@@ -187,10 +187,10 @@ void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list
             // NOTE: don't touch query tree indexes, they
             // stay around and just go out of date
             const bool index_is_in_query_tree = [=]() {
-                const QModelIndex scope_parent = console->get_scope_parent(index);
-                const ItemType scope_parent_type = (ItemType) scope_parent.data(ConsoleRole_Type).toInt();
+                const QModelIndex parent = index.parent();
+                const ItemType parent_type = (ItemType) parent.data(ConsoleRole_Type).toInt();
 
-                return (scope_parent_type == ItemType_QueryItem);
+                return (parent_type == ItemType_QueryItem);
             }();
 
             if (index_is_in_query_tree && ignore_query_tree) {

@@ -47,18 +47,12 @@ enum ConsoleRole {
     // this scope item. Doesn't apply to results items.
     ConsoleRole_ResultsId = Qt::UserRole + 2,
 
-    ConsoleRole_Buddy = Qt::UserRole + 3,
-
-    // Scope item parent of a results item. Doesn't apply
-    // to scope items.
-    ConsoleRole_ScopeParent = Qt::UserRole + 4,
-
-    ConsoleRole_IsScope = Qt::UserRole + 5,
+    ConsoleRole_IsScope = Qt::UserRole + 3,
 
     // Determines whether scope is dynamic.
-    ConsoleRole_ScopeIsDynamic = Qt::UserRole + 6,
+    ConsoleRole_ScopeIsDynamic = Qt::UserRole + 4,
 
-    ConsoleRole_Fetching = Qt::UserRole + 7,
+    ConsoleRole_Fetching = Qt::UserRole + 5,
 
     // NOTE: don't go above ConsoleRole_Type and
     // ConsoleRole_LAST (defined in public header)

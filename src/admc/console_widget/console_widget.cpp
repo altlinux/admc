@@ -486,12 +486,6 @@ QList<QStandardItem *> ConsoleWidget::get_results_row(const QModelIndex &index) 
     return row;
 }
 
-QModelIndex ConsoleWidget::get_scope_parent(const QModelIndex &index) const {
-    const QModelIndex scope_parent = index.data(ConsoleRole_ScopeParent).toModelIndex();
-
-    return scope_parent;
-}
-
 bool ConsoleWidget::item_was_fetched(const QModelIndex &index) const {
     return index.data(ConsoleRole_WasFetched).toBool();
 }

@@ -194,7 +194,6 @@ public:
     QStandardItem *get_scope_item(const QModelIndex &scope_index) const;
     QList<QStandardItem *> get_results_row(const QModelIndex &results_index) const;
 
-    QModelIndex get_scope_parent(const QModelIndex &index) const;
     bool item_was_fetched(const QModelIndex &index) const;
 
     void add_actions_to_action_menu(QMenu *menu);
