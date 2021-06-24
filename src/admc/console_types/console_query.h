@@ -56,7 +56,7 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index);
 void console_query_tree_init(ConsoleWidget *console);
 void console_query_tree_save(ConsoleWidget *console);
-bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
+bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
 void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 QString console_query_folder_path(const QModelIndex &index);

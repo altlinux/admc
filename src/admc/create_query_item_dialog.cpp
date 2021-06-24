@@ -63,7 +63,7 @@ void CreateQueryItemDialog::accept() {
 
     const QModelIndex parent_index = console->get_selected_item();
 
-    if (!console_query_or_folder_name_is_good(name, parent_index, this, QModelIndex())) {
+    if (!console_query_or_folder_name_is_good(console, name, parent_index, this, QModelIndex())) {
         return;
     }
 

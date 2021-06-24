@@ -73,7 +73,7 @@ void CreateQueryFolderDialog::accept() {
     const QString name = name_edit->text();
     const QString description = description_edit->text();
 
-    if (!console_query_or_folder_name_is_good(name, parent_index, this, QModelIndex())) {
+    if (!console_query_or_folder_name_is_good(console, name, parent_index, this, QModelIndex())) {
         return;
     }
 

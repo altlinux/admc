@@ -521,6 +521,10 @@ QWidget *ConsoleWidget::get_description_bar() const {
     return d->description_bar;
 }
 
+QStandardItemModel *ConsoleWidget::scope_model() const {
+    return d->scope_model;
+}
+
 void ConsoleWidgetPrivate::connect_to_drag_model(ConsoleDragModel *model) {
     connect(
         model, &ConsoleDragModel::start_drag,
@@ -963,15 +967,4 @@ QModelIndex console_item_get_buddy(const QModelIndex &index) {
     const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
 
     return buddy;
-}
-
-// TODO: rename
-QModelIndex console_item_convert_to_scope_index(const QModelIndex &index) {
-    if (console_item_is_scope(index)) {
-        return index;
-    } else {
-        const QModelIndex buddy = console_item_get_buddy(index);
-
-        return buddy;
-    }
 }

@@ -601,11 +601,8 @@ void CentralWidget::query_paste() {
 
 void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {
     const bool dropped_contains_target = [&]() {
-        const QModelIndex target_scope = console_item_convert_to_scope_index(target);
-
         for (const QPersistentModelIndex &dropped : dropped_list) {
-            const QModelIndex dropped_scope = console_item_convert_to_scope_index(dropped);
-            if (dropped_scope == target_scope) {
+            if (dropped == target) {
                 return true;
             }
         }

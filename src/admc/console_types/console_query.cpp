@@ -303,7 +303,7 @@ void console_query_tree_save(ConsoleWidget *console) {
     g_settings->set_variant(VariantSetting_QueryItems, item_variant);
 }
 
-bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index_raw, QWidget *parent_widget, const QModelIndex &current_index) {
+bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index) {
     if (name.isEmpty()) {
         const QString error_text = QString(QCoreApplication::translate("query.cpp", "Name may not be empty"));
         QMessageBox::warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
@@ -311,14 +311,12 @@ bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex
         return false;
     }
 
-    const QModelIndex parent_index = console_item_convert_to_scope_index(parent_index_raw);
-
     const QString current_name = current_index.data(Qt::DisplayRole).toString();
 
     const QList<QString> sibling_names = [&]() {
         QList<QString> out;
 
-        QAbstractItemModel *model = (QAbstractItemModel *) parent_index.model();
+        QStandardItemModel *model = console->scope_model();
 
         for (int row = 0; row < model->rowCount(parent_index); row++) {
             const QModelIndex sibling = model->index(row, 0, parent_index);
@@ -440,26 +438,16 @@ void console_query_drop(ConsoleWidget *console, const QList<QPersistentModelInde
     console_query_move(console, dropped_list, target);
 }
 
-void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index_raw, const bool delete_old_branch) {
-    const QModelIndex new_parent_index = console_item_convert_to_scope_index(new_parent_index_raw);
-
+void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch) {
     // Check for name conflict
-    for (const QPersistentModelIndex &index_raw : index_list) {
-        const QModelIndex index = console_item_convert_to_scope_index(index_raw);
-
+    for (const QPersistentModelIndex &index : index_list) {
         const QString name = index.data(Qt::DisplayRole).toString();
-        if (!console_query_or_folder_name_is_good(name, new_parent_index, console, index)) {
+        if (!console_query_or_folder_name_is_good(console, name, new_parent_index, console, index)) {
             return;
         }
     }
 
-    for (const QPersistentModelIndex &old_index_raw : index_list) {
-        // NOTE: convert both moved index and target index to
-        // their scope index equivalents (if they aren't scope
-        // indexes already). Do this because move process
-        // requires iteration through scope tree.
-        const QModelIndex old_index = console_item_convert_to_scope_index(old_index_raw);
-
+    for (const QPersistentModelIndex &old_index : index_list) {
         // Create a copy of the tree branch at new location. Go
         // down the branch and replicate all of the children.
 
@@ -626,7 +614,7 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
     const QString filter = data["filter"].toString();
     const QByteArray filter_state = QByteArray::fromHex(data["filter_state"].toString().toLocal8Bit());
 
-    if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
+    if (!console_query_or_folder_name_is_good(console, name, parent_index, console, QModelIndex())) {
         return;
     }
 

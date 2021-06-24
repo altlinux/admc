@@ -53,6 +53,7 @@ class ResultsView;
 class QStandardItem;
 class QMenu;
 class QAbstractItemView;
+class QStandardItemModel;
 
 enum ConsoleRolePublic {
     ConsoleRole_HasProperties = Qt::UserRole + 18,
@@ -204,6 +205,8 @@ public:
     QWidget *get_scope_view() const;
     QWidget *get_description_bar() const;
 
+    QStandardItemModel *scope_model() const;
+
 signals:
     // Emitted when a dynamic scope item is expanded or
     // selected for the first time. User of this widget
@@ -250,9 +253,6 @@ private:
 
 bool console_item_is_scope(const QModelIndex &index);
 QModelIndex console_item_get_buddy(const QModelIndex &index);
-// If index is already scope, returns index, otherwise
-// returns scope buddy, if it exists
-QModelIndex console_item_convert_to_scope_index(const QModelIndex &index);
 
 // Returns true if item or item's buddy is fetching
 bool console_get_item_fetching(const QModelIndex &index);
