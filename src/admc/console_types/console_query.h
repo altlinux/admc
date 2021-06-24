@@ -48,10 +48,10 @@ extern int console_query_folder_results_id;
 
 QList<QString> console_query_folder_header_labels();
 QList<int> console_query_folder_default_columns();
-void console_query_folder_load(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description);
+void console_query_folder_load(const QList<QStandardItem *> &row, const QString &name, const QString &description);
 // Returns index of the scope item
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent);
-void console_query_item_load(QStandardItem *scope_item, const QList<QStandardItem *> results_row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children);
+void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children);
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent);
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index);
 void console_query_tree_init(ConsoleWidget *console);

@@ -286,21 +286,7 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
         set_current_scope(index.parent());
     }
 
-    // NOTE: i *think* discarding const from model is fine.
-    // Qt's reason: "A const pointer to the model is
-    // returned because calls to non-const functions of the
-    // model might invalidate the model index and possibly
-    // crash your application.". Index becoming invalid is
-    // expected since we're deleting it from the model.
-
-    // Remove buddy item
-    const QModelIndex buddy = console_item_get_buddy(index);
-    if (buddy.isValid()) {
-        ((QAbstractItemModel *) buddy.model())->removeRows(buddy.row(), 1, buddy.parent());
-    }
-
-    // Remove item from it's own model
-    ((QAbstractItemModel *) index.model())->removeRows(index.row(), 1, index.parent());
+    d->scope_model->removeRows(index.row(), 1, index.parent());
 }
 
 void ConsoleWidget::set_current_scope(const QModelIndex &index) {
@@ -409,12 +395,9 @@ void ConsoleWidget::set_item_fetching(const QModelIndex &scope_index, const bool
 }
 
 bool console_get_item_fetching(const QModelIndex &index) {
-    const bool index_fetching = index.data(ConsoleRole_Fetching).toBool();
+    const bool is_fetching = index.data(ConsoleRole_Fetching).toBool();
 
-    const QModelIndex buddy = console_item_get_buddy(index);
-    const bool buddy_fetching = buddy.data(ConsoleRole_Fetching).toBool();
-
-    return (index_fetching || buddy_fetching);
+    return is_fetching;
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
@@ -955,16 +938,4 @@ QList<QModelIndex> filter_indexes_by_type(const QList<QModelIndex> &indexes, con
     }
 
     return out;
-}
-
-bool console_item_is_scope(const QModelIndex &index) {
-    const bool is_scope = index.data(ConsoleRole_IsScope).toBool();
-
-    return is_scope;
-}
-
-QModelIndex console_item_get_buddy(const QModelIndex &index) {
-    const QModelIndex buddy = index.data(ConsoleRole_Buddy).toModelIndex();
-
-    return buddy;
 }

@@ -251,9 +251,6 @@ private:
     ConsoleWidgetPrivate *d;
 };
 
-bool console_item_is_scope(const QModelIndex &index);
-QModelIndex console_item_get_buddy(const QModelIndex &index);
-
 // Returns true if item or item's buddy is fetching
 bool console_get_item_fetching(const QModelIndex &index);
 

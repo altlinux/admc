@@ -115,59 +115,45 @@ QString console_query_folder_path(const QModelIndex &index) {
     return path;
 }
 
-void console_query_folder_load(QStandardItem *scope_item, const QList<QStandardItem *> &results_row, const QString &name, const QString &description) {
-    auto load_main_item = [&](QStandardItem *item) {
-        item->setData(description, QueryItemRole_Description);
-        item->setData(ItemType_QueryFolder, ConsoleRole_Type);
-        item->setIcon(QIcon::fromTheme("folder"));
-    };
+void console_query_folder_load(const QList<QStandardItem *> &row, const QString &name, const QString &description) {
+    QStandardItem *main_item = row[0];
+    main_item->setData(description, QueryItemRole_Description);
+    main_item->setData(ItemType_QueryFolder, ConsoleRole_Type);
+    main_item->setIcon(QIcon::fromTheme("folder"));
 
-    load_main_item(scope_item);
-    scope_item->setText(name);
-
-    load_main_item(results_row[0]);
-    results_row[QueryColumn_Name]->setText(name);
-    results_row[QueryColumn_Description]->setText(description);
+    row[QueryColumn_Name]->setText(name);
+    row[QueryColumn_Description]->setText(description);
 }
 
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
     QStandardItem *scope_item;
-    QList<QStandardItem *> results_row;
-    console->add_buddy_scope_and_results(console_query_folder_results_id, ScopeNodeType_Static, parent, &scope_item, &results_row);
-    console_query_folder_load(scope_item, results_row, name, description);
+    QList<QStandardItem *> row;
+    console->add_buddy_scope_and_results(console_query_folder_results_id, ScopeNodeType_Static, parent, &scope_item, &row);
+    console_query_folder_load(row, name, description);
 
     return scope_item->index();
 }
 
-void console_query_item_load(QStandardItem *scope_item, const QList<QStandardItem *> results_row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
-    auto load_main_item = [&](QStandardItem *item) {
-        item->setData(ItemType_QueryItem, ConsoleRole_Type);
-        item->setData(description, QueryItemRole_Description);
-        item->setData(filter, QueryItemRole_Filter);
-        item->setData(filter_state, QueryItemRole_FilterState);
-        item->setData(base, QueryItemRole_Base);
-        item->setData(scope_is_children, QueryItemRole_ScopeIsChildren);
-        item->setIcon(QIcon::fromTheme("emblem-system"));
-    };
+void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
+    QStandardItem *main_item = row[0];
+    main_item->setData(ItemType_QueryItem, ConsoleRole_Type);
+    main_item->setData(description, QueryItemRole_Description);
+    main_item->setData(filter, QueryItemRole_Filter);
+    main_item->setData(filter_state, QueryItemRole_FilterState);
+    main_item->setData(base, QueryItemRole_Base);
+    main_item->setData(scope_is_children, QueryItemRole_ScopeIsChildren);
+    main_item->setIcon(QIcon::fromTheme("emblem-system"));
 
-    if (scope_item != nullptr) {
-        load_main_item(scope_item);
-        scope_item->setText(name);
-    }
-
-    if (!results_row.isEmpty()) {
-        load_main_item(results_row[0]);
-        results_row[QueryColumn_Name]->setText(name);
-        results_row[QueryColumn_Description]->setText(description);
-    }
+    row[QueryColumn_Name]->setText(name);
+    row[QueryColumn_Description]->setText(description);
 }
 
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
     QStandardItem *scope_item;
-    QList<QStandardItem *> results_row;
-    console->add_buddy_scope_and_results(console_object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &results_row);
+    QList<QStandardItem *> row;
+    console->add_buddy_scope_and_results(console_object_results_id, ScopeNodeType_Dynamic, parent, &scope_item, &row);
 
-    console_query_item_load(scope_item, results_row, name, description, filter, filter_state, base, scope_is_children);
+    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 }
 
 void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
