@@ -232,7 +232,7 @@ CentralWidget::CentralWidget()
         console, &ConsoleWidget::properties_requested,
         this, &CentralWidget::object_properties);
     connect(
-        console, &ConsoleWidget::selection_changed,
+        console, &ConsoleWidget::actions_changed,
         this, &CentralWidget::update_actions_visibility);
     connect(
         console, &ConsoleWidget::context_menu,

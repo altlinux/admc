@@ -572,7 +572,7 @@ void ConsoleWidgetPrivate::on_selection_changed() {
         refresh_action->setEnabled(false);
     }
 
-    emit q->selection_changed();
+    emit q->actions_changed();
 }
 
 void ConsoleWidgetPrivate::on_context_menu(const QPoint pos) {

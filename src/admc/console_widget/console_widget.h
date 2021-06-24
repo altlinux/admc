@@ -222,10 +222,9 @@ signals:
     // description bar.
     void results_count_changed();
 
-    // Emitted when selected items changes. Note that this
-    // is also emitted when focus changes between scope and
-    // results panes.
-    void selection_changed();
+    // Emitted when actions need to updated due to selection
+    // changing.
+    void actions_changed();
 
     // Emitted when a context menu is requested from a scope
     // or results view
