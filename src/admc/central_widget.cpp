@@ -256,11 +256,11 @@ void CentralWidget::go_online(AdInterface &ad) {
     auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
-    object_tree_head = console_object_tree_init(console, ad);
+    console_object_tree_init(console, ad);
     console_policy_tree_init(console, ad);
     console_query_tree_init(console);
 
-    console->set_current_scope(object_tree_head->index());
+    console->set_current_scope(console_object_head()->index());
 }
 
 void CentralWidget::open_filter() {
@@ -350,7 +350,7 @@ void CentralWidget::object_create_helper(const QString &object_class) {
 
             show_busy_indicator();
 
-            const QList<QModelIndex> search_parent = console->search_items(ObjectRole_DN, parent_dn, ItemType_Object);
+            const QList<QModelIndex> search_parent = console->search_items(console_object_head()->index(), ObjectRole_DN, parent_dn, ItemType_Object);
 
             if (search_parent.isEmpty()) {
                 hide_busy_indicator();
@@ -467,7 +467,7 @@ void CentralWidget::object_edit_upn_suffixes() {
 }
 
 void CentralWidget::object_change_dc() {
-    auto change_dc_dialog = new ChangeDCDialog(object_tree_head, this);
+    auto change_dc_dialog = new ChangeDCDialog(console_object_head(), this);
     change_dc_dialog->open();
 }
 
@@ -700,7 +700,7 @@ void CentralWidget::on_object_properties_applied() {
     for (const QString &target : target_list) {
         const AdObject object = ad.search_object(target);
 
-        const QList<QModelIndex> index_list = console->search_items(ObjectRole_DN, target, ItemType_Object);
+        const QList<QModelIndex> index_list = console->search_items(console_object_head()->index(), ObjectRole_DN, target, ItemType_Object);
         for (const QModelIndex &index : index_list) {
             const QList<QStandardItem *> row = console->get_row(index);
             console_object_results_load(row, object);
@@ -715,7 +715,7 @@ void CentralWidget::on_object_properties_applied() {
 void CentralWidget::refresh_head() {
     show_busy_indicator();
 
-    console->refresh_scope(object_tree_head->index());
+    console->refresh_scope(console_object_head()->index());
 
     hide_busy_indicator();
 }
@@ -792,7 +792,7 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
     }
 
     for (const QString &dn : changed_objects) {
-        const QList<QModelIndex> index_list = console->search_items(ObjectRole_DN, dn, ItemType_Object);
+        const QList<QModelIndex> index_list = console->search_items(console_object_head()->index(), ObjectRole_DN, dn, ItemType_Object);
         for (const QModelIndex &index : index_list) {
             QStandardItem *item = console->get_item(index);
             item->setData(disabled, ObjectRole_AccountDisabled);

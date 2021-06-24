@@ -40,6 +40,8 @@
 int policy_container_results_id;
 int policy_results_id;
 
+QStandardItem *policy_tree_head = nullptr;
+
 void console_policy_results_load(const QList<QStandardItem *> &row, const AdObject &object) {
     QStandardItem *main_item = row[0];
     main_item->setIcon(QIcon::fromTheme("folder-templates"));
@@ -63,33 +65,17 @@ QList<QString> console_policy_search_attributes() {
 }
 
 void console_policy_create(ConsoleWidget *console, const AdObject &object) {
-    const QModelIndex policy_root_index = [&]() {
-        const QList<QModelIndex> results = console->search_items(ConsoleRole_Type, ItemType_PolicyRoot);
-
-        if (!results.isEmpty()) {
-            return results[0];
-        } else {
-            return QModelIndex();
-        }
-    }();
-
-    if (!policy_root_index.isValid()) {
-        qDebug() << "Failed to find policy root";
-
-        return;
-    }
-
-    const QList<QStandardItem *> results_row = console->add_scope_item(policy_results_id, ScopeNodeType_Static, policy_root_index);
+    const QList<QStandardItem *> results_row = console->add_scope_item(policy_results_id, ScopeNodeType_Static, policy_tree_head->index());
 
     console_policy_results_load(results_row, object);
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
-    QStandardItem *top_item = console->add_top_item(policy_container_results_id, ScopeNodeType_Static);
-    top_item->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
-    top_item->setDragEnabled(false);
-    top_item->setIcon(QIcon::fromTheme("folder"));
-    top_item->setData(ItemType_PolicyRoot, ConsoleRole_Type);
+    policy_tree_head = console->add_top_item(policy_container_results_id, ScopeNodeType_Static);
+    policy_tree_head->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
+    policy_tree_head->setDragEnabled(false);
+    policy_tree_head->setIcon(QIcon::fromTheme("folder"));
+    policy_tree_head->setData(ItemType_PolicyRoot, ConsoleRole_Type);
 
     // Add children
     const QString base = g_adconfig->domain_head();

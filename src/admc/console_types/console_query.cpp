@@ -48,6 +48,7 @@ enum QueryColumn {
 };
 
 int console_query_folder_results_id;
+QStandardItem *query_tree_head = nullptr;
 
 bool copied_index_is_cut = false;
 QPersistentModelIndex copied_index;
@@ -169,18 +170,18 @@ void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) 
 }
 
 void console_query_tree_init(ConsoleWidget *console) {
-    QStandardItem *top_item = console->add_top_item(console_query_folder_results_id, ScopeNodeType_Static);
-    top_item->setText(QCoreApplication::translate("query", "Saved Queries"));
-    top_item->setIcon(QIcon::fromTheme("folder"));
-    top_item->setData(ItemType_QueryRoot, ConsoleRole_Type);
-    top_item->setDragEnabled(false);
+    query_tree_head = console->add_top_item(console_query_folder_results_id, ScopeNodeType_Static);
+    query_tree_head->setText(QCoreApplication::translate("query", "Saved Queries"));
+    query_tree_head->setIcon(QIcon::fromTheme("folder"));
+    query_tree_head->setData(ItemType_QueryRoot, ConsoleRole_Type);
+    query_tree_head->setDragEnabled(false);
 
     // Add rest of tree
     const QHash<QString, QVariant> folder_list = g_settings->get_variant(VariantSetting_QueryFolders).toHash();
     const QHash<QString, QVariant> item_list = g_settings->get_variant(VariantSetting_QueryItems).toHash();
 
     QStack<QPersistentModelIndex> folder_stack;
-    folder_stack.append(top_item->index());
+    folder_stack.append(query_tree_head->index());
     while (!folder_stack.isEmpty()) {
         const QPersistentModelIndex folder_index = folder_stack.pop();
 
@@ -218,15 +219,10 @@ void console_query_tree_save(ConsoleWidget *console) {
     QHash<QString, QVariant> folder_list;
     QHash<QString, QVariant> item_list;
 
-    const QModelIndex query_root_index = console_query_get_root_index(console);
-    if (!query_root_index.isValid()) {
-        return;
-    }
-
     QStack<QModelIndex> stack;
-    stack.append(query_root_index);
+    stack.append(query_tree_head->index());
 
-    const QAbstractItemModel *model = query_root_index.model();
+    const QAbstractItemModel *model = query_tree_head->model();
 
     while (!stack.isEmpty()) {
         const QModelIndex index = stack.pop();
@@ -386,7 +382,7 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
 }
 
 QModelIndex console_query_get_root_index(ConsoleWidget *console) {
-    const QList<QModelIndex> results = console->search_items(ConsoleRole_Type, ItemType_QueryRoot);
+    const QList<QModelIndex> results = console->search_items(query_tree_head->index(), ConsoleRole_Type, ItemType_QueryRoot);
 
     if (!results.isEmpty()) {
         return results[0];
