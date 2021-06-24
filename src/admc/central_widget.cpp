@@ -351,7 +351,7 @@ void CentralWidget::object_create_helper(const QString &object_class) {
 
             show_busy_indicator();
 
-            const QList<QModelIndex> search_parent = console->search_scope_by_role(ObjectRole_DN, parent_dn, ItemType_Object);
+            const QList<QModelIndex> search_parent = console->search_items(ObjectRole_DN, parent_dn, ItemType_Object);
 
             if (search_parent.isEmpty()) {
                 hide_busy_indicator();
@@ -705,7 +705,7 @@ void CentralWidget::on_object_properties_applied() {
     for (const QString &target : target_list) {
         const AdObject object = ad.search_object(target);
 
-        const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, target, ItemType_Object);
+        const QList<QModelIndex> results_indexes = console->search_items(ObjectRole_DN, target, ItemType_Object);
         for (const QModelIndex &index : results_indexes) {
             const QList<QStandardItem *> results_row = console->get_results_row(index);
             console_object_results_load(results_row, object);
@@ -797,13 +797,13 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
     }
 
     for (const QString &dn : changed_objects) {
-        const QList<QModelIndex> scope_indexes = console->search_scope_by_role(ObjectRole_DN, dn, ItemType_Object);
+        const QList<QModelIndex> scope_indexes = console->search_items(ObjectRole_DN, dn, ItemType_Object);
         for (const QModelIndex &index : scope_indexes) {
             QStandardItem *scope_item = console->get_scope_item(index);
             scope_item->setData(disabled, ObjectRole_AccountDisabled);
         }
 
-        const QList<QModelIndex> results_indexes = console->search_results_by_role(ObjectRole_DN, dn, ItemType_Object);
+        const QList<QModelIndex> results_indexes = console->search_items(ObjectRole_DN, dn, ItemType_Object);
         for (const QModelIndex &index : results_indexes) {
             const QList<QStandardItem *> results_row = console->get_results_row(index);
             results_row[0]->setData(disabled, ObjectRole_AccountDisabled);

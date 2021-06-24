@@ -386,7 +386,7 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
 }
 
 QModelIndex console_query_get_root_index(ConsoleWidget *console) {
-    const QList<QModelIndex> results = console->search_scope_by_role(ConsoleRole_Type, ItemType_QueryRoot);
+    const QList<QModelIndex> results = console->search_items(ConsoleRole_Type, ItemType_QueryRoot);
 
     if (!results.isEmpty()) {
         return results[0];

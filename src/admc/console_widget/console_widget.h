@@ -182,8 +182,7 @@ public:
 
     // NOTE: if no type is given, then items of all types
     // will be returned
-    QList<QModelIndex> search_scope_by_role(int role, const QVariant &value, const int type = -1) const;
-    QList<QModelIndex> search_results_by_role(int role, const QVariant &value, const int type = -1) const;
+    QList<QModelIndex> search_items(int role, const QVariant &value, const int type = -1) const;
 
     QModelIndex get_current_scope_item() const;
     int get_current_results_count() const;

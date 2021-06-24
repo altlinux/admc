@@ -64,7 +64,7 @@ QList<QString> console_policy_search_attributes() {
 
 void console_policy_create(ConsoleWidget *console, const AdObject &object) {
     const QModelIndex policy_root_index = [&]() {
-        const QList<QModelIndex> results = console->search_scope_by_role(ConsoleRole_Type, ItemType_PolicyRoot);
+        const QList<QModelIndex> results = console->search_items(ConsoleRole_Type, ItemType_PolicyRoot);
 
         if (!results.isEmpty()) {
             return results[0];

@@ -437,16 +437,12 @@ QModelIndex ConsoleWidget::get_selected_item() const {
     return selected_list[0];
 }
 
-QList<QModelIndex> ConsoleWidget::search_scope_by_role(int role, const QVariant &value, const int type) const {
+QList<QModelIndex> ConsoleWidget::search_items(int role, const QVariant &value, const int type) const {
     const QList<QModelIndex> all_matches = d->scope_model->match(d->scope_model->index(0, 0), role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
 
     const QList<QModelIndex> matches = filter_indexes_by_type(all_matches, type);
 
     return matches;
-}
-
-QList<QModelIndex> ConsoleWidget::search_results_by_role(int role, const QVariant &value, const int type) const {
-    return search_scope_by_role(role, value, type);
 }
 
 QModelIndex ConsoleWidget::get_current_scope_item() const {
