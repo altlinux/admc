@@ -381,18 +381,6 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
     }
 }
 
-QModelIndex console_query_get_root_index(ConsoleWidget *console) {
-    const QList<QModelIndex> results = console->search_items(query_tree_head->index(), ConsoleRole_Type, ItemType_QueryRoot);
-
-    if (!results.isEmpty()) {
-        return results[0];
-    } else {
-        qDebug() << "Failed to find query root";
-
-        return QModelIndex();
-    }
-}
-
 void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
     const bool dropped_are_query_item_or_folder = (dropped_types - QSet<ItemType>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
     if (!dropped_are_query_item_or_folder) {

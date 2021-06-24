@@ -60,7 +60,6 @@ bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString 
 void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 QString console_query_folder_path(const QModelIndex &index);
-QModelIndex console_query_get_root_index(ConsoleWidget *console);
 void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
 void console_query_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch = true);
