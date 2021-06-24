@@ -596,3 +596,7 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
 
     console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
 }
+
+QStandardItem *console_query_head() {
+    return query_tree_head;
+}

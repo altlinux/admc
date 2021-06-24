@@ -24,6 +24,7 @@
 #include "central_widget.h"
 #include "console_actions.h"
 #include "console_types/console_policy.h"
+#include "console_types/console_query.h"
 #include "filter_dialog.h"
 #include "globals.h"
 #include "search_thread.h"
@@ -161,11 +162,21 @@ void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, c
     }
 }
 
-void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list) {
+// NOTE: for regular delete we also delete objects in query
+// tree. For delete as part of move, objects in query tree
+// are kept as is and become outdated
+void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const bool delete_in_query_tree) {
     for (const QString &dn : dn_list) {
         const QList<QPersistentModelIndex> index_list = persistent_index_list(console->search_items(object_tree_head->index(), ObjectRole_DN, dn, ItemType_Object));
         for (const QPersistentModelIndex &index : index_list) {
             console->delete_item(index);
+        }
+
+        if (delete_in_query_tree) {
+            const QList<QPersistentModelIndex> index_list_from_queries = persistent_index_list(console->search_items(console_query_head()->index(), ObjectRole_DN, dn, ItemType_Object));
+            for (const QPersistentModelIndex &index : index_list_from_queries) {
+                console->delete_item(index);
+            }
         }
     }
 }
@@ -208,7 +219,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
     }();
 
     console_object_create(console, ad, new_dn_list, new_parent_index);
-    console_object_delete(console, old_dn_list);
+    console_object_delete(console, old_dn_list, false);
 }
 
 void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {

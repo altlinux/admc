@@ -69,5 +69,6 @@ void console_query_import(ConsoleWidget *console);
 void console_query_cut(ConsoleWidget *console);
 void console_query_copy(ConsoleWidget *console);
 void console_query_paste(ConsoleWidget *console);
+QStandardItem *console_query_head();
 
 #endif /* CONSOLE_QUERY_H */
