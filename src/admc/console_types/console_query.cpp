@@ -374,11 +374,6 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
     }
 
     visible_actions->unite(my_visible_actions);
-
-    const bool is_fetching = index.data(ConsoleRole_Fetching).toBool();
-    if (is_fetching) {
-        disabled_actions->unite(my_visible_actions);
-    }
 }
 
 void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {

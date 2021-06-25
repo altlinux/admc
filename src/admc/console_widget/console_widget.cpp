@@ -547,23 +547,6 @@ void ConsoleWidgetPrivate::update_actions() {
         }
     }
 
-    const bool any_selected_is_fetching = [&]() {
-        for (const QModelIndex &index : selected_list) {
-            const bool is_fetching = index.data(ConsoleRole_Fetching).toBool();
-
-            if (is_fetching) {
-                return true;
-            }
-        }
-
-        return false;
-    }();
-
-    if (any_selected_is_fetching) {
-        properties_action->setEnabled(false);
-        refresh_action->setEnabled(false);
-    }
-
     emit q->actions_changed();
 }
 

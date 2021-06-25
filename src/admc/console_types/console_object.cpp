@@ -592,11 +592,6 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
     my_visible_actions.insert(ConsoleAction_Delete);
 
     visible_actions->unite(my_visible_actions);
-
-    const bool is_fetching = index.data(ConsoleRole_Fetching).toBool();
-    if (is_fetching) {
-        disabled_actions->unite(my_visible_actions);
-    }
 }
 
 QList<QString> object_operation_delete(const QList<QString> &targets, QWidget *parent) {
