@@ -242,14 +242,3 @@ void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const 
 
     select_dialog->accept();
 }
-
-QPushButton *find_button_by_name(const QString &name, QWidget *parent) {
-    auto buttons = parent->findChildren<QPushButton *>();
-    for (const auto &button : buttons) {
-        if (button->text() == name) {
-            return button;
-        }
-    }
-
-    return nullptr;
-}

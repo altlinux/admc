@@ -79,10 +79,9 @@ void ADMCTestObjectMenu::select_dialog_correct_object_added() {
     tab(3);
     QTest::keyClicks(QApplication::focusWidget(), "test-user");
 
-    // Press "Find" button
-    QPushButton *find_button = find_button_by_name("Find", find_select_dialog);
+    auto find_button = find_select_dialog->findChild<QPushButton *>("find_button");
     QVERIFY(find_button != nullptr);
-    QTest::mouseClick(find_button, Qt::LeftButton);
+    find_button->click();
 
     // Switch to find results
     auto find_results_view = find_select_dialog->findChild<QTreeView *>();
@@ -358,8 +357,9 @@ void ADMCTestObjectMenu::object_menu_find_simple() {
 
     QTest::keyClicks(QApplication::focusWidget(), user_name);
 
-    QPushButton *find_button = find_button_by_name(FIND_BUTTON_LABEL, find_dialog);
-    QVERIFY2((find_button != nullptr), "Failed to find find_button");
+    auto find_button = find_dialog->findChild<QPushButton *>("find_button");
+    QVERIFY(find_button != nullptr);
+    find_button->click();
 
     QTest::mouseClick(find_button, Qt::LeftButton);
 
@@ -394,8 +394,9 @@ void ADMCTestObjectMenu::object_menu_find_advanced() {
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, user_dn);
     QTest::keyClicks(QApplication::focusWidget(), filter);
 
-    QPushButton *find_button = find_button_by_name(FIND_BUTTON_LABEL, find_dialog);
-    QVERIFY2((find_button != nullptr), "Failed to find find_button");
+    auto find_button = find_dialog->findChild<QPushButton *>("find_button");
+    QVERIFY(find_button != nullptr);
+    find_button->click();
 
     QTest::mouseClick(find_button, Qt::LeftButton);
 
