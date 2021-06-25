@@ -79,10 +79,9 @@ void ADMCTestObjectMenu::select_dialog_correct_object_added() {
     tab(3);
     QTest::keyClicks(QApplication::focusWidget(), "test-user");
 
-    // Press "Find" button
-    QPushButton *find_button = find_button_by_name("Find", find_select_dialog);
+    auto find_button = find_select_dialog->findChild<QPushButton *>("find_button");
     QVERIFY(find_button != nullptr);
-    QTest::mouseClick(find_button, Qt::LeftButton);
+    find_button->click();
 
     // Switch to find results
     auto find_results_view = find_select_dialog->findChild<QTreeView *>();
@@ -358,8 +357,9 @@ void ADMCTestObjectMenu::object_menu_find_simple() {
 
     QTest::keyClicks(QApplication::focusWidget(), user_name);
 
-    QPushButton *find_button = find_button_by_name(FIND_BUTTON_LABEL, find_dialog);
-    QVERIFY2((find_button != nullptr), "Failed to find find_button");
+    auto find_button = find_dialog->findChild<QPushButton *>("find_button");
+    QVERIFY(find_button != nullptr);
+    find_button->click();
 
     QTest::mouseClick(find_button, Qt::LeftButton);
 
@@ -394,8 +394,9 @@ void ADMCTestObjectMenu::object_menu_find_advanced() {
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, user_dn);
     QTest::keyClicks(QApplication::focusWidget(), filter);
 
-    QPushButton *find_button = find_button_by_name(FIND_BUTTON_LABEL, find_dialog);
-    QVERIFY2((find_button != nullptr), "Failed to find find_button");
+    auto find_button = find_dialog->findChild<QPushButton *>("find_button");
+    QVERIFY(find_button != nullptr);
+    find_button->click();
 
     QTest::mouseClick(find_button, Qt::LeftButton);
 
@@ -430,40 +431,9 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     auto select_dialog = parent_widget->findChild<SelectObjectDialog *>();
     QVERIFY2((select_dialog != nullptr), "Failed to find select_dialog");
     QVERIFY(QTest::qWaitForWindowExposed(select_dialog, 1000));
-
-    // Press "Add" button in select dialog
-    tab();
-    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Space);
-
-    // Find dialog has been opened, so switch to it
-    auto find_select_dialog = select_dialog->findChild<FindSelectObjectDialog *>();
-    QVERIFY2((find_select_dialog != nullptr), "Failed to find find_select_dialog");
-    QVERIFY(QTest::qWaitForWindowExposed(find_select_dialog, 1000));
-
-    // Enter group name in "Name" edit
-    tab(3);
-    QTest::keyClicks(QApplication::focusWidget(), group_name);
-
-    // Press "Find" button
-    QPushButton *find_button = find_button_by_name("Find", find_select_dialog);
-    QVERIFY(find_button != nullptr);
-    QTest::keyClick(find_button, Qt::Key_Space);
-
-    // Switch to find results
-    auto find_results_view = find_select_dialog->findChild<QTreeView *>();
-    QVERIFY2((find_results_view != nullptr), "Failed to cast find_results_view");
-
-    wait_for_find_results_to_load(find_results_view);
-
-    // Select group in view
-    navigate_until_object(find_results_view, group_dn, ObjectRole_DN);
-    const QModelIndex selected_index = find_results_view->selectionModel()->currentIndex();
-    const QString selected_dn = selected_index.data(ObjectRole_DN).toString();
-
-    find_select_dialog->accept();
-
-    select_dialog->accept();
-
+    
+    select_in_select_dialog(select_dialog, group_dn);
+    
     const AdObject group = ad.search_object(group_dn);
     const QList<QString> group_members = group.get_strings(ATTRIBUTE_MEMBER);
     const bool user_is_member_of_group = group_members.contains(user_dn);

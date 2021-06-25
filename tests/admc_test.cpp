@@ -24,6 +24,9 @@
 #include "console_types/console_object.h"
 #include "globals.h"
 #include "utils.h"
+#include "select_object_dialog.h"
+#include "find_select_object_dialog.h"
+#include "filter_widget/filter_widget_simple_tab.h"
 
 #include <QMessageBox>
 #include <QModelIndex>
@@ -31,6 +34,7 @@
 #include <QTest>
 #include <QTimer>
 #include <QTreeView>
+#include <QLineEdit>
 
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
@@ -200,13 +204,41 @@ void ADMCTest::close_message_box_slot() {
     }
 }
 
-QPushButton *find_button_by_name(const QString &name, QWidget *parent) {
-    auto buttons = parent->findChildren<QPushButton *>();
-    for (const auto &button : buttons) {
-        if (button->text() == name) {
-            return button;
-        }
-    }
+void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &dn) {
+    auto add_button = select_dialog->findChild<QPushButton *>("add_button");
+    QVERIFY(add_button != nullptr);
+    add_button->click();
 
-    return nullptr;
+    // Find dialog has been opened, so switch to it
+    auto find_select_dialog = select_dialog->findChild<FindSelectObjectDialog *>();
+    QVERIFY(find_select_dialog != nullptr);
+    QVERIFY(QTest::qWaitForWindowExposed(find_select_dialog, 1000));
+
+    // Enter group name in "Name" edit
+    const QString name = dn_get_name(dn);
+    auto simple_tab = select_dialog->findChild<FilterWidgetSimpleTab *>();
+    QVERIFY(simple_tab != nullptr);
+    auto name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
+    QVERIFY(name_edit != nullptr);
+    name_edit->setText(name);
+
+    // Press "Find" button
+    auto find_button = find_select_dialog->findChild<QPushButton *>("find_button");
+    QVERIFY(find_button != nullptr);
+    find_button->click();
+
+    // Switch to find results
+    auto find_results_view = find_select_dialog->findChild<QTreeView *>();
+    QVERIFY(find_results_view != nullptr);
+
+    wait_for_find_results_to_load(find_results_view);
+
+    // Select group in view
+    navigate_until_object(find_results_view, dn, ObjectRole_DN);
+    const QModelIndex selected_index = find_results_view->selectionModel()->currentIndex();
+    const QString selected_dn = selected_index.data(ObjectRole_DN).toString();
+
+    find_select_dialog->accept();
+
+    select_dialog->accept();
 }

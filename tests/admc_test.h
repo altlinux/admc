@@ -36,6 +36,7 @@
 class QString;
 class QTreeView;
 class QPushButton;
+class SelectObjectDialog;
 
 #define TEST_USER "test-user"
 #define TEST_USER_LOGON "test-user-logon"
@@ -95,13 +96,13 @@ protected:
     // messageboxes later.
     void close_message_box_later();
 
+    void select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &name);
+
 private:
     void close_message_box_slot();
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
-
-QPushButton *find_button_by_name(const QString &name, QWidget *parent);
 
 // Presses the Tab button. Use to cycle through input
 // widgets.
