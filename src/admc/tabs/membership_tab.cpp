@@ -81,7 +81,9 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
 
     auto properties_button = new QPushButton(PropertiesDialog::display_name());
     auto add_button = new QPushButton(tr("Add"));
+    add_button->setObjectName("add_button");
     auto remove_button = new QPushButton(tr("Remove"));
+    remove_button->setObjectName("remove_button");
     auto button_layout = new QHBoxLayout();
     button_layout->addWidget(properties_button);
     button_layout->addWidget(add_button);

@@ -59,6 +59,7 @@ SelectObjectDialog::SelectObjectDialog(QList<QString> classes_arg, SelectObjectD
     view->setModel(model);
 
     auto add_button = new QPushButton(tr("Add"));
+    add_button->setObjectName("add_button");
     auto remove_button = new QPushButton(tr("Remove"));
 
     auto button_box = new QDialogButtonBox();

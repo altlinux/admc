@@ -45,6 +45,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_base
 
     find_button = new QPushButton(tr(FIND_BUTTON_LABEL));
     find_button->setDefault(true);
+    find_button->setObjectName("find_button");
 
     stop_button = new QPushButton(tr("Stop"));
     stop_button->setAutoDefault(false);

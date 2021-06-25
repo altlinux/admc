@@ -43,6 +43,7 @@ set(TEST_TARGETS
     admc_test_filter_widget
     admc_test_security_tab
     admc_test_attributes_tab
+    admc_test_members_tab
 )
 
 foreach(target ${TEST_TARGETS})

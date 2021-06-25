@@ -36,6 +36,7 @@
 class QString;
 class QTreeView;
 class QPushButton;
+class SelectObjectDialog;
 
 #define TEST_USER "test-user"
 #define TEST_USER_LOGON "test-user-logon"
@@ -94,6 +95,8 @@ protected:
     // can open messageboxes, call this to to close
     // messageboxes later.
     void close_message_box_later();
+
+    void select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &name);
 
 private:
     void close_message_box_slot();
