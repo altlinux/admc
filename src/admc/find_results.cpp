@@ -76,9 +76,6 @@ FindResults::FindResults()
         customize_columns_action, &QAction::triggered,
         this, &FindResults::customize_columns);
     connect(
-        view, &ResultsView::context_menu,
-        this, &FindResults::on_context_menu);
-    connect(
         view, &ResultsView::activated,
         this, &FindResults::properties);
 
@@ -130,6 +127,18 @@ void FindResults::add_actions_to_action_menu(QMenu *menu) {
     connect(
         menu, &QMenu::aboutToShow,
         this, &FindResults::update_actions_visibility);
+
+    connect(
+        view, &ResultsView::context_menu,
+        [=](const QPoint pos) {
+            const QModelIndex index = view->current_view()->indexAt(pos);
+
+            if (index.isValid()) {
+                const QPoint global_pos = view->current_view()->mapToGlobal(pos);
+
+                menu->exec(global_pos);
+            }
+        });
 }
 
 void FindResults::add_actions_to_view_menu(QMenu *menu) {
@@ -250,12 +259,6 @@ void FindResults::create_group() {
 void FindResults::customize_columns() {
     auto dialog = new CustomizeColumnsDialog(view->detail_view(), console_object_default_columns(), this);
     dialog->open();
-}
-
-void FindResults::on_context_menu(const QPoint pos) {
-    const QPoint global_pos = view->mapToGlobal(pos);
-
-    emit context_menu(global_pos);
 }
 
 void FindResults::enable_disable_helper(const bool disabled) {

@@ -28,7 +28,6 @@
 #include <QDialog>
 
 class QString;
-class QMenu;
 template <typename T>
 class QList;
 
@@ -37,11 +36,6 @@ class FindObjectDialog final : public QDialog {
 
 public:
     FindObjectDialog(const QList<QString> classes, const QString default_base, QWidget *parent);
-
-private:
-    QMenu *action_menu;
-
-    void on_context_menu(const QPoint pos);
 };
 
 #endif /* FIND_OBJECT_DIALOG_H */

@@ -175,7 +175,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     connect(
         d->scope_view, &QWidget::customContextMenuRequested,
-        d, &ConsoleWidgetPrivate::on_context_menu);
+        this, &ConsoleWidget::context_menu);
 
     connect(
         qApp, &QApplication::focusChanged,
@@ -328,7 +328,7 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
             d, &ConsoleWidgetPrivate::on_results_activated);
         connect(
             view, &ResultsView::context_menu,
-            d, &ConsoleWidgetPrivate::on_context_menu);
+            this, &ConsoleWidget::context_menu);
 
         // Hide non-default results view columns. Note that
         // at creation, view header doesnt have any
@@ -565,16 +565,6 @@ void ConsoleWidgetPrivate::update_actions() {
     }
 
     emit q->actions_changed();
-}
-
-void ConsoleWidgetPrivate::on_context_menu(const QPoint pos) {
-    const QModelIndex index = focused_view->indexAt(pos);
-
-    if (index.isValid()) {
-        const QPoint global_pos = focused_view->mapToGlobal(pos);
-
-        emit q->context_menu(global_pos);
-    }
 }
 
 void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &current_proxy, const QModelIndex &previous_proxy) {
@@ -846,6 +836,19 @@ void ConsoleWidget::add_actions_to_action_menu(QMenu *menu) {
     connect(
         menu, &QMenu::aboutToShow,
         d, &ConsoleWidgetPrivate::update_actions);
+
+    // Open action menu as context menu for central widget
+    connect(
+        this, &ConsoleWidget::context_menu,
+        [=](const QPoint pos) {
+            const QModelIndex index = d->focused_view->indexAt(pos);
+
+            if (index.isValid()) {
+                const QPoint global_pos = d->focused_view->mapToGlobal(pos);
+
+                menu->exec(global_pos);
+            }
+        });
 }
 
 void ConsoleWidget::add_actions_to_navigation_menu(QMenu *menu) {

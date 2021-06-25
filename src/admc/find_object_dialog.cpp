@@ -40,7 +40,7 @@ FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString d
     setWindowTitle(tr("Find objects"));
 
     auto menubar = new QMenuBar();
-    action_menu = menubar->addMenu(tr("&Action"));
+    auto action_menu = menubar->addMenu(tr("&Action"));
     auto view_menu = menubar->addMenu(tr("&View"));
 
     auto find_widget = new FindWidget(classes, default_base);
@@ -52,12 +52,4 @@ FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString d
 
     find_widget->find_results->add_actions_to_action_menu(action_menu);
     find_widget->find_results->add_actions_to_view_menu(view_menu);
-
-    connect(
-        find_widget->find_results, &FindResults::context_menu,
-        this, &FindObjectDialog::on_context_menu);
-}
-
-void FindObjectDialog::on_context_menu(const QPoint pos) {
-    action_menu->exec(pos);
 }

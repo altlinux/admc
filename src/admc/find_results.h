@@ -59,9 +59,6 @@ public:
     void add_actions_to_action_menu(QMenu *menu);
     void add_actions_to_view_menu(QMenu *menu);
 
-signals:
-    void context_menu(const QPoint pos);
-
 private slots:
     void properties();
     void delete_objects();
@@ -77,7 +74,6 @@ private slots:
     void create_group();
 
     void customize_columns();
-    void on_context_menu(const QPoint pos);
 
 private:
     ResultsView *view;

@@ -234,9 +234,6 @@ CentralWidget::CentralWidget()
     connect(
         console, &ConsoleWidget::actions_changed,
         this, &CentralWidget::update_actions_visibility);
-    connect(
-        console, &ConsoleWidget::context_menu,
-        this, &CentralWidget::context_menu);
 
     update_actions_visibility();
 }

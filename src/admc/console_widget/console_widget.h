@@ -204,8 +204,8 @@ signals:
     // changing.
     void actions_changed();
 
-    // Emitted when a context menu is requested from a scope
-    // or results view
+    // Emitted when context menu needs to open, used
+    // internally.
     void context_menu(const QPoint pos);
 
 private:

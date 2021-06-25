@@ -221,13 +221,6 @@ void MainWindow::setup_menubar() {
             });
     }
 
-    // Open action menu as context menu for central widget
-    connect(
-        central_widget, &CentralWidget::context_menu,
-        [action_menu](const QPoint pos) {
-            action_menu->exec(pos);
-        });
-
     connect(
         g_settings->get_bool_signal(BoolSetting_LogSearches), &BoolSettingSignal::changed,
         this, &MainWindow::on_log_searches_changed);
@@ -251,6 +244,7 @@ void MainWindow::connect_to_server() {
         g_status()->display_ad_messages(ad, this);
 
         central_widget->go_online(ad);
+        
         central_widget->setEnabled(true);
         connect_action->setEnabled(false);
     }
