@@ -496,8 +496,10 @@ void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 
     menu->addSeparator();
 
-    // User
+    // User/group
     menu->addAction(actions->get(ConsoleAction_AddToGroup));
+
+    // User
     menu->addAction(actions->get(ConsoleAction_Enable));
     menu->addAction(actions->get(ConsoleAction_Disable));
     menu->addAction(actions->get(ConsoleAction_ResetPassword));
@@ -529,6 +531,7 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
     }();
 
     const bool is_user = (object_class == CLASS_USER);
+    const bool is_group = (object_class == CLASS_GROUP);
     const bool is_domain = (object_class == CLASS_DOMAIN);
 
     const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
@@ -584,7 +587,7 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
     }
 
     // Single OR multi selection
-    if (is_user) {
+    if (is_user || is_group) {
         my_visible_actions.insert(ConsoleAction_AddToGroup);
     }
 
