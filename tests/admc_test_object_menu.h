@@ -23,11 +23,6 @@
 
 #include "admc_test.h"
 
-#include <functional>
-
-class QString;
-class QPushButton;
-
 class ADMCTestObjectMenu : public ADMCTest {
     Q_OBJECT
 
@@ -42,10 +37,7 @@ private slots:
     void object_menu_new_group();
 
     void object_menu_move();
-    void object_menu_rename_computer();
-    void object_menu_rename_user();
-    void object_menu_rename_ou();
-    void object_menu_rename_group();
+    void object_menu_rename();
     void object_menu_reset_password();
     void object_menu_disable_enable_account();
 
@@ -53,18 +45,7 @@ private slots:
     void object_menu_find_advanced();
 
 private:
-    // Use this as parents for widgets used inside tests.
-    // For every test a new parent will be created and after
-    // test completes, parent is deleted which deletes all
-    // child widgets as well.
-    // QWidget *parent_widget = nullptr;
 
-    // Creates object of given type with specified name and
-    // runs a specified rename function on this object.
-    void test_object_rename(const QString &oldname, const QString &newname, const QString &object_class, std::function<void(const QString &)> rename_callback);
-
-    // Common renamer for object.
-    static void basic_rename(const QString &newname);
 };
 
 #endif /* ADMC_TEST_OBJECT_MENU_H */

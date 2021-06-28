@@ -435,70 +435,31 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     QVERIFY(true);
 }
 
-void ADMCTestObjectMenu::basic_rename(const QString &newname) {
-    QTest::keyClicks(QApplication::focusWidget(), "A", Qt::ControlModifier);
+void ADMCTestObjectMenu::object_menu_rename() {
+    const QString old_name = TEST_USER;
+    const QString new_name = old_name + "2";
 
-    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Delete);
-
-    QTest::keyClicks(QApplication::focusWidget(), newname);
-};
-
-void ADMCTestObjectMenu::object_menu_rename_computer() {
-    const QString computer_name = TEST_COMPUTER;
-    const QString computer_renamed = computer_name + "2";
-
-    test_object_rename(computer_name, computer_renamed, CLASS_COMPUTER, basic_rename);
-}
-
-void ADMCTestObjectMenu::object_menu_rename_user() {
-    const QString user_name = TEST_USER;
-    const QString user_renamed = user_name + "2";
-
-    test_object_rename(user_name, user_renamed, CLASS_USER, basic_rename);
-}
-
-void ADMCTestObjectMenu::object_menu_rename_ou() {
-    const QString ou_name = TEST_OU;
-    const QString ou_renamed = ou_name + "2";
-
-    test_object_rename(ou_name, ou_renamed, CLASS_OU, basic_rename);
-}
-
-void ADMCTestObjectMenu::object_menu_rename_group() {
-    const QString group_name = TEST_GROUP;
-    const QString group_renamed = group_name + "2";
-
-    auto group_rename = [](const QString &newname) {
-        ADMCTestObjectMenu::basic_rename(newname);
-        tab();
-        ADMCTestObjectMenu::basic_rename(newname);
-    };
-
-    test_object_rename(group_name, group_renamed, CLASS_GROUP, group_rename);
-}
-
-void ADMCTestObjectMenu::test_object_rename(const QString &oldname, const QString &newname, const QString &object_class, std::function<void(const QString &)> rename_callback) {
-    const QString parent = test_arena_dn();
-
-    const QString dn = test_object_dn(oldname, object_class);
-
-    const QString dn_after_rename = dn_rename(dn, newname);
+    const QString old_dn = test_object_dn(old_name, CLASS_USER);
+    const QString new_dn = dn_rename(old_dn, new_name);
 
     // Create test object
-    const bool create_success = ad.object_add(dn, object_class);
-    QVERIFY2(create_success, qPrintable(QString("Failed to create %1").arg(object_class)));
-    QVERIFY2(object_exists(dn), qPrintable(QString("Created %1 doesn't exist").arg(object_class)));
+    const bool create_success = ad.object_add(old_dn, CLASS_USER);
+    QVERIFY(create_success);
+    QVERIFY(object_exists(old_dn));
 
     // Open rename dialog
-    auto rename_dialog = new RenameObjectDialog({dn}, parent_widget);
+    auto rename_dialog = new RenameObjectDialog(old_dn, parent_widget);
     rename_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(rename_dialog, 1000));
 
-    rename_callback(newname);
+    // Enter new name
+    auto name_edit = rename_dialog->findChild<QLineEdit *>("name_edit");
+    QVERIFY(name_edit != nullptr);
+    name_edit->setText(new_name);
 
     rename_dialog->accept();
 
-    QVERIFY2(object_exists(dn_after_rename), "Renamed object doesn't exist");
+    QVERIFY(object_exists(new_dn));
 }
 
 QTEST_MAIN(ADMCTestObjectMenu)

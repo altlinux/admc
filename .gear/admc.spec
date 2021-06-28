@@ -80,6 +80,8 @@ cd BUILD
 %_bindir/admc_test_filter_widget
 %_bindir/admc_test_security_tab
 %_bindir/admc_test_attributes_tab
+%_bindir/admc_test_member_of_tab
+%_bindir/admc_test_members_tab
 
 %changelog
 * Mon Jun 21 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.3-alt1
