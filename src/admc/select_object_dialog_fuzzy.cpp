@@ -31,8 +31,10 @@
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QTreeView>
-#include <QVBoxLayout>
-#include <QPlainTextEdit>
+#include <QFormLayout>
+#include <QLineEdit>
+#include <QLabel>
+#include <QDialogButtonBox>
 
 SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, QWidget *parent)
 : QDialog(parent) {
@@ -43,7 +45,7 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
 
     select_classes = new SelectClassesWidget(classes);
 
-    edit = new QPlainTextEdit();
+    edit = new QLineEdit();
 
     auto add_button = new QPushButton(tr("Add"));
 
@@ -60,12 +62,12 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
 
     view->setModel(model);
 
-    auto layout = new QVBoxLayout();
+    auto layout = new QFormLayout();
     setLayout(layout);
-    layout->addWidget(select_classes);
-    layout->addWidget(edit);
-    layout->addWidget(add_button);
-    layout->addWidget(view);
+    layout->addRow(tr("Classes:"), select_classes);
+    layout->addRow(tr("Name:"), edit);
+    layout->addRow(add_button);
+    layout->addRow(view);
 
     connect(
         add_button, &QPushButton::clicked,
@@ -79,7 +81,7 @@ void SelectObjectDialogFuzzy::on_add_button() {
     }
 
     const QString filter = [&]() {
-        const QString entered_name = edit->toPlainText();
+        const QString entered_name = edit->text();
 
         const QString name_filter = filter_OR({
             filter_CONDITION(Condition_StartsWith, ATTRIBUTE_NAME, entered_name),
@@ -111,8 +113,82 @@ void SelectObjectDialogFuzzy::on_add_button() {
     } else if (search_results.size() > 1) {
         // Open dialog where you can select one of the matches
         // TODO: probably make a separate file, decent sized dialog
+        auto dialog = new SelectFuzzyMatchDialog(search_results, this);
+        connect(
+            dialog, &QDialog::accepted,
+            [=]() {
+                const QList<QString> selected_list = dialog->get_selected();
+                // TODO: duplicating section above
+                for (const QString &dn : selected_list) {
+                    const AdObject object = search_results[dn];
+
+                    const QList<QStandardItem *> row = make_item_row(g_adconfig->get_columns().count());
+                    console_object_load(row, object);
+                    model->appendRow(row);
+                }
+            });
+
+        dialog->open();
     } else if (search_results.size() == 0) {
         // Warn about failing to find any matches
         QMessageBox::warning(this, tr("Error"), tr("Failed to find any matches."));
     }
+}
+
+SelectFuzzyMatchDialog::SelectFuzzyMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
+: QDialog() {
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    auto label = new QLabel(tr("There are multiple matches. Select one or more to add to the list."));
+
+    auto model = new QStandardItemModel(this);
+
+    const QList<QString> header_labels = console_object_header_labels();
+    model->setHorizontalHeaderLabels(header_labels);
+
+    for (const AdObject &object : search_results) {
+        const QList<QStandardItem *> row = make_item_row(g_adconfig->get_columns().count());
+
+        console_object_load(row, object);
+
+        model->appendRow(row);
+    }
+
+    view = new QTreeView(this);
+    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    view->setSortingEnabled(true);
+    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    view->sortByColumn(0, Qt::AscendingOrder);
+
+    view->setModel(model);
+
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
+
+    auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addWidget(label);
+    layout->addWidget(view);
+    layout->addWidget(button_box);
+
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        this, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
+}
+
+QList<QString> SelectFuzzyMatchDialog::get_selected() const {
+    QList<QString> out;
+
+    const QList<QModelIndex> selected_indexes = view->selectionModel()->selectedRows();
+
+    for (const QModelIndex &index : selected_indexes) {
+        const QString dn = index.data(ObjectRole_DN).toString();
+        out.append(dn);
+    }
+
+    return out;
 }

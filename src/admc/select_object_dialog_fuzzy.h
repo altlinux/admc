@@ -23,10 +23,11 @@
 
 #include <QDialog>
 
-class QPlainTextEdit;
+class QLineEdit;
 class QTreeView;
 class QStandardItemModel;
 class SelectClassesWidget;
+class AdObject;
 
 class SelectObjectDialogFuzzy final : public QDialog {
 Q_OBJECT
@@ -37,10 +38,22 @@ public:
 private:
     QStandardItemModel *model;
     QTreeView *view;
-    QPlainTextEdit *edit;
+    QLineEdit *edit;
     SelectClassesWidget *select_classes;
 
     void on_add_button();
+};
+
+class SelectFuzzyMatchDialog final : public QDialog {
+Q_OBJECT
+
+public:
+    SelectFuzzyMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent);
+
+    QList<QString> get_selected() const;
+
+private:
+    QTreeView *view;
 };
 
 #endif /* SELECT_OBJECT_DIALOG_FUZZY_H */
