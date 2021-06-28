@@ -122,21 +122,6 @@ bool ADMCTest::object_exists(const QString &dn) {
     return exists;
 }
 
-void tab(const int n) {
-    static int tab_number = 0;
-    for (int i = 0; i < n; i++) {
-        if (PRINT_FOCUS_WIDGET_BEFORE_TAB) {
-            qInfo() << tab_number << "=" << QApplication::focusWidget();
-        }
-
-        QTest::keyClick(QApplication::focusWidget(), Qt::Key_Tab);
-
-        if (PRINT_FOCUS_WIDGET_AFTER_TAB) {
-            qInfo() << tab_number << "=" << QApplication::focusWidget();
-        }
-    }
-}
-
 // Go down the list of objects by pressing Down arrow
 // until current item's dn equals to target dn
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role) {
