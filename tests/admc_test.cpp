@@ -239,6 +239,4 @@ void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const 
     const QString selected_dn = selected_index.data(ObjectRole_DN).toString();
 
     find_select_dialog->accept();
-
-    select_dialog->accept();
 }

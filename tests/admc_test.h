@@ -96,7 +96,7 @@ protected:
     // messageboxes later.
     void close_message_box_later();
 
-    void select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &name);
+    void select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &dn);
 
 private:
     void close_message_box_slot();

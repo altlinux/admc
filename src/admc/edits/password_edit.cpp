@@ -33,6 +33,9 @@ PasswordEdit::PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
     edit = new QLineEdit();
     confirm_edit = new QLineEdit();
 
+    edit->setObjectName("password_main_edit");
+    confirm_edit->setObjectName("password_confirm_edit");
+
     edit->setEchoMode(QLineEdit::Password);
     confirm_edit->setEchoMode(QLineEdit::Password);
 

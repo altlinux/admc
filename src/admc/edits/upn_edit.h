@@ -35,6 +35,7 @@ public:
 
     QString get_input() const;
     bool verify(AdInterface &ad, const QString &dn) const override;
+    QLineEdit *get_edit() const;
 
 private:
     QLineEdit *prefix_edit;

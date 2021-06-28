@@ -64,6 +64,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
     setWindowTitle(title);
 
     name_edit = new QLineEdit();
+    name_edit->setObjectName("name_edit");
 
     const auto edits_layout = new QFormLayout();
 
@@ -75,6 +76,12 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         auto initials_edit = new StringEdit(ATTRIBUTE_INITIALS, object_class, &all_edits, this);
         auto upn_edit = new UpnEdit(&all_edits, ad, this);
         auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
+
+        first_name_edit->get_edit()->setObjectName("first_name_edit");
+        last_name_edit->get_edit()->setObjectName("last_name_edit");
+        initials_edit->get_edit()->setObjectName("initials_edit");
+        upn_edit->get_edit()->setObjectName("upn_edit");
+        sama_edit->get_edit()->setObjectName("sama_edit");
 
         pass_edit = new PasswordEdit(&all_edits, this);
 
@@ -143,6 +150,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
             });
     } else if (object_class == CLASS_GROUP) {
         auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
+        sama_edit->get_edit()->setObjectName("sama_edit");
 
         required_edits = {
             sama_edit,
@@ -161,6 +169,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         // TODO: "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
 
         auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
+        sama_edit->get_edit()->setObjectName("sama_edit");
 
         required_edits = {
             sama_edit};

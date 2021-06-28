@@ -53,6 +53,7 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
     setWindowTitle(title);
 
     name_edit = new QLineEdit();
+    name_edit->setObjectName("name_edit");
 
     if (object.is_class(CLASS_USER)) {
         const QList<QString> attributes = {
@@ -64,7 +65,8 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
         };
         StringEdit::make_many(attributes, object_class, &all_edits, this);
     } else if (object.is_class(CLASS_GROUP)) {
-        new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
+        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
+        sama_edit->get_edit()->setObjectName("sama_edit");
     }
 
     auto button_box = new QDialogButtonBox();

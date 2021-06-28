@@ -41,6 +41,7 @@ public:
     QString get_input() const;
     void set_input(const QString &value);
     bool is_empty() const;
+    QLineEdit *get_edit() const;
 
 private:
     QLineEdit *edit;

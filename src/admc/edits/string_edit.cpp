@@ -115,3 +115,7 @@ bool StringEdit::is_empty() const {
 
     return text.isEmpty();
 }
+
+QLineEdit *StringEdit::get_edit() const {
+    return edit;
+}

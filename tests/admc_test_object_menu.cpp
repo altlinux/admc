@@ -31,6 +31,8 @@
 #include "rename_object_dialog.h"
 #include "select_container_dialog.h"
 #include "select_object_dialog.h"
+#include "filter_widget/filter_widget_simple_tab.h"
+#include "filter_widget/filter_widget_advanced_tab.h"
 #include "utils.h"
 
 #include <QComboBox>
@@ -39,6 +41,9 @@
 #include <QPushButton>
 #include <QTest>
 #include <QTreeView>
+#include <QPlainTextEdit>
+#include <QTabWidget>
+#include <QLineEdit>
 
 // Test that when adding an object from find dialog to
 // select dialog, the correct object is added.
@@ -66,33 +71,7 @@ void ADMCTestObjectMenu::select_dialog_correct_object_added() {
     select_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(select_dialog, 1000));
 
-    // Press "Add" button in select dialog
-    tab();
-    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Space);
-
-    // Find dialog has been opened, so switch to it
-    auto find_select_dialog = select_dialog->findChild<FindSelectObjectDialog *>();
-    QVERIFY2((find_select_dialog != nullptr), "Failed to find find_select_dialog");
-    QVERIFY(QTest::qWaitForWindowExposed(find_select_dialog, 1000));
-
-    // Enter "test-user" in "Name" edit to filter out extra users
-    tab(3);
-    QTest::keyClicks(QApplication::focusWidget(), "test-user");
-
-    auto find_button = find_select_dialog->findChild<QPushButton *>("find_button");
-    QVERIFY(find_button != nullptr);
-    find_button->click();
-
-    // Switch to find results
-    auto find_results_view = find_select_dialog->findChild<QTreeView *>();
-    QVERIFY2((find_results_view != nullptr), "Failed to cast find_results_view");
-
-    wait_for_find_results_to_load(find_results_view);
-
-    // Select user in results
-    navigate_until_object(find_results_view, select_dn, ObjectRole_DN);
-
-    find_select_dialog->accept();
+    select_in_select_dialog(select_dialog, select_dn);
 
     // Switch to view containing selected object
     auto select_dialog_view = select_dialog->findChild<QTreeView *>();
@@ -121,19 +100,22 @@ void ADMCTestObjectMenu::object_menu_new_user() {
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
-    // Enter name
-    QTest::keyClicks(QApplication::focusWidget(), name);
+    // Fill out edits
+    auto name_edit = create_dialog->findChild<QLineEdit *>("name_edit");
+    QVERIFY(name_edit != nullptr);
+    name_edit->setText(name);
 
-    // Enter logon name
-    tab(4);
-    QTest::keyClicks(QApplication::focusWidget(), logon_name);
+    auto sama_edit = create_dialog->findChild<QLineEdit *>("sama_edit");
+    QVERIFY(sama_edit != nullptr);
+    sama_edit->setText(logon_name);
 
-    // Enter password
-    tab(3);
-    QTest::keyClicks(QApplication::focusWidget(), password);
-    // Confirm password
-    tab();
-    QTest::keyClicks(QApplication::focusWidget(), password);
+    auto password_main_edit = create_dialog->findChild<QLineEdit *>("password_main_edit");
+    QVERIFY(password_main_edit != nullptr);
+    password_main_edit->setText(password);
+
+    auto password_confirm_edit = create_dialog->findChild<QLineEdit *>("password_confirm_edit");
+    QVERIFY(password_confirm_edit != nullptr);
+    password_confirm_edit->setText(password);
 
     create_dialog->accept();
 
@@ -153,7 +135,9 @@ void ADMCTestObjectMenu::object_menu_new_ou() {
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
     // Enter name
-    QTest::keyClicks(QApplication::focusWidget(), name);
+    auto name_edit = create_dialog->findChild<QLineEdit *>("name_edit");
+    QVERIFY(name_edit != nullptr);
+    name_edit->setText(name);
 
     create_dialog->accept();
 
@@ -174,11 +158,14 @@ void ADMCTestObjectMenu::object_menu_new_computer() {
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
     // Enter name
-    QTest::keyClicks(QApplication::focusWidget(), name);
+    auto name_edit = create_dialog->findChild<QLineEdit *>("name_edit");
+    QVERIFY(name_edit != nullptr);
+    name_edit->setText(name);
 
     // Enter logon name
-    tab();
-    QTest::keyClicks(QApplication::focusWidget(), name);
+    auto sama_edit = create_dialog->findChild<QLineEdit *>("sama_edit");
+    QVERIFY(sama_edit != nullptr);
+    sama_edit->setText(name);
 
     create_dialog->accept();
 
@@ -199,11 +186,14 @@ void ADMCTestObjectMenu::object_menu_new_group() {
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
     // Enter name
-    QTest::keyClicks(QApplication::focusWidget(), name);
+    auto name_edit = create_dialog->findChild<QLineEdit *>("name_edit");
+    QVERIFY(name_edit != nullptr);
+    name_edit->setText(name);
 
     // Enter logon name
-    tab();
-    QTest::keyClicks(QApplication::focusWidget(), name);
+    auto sama_edit = create_dialog->findChild<QLineEdit *>("sama_edit");
+    QVERIFY(sama_edit != nullptr);
+    sama_edit->setText(name);
 
     create_dialog->accept();
 
@@ -274,11 +264,13 @@ void ADMCTestObjectMenu::object_menu_reset_password() {
     QVERIFY(QTest::qWaitForWindowExposed(password_dialog, 1000));
 
     // Enter password
-    QTest::keyClicks(QApplication::focusWidget(), password);
+    auto password_main_edit = password_dialog->findChild<QLineEdit *>("password_main_edit");
+    QVERIFY(password_main_edit);
+    password_main_edit->setText(password);
 
-    // Confirm password
-    tab();
-    QTest::keyClicks(QApplication::focusWidget(), password);
+    auto password_confirm_edit = password_dialog->findChild<QLineEdit *>("password_confirm_edit");
+    QVERIFY(password_confirm_edit);
+    password_confirm_edit->setText(password);
 
     password_dialog->accept();
 
@@ -351,18 +343,19 @@ void ADMCTestObjectMenu::object_menu_find_simple() {
     find_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(find_dialog, 1000));
 
-    tab();
-    tab();
-    tab();
+    // Enter name in search field
+    auto simple_tab = find_dialog->findChild<FilterWidgetSimpleTab *>();
+    QVERIFY(simple_tab != nullptr);
+    auto name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
+    QVERIFY(name_edit != nullptr);
+    name_edit->setText(user_name);
 
-    QTest::keyClicks(QApplication::focusWidget(), user_name);
-
+    // Press find button
     auto find_button = find_dialog->findChild<QPushButton *>("find_button");
     QVERIFY(find_button != nullptr);
     find_button->click();
 
-    QTest::mouseClick(find_button, Qt::LeftButton);
-
+    // Confirm that results are not empty
     auto find_results = find_dialog->findChild<QTreeView *>();
 
     wait_for_find_results_to_load(find_results);
@@ -385,20 +378,19 @@ void ADMCTestObjectMenu::object_menu_find_advanced() {
     find_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(find_dialog, 1000));
 
-    tab();
-    tab();
-    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Right);
-    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Right);
-    tab();
+    auto tab_widget = find_dialog->findChild<QTabWidget *>();
+    QVERIFY(tab_widget != nullptr);
+    auto advanced_tab = find_dialog->findChild<FilterWidgetAdvancedTab *>();
+    QVERIFY(advanced_tab != nullptr);
+    tab_widget->setCurrentWidget(advanced_tab);
 
+    auto filter_edit = advanced_tab->findChild<QPlainTextEdit *>();
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, user_dn);
-    QTest::keyClicks(QApplication::focusWidget(), filter);
+    filter_edit->setPlainText(filter);
 
     auto find_button = find_dialog->findChild<QPushButton *>("find_button");
     QVERIFY(find_button != nullptr);
     find_button->click();
-
-    QTest::mouseClick(find_button, Qt::LeftButton);
 
     auto find_results = find_dialog->findChild<QTreeView *>();
 
@@ -433,6 +425,7 @@ void ADMCTestObjectMenu::object_menu_add_to_group() {
     QVERIFY(QTest::qWaitForWindowExposed(select_dialog, 1000));
     
     select_in_select_dialog(select_dialog, group_dn);
+    select_dialog->accept();
     
     const AdObject group = ad.search_object(group_dn);
     const QList<QString> group_members = group.get_strings(ATTRIBUTE_MEMBER);

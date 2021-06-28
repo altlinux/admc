@@ -118,8 +118,8 @@ void ADMCTestMemberOfTab::add() {
 
     auto select_dialog = member_of_tab->findChild<SelectObjectDialog *>();
 
-
     select_in_select_dialog(select_dialog, group_dn);
+    select_dialog->accept();
 
     // Check ui state before applying
     QVERIFY(model->rowCount() == 2);
