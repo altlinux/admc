@@ -74,6 +74,7 @@ set(ADMC_SOURCES
     edit_query_folder_dialog.cpp
     object_multi_properties_dialog.cpp
     change_dc_dialog.cpp
+    select_object_dialog_fuzzy.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_widget_simple_tab.cpp
