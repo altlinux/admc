@@ -28,6 +28,7 @@ class QTreeView;
 class QStandardItemModel;
 class SelectClassesWidget;
 class AdObject;
+class SelectBaseWidget;
 
 class SelectObjectDialogFuzzy final : public QDialog {
 Q_OBJECT
@@ -40,6 +41,7 @@ private:
     QTreeView *view;
     QLineEdit *edit;
     SelectClassesWidget *select_classes;
+    SelectBaseWidget *select_base_widget;
 
     void on_add_button();
 };

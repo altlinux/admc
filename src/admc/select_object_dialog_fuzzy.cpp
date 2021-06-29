@@ -26,6 +26,7 @@
 #include "utils.h"
 #include "console_types/console_object.h"
 #include "filter_widget/select_classes_widget.h"
+#include "filter_widget/select_base_widget.h"
 
 #include <QMessageBox>
 #include <QPushButton>
@@ -44,6 +45,8 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
     resize(600, 500);
 
     select_classes = new SelectClassesWidget(classes);
+
+    select_base_widget = new SelectBaseWidget();
 
     edit = new QLineEdit();
 
@@ -65,6 +68,7 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
     auto layout = new QFormLayout();
     setLayout(layout);
     layout->addRow(tr("Classes:"), select_classes);
+    layout->addRow(tr("Search in:"), select_base_widget);
     layout->addRow(tr("Name:"), edit);
     layout->addRow(add_button);
     layout->addRow(view);
@@ -79,6 +83,8 @@ void SelectObjectDialogFuzzy::on_add_button() {
     if (ad_failed(ad)) {
         return;
     }
+
+    const QString base = select_base_widget->get_base();
 
     const QString filter = [&]() {
         const QString entered_name = edit->text();
@@ -100,7 +106,7 @@ void SelectObjectDialogFuzzy::on_add_button() {
         return out;
     }();
 
-    const QHash<QString, AdObject> search_results = ad.search(g_adconfig->domain_head(), SearchScope_All, filter, console_object_search_attributes());
+    const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, console_object_search_attributes());
 
     if (search_results.size() == 1) {
         // Add to list
