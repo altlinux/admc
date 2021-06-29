@@ -45,6 +45,7 @@ set(TEST_TARGETS
     admc_test_attributes_tab
     admc_test_members_tab
     admc_test_member_of_tab
+    admc_test_select_object_dialog
 )
 
 foreach(target ${TEST_TARGETS})

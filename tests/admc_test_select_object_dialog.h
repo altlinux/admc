@@ -5,7 +5,7 @@
  * Copyright (C) 2020-2021 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -18,35 +18,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_MEMBERS_TAB_H
-#define ADMC_TEST_MEMBERS_TAB_H
+#ifndef ADMC_TEST_SELECT_OBJECT_DIALOG_H
+#define ADMC_TEST_SELECT_OBJECT_DIALOG_H
 
 #include "admc_test.h"
 
-class QTreeView;
-class MembersTab;
-class QStandardItemModel;
+class QLineEdit;
 class QPushButton;
+class SelectObjectDialog;
 
-class ADMCTestMembersTab : public ADMCTest {
+class ADMCTestSelectObjectDialog : public ADMCTest {
 Q_OBJECT
 
 private slots:
     void init() override;
 
-    void load_empty();
-    void load();
-    void remove();
-    void add();
+    void empty();
+    void no_matches();
+    void one_match();
+    void multiple_matches();
 
 private:
-    MembersTab *members_tab;
-    QTreeView *view;
-    QStandardItemModel *model;
-    QString user_dn;
-    QString group_dn;
+    SelectObjectDialog *dialog;
+    QLineEdit *edit;
     QPushButton *add_button;
-    QPushButton *remove_button;
 };
 
-#endif /* ADMC_TEST_MEMBERS_TAB_H */
+#endif /* ADMC_TEST_SELECT_OBJECT_DIALOG_H */

@@ -47,7 +47,7 @@ enum SelectColumn {
 
 void add_select_object_to_model(QStandardItemModel *model, const AdObject &object);
 
-SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent)
+SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, const QString &default_base, QWidget *parent)
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("Select dialog");
@@ -59,12 +59,15 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 
     select_classes = new SelectClassesWidget(class_list);
 
-    select_base_widget = new SelectBaseWidget();
+    select_base_widget = new SelectBaseWidget(default_base);
+    select_base_widget->setObjectName("select_base_widget");
 
     edit = new QLineEdit();
+    edit->setObjectName("edit");
 
     auto add_button = new QPushButton(tr("Add"));
     add_button->setDefault(true);
+    add_button->setObjectName("add_button");
 
     model = new QStandardItemModel(this);
 
@@ -115,6 +118,11 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     connect(
         advanced_button, &QPushButton::clicked,
         this, &SelectObjectDialog::on_advanced_button);
+}
+
+SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent)
+: SelectObjectDialog(class_list_arg, multi_selection_arg, QString(), parent) {
+
 }
 
 QList<QString> SelectObjectDialog::get_selected() const {
@@ -294,7 +302,8 @@ SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> 
     view->setModel(model);
 
     auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+    ok_button->setObjectName("ok_button");
     button_box->addButton(QDialogButtonBox::Cancel);
 
     auto layout = new QVBoxLayout();
