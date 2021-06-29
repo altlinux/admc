@@ -30,11 +30,21 @@ class SelectClassesWidget;
 class AdObject;
 class SelectBaseWidget;
 
+enum SelectObjectDialogFuzzyMultiSelection {
+    SelectObjectDialogFuzzyMultiSelection_Yes,
+    SelectObjectDialogFuzzyMultiSelection_No
+};
+
 class SelectObjectDialogFuzzy final : public QDialog {
 Q_OBJECT
 
 public:
-    SelectObjectDialogFuzzy(const QList<QString> classes, QWidget *parent);
+    SelectObjectDialogFuzzy(const QList<QString> class_list_arg, const SelectObjectDialogFuzzyMultiSelection multi_selection_arg, QWidget *parent);
+
+    QList<QString> get_selected() const;
+
+public slots:
+    void accept() override;
 
 private:
     QStandardItemModel *model;
@@ -42,8 +52,11 @@ private:
     QLineEdit *edit;
     SelectClassesWidget *select_classes;
     SelectBaseWidget *select_base_widget;
+    QList<QString> class_list;
+    SelectObjectDialogFuzzyMultiSelection multi_selection;
 
     void on_add_button();
+    void on_advanced_button();
 };
 
 class SelectFuzzyMatchDialog final : public QDialog {

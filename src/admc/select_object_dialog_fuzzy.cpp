@@ -27,6 +27,7 @@
 #include "console_types/console_object.h"
 #include "filter_widget/select_classes_widget.h"
 #include "filter_widget/select_base_widget.h"
+#include "find_select_object_dialog.h"
 
 #include <QMessageBox>
 #include <QPushButton>
@@ -44,16 +45,19 @@ enum SelectColumn {
     SelectColumn_COUNT,
 };
 
-void load_select_row(const QList<QStandardItem *> row, const AdObject &object);
+void add_select_object_to_model(QStandardItemModel *model, const AdObject &object);
 
-SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, QWidget *parent)
+SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> class_list_arg, const SelectObjectDialogFuzzyMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("Select dialog");
 
+    class_list = class_list_arg;
+    multi_selection = multi_selection_arg;
+
     resize(600, 400);
 
-    select_classes = new SelectClassesWidget(classes);
+    select_classes = new SelectClassesWidget(class_list);
 
     select_base_widget = new SelectBaseWidget();
 
@@ -84,6 +88,8 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
     button_box->addButton(QDialogButtonBox::Cancel);
     ok_button->setDefault(false);
 
+    auto advanced_button = new QPushButton(tr("Advanced"));
+
     auto parameters_layout = new QFormLayout();
     parameters_layout->addRow(tr("Classes:"), select_classes);
     parameters_layout->addRow(tr("Search in:"), select_base_widget);
@@ -94,6 +100,7 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
     layout->addLayout(parameters_layout);
     layout->addWidget(add_button);
     layout->addWidget(view);
+    layout->addWidget(advanced_button);
     layout->addWidget(button_box);
 
     connect(
@@ -105,6 +112,33 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
     connect(
         button_box, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
+    connect(
+        advanced_button, &QPushButton::clicked,
+        this, &SelectObjectDialogFuzzy::on_advanced_button);
+}
+
+QList<QString> SelectObjectDialogFuzzy::get_selected() const {
+    QList<QString> out;
+
+    for (int row = 0; row < model->rowCount(); row++) {
+        const QModelIndex index = model->index(row, 0);
+        const QString dn = index.data(ObjectRole_DN).toString();
+
+        out.append(dn);
+    }
+
+    return out;
+}
+
+void SelectObjectDialogFuzzy::accept() {
+    const QList<QString> selected = get_selected();
+
+    const bool selected_multiple_when_single_selection = (multi_selection == SelectObjectDialogFuzzyMultiSelection_No && selected.size() > 1);
+    if (selected_multiple_when_single_selection) {
+        QMessageBox::warning(this, tr("Error"), tr("This selection accepts only one object. Remove extra objects to proceed."));
+    } else {
+        QDialog::accept();
+    }
 }
 
 void SelectObjectDialogFuzzy::on_add_button() {
@@ -143,12 +177,8 @@ void SelectObjectDialogFuzzy::on_add_button() {
 
     if (search_results.size() == 1) {
         // Add to list
-        const QList<QStandardItem *> row = make_item_row(SelectColumn_COUNT);
-
         const AdObject object = search_results.values()[0];
-        load_select_row(row, object);
-
-        model->appendRow(row);
+        add_select_object_to_model(model, object);
 
         edit->clear();
     } else if (search_results.size() > 1) {
@@ -162,10 +192,7 @@ void SelectObjectDialogFuzzy::on_add_button() {
                 // TODO: duplicating section above
                 for (const QString &dn : selected_list) {
                     const AdObject object = search_results[dn];
-
-                    const QList<QStandardItem *> row = make_item_row(SelectColumn_COUNT);
-                    console_object_load(row, object);
-                    model->appendRow(row);
+                    add_select_object_to_model(model, object);
                 }
 
                 edit->clear();
@@ -176,6 +203,33 @@ void SelectObjectDialogFuzzy::on_add_button() {
         // Warn about failing to find any matches
         QMessageBox::warning(this, tr("Error"), tr("Failed to find any matches."));
     }
+}
+
+void SelectObjectDialogFuzzy::on_advanced_button() {
+    auto dialog = new FindSelectObjectDialog(class_list, this);
+
+    // TODO: can optimize if dialog returns objects
+    // directly, but will need to keep them around
+    connect(
+        dialog, &FindSelectObjectDialog::accepted,
+        [=]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            const QList<QList<QStandardItem *>> selected = dialog->get_selected_rows();
+
+            const QList<QList<QStandardItem *>> row_list = dialog->get_selected_rows();
+            for (const QList<QStandardItem *> &row : row_list) {
+                QStandardItem *item = row[0];
+                const QString dn = item->data(ObjectRole_DN).toString();
+                const AdObject object = ad.search_object(dn);
+                add_select_object_to_model(model, object);
+            }
+        });
+
+    dialog->open();
 }
 
 SelectFuzzyMatchDialog::SelectFuzzyMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
@@ -190,11 +244,7 @@ SelectFuzzyMatchDialog::SelectFuzzyMatchDialog(const QHash<QString, AdObject> &s
     model->setHorizontalHeaderLabels(header_labels);
 
     for (const AdObject &object : search_results) {
-        const QList<QStandardItem *> row = make_item_row(SelectColumn_COUNT);
-
-        load_select_row(row, object);
-
-        model->appendRow(row);
+        add_select_object_to_model(model, object);
     }
 
     view = new QTreeView(this);
@@ -236,7 +286,9 @@ QList<QString> SelectFuzzyMatchDialog::get_selected() const {
     return out;
 }
 
-void load_select_row(const QList<QStandardItem *> row, const AdObject &object) {
+void add_select_object_to_model(QStandardItemModel *model, const AdObject &object) {
+    const QList<QStandardItem *> row = make_item_row(SelectColumn_COUNT);
+
     console_object_item_data_load(row[0], object);
 
     const QString dn = object.get_dn();
@@ -248,4 +300,6 @@ void load_select_row(const QList<QStandardItem *> row, const AdObject &object) {
     row[SelectColumn_Name]->setText(name);
     row[SelectColumn_Type]->setText(type);
     row[SelectColumn_Folder]->setText(folder);
+
+    model->appendRow(row);
 }
