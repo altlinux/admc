@@ -860,9 +860,9 @@
     </message>
 </context>
 <context>
-    <name>FindSelectObjectDialog</name>
+    <name>SelectObjectAdvancedDialog</name>
     <message>
-        <location filename="find_select_object_dialog.cpp" line="35"/>
+        <location filename="select_object_advanced_dialog.cpp" line="35"/>
         <source>Find and select objects</source>
         <translation>Найдите и выберите объекты</translation>
     </message>

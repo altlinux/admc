@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_SELECT_OBJECT_DIALOG_H
-#define FIND_SELECT_OBJECT_DIALOG_H
+#ifndef SELECT_OBJECT_ADVANCED_DIALOG_H
+#define SELECT_OBJECT_ADVANCED_DIALOG_H
 
 /**
  * Find objects and select them. 
@@ -32,11 +32,11 @@ class QStandardItem;
 template <typename T>
 class QList;
 
-class FindSelectObjectDialog final : public QDialog {
+class SelectObjectAdvancedDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    FindSelectObjectDialog(const QList<QString> classes, QWidget *parent);
+    SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent);
 
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
@@ -44,4 +44,4 @@ private:
     FindWidget *find_widget;
 };
 
-#endif /* FIND_SELECT_OBJECT_DIALOG_H */
+#endif /* SELECT_OBJECT_ADVANCED_DIALOG_H */

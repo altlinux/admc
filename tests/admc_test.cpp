@@ -25,7 +25,7 @@
 #include "globals.h"
 #include "utils.h"
 #include "select_object_dialog.h"
-#include "find_select_object_dialog.h"
+#include "select_object_advanced_dialog.h"
 #include "filter_widget/filter_widget_simple_tab.h"
 
 #include <QMessageBox>
@@ -195,7 +195,7 @@ void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const 
     add_button->click();
 
     // Find dialog has been opened, so switch to it
-    auto find_select_dialog = select_dialog->findChild<FindSelectObjectDialog *>();
+    auto find_select_dialog = select_dialog->findChild<SelectObjectAdvancedDialog *>();
     QVERIFY(find_select_dialog != nullptr);
     QVERIFY(QTest::qWaitForWindowExposed(find_select_dialog, 1000));
 

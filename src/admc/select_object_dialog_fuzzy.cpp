@@ -27,7 +27,7 @@
 #include "console_types/console_object.h"
 #include "filter_widget/select_classes_widget.h"
 #include "filter_widget/select_base_widget.h"
-#include "find_select_object_dialog.h"
+#include "select_object_advanced_dialog.h"
 
 #include <QMessageBox>
 #include <QPushButton>
@@ -206,12 +206,12 @@ void SelectObjectDialogFuzzy::on_add_button() {
 }
 
 void SelectObjectDialogFuzzy::on_advanced_button() {
-    auto dialog = new FindSelectObjectDialog(class_list, this);
+    auto dialog = new SelectObjectAdvancedDialog(class_list, this);
 
     // TODO: can optimize if dialog returns objects
     // directly, but will need to keep them around
     connect(
-        dialog, &FindSelectObjectDialog::accepted,
+        dialog, &SelectObjectAdvancedDialog::accepted,
         [=]() {
             AdInterface ad;
             if (ad_failed(ad)) {

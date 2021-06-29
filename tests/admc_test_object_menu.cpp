@@ -24,7 +24,7 @@
 #include "console_types/console_object.h"
 #include "create_object_dialog.h"
 #include "find_object_dialog.h"
-#include "find_select_object_dialog.h"
+#include "select_object_advanced_dialog.h"
 #include "find_widget.h"
 #include "move_object_dialog.h"
 #include "password_dialog.h"

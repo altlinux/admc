@@ -21,7 +21,7 @@
 #include "select_object_dialog.h"
 #include "adldap.h"
 #include "console_types/console_object.h"
-#include "find_select_object_dialog.h"
+#include "select_object_advanced_dialog.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
@@ -119,10 +119,10 @@ void SelectObjectDialog::accept() {
 }
 
 void SelectObjectDialog::open_find_dialog() {
-    auto dialog = new FindSelectObjectDialog(classes, this);
+    auto dialog = new SelectObjectAdvancedDialog(classes, this);
 
     connect(
-        dialog, &FindSelectObjectDialog::accepted,
+        dialog, &SelectObjectAdvancedDialog::accepted,
         [this, dialog]() {
             // Add objects selected in find dialog to select
             // objects list
