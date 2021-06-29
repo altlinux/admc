@@ -51,7 +51,7 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("Select dialog");
 
-    resize(600, 500);
+    resize(600, 400);
 
     select_classes = new SelectClassesWidget(classes);
 
@@ -84,14 +84,17 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
     button_box->addButton(QDialogButtonBox::Cancel);
     ok_button->setDefault(false);
 
-    auto layout = new QFormLayout();
+    auto parameters_layout = new QFormLayout();
+    parameters_layout->addRow(tr("Classes:"), select_classes);
+    parameters_layout->addRow(tr("Search in:"), select_base_widget);
+    parameters_layout->addRow(tr("Name:"), edit);
+
+    auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addRow(tr("Classes:"), select_classes);
-    layout->addRow(tr("Search in:"), select_base_widget);
-    layout->addRow(tr("Name:"), edit);
-    layout->addRow(add_button);
-    layout->addRow(view);
-    layout->addRow(button_box);
+    layout->addLayout(parameters_layout);
+    layout->addWidget(add_button);
+    layout->addWidget(view);
+    layout->addWidget(button_box);
 
     connect(
         add_button, &QPushButton::clicked,
