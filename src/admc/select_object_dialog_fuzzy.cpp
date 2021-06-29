@@ -37,6 +37,15 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 
+enum SelectColumn {
+    SelectColumn_Name,
+    SelectColumn_Type,
+    SelectColumn_Folder,
+    SelectColumn_COUNT,
+};
+
+void load_select_row(const QList<QStandardItem *> row, const AdObject &object);
+
 SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, QWidget *parent)
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -55,7 +64,11 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
 
     model = new QStandardItemModel(this);
 
-    const QList<QString> header_labels = console_object_header_labels();
+    const QList<QString> header_labels = {
+        tr("Name"),        
+        tr("Type"),        
+        tr("Folder"),        
+    };
     model->setHorizontalHeaderLabels(header_labels);
 
     view = new QTreeView(this);
@@ -127,10 +140,10 @@ void SelectObjectDialogFuzzy::on_add_button() {
 
     if (search_results.size() == 1) {
         // Add to list
-        const QList<QStandardItem *> row = make_item_row(g_adconfig->get_columns().count());
+        const QList<QStandardItem *> row = make_item_row(SelectColumn_COUNT);
 
         const AdObject object = search_results.values()[0];
-        console_object_load(row, object);
+        load_select_row(row, object);
 
         model->appendRow(row);
 
@@ -147,7 +160,7 @@ void SelectObjectDialogFuzzy::on_add_button() {
                 for (const QString &dn : selected_list) {
                     const AdObject object = search_results[dn];
 
-                    const QList<QStandardItem *> row = make_item_row(g_adconfig->get_columns().count());
+                    const QList<QStandardItem *> row = make_item_row(SelectColumn_COUNT);
                     console_object_load(row, object);
                     model->appendRow(row);
                 }
@@ -174,9 +187,9 @@ SelectFuzzyMatchDialog::SelectFuzzyMatchDialog(const QHash<QString, AdObject> &s
     model->setHorizontalHeaderLabels(header_labels);
 
     for (const AdObject &object : search_results) {
-        const QList<QStandardItem *> row = make_item_row(g_adconfig->get_columns().count());
+        const QList<QStandardItem *> row = make_item_row(SelectColumn_COUNT);
 
-        console_object_load(row, object);
+        load_select_row(row, object);
 
         model->appendRow(row);
     }
@@ -218,4 +231,18 @@ QList<QString> SelectFuzzyMatchDialog::get_selected() const {
     }
 
     return out;
+}
+
+void load_select_row(const QList<QStandardItem *> row, const AdObject &object) {
+    console_object_item_data_load(row[0], object);
+
+    const QString dn = object.get_dn();
+    const QString name = dn_get_name(dn);
+    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+    const QString type = g_adconfig->get_class_display_name(object_class);
+    const QString folder = dn_get_parent_canonical(dn);
+
+    row[SelectColumn_Name]->setText(name);
+    row[SelectColumn_Type]->setText(type);
+    row[SelectColumn_Folder]->setText(folder);
 }
