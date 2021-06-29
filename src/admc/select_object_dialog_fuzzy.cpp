@@ -51,6 +51,7 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
     edit = new QLineEdit();
 
     auto add_button = new QPushButton(tr("Add"));
+    add_button->setDefault(true);
 
     model = new QStandardItemModel(this);
 
@@ -65,6 +66,11 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
 
     view->setModel(model);
 
+    auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
+    ok_button->setDefault(false);
+
     auto layout = new QFormLayout();
     setLayout(layout);
     layout->addRow(tr("Classes:"), select_classes);
@@ -72,13 +78,24 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> classes, Q
     layout->addRow(tr("Name:"), edit);
     layout->addRow(add_button);
     layout->addRow(view);
+    layout->addRow(button_box);
 
     connect(
         add_button, &QPushButton::clicked,
         this, &SelectObjectDialogFuzzy::on_add_button);
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        this, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
 }
 
 void SelectObjectDialogFuzzy::on_add_button() {
+    if (edit->text().isEmpty()) {
+        return;
+    }
+
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -116,6 +133,8 @@ void SelectObjectDialogFuzzy::on_add_button() {
         console_object_load(row, object);
 
         model->appendRow(row);
+
+        edit->clear();
     } else if (search_results.size() > 1) {
         // Open dialog where you can select one of the matches
         // TODO: probably make a separate file, decent sized dialog
@@ -132,6 +151,8 @@ void SelectObjectDialogFuzzy::on_add_button() {
                     console_object_load(row, object);
                     model->appendRow(row);
                 }
+
+                edit->clear();
             });
 
         dialog->open();
