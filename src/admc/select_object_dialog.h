@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SELECT_OBJECT_DIALOG_FUZZY_H
-#define SELECT_OBJECT_DIALOG_FUZZY_H
+#ifndef SELECT_OBJECT_DIALOG_H
+#define SELECT_OBJECT_DIALOG_H
 
 #include <QDialog>
 
@@ -30,16 +30,16 @@ class SelectClassesWidget;
 class AdObject;
 class SelectBaseWidget;
 
-enum SelectObjectDialogFuzzyMultiSelection {
-    SelectObjectDialogFuzzyMultiSelection_Yes,
-    SelectObjectDialogFuzzyMultiSelection_No
+enum SelectObjectDialogMultiSelection {
+    SelectObjectDialogMultiSelection_Yes,
+    SelectObjectDialogMultiSelection_No
 };
 
-class SelectObjectDialogFuzzy final : public QDialog {
+class SelectObjectDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    SelectObjectDialogFuzzy(const QList<QString> class_list_arg, const SelectObjectDialogFuzzyMultiSelection multi_selection_arg, QWidget *parent);
+    SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent);
 
     QList<QString> get_selected() const;
 
@@ -53,7 +53,7 @@ private:
     SelectClassesWidget *select_classes;
     SelectBaseWidget *select_base_widget;
     QList<QString> class_list;
-    SelectObjectDialogFuzzyMultiSelection multi_selection;
+    SelectObjectDialogMultiSelection multi_selection;
 
     void on_add_button();
     void on_advanced_button();
@@ -61,11 +61,11 @@ private:
     void duplicate_message_box();
 };
 
-class SelectFuzzyMatchDialog final : public QDialog {
+class SelectObjectMatchDialog final : public QDialog {
 Q_OBJECT
 
 public:
-    SelectFuzzyMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent);
+    SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent);
 
     QList<QString> get_selected() const;
 
@@ -73,4 +73,4 @@ private:
     QTreeView *view;
 };
 
-#endif /* SELECT_OBJECT_DIALOG_FUZZY_H */
+#endif /* SELECT_OBJECT_DIALOG_H */

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "select_object_dialog_fuzzy.h"
+#include "select_object_dialog.h"
 
 #include "adldap.h"
 #include "console_types/console_object.h"
@@ -47,7 +47,7 @@ enum SelectColumn {
 
 void add_select_object_to_model(QStandardItemModel *model, const AdObject &object);
 
-SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> class_list_arg, const SelectObjectDialogFuzzyMultiSelection multi_selection_arg, QWidget *parent)
+SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("Select dialog");
@@ -105,7 +105,7 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> class_list
 
     connect(
         add_button, &QPushButton::clicked,
-        this, &SelectObjectDialogFuzzy::on_add_button);
+        this, &SelectObjectDialog::on_add_button);
     connect(
         button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
@@ -114,10 +114,10 @@ SelectObjectDialogFuzzy::SelectObjectDialogFuzzy(const QList<QString> class_list
         this, &QDialog::reject);
     connect(
         advanced_button, &QPushButton::clicked,
-        this, &SelectObjectDialogFuzzy::on_advanced_button);
+        this, &SelectObjectDialog::on_advanced_button);
 }
 
-QList<QString> SelectObjectDialogFuzzy::get_selected() const {
+QList<QString> SelectObjectDialog::get_selected() const {
     QList<QString> out;
 
     for (int row = 0; row < model->rowCount(); row++) {
@@ -130,10 +130,10 @@ QList<QString> SelectObjectDialogFuzzy::get_selected() const {
     return out;
 }
 
-void SelectObjectDialogFuzzy::accept() {
+void SelectObjectDialog::accept() {
     const QList<QString> selected = get_selected();
 
-    const bool selected_multiple_when_single_selection = (multi_selection == SelectObjectDialogFuzzyMultiSelection_No && selected.size() > 1);
+    const bool selected_multiple_when_single_selection = (multi_selection == SelectObjectDialogMultiSelection_No && selected.size() > 1);
     if (selected_multiple_when_single_selection) {
         QMessageBox::warning(this, tr("Error"), tr("This selection accepts only one object. Remove extra objects to proceed."));
     } else {
@@ -141,7 +141,7 @@ void SelectObjectDialogFuzzy::accept() {
     }
 }
 
-void SelectObjectDialogFuzzy::on_add_button() {
+void SelectObjectDialog::on_add_button() {
     if (edit->text().isEmpty()) {
         return;
     }
@@ -189,7 +189,7 @@ void SelectObjectDialogFuzzy::on_add_button() {
     } else if (search_results.size() > 1) {
         // Open dialog where you can select one of the matches
         // TODO: probably make a separate file, decent sized dialog
-        auto dialog = new SelectFuzzyMatchDialog(search_results, this);
+        auto dialog = new SelectObjectMatchDialog(search_results, this);
         connect(
             dialog, &QDialog::accepted,
             [=]() {
@@ -222,7 +222,7 @@ void SelectObjectDialogFuzzy::on_add_button() {
     }
 }
 
-void SelectObjectDialogFuzzy::on_advanced_button() {
+void SelectObjectDialog::on_advanced_button() {
     auto dialog = new SelectObjectAdvancedDialog(class_list, this);
 
     // TODO: can optimize if dialog returns objects
@@ -260,17 +260,17 @@ void SelectObjectDialogFuzzy::on_advanced_button() {
     dialog->open();
 }
 
-bool SelectObjectDialogFuzzy::is_duplicate(const AdObject &object) const {
+bool SelectObjectDialog::is_duplicate(const AdObject &object) const {
     const QList<QString> selected = get_selected();
 
     return selected.contains(object.get_dn());
 }
 
-void SelectObjectDialogFuzzy::duplicate_message_box() {
+void SelectObjectDialog::duplicate_message_box() {
     QMessageBox::warning(this, tr("Error"), tr("Selected object is already in the list."));
 }
 
-SelectFuzzyMatchDialog::SelectFuzzyMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
+SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
 : QDialog() {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -311,7 +311,7 @@ SelectFuzzyMatchDialog::SelectFuzzyMatchDialog(const QHash<QString, AdObject> &s
         this, &QDialog::reject);
 }
 
-QList<QString> SelectFuzzyMatchDialog::get_selected() const {
+QList<QString> SelectObjectMatchDialog::get_selected() const {
     QList<QString> out;
 
     const QList<QModelIndex> selected_indexes = view->selectionModel()->selectedRows();
