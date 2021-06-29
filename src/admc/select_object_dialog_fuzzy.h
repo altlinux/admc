@@ -57,6 +57,8 @@ private:
 
     void on_add_button();
     void on_advanced_button();
+    bool is_duplicate(const AdObject &object) const;
+    void duplicate_message_box();
 };
 
 class SelectFuzzyMatchDialog final : public QDialog {

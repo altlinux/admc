@@ -178,9 +178,14 @@ void SelectObjectDialogFuzzy::on_add_button() {
     if (search_results.size() == 1) {
         // Add to list
         const AdObject object = search_results.values()[0];
-        add_select_object_to_model(model, object);
 
-        edit->clear();
+        if (is_duplicate(object)) {
+            duplicate_message_box();
+        } else {
+            add_select_object_to_model(model, object);
+
+            edit->clear();
+        }
     } else if (search_results.size() > 1) {
         // Open dialog where you can select one of the matches
         // TODO: probably make a separate file, decent sized dialog
@@ -189,10 +194,22 @@ void SelectObjectDialogFuzzy::on_add_button() {
             dialog, &QDialog::accepted,
             [=]() {
                 const QList<QString> selected_list = dialog->get_selected();
+
+                bool any_duplicates = false;
+
                 // TODO: duplicating section above
                 for (const QString &dn : selected_list) {
                     const AdObject object = search_results[dn];
-                    add_select_object_to_model(model, object);
+
+                    if (is_duplicate(object)) {
+                        any_duplicates = true;
+                    } else {
+                        add_select_object_to_model(model, object);
+                    }
+                }
+
+                if (any_duplicates) {
+                    duplicate_message_box();
                 }
 
                 edit->clear();
@@ -220,16 +237,37 @@ void SelectObjectDialogFuzzy::on_advanced_button() {
 
             const QList<QList<QStandardItem *>> selected = dialog->get_selected_rows();
 
+            bool any_duplicates = false;
+
             const QList<QList<QStandardItem *>> row_list = dialog->get_selected_rows();
             for (const QList<QStandardItem *> &row : row_list) {
                 QStandardItem *item = row[0];
                 const QString dn = item->data(ObjectRole_DN).toString();
                 const AdObject object = ad.search_object(dn);
-                add_select_object_to_model(model, object);
+
+                if (is_duplicate(object)) {
+                    any_duplicates = true;
+                } else {
+                    add_select_object_to_model(model, object);
+                }
+            }
+
+            if (any_duplicates) {
+                duplicate_message_box();
             }
         });
 
     dialog->open();
+}
+
+bool SelectObjectDialogFuzzy::is_duplicate(const AdObject &object) const {
+    const QList<QString> selected = get_selected();
+
+    return selected.contains(object.get_dn());
+}
+
+void SelectObjectDialogFuzzy::duplicate_message_box() {
+    QMessageBox::warning(this, tr("Error"), tr("Selected object is already in the list."));
 }
 
 SelectFuzzyMatchDialog::SelectFuzzyMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
