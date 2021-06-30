@@ -143,7 +143,7 @@ void SelectObjectDialog::accept() {
 
     const bool selected_multiple_when_single_selection = (multi_selection == SelectObjectDialogMultiSelection_No && selected.size() > 1);
     if (selected_multiple_when_single_selection) {
-        QMessageBox::warning(this, tr("Error"), tr("This selection accepts only one object. Remove extra objects to proceed."));
+        open_message_box(QMessageBox::Warning, tr("Warning"), tr("This selection accepts only one object. Remove extra objects to proceed."), this);
     } else {
         QDialog::accept();
     }
@@ -226,7 +226,7 @@ void SelectObjectDialog::on_add_button() {
         dialog->open();
     } else if (search_results.size() == 0) {
         // Warn about failing to find any matches
-        QMessageBox::warning(this, tr("Error"), tr("Failed to find any matches."));
+        open_message_box(QMessageBox::Critical, tr("Error"), tr("Failed to find any matches."), this);
     }
 }
 
@@ -275,11 +275,11 @@ bool SelectObjectDialog::is_duplicate(const AdObject &object) const {
 }
 
 void SelectObjectDialog::duplicate_message_box() {
-    QMessageBox::warning(this, tr("Error"), tr("Selected object is already in the list."));
+    open_message_box(QMessageBox::Critical, tr("Error"), tr("Selected object is already in the list."), this);
 }
 
 SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
-: QDialog() {
+: QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
 
     auto label = new QLabel(tr("There are multiple matches. Select one or more to add to the list."));

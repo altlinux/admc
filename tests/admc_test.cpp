@@ -189,6 +189,14 @@ void ADMCTest::close_message_box_slot() {
     }
 }
 
+void ADMCTest::close_message_box() {
+    auto message_box = parent_widget->findChild<QMessageBox *>();
+    if (message_box != nullptr) {
+        QVERIFY(QTest::qWaitForWindowExposed(message_box, 1000));
+        message_box->accept();
+    }
+}
+
 void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &dn) {
     auto add_button = select_dialog->findChild<QPushButton *>("add_button");
     QVERIFY(add_button != nullptr);

@@ -37,11 +37,15 @@ private slots:
     void no_matches();
     void one_match();
     void multiple_matches();
+    void one_match_duplicate();
+    void multiple_match_duplicate();
 
 private:
     SelectObjectDialog *dialog;
     QLineEdit *edit;
     QPushButton *add_button;
+
+    void select_object_in_multi_match_dialog(const QString &name, const QString &dn);
 };
 
 #endif /* ADMC_TEST_SELECT_OBJECT_DIALOG_H */

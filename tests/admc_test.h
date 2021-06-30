@@ -90,16 +90,23 @@ protected:
     // because find results are loaded in separate thread.
     void wait_for_find_results_to_load(QTreeView *view);
 
-    // Message boxes block executation because they are
-    // opened using exec(). Therefore when testing f-ns that
-    // can open messageboxes, call this to to close
-    // messageboxes later.
+    // This is for message boxes opened using exec(), i.e.
+    // the ones opened by message box static f-ns. Message
+    // boxes block executation because they are    // opened
+    // using exec(). Therefore when testing f-ns that can
+    // open messageboxes, call this to to close messageboxes
+    // later.
     void close_message_box_later();
 
     void select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &dn);
 
-private:
     void close_message_box_slot();
+
+    // This is for closing message boxes opened using
+    // open().
+    void close_message_box();
+
+private:
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
