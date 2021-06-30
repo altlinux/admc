@@ -29,7 +29,7 @@ class QStandardItemModel;
 class QPushButton;
 
 class ADMCTestMemberOfTab : public ADMCTest {
-Q_OBJECT
+    Q_OBJECT
 
 private slots:
     void init() override;

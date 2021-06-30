@@ -23,27 +23,27 @@
 #include "adldap.h"
 #include "console_types/console_object.h"
 #include "create_object_dialog.h"
+#include "filter_widget/filter_widget_advanced_tab.h"
+#include "filter_widget/filter_widget_simple_tab.h"
 #include "find_object_dialog.h"
-#include "select_object_advanced_dialog.h"
 #include "find_widget.h"
 #include "move_object_dialog.h"
 #include "password_dialog.h"
 #include "rename_object_dialog.h"
 #include "select_container_dialog.h"
+#include "select_object_advanced_dialog.h"
 #include "select_object_dialog.h"
-#include "filter_widget/filter_widget_simple_tab.h"
-#include "filter_widget/filter_widget_advanced_tab.h"
 #include "utils.h"
 
 #include <QComboBox>
 #include <QDebug>
+#include <QLineEdit>
 #include <QModelIndex>
+#include <QPlainTextEdit>
 #include <QPushButton>
+#include <QTabWidget>
 #include <QTest>
 #include <QTreeView>
-#include <QPlainTextEdit>
-#include <QTabWidget>
-#include <QLineEdit>
 
 void ADMCTestObjectMenu::object_menu_new_user() {
     const QString name = TEST_USER;

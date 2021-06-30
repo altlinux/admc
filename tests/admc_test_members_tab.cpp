@@ -23,10 +23,10 @@
 #include "select_object_dialog.h"
 #include "tabs/membership_tab.h"
 
-#include <QVBoxLayout>
-#include <QStandardItemModel>
 #include <QPushButton>
+#include <QStandardItemModel>
 #include <QTreeView>
+#include <QVBoxLayout>
 
 // TODO: test primary functionality
 

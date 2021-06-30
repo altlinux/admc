@@ -31,7 +31,7 @@ class QPushButton;
 class QTreeView;
 
 class ADMCTestAttributesTab : public ADMCTest {
-Q_OBJECT
+    Q_OBJECT
 
 private slots:
     void init() override;

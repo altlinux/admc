@@ -22,21 +22,21 @@
 
 #include "adldap.h"
 #include "console_types/console_object.h"
-#include "globals.h"
-#include "utils.h"
-#include "select_object_dialog.h"
-#include "select_object_advanced_dialog.h"
 #include "filter_widget/filter_widget_simple_tab.h"
 #include "filter_widget/select_base_widget.h"
+#include "globals.h"
 #include "select_container_dialog.h"
+#include "select_object_advanced_dialog.h"
+#include "select_object_dialog.h"
+#include "utils.h"
 
+#include <QLineEdit>
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QPushButton>
 #include <QTest>
 #include <QTimer>
 #include <QTreeView>
-#include <QLineEdit>
 
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
@@ -239,7 +239,7 @@ void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const 
 void ADMCTest::select_object_dialog_select(const QString &dn) {
     auto select_dialog = parent_widget->findChild<SelectObjectDialog *>();
     QVERIFY(select_dialog != nullptr);
-    
+
     auto select_base_widget = select_dialog->findChild<SelectBaseWidget *>();
     QVERIFY(select_base_widget != nullptr);
     select_base_widget_add(select_base_widget, test_arena_dn());

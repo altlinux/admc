@@ -41,7 +41,6 @@ private slots:
     void object_menu_find_advanced();
 
 private:
-
 };
 
 #endif /* ADMC_TEST_OBJECT_MENU_H */

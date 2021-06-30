@@ -93,9 +93,9 @@ protected:
 
     // This is for message boxes opened using exec(), i.e.
     // the ones opened by message box static f-ns. Message
-    // boxes block executation because they are    // opened
-    // using exec(). Therefore when testing f-ns that can
-    // open messageboxes, call this to to close messageboxes
+    // boxes block executation because they are opened using
+    // exec(). Therefore when testing f-ns that can open
+    // messageboxes, call this to to close messageboxes
     // later.
     void close_message_box_later();
 
@@ -112,7 +112,6 @@ protected:
     void select_object_dialog_select(const QString &dn);
 
 private:
-
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);

@@ -21,13 +21,13 @@
 #include "admc_test_select_object_dialog.h"
 
 #include "admc_test_select_base_widget.h"
-#include "select_object_dialog.h"
 #include "console_types/console_object.h"
 #include "filter_widget/select_base_widget.h"
+#include "select_object_dialog.h"
 
 #include <QLineEdit>
-#include <QPushButton>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QTreeView>
 
 void ADMCTestSelectObjectDialog::init() {
@@ -129,7 +129,7 @@ void ADMCTestSelectObjectDialog::multiple_match_duplicate() {
     QVERIFY(create_success2);
 
     select_object_in_multi_match_dialog(TEST_USER, dn2);
-    
+
     const QList<QString> selected_first = dialog->get_selected();
     QVERIFY(selected_first == QList<QString>({dn2}));
 
@@ -156,7 +156,7 @@ void ADMCTestSelectObjectDialog::select_object_in_multi_match_dialog(const QStri
 
     auto ok_button = match_dialog->findChild<QPushButton *>();
     QVERIFY(ok_button != nullptr);
-    
+
     ok_button->click();
 
     close_message_box();
