@@ -28,7 +28,6 @@
 #include <QComboBox>
 #include <QFormLayout>
 #include <QLineEdit>
-#include <QMessageBox>
 
 UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -73,7 +72,7 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
 
     if (new_value.isEmpty()) {
         const QString text = tr("UPN may not be empty.");
-        QMessageBox::warning(prefix_edit, tr("Error"), text);
+        open_message_box(QMessageBox::Warning, tr("Error"), text, prefix_edit);
 
         return false;
     }
@@ -96,7 +95,7 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
 
     if (upn_not_unique) {
         const QString text = tr("The specified user logon name already exists.");
-        QMessageBox::warning(prefix_edit, tr("Error"), text);
+        open_message_box(QMessageBox::Warning, tr("Error"), text, prefix_edit);
 
         return false;
     }

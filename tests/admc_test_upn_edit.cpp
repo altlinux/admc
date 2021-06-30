@@ -186,7 +186,6 @@ void ADMCTestUpnEdit::test_verify() {
     ad.attribute_replace_string(conflict_dn, ATTRIBUTE_USER_PRINCIPAL_NAME, conflicting_upn);
 
     // Verify should fail
-    close_message_box_later();
     const bool verify_success = upn_edit->verify(ad, dn);
 
     QVERIFY2(!verify_success, "verify() didn't notice upn conflict");

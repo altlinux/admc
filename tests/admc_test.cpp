@@ -177,20 +177,6 @@ void ADMCTest::wait_for_find_results_to_load(QTreeView *view) {
     }
 }
 
-void ADMCTest::close_message_box_later() {
-    QTimer::singleShot(100, this, &ADMCTest::close_message_box_slot);
-}
-
-void ADMCTest::close_message_box_slot() {
-    const QList<QWidget *> top_widgets = QApplication::topLevelWidgets();
-    for (QWidget *widget : top_widgets) {
-        QMessageBox *message_box = qobject_cast<QMessageBox *>(widget);
-        if (message_box != nullptr) {
-            QTest::keyClick(message_box, Qt::Key_Enter);
-        }
-    }
-}
-
 void ADMCTest::close_message_box() {
     auto message_box = parent_widget->findChild<QMessageBox *>();
     if (message_box != nullptr) {
