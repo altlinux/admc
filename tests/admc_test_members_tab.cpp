@@ -113,10 +113,7 @@ void ADMCTestMembersTab::remove() {
 void ADMCTestMembersTab::add() {
     add_button->click();
 
-    auto select_dialog = members_tab->findChild<SelectObjectDialog *>();
-
-    select_in_select_dialog(select_dialog, user_dn);
-    select_dialog->accept();
+    select_object_dialog_select(user_dn);
 
     // Check ui state before applying
     QVERIFY(model->rowCount() == 1);

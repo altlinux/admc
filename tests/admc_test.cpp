@@ -236,6 +236,28 @@ void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const 
     find_select_dialog->accept();
 }
 
+void ADMCTest::select_object_dialog_select(const QString &dn) {
+    auto select_dialog = parent_widget->findChild<SelectObjectDialog *>();
+    QVERIFY(select_dialog != nullptr);
+    
+    auto select_base_widget = select_dialog->findChild<SelectBaseWidget *>();
+    QVERIFY(select_base_widget != nullptr);
+    select_base_widget_add(select_base_widget, test_arena_dn());
+
+    auto edit = select_dialog->findChild<QLineEdit *>("edit");
+    QVERIFY(edit != nullptr);
+
+    auto add_button = select_dialog->findChild<QPushButton *>("add_button");
+    QVERIFY(add_button != nullptr);
+
+    edit->setText(dn_get_name(dn));
+    add_button->click();
+
+    select_dialog->accept();
+
+    delete select_dialog;
+}
+
 void select_base_widget_add(SelectBaseWidget *widget, const QString &dn) {
     auto browse_button = widget->findChild<QPushButton *>();
     QVERIFY(browse_button != nullptr);

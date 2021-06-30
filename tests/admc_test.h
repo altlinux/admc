@@ -107,7 +107,12 @@ protected:
     // open().
     void close_message_box();
 
+    // Selects an object via an already open select object
+    // dialog. Object must be inside test arena
+    void select_object_dialog_select(const QString &dn);
+
 private:
+
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
