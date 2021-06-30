@@ -20,8 +20,10 @@
 
 #include "admc_test_select_object_dialog.h"
 
+#include "admc_test_select_base_widget.h"
 #include "select_object_dialog.h"
 #include "console_types/console_object.h"
+#include "filter_widget/select_base_widget.h"
 
 #include <QLineEdit>
 #include <QPushButton>
@@ -31,9 +33,12 @@
 void ADMCTestSelectObjectDialog::init() {
     ADMCTest::init();
 
-    dialog = new SelectObjectDialog({CLASS_USER}, SelectObjectDialogMultiSelection_Yes, test_arena_dn(), parent_widget);
+    dialog = new SelectObjectDialog({CLASS_USER}, SelectObjectDialogMultiSelection_Yes, parent_widget);
     dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    auto select_base_widget = dialog->findChild<SelectBaseWidget *>();
+    select_base_widget_add(select_base_widget, test_arena_dn());
 
     edit = dialog->findChild<QLineEdit *>("edit");
     QVERIFY(edit != nullptr);

@@ -27,6 +27,8 @@
 #include "select_object_dialog.h"
 #include "select_object_advanced_dialog.h"
 #include "filter_widget/filter_widget_simple_tab.h"
+#include "filter_widget/select_base_widget.h"
+#include "select_container_dialog.h"
 
 #include <QMessageBox>
 #include <QModelIndex>
@@ -232,4 +234,27 @@ void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const 
     const QString selected_dn = selected_index.data(ObjectRole_DN).toString();
 
     find_select_dialog->accept();
+}
+
+void select_base_widget_add(SelectBaseWidget *widget, const QString &dn) {
+    auto browse_button = widget->findChild<QPushButton *>();
+    QVERIFY(browse_button != nullptr);
+
+    browse_button->click();
+
+    auto select_container_dialog = widget->findChild<SelectContainerDialog *>();
+    QVERIFY(select_container_dialog != nullptr);
+    QVERIFY(QTest::qWaitForWindowExposed(select_container_dialog, 1000));
+
+    auto select_container_view = select_container_dialog->findChild<QTreeView *>();
+    QVERIFY(select_container_view != nullptr);
+    navigate_until_object(select_container_view, dn, ContainerRole_DN);
+
+    select_container_dialog->accept();
+    QVERIFY(QTest::qWaitForWindowExposed(widget, 1000));
+
+    // NOTE: have to delete manually, dialog deletes itself
+    // on close a bit late which causes consecutive calls
+    // calls to get the dialog that should've been destroyed
+    delete select_container_dialog;
 }

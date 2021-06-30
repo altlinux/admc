@@ -37,6 +37,7 @@ class QString;
 class QTreeView;
 class QPushButton;
 class SelectObjectDialog;
+class SelectBaseWidget;
 
 #define TEST_USER "test-user"
 #define TEST_USER_LOGON "test-user-logon"
@@ -110,5 +111,9 @@ private:
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
+
+// Add a base to the base combo. Note that it is also
+// automatically selected.
+void select_base_widget_add(SelectBaseWidget *widget, const QString &dn);
 
 #endif /* ADMC_TEST_H */
