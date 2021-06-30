@@ -182,6 +182,8 @@ void ADMCTest::close_message_box() {
     if (message_box != nullptr) {
         QVERIFY(QTest::qWaitForWindowExposed(message_box, 1000));
         message_box->accept();
+
+        delete message_box;
     }
 }
 
