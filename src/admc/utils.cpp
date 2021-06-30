@@ -281,3 +281,14 @@ void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad,
         results[schema_dn] = ad.search_object(schema_dn);
     }
 }
+
+void open_message_box(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent) {
+    auto message_box = new QMessageBox(parent);
+    message_box->setAttribute(Qt::WA_DeleteOnClose);
+    message_box->setStandardButtons(QMessageBox::Ok);
+    message_box->setWindowTitle(title);
+    message_box->setText(title);
+    message_box->setIcon(icon);
+
+    message_box->open();
+}

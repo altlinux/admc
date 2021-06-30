@@ -22,19 +22,21 @@
 
 #include "adldap.h"
 #include "console_types/console_object.h"
-#include "globals.h"
-#include "utils.h"
-#include "select_object_dialog.h"
-#include "find_select_object_dialog.h"
 #include "filter_widget/filter_widget_simple_tab.h"
+#include "filter_widget/select_base_widget.h"
+#include "globals.h"
+#include "select_container_dialog.h"
+#include "select_object_advanced_dialog.h"
+#include "select_object_dialog.h"
+#include "utils.h"
 
+#include <QLineEdit>
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QPushButton>
 #include <QTest>
 #include <QTimer>
 #include <QTreeView>
-#include <QLineEdit>
 
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
@@ -189,13 +191,21 @@ void ADMCTest::close_message_box_slot() {
     }
 }
 
+void ADMCTest::close_message_box() {
+    auto message_box = parent_widget->findChild<QMessageBox *>();
+    if (message_box != nullptr) {
+        QVERIFY(QTest::qWaitForWindowExposed(message_box, 1000));
+        message_box->accept();
+    }
+}
+
 void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &dn) {
     auto add_button = select_dialog->findChild<QPushButton *>("add_button");
     QVERIFY(add_button != nullptr);
     add_button->click();
 
     // Find dialog has been opened, so switch to it
-    auto find_select_dialog = select_dialog->findChild<FindSelectObjectDialog *>();
+    auto find_select_dialog = select_dialog->findChild<SelectObjectAdvancedDialog *>();
     QVERIFY(find_select_dialog != nullptr);
     QVERIFY(QTest::qWaitForWindowExposed(find_select_dialog, 1000));
 
@@ -224,4 +234,49 @@ void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const 
     const QString selected_dn = selected_index.data(ObjectRole_DN).toString();
 
     find_select_dialog->accept();
+}
+
+void ADMCTest::select_object_dialog_select(const QString &dn) {
+    auto select_dialog = parent_widget->findChild<SelectObjectDialog *>();
+    QVERIFY(select_dialog != nullptr);
+
+    auto select_base_widget = select_dialog->findChild<SelectBaseWidget *>();
+    QVERIFY(select_base_widget != nullptr);
+    select_base_widget_add(select_base_widget, test_arena_dn());
+
+    auto edit = select_dialog->findChild<QLineEdit *>("edit");
+    QVERIFY(edit != nullptr);
+
+    auto add_button = select_dialog->findChild<QPushButton *>("add_button");
+    QVERIFY(add_button != nullptr);
+
+    edit->setText(dn_get_name(dn));
+    add_button->click();
+
+    select_dialog->accept();
+
+    delete select_dialog;
+}
+
+void select_base_widget_add(SelectBaseWidget *widget, const QString &dn) {
+    auto browse_button = widget->findChild<QPushButton *>();
+    QVERIFY(browse_button != nullptr);
+
+    browse_button->click();
+
+    auto select_container_dialog = widget->findChild<SelectContainerDialog *>();
+    QVERIFY(select_container_dialog != nullptr);
+    QVERIFY(QTest::qWaitForWindowExposed(select_container_dialog, 1000));
+
+    auto select_container_view = select_container_dialog->findChild<QTreeView *>();
+    QVERIFY(select_container_view != nullptr);
+    navigate_until_object(select_container_view, dn, ContainerRole_DN);
+
+    select_container_dialog->accept();
+    QVERIFY(QTest::qWaitForWindowExposed(widget, 1000));
+
+    // NOTE: have to delete manually, dialog deletes itself
+    // on close a bit late which causes consecutive calls
+    // calls to get the dialog that should've been destroyed
+    delete select_container_dialog;
 }

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "find_select_object_dialog.h"
+#include "select_object_advanced_dialog.h"
 
 #include "adldap.h"
 #include "find_widget.h"
@@ -28,7 +28,7 @@
 #include <QList>
 #include <QVBoxLayout>
 
-FindSelectObjectDialog::FindSelectObjectDialog(const QList<QString> classes, QWidget *parent)
+SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent)
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -47,12 +47,12 @@ FindSelectObjectDialog::FindSelectObjectDialog(const QList<QString> classes, QWi
 
     connect(
         buttons, &QDialogButtonBox::accepted,
-        this, &FindSelectObjectDialog::accept);
+        this, &SelectObjectAdvancedDialog::accept);
     connect(
         buttons, &QDialogButtonBox::rejected,
-        this, &FindSelectObjectDialog::reject);
+        this, &SelectObjectAdvancedDialog::reject);
 }
 
-QList<QList<QStandardItem *>> FindSelectObjectDialog::get_selected_rows() const {
+QList<QList<QStandardItem *>> SelectObjectAdvancedDialog::get_selected_rows() const {
     return find_widget->get_selected_rows();
 }

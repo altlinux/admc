@@ -23,10 +23,10 @@
 #include "select_object_dialog.h"
 #include "tabs/membership_tab.h"
 
-#include <QVBoxLayout>
-#include <QStandardItemModel>
 #include <QPushButton>
+#include <QStandardItemModel>
 #include <QTreeView>
+#include <QVBoxLayout>
 
 // TODO: test primary functionality
 
@@ -116,10 +116,7 @@ void ADMCTestMemberOfTab::remove() {
 void ADMCTestMemberOfTab::add() {
     add_button->click();
 
-    auto select_dialog = member_of_tab->findChild<SelectObjectDialog *>();
-
-    select_in_select_dialog(select_dialog, group_dn);
-    select_dialog->accept();
+    select_object_dialog_select(group_dn);
 
     // Check ui state before applying
     QVERIFY(model->rowCount() == 2);

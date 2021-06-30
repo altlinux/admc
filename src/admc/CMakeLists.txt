@@ -62,7 +62,7 @@ set(ADMC_SOURCES
     rename_policy_dialog.cpp
     create_object_dialog.cpp
     find_object_dialog.cpp
-    find_select_object_dialog.cpp
+    select_object_advanced_dialog.cpp
     select_container_dialog.cpp
     about_dialog.cpp
     manual_dialog.cpp

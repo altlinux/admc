@@ -23,70 +23,27 @@
 #include "adldap.h"
 #include "console_types/console_object.h"
 #include "create_object_dialog.h"
+#include "filter_widget/filter_widget_advanced_tab.h"
+#include "filter_widget/filter_widget_simple_tab.h"
 #include "find_object_dialog.h"
-#include "find_select_object_dialog.h"
 #include "find_widget.h"
 #include "move_object_dialog.h"
 #include "password_dialog.h"
 #include "rename_object_dialog.h"
 #include "select_container_dialog.h"
+#include "select_object_advanced_dialog.h"
 #include "select_object_dialog.h"
-#include "filter_widget/filter_widget_simple_tab.h"
-#include "filter_widget/filter_widget_advanced_tab.h"
 #include "utils.h"
 
 #include <QComboBox>
 #include <QDebug>
+#include <QLineEdit>
 #include <QModelIndex>
+#include <QPlainTextEdit>
 #include <QPushButton>
+#include <QTabWidget>
 #include <QTest>
 #include <QTreeView>
-#include <QPlainTextEdit>
-#include <QTabWidget>
-#include <QLineEdit>
-
-// Test that when adding an object from find dialog to
-// select dialog, the correct object is added.
-void ADMCTestObjectMenu::select_dialog_correct_object_added() {
-    const QString parent = test_arena_dn();
-
-    // Create 5 different users
-    const QList<QString> names = {
-        "test-user-1",
-        "test-user-2",
-        "test-user-3",
-        "test-user-4",
-        "test-user-5",
-    };
-    for (const QString &name : names) {
-        const QString dn = test_object_dn(name, CLASS_USER);
-
-        const bool create_success = ad.object_add(dn, CLASS_USER);
-        QVERIFY2(create_success, "Failed to create test user");
-    }
-
-    const QString select_dn = test_object_dn("test-user-3", CLASS_USER);
-
-    auto select_dialog = new SelectObjectDialog({CLASS_USER}, SelectObjectDialogMultiSelection_Yes, parent_widget);
-    select_dialog->open();
-    QVERIFY(QTest::qWaitForWindowExposed(select_dialog, 1000));
-
-    select_in_select_dialog(select_dialog, select_dn);
-
-    // Switch to view containing selected object
-    auto select_dialog_view = select_dialog->findChild<QTreeView *>();
-    QVERIFY(select_dialog_view != nullptr);
-
-    // Verify that user added from find dialog is in
-    // selected list
-    auto select_dialog_model = select_dialog_view->model();
-
-    QVERIFY(select_dialog_model->rowCount() == 1);
-    const QModelIndex index = select_dialog_model->index(0, 0);
-    const QString index_dn = index.data(ObjectRole_DN).toString();
-
-    QVERIFY(index_dn == select_dn);
-}
 
 void ADMCTestObjectMenu::object_menu_new_user() {
     const QString name = TEST_USER;
@@ -397,42 +354,6 @@ void ADMCTestObjectMenu::object_menu_find_advanced() {
     wait_for_find_results_to_load(find_results);
 
     QVERIFY2(find_results->model()->rowCount(), "No results found");
-}
-
-void ADMCTestObjectMenu::object_menu_add_to_group() {
-    const QString parent = test_arena_dn();
-
-    const QString user_name = TEST_USER;
-    const QString user_dn = test_object_dn(user_name, CLASS_USER);
-
-    const QString group_name = TEST_GROUP;
-    const QString group_dn = test_object_dn(group_name, CLASS_GROUP);
-
-    // Create test user
-    const bool create_user_success = ad.object_add(user_dn, CLASS_USER);
-    QVERIFY2(create_user_success, "Failed to create user");
-    QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
-
-    // Create test group
-    const bool create_group_success = ad.object_add(group_dn, CLASS_GROUP);
-    QVERIFY2(create_group_success, "Failed to create group");
-    QVERIFY2(object_exists(group_dn), "Created group doesn't exist");
-
-    // Open add to group dialog
-    object_operation_add_to_group({user_dn}, parent_widget);
-    auto select_dialog = parent_widget->findChild<SelectObjectDialog *>();
-    QVERIFY2((select_dialog != nullptr), "Failed to find select_dialog");
-    QVERIFY(QTest::qWaitForWindowExposed(select_dialog, 1000));
-    
-    select_in_select_dialog(select_dialog, group_dn);
-    select_dialog->accept();
-    
-    const AdObject group = ad.search_object(group_dn);
-    const QList<QString> group_members = group.get_strings(ATTRIBUTE_MEMBER);
-    const bool user_is_member_of_group = group_members.contains(user_dn);
-    QVERIFY2(user_is_member_of_group, "User did not become member of group");
-
-    QVERIFY(true);
 }
 
 void ADMCTestObjectMenu::object_menu_rename() {

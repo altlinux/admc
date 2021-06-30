@@ -47,6 +47,8 @@ class QMap;
 template <typename K, typename T>
 class QHash;
 
+#include <QMessageBox>
+
 #define debug_print(a, args...) printf("%s(%s:%d) " a, __func__, __FILE__, __LINE__, ##args)
 #define trace(a, args...) debug_print(a "\n", ##args)
 
@@ -98,5 +100,7 @@ void advanced_features_filter(QString &filter);
 
 void dev_mode_filter(QString &filter);
 void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base);
+
+void open_message_box(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
 
 #endif /* UTILS_H */

@@ -18,30 +18,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_SELECT_OBJECT_DIALOG_H
-#define FIND_SELECT_OBJECT_DIALOG_H
+#ifndef ADMC_TEST_SELECT_OBJECT_DIALOG_H
+#define ADMC_TEST_SELECT_OBJECT_DIALOG_H
 
-/**
- * Find objects and select them. 
- */
+#include "admc_test.h"
 
-#include <QDialog>
+class QLineEdit;
+class QPushButton;
+class SelectObjectDialog;
 
-class FindWidget;
-class QStandardItem;
-template <typename T>
-class QList;
-
-class FindSelectObjectDialog final : public QDialog {
+class ADMCTestSelectObjectDialog : public ADMCTest {
     Q_OBJECT
 
-public:
-    FindSelectObjectDialog(const QList<QString> classes, QWidget *parent);
+private slots:
+    void init() override;
 
-    QList<QList<QStandardItem *>> get_selected_rows() const;
+    void empty();
+    void no_matches();
+    void one_match();
+    void multiple_matches();
+    void one_match_duplicate();
+    void multiple_match_duplicate();
 
 private:
-    FindWidget *find_widget;
+    SelectObjectDialog *dialog;
+    QLineEdit *edit;
+    QPushButton *add_button;
+
+    void select_object_in_multi_match_dialog(const QString &name, const QString &dn);
 };
 
-#endif /* FIND_SELECT_OBJECT_DIALOG_H */
+#endif /* ADMC_TEST_SELECT_OBJECT_DIALOG_H */

@@ -18,35 +18,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_MEMBERS_TAB_H
-#define ADMC_TEST_MEMBERS_TAB_H
+#ifndef SELECT_OBJECT_ADVANCED_DIALOG_H
+#define SELECT_OBJECT_ADVANCED_DIALOG_H
 
-#include "admc_test.h"
+/**
+ * Find objects and select them. 
+ */
 
-class QTreeView;
-class MembersTab;
-class QStandardItemModel;
-class QPushButton;
+#include <QDialog>
 
-class ADMCTestMembersTab : public ADMCTest {
+class FindWidget;
+class QStandardItem;
+template <typename T>
+class QList;
+
+class SelectObjectAdvancedDialog final : public QDialog {
     Q_OBJECT
 
-private slots:
-    void init() override;
+public:
+    SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent);
 
-    void load_empty();
-    void load();
-    void remove();
-    void add();
+    QList<QList<QStandardItem *>> get_selected_rows() const;
 
 private:
-    MembersTab *members_tab;
-    QTreeView *view;
-    QStandardItemModel *model;
-    QString user_dn;
-    QString group_dn;
-    QPushButton *add_button;
-    QPushButton *remove_button;
+    FindWidget *find_widget;
 };
 
-#endif /* ADMC_TEST_MEMBERS_TAB_H */
+#endif /* SELECT_OBJECT_ADVANCED_DIALOG_H */

@@ -41,10 +41,7 @@ private slots:
 private:
     SelectBaseWidget *select_base_widget;
     QComboBox *combo;
-    QPushButton *browse_button;
     QList<QString> dn_list;
-
-    void add_base(const QString &dn);
 };
 
 #endif /* ADMC_TEST_SELECT_BASE_WIDGET_H */

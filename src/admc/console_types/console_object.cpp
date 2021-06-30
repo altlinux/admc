@@ -48,7 +48,6 @@ enum DropType {
 
 QStandardItem *object_tree_head = nullptr;
 
-void console_object_item_data_load(QStandardItem *item, const AdObject &object);
 DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
 bool console_object_create_check(ConsoleWidget *console, const QModelIndex &parent);

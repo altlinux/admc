@@ -45,9 +45,6 @@ void ADMCTestSelectBaseWidget::init() {
     combo = select_base_widget->findChild<QComboBox *>();
     QVERIFY(combo != nullptr);
 
-    browse_button = select_base_widget->findChild<QPushButton *>();
-    QVERIFY(browse_button != nullptr);
-
     // Create test OU's
     const QList<QString> ou_name_list = {
         "test-ou-alpha",
@@ -77,7 +74,7 @@ void ADMCTestSelectBaseWidget::default_to_domain_head() {
 // the DN of selected search base
 void ADMCTestSelectBaseWidget::select_base() {
     const QString select_dn = dn_list[0];
-    add_base(select_dn);
+    select_base_widget_add(select_base_widget, select_dn);
 
     const QString base = select_base_widget->get_base();
     QVERIFY(base == select_dn);
@@ -88,7 +85,7 @@ void ADMCTestSelectBaseWidget::select_base() {
 // that search base.
 void ADMCTestSelectBaseWidget::select_base_multiple() {
     for (const QString &dn : dn_list) {
-        add_base(dn);
+        select_base_widget_add(select_base_widget, dn);
     }
 
     // Alpha is at index 1 in the combo (0 is domain)
@@ -97,29 +94,10 @@ void ADMCTestSelectBaseWidget::select_base_multiple() {
     QVERIFY(base == dn_list[0]);
 }
 
-void ADMCTestSelectBaseWidget::add_base(const QString &dn) {
-    browse_button->click();
-    auto select_container_dialog = select_base_widget->findChild<SelectContainerDialog *>();
-    QVERIFY(select_container_dialog != nullptr);
-    QVERIFY(QTest::qWaitForWindowExposed(select_container_dialog, 1000));
-
-    auto select_container_view = select_container_dialog->findChild<QTreeView *>();
-    QVERIFY(select_container_view != nullptr);
-    navigate_until_object(select_container_view, dn, ContainerRole_DN);
-
-    QTest::keyClick(QApplication::focusWidget(), Qt::Key_Enter);
-    QVERIFY(QTest::qWaitForWindowExposed(select_base_widget, 1000));
-
-    // NOTE: have to delete manually, dialog deletes itself
-    // on close a bit late which causes consecutive add_base()
-    // calls to get the dialog that should've been destroyed
-    delete select_container_dialog;
-}
-
 void ADMCTestSelectBaseWidget::save_state() {
     // Setup some state
     for (const QString &dn : dn_list) {
-        add_base(dn);
+        select_base_widget_add(select_base_widget, dn);
     }
 
     combo->setCurrentIndex(1);

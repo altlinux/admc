@@ -23,14 +23,14 @@
 #include "editors/multi_editor.h"
 #include "editors/string_editor.h"
 
-#include <QVBoxLayout>
-#include <QString>
-#include <QStandardItemModel>
-#include <QPushButton>
-#include <QDialog>
 #include <QCheckBox>
+#include <QDialog>
 #include <QLineEdit>
+#include <QPushButton>
+#include <QStandardItemModel>
+#include <QString>
 #include <QTreeView>
+#include <QVBoxLayout>
 
 // NOTE: can't be set because order is important. Read only
 // has to be set first to enable other filters.
@@ -150,7 +150,7 @@ void ADMCTestAttributesTab::filter() {
 // changes
 void ADMCTestAttributesTab::apply() {
     const QString correct_value = "test description";
-    
+
     navigate_until_object(view, "description", Qt::DisplayRole);
     edit_button->click();
 

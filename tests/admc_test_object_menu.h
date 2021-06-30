@@ -27,10 +27,6 @@ class ADMCTestObjectMenu : public ADMCTest {
     Q_OBJECT
 
 private slots:
-    void select_dialog_correct_object_added();
-
-    void object_menu_add_to_group();
-
     void object_menu_new_user();
     void object_menu_new_ou();
     void object_menu_new_computer();
@@ -45,7 +41,6 @@ private slots:
     void object_menu_find_advanced();
 
 private:
-
 };
 
 #endif /* ADMC_TEST_OBJECT_MENU_H */
