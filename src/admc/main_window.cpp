@@ -27,6 +27,8 @@
 #include "settings.h"
 #include "status.h"
 
+#include "logon_hours_dialog.h"
+
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
@@ -67,6 +69,9 @@ MainWindow::MainWindow()
     restoreState(state);
 
     connect_to_server();
+
+    auto dialog = new LogonHoursDialog(this);
+    dialog->open();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {

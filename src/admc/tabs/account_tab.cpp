@@ -24,10 +24,11 @@
 #include "edits/string_edit.h"
 #include "edits/unlock_edit.h"
 #include "edits/upn_edit.h"
+#include "edits/logon_hours_edit.h"
 
 #include <QFormLayout>
 
-// TODO: logon hours, logon computers
+// TODO: logon computers
 
 // NOTE: the "can't change password" checkbox does not
 // affect the permission in the security tab, even though
@@ -40,6 +41,8 @@ AccountTab::AccountTab(AdInterface &ad) {
     auto unlock_edit = new UnlockEdit(&edits, this);
 
     auto expiry_edit = new ExpiryEdit(&edits, this);
+
+    auto logon_hours_edit = new LogonHoursEdit(&edits, this);
 
     QList<AccountOption> options;
     for (int i = 0; i < AccountOption_COUNT; i++) {
@@ -58,6 +61,7 @@ AccountTab::AccountTab(AdInterface &ad) {
         upn_edit,
         unlock_edit,
         expiry_edit,
+        logon_hours_edit,
     };
     edits_add_to_layout(top_edits, edits_layout);
 
