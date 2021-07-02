@@ -48,6 +48,7 @@ private slots:
 private:
     QPlainTextEdit *edit;
     QComboBox *format_combo;
+    OctetDisplayFormat prev_format;
 
     bool check_input(const OctetDisplayFormat format);
 };

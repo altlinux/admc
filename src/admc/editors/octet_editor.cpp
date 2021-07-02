@@ -44,6 +44,8 @@ OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values
 : AttributeEditor(parent) {
     setWindowTitle(tr("Edit octet string"));
 
+    prev_format = OctetDisplayFormat_Hexadecimal;
+
     QLabel *attribute_label = make_attribute_label(attribute);
 
     format_combo = new QComboBox();
@@ -95,7 +97,6 @@ void OctetEditor::accept() {
 }
 
 void OctetEditor::on_format_combo() {
-    static OctetDisplayFormat prev_format = OctetDisplayFormat_Hexadecimal;
     static int prev_index = 0;
 
     // Check that input is ok for previous format, otherwise
