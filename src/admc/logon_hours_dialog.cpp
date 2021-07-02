@@ -28,9 +28,14 @@
 #include <QHeaderView>
 #include <QDialogButtonBox>
 #include <QDebug>
+#include <QDateTime>
+#include <QTimeZone>
+#include <QRadioButton>
 
 #define DAYS_IN_WEEK 7
 #define HOURS_IN_DAY 24
+
+QList<bool> shift_list(const QList<bool> &list, const int shift_amount);
 
 LogonHoursDialog::LogonHoursDialog(QWidget *parent)
 : QDialog(parent) {
@@ -60,6 +65,14 @@ LogonHoursDialog::LogonHoursDialog(QWidget *parent)
         view->setColumnWidth(col, 5);
     }
 
+    local_time_button = new QRadioButton(tr("Local time"));
+    auto utc_time_button = new QRadioButton(tr("UTC time"));
+    local_time_button->setChecked(true);
+    is_local_time = true;
+
+    local_time_button->setObjectName("local_time_button");
+    utc_time_button->setObjectName("utc_time_button");
+
     auto button_box = new QDialogButtonBox();
     button_box->addButton(QDialogButtonBox::Ok);
     button_box->addButton(QDialogButtonBox::Cancel);
@@ -67,6 +80,8 @@ LogonHoursDialog::LogonHoursDialog(QWidget *parent)
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(view);
+    layout->addWidget(local_time_button);
+    layout->addWidget(utc_time_button);
     layout->addWidget(button_box);
 
     connect(
@@ -75,6 +90,12 @@ LogonHoursDialog::LogonHoursDialog(QWidget *parent)
     connect(
         button_box, &QDialogButtonBox::rejected,
         this, &LogonHoursDialog::reject);
+    connect(
+        local_time_button, &QRadioButton::clicked,
+        this, &LogonHoursDialog::switch_to_local_time);
+    connect(
+        utc_time_button, &QRadioButton::clicked,
+        this, &LogonHoursDialog::switch_to_utc_time);
 }
 
 void LogonHoursDialog::load(const QByteArray &value) {
@@ -87,16 +108,14 @@ void LogonHoursDialog::load(const QByteArray &value) {
         return;
     }
 
-    const QList<QList<bool>> bools = logon_hours_to_bools(value);
+    const QList<QList<bool>> bools = logon_hours_to_bools(value, get_offset());
 
     for (int day = 0; day < 7; day++) {
         for (int h = 0; h < 24; h++) {
             const bool selected = bools[day][h];
 
             if (selected) {
-                // TODO: day shift?
                 const int row = day;
-                // TODO: timezone shift
                 const int column = h;
                 const QModelIndex index = model->index(row, column);
                 view->selectionModel()->select(index, QItemSelectionModel::Select);
@@ -121,7 +140,7 @@ QByteArray LogonHoursDialog::get() const {
         return out;
     }();
 
-    const QByteArray out = logon_hours_to_bytes(bools);
+    const QByteArray out = logon_hours_to_bytes(bools, get_offset());
 
     return out;
 }
@@ -138,7 +157,39 @@ void LogonHoursDialog::reject() {
     QDialog::reject();
 }
 
-QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list) {
+// Get current value, change time state and reload value
+void LogonHoursDialog::switch_to_local_time() {
+    const QByteArray current_value = get();
+
+    // NOTE: important to change state after get() call so
+    // current_value is in correct format
+    is_local_time = true;
+
+    load(current_value);
+}
+
+void LogonHoursDialog::switch_to_utc_time() {
+    const QByteArray current_value = get();
+
+    // NOTE: same as above
+    is_local_time = false;
+
+    load(current_value);
+}
+
+int LogonHoursDialog::get_offset() const {
+    if (is_local_time) {
+        return 0;
+    }
+
+    const QDateTime current_datetime = QDateTime::currentDateTime();
+    const int offset_s = QTimeZone::systemTimeZone().offsetFromUtc(current_datetime);
+    const int offset_h = offset_s / 60 / 60;
+
+    return offset_h;
+}
+
+QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list, const int time_offset) {
     // Convet byte array to list of bools
     const QList<bool> joined = [&]() {
         QList<bool> out;
@@ -150,6 +201,8 @@ QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list) {
                 out.append(is_set);
             }
         }
+
+        out = shift_list(out, time_offset);
 
         return out;
     }();
@@ -169,13 +222,15 @@ QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list) {
     return out;
 }
 
-QByteArray logon_hours_to_bytes(const QList<QList<bool>> bool_list) {
+QByteArray logon_hours_to_bytes(const QList<QList<bool>> bool_list, const int time_offset) {
     const QList<bool> joined = [&]() {
         QList<bool> out;
 
         for (const QList<bool> &sublist : bool_list) {
             out += sublist;
         }
+
+        out = shift_list(out, -time_offset);
 
         return out;
     }();
@@ -197,6 +252,32 @@ QByteArray logon_hours_to_bytes(const QList<QList<bool>> bool_list) {
 
         return bytes;
     }();
+
+    return out;
+}
+
+QList<bool> shift_list(const QList<bool> &list, const int shift_amount) {
+    if (abs(shift_amount) > list.size()) {
+        return list;
+    }
+
+    QList<bool> out;
+
+    for (int i = 0; i < list.size(); i++) {
+        const int shifted_i = [&]() {
+            int out_i = i + shift_amount;
+
+            if (out_i < 0) {
+                out_i += list.size();
+            } else if (out_i >= list.size()) {
+                out_i -= list.size();
+            }
+
+            return out_i;
+        }();
+
+        out.append(list[shifted_i]);
+    }
 
     return out;
 }

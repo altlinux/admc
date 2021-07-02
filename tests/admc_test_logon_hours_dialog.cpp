@@ -24,6 +24,7 @@
 
 #include <QTableView>
 #include <QStandardItemModel>
+#include <QRadioButton>
 
 void ADMCTestLogonHoursDialog::init() {
     ADMCTest::init();
@@ -31,6 +32,10 @@ void ADMCTestLogonHoursDialog::init() {
     dialog = new LogonHoursDialog(parent_widget);
     dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    // NOTE: use utc for 
+    local_time_button = dialog->findChild<QRadioButton *>("utc_time_button");
+    utc_time_button = dialog->findChild<QRadioButton *>("utc_time_button");
 
     view = dialog->findChild<QTableView *>();
     QVERIFY(view != nullptr);
@@ -87,6 +92,8 @@ void ADMCTestLogonHoursDialog::conversion_funs() {
 }
 
 void ADMCTestLogonHoursDialog::load() {
+    utc_time_button->setChecked(true);
+    
     dialog->load(test_bytes);
 
     const QList<QModelIndex> selected = selection_model->selectedIndexes();
@@ -106,7 +113,7 @@ void ADMCTestLogonHoursDialog::load() {
 void ADMCTestLogonHoursDialog::load_undefined() {
     dialog->load(QByteArray());
 
-    const QByteArray out = selection_model->get();
+    const QByteArray out = dialog->get();
     QVERIFY(out == empty_bytes);
 }
 

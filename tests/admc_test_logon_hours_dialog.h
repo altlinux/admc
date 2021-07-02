@@ -27,6 +27,7 @@ class LogonHoursDialog;
 class QStandardItemModel;
 class QTableView;
 class QItemSelectionModel;
+class QRadioButton;
 
 class ADMCTestLogonHoursDialog : public ADMCTest {
     Q_OBJECT
@@ -44,6 +45,8 @@ private:
     QStandardItemModel *model;
     QTableView *view;
     QItemSelectionModel *selection_model;
+    QRadioButton *local_time_button;
+    QRadioButton *utc_time_button;
 };
 
 #endif /* ADMC_TEST_LOGON_HOURS_DIALOG_H */

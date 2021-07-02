@@ -29,6 +29,7 @@
 
 class QTableView;
 class QStandardItemModel;
+class QRadioButton;
 
 // NOTE: this is the order in logon hours value. Different
 // from the display order in the dialog where first day is monday
@@ -61,9 +62,15 @@ private:
     QTableView *view;
     QStandardItemModel *model;
     QByteArray original_value;
+    QRadioButton *local_time_button;
+
+    void switch_to_local_time();
+    void switch_to_utc_time();
+    int get_offset() const;
+    bool is_local_time;
 };
 
-QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list);
-QByteArray logon_hours_to_bytes(const QList<QList<bool>> bool_list);
+QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list, const int time_offset = 0);
+QByteArray logon_hours_to_bytes(const QList<QList<bool>> bool_list, const int time_offset = 0);
 
 #endif /* LOGON_HOURS_DIALOG_H */
