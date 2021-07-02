@@ -32,22 +32,19 @@
 #include <QTimeZone>
 #include <QRadioButton>
 
-#define DAYS_IN_WEEK 7
-#define HOURS_IN_DAY 24
-
 QList<bool> shift_list(const QList<bool> &list, const int shift_amount);
 
 LogonHoursDialog::LogonHoursDialog(QWidget *parent)
 : QDialog(parent) {
     model = new QStandardItemModel(DAYS_IN_WEEK, HOURS_IN_DAY, this);
     model->setVerticalHeaderLabels({
+        tr("Sunday"),
         tr("Monday"),
         tr("Tuesday"),
         tr("Wednesday"),
         tr("Thursday"),
         tr("Friday"),
         tr("Saturday"),
-        tr("Sunday"),
     });
 
     view = new QTableView();
@@ -107,8 +104,8 @@ void LogonHoursDialog::load(const QByteArray &value) {
 
     const QList<QList<bool>> bools = logon_hours_to_bools(value, get_offset());
 
-    for (int day = 0; day < 7; day++) {
-        for (int h = 0; h < 24; h++) {
+    for (int day = 0; day < DAYS_IN_WEEK; day++) {
+        for (int h = 0; h < HOURS_IN_DAY; h++) {
             const bool selected = bools[day][h];
 
             if (selected) {
@@ -199,12 +196,12 @@ QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list, const int t
         return out;
     }();
 
-    // Split the list into sublists for each day (24 hours)
+    // Split the list into sublists for each day
     const QList<QList<bool>> out = [&]() {
         QList<QList<bool>> out_the;
 
-        for (int i = 0; i < joined.size(); i += 24) {
-            const QList<bool> day_list = joined.mid(i, 24);
+        for (int i = 0; i < joined.size(); i += HOURS_IN_DAY) {
+            const QList<bool> day_list = joined.mid(i, HOURS_IN_DAY);
             out_the.append(day_list);
         }
 

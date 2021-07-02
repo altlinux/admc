@@ -22,7 +22,7 @@
 #define LOGON_HOURS_DIALOG_H
 
 /**
- *
+ * Dialog for editing logon hours of a user account.
  */
 
 #include <QDialog>
@@ -44,6 +44,8 @@ enum Weekday {
     Weekday_COUNT,
 };
 
+#define DAYS_IN_WEEK 7
+#define HOURS_IN_DAY 24
 #define LOGON_HOURS_SIZE (7 * 3)
 
 class LogonHoursDialog : public QDialog {

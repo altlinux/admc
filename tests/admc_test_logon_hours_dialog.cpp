@@ -49,7 +49,7 @@ void ADMCTestLogonHoursDialog::init() {
 auto empty_day = []() {
     QList<bool> out;
 
-    for (int i = 0; i < 24; i++) {
+    for (int i = 0; i < HOURS_IN_DAY; i++) {
         out.append(false);
     }
 
@@ -59,7 +59,7 @@ auto empty_day = []() {
 auto empty_week = [&]() {
     QList<QList<bool>> out;
 
-    for (int day = 0; day < 7; day++) {
+    for (int day = 0; day < DAYS_IN_WEEK; day++) {
         out.append(empty_day());
     }
 
@@ -156,10 +156,10 @@ void ADMCTestLogonHoursDialog::handle_timezone() {
         const int offset = get_current_utc_offset();
         col += offset;
         if (col < 0) {
-            col += 24;
+            col += HOURS_IN_DAY;
             row--;
-        } else if (col >= 24) {
-            col -= 24;
+        } else if (col >= HOURS_IN_DAY) {
+            col -= HOURS_IN_DAY;
             row++;
         }
     
