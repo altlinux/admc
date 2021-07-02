@@ -61,8 +61,9 @@ auto empty_week = [&]() {
     return out;
 };
 
+const QByteArray empty_bytes = QByteArray(LOGON_HOURS_SIZE, '\0');
 const QByteArray test_bytes = [&]() {
-    QByteArray out = QByteArray(LOGON_HOURS_SIZE, '\0');
+    QByteArray out = empty_bytes;
     out[Weekday_Tuesday * 3] = 'a';
 
     return out;
@@ -98,6 +99,15 @@ void ADMCTestLogonHoursDialog::load() {
     };
 
     QVERIFY(selected_set == correct_selected_set);
+}
+
+// Dialog should handle loading undefined value, where
+// bytearray is empty
+void ADMCTestLogonHoursDialog::load_undefined() {
+    dialog->load(QByteArray());
+
+    const QByteArray out = selection_model->get();
+    QVERIFY(out == empty_bytes);
 }
 
 void ADMCTestLogonHoursDialog::get_unchanged() {

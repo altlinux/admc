@@ -36,6 +36,7 @@ private slots:
 
     void conversion_funs();
     void load();
+    void load_undefined();
     void get_unchanged();
 
 private:

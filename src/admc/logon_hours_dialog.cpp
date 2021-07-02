@@ -82,6 +82,11 @@ void LogonHoursDialog::load(const QByteArray &value) {
 
     view->clearSelection();
 
+    // NOTE: value may be empty if it's undefined
+    if (value.size() != LOGON_HOURS_SIZE) {
+        return;
+    }
+
     const QList<QList<bool>> bools = logon_hours_to_bools(value);
 
     for (int day = 0; day < 7; day++) {
