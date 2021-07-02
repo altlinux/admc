@@ -39,6 +39,7 @@ private slots:
     void load();
     void load_undefined();
     void get_unchanged();
+    void handle_timezone();
 
 private:
     LogonHoursDialog *dialog;

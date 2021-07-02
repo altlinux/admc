@@ -91,11 +91,8 @@ LogonHoursDialog::LogonHoursDialog(QWidget *parent)
         button_box, &QDialogButtonBox::rejected,
         this, &LogonHoursDialog::reject);
     connect(
-        local_time_button, &QRadioButton::clicked,
-        this, &LogonHoursDialog::switch_to_local_time);
-    connect(
-        utc_time_button, &QRadioButton::clicked,
-        this, &LogonHoursDialog::switch_to_utc_time);
+        local_time_button, &QRadioButton::toggled,
+        this, &LogonHoursDialog::on_local_time_button_toggled);
 }
 
 void LogonHoursDialog::load(const QByteArray &value) {
@@ -158,35 +155,30 @@ void LogonHoursDialog::reject() {
 }
 
 // Get current value, change time state and reload value
-void LogonHoursDialog::switch_to_local_time() {
+void LogonHoursDialog::on_local_time_button_toggled(bool checked) {
     const QByteArray current_value = get();
 
     // NOTE: important to change state after get() call so
     // current_value is in correct format
-    is_local_time = true;
+    is_local_time = checked;
 
     load(current_value);
 }
 
-void LogonHoursDialog::switch_to_utc_time() {
-    const QByteArray current_value = get();
-
-    // NOTE: same as above
-    is_local_time = false;
-
-    load(current_value);
-}
-
-int LogonHoursDialog::get_offset() const {
-    if (is_local_time) {
-        return 0;
-    }
-
+int get_current_utc_offset() {
     const QDateTime current_datetime = QDateTime::currentDateTime();
     const int offset_s = QTimeZone::systemTimeZone().offsetFromUtc(current_datetime);
     const int offset_h = offset_s / 60 / 60;
 
     return offset_h;
+}
+
+int LogonHoursDialog::get_offset() const {
+    if (is_local_time) {
+        return get_current_utc_offset();
+    } else {
+        return 0;
+    }
 }
 
 QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list, const int time_offset) {
@@ -265,7 +257,7 @@ QList<bool> shift_list(const QList<bool> &list, const int shift_amount) {
 
     for (int i = 0; i < list.size(); i++) {
         const int shifted_i = [&]() {
-            int out_i = i + shift_amount;
+            int out_i = i - shift_amount;
 
             if (out_i < 0) {
                 out_i += list.size();

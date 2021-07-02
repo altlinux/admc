@@ -65,12 +65,13 @@ private:
     QRadioButton *local_time_button;
 
     void switch_to_local_time();
-    void switch_to_utc_time();
+    void on_local_time_button_toggled(bool checked);
     int get_offset() const;
     bool is_local_time;
 };
 
 QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list, const int time_offset = 0);
 QByteArray logon_hours_to_bytes(const QList<QList<bool>> bool_list, const int time_offset = 0);
+int get_current_utc_offset();
 
 #endif /* LOGON_HOURS_DIALOG_H */

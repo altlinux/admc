@@ -34,7 +34,7 @@ void ADMCTestLogonHoursDialog::init() {
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
     // NOTE: use utc for 
-    local_time_button = dialog->findChild<QRadioButton *>("utc_time_button");
+    local_time_button = dialog->findChild<QRadioButton *>("local_time_button");
     utc_time_button = dialog->findChild<QRadioButton *>("utc_time_button");
 
     view = dialog->findChild<QTableView *>();
@@ -121,6 +121,52 @@ void ADMCTestLogonHoursDialog::get_unchanged() {
     dialog->load(test_bytes);
     const QByteArray returned_bytes = dialog->get();
     QVERIFY(returned_bytes == test_bytes);
+}
+
+void ADMCTestLogonHoursDialog::handle_timezone() {
+    const QByteArray bytes = [&]() {
+        QByteArray out = empty_bytes;
+        out[Weekday_Tuesday * 3] = 0x01;
+
+        return out;
+    }();
+    dialog->load(bytes);
+
+    auto test_selected = [&](const QList<QModelIndex> &correct_selected) {
+    };
+
+    // First do UTC
+    utc_time_button->setChecked(true);
+
+    const QList<QModelIndex> correct_utc_selected = {
+        model->index(Weekday_Tuesday, 0),
+    };
+    const QList<QModelIndex> utc_selected = selection_model->selectedIndexes();
+    QVERIFY(utc_selected == correct_utc_selected);
+
+    // Then local time
+    local_time_button->setChecked(true);
+
+    const QList<QModelIndex> correct_local_selected = [&]() {
+        // UTC rows
+        int row = Weekday_Tuesday;
+        int col = 0;
+
+        // Apply timezone offset
+        const int offset = get_current_utc_offset();
+        col += offset;
+        if (col < 0) {
+            col += 24;
+            row--;
+        } else if (col >= 24) {
+            col -= 24;
+            row++;
+        }
+    
+        return QList<QModelIndex>({model->index(row, col)});
+    }();
+    const QList<QModelIndex> local_selected = selection_model->selectedIndexes();
+    QVERIFY(local_selected == correct_local_selected);
 }
 
 QTEST_MAIN(ADMCTestLogonHoursDialog)
