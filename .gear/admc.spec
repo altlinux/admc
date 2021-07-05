@@ -83,6 +83,7 @@ cd BUILD
 %_bindir/admc_test_member_of_tab
 %_bindir/admc_test_members_tab
 %_bindir/admc_test_select_object_dialog
+%_bindir/admc_test_logon_hours_dialog
 
 %changelog
 * Mon Jun 21 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.3-alt1
