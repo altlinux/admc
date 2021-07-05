@@ -86,6 +86,8 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 
     view->setModel(model);
 
+    auto remove_button = new QPushButton(tr("Remove"));
+
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
     button_box->addButton(QDialogButtonBox::Cancel);
@@ -103,6 +105,7 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     layout->addLayout(parameters_layout);
     layout->addWidget(add_button);
     layout->addWidget(view);
+    layout->addWidget(remove_button);
     layout->addWidget(advanced_button);
     layout->addWidget(button_box);
 
@@ -118,6 +121,9 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     connect(
         advanced_button, &QPushButton::clicked,
         this, &SelectObjectDialog::on_advanced_button);
+    connect(
+        remove_button, &QAbstractButton::clicked,
+        this, &SelectObjectDialog::on_remove_button);
 }
 
 QList<QString> SelectObjectDialog::get_selected() const {
@@ -222,6 +228,14 @@ void SelectObjectDialog::on_add_button() {
     } else if (search_results.size() == 0) {
         // Warn about failing to find any matches
         open_message_box(QMessageBox::Critical, tr("Error"), tr("Failed to find any matches."), this);
+    }
+}
+
+void SelectObjectDialog::on_remove_button() {
+    const QList<QPersistentModelIndex> selected = persistent_index_list(view->selectionModel()->selectedRows());
+
+    for (const QPersistentModelIndex &index : selected) {
+        model->removeRows(index.row(), 1);
     }
 }
 
