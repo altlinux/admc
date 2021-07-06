@@ -41,6 +41,7 @@ CreateQueryItemDialog::CreateQueryItemDialog(ConsoleWidget *console_arg)
 
     auto buttonbox = new QDialogButtonBox();
     buttonbox->addButton(QDialogButtonBox::Ok);
+    buttonbox->addButton(QDialogButtonBox::Cancel);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
@@ -50,6 +51,9 @@ CreateQueryItemDialog::CreateQueryItemDialog(ConsoleWidget *console_arg)
     connect(
         buttonbox, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
+    connect(
+        buttonbox, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
 }
 
 void CreateQueryItemDialog::accept() {

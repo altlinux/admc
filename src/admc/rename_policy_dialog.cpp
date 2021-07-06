@@ -47,16 +47,16 @@ RenamePolicyDialog::RenamePolicyDialog(ConsoleWidget *console_arg)
     auto button_box = new QDialogButtonBox();
     ok_button = button_box->addButton(QDialogButtonBox::Ok);
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
+    button_box->addButton(QDialogButtonBox::Cancel);
     connect(
-        ok_button, &QPushButton::clicked,
-        this, &RenamePolicyDialog::accept);
+        button_box, &QDialogButtonBox::accepted,
+        this, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
     connect(
         reset_button, &QPushButton::clicked,
         this, &RenamePolicyDialog::reset);
-    connect(
-        cancel_button, &QPushButton::clicked,
-        this, &RenamePolicyDialog::reject);
 
     const auto edits_layout = new QFormLayout();
     // NOTE: label name edit as "Name" even though it edits

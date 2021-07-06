@@ -57,6 +57,7 @@ EditQueryItemWidget::EditQueryItemWidget()
 
     auto dialog_buttonbox = new QDialogButtonBox();
     dialog_buttonbox->addButton(QDialogButtonBox::Ok);
+    dialog_buttonbox->addButton(QDialogButtonBox::Cancel);
 
     auto dialog_layout = new QVBoxLayout();
     edit_filter_dialog->setLayout(dialog_layout);
@@ -82,6 +83,9 @@ EditQueryItemWidget::EditQueryItemWidget()
     connect(
         dialog_buttonbox, &QDialogButtonBox::accepted,
         edit_filter_dialog, &QDialog::accept);
+    connect(
+        dialog_buttonbox, &QDialogButtonBox::rejected,
+        edit_filter_dialog, &QDialog::reject);
 
     connect(
         edit_filter_button, &QPushButton::clicked,

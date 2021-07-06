@@ -27,6 +27,7 @@
 #include "globals.h"
 #include "status.h"
 
+#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QMessageBox>
@@ -44,10 +45,13 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
 
     description_edit = new QLineEdit();
 
-    auto form_layout = new QFormLayout();
-
     auto create_button = new QPushButton(tr("Create"));
 
+    auto buttonbox = new QDialogButtonBox();
+    buttonbox->addButton(tr("Create"), QDialogButtonBox::AcceptRole);
+    buttonbox->addButton(QDialogButtonBox::Cancel);
+
+    auto form_layout = new QFormLayout();
     form_layout->addRow(tr("Name:"), name_edit);
     form_layout->addRow(tr("Description:"), description_edit);
 
@@ -57,8 +61,11 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
     layout->addWidget(create_button);
 
     connect(
-        create_button, &QAbstractButton::clicked,
-        this, &CreateQueryFolderDialog::accept);
+        buttonbox, &QDialogButtonBox::accepted,
+        this, &QDialog::accept);
+    connect(
+        buttonbox, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
 }
 
 void CreateQueryFolderDialog::open() {
