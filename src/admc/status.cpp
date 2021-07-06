@@ -144,7 +144,8 @@ void ad_error_log(const AdInterface &ad, QWidget *parent) {
     auto errors_display = new QPlainTextEdit();
     errors_display->setPlainText(errors_text);
 
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
 
     auto layout = new QVBoxLayout();
     dialog->setLayout(layout);

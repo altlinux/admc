@@ -36,7 +36,8 @@ AboutDialog::AboutDialog(QWidget *parent)
 
     auto license_label = new QLabel(tr("Copyright (C) 2020 BaseALT Ltd."));
 
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
 
     auto layout = new QVBoxLayout();
     setLayout(layout);

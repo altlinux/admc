@@ -109,7 +109,9 @@ QLabel *AttributeEditor::make_attribute_label(const QString &attribute) {
 }
 
 QDialogButtonBox *AttributeEditor::make_button_box(const QString attribute) {
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
     const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
     if (system_only) {
