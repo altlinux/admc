@@ -81,9 +81,8 @@ private:
     void on_add_trustee_button();
     void on_add_well_known_trustee_button();
     void on_remove_trustee_button();
-    void add_trustee_item(const QByteArray &sid, AdInterface &ad);
     void apply_current_state_to_items();
-    void add_trustees_from_dialog(const QList<QByteArray> &sid_list, AdInterface &ad);
+    void add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad);
 };
 
 class SelectWellKnownTrusteeDialog final : public QDialog {
