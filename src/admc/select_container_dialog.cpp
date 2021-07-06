@@ -76,6 +76,21 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     }
     header->setSectionHidden(g_adconfig->get_column_index(ATTRIBUTE_NAME), false);
 
+    enable_widget_on_selection(ok_button, view);
+
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addWidget(view);
+    layout->addWidget(button_box);
+
+    // Load head object
+    const QString head_dn = g_adconfig->domain_head();
+    const AdObject head_object = ad.search_object(head_dn);
+    auto item = make_container_node(head_object);
+    model->appendRow(item);
+
+    g_status()->display_ad_messages(ad, this);
+
     connect(
         button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
@@ -91,21 +106,6 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
                 fetch_node(index);
             }
         });
-
-    enable_widget_on_selection(ok_button, view);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(view);
-    layout->addWidget(button_box);
-
-    // Load head object
-    const QString head_dn = g_adconfig->domain_head();
-    const AdObject head_object = ad.search_object(head_dn);
-    auto item = make_container_node(head_object);
-    model->appendRow(item);
-
-    g_status()->display_ad_messages(ad, this);
 }
 
 QString SelectContainerDialog::get_selected() const {
