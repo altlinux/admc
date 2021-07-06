@@ -62,16 +62,16 @@ FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list_arg)
         }
     }
 
-    auto buttonbox = new QDialogButtonBox();
-    auto select_all_button = buttonbox->addButton(tr("Select all"), QDialogButtonBox::ActionRole);
-    auto clear_selection_button = buttonbox->addButton(tr("Clear selection"), QDialogButtonBox::ActionRole);
+    auto button_box = new QDialogButtonBox();
+    auto select_all_button = button_box->addButton(tr("Select all"), QDialogButtonBox::ActionRole);
+    auto clear_selection_button = button_box->addButton(tr("Clear selection"), QDialogButtonBox::ActionRole);
 
     auto scroll_area = new QScrollArea();
     scroll_area->setWidget(classes_widget);
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addWidget(buttonbox);
+    layout->addWidget(button_box);
     layout->addWidget(scroll_area);
 
     connect(

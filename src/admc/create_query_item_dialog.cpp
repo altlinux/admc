@@ -39,20 +39,20 @@ CreateQueryItemDialog::CreateQueryItemDialog(ConsoleWidget *console_arg)
 
     edit_query_widget = new EditQueryItemWidget();
 
-    auto buttonbox = new QDialogButtonBox();
-    buttonbox->addButton(QDialogButtonBox::Ok);
-    buttonbox->addButton(QDialogButtonBox::Cancel);
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(edit_query_widget);
-    layout->addWidget(buttonbox);
+    layout->addWidget(button_box);
 
     connect(
-        buttonbox, &QDialogButtonBox::accepted,
+        button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
     connect(
-        buttonbox, &QDialogButtonBox::rejected,
+        button_box, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
 }
 

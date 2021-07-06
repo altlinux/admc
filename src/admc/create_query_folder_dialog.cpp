@@ -47,9 +47,9 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
 
     auto create_button = new QPushButton(tr("Create"));
 
-    auto buttonbox = new QDialogButtonBox();
-    buttonbox->addButton(tr("Create"), QDialogButtonBox::AcceptRole);
-    buttonbox->addButton(QDialogButtonBox::Cancel);
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(tr("Create"), QDialogButtonBox::AcceptRole);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
     auto form_layout = new QFormLayout();
     form_layout->addRow(tr("Name:"), name_edit);
@@ -61,10 +61,10 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
     layout->addWidget(create_button);
 
     connect(
-        buttonbox, &QDialogButtonBox::accepted,
+        button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
     connect(
-        buttonbox, &QDialogButtonBox::rejected,
+        button_box, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
 }
 

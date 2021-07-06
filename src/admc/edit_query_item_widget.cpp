@@ -55,14 +55,14 @@ EditQueryItemWidget::EditQueryItemWidget()
     auto edit_filter_dialog = new QDialog(this);
     edit_filter_dialog->setWindowTitle("Edit filter");
 
-    auto dialog_buttonbox = new QDialogButtonBox();
-    dialog_buttonbox->addButton(QDialogButtonBox::Ok);
-    dialog_buttonbox->addButton(QDialogButtonBox::Cancel);
+    auto dialog_button_box = new QDialogButtonBox();
+    dialog_button_box->addButton(QDialogButtonBox::Ok);
+    dialog_button_box->addButton(QDialogButtonBox::Cancel);
 
     auto dialog_layout = new QVBoxLayout();
     edit_filter_dialog->setLayout(dialog_layout);
     dialog_layout->addWidget(filter_widget);
-    dialog_layout->addWidget(dialog_buttonbox);
+    dialog_layout->addWidget(dialog_button_box);
 
     auto edit_filter_button = new QPushButton(tr("Edit filter"));
 
@@ -81,10 +81,10 @@ EditQueryItemWidget::EditQueryItemWidget()
     layout->addWidget(edit_filter_button);
 
     connect(
-        dialog_buttonbox, &QDialogButtonBox::accepted,
+        dialog_button_box, &QDialogButtonBox::accepted,
         edit_filter_dialog, &QDialog::accept);
     connect(
-        dialog_buttonbox, &QDialogButtonBox::rejected,
+        dialog_button_box, &QDialogButtonBox::rejected,
         edit_filter_dialog, &QDialog::reject);
 
     connect(

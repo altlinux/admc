@@ -192,20 +192,20 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         return;
     }
 
-    auto buttonbox = new QDialogButtonBox();
-    create_button = buttonbox->addButton(tr("Create"), QDialogButtonBox::AcceptRole);
-    buttonbox->addButton(QDialogButtonBox::Cancel);
+    auto button_box = new QDialogButtonBox();
+    create_button = button_box->addButton(tr("Create"), QDialogButtonBox::AcceptRole);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addLayout(edits_layout);
-    layout->addWidget(buttonbox);
+    layout->addWidget(button_box);
 
     connect(
-        buttonbox, &QDialogButtonBox::accepted,
+        button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
     connect(
-        buttonbox, &QDialogButtonBox::rejected,
+        button_box, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
 
     for (auto edit : required_edits) {
