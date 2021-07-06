@@ -37,7 +37,7 @@ ManagerWidget::ManagerWidget(const QString &manager_attribute_arg)
     edit->setReadOnly(true);
 
     change_button = new QPushButton(tr("Change"));
-    properties_button = new QPushButton(PropertiesDialog::display_name());
+    properties_button = new QPushButton(tr("Properties"));
     clear_button = new QPushButton(tr("Clear"));
 
     auto button_layout = new QHBoxLayout();

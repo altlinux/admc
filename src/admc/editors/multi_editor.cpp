@@ -70,6 +70,8 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
     auto add_button = new QPushButton(tr("Add"));
     add_button->setObjectName("add_button");
 
+    auto list_label = new QLabel(tr("Values:"));
+
     list_widget = new QListWidget();
 
     for (const QByteArray &value : values) {
@@ -79,14 +81,21 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
     auto remove_button = new QPushButton(tr("Remove"));
 
     QDialogButtonBox *button_box = make_button_box(attribute);
-    ;
+
+    auto list_button_layout = new QVBoxLayout();
+    list_button_layout->addWidget(add_button);
+    list_button_layout->addWidget(remove_button);
+    list_button_layout->addStretch();
+
+    auto list_layout = new QHBoxLayout();
+    list_layout->addWidget(list_widget);
+    list_layout->addLayout(list_button_layout);
 
     const auto top_layout = new QVBoxLayout();
     setLayout(top_layout);
     top_layout->addWidget(attribute_label);
-    top_layout->addWidget(add_button);
-    top_layout->addWidget(list_widget);
-    top_layout->addWidget(remove_button);
+    top_layout->addWidget(list_label);
+    top_layout->addLayout(list_layout);
     top_layout->addWidget(button_box);
 
     const bool read_only = g_adconfig->get_attribute_is_system_only(attribute);

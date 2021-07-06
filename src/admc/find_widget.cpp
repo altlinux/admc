@@ -43,7 +43,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_base
 
     filter_widget = new FilterWidget(classes);
 
-    find_button = new QPushButton(tr(FIND_BUTTON_LABEL));
+    find_button = new QPushButton(tr("Find"));
     find_button->setDefault(true);
     find_button->setObjectName("find_button");
 

@@ -52,6 +52,8 @@ EditQueryItemWidget::EditQueryItemWidget()
     filter_display = new QTextEdit();
     filter_display->setReadOnly(true);
 
+    auto edit_filter_button = new QPushButton(tr("Edit"));
+
     auto edit_filter_dialog = new QDialog(this);
     edit_filter_dialog->setWindowTitle("Edit filter");
 
@@ -64,21 +66,21 @@ EditQueryItemWidget::EditQueryItemWidget()
     dialog_layout->addWidget(filter_widget);
     dialog_layout->addWidget(dialog_button_box);
 
-    auto edit_filter_button = new QPushButton(tr("Edit filter"));
-
     auto form_layout = new QFormLayout();
     form_layout->addRow(tr("Name:"), name_edit);
     form_layout->addRow(tr("Description:"), description_edit);
     form_layout->addRow(tr("Search in:"), select_base_widget);
     form_layout->addRow(scope_checkbox);
     form_layout->addRow(new QLabel(tr("Filter:")));
-    form_layout->addRow(filter_display);
-    form_layout->addRow(edit_filter_button);
+
+    auto filter_layout = new QHBoxLayout();
+    filter_layout->addWidget(filter_display);
+    filter_layout->addWidget(edit_filter_button);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addLayout(form_layout);
-    layout->addWidget(edit_filter_button);
+    layout->addLayout(filter_layout);
 
     connect(
         dialog_button_box, &QDialogButtonBox::accepted,

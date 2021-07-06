@@ -57,7 +57,6 @@ SelectBaseWidget::SelectBaseWidget(const QString &default_base)
     auto layout = new QHBoxLayout();
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
     layout->addWidget(combo);
     layout->addWidget(browse_button);
 

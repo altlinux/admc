@@ -79,7 +79,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
 
     view->setModel(model);
 
-    auto properties_button = new QPushButton(PropertiesDialog::display_name());
+    auto properties_button = new QPushButton(tr("Properties"));
     auto add_button = new QPushButton(tr("Add"));
     add_button->setObjectName("add_button");
     auto remove_button = new QPushButton(tr("Remove"));

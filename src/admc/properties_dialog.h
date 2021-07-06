@@ -45,7 +45,6 @@ class PropertiesDialog final : public QDialog {
 public:
     static PropertiesDialog *open_for_target(const QString &target);
     static void open_when_view_item_activated(QAbstractItemView *view, const int dn_role);
-    static QString display_name();
 
 signals:
     // Emitted when changes are applide via apply or ok

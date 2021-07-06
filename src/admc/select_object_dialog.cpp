@@ -69,6 +69,10 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     add_button->setDefault(true);
     add_button->setObjectName("add_button");
 
+    auto name_edit_layout = new QHBoxLayout();
+    name_edit_layout->addWidget(edit);
+    name_edit_layout->addWidget(add_button);
+
     model = new QStandardItemModel(this);
 
     const QList<QString> header_labels = {
@@ -90,23 +94,25 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
     ok_button->setDefault(false);
-
-    auto advanced_button = new QPushButton(tr("Advanced"));
+    button_box->addButton(QDialogButtonBox::Cancel);
+    auto advanced_button = button_box->addButton(tr("Advanced"), QDialogButtonBox::HelpRole);
 
     auto parameters_layout = new QFormLayout();
     parameters_layout->addRow(tr("Classes:"), select_classes);
     parameters_layout->addRow(tr("Search in:"), select_base_widget);
-    parameters_layout->addRow(tr("Name:"), edit);
+    parameters_layout->addRow(tr("Name:"), name_edit_layout);
+    parameters_layout->addRow(new QLabel(tr("Selected objects:")));
+
+    auto object_view_layout = new QHBoxLayout();
+    object_view_layout->addWidget(view);
+    object_view_layout->addWidget(remove_button);
+    object_view_layout->setAlignment(remove_button, Qt::AlignTop);
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addLayout(parameters_layout);
-    layout->addWidget(add_button);
-    layout->addWidget(view);
-    layout->addWidget(remove_button);
-    layout->addWidget(advanced_button);
+    layout->addLayout(object_view_layout);
     layout->addWidget(button_box);
 
     connect(
