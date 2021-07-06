@@ -38,6 +38,73 @@ QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
 QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
 QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig);
 
+const QList<QString> well_known_sid_list = {
+    SID_WORLD_DOMAIN,
+    SID_WORLD,
+    SID_WORLD,
+    SID_CREATOR_OWNER_DOMAIN,
+    SID_CREATOR_OWNER,
+    SID_CREATOR_GROUP,
+    SID_OWNER_RIGHTS,
+    SID_NT_AUTHORITY,
+    SID_NT_DIALUP,
+    SID_NT_NETWORK,
+    SID_NT_BATCH,
+    SID_NT_INTERACTIVE,
+    SID_NT_SERVICE,
+    SID_NT_ANONYMOUS,
+    SID_NT_PROXY,
+    SID_NT_ENTERPRISE_DCS,
+    SID_NT_SELF,
+    SID_NT_AUTHENTICATED_USERS,
+    SID_NT_RESTRICTED,
+    SID_NT_TERMINAL_SERVER_USERS,
+    SID_NT_REMOTE_INTERACTIVE,
+    SID_NT_THIS_ORGANISATION,
+    SID_NT_IUSR,
+    SID_NT_SYSTEM,
+    SID_NT_LOCAL_SERVICE,
+    SID_NT_NETWORK_SERVICE,
+    SID_NT_DIGEST_AUTHENTICATION,
+    SID_NT_NTLM_AUTHENTICATION,
+    SID_NT_SCHANNEL_AUTHENTICATION,
+    SID_NT_OTHER_ORGANISATION,
+};
+
+// TODO: not sure if these are supposed to be translated?
+const QHash<QString, QString> trustee_name_map = {
+    {SID_WORLD_DOMAIN, "Everyone in Domain"},
+    {SID_WORLD, "Everyone"},
+    {SID_WORLD, "Everyone"},
+    {SID_CREATOR_OWNER_DOMAIN, "CREATOR OWNER DOMAIN"},
+    {SID_CREATOR_OWNER, "CREATOR OWNER"},
+    {SID_CREATOR_GROUP, "CREATOR GROUP"},
+    {SID_OWNER_RIGHTS, "OWNER RIGHTS"},
+    {SID_NT_AUTHORITY, "AUTHORITY"},
+    {SID_NT_DIALUP, "DIALUP"},
+    {SID_NT_NETWORK, "NETWORK"},
+    {SID_NT_BATCH, "BATCH"},
+    {SID_NT_INTERACTIVE, "INTERACTIVE"},
+    {SID_NT_SERVICE, "SERVICE"},
+    {SID_NT_ANONYMOUS, "ANONYMOUS LOGON"},
+    {SID_NT_PROXY, "PROXY"},
+    {SID_NT_ENTERPRISE_DCS, "ENTERPRISE DOMAIN CONTROLLERS"},
+    {SID_NT_SELF, "SELF"},
+    {SID_NT_AUTHENTICATED_USERS, "Authenticated Users"},
+    {SID_NT_RESTRICTED, "RESTRICTED"},
+    {SID_NT_TERMINAL_SERVER_USERS, "TERMINAL SERVER USERS"},
+    {SID_NT_REMOTE_INTERACTIVE, "REMOTE INTERACTIVE LOGON"},
+    {SID_NT_THIS_ORGANISATION, "This Organization"},
+    {SID_NT_IUSR, "IUSR"},
+    {SID_NT_SYSTEM, "SYSTEM"},
+    {SID_NT_LOCAL_SERVICE, "LOCAL SERVICE"},
+    {SID_NT_NETWORK_SERVICE, "NETWORK SERVICE"},
+    {SID_NT_DIGEST_AUTHENTICATION, "Digest Authentication"},
+    {SID_NT_NTLM_AUTHENTICATION, "NTLM Authentication"},
+    {SID_NT_SCHANNEL_AUTHENTICATION, "SChannel Authentication"},
+    {SID_NT_OTHER_ORGANISATION, "Other Organization"},
+};
+
 // TODO: values of SEC_ADS_GENERIC_READ and
 // SEC_ADS_GENERIC_WRITE constants don't match with the bits
 // that ADUC sets when you enable those permissions in
@@ -194,41 +261,12 @@ QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(cons
     return out;
 }
 
-QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee) {
-    // TODO: not sure if these are supposed to be translated?
-    static const QHash<QString, QString> trustee_name_map = {
-        {SID_WORLD_DOMAIN, "Everyone in Domain"},
-        {SID_WORLD, "Everyone"},
-        {SID_WORLD, "Everyone"},
-        {SID_CREATOR_OWNER_DOMAIN, "CREATOR OWNER DOMAIN"},
-        {SID_CREATOR_OWNER, "CREATOR OWNER"},
-        {SID_CREATOR_GROUP, "CREATOR GROUP"},
-        {SID_OWNER_RIGHTS, "OWNER RIGHTS"},
-        {SID_NT_AUTHORITY, "AUTHORITY"},
-        {SID_NT_DIALUP, "DIALUP"},
-        {SID_NT_NETWORK, "NETWORK"},
-        {SID_NT_BATCH, "BATCH"},
-        {SID_NT_INTERACTIVE, "INTERACTIVE"},
-        {SID_NT_SERVICE, "SERVICE"},
-        {SID_NT_ANONYMOUS, "ANONYMOUS LOGON"},
-        {SID_NT_PROXY, "PROXY"},
-        {SID_NT_ENTERPRISE_DCS, "ENTERPRISE DOMAIN CONTROLLERS"},
-        {SID_NT_SELF, "SELF"},
-        {SID_NT_AUTHENTICATED_USERS, "Authenticated Users"},
-        {SID_NT_RESTRICTED, "RESTRICTED"},
-        {SID_NT_TERMINAL_SERVER_USERS, "TERMINAL SERVER USERS"},
-        {SID_NT_REMOTE_INTERACTIVE, "REMOTE INTERACTIVE LOGON"},
-        {SID_NT_THIS_ORGANISATION, "This Organization"},
-        {SID_NT_IUSR, "IUSR"},
-        {SID_NT_SYSTEM, "SYSTEM"},
-        {SID_NT_LOCAL_SERVICE, "LOCAL SERVICE"},
-        {SID_NT_NETWORK_SERVICE, "NETWORK SERVICE"},
-        {SID_NT_DIGEST_AUTHENTICATION, "Digest Authentication"},
-        {SID_NT_NTLM_AUTHENTICATION, "NTLM Authentication"},
-        {SID_NT_SCHANNEL_AUTHENTICATION, "SChannel Authentication"},
-        {SID_NT_OTHER_ORGANISATION, "Other Organization"},
-    };
+QString ad_security_get_well_known_trustee_name(const QByteArray &trustee) {
+    const QString trustee_string = object_sid_display_value(trustee);
+    return trustee_name_map.value(trustee_string, QString());
+}
 
+QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee) {
     const QString trustee_string = object_sid_display_value(trustee);
 
     if (trustee_name_map.contains(trustee_string)) {

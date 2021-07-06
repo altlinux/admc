@@ -36,6 +36,7 @@ class AdInterface;
 class AdConfig;
 class AdObject;
 
+extern const QList<QString> well_known_sid_list;
 extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
 extern const QHash<AcePermission, QString> ace_permission_to_type_map;
 extern const QList<AcePermission> all_permissions_list;
@@ -45,6 +46,7 @@ extern const QSet<AcePermission> read_prop_permissions;
 extern const QSet<AcePermission> write_prop_permissions;
 
 QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &current, const QByteArray &trustee, const AcePermission permission, const PermissionState new_state);
+QString ad_security_get_well_known_trustee_name(const QByteArray &trustee);
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee);
 bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg);
 QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject *object);

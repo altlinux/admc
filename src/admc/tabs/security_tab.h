@@ -24,10 +24,13 @@
 
 #include "ad_defines.h"
 
+#include <QDialog>
+
 class QTreeView;
 class QStandardItemModel;
 class QStandardItem;
 class QLabel;
+class QListWidget;
 
 enum AceColumn {
     AceColumn_Name,
@@ -75,10 +78,24 @@ private:
     QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
     bool ignore_item_changed_signal;
 
-    void add_trustee();
-    void remove_trustee();
+    void on_add_trustee_button();
+    void on_add_well_known_trustee_button();
+    void on_remove_trustee_button();
     void add_trustee_item(const QByteArray &sid, AdInterface &ad);
     void apply_current_state_to_items();
+    void add_trustees_from_dialog(const QList<QByteArray> &sid_list, AdInterface &ad);
+};
+
+class SelectWellKnownTrusteeDialog final : public QDialog {
+    Q_OBJECT
+
+public:
+    SelectWellKnownTrusteeDialog(QWidget *parent);
+
+    QList<QByteArray> get_selected() const;
+
+private:
+    QListWidget *list;
 };
 
 #endif /* SECURITY_TAB_H */
