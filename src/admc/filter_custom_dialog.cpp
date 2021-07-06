@@ -44,15 +44,15 @@ FilterCustomDialog::FilterCustomDialog(QWidget *parent)
 
     filter_widget = new FilterWidget(noncontainer_classes);
 
-    auto buttonbox = new QDialogButtonBox();
-    buttonbox->addButton(QDialogButtonBox::Ok);
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(filter_widget);
-    layout->addWidget(buttonbox);
+    layout->addWidget(button_box);
 
     connect(
-        buttonbox, &QDialogButtonBox::accepted,
+        button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
 }

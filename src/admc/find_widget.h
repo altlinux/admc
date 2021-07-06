@@ -40,8 +40,6 @@ class QList;
 template <typename K, typename V>
 class QHash;
 
-#define FIND_BUTTON_LABEL QT_TRANSLATE_NOOP("FindWidget", "Find")
-
 class FindWidget final : public QWidget {
     Q_OBJECT
 

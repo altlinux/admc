@@ -57,8 +57,8 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     new UnlockEdit(&edits, this);
 
     auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
+    button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
     auto edits_layout = new QFormLayout();
     edits_add_to_layout(edits, edits_layout);
@@ -74,10 +74,10 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     pass_expired_check->set_checked(true);
 
     connect(
-        ok_button, &QPushButton::clicked,
-        this, &PasswordDialog::accept);
+        button_box, &QDialogButtonBox::accepted,
+        this, &QDialog::accept);
     connect(
-        cancel_button, &QPushButton::clicked,
+        button_box, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
 
     g_status()->display_ad_messages(ad, this);

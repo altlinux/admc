@@ -91,10 +91,10 @@ SecurityTab::SecurityTab() {
     trustee_view->setSortingEnabled(true);
     trustee_view->setSelectionMode(QAbstractItemView::SingleSelection);
 
-    auto trustee_buttonbox = new QDialogButtonBox();
-    auto add_trustee_button = trustee_buttonbox->addButton(tr("Add"), QDialogButtonBox::ActionRole);
-    auto add_well_known_trustee_button = trustee_buttonbox->addButton(tr("Add well-known trustee"), QDialogButtonBox::ActionRole);
-    auto remove_trustee_button = trustee_buttonbox->addButton(tr("Remove"), QDialogButtonBox::ActionRole);
+    auto trustee_button_box = new QDialogButtonBox();
+    auto add_trustee_button = trustee_button_box->addButton(tr("Add"), QDialogButtonBox::ActionRole);
+    auto add_well_known_trustee_button = trustee_button_box->addButton(tr("Add well-known trustee"), QDialogButtonBox::ActionRole);
+    auto remove_trustee_button = trustee_button_box->addButton(tr("Remove"), QDialogButtonBox::ActionRole);
 
     ace_model = new QStandardItemModel(0, AceColumn_COUNT, this);
     set_horizontal_header_labels_from_map(ace_model,
@@ -150,7 +150,7 @@ SecurityTab::SecurityTab() {
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(trustee_view);
-    layout->addWidget(trustee_buttonbox);
+    layout->addWidget(trustee_button_box);
     layout->addWidget(trustee_label);
     layout->addWidget(ace_view);
 

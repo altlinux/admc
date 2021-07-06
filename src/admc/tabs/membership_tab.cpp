@@ -79,45 +79,31 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
 
     view->setModel(model);
 
-    auto properties_button = new QPushButton(PropertiesDialog::display_name());
+    auto properties_button = new QPushButton(tr("Properties"));
     auto add_button = new QPushButton(tr("Add"));
     add_button->setObjectName("add_button");
     auto remove_button = new QPushButton(tr("Remove"));
     remove_button->setObjectName("remove_button");
+    primary_button = new QPushButton(tr("Set primary group"));
+
+    primary_group_label = new QLabel();
+
+    // Primary group widgets are visible only in Member of version
+    if (type == MembershipTabType_Members) {
+        primary_button->hide();
+        primary_group_label->hide();
+    }
+
     auto button_layout = new QHBoxLayout();
     button_layout->addWidget(properties_button);
     button_layout->addWidget(add_button);
     button_layout->addWidget(remove_button);
-
-    if (type == MembershipTabType_MemberOf) {
-        primary_button = new QPushButton(tr("Set primary group"));
-        button_layout->addWidget(primary_button);
-
-        connect(
-            primary_button, &QAbstractButton::clicked,
-            this, &MembershipTab::on_primary_button);
-    } else {
-        primary_button = nullptr;
-    }
-
-    button_layout->addStretch(1);
+    button_layout->addStretch();
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
     layout->addWidget(view);
-
-    // Add primary group label to layout
-    if (type == MembershipTabType_MemberOf) {
-        primary_group_label = new QLabel();
-
-        auto primary_group_layout = new QFormLayout();
-        primary_group_layout->addRow(tr("Primary group: "), primary_group_label);
-
-        layout->addLayout(primary_group_layout);
-    }
-
+    layout->addWidget(primary_group_label);
     layout->addLayout(button_layout);
 
     enable_widget_on_selection(remove_button, view);
@@ -138,6 +124,9 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     connect(
         properties_button, &QAbstractButton::clicked,
         this, &MembershipTab::on_properties_button);
+    connect(
+        primary_button, &QAbstractButton::clicked,
+        this, &MembershipTab::on_primary_button);
 
     PropertiesDialog::open_when_view_item_activated(view, MembersRole_DN);
 }
@@ -446,14 +435,16 @@ void MembershipTab::reload_model() {
     // Load primary group name into label
     if (type == MembershipTabType_MemberOf) {
         const QString primary_group_label_text = [this]() {
+            QString out = tr("Primary group: ");
+
             if (!current_primary_values.isEmpty()) {
                 const QString primary_group_dn = current_primary_values.values()[0];
                 const QString primary_group_name = dn_get_name(primary_group_dn);
 
-                return primary_group_name;
-            } else {
-                return QString();
+                out += primary_group_name;
             }
+
+            return out;
         }();
 
         primary_group_label->setText(primary_group_label_text);

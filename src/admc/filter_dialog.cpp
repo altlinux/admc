@@ -62,8 +62,8 @@ FilterDialog::FilterDialog(QWidget *parent)
 
     filter_classes_widget = new FilterClassesWidget(noncontainer_classes);
 
-    auto buttonbox = new QDialogButtonBox();
-    buttonbox->addButton(QDialogButtonBox::Ok);
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
 
     auto radio_buttons_frame = new QFrame();
     radio_buttons_frame->setFrameStyle(QFrame::Raised);
@@ -86,10 +86,10 @@ FilterDialog::FilterDialog(QWidget *parent)
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(radio_buttons_frame);
-    layout->addWidget(buttonbox);
+    layout->addWidget(button_box);
 
     connect(
-        buttonbox, &QDialogButtonBox::accepted,
+        button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
     connect(
         custom_dialog_button, &QPushButton::clicked,

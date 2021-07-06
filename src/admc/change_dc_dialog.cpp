@@ -51,21 +51,21 @@ ChangeDCDialog::ChangeDCDialog(QStandardItem *domain_head_item_arg, QWidget *par
 
     save_dc_checkbox = new QCheckBox(tr("Save this setting"));
 
-    auto buttonbox = new QDialogButtonBox();
-    buttonbox->addButton(QDialogButtonBox::Ok);
-    buttonbox->addButton(QDialogButtonBox::Cancel);
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(list_widget);
     layout->addWidget(save_dc_checkbox);
-    layout->addWidget(buttonbox);
+    layout->addWidget(button_box);
 
     connect(
-        buttonbox, &QDialogButtonBox::accepted,
+        button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
     connect(
-        buttonbox, &QDialogButtonBox::rejected,
+        button_box, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
 }
 

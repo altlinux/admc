@@ -72,16 +72,7 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
     auto button_box = new QDialogButtonBox();
     ok_button = button_box->addButton(QDialogButtonBox::Ok);
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
-    connect(
-        ok_button, &QPushButton::clicked,
-        this, &QDialog::accept);
-    connect(
-        reset_button, &QPushButton::clicked,
-        this, &RenameObjectDialog::reset);
-    connect(
-        cancel_button, &QPushButton::clicked,
-        this, &RenameObjectDialog::reject);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto edits_layout = new QFormLayout();
     edits_layout->addRow(tr("Name:"), name_edit);
@@ -92,6 +83,15 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
     top_layout->addLayout(edits_layout);
     top_layout->addWidget(button_box);
 
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        this, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
+    connect(
+        reset_button, &QPushButton::clicked,
+        this, &RenameObjectDialog::reset);
     for (auto edit : all_edits) {
         connect(
             edit, &AttributeEdit::edited,

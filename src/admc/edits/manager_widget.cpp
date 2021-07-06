@@ -37,19 +37,20 @@ ManagerWidget::ManagerWidget(const QString &manager_attribute_arg)
     edit->setReadOnly(true);
 
     change_button = new QPushButton(tr("Change"));
-    properties_button = new QPushButton(PropertiesDialog::display_name());
+    properties_button = new QPushButton(tr("Properties"));
     clear_button = new QPushButton(tr("Clear"));
 
-    auto buttons_layout = new QHBoxLayout();
-    buttons_layout->addWidget(change_button);
-    buttons_layout->addWidget(properties_button);
-    buttons_layout->addWidget(clear_button);
+    auto button_layout = new QHBoxLayout();
+    button_layout->addWidget(change_button);
+    button_layout->addWidget(properties_button);
+    button_layout->addWidget(clear_button);
+    button_layout->addStretch();
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(edit);
-    layout->addLayout(buttons_layout);
+    layout->addLayout(button_layout);
 
     connect(
         change_button, &QPushButton::clicked,

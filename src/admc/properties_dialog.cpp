@@ -99,10 +99,6 @@ void PropertiesDialog::open_when_view_item_activated(QAbstractItemView *view, co
         });
 }
 
-QString PropertiesDialog::display_name() {
-    return tr("Properties");
-}
-
 PropertiesDialog::PropertiesDialog(const QString &target_arg)
 : QDialog() {
     target = target_arg;
@@ -128,8 +124,15 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     setLayout(layout);
     layout->setSpacing(0);
 
-    const QString name = dn_get_name(target_arg);
-    const QString window_title = name.isEmpty() ? PropertiesDialog::display_name() : QString(tr("\"%1\" Properties")).arg(name);
+    const QString window_title = [&]() {
+        const QString target_name = dn_get_name(target_arg);
+        
+        if (!target_name.isEmpty()) {
+            return QString(tr("\"%1\" Properties")).arg(target_name);
+        } else {
+            return tr("Properties");
+        }
+    }();
     setWindowTitle(window_title);
 
     AdObject object;

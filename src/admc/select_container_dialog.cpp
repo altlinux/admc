@@ -65,9 +65,9 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 
     view->setModel(proxy_model);
 
-    auto buttonbox = new QDialogButtonBox();
-    auto ok_button = buttonbox->addButton(QDialogButtonBox::Ok);
-    buttonbox->addButton(QDialogButtonBox::Cancel);
+    auto button_box = new QDialogButtonBox();
+    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
     // Hide all columns except name column
     QHeaderView *header = view->header();
@@ -76,11 +76,26 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     }
     header->setSectionHidden(g_adconfig->get_column_index(ATTRIBUTE_NAME), false);
 
+    enable_widget_on_selection(ok_button, view);
+
+    const auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addWidget(view);
+    layout->addWidget(button_box);
+
+    // Load head object
+    const QString head_dn = g_adconfig->domain_head();
+    const AdObject head_object = ad.search_object(head_dn);
+    auto item = make_container_node(head_object);
+    model->appendRow(item);
+
+    g_status()->display_ad_messages(ad, this);
+
     connect(
-        buttonbox, &QDialogButtonBox::accepted,
+        button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
     connect(
-        buttonbox, &QDialogButtonBox::rejected,
+        button_box, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
 
     connect(
@@ -91,21 +106,6 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
                 fetch_node(index);
             }
         });
-
-    enable_widget_on_selection(ok_button, view);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(view);
-    layout->addWidget(buttonbox);
-
-    // Load head object
-    const QString head_dn = g_adconfig->domain_head();
-    const AdObject head_object = ad.search_object(head_dn);
-    auto item = make_container_node(head_object);
-    model->appendRow(item);
-
-    g_status()->display_ad_messages(ad, this);
 }
 
 QString SelectContainerDialog::get_selected() const {

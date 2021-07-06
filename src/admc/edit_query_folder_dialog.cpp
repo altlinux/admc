@@ -46,6 +46,7 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
 
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
     form_layout->addRow(tr("Name:"), name_edit);
     form_layout->addRow(tr("Description:"), description_edit);
@@ -56,8 +57,11 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
     layout->addWidget(ok_button);
 
     connect(
-        ok_button, &QAbstractButton::clicked,
-        this, &EditQueryFolderDialog::accept);
+        button_box, &QDialogButtonBox::accepted,
+        this, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
 }
 
 void EditQueryFolderDialog::open() {

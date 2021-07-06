@@ -43,7 +43,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_base
 
     filter_widget = new FilterWidget(classes);
 
-    find_button = new QPushButton(tr(FIND_BUTTON_LABEL));
+    find_button = new QPushButton(tr("Find"));
     find_button->setDefault(true);
     find_button->setObjectName("find_button");
 
@@ -60,16 +60,16 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_base
         auto select_base_layout = new QFormLayout();
         select_base_layout->addRow(tr("Search in:"), select_base_widget);
 
-        auto buttons_layout = new QHBoxLayout();
-        buttons_layout->addWidget(find_button);
-        buttons_layout->addWidget(stop_button);
-        buttons_layout->addStretch(1);
+        auto button_layout = new QHBoxLayout();
+        button_layout->addWidget(find_button);
+        button_layout->addWidget(stop_button);
+        button_layout->addStretch();
 
         auto layout = new QVBoxLayout();
         filter_widget_frame->setLayout(layout);
         layout->addLayout(select_base_layout);
         layout->addWidget(filter_widget);
-        layout->addLayout(buttons_layout);
+        layout->addLayout(button_layout);
     }
 
     {

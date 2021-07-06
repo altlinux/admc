@@ -33,6 +33,7 @@
 
 #include <QButtonGroup>
 #include <QDebug>
+#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QPushButton>
@@ -191,16 +192,21 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         return;
     }
 
-    create_button = new QPushButton(tr("Create"));
+    auto button_box = new QDialogButtonBox();
+    create_button = button_box->addButton(tr("Create"), QDialogButtonBox::AcceptRole);
+    button_box->addButton(QDialogButtonBox::Cancel);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addLayout(edits_layout);
-    layout->addWidget(create_button);
+    layout->addWidget(button_box);
 
     connect(
-        create_button, &QAbstractButton::clicked,
-        this, &CreateObjectDialog::accept);
+        button_box, &QDialogButtonBox::accepted,
+        this, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
 
     for (auto edit : required_edits) {
         connect(

@@ -75,7 +75,7 @@ AttributesTab::AttributesTab() {
     filter_button->setObjectName("filter_button");
     auto buttons = new QHBoxLayout();
     buttons->addWidget(edit_button);
-    buttons->addStretch(1);
+    buttons->addStretch();
     buttons->addWidget(filter_button);
 
     const auto layout = new QVBoxLayout();
@@ -205,7 +205,9 @@ void AttributesTab::open_filter_dialog() {
     layout->addWidget(second_frame);
     layout->addWidget(third_frame);
 
-    auto button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
     connect(
         button_box, &QDialogButtonBox::accepted,
         dialog, &QDialog::accept);
