@@ -103,7 +103,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     description_layout->addWidget(d->description_bar_left);
     description_layout->addSpacing(10);
     description_layout->addWidget(d->description_bar_right);
-    description_layout->addStretch(1);
+    description_layout->addStretch();
 
     auto results_wrapper = new QWidget();
     auto results_layout = new QVBoxLayout();

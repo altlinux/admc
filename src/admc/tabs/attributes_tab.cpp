@@ -75,7 +75,7 @@ AttributesTab::AttributesTab() {
     filter_button->setObjectName("filter_button");
     auto buttons = new QHBoxLayout();
     buttons->addWidget(edit_button);
-    buttons->addStretch(1);
+    buttons->addStretch();
     buttons->addWidget(filter_button);
 
     const auto layout = new QVBoxLayout();

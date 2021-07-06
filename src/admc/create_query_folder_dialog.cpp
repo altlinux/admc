@@ -45,8 +45,6 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
 
     description_edit = new QLineEdit();
 
-    auto create_button = new QPushButton(tr("Create"));
-
     auto button_box = new QDialogButtonBox();
     button_box->addButton(tr("Create"), QDialogButtonBox::AcceptRole);
     button_box->addButton(QDialogButtonBox::Cancel);
@@ -58,7 +56,7 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addLayout(form_layout);
-    layout->addWidget(create_button);
+    layout->addWidget(button_box);
 
     connect(
         button_box, &QDialogButtonBox::accepted,

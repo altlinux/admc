@@ -60,21 +60,18 @@ FilterWidgetNormalTab::FilterWidgetNormalTab(const QList<QString> classes)
     auto classes_layout = new QFormLayout();
     classes_layout->addRow(tr("Classes:"), select_classes);
 
-    auto list_buttons_layout = new QHBoxLayout();
-    list_buttons_layout->addWidget(remove_filter_button);
-    list_buttons_layout->addWidget(clear_filters_button);
+    auto button_layout = new QHBoxLayout();
+    button_layout->addWidget(remove_filter_button);
+    button_layout->addWidget(clear_filters_button);
+    button_layout->addStretch();
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
-
     layout->addLayout(classes_layout);
-
     layout->addWidget(filter_builder_framed);
-
     layout->addWidget(new QLabel(tr("Filters:")));
     layout->addWidget(filter_list);
-
-    layout->addLayout(list_buttons_layout);
+    layout->addLayout(button_layout);
 
     connect(
         remove_filter_button, &QAbstractButton::clicked,

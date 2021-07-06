@@ -85,11 +85,10 @@ GroupPolicyTab::GroupPolicyTab() {
     auto button_layout = new QHBoxLayout();
     button_layout->addWidget(add_button);
     button_layout->addWidget(remove_button);
+    button_layout->addStretch();
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
     layout->addWidget(view);
     layout->addLayout(button_layout);
     layout->addLayout(edits_layout);
