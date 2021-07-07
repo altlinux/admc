@@ -83,6 +83,10 @@ void ADMCTestAttributesTab::init() {
     // Load it into the tab
     const AdObject object = ad.search_object(dn);
     attributes_tab->load(ad, object);
+
+    // NOTE: filters might be messed up in settings by user
+    // so reset it before tests
+    set_filter(all_filters, Qt::Checked);
 }
 
 void ADMCTestAttributesTab::load() {
