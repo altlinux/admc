@@ -30,9 +30,9 @@
 #include <QString>
 #include <QWidget>
 
+class EditQueryItemFilterDialog;
 class QLineEdit;
 class QTextEdit;
-class FilterWidget;
 class SelectBaseWidget;
 class QCheckBox;
 
@@ -46,10 +46,10 @@ public:
     void save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const;
 
 private:
+    EditQueryItemFilterDialog *dialog;
     QLineEdit *name_edit;
     QLineEdit *description_edit;
     QTextEdit *filter_display;
-    FilterWidget *filter_widget;
     SelectBaseWidget *select_base_widget;
     QCheckBox *scope_checkbox;
 

@@ -19,6 +19,7 @@
  */
 
 #include "edit_query_item_widget.h"
+#include "edit_query_item_widget_p.h"
 
 #include "ad_filter.h"
 #include "console_types/console_query.h"
@@ -38,9 +39,9 @@ EditQueryItemWidget::EditQueryItemWidget()
 : QWidget() {
     setMinimumWidth(400);
 
-    select_base_widget = new SelectBaseWidget();
+    dialog = new EditQueryItemFilterDialog(this);
 
-    filter_widget = new FilterWidget(filter_classes);
+    select_base_widget = new SelectBaseWidget();
 
     name_edit = new QLineEdit();
     name_edit->setText("New query");
@@ -53,18 +54,6 @@ EditQueryItemWidget::EditQueryItemWidget()
     filter_display->setReadOnly(true);
 
     auto edit_filter_button = new QPushButton(tr("Edit"));
-
-    auto edit_filter_dialog = new QDialog(this);
-    edit_filter_dialog->setWindowTitle("Edit filter");
-
-    auto dialog_button_box = new QDialogButtonBox();
-    dialog_button_box->addButton(QDialogButtonBox::Ok);
-    dialog_button_box->addButton(QDialogButtonBox::Cancel);
-
-    auto dialog_layout = new QVBoxLayout();
-    edit_filter_dialog->setLayout(dialog_layout);
-    dialog_layout->addWidget(filter_widget);
-    dialog_layout->addWidget(dialog_button_box);
 
     auto form_layout = new QFormLayout();
     form_layout->addRow(tr("Name:"), name_edit);
@@ -83,17 +72,10 @@ EditQueryItemWidget::EditQueryItemWidget()
     layout->addLayout(filter_layout);
 
     connect(
-        dialog_button_box, &QDialogButtonBox::accepted,
-        edit_filter_dialog, &QDialog::accept);
-    connect(
-        dialog_button_box, &QDialogButtonBox::rejected,
-        edit_filter_dialog, &QDialog::reject);
-
-    connect(
         edit_filter_button, &QPushButton::clicked,
-        edit_filter_dialog, &QDialog::open);
+        dialog, &QDialog::open);
     connect(
-        edit_filter_dialog, &QDialog::accepted,
+        dialog, &QDialog::accepted,
         this, &EditQueryItemWidget::update_filter_display);
     update_filter_display();
 }
@@ -108,7 +90,7 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     const QHash<QString, QVariant> filter_widget_state = state["filter_widget"].toHash();
 
     select_base_widget->load_state(select_base_widget_state);
-    filter_widget->load_state(filter_widget_state);
+    dialog->filter_widget->load_state(filter_widget_state);
 
     update_filter_display();
 
@@ -125,7 +107,7 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
 void EditQueryItemWidget::save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const {
     name = name_edit->text();
     description = description_edit->text();
-    filter = filter_widget->get_filter();
+    filter = dialog->filter_widget->get_filter();
     base = select_base_widget->get_base();
     scope_is_children = !scope_checkbox->isChecked();
 
@@ -134,7 +116,7 @@ void EditQueryItemWidget::save(QString &name, QString &description, QString &fil
         QHash<QString, QVariant> filter_widget_state;
 
         select_base_widget->save_state(select_base_widget_state);
-        filter_widget->save_state(filter_widget_state);
+        dialog->filter_widget->save_state(filter_widget_state);
 
         QHash<QString, QVariant> state;
         state["select_base_widget"] = select_base_widget_state;
@@ -150,6 +132,29 @@ void EditQueryItemWidget::save(QString &name, QString &description, QString &fil
 }
 
 void EditQueryItemWidget::update_filter_display() {
-    const QString filter = filter_widget->get_filter();
+    const QString filter = dialog->filter_widget->get_filter();
     filter_display->setPlainText(filter);
+}
+
+EditQueryItemFilterDialog::EditQueryItemFilterDialog(QWidget *parent)
+: QDialog(parent) {
+    setWindowTitle("Edit filter");
+
+    filter_widget = new FilterWidget(filter_classes);
+
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
+
+    auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addWidget(filter_widget);
+    layout->addWidget(button_box);
+
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        this, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
 }
