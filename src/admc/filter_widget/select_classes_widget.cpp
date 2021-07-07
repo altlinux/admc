@@ -19,12 +19,12 @@
  */
 
 #include "filter_widget/select_classes_widget.h"
+#include "filter_widget/select_classes_widget_p.h"
 
 #include "adldap.h"
 #include "filter_classes_widget.h"
 #include "globals.h"
 
-#include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QPushButton>
@@ -32,6 +32,8 @@
 
 SelectClassesWidget::SelectClassesWidget(const QList<QString> class_list)
 : QWidget() {
+    dialog = new SelectClassesDialog(class_list, this);
+    
     classes_display = new QLineEdit();
     classes_display->setReadOnly(true);
 
@@ -44,33 +46,17 @@ SelectClassesWidget::SelectClassesWidget(const QList<QString> class_list)
     layout->addWidget(classes_display);
     layout->addWidget(select_classes_button);
 
-    auto dialog = new QDialog(this);
-
-    filter_classes_widget = new FilterClassesWidget(class_list);
-
-    auto dialog_buttons = new QDialogButtonBox();
-    dialog_buttons->addButton(QDialogButtonBox::Ok);
-
-    auto dialog_layout = new QVBoxLayout();
-    dialog->setLayout(dialog_layout);
-    dialog_layout->addWidget(filter_classes_widget);
-    dialog_layout->addWidget(dialog_buttons);
-
-    connect(
-        dialog_buttons, &QDialogButtonBox::accepted,
-        dialog, &QDialog::accept);
-    connect(
-        dialog, &QDialog::accepted,
-        this, &SelectClassesWidget::update_classes_display);
-    update_classes_display();
-
     connect(
         select_classes_button, &QAbstractButton::clicked,
         dialog, &QDialog::open);
+    connect(
+        dialog, &QDialog::finished,
+        this, &SelectClassesWidget::update_classes_display);
+    update_classes_display();
 }
 
 QString SelectClassesWidget::get_filter() const {
-    return filter_classes_widget->get_filter();
+    return dialog->filter_classes_widget->get_filter();
 }
 
 // Display selected classes in line edit as a sorted list of
@@ -78,7 +64,7 @@ QString SelectClassesWidget::get_filter() const {
 // "User, Organizational Unit, ..."
 void SelectClassesWidget::update_classes_display() {
     const QString classes_display_text = [this]() {
-        const QList<QString> selected_classes = filter_classes_widget->get_selected_classes();
+        const QList<QString> selected_classes = dialog->filter_classes_widget->get_selected_classes();
 
         QList<QString> classes_display_strings;
         for (const QString &object_class : selected_classes) {
@@ -98,10 +84,53 @@ void SelectClassesWidget::update_classes_display() {
 }
 
 void SelectClassesWidget::save_state(QHash<QString, QVariant> &state) const {
-    filter_classes_widget->save_state(state);
+    dialog->filter_classes_widget->save_state(state);
 }
 
 void SelectClassesWidget::load_state(const QHash<QString, QVariant> &state) {
-    filter_classes_widget->load_state(state);
+    dialog->filter_classes_widget->load_state(state);
     update_classes_display();
+}
+
+SelectClassesDialog::SelectClassesDialog(const QList<QString> class_list, QWidget *parent)
+: QDialog(parent) {
+    filter_classes_widget = new FilterClassesWidget(class_list);
+
+    auto button_box = new QDialogButtonBox();
+    button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Cancel);
+    auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
+
+    auto layout = new QVBoxLayout();
+    setLayout(layout);
+    layout->addWidget(filter_classes_widget);
+    layout->addWidget(button_box);
+
+    connect(
+        button_box, &QDialogButtonBox::accepted,
+        this, &QDialog::accept);
+    connect(
+        button_box, &QDialogButtonBox::rejected,
+        this, &QDialog::reject);
+    connect(
+        reset_button, &QPushButton::clicked,
+        this, &SelectClassesDialog::reset);
+}
+
+void SelectClassesDialog::open() {
+    // Save state to later restore if dialog is dialog is
+    // rejected
+    filter_classes_widget->save_state(state_to_restore);
+
+    QDialog::open();
+}
+
+void SelectClassesDialog::reject() {
+    reset();
+
+    QDialog::reject();
+}
+
+void SelectClassesDialog::reset() {
+    filter_classes_widget->load_state(state_to_restore);
 }

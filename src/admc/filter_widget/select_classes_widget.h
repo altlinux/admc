@@ -31,7 +31,7 @@
 #include <QWidget>
 
 class QLineEdit;
-class FilterClassesWidget;
+class SelectClassesDialog;
 
 class SelectClassesWidget final : public QWidget {
     Q_OBJECT
@@ -46,7 +46,7 @@ public:
 
 private:
     QLineEdit *classes_display;
-    FilterClassesWidget *filter_classes_widget;
+    SelectClassesDialog *dialog;
 
     void update_classes_display();
 };
