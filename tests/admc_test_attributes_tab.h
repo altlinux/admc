@@ -24,11 +24,13 @@
 #include "admc_test.h"
 
 #include "tabs/attributes_tab.h"
+#include "tabs/attributes_tab_p.h"
 
 class QStandardItemModel;
 class QSortFilterProxyModel;
 class QPushButton;
 class QTreeView;
+class AttributesFilterDialog;
 
 class ADMCTestAttributesTab : public ADMCTest {
     Q_OBJECT
@@ -42,6 +44,7 @@ private slots:
 
 private:
     AttributesTab *attributes_tab;
+    AttributesFilterDialog *filter_dialog;
     QTreeView *view;
     QStandardItemModel *model;
     QSortFilterProxyModel *proxy;

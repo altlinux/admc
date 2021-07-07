@@ -49,6 +49,9 @@ void ADMCTestAttributesTab::init() {
 
     attributes_tab = new AttributesTab();
 
+    filter_dialog = attributes_tab->findChild<AttributesFilterDialog *>();
+    QVERIFY(filter_dialog != nullptr);
+
     parent_widget->show();
     QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
 
@@ -183,9 +186,6 @@ void ADMCTestAttributesTab::apply() {
 void ADMCTestAttributesTab::set_filter(const QList<AttributeFilter> &filter_list, const Qt::CheckState state) {
     filter_button->click();
 
-    auto filter_dialog = attributes_tab->findChild<QDialog *>();
-    QVERIFY(filter_dialog != nullptr);
-
     QVERIFY(QTest::qWaitForWindowExposed(filter_dialog, 1000));
 
     for (const AttributeFilter &filter : filter_list) {
@@ -195,11 +195,6 @@ void ADMCTestAttributesTab::set_filter(const QList<AttributeFilter> &filter_list
     }
 
     filter_dialog->accept();
-
-    // NOTE: manually delete because normally it's deleted
-    // lazily which is a problem when we need to open this
-    // dialog multiple times
-    delete filter_dialog;
 
     QVERIFY(QTest::qWaitForWindowExposed(attributes_tab, 1000));
 }

@@ -28,27 +28,11 @@
 
 #include "tabs/properties_tab.h"
 
-#include <QSet>
-#include <QSortFilterProxyModel>
-#include <QString>
-
 class QStandardItemModel;
 class QStandardItem;
 class AttributesTabProxy;
 class QTreeView;
-
-// NOTE: "readonly" is really "systemonly", it's just that this set of attributes is broken down into "backlink", "constructed" and "systemonly"(aka, not backlink or constructed but still systemonly). Not sure if this is the ideal behavior, maybe change it to be more logical and aligned with what user needs.
-enum AttributeFilter {
-    AttributeFilter_Unset,
-    AttributeFilter_ReadOnly,
-    AttributeFilter_Mandatory,
-    AttributeFilter_Optional,
-    AttributeFilter_SystemOnly,
-    AttributeFilter_Constructed,
-    AttributeFilter_Backlink,
-
-    AttributeFilter_COUNT,
-};
+class AttributesFilterDialog;
 
 class AttributesTab final : public PropertiesTab {
     Q_OBJECT
@@ -61,9 +45,9 @@ public:
 
 private slots:
     void edit_attribute();
-    void open_filter_dialog();
 
 private:
+    AttributesFilterDialog *filter_dialog;
     QTreeView *view;
     QStandardItemModel *model;
     AttributesTabProxy *proxy;
@@ -71,24 +55,7 @@ private:
     QHash<QString, QList<QByteArray>> current;
 
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
-};
-
-class AttributesTabProxy final : public QSortFilterProxyModel {
-
-public:
-    static QHash<AttributeFilter, bool> default_filters;
-    QHash<AttributeFilter, bool> filters;
-
-    AttributesTabProxy(QObject *parent);
-
-    void load(const AdObject &object);
-
-private:
-    QSet<QString> set_attributes;
-    QSet<QString> mandatory_attributes;
-    QSet<QString> optional_attributes;
-
-    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
+    void update_proxy();
 };
 
 #endif /* ATTRIBUTES_TAB_H */
