@@ -144,6 +144,7 @@ set(ADMC_SOURCES
     edits/manager_widget.cpp
     edits/delegation_edit.cpp
     edits/logon_hours_edit.cpp
+    edits/logon_computers_edit.cpp
 
     console_widget/console_widget.cpp
     console_widget/scope_model.cpp

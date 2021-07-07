@@ -25,6 +25,7 @@
 #include "edits/unlock_edit.h"
 #include "edits/upn_edit.h"
 #include "edits/logon_hours_edit.h"
+#include "edits/logon_computers_edit.h"
 
 #include <QFormLayout>
 
@@ -44,6 +45,8 @@ AccountTab::AccountTab(AdInterface &ad) {
 
     auto logon_hours_edit = new LogonHoursEdit(&edits, this);
 
+    auto logon_computers_edit = new LogonComputersEdit(&edits, this);
+
     QList<AccountOption> options;
     for (int i = 0; i < AccountOption_COUNT; i++) {
         const AccountOption option = (AccountOption) i;
@@ -62,6 +65,7 @@ AccountTab::AccountTab(AdInterface &ad) {
         unlock_edit,
         expiry_edit,
         logon_hours_edit,
+        logon_computers_edit,
     };
     edits_add_to_layout(top_edits, edits_layout);
 
