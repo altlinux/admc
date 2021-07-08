@@ -56,7 +56,7 @@ auto empty_day = []() {
     return out;
 };
 
-auto empty_week = [&]() {
+auto empty_week = []() {
     QList<QList<bool>> out;
 
     for (int day = 0; day < DAYS_IN_WEEK; day++) {
@@ -67,13 +67,13 @@ auto empty_week = [&]() {
 };
 
 const QByteArray empty_bytes = QByteArray(LOGON_HOURS_SIZE, '\0');
-const QByteArray test_bytes = [&]() {
+const QByteArray test_bytes = []() {
     QByteArray out = empty_bytes;
     out[Weekday_Tuesday * 3] = 'a';
 
     return out;
 }();
-const QList<QList<bool>> test_bools = [&]() {
+const QList<QList<bool>> test_bools = []() {
     QList<QList<bool>> out = empty_week();
     out[Weekday_Tuesday][0] = true;
     out[Weekday_Tuesday][5] = true;
