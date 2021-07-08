@@ -108,12 +108,10 @@ void ADMCTestAdInterface::group_set_scope() {
     const bool add_group_success = ad.object_add(group_dn, CLASS_GROUP);
     QVERIFY(add_group_success);
 
-    const AdObject group_object2 = ad.search_object(group_dn);
-    const GroupScope current_scope2 = group_object2.get_group_scope();
-
     for (int scope_i = 0; scope_i < GroupScope_COUNT; scope_i++) {
         const GroupScope scope = (GroupScope) scope_i;
         const bool success = ad.group_set_scope(group_dn, scope);
+        QVERIFY(success);
 
         const AdObject group_object = ad.search_object(group_dn);
         const GroupScope current_scope = group_object.get_group_scope();
@@ -129,6 +127,7 @@ void ADMCTestAdInterface::group_set_type() {
     for (int type_i = 0; type_i < GroupType_COUNT; type_i++) {
         const GroupType type = (GroupType) type_i;
         const bool success = ad.group_set_type(group_dn, type);
+        QVERIFY(success);
 
         const AdObject group_object = ad.search_object(group_dn);
         const GroupType current_type = group_object.get_group_type();
@@ -144,6 +143,7 @@ void ADMCTestAdInterface::user_set_account_option() {
     for (int option_i = 0; option_i < AccountOption_COUNT; option_i++) {
         const AccountOption option = (AccountOption) option_i;
         const bool success = ad.user_set_account_option(user_dn, option, true);
+        QVERIFY(success);
 
         const AdObject object = ad.search_object(user_dn);
         const bool option_set = object.get_account_option(option, ad.adconfig());

@@ -136,8 +136,6 @@ void navigate_until_object(QTreeView *view, const QString &target_dn, const int 
     // NOTE: start at invalid index to iterate over top items
     search_stack.append(QModelIndex());
 
-    bool found_object = false;
-
     while (!search_stack.isEmpty()) {
         const QModelIndex index = search_stack.takeFirst();
 
