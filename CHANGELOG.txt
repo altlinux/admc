@@ -2,6 +2,45 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.6.0 (Released 08-07-2021)
+-----------------------------------------------------------------------
+- Properties dialog: Improved how connection failure is
+  handled. Dialog stays open and displays informative error
+  text.
+- Properties dialog: Sped up dialog opening and applying
+  slightly.
+- Manual dialog: Fixed manual path so it loads correctly.
+- Connection: Fixed crash when getting domain name fails.
+- Connection: Changed how domain name is determined. Before
+  it was determined from the default domain, now it is
+  determined from the default principal. Default domain has
+  to be specified manually and is not guaranteed to be
+  there.
+- Console: Don't open context menu when clicking on empty
+  space in results pane.
+- Console: Changed how target object for Action menu is
+  determined. If results is focused but has no selection,
+  use selection from scope.
+- Action menu: Disable "New" menu if all new actions are
+  disabled.
+- Action menu: Don't disable actions for items that are
+  fetching. This messed up context menu logic.
+- Action menu: Enabled "Add to group" action for groups.
+  Groups can be added to groups.
+- Select object dialog: Changed the base dialog to contain a
+  simpler search method. More advanced search is still available via another dialog opened from "Advanced" button.
+- Select object dialog: Changed columns for the selected
+  list to be more informative.
+- Account tab: Added "Logon hours" edit. Note that this
+  functionality is currently only working for Windows
+  clients. To work on Linux clients, it has to be
+  implemented in the client backend (not in ADMC).
+- Account tab: Added "Logon computers" edit.
+- UI: Improved button layout.
+- UI: Added missing "Cancel" buttons to some dialogs.
+- Security tab: Implemented addition of well-known trustee's.
+
+-----------------------------------------------------------------------
  VERSION 0.5.3 (Released 21-06-2021)
 -----------------------------------------------------------------------
 - Properties dialog: Added new "Security" tab for User objects.
