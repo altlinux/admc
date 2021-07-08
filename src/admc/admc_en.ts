@@ -44,179 +44,182 @@
     </message>
 </context>
 <context>
-    <name>AttributesTab</name>
+    <name>AttributesFilterDialog</name>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="53"/>
-        <source>Name</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="54"/>
-        <source>Value</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="55"/>
-        <source>Type</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="71"/>
-        <source>Edit</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="72"/>
-        <source>Filter</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="135"/>
-        <source>Error</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="135"/>
-        <source>No editor is available for this attribute type.</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="164"/>
+        <location filename="tabs/attributes_tab.cpp" line="233"/>
         <source>Unset</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="165"/>
+        <location filename="tabs/attributes_tab.cpp" line="234"/>
         <source>Read-only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="166"/>
+        <location filename="tabs/attributes_tab.cpp" line="235"/>
         <source>Mandatory</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="167"/>
+        <location filename="tabs/attributes_tab.cpp" line="236"/>
         <source>Optional</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="168"/>
+        <location filename="tabs/attributes_tab.cpp" line="237"/>
         <source>System-only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="169"/>
+        <location filename="tabs/attributes_tab.cpp" line="238"/>
         <source>Constructed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="170"/>
+        <location filename="tabs/attributes_tab.cpp" line="239"/>
         <source>Backlink</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="192"/>
+        <location filename="tabs/attributes_tab.cpp" line="264"/>
         <source>Read-only attributes:</source>
         <translation></translation>
     </message>
+</context>
+<context>
+    <name>AttributesTab</name>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="378"/>
-        <source>Boolean</source>
+        <location filename="tabs/attributes_tab.cpp" line="60"/>
+        <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="379"/>
-        <source>Enumeration</source>
+        <location filename="tabs/attributes_tab.cpp" line="61"/>
+        <source>Value</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="380"/>
-        <source>Integer</source>
+        <location filename="tabs/attributes_tab.cpp" line="62"/>
+        <source>Type</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="381"/>
-        <source>Large Integer</source>
+        <location filename="tabs/attributes_tab.cpp" line="78"/>
+        <source>Edit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="382"/>
-        <source>String Case</source>
+        <location filename="tabs/attributes_tab.cpp" line="80"/>
+        <source>Filter</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="383"/>
-        <source>IA5</source>
+        <location filename="tabs/attributes_tab.cpp" line="148"/>
+        <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="384"/>
-        <source>NT Security Descriptor</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="385"/>
-        <source>Numeric</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="386"/>
-        <source>Object Identifier</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="387"/>
-        <source>Octet</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="388"/>
-        <source>Replica Link</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="389"/>
-        <source>Printable</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="390"/>
-        <source>SID</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="391"/>
-        <source>Teletex</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="392"/>
-        <source>Unicode</source>
+        <location filename="tabs/attributes_tab.cpp" line="148"/>
+        <source>No editor is available for this attribute type.</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/attributes_tab.cpp" line="393"/>
-        <source>UTC Time</source>
+        <source>Boolean</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/attributes_tab.cpp" line="394"/>
-        <source>Generalized Time</source>
+        <source>Enumeration</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/attributes_tab.cpp" line="395"/>
-        <source>DN String</source>
+        <source>Integer</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/attributes_tab.cpp" line="396"/>
-        <source>DN Binary</source>
+        <source>Large Integer</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/attributes_tab.cpp" line="397"/>
+        <source>String Case</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="398"/>
+        <source>IA5</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="399"/>
+        <source>NT Security Descriptor</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="400"/>
+        <source>Numeric</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="401"/>
+        <source>Object Identifier</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="402"/>
+        <source>Octet</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="403"/>
+        <source>Replica Link</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="404"/>
+        <source>Printable</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="405"/>
+        <source>SID</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="406"/>
+        <source>Teletex</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="407"/>
+        <source>Unicode</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="408"/>
+        <source>UTC Time</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="409"/>
+        <source>Generalized Time</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="410"/>
+        <source>DN String</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="411"/>
+        <source>DN Binary</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.cpp" line="412"/>
         <source>Distinguished Name</source>
         <translation></translation>
     </message>
@@ -262,12 +265,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="519"/>
+        <location filename="central_widget.cpp" line="511"/>
         <source>Are you sure you want to delete this policy and all of it&apos;s links?</source>
         <translation></translation>
     </message>
     <message numerus="yes">
-        <location filename="central_widget.cpp" line="744"/>
+        <location filename="central_widget.cpp" line="727"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
@@ -275,7 +278,7 @@
         </translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="748"/>
+        <location filename="central_widget.cpp" line="731"/>
         <source> [Filtering results]</source>
         <translation></translation>
     </message>
@@ -425,7 +428,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_object.cpp" line="636"/>
+        <location filename="console_types/console_object.cpp" line="604"/>
         <source>Are you sure you want to delete this object?</source>
         <translation></translation>
     </message>
@@ -433,47 +436,47 @@
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="83"/>
+        <location filename="console_widget/console_widget.cpp" line="81"/>
         <source>&amp;Properties</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="84"/>
+        <location filename="console_widget/console_widget.cpp" line="82"/>
         <source>&amp;Up one level</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="85"/>
+        <location filename="console_widget/console_widget.cpp" line="83"/>
         <source>&amp;Back</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="86"/>
+        <location filename="console_widget/console_widget.cpp" line="84"/>
         <source>&amp;Forward</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="87"/>
+        <location filename="console_widget/console_widget.cpp" line="85"/>
         <source>&amp;Refresh</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="88"/>
+        <location filename="console_widget/console_widget.cpp" line="86"/>
         <source>&amp;Customize columns</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="89"/>
+        <location filename="console_widget/console_widget.cpp" line="87"/>
         <source>&amp;Icons</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="90"/>
+        <location filename="console_widget/console_widget.cpp" line="88"/>
         <source>&amp;List</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="91"/>
+        <location filename="console_widget/console_widget.cpp" line="89"/>
         <source>&amp;Detail</source>
         <translation></translation>
     </message>
@@ -489,34 +492,34 @@
 <context>
     <name>CreateObjectDialog</name>
     <message>
-        <location filename="create_object_dialog.cpp" line="63"/>
+        <location filename="create_object_dialog.cpp" line="64"/>
         <source>Create object - &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="98"/>
+        <location filename="create_object_dialog.cpp" line="106"/>
         <source>Full name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="154"/>
-        <location filename="create_object_dialog.cpp" line="168"/>
-        <location filename="create_object_dialog.cpp" line="179"/>
+        <location filename="create_object_dialog.cpp" line="163"/>
+        <location filename="create_object_dialog.cpp" line="178"/>
+        <location filename="create_object_dialog.cpp" line="189"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="185"/>
+        <location filename="create_object_dialog.cpp" line="196"/>
         <source>Create</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="235"/>
+        <location filename="create_object_dialog.cpp" line="250"/>
         <source>Failed to create object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="258"/>
+        <location filename="create_object_dialog.cpp" line="273"/>
         <source>Created object &quot;%1&quot;</source>
         <translation></translation>
     </message>
@@ -524,27 +527,27 @@
 <context>
     <name>CreatePolicyDialog</name>
     <message>
-        <location filename="create_policy_dialog.cpp" line="40"/>
+        <location filename="create_policy_dialog.cpp" line="41"/>
         <source>Create GPO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="47"/>
+        <location filename="create_policy_dialog.cpp" line="48"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="49"/>
+        <location filename="create_policy_dialog.cpp" line="51"/>
         <source>Create</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="91"/>
+        <location filename="create_policy_dialog.cpp" line="97"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="91"/>
+        <location filename="create_policy_dialog.cpp" line="97"/>
         <source>Group Policy Object with this name already exists.</source>
         <translation></translation>
     </message>
@@ -552,7 +555,7 @@
 <context>
     <name>CreateQueryFolderDialog</name>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="39"/>
+        <location filename="create_query_folder_dialog.cpp" line="40"/>
         <source>Create query folder</source>
         <translation></translation>
     </message>
@@ -562,17 +565,17 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="51"/>
+        <location filename="create_query_folder_dialog.cpp" line="53"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="52"/>
+        <location filename="create_query_folder_dialog.cpp" line="54"/>
         <source>Description:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="65"/>
+        <location filename="create_query_folder_dialog.cpp" line="70"/>
         <source>New folder</source>
         <translation></translation>
     </message>
@@ -614,12 +617,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_folder_dialog.cpp" line="50"/>
+        <location filename="edit_query_folder_dialog.cpp" line="51"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_folder_dialog.cpp" line="51"/>
+        <location filename="edit_query_folder_dialog.cpp" line="52"/>
         <source>Description:</source>
         <translation></translation>
     </message>
@@ -635,32 +638,32 @@
 <context>
     <name>EditQueryItemWidget</name>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="50"/>
+        <location filename="edit_query_item_widget.cpp" line="51"/>
         <source>Include subcontainers</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="66"/>
-        <source>Edit filter</source>
+        <location filename="edit_query_item_widget.cpp" line="56"/>
+        <source>Edit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="69"/>
+        <location filename="edit_query_item_widget.cpp" line="59"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="70"/>
+        <location filename="edit_query_item_widget.cpp" line="60"/>
         <source>Description:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="71"/>
+        <location filename="edit_query_item_widget.cpp" line="61"/>
         <source>Search in:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="73"/>
+        <location filename="edit_query_item_widget.cpp" line="63"/>
         <source>Filter:</source>
         <translation></translation>
     </message>
@@ -704,12 +707,12 @@
 <context>
     <name>FilterClassesWidget</name>
     <message>
-        <location filename="filter_classes_widget.cpp" line="66"/>
+        <location filename="filter_classes_widget.cpp" line="65"/>
         <source>Select all</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="filter_classes_widget.cpp" line="67"/>
+        <location filename="filter_classes_widget.cpp" line="66"/>
         <source>Clear selection</source>
         <translation></translation>
     </message>
@@ -794,12 +797,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="filter_widget/filter_widget_normal_tab.cpp" line="61"/>
+        <location filename="filter_widget/filter_widget_normal_tab.cpp" line="62"/>
         <source>Classes:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="filter_widget/filter_widget_normal_tab.cpp" line="74"/>
+        <location filename="filter_widget/filter_widget_normal_tab.cpp" line="77"/>
         <source>Filters:</source>
         <translation></translation>
     </message>
@@ -848,7 +851,7 @@
         <translation></translation>
     </message>
     <message numerus="yes">
-        <location filename="find_results.cpp" line="153"/>
+        <location filename="find_results.cpp" line="162"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
@@ -857,27 +860,19 @@
     </message>
 </context>
 <context>
-    <name>SelectObjectAdvancedDialog</name>
-    <message>
-        <location filename="select_object_advanced_dialog.cpp" line="35"/>
-        <source>Find and select objects</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
     <name>FindWidget</name>
     <message>
-        <location filename="find_widget.h" line="43"/>
+        <location filename="find_widget.cpp" line="46"/>
         <source>Find</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="find_widget.cpp" line="49"/>
+        <location filename="find_widget.cpp" line="50"/>
         <source>Stop</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="find_widget.cpp" line="60"/>
+        <location filename="find_widget.cpp" line="61"/>
         <source>Search in:</source>
         <translation></translation>
     </message>
@@ -892,6 +887,14 @@
     <message>
         <location filename="multi_tabs/general_multi_tab.cpp" line="38"/>
         <source>To change a property for multiple objects, first select the checkbox to enable the change and then type the change. Depending on the number of selected objects, you might have to wait while the changes are applied.</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>GeneralTab</name>
+    <message>
+        <location filename="tabs/general_tab.cpp" line="41"/>
+        <source>Failed to load object information. Check your connection.</source>
         <translation></translation>
     </message>
 </context>
@@ -939,17 +942,17 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/group_policy_tab.cpp" line="157"/>
+        <location filename="tabs/group_policy_tab.cpp" line="156"/>
         <source>Remove link</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/group_policy_tab.cpp" line="161"/>
+        <location filename="tabs/group_policy_tab.cpp" line="160"/>
         <source>Move up</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/group_policy_tab.cpp" line="164"/>
+        <location filename="tabs/group_policy_tab.cpp" line="163"/>
         <source>Move down</source>
         <translation></translation>
     </message>
@@ -967,6 +970,93 @@
     <message>
         <location filename="edits/group_type_edit.cpp" line="56"/>
         <source>Group type:</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>LogonComputersDialog</name>
+    <message>
+        <location filename="edits/logon_computers_edit.cpp" line="81"/>
+        <source>New value:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="edits/logon_computers_edit.cpp" line="86"/>
+        <source>Add</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="edits/logon_computers_edit.cpp" line="89"/>
+        <source>Remove</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="edits/logon_computers_edit.cpp" line="92"/>
+        <source>Values:</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>LogonComputersEdit</name>
+    <message>
+        <location filename="edits/logon_computers_edit.cpp" line="35"/>
+        <source>Logon computers</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>LogonHoursDialog</name>
+    <message>
+        <location filename="logon_hours_dialog.cpp" line="41"/>
+        <source>Sunday</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="logon_hours_dialog.cpp" line="42"/>
+        <source>Monday</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="logon_hours_dialog.cpp" line="43"/>
+        <source>Tuesday</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="logon_hours_dialog.cpp" line="44"/>
+        <source>Wednesday</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="logon_hours_dialog.cpp" line="45"/>
+        <source>Thursday</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="logon_hours_dialog.cpp" line="46"/>
+        <source>Friday</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="logon_hours_dialog.cpp" line="47"/>
+        <source>Saturday</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="logon_hours_dialog.cpp" line="65"/>
+        <source>Local time</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="logon_hours_dialog.cpp" line="66"/>
+        <source>UTC time</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>LogonHoursEdit</name>
+    <message>
+        <location filename="edits/logon_hours_edit.cpp" line="34"/>
+        <source>Logon hours</source>
         <translation></translation>
     </message>
 </context>
@@ -1091,6 +1181,11 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="edits/manager_widget.cpp" line="40"/>
+        <source>Properties</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="edits/manager_widget.cpp" line="41"/>
         <source>Clear</source>
         <translation></translation>
@@ -1109,37 +1204,42 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="tabs/membership_tab.cpp" line="82"/>
+        <source>Properties</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="tabs/membership_tab.cpp" line="83"/>
         <source>Add</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="84"/>
+        <location filename="tabs/membership_tab.cpp" line="85"/>
         <source>Remove</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="91"/>
+        <location filename="tabs/membership_tab.cpp" line="87"/>
         <source>Set primary group</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="114"/>
+        <location filename="tabs/membership_tab.cpp" line="438"/>
         <source>Primary group: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="375"/>
+        <location filename="tabs/membership_tab.cpp" line="366"/>
         <source>Can&apos;t remove because this group is a primary group to selected user.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="376"/>
+        <location filename="tabs/membership_tab.cpp" line="367"/>
         <source>Can&apos;t remove because selected group is a primary group to this user.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="381"/>
+        <location filename="tabs/membership_tab.cpp" line="372"/>
         <source>Error</source>
         <translation></translation>
     </message>
@@ -1187,7 +1287,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="editors/multi_editor.cpp" line="78"/>
+        <location filename="editors/multi_editor.cpp" line="73"/>
+        <source>Values:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="editors/multi_editor.cpp" line="81"/>
         <source>Remove</source>
         <translation></translation>
     </message>
@@ -1233,47 +1338,47 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="50"/>
+        <location filename="editors/octet_editor.cpp" line="52"/>
         <source>Hexadecimal</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="51"/>
+        <location filename="editors/octet_editor.cpp" line="53"/>
         <source>Binary</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="52"/>
+        <location filename="editors/octet_editor.cpp" line="54"/>
         <source>Decimal</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="53"/>
+        <location filename="editors/octet_editor.cpp" line="55"/>
         <source>Octal</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="186"/>
+        <location filename="editors/octet_editor.cpp" line="187"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="190"/>
+        <location filename="editors/octet_editor.cpp" line="191"/>
         <source>Input must be strings of 2 hexadecimal digits separated by spaces. Example: &quot;0a 00 b5 ff&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="191"/>
+        <location filename="editors/octet_editor.cpp" line="192"/>
         <source>Input must be strings of 8 binary digits separated by spaces. Example: &quot;01010010 01000010 01000010&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="192"/>
+        <location filename="editors/octet_editor.cpp" line="193"/>
         <source>Input must be strings of 3 decimal digits (0-255) separated by spaces. Example: &quot;010 000 191&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="193"/>
+        <location filename="editors/octet_editor.cpp" line="194"/>
         <source>Input must be strings of 3 octal digits (0-377) separated by spaces.. Example: &quot;070 343 301&quot;</source>
         <translation></translation>
     </message>
@@ -1307,28 +1412,28 @@
 <context>
     <name>PasswordEdit</name>
     <message>
-        <location filename="edits/password_edit.cpp" line="60"/>
+        <location filename="edits/password_edit.cpp" line="63"/>
         <source>Password:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/password_edit.cpp" line="61"/>
+        <location filename="edits/password_edit.cpp" line="64"/>
         <source>Confirm password:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/password_edit.cpp" line="68"/>
+        <location filename="edits/password_edit.cpp" line="71"/>
         <source>Passwords don&apos;t match!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/password_edit.cpp" line="69"/>
-        <location filename="edits/password_edit.cpp" line="78"/>
+        <location filename="edits/password_edit.cpp" line="72"/>
+        <location filename="edits/password_edit.cpp" line="81"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/password_edit.cpp" line="77"/>
+        <location filename="edits/password_edit.cpp" line="80"/>
         <source>Password contains invalid characters</source>
         <translation></translation>
     </message>
@@ -1364,119 +1469,114 @@
 <context>
     <name>PropertiesDialog</name>
     <message>
-        <location filename="properties_dialog.cpp" line="103"/>
+        <location filename="properties_dialog.cpp" line="133"/>
         <source>Properties</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="140"/>
+        <location filename="properties_dialog.cpp" line="131"/>
         <source>&quot;%1&quot; Properties</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="144"/>
-        <source>Object could not be found</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="properties_dialog.cpp" line="164"/>
+        <location filename="properties_dialog.cpp" line="156"/>
         <source>General</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="168"/>
+        <location filename="properties_dialog.cpp" line="160"/>
         <source>Object</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="171"/>
+        <location filename="properties_dialog.cpp" line="163"/>
         <source>Attributes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="177"/>
+        <location filename="properties_dialog.cpp" line="169"/>
         <source>Account</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="179"/>
+        <location filename="properties_dialog.cpp" line="171"/>
         <source>Organization</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="180"/>
+        <location filename="properties_dialog.cpp" line="172"/>
         <source>Telephones</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="181"/>
+        <location filename="properties_dialog.cpp" line="173"/>
         <source>Profile</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="184"/>
+        <location filename="properties_dialog.cpp" line="176"/>
         <source>Security</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="188"/>
+        <location filename="properties_dialog.cpp" line="180"/>
         <source>Members</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="191"/>
-        <location filename="properties_dialog.cpp" line="209"/>
+        <location filename="properties_dialog.cpp" line="183"/>
+        <location filename="properties_dialog.cpp" line="201"/>
         <source>Member of</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="195"/>
-        <location filename="properties_dialog.cpp" line="210"/>
+        <location filename="properties_dialog.cpp" line="187"/>
+        <location filename="properties_dialog.cpp" line="202"/>
         <source>Managed by</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="199"/>
+        <location filename="properties_dialog.cpp" line="191"/>
         <source>Group policy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="203"/>
+        <location filename="properties_dialog.cpp" line="195"/>
         <source>Links to</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="207"/>
+        <location filename="properties_dialog.cpp" line="199"/>
         <source>Operating System</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="208"/>
+        <location filename="properties_dialog.cpp" line="200"/>
         <source>Delegation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="255"/>
+        <location filename="properties_dialog.cpp" line="249"/>
         <source>You&apos;re switching to attributes tab, while another tab has unapplied changes. Choose to apply or discard those changes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="257"/>
+        <location filename="properties_dialog.cpp" line="251"/>
         <source>You&apos;re switching from attributes tab, while it has unapplied changes. Choose to apply or discard those changes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="263"/>
+        <location filename="properties_dialog.cpp" line="257"/>
         <source>Apply current changes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="264"/>
+        <location filename="properties_dialog.cpp" line="258"/>
         <source>Discard changes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="178"/>
+        <location filename="properties_dialog.cpp" line="170"/>
         <source>Address</source>
         <translation></translation>
     </message>
@@ -1507,17 +1607,17 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="85"/>
+        <location filename="rename_object_dialog.cpp" line="78"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="109"/>
+        <location filename="rename_object_dialog.cpp" line="111"/>
         <source>Renamed object &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="114"/>
+        <location filename="rename_object_dialog.cpp" line="116"/>
         <source>Failed to rename object &quot;%1&quot;</source>
         <translation></translation>
     </message>
@@ -1530,7 +1630,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_policy_dialog.cpp" line="64"/>
+        <location filename="rename_policy_dialog.cpp" line="55"/>
         <source>Name:</source>
         <translation></translation>
     </message>
@@ -1538,37 +1638,42 @@
 <context>
     <name>SecurityTab</name>
     <message>
-        <location filename="tabs/security_tab.cpp" line="93"/>
+        <location filename="tabs/security_tab.cpp" line="95"/>
         <source>Add</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="94"/>
+        <location filename="tabs/security_tab.cpp" line="96"/>
+        <source>Add well-known trustee</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="97"/>
         <source>Remove</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="99"/>
+        <location filename="tabs/security_tab.cpp" line="102"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="100"/>
+        <location filename="tabs/security_tab.cpp" line="103"/>
         <source>Allowed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="101"/>
+        <location filename="tabs/security_tab.cpp" line="104"/>
         <source>Denied</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="344"/>
+        <location filename="tabs/security_tab.cpp" line="445"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="344"/>
+        <location filename="tabs/security_tab.cpp" line="445"/>
         <source>Failed to add some trustee&apos;s because they are already in the list.</source>
         <translation></translation>
     </message>
@@ -1584,7 +1689,7 @@
 <context>
     <name>SelectClassesWidget</name>
     <message>
-        <location filename="filter_widget/select_classes_widget.cpp" line="38"/>
+        <location filename="filter_widget/select_classes_widget.cpp" line="40"/>
         <source>Select</source>
         <translation></translation>
     </message>
@@ -1598,25 +1703,97 @@
     </message>
 </context>
 <context>
+    <name>SelectObjectAdvancedDialog</name>
+    <message>
+        <location filename="select_object_advanced_dialog.cpp" line="35"/>
+        <source>Find and select objects</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>SelectObjectDialog</name>
     <message>
-        <location filename="select_object_dialog.cpp" line="61"/>
+        <location filename="select_object_dialog.cpp" line="68"/>
         <source>Add</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="62"/>
+        <location filename="select_object_dialog.cpp" line="79"/>
+        <source>Name</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="80"/>
+        <source>Type</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="81"/>
+        <source>Folder</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="93"/>
         <source>Remove</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="114"/>
+        <location filename="select_object_dialog.cpp" line="99"/>
+        <source>Advanced</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="102"/>
+        <source>Classes:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="103"/>
+        <source>Search in:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="104"/>
+        <source>Name:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="105"/>
+        <source>Selected objects:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="153"/>
+        <source>Warning</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="236"/>
+        <location filename="select_object_dialog.cpp" line="293"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="114"/>
+        <location filename="select_object_dialog.cpp" line="236"/>
+        <source>Failed to find any matches.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="293"/>
+        <source>Selected object is already in the list.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="153"/>
         <source>This selection accepts only one object. Remove extra objects to proceed.</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>SelectObjectMatchDialog</name>
+    <message>
+        <location filename="select_object_dialog.cpp" line="300"/>
+        <source>There are multiple matches. Select one or more to add to the list.</source>
         <translation></translation>
     </message>
 </context>
@@ -1670,18 +1847,18 @@
 <context>
     <name>UpnEdit</name>
     <message>
-        <location filename="edits/upn_edit.cpp" line="75"/>
+        <location filename="edits/upn_edit.cpp" line="74"/>
         <source>UPN may not be empty.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/upn_edit.cpp" line="76"/>
-        <location filename="edits/upn_edit.cpp" line="99"/>
+        <location filename="edits/upn_edit.cpp" line="75"/>
+        <location filename="edits/upn_edit.cpp" line="98"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/upn_edit.cpp" line="98"/>
+        <location filename="edits/upn_edit.cpp" line="97"/>
         <source>The specified user logon name already exists.</source>
         <translation></translation>
     </message>
@@ -1689,18 +1866,18 @@
 <context>
     <name>console_query.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="520"/>
+        <location filename="console_types/console_query.cpp" line="467"/>
         <source>Export Query</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="522"/>
-        <location filename="console_types/console_query.cpp" line="547"/>
+        <location filename="console_types/console_query.cpp" line="469"/>
+        <location filename="console_types/console_query.cpp" line="494"/>
         <source>JSON (*.json)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="545"/>
+        <location filename="console_types/console_query.cpp" line="492"/>
         <source>Import Query</source>
         <translation></translation>
     </message>
@@ -1708,7 +1885,7 @@
 <context>
     <name>policy</name>
     <message>
-        <location filename="console_types/console_policy.cpp" line="108"/>
+        <location filename="console_types/console_policy.cpp" line="75"/>
         <source>Group Policy Objects</source>
         <translation></translation>
     </message>
@@ -1716,7 +1893,7 @@
 <context>
     <name>policy_model</name>
     <message>
-        <location filename="console_types/console_policy.cpp" line="69"/>
+        <location filename="console_types/console_policy.cpp" line="56"/>
         <source>Name</source>
         <translation></translation>
     </message>
@@ -1724,7 +1901,7 @@
 <context>
     <name>query</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="192"/>
+        <location filename="console_types/console_query.cpp" line="174"/>
         <source>Saved Queries</source>
         <translation></translation>
     </message>
@@ -1732,30 +1909,30 @@
 <context>
     <name>query.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="308"/>
+        <location filename="console_types/console_query.cpp" line="285"/>
         <source>Name may not be empty</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="309"/>
-        <location filename="console_types/console_query.cpp" line="343"/>
-        <location filename="console_types/console_query.cpp" line="346"/>
-        <location filename="console_types/console_query.cpp" line="567"/>
+        <location filename="console_types/console_query.cpp" line="286"/>
+        <location filename="console_types/console_query.cpp" line="318"/>
+        <location filename="console_types/console_query.cpp" line="321"/>
+        <location filename="console_types/console_query.cpp" line="514"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="342"/>
+        <location filename="console_types/console_query.cpp" line="317"/>
         <source>There&apos;s already an item with this name.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="345"/>
+        <location filename="console_types/console_query.cpp" line="320"/>
         <source>Names cannot contain &quot;/&quot;.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="566"/>
+        <location filename="console_types/console_query.cpp" line="513"/>
         <source>Query file is corrupted.</source>
         <translation></translation>
     </message>
@@ -1763,12 +1940,12 @@
 <context>
     <name>query_folder.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="60"/>
+        <location filename="console_types/console_query.cpp" line="61"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="61"/>
+        <location filename="console_types/console_query.cpp" line="62"/>
         <source>Description</source>
         <translation></translation>
     </message>
