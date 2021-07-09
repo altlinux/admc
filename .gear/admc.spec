@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.5.3
+Version: 0.6.0
 Release: alt1
 
 Summary: AD editor
@@ -86,6 +86,9 @@ Tests for ADMC
 %_bindir/admc_test_logon_computers
 
 %changelog
+* Fri Jul 09 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.6.0-alt1
+- 0.6.0
+
 * Mon Jun 21 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.3-alt1
 - 0.5.3
 
