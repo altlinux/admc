@@ -30,15 +30,8 @@
 void ADMCTestStringEdit::init() {
     ADMCTest::init();
 
-    // Embed unlock edit in parent widget
-    QList<AttributeEdit *> edits;
     edit = new StringEdit(TEST_ATTRIBUTE, CLASS_USER, &edits, parent_widget);
-    auto layout = new QFormLayout();
-    parent_widget->setLayout(layout);
-    edit->add_to_layout(layout);
-
-    parent_widget->show();
-    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
+    add_attribute_edit(edit);
 
     line_edit = parent_widget->findChild<QLineEdit *>();
     QVERIFY(line_edit != nullptr);

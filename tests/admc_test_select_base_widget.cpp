@@ -34,13 +34,7 @@ void ADMCTestSelectBaseWidget::init() {
     ADMCTest::init();
 
     select_base_widget = new SelectBaseWidget();
-
-    auto layout = new QVBoxLayout();
-    parent_widget->setLayout(layout);
-    layout->addWidget(select_base_widget);
-
-    parent_widget->show();
-    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
+    add_widget(select_base_widget);
 
     combo = select_base_widget->findChild<QComboBox *>();
     QVERIFY(combo != nullptr);

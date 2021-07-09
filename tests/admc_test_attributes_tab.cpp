@@ -48,16 +48,10 @@ void ADMCTestAttributesTab::init() {
     ADMCTest::init();
 
     attributes_tab = new AttributesTab();
+    add_widget(attributes_tab);
 
     filter_dialog = attributes_tab->findChild<AttributesFilterDialog *>();
     QVERIFY(filter_dialog != nullptr);
-
-    parent_widget->show();
-    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
-
-    auto layout = new QVBoxLayout();
-    parent_widget->setLayout(layout);
-    layout->addWidget(attributes_tab);
 
     view = attributes_tab->findChild<QTreeView *>();
     QVERIFY(view != nullptr);

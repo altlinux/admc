@@ -41,13 +41,7 @@ void ADMCTestFilterWidget::init() {
     ADMCTest::init();
 
     filter_widget = new FilterWidget(filter_classes);
-
-    auto layout = new QVBoxLayout();
-    parent_widget->setLayout(layout);
-    layout->addWidget(filter_widget);
-
-    parent_widget->show();
-    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
+    add_widget(filter_widget);
 
     tab_widget = filter_widget->findChild<QTabWidget *>();
     QVERIFY(tab_widget != nullptr);

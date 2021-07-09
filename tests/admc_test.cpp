@@ -29,6 +29,7 @@
 #include "select_object_advanced_dialog.h"
 #include "select_object_dialog.h"
 #include "utils.h"
+#include "edits/attribute_edit.h"
 
 #include <QLineEdit>
 #include <QMessageBox>
@@ -37,6 +38,7 @@
 #include <QTest>
 #include <QTimer>
 #include <QTreeView>
+#include <QFormLayout>
 
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false
@@ -65,11 +67,19 @@ void ADMCTest::cleanupTestCase() {
 
 void ADMCTest::init() {
     parent_widget = new QWidget();
+    layout = new QFormLayout();
+    parent_widget->setLayout(layout);
+
+    edits.clear();
 
     const QString dn = test_arena_dn();
     const bool create_success = ad.object_add(dn, CLASS_OU);
 
     QVERIFY2(create_success, "Failed to create test-arena");
+
+    // Show parent widget and wait for it to appear
+    parent_widget->show();
+    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
 }
 
 void ADMCTest::cleanup() {
@@ -242,6 +252,14 @@ void ADMCTest::select_object_dialog_select(const QString &dn) {
     select_dialog->accept();
 
     delete select_dialog;
+}
+
+void ADMCTest::add_attribute_edit(AttributeEdit *edit) {
+    edit->add_to_layout(layout);
+}
+
+void ADMCTest::add_widget(QWidget *widget) {
+    layout->addWidget(widget);
 }
 
 void select_base_widget_add(SelectBaseWidget *widget, const QString &dn) {

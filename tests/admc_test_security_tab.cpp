@@ -32,6 +32,7 @@ void ADMCTestSecurityTab::init() {
     ADMCTest::init();
 
     security_tab = new SecurityTab();
+    add_widget(security_tab);
 
     // Create test user
     const QString name = TEST_USER;
@@ -42,13 +43,6 @@ void ADMCTestSecurityTab::init() {
     const AdObject object = ad.search_object(test_user_dn);
 
     security_tab->load(ad, object);
-
-    auto layout = new QVBoxLayout();
-    parent_widget->setLayout(layout);
-    layout->addWidget(security_tab);
-
-    parent_widget->show();
-    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
 }
 
 // NOTE: just checking that the default security descriptor

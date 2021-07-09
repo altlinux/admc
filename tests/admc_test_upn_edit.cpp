@@ -31,15 +31,8 @@
 void ADMCTestUpnEdit::init() {
     ADMCTest::init();
 
-    // Embed unlock edit in parent widget
-    QList<AttributeEdit *> edits;
     upn_edit = new UpnEdit(&edits, ad, parent_widget);
-    auto layout = new QFormLayout();
-    parent_widget->setLayout(layout);
-    upn_edit->add_to_layout(layout);
-
-    parent_widget->show();
-    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
+    add_attribute_edit(upn_edit);
 
     prefix_edit = parent_widget->findChild<QLineEdit *>();
     QVERIFY(prefix_edit != nullptr);

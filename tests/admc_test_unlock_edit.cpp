@@ -34,15 +34,8 @@
 void ADMCTestUnlockEdit::init() {
     ADMCTest::init();
 
-    // Embed unlock edit in parent widget
-    QList<AttributeEdit *> edits;
     unlock_edit = new UnlockEdit(&edits, parent_widget);
-    auto layout = new QFormLayout();
-    parent_widget->setLayout(layout);
-    unlock_edit->add_to_layout(layout);
-
-    parent_widget->show();
-    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
+    add_attribute_edit(unlock_edit);
 
     checkbox = parent_widget->findChild<QCheckBox *>();
     QVERIFY(checkbox != nullptr);

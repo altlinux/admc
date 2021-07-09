@@ -30,14 +30,8 @@
 void ADMCTestCountryEdit::init() {
     ADMCTest::init();
 
-    QList<AttributeEdit *> edits;
     edit = new CountryEdit(&edits, parent_widget);
-    auto layout = new QFormLayout();
-    parent_widget->setLayout(layout);
-    edit->add_to_layout(layout);
-
-    parent_widget->show();
-    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
+    add_attribute_edit(edit);
 
     combo = parent_widget->findChild<QComboBox *>();
     QVERIFY(combo != nullptr);

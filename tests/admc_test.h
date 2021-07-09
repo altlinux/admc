@@ -27,17 +27,15 @@
  * each test.
  */
 
-#include <QObject>
-
 #include <QTest>
 
 #include "adldap.h"
 
-class QString;
 class QTreeView;
-class QPushButton;
 class SelectObjectDialog;
 class SelectBaseWidget;
+class QFormLayout;
+class AttributeEdit;
 
 #define TEST_USER "test-user"
 #define TEST_USER_LOGON "test-user-logon"
@@ -71,6 +69,9 @@ protected:
     // child widgets as well.
     QWidget *parent_widget = nullptr;
 
+    // This list is just for passing to edit ctors
+    QList<AttributeEdit *> edits;
+
     void init_test_case();
 
     // For easy setup and cleanup of each test, we use an
@@ -101,8 +102,14 @@ protected:
     // dialog. Object must be inside test arena
     void select_object_dialog_select(const QString &dn);
 
-private:
+    // Adds an AttributeEdit to layout in parent widget
+    void add_attribute_edit(AttributeEdit *edit);
 
+    // Adds a widget to layout in parent widget
+    void add_widget(QWidget *widget);
+
+private:
+    QFormLayout *layout;
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);

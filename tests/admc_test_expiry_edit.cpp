@@ -30,15 +30,8 @@
 void ADMCTestExpiryEdit::init() {
     ADMCTest::init();
 
-    // Embed unlock edit in parent widget
-    QList<AttributeEdit *> edits;
     edit = new ExpiryEdit(&edits, parent_widget);
-    auto layout = new QFormLayout();
-    parent_widget->setLayout(layout);
-    edit->add_to_layout(layout);
-
-    parent_widget->show();
-    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
+    add_attribute_edit(edit);
 
     never_check = parent_widget->findChild<QCheckBox *>("never_check");
     end_of_check = parent_widget->findChild<QCheckBox *>("end_of_check");

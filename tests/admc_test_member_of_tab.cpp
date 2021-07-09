@@ -37,13 +37,7 @@ void ADMCTestMemberOfTab::init() {
     ADMCTest::init();
 
     member_of_tab = new MemberOfTab();
-
-    parent_widget->show();
-    QVERIFY(QTest::qWaitForWindowExposed(parent_widget, 1000));
-
-    auto layout = new QVBoxLayout();
-    parent_widget->setLayout(layout);
-    layout->addWidget(member_of_tab);
+    add_widget(member_of_tab);
 
     view = member_of_tab->findChild<QTreeView *>();
     QVERIFY(view != nullptr);
