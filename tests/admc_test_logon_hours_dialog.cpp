@@ -132,9 +132,6 @@ void ADMCTestLogonHoursDialog::handle_timezone() {
     }();
     dialog->load(bytes);
 
-    auto test_selected = [&](const QList<QModelIndex> &correct_selected) {
-    };
-
     // First do UTC
     utc_time_button->setChecked(true);
 
