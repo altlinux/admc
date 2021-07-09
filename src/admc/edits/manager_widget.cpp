@@ -35,10 +35,15 @@ ManagerWidget::ManagerWidget(const QString &manager_attribute_arg)
 
     edit = new QLineEdit();
     edit->setReadOnly(true);
+    edit->setObjectName("manager_display");
 
     change_button = new QPushButton(tr("Change"));
     properties_button = new QPushButton(tr("Properties"));
     clear_button = new QPushButton(tr("Clear"));
+
+    change_button->setObjectName("change_button");
+    properties_button->setObjectName("properties_button");
+    clear_button->setObjectName("clear_button");
 
     auto button_layout = new QHBoxLayout();
     button_layout->addWidget(change_button);
