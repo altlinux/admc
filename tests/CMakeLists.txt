@@ -50,6 +50,7 @@ set(TEST_TARGETS
     admc_test_logon_computers
     admc_test_expiry_edit
     admc_test_password_edit
+    admc_test_group_scope_edit
 )
 
 foreach(target ${TEST_TARGETS})
