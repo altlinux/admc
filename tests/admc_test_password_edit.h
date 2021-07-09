@@ -18,28 +18,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_OBJECT_MENU_H
-#define ADMC_TEST_OBJECT_MENU_H
+#ifndef ADMC_TEST_PASSWORD_EDIT_H
+#define ADMC_TEST_PASSWORD_EDIT_H
 
 #include "admc_test.h"
 
-class ADMCTestObjectMenu : public ADMCTest {
+class PasswordEdit;
+class QLineEdit;
+
+class ADMCTestPasswordEdit : public ADMCTest {
     Q_OBJECT
 
 private slots:
-    void object_menu_new_user();
-    void object_menu_new_ou();
-    void object_menu_new_computer();
-    void object_menu_new_group();
+    void init() override;
 
-    void object_menu_move();
-    void object_menu_rename();
-    void object_menu_disable_enable_account();
-
-    void object_menu_find_simple();
-    void object_menu_find_advanced();
+    void edited_signal();
+    void load();
+    void apply_with_bad_confirm();
+    void apply();
 
 private:
+    PasswordEdit *edit;
+    QString dn;
+    QLineEdit *main_edit;
+    QLineEdit *confirm_edit;
 };
 
-#endif /* ADMC_TEST_OBJECT_MENU_H */
+#endif /* ADMC_TEST_PASSWORD_EDIT_H */

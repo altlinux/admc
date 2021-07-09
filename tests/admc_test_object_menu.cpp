@@ -28,7 +28,6 @@
 #include "find_object_dialog.h"
 #include "find_widget.h"
 #include "move_object_dialog.h"
-#include "password_dialog.h"
 #include "rename_object_dialog.h"
 #include "select_container_dialog.h"
 #include "select_object_advanced_dialog.h"
@@ -197,48 +196,6 @@ void ADMCTestObjectMenu::object_menu_move() {
     QVERIFY2(object_exists(user_dn_after_move), "Moved object doesn't exist");
 
     QVERIFY(true);
-}
-
-void ADMCTestObjectMenu::object_menu_reset_password() {
-    const QString user_name = TEST_USER;
-    const QString user_dn = test_object_dn(user_name, CLASS_USER);
-    const QString password = "pass123!";
-
-    // Create test user
-    const bool create_user_success = ad.object_add(user_dn, CLASS_USER);
-    QVERIFY2(create_user_success, "Failed to create user");
-    QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
-
-    const QByteArray pwdLastSet_value_before = [=]() {
-        const AdObject object = ad.search_object(user_dn);
-
-        return object.get_value(ATTRIBUTE_PWD_LAST_SET);
-    }();
-
-    // Open password dialog
-    const auto password_dialog = new PasswordDialog({user_dn}, parent_widget);
-    password_dialog->open();
-    QVERIFY(QTest::qWaitForWindowExposed(password_dialog, 1000));
-
-    // Enter password
-    auto password_main_edit = password_dialog->findChild<QLineEdit *>("password_main_edit");
-    QVERIFY(password_main_edit);
-    password_main_edit->setText(password);
-
-    auto password_confirm_edit = password_dialog->findChild<QLineEdit *>("password_confirm_edit");
-    QVERIFY(password_confirm_edit);
-    password_confirm_edit->setText(password);
-
-    password_dialog->accept();
-
-    const QByteArray pwdLastSet_value_after = [=]() {
-        const AdObject object = ad.search_object(user_dn);
-
-        return object.get_value(ATTRIBUTE_PWD_LAST_SET);
-    }();
-
-    const bool password_changed = (pwdLastSet_value_before != pwdLastSet_value_after);
-    QVERIFY2(password_changed, "Failed to change password");
 }
 
 void ADMCTestObjectMenu::object_menu_disable_enable_account() {
