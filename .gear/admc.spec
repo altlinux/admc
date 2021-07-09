@@ -88,6 +88,7 @@ Tests for ADMC
 %_bindir/admc_test_password_edit
 %_bindir/admc_test_group_scope_edit
 %_bindir/admc_test_group_type_edit
+%_bindir/admc_test_datetime_edit
 
 %changelog
 * Fri Jul 09 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.6.0-alt1

@@ -52,6 +52,7 @@ set(TEST_TARGETS
     admc_test_password_edit
     admc_test_group_scope_edit
     admc_test_group_type_edit
+    admc_test_datetime_edit
 )
 
 foreach(target ${TEST_TARGETS})
