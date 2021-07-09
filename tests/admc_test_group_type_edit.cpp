@@ -1,0 +1,73 @@
+/*
+ * ADMC - AD Management Center
+ *
+ * Copyright (C) 2020-2021 BaseALT Ltd.
+ * Copyright (C) 2020-2021 Dmitry Degtyarev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "admc_test_group_type_edit.h"
+
+#include "edits/group_type_edit.h"
+
+#include <QFormLayout>
+#include <QComboBox>
+
+void ADMCTestGroupTypeEdit::init() {
+    ADMCTest::init();
+
+    edit = new GroupTypeEdit(&edits, parent_widget);
+    add_attribute_edit(edit);
+
+    combo = parent_widget->findChild<QComboBox *>();
+
+    const QString name = TEST_GROUP;
+    dn = test_object_dn(name, CLASS_GROUP);
+    const bool create_success = ad.object_add(dn, CLASS_GROUP);
+    QVERIFY(create_success);
+}
+
+void ADMCTestGroupTypeEdit::edited_signal() {
+    bool edited_signal_emitted = false;
+    connect(
+        edit, &AttributeEdit::edited,
+        [&edited_signal_emitted]() {
+            edited_signal_emitted = true;
+        });
+
+    combo->setCurrentIndex(1);
+    QVERIFY(edited_signal_emitted);
+}
+
+void ADMCTestGroupTypeEdit::load() {
+    const AdObject object = ad.search_object(dn);
+    edit->load(ad, object);
+
+    QVERIFY(combo->currentIndex() == 0);
+}
+
+void ADMCTestGroupTypeEdit::apply() {
+    load();
+
+    combo->setCurrentIndex(1);
+    const bool apply_success = edit->apply(ad, dn);
+    QVERIFY(apply_success);
+
+    const AdObject updated_object = ad.search_object(dn);
+    const GroupType type = updated_object.get_group_type();
+    QVERIFY(type == GroupType_Distribution);
+}
+
+QTEST_MAIN(ADMCTestGroupTypeEdit)
