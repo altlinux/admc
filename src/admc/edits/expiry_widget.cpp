@@ -39,12 +39,16 @@ ExpiryWidget::ExpiryWidget()
     setFrameShape(QFrame::Box);
 
     never_check = new QCheckBox(tr("Never"));
+    never_check->setObjectName("never_check");
+
     end_of_check = new QCheckBox(tr("End of:"));
+    end_of_check->setObjectName("end_of_check");
 
     never_check->setAutoExclusive(true);
     end_of_check->setAutoExclusive(true);
 
     edit = new QDateEdit();
+    edit->setObjectName("date_edit");
 
     auto button_group = new QButtonGroup(this);
     button_group->addButton(never_check);

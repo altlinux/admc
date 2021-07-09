@@ -48,6 +48,7 @@ set(TEST_TARGETS
     admc_test_select_object_dialog
     admc_test_logon_hours_dialog
     admc_test_logon_computers
+    admc_test_expiry_edit
 )
 
 foreach(target ${TEST_TARGETS})
