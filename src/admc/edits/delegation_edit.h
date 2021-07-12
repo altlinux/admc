@@ -21,7 +21,7 @@
 #ifndef DELEGATION_EDIT_H
 #define DELEGATION_EDIT_H
 
-#include "attribute_edit.h"
+#include "edits/attribute_edit.h"
 
 class QRadioButton;
 

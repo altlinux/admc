@@ -19,6 +19,7 @@
  */
 
 #include "tabs/general_tab.h"
+
 #include "adldap.h"
 #include "edits/country_edit.h"
 #include "edits/group_scope_edit.h"

@@ -28,7 +28,6 @@
 #include <QWidget>
 
 class QComboBox;
-class QString;
 
 class SelectBaseWidget final : public QWidget {
     Q_OBJECT

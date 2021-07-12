@@ -22,8 +22,6 @@
 #define RENAME_OBJECT_DIALOG_H
 
 #include <QDialog>
-#include <QList>
-#include <QString>
 
 class AttributeEdit;
 class QLineEdit;

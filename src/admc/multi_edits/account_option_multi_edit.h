@@ -23,7 +23,9 @@
 
 #include "multi_edits/attribute_multi_edit.h"
 
-#include "adldap.h"
+#include "ad_defines.h"
+
+#include <QHash>
 
 class QScrollArea;
 

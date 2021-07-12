@@ -30,8 +30,6 @@
 #include "utils.h"
 
 #include <QFormLayout>
-#include <QFrame>
-#include <QLabel>
 
 // NOTE: store manager's edits in separate list because they
 // don't apply to the target of properties.

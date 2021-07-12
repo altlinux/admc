@@ -19,6 +19,7 @@
  */
 
 #include "edits/attribute_edit.h"
+
 #include "tabs/properties_tab.h"
 
 #include <QDebug>

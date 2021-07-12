@@ -22,8 +22,6 @@
 #define SELECT_POLICY_DIALOG_H
 
 #include <QDialog>
-#include <QList>
-#include <QString>
 
 class QTreeView;
 

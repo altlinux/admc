@@ -276,4 +276,15 @@ enum AcePermission {
     AcePermission_COUNT,
 };
 
+enum SearchScope {
+    SearchScope_Object,
+    SearchScope_Children,
+    // NOTE: Descendants scope appears to not work, from the
+    // ldap_search manual: "Note that the latter requires
+    // the server support the LDAP Subordinates Search Scope
+    // extension."
+    SearchScope_Descendants,
+    SearchScope_All,
+};
+
 #endif /* AD_DEFINES_H */

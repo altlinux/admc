@@ -20,6 +20,7 @@
  */
 
 #include "tabs/membership_tab.h"
+
 #include "adldap.h"
 #include "globals.h"
 #include "properties_dialog.h"
@@ -27,9 +28,7 @@
 #include "utils.h"
 
 #include <QDebug>
-#include <QFormLayout>
 #include <QLabel>
-#include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QStandardItemModel>

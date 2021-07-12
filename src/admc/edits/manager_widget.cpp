@@ -24,10 +24,11 @@
 #include "globals.h"
 #include "properties_dialog.h"
 #include "select_object_dialog.h"
-#include "utils.h"
-#include <QFormLayout>
+
 #include <QLineEdit>
 #include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 ManagerWidget::ManagerWidget(const QString &manager_attribute_arg)
 : QWidget() {

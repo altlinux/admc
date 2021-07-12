@@ -22,8 +22,6 @@
 
 #include "multi_edits/attribute_multi_edit.h"
 
-#include <QDebug>
-
 bool PropertiesMultiTab::apply(AdInterface &ad, const QList<QString> &target_list) {
     bool total_success = true;
     for (AttributeMultiEdit *edit : edit_list) {

@@ -23,7 +23,6 @@
 #include "adldap.h"
 #include "edits/expiry_widget.h"
 #include "globals.h"
-#include "utils.h"
 
 #include <QFormLayout>
 

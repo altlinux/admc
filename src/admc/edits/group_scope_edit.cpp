@@ -19,8 +19,9 @@
  */
 
 #include "edits/group_scope_edit.h"
+
 #include "adldap.h"
-#include "utils.h"
+
 #include <QComboBox>
 #include <QFormLayout>
 

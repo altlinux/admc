@@ -26,14 +26,11 @@
 #include "filter_widget/filter_widget.h"
 #include "globals.h"
 
-#include <QCheckBox>
-#include <QDebug>
 #include <QDialogButtonBox>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QRadioButton>
-#include <QScrollArea>
 #include <QVBoxLayout>
 
 // TODO: implement canceling. Need to be able to load/unload

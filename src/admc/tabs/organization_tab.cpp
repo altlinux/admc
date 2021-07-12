@@ -19,6 +19,7 @@
  */
 
 #include "tabs/organization_tab.h"
+
 #include "adldap.h"
 #include "edits/manager_edit.h"
 #include "edits/string_edit.h"

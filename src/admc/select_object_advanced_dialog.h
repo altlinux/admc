@@ -29,8 +29,6 @@
 
 class FindWidget;
 class QStandardItem;
-template <typename T>
-class QList;
 
 class SelectObjectAdvancedDialog final : public QDialog {
     Q_OBJECT

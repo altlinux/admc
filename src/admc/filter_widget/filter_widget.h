@@ -30,7 +30,6 @@
 #include <QWidget>
 
 class QTabWidget;
-class QString;
 class FilterWidgetTab;
 class FilterWidgetSimpleTab;
 class FilterWidgetNormalTab;

@@ -24,11 +24,8 @@
 
 #include <QAction>
 #include <QCheckBox>
-#include <QCoreApplication>
 #include <QHeaderView>
 #include <QLocale>
-#include <QSettings>
-#include <QWidget>
 
 bool bool_default_value(const BoolSetting setting);
 QString bool_to_string(const BoolSetting setting);

@@ -21,10 +21,7 @@
 #ifndef ATTRIBUTE_EDIT_H
 #define ATTRIBUTE_EDIT_H
 
-#include <QList>
-#include <QMap>
 #include <QObject>
-#include <QString>
 
 /**
  * AttributeEdit's wrap regular Qt widgets so that they can

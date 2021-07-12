@@ -19,11 +19,11 @@
  */
 
 #include "edits/gpoptions_edit.h"
+
 #include "adldap.h"
-#include "utils.h"
+
 #include <QCheckBox>
 #include <QFormLayout>
-#include <QHash>
 
 GpoptionsEdit::GpoptionsEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {

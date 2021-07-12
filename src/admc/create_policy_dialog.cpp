@@ -25,6 +25,7 @@
 #include "console_widget/console_widget.h"
 #include "globals.h"
 #include "status.h"
+#include "utils.h"
 
 #include <QDialogButtonBox>
 #include <QFormLayout>

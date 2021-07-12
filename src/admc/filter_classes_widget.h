@@ -27,8 +27,6 @@
  * filter which will filter out unselected classes.
  */
 
-#include <QHash>
-#include <QString>
 #include <QWidget>
 
 class QCheckBox;

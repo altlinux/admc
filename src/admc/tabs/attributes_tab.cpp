@@ -31,8 +31,6 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFrame>
-#include <QHeaderView>
-#include <QDebug>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>

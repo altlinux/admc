@@ -27,10 +27,6 @@
 
 #include <QDialog>
 
-class QString;
-template <typename T>
-class QList;
-
 class FindObjectDialog final : public QDialog {
     Q_OBJECT
 

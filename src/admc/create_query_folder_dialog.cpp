@@ -32,6 +32,7 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QModelIndex>
 
 CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {

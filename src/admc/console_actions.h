@@ -25,14 +25,13 @@
  * Helper storage class for managing console actions.
  */
 
-#include <QHash>
 #include <QObject>
+
+#include <QHash>
 
 class QMenu;
 class QAction;
 class QModelIndex;
-template <typename T>
-class QList;
 
 enum ConsoleAction {
     ConsoleAction_NewUser,

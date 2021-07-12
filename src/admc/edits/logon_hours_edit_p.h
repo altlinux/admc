@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LOGON_HOURS_DIALOG_H
-#define LOGON_HOURS_DIALOG_H
+#ifndef LOGON_HOURS_EDIT_P_H
+#define LOGON_HOURS_EDIT_P_H
 
 /**
  * Dialog for editing logon hours of a user account.
@@ -76,4 +76,4 @@ QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list, const int t
 QByteArray logon_hours_to_bytes(const QList<QList<bool>> bool_list, const int time_offset = 0);
 int get_current_utc_offset();
 
-#endif /* LOGON_HOURS_DIALOG_H */
+#endif /* LOGON_HOURS_EDIT_P_H */

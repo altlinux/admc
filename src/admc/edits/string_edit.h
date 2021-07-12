@@ -21,14 +21,9 @@
 #ifndef STRING_EDIT_H
 #define STRING_EDIT_H
 
-#include "attribute_edit.h"
-
-#include <QList>
-#include <QMap>
-#include <QString>
+#include "edits/attribute_edit.h"
 
 class QLineEdit;
-class QLabel;
 
 class StringEdit final : public AttributeEdit {
     Q_OBJECT

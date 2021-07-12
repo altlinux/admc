@@ -30,6 +30,7 @@
 #include "globals.h"
 #include "settings.h"
 #include "status.h"
+#include "utils.h"
 
 #include <QButtonGroup>
 #include <QDebug>

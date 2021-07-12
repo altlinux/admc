@@ -22,9 +22,6 @@
 #define CREATE_QUERY_FOLDER_DIALOG_H
 
 #include <QDialog>
-#include <QList>
-#include <QModelIndex>
-#include <QString>
 
 class QLineEdit;
 class ConsoleWidget;

@@ -19,6 +19,7 @@
  */
 
 #include "tabs/address_tab.h"
+
 #include "adldap.h"
 #include "edits/country_edit.h"
 #include "edits/string_edit.h"

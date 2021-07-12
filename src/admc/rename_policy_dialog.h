@@ -28,7 +28,6 @@
  */
 
 #include <QDialog>
-#include <QString>
 
 class QLineEdit;
 class QPushButton;

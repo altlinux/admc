@@ -29,8 +29,6 @@
  */
 
 #include <QDialog>
-#include <QList>
-#include <QString>
 
 class AttributeEdit;
 class StringEdit;

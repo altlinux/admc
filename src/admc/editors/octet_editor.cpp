@@ -22,7 +22,6 @@
 
 #include "adldap.h"
 #include "globals.h"
-#include "utils.h"
 
 #include <QComboBox>
 #include <QDialogButtonBox>

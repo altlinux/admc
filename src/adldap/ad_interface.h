@@ -42,17 +42,6 @@ template <typename T>
 class QList;
 typedef void TALLOC_CTX;
 
-enum SearchScope {
-    SearchScope_Object,
-    SearchScope_Children,
-    // NOTE: Descendants scope appears to not work, from the
-    // ldap_search manual: "Note that the latter requires
-    // the server support the LDAP Subordinates Search Scope
-    // extension."
-    SearchScope_Descendants,
-    SearchScope_All,
-};
-
 enum AdMessageType {
     AdMessageType_Success,
     AdMessageType_Error

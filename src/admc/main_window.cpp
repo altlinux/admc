@@ -19,6 +19,7 @@
  */
 
 #include "main_window.h"
+
 #include "about_dialog.h"
 #include "adldap.h"
 #include "central_widget.h"
@@ -26,17 +27,15 @@
 #include "manual_dialog.h"
 #include "settings.h"
 #include "status.h"
+#include "utils.h"
 
 #include <QAction>
 #include <QActionGroup>
-#include <QApplication>
 #include <QDebug>
-#include <QDesktopWidget>
 #include <QDockWidget>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QStatusBar>
-#include <QString>
 #include <QTextEdit>
 
 #define MESSAGE_LOG_OBJECT_NAME "MESSAGE_LOG_OBJECT_NAME"

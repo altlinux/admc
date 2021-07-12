@@ -30,12 +30,10 @@
 #include "settings.h"
 #include "utils.h"
 
-#include <QDebug>
 #include <QFormLayout>
 #include <QFrame>
 #include <QList>
 #include <QPushButton>
-#include <QString>
 
 FindWidget::FindWidget(const QList<QString> classes, const QString &default_base)
 : QWidget() {

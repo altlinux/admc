@@ -26,10 +26,7 @@
  * instead of QLineEdit.
  */
 
-#include "attribute_edit.h"
-
-#include <QList>
-#include <QString>
+#include "edits/attribute_edit.h"
 
 class QPlainTextEdit;
 

@@ -21,16 +21,11 @@
 #include "find_object_dialog.h"
 
 #include "ad_config.h"
-#include "console_widget/customize_columns_dialog.h"
 #include "find_results.h"
 #include "find_widget.h"
 #include "globals.h"
-#include "properties_dialog.h"
 
-#include <QDialogButtonBox>
-#include <QList>
 #include <QMenuBar>
-#include <QTreeView>
 #include <QVBoxLayout>
 
 FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString default_base, QWidget *parent)

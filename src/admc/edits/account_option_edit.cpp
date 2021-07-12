@@ -22,17 +22,14 @@
 
 #include "adldap.h"
 #include "globals.h"
-#include "utils.h"
 
 #include <QCheckBox>
-#include <QComboBox>
-#include <QDateTimeEdit>
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QLabel>
-#include <QLineEdit>
 #include <QMessageBox>
 #include <QScrollArea>
+#include <QMap>
 
 void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
     QHash<AccountOption, QCheckBox *> check_map;

@@ -27,7 +27,6 @@
  * groups by class to which they are related.
  */
 
-#include <QString>
 #include <QWidget>
 
 class QComboBox;

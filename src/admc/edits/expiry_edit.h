@@ -23,8 +23,6 @@
 
 #include "edits/attribute_edit.h"
 
-#include <QString>
-
 class ExpiryWidget;
 
 class ExpiryEdit final : public AttributeEdit {

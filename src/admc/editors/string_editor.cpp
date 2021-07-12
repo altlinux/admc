@@ -19,11 +19,11 @@
  */
 
 #include "editors/string_editor.h"
+
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
 
-#include <QDebug>
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLineEdit>

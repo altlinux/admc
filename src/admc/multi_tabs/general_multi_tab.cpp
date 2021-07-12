@@ -21,11 +21,6 @@
 #include "multi_tabs/general_multi_tab.h"
 
 #include "adldap.h"
-#include "edits/country_edit.h"
-#include "edits/group_scope_edit.h"
-#include "edits/group_type_edit.h"
-#include "edits/string_edit.h"
-#include "edits/string_other_edit.h"
 #include "multi_edits/string_multi_edit.h"
 
 #include <QFormLayout>

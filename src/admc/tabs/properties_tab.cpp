@@ -19,6 +19,7 @@
  */
 
 #include "tabs/properties_tab.h"
+
 #include "edits/attribute_edit.h"
 
 #include "adldap.h"

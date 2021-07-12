@@ -21,7 +21,7 @@
 #ifndef PASSWORD_EDIT_H
 #define PASSWORD_EDIT_H
 
-#include "attribute_edit.h"
+#include "edits/attribute_edit.h"
 
 class QLineEdit;
 

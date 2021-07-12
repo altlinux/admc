@@ -19,6 +19,7 @@
  */
 
 #include "tabs/telephones_tab.h"
+
 #include "adldap.h"
 #include "edits/string_large_edit.h"
 #include "edits/string_other_edit.h"

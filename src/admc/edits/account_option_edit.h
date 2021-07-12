@@ -21,8 +21,9 @@
 #ifndef ACCOUNT_OPTION_EDIT_H
 #define ACCOUNT_OPTION_EDIT_H
 
-#include "ad_defines.h"
 #include "edits/attribute_edit.h"
+
+#include "ad_defines.h"
 
 class QCheckBox;
 class QWidget;

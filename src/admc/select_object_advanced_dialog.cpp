@@ -25,7 +25,6 @@
 #include "globals.h"
 
 #include <QDialogButtonBox>
-#include <QList>
 #include <QVBoxLayout>
 
 SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent)

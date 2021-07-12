@@ -24,7 +24,6 @@
 
 #include <QDialogButtonBox>
 #include <QLabel>
-#include <QString>
 #include <QVBoxLayout>
 
 AboutDialog::AboutDialog(QWidget *parent)

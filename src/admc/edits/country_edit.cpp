@@ -23,17 +23,8 @@
 #include "adldap.h"
 #include "edits/country_widget.h"
 #include "globals.h"
-#include "status.h"
-#include "tabs/address_tab.h"
-#include "utils.h"
 
-#include <QComboBox>
-#include <QDebug>
-#include <QFile>
 #include <QFormLayout>
-#include <QHash>
-#include <QVBoxLayout>
-#include <algorithm>
 
 CountryEdit::CountryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {

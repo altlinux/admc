@@ -25,11 +25,8 @@
  * Displays OU's linked to currently selected policy.
  */
 
-#include <QString>
 #include <QWidget>
 
-class QModelIndex;
-class QTreeView;
 class QStandardItemModel;
 class QStandardItem;
 class QMenu;

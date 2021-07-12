@@ -28,13 +28,9 @@
  * switch between views.
  */
 
-#include <QHash>
 #include <QWidget>
 
 class QTreeView;
-class QListView;
-class QCheckBox;
-class ResultsDescription;
 class QStackedWidget;
 class QAbstractItemView;
 class QAbstractItemModel;

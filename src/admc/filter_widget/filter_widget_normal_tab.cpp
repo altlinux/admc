@@ -19,11 +19,11 @@
  */
 
 #include "filter_widget/filter_widget_normal_tab.h"
+
 #include "adldap.h"
 #include "filter_widget/filter_builder.h"
 #include "filter_widget/select_classes_widget.h"
 
-#include <QDebug>
 #include <QFormLayout>
 #include <QLabel>
 #include <QListWidget>

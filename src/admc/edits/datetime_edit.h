@@ -23,8 +23,9 @@
 
 #include "edits/attribute_edit.h"
 
-#include <QDateTimeEdit>
 #include <QString>
+
+class QDateTimeEdit;
 
 class DateTimeEdit final : public AttributeEdit {
     Q_OBJECT

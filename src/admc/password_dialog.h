@@ -22,11 +22,8 @@
 #define PASSWORD_DIALOG_H
 
 #include <QDialog>
-#include <QString>
 
-class QWidget;
 class AttributeEdit;
-class PasswordEdit;
 
 // Accepts input of new password and changes password when done
 class PasswordDialog final : public QDialog {

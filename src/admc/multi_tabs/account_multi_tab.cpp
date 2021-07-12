@@ -27,8 +27,6 @@
 #include "multi_edits/upn_multi_edit.h"
 
 #include <QFormLayout>
-#include <QFrame>
-#include <QLabel>
 
 AccountMultiTab::AccountMultiTab(AdInterface &ad) {
     new UpnMultiEdit(edit_list, ad, this);

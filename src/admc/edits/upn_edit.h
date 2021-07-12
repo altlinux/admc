@@ -21,7 +21,7 @@
 #ifndef UPN_EDIT_H
 #define UPN_EDIT_H
 
-#include "attribute_edit.h"
+#include "edits/attribute_edit.h"
 
 class QLineEdit;
 class AdInterface;

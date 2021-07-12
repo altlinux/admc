@@ -22,7 +22,6 @@
 #define EDIT_QUERY_ITEM_DIALOG_H
 
 #include <QDialog>
-#include <QModelIndex>
 
 class ConsoleWidget;
 class EditQueryItemWidget;

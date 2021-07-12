@@ -28,7 +28,6 @@
 #include <QComboBox>
 #include <QDebug>
 #include <QFile>
-#include <QFormLayout>
 #include <QHash>
 #include <QVBoxLayout>
 #include <algorithm>

@@ -21,8 +21,6 @@
 #ifndef PROPERTIES_TAB_H
 #define PROPERTIES_TAB_H
 
-#include <QList>
-#include <QString>
 #include <QWidget>
 
 /**

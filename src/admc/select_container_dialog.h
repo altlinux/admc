@@ -29,7 +29,6 @@
 #include <QDialog>
 
 class QTreeView;
-class QModelIndex;
 class QStandardItemModel;
 class QSortFilterProxyModel;
 

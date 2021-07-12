@@ -21,7 +21,6 @@
 #ifndef ATTRIBUTE_MULTI_EDIT_H
 #define ATTRIBUTE_MULTI_EDIT_H
 
-#include <QList>
 #include <QObject>
 
 class QFormLayout;

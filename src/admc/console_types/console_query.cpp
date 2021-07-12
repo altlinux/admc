@@ -29,7 +29,6 @@
 #include "utils.h"
 
 #include <QCoreApplication>
-#include <QDebug>
 #include <QFileDialog>
 #include <QJsonDocument>
 #include <QMenu>

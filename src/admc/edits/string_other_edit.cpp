@@ -19,13 +19,13 @@
  */
 
 #include "edits/string_other_edit.h"
+
 #include "adldap.h"
 #include "editors/multi_editor.h"
 #include "edits/string_edit.h"
 #include "globals.h"
-#include "utils.h"
+
 #include <QFormLayout>
-#include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 

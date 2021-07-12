@@ -23,9 +23,6 @@
 #include "adldap.h"
 #include "edits/manager_widget.h"
 #include "globals.h"
-#include "properties_dialog.h"
-#include "select_object_dialog.h"
-#include "utils.h"
 
 #include <QFormLayout>
 

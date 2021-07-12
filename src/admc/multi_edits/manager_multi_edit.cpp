@@ -26,7 +26,6 @@
 
 #include <QFormLayout>
 #include <QLabel>
-#include <QLineEdit>
 
 ManagerMultiEdit::ManagerMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : AttributeMultiEdit(edits_out, parent) {

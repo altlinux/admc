@@ -23,8 +23,6 @@
 
 #include "tabs/properties_tab.h"
 
-#include <QPoint>
-
 class QTreeView;
 class QStandardItemModel;
 

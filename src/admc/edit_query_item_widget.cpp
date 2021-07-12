@@ -34,6 +34,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTextEdit>
+#include <QModelIndex>
 
 EditQueryItemWidget::EditQueryItemWidget()
 : QWidget() {

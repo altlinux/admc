@@ -21,16 +21,9 @@
 #include "move_object_dialog.h"
 
 #include "adldap.h"
-#include "edits/string_edit.h"
 #include "globals.h"
-#include "select_container_dialog.h"
 #include "status.h"
 #include "utils.h"
-
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QLineEdit>
-#include <QPushButton>
 
 MoveObjectDialog::MoveObjectDialog(const QList<QString> &targets_arg, QWidget *parent)
 : SelectContainerDialog(parent) {

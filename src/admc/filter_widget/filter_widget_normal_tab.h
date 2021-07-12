@@ -32,7 +32,6 @@
 
 #include "filter_widget/filter_widget.h"
 
-class QString;
 class QListWidget;
 class SelectClassesWidget;
 class FilterBuilder;

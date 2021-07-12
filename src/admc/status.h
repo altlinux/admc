@@ -27,8 +27,6 @@
  * error messages in a dialog.
  */
 
-#include "utils.h"
-
 class QTextEdit;
 class QStatusBar;
 class QString;

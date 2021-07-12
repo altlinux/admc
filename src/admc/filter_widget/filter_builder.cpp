@@ -19,6 +19,7 @@
  */
 
 #include "filter_widget/filter_builder.h"
+
 #include "adldap.h"
 #include "globals.h"
 

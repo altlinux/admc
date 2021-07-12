@@ -27,6 +27,7 @@
 #include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QVBoxLayout>
+#include <QModelIndex>
 
 CreateQueryItemDialog::CreateQueryItemDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {

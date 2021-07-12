@@ -29,7 +29,6 @@
 #include <QHelpIndexWidget>
 #include <QSplitter>
 #include <QStandardPaths>
-#include <QString>
 #include <QTabWidget>
 #include <QVBoxLayout>
 

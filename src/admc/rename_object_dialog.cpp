@@ -19,13 +19,13 @@
  */
 
 #include "rename_object_dialog.h"
+
 #include "adldap.h"
 #include "edits/string_edit.h"
 #include "globals.h"
 #include "status.h"
 #include "utils.h"
 
-#include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLineEdit>

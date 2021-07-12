@@ -19,11 +19,12 @@
  */
 
 #include "edits/password_edit.h"
+
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
+
 #include <QFormLayout>
-#include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QTextCodec>

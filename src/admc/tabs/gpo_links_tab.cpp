@@ -27,7 +27,6 @@
 
 #include <algorithm>
 
-#include <QMenu>
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>

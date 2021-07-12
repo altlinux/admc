@@ -33,7 +33,6 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QDebug>
 #include <QMenu>
 #include <QSet>
 #include <QStandardItemModel>

@@ -21,12 +21,8 @@
 #ifndef ATTRIBUTE_EDITOR_H
 #define ATTRIBUTE_EDITOR_H
 
-#include <QByteArray>
 #include <QDialog>
-#include <QList>
-#include <QString>
 
-class QVBoxLayout;
 class QLabel;
 class QDialogButtonBox;
 

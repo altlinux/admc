@@ -25,7 +25,6 @@
 #include "globals.h"
 #include "utils.h"
 
-#include <QComboBox>
 #include <QFormLayout>
 #include <QLineEdit>
 

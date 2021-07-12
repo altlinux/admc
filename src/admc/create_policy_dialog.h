@@ -26,8 +26,6 @@
  */
 
 #include <QDialog>
-#include <QList>
-#include <QString>
 
 class QLineEdit;
 class ConsoleWidget;

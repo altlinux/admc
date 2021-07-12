@@ -22,13 +22,8 @@
 #define EDIT_QUERY_FOLDER_DIALOG_H
 
 #include <QDialog>
-#include <QList>
-#include <QModelIndex>
-#include <QString>
 
 class QLineEdit;
-class FilterWidget;
-class SelectBaseWidget;
 class ConsoleWidget;
 
 class EditQueryFolderDialog : public QDialog {

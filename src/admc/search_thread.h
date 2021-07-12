@@ -35,13 +35,9 @@
 
 #include <QThread>
 
-#include "adldap.h"
+#include "ad_defines.h"
 
 class AdObject;
-template <typename T>
-class QList;
-template <typename K, typename V>
-class QHash;
 
 class SearchThread final : public QThread {
     Q_OBJECT

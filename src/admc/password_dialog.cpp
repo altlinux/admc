@@ -19,6 +19,7 @@
  */
 
 #include "password_dialog.h"
+
 #include "adldap.h"
 #include "edits/account_option_edit.h"
 #include "edits/password_edit.h"
@@ -29,7 +30,6 @@
 
 #include <QDialogButtonBox>
 #include <QFormLayout>
-#include <QLabel>
 #include <QPushButton>
 
 PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)

@@ -20,7 +20,7 @@
 
 #include "admc_test_logon_hours_dialog.h"
 
-#include "logon_hours_dialog.h"
+#include "edits/logon_hours_edit_p.h"
 
 #include <QTableView>
 #include <QStandardItemModel>

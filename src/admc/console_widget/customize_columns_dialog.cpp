@@ -30,8 +30,6 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-#include <QDebug>
-
 CustomizeColumnsDialogPrivate::CustomizeColumnsDialogPrivate(CustomizeColumnsDialog *q)
 : QObject(q) {
 }

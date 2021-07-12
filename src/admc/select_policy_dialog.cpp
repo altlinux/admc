@@ -22,15 +22,11 @@
 
 #include "adldap.h"
 #include "console_types/console_policy.h"
-#include "edits/string_edit.h"
 #include "globals.h"
 #include "status.h"
 #include "utils.h"
 
-#include <QDialog>
 #include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QLineEdit>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QTreeView>

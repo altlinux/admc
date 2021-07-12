@@ -29,7 +29,7 @@
  * "managedBy".
  */
 
-#include "attribute_edit.h"
+#include "edits/attribute_edit.h"
 
 class ManagerWidget;
 

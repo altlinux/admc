@@ -35,10 +35,6 @@ class QStandardItem;
 class QPushButton;
 class AdObject;
 class SelectBaseWidget;
-template <typename T>
-class QList;
-template <typename K, typename V>
-class QHash;
 
 class FindWidget final : public QWidget {
     Q_OBJECT

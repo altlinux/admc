@@ -32,11 +32,8 @@
 #include "tab_widget.h"
 #include "utils.h"
 
-#include <QAbstractItemView>
 #include <QAction>
-#include <QDebug>
 #include <QDialogButtonBox>
-#include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
 

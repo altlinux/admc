@@ -30,6 +30,7 @@
  */
 
 #include <QObject>
+
 #include <QSettings>
 
 class QAction;

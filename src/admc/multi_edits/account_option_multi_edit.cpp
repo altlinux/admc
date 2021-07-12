@@ -21,6 +21,7 @@
 #include "multi_edits/account_option_multi_edit.h"
 
 #include "edits/account_option_edit.h"
+#include "adldap.h"
 #include "globals.h"
 
 #include <QCheckBox>

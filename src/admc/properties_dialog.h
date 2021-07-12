@@ -30,14 +30,11 @@
 
 #include <QDialog>
 
-class QString;
 class PropertiesTab;
 class QAbstractItemView;
 class QPushButton;
 class AttributesTab;
 class AdInterface;
-template <typename T>
-class QList;
 
 class PropertiesDialog final : public QDialog {
     Q_OBJECT

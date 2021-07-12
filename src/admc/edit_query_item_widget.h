@@ -26,8 +26,6 @@
  * dialog and create query dialog.
  */
 
-#include <QModelIndex>
-#include <QString>
 #include <QWidget>
 
 class EditQueryItemFilterDialog;

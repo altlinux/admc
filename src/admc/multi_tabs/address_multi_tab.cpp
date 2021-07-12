@@ -25,7 +25,6 @@
 #include "multi_edits/string_multi_edit.h"
 
 #include <QFormLayout>
-#include <QLabel>
 
 AddressMultiTab::AddressMultiTab() {
     auto edit_layout = new QFormLayout();

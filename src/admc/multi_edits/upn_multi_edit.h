@@ -28,7 +28,6 @@
 
 #include "multi_edits/attribute_multi_edit.h"
 
-class QLineEdit;
 class UpnSuffixWidget;
 
 class UpnMultiEdit final : public AttributeMultiEdit {

@@ -21,8 +21,9 @@
 #ifndef GROUP_POLICY_TAB_H
 #define GROUP_POLICY_TAB_H
 
-#include "gplink.h"
 #include "tabs/properties_tab.h"
+
+#include "gplink.h"
 
 class QTreeView;
 class QString;

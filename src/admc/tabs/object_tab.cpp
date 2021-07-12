@@ -19,6 +19,7 @@
  */
 
 #include "tabs/object_tab.h"
+
 #include "adldap.h"
 #include "edits/datetime_edit.h"
 #include "edits/string_edit.h"

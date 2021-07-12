@@ -19,6 +19,7 @@
  */
 
 #include "editors/bool_editor.h"
+
 #include "adldap.h"
 #include "globals.h"
 

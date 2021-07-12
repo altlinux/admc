@@ -23,13 +23,9 @@
 #include "adldap.h"
 #include "edits/upn_suffix_widget.h"
 #include "globals.h"
-#include "utils.h"
 
-#include <QComboBox>
 #include <QFormLayout>
 #include <QLabel>
-#include <QLineEdit>
-#include <QMessageBox>
 
 UpnMultiEdit::UpnMultiEdit(QList<AttributeMultiEdit *> &edits_out, AdInterface &ad, QObject *parent)
 : AttributeMultiEdit(edits_out, parent) {

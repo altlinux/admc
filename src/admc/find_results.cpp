@@ -19,6 +19,7 @@
  */
 
 #include "find_results.h"
+
 #include "adldap.h"
 #include "console_actions.h"
 #include "console_types/console_object.h"
@@ -36,14 +37,11 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QDebug>
-#include <QHash>
-#include <QHeaderView>
+#include <QAbstractItemView>
 #include <QLabel>
 #include <QMenu>
 #include <QSortFilterProxyModel>
 #include <QStandardItemModel>
-#include <QTreeView>
 #include <QVBoxLayout>
 
 FindResults::FindResults()

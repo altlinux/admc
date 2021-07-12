@@ -27,7 +27,6 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLineEdit>

@@ -24,7 +24,6 @@
 #include "tabs/properties_tab.h"
 
 #include <QSet>
-#include <QString>
 
 class QTreeView;
 class QStandardItemModel;
