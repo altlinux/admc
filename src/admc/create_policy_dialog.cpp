@@ -30,7 +30,6 @@
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLineEdit>
-#include <QMessageBox>
 #include <QPushButton>
 
 CreatePolicyDialog::CreatePolicyDialog(ConsoleWidget *console_arg)
@@ -95,7 +94,7 @@ void CreatePolicyDialog::accept() {
     }();
 
     if (name_conflict) {
-        QMessageBox::warning(this, tr("Error"), tr("Group Policy Object with this name already exists."));
+        message_box_warning(this, tr("Error"), tr("Group Policy Object with this name already exists."));
 
         return;
     }

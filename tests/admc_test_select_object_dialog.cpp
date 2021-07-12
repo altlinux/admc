@@ -26,7 +26,6 @@
 #include "select_object_dialog.h"
 
 #include <QLineEdit>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QTreeView>
 

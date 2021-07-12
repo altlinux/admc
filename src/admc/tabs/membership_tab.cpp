@@ -29,7 +29,6 @@
 
 #include <QDebug>
 #include <QLabel>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QTreeView>
@@ -368,7 +367,7 @@ void MembershipTab::on_remove_button() {
             return QString();
         }();
 
-        QMessageBox::warning(this, tr("Error"), error_text);
+        message_box_warning(this, tr("Error"), error_text);
     } else {
         remove_values(removed_values);
     }

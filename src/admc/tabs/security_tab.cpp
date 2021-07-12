@@ -32,7 +32,6 @@
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QListWidget>
-#include <QMessageBox>
 #include <QPersistentModelIndex>
 #include <QPushButton>
 #include <QStandardItemModel>
@@ -442,7 +441,7 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
     }
 
     if (failed_to_add_because_already_exists) {
-        QMessageBox::warning(this, tr("Error"), tr("Failed to add some trustee's because they are already in the list."));
+        message_box_warning(this, tr("Error"), tr("Failed to add some trustee's because they are already in the list."));
     }
 }
 

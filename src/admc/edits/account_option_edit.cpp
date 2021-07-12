@@ -22,12 +22,12 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QLabel>
-#include <QMessageBox>
 #include <QScrollArea>
 #include <QMap>
 
@@ -129,7 +129,7 @@ void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &che
                     const QString subject_name = account_option_string(subject_option);
                     const QString blocker_name = account_option_string(blocker_option);
                     const QString error = QString(QObject::tr("Can't set \"%1\" when \"%2\" is set.")).arg(blocker_name, subject_name);
-                    QMessageBox::warning(blocker, QObject::tr("Error"), error);
+                    message_box_warning(blocker, QObject::tr("Error"), error);
                 }
             });
     };

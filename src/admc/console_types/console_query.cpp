@@ -32,7 +32,6 @@
 #include <QFileDialog>
 #include <QJsonDocument>
 #include <QMenu>
-#include <QMessageBox>
 #include <QStack>
 #include <QStandardItem>
 #include <QStandardPaths>
@@ -282,7 +281,7 @@ void console_query_tree_save(ConsoleWidget *console) {
 bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index) {
     if (name.isEmpty()) {
         const QString error_text = QString(QCoreApplication::translate("query.cpp", "Name may not be empty"));
-        QMessageBox::warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
+        message_box_warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
 
         return false;
     }
@@ -314,10 +313,10 @@ bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString 
 
     if (name_conflict) {
         const QString error_text = QString(QCoreApplication::translate("query.cpp", "There's already an item with this name."));
-        QMessageBox::warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
+        message_box_warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
     } else if (name_contains_slash) {
         const QString error_text = QString(QCoreApplication::translate("query.cpp", "Names cannot contain \"/\"."));
-        QMessageBox::warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
+        message_box_warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
     }
 
     const bool name_is_good = (!name_conflict && !name_contains_slash);
@@ -510,7 +509,7 @@ void console_query_import(ConsoleWidget *console) {
 
         if (json_document.isNull()) {
             const QString error_text = QString(QCoreApplication::translate("query.cpp", "Query file is corrupted."));
-            QMessageBox::warning(console, QCoreApplication::translate("query.cpp", "Error"), error_text);
+            message_box_warning(console, QCoreApplication::translate("query.cpp", "Error"), error_text);
 
             return QHash<QString, QVariant>();
         }

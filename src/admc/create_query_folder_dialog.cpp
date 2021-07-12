@@ -30,7 +30,6 @@
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLineEdit>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QModelIndex>
 

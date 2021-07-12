@@ -32,7 +32,6 @@
 #include <QDialogButtonBox>
 #include <QFrame>
 #include <QLabel>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QTreeView>
@@ -143,7 +142,7 @@ void AttributesTab::edit_attribute() {
 
         editor->open();
     } else {
-        QMessageBox::critical(this, tr("Error"), tr("No editor is available for this attribute type."));
+        message_box_critical(this, tr("Error"), tr("No editor is available for this attribute type."));
     }
 }
 

@@ -46,6 +46,8 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 
+void message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
+
 QList<QStandardItem *> make_item_row(const int count) {
     QList<QStandardItem *> row;
 
@@ -282,7 +284,7 @@ void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad,
     }
 }
 
-void open_message_box(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent) {
+void message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent) {
     auto message_box = new QMessageBox(parent);
     message_box->setAttribute(Qt::WA_DeleteOnClose);
     message_box->setStandardButtons(QMessageBox::Ok);
@@ -291,4 +293,20 @@ void open_message_box(const QMessageBox::Icon icon, const QString &title, const 
     message_box->setIcon(icon);
 
     message_box->open();
+}
+
+void message_box_critical(QWidget *parent, const QString &title, const QString &text) {
+    message_box_generic(QMessageBox::Critical, title, text, parent);
+}
+
+void message_box_information(QWidget *parent, const QString &title, const QString &text) {
+    message_box_generic(QMessageBox::Information, title, text, parent);
+}
+
+void message_box_question(QWidget *parent, const QString &title, const QString &text) {
+    message_box_generic(QMessageBox::Question, title, text, parent);
+}
+
+void message_box_warning(QWidget *parent, const QString &title, const QString &text) {
+    message_box_generic(QMessageBox::Warning, title, text, parent);
 }

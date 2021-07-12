@@ -47,8 +47,6 @@ class QMap;
 template <typename K, typename T>
 class QHash;
 
-#include <QMessageBox>
-
 #define debug_print(a, args...) printf("%s(%s:%d) " a, __func__, __FILE__, __LINE__, ##args)
 #define trace(a, args...) debug_print(a "\n", ##args)
 
@@ -101,6 +99,12 @@ void advanced_features_filter(QString &filter);
 void dev_mode_filter(QString &filter);
 void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base);
 
-void open_message_box(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
+// NOTE: these f-ns replace QMessageBox static f-ns. The
+// static f-ns use exec(), which block execution and makes
+// testing a hassle. These f-ns use open().
+void message_box_critical(QWidget *parent, const QString &title, const QString &text);
+void message_box_information(QWidget *parent, const QString &title, const QString &text);
+void message_box_question(QWidget *parent, const QString &title, const QString &text);
+void message_box_warning(QWidget *parent, const QString &title, const QString &text);
 
 #endif /* UTILS_H */

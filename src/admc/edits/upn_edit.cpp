@@ -71,7 +71,7 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
 
     if (new_value.isEmpty()) {
         const QString text = tr("UPN may not be empty.");
-        open_message_box(QMessageBox::Warning, tr("Error"), text, prefix_edit);
+        message_box_warning(prefix_edit, tr("Error"), text);
 
         return false;
     }
@@ -94,7 +94,7 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
 
     if (upn_not_unique) {
         const QString text = tr("The specified user logon name already exists.");
-        open_message_box(QMessageBox::Warning, tr("Error"), text, prefix_edit);
+        message_box_warning(prefix_edit, tr("Error"), text);
 
         return false;
     }

@@ -29,7 +29,6 @@
 #include "filter_widget/select_base_widget.h"
 #include "select_object_advanced_dialog.h"
 
-#include <QMessageBox>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QTreeView>
@@ -150,7 +149,7 @@ void SelectObjectDialog::accept() {
 
     const bool selected_multiple_when_single_selection = (multi_selection == SelectObjectDialogMultiSelection_No && selected.size() > 1);
     if (selected_multiple_when_single_selection) {
-        open_message_box(QMessageBox::Warning, tr("Warning"), tr("This selection accepts only one object. Remove extra objects to proceed."), this);
+        message_box_warning(this, tr("Error"), tr("This selection accepts only one object. Remove extra objects to proceed."));
     } else {
         QDialog::accept();
     }
@@ -233,7 +232,7 @@ void SelectObjectDialog::on_add_button() {
         dialog->open();
     } else if (search_results.size() == 0) {
         // Warn about failing to find any matches
-        open_message_box(QMessageBox::Critical, tr("Error"), tr("Failed to find any matches."), this);
+        message_box_warning(this, tr("Error"), tr("Failed to find any matches."));
     }
 }
 
@@ -290,7 +289,7 @@ bool SelectObjectDialog::is_duplicate(const AdObject &object) const {
 }
 
 void SelectObjectDialog::duplicate_message_box() {
-    open_message_box(QMessageBox::Critical, tr("Error"), tr("Selected object is already in the list."), this);
+    message_box_warning(this, tr("Error"), tr("Selected object is already in the list."));
 }
 
 SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)

@@ -22,13 +22,13 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QComboBox>
 #include <QDialogButtonBox>
 #include <QFont>
 #include <QFontDatabase>
 #include <QLabel>
-#include <QMessageBox>
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
 
@@ -195,7 +195,7 @@ bool OctetEditor::check_input(const OctetDisplayFormat format) {
             return QString();
         }();
 
-        QMessageBox::warning(this, title, text);
+        message_box_warning(this, title, text);
     }
 
     return ok;

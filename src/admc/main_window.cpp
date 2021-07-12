@@ -34,7 +34,6 @@
 #include <QDebug>
 #include <QDockWidget>
 #include <QMenuBar>
-#include <QMessageBox>
 #include <QStatusBar>
 #include <QTextEdit>
 
@@ -215,7 +214,7 @@ void MainWindow::setup_menubar() {
                 if (checked) {
                     g_settings->set_variant(VariantSetting_Locale, QLocale(language));
 
-                    QMessageBox::information(this, tr("Info"), tr("App needs to be restarted for the language option to take effect."));
+                    message_box_information(this, tr("Info"), tr("App needs to be restarted for the language option to take effect."));
                 }
             });
     }

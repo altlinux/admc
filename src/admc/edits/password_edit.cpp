@@ -26,7 +26,6 @@
 
 #include <QFormLayout>
 #include <QLineEdit>
-#include <QMessageBox>
 #include <QTextCodec>
 
 PasswordEdit::PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
@@ -70,7 +69,7 @@ bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
     const QString confirm_pass = confirm_edit->text();
     if (pass != confirm_pass) {
         const QString error_text = QString(tr("Passwords don't match!"));
-        QMessageBox::warning(edit, tr("Error"), error_text);
+        message_box_warning(edit, tr("Error"), error_text);
 
         return false;
     }
@@ -79,7 +78,7 @@ bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
     const bool can_encode = codec->canEncode(pass);
     if (!can_encode) {
         const QString error_text = QString(tr("Password contains invalid characters"));
-        QMessageBox::warning(edit, tr("Error"), error_text);
+        message_box_warning(edit, tr("Error"), error_text);
 
         return false;
     }
