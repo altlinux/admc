@@ -53,7 +53,7 @@ FormatIndex next_format_index(const FormatIndex index);
 void ADMCTestOctetEdit::init() {
     ADMCTest::init();
 
-    edit = new OctetEditor(ATTRIBUTE_DESCRIPTION, QList<QByteArray>(), parent_widget);
+    edit = new OctetEditor(ATTRIBUTE_DESCRIPTION, parent_widget);
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
