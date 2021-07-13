@@ -28,18 +28,15 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-DateTimeEditor::DateTimeEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+DateTimeEditor::DateTimeEditor(const QString attribute_arg, QWidget *parent)
 : AttributeEditor(parent) {
     setWindowTitle(tr("Edit datetime"));
+
+    attribute = attribute_arg;
 
     QLabel *attribute_label = make_attribute_label(attribute);
 
     edit = new QDateTimeEdit();
-
-    const QByteArray value = values.value(0, QByteArray());
-    const QString value_string = QString(value);
-    const QDateTime value_datetime = datetime_string_to_qdatetime(attribute, value_string, g_adconfig);
-    edit->setDateTime(value_datetime);
 
     QDialogButtonBox *button_box = make_button_box(attribute);
     ;
@@ -54,6 +51,13 @@ DateTimeEditor::DateTimeEditor(const QString attribute, const QList<QByteArray> 
     if (system_only) {
         edit->setReadOnly(true);
     }
+}
+
+void DateTimeEditor::load(const QList<QByteArray> &values) {
+    const QByteArray value = values.value(0, QByteArray());
+    const QString value_string = QString(value);
+    const QDateTime value_datetime = datetime_string_to_qdatetime(attribute, value_string, g_adconfig);
+    edit->setDateTime(value_datetime);
 }
 
 QList<QByteArray> DateTimeEditor::get_new_values() const {

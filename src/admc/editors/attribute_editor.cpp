@@ -38,67 +38,75 @@ AttributeEditor::AttributeEditor(QWidget *parent)
     resize(600, height());
 }
 
-AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByteArray> values, QWidget *parent) {
+AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByteArray> value_list, QWidget *parent) {
     const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
 
     auto octet_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
-            return new OctetEditor(attribute, values, parent);
+            return new OctetEditor(attribute, parent);
         } else {
-            return new MultiEditor(attribute, values, parent);
+            return new MultiEditor(attribute, parent);
         }
     };
 
     auto string_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
-            return new StringEditor(attribute, values, parent);
+            return new StringEditor(attribute, parent);
         } else {
-            return new MultiEditor(attribute, values, parent);
+            return new MultiEditor(attribute, parent);
         }
     };
 
     auto bool_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
-            return new BoolEditor(attribute, values, parent);
+            return new BoolEditor(attribute, parent);
         } else {
             // NOTE: yes, string multi editor also works for multi-valued bools since they are just strings (TRUE/FALSE)
-            return new MultiEditor(attribute, values, parent);
+            return new MultiEditor(attribute, parent);
         }
     };
 
     auto datetime_dialog = [=]() -> AttributeEditor * {
         if (single_valued) {
-            return new DateTimeEditor(attribute, values, parent);
+            return new DateTimeEditor(attribute, parent);
         } else {
             return nullptr;
         }
     };
 
-    const AttributeType type = g_adconfig->get_attribute_type(attribute);
-    switch (type) {
-        case AttributeType_Octet: return octet_dialog();
-        case AttributeType_Sid: return octet_dialog();
+    AttributeEditor *editor = [&]() -> AttributeEditor * {
+        const AttributeType type = g_adconfig->get_attribute_type(attribute);
+        switch (type) {
+            case AttributeType_Octet: return octet_dialog();
+            case AttributeType_Sid: return octet_dialog();
 
-        case AttributeType_Boolean: return bool_dialog();
+            case AttributeType_Boolean: return bool_dialog();
 
-        case AttributeType_Unicode: return string_dialog();
-        case AttributeType_StringCase: return string_dialog();
-        case AttributeType_DSDN: return string_dialog();
-        case AttributeType_IA5: return string_dialog();
-        case AttributeType_Teletex: return string_dialog();
-        case AttributeType_ObjectIdentifier: return string_dialog();
-        case AttributeType_Integer: return string_dialog();
-        case AttributeType_Enumeration: return string_dialog();
-        case AttributeType_LargeInteger: return string_dialog();
+            case AttributeType_Unicode: return string_dialog();
+            case AttributeType_StringCase: return string_dialog();
+            case AttributeType_DSDN: return string_dialog();
+            case AttributeType_IA5: return string_dialog();
+            case AttributeType_Teletex: return string_dialog();
+            case AttributeType_ObjectIdentifier: return string_dialog();
+            case AttributeType_Integer: return string_dialog();
+            case AttributeType_Enumeration: return string_dialog();
+            case AttributeType_LargeInteger: return string_dialog();
 
-        case AttributeType_UTCTime: return datetime_dialog();
-        case AttributeType_GeneralizedTime: return datetime_dialog();
+            case AttributeType_UTCTime: return datetime_dialog();
+            case AttributeType_GeneralizedTime: return datetime_dialog();
 
-        // NOTE: putting these here as confirmed to be unsupported
-        case AttributeType_DNBinary: return nullptr;
+            // NOTE: putting these here as confirmed to be unsupported
+            case AttributeType_DNBinary: return nullptr;
 
-        default: return nullptr;
+            default: return nullptr;
+        }
+    }();
+
+    if (editor != nullptr) {
+        editor->load(value_list);
     }
+
+    return editor;
 }
 
 QLabel *AttributeEditor::make_attribute_label(const QString &attribute) {

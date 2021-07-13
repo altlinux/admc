@@ -29,7 +29,7 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 
-StringEditor::StringEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+StringEditor::StringEditor(const QString attribute, QWidget *parent)
 : AttributeEditor(parent) {
     const QString title = [attribute]() {
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
@@ -55,10 +55,6 @@ StringEditor::StringEditor(const QString attribute, const QList<QByteArray> valu
 
     limit_edit(edit, attribute);
 
-    const QByteArray value = values.value(0, QByteArray());
-    const QString value_string = QString(value);
-    edit->setText(value_string);
-
     QDialogButtonBox *button_box = make_button_box(attribute);
     ;
 
@@ -72,6 +68,12 @@ StringEditor::StringEditor(const QString attribute, const QList<QByteArray> valu
     if (system_only) {
         edit->setReadOnly(true);
     }
+}
+
+void StringEditor::load(const QList<QByteArray> &values) {
+    const QByteArray value = values.value(0, QByteArray());
+    const QString value_string = QString(value);
+    edit->setText(value_string);
 }
 
 QList<QByteArray> StringEditor::get_new_values() const {

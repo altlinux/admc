@@ -29,9 +29,10 @@ class BoolEditor final : public AttributeEditor {
     Q_OBJECT
 
 public:
-    BoolEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    BoolEditor(const QString attribute, QWidget *parent);
 
-    QList<QByteArray> get_new_values() const;
+    void load(const QList<QByteArray> &values) override;
+    QList<QByteArray> get_new_values() const override;
 
 private:
     QRadioButton *true_button;

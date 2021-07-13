@@ -36,9 +36,10 @@ class MultiEditor final : public AttributeEditor {
     Q_OBJECT
 
 public:
-    MultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent);
+    MultiEditor(const QString attribute_arg, QWidget *parent);
 
-    QList<QByteArray> get_new_values() const;
+    void load(const QList<QByteArray> &values) override;
+    QList<QByteArray> get_new_values() const override;
 
 private slots:
     void add();

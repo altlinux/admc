@@ -34,7 +34,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> values, QWidget *parent)
+MultiEditor::MultiEditor(const QString attribute_arg, QWidget *parent)
 : AttributeEditor(parent) {
     attribute = attribute_arg;
 
@@ -71,10 +71,6 @@ MultiEditor::MultiEditor(const QString attribute_arg, const QList<QByteArray> va
     auto list_label = new QLabel(tr("Values:"));
 
     list_widget = new QListWidget();
-
-    for (const QByteArray &value : values) {
-        add_value(value);
-    }
 
     auto remove_button = new QPushButton(tr("Remove"));
 
@@ -119,11 +115,13 @@ void MultiEditor::add() {
     AttributeEditor *editor = [this]() -> AttributeEditor * {
         const bool is_bool = (g_adconfig->get_attribute_type(attribute) == AttributeType_Boolean);
         if (is_bool) {
-            return new BoolEditor(attribute, QList<QByteArray>(), this);
+            return new BoolEditor(attribute, this);
         } else {
-            return new StringEditor(attribute, QList<QByteArray>(), this);
+            return new StringEditor(attribute, this);
         }
     }();
+
+    editor->load({});
 
     connect(
         editor, &QDialog::accepted,
@@ -144,6 +142,12 @@ void MultiEditor::remove() {
 
     for (const auto item : selected) {
         delete item;
+    }
+}
+
+void MultiEditor::load(const QList<QByteArray> &values) {
+    for (const QByteArray &value : values) {
+        add_value(value);
     }
 }
 
@@ -169,13 +173,15 @@ void MultiEditor::edit_item(QListWidgetItem *item) {
         const MultiEditorType editor_type = get_editor_type();
 
         switch (editor_type) {
-            case MultiEditorType_String: return new StringEditor(attribute, {bytes}, this);
-            case MultiEditorType_Octet: return new OctetEditor(attribute, {bytes}, this);
-            case MultiEditorType_Datetime: return new DateTimeEditor(attribute, {bytes}, this);
+            case MultiEditorType_String: return new StringEditor(attribute, this);
+            case MultiEditorType_Octet: return new OctetEditor(attribute, this);
+            case MultiEditorType_Datetime: return new DateTimeEditor(attribute, this);
         }
 
         return nullptr;
     }();
+
+    editor->load({bytes});
 
     if (editor == nullptr) {
         return;

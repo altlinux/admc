@@ -444,7 +444,8 @@ void CentralWidget::object_edit_upn_suffixes() {
 
     g_status()->display_ad_messages(ad, this);
 
-    auto editor = new MultiEditor(ATTRIBUTE_UPN_SUFFIXES, current_values, this);
+    auto editor = new MultiEditor(ATTRIBUTE_UPN_SUFFIXES, this);
+    editor->load(current_values);
     editor->open();
 
     // When editor is accepted, update values of upn

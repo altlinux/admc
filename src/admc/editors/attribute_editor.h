@@ -40,8 +40,9 @@ public:
     // Makes a dialog by picking the appropriate type of
     // editor for given attribute. If attribute is not
     // supported, returns nullptr.
-    static AttributeEditor *make(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    static AttributeEditor *make(const QString attribute, const QList<QByteArray> value_list, QWidget *parent);
 
+    virtual void load(const QList<QByteArray> &value_list) = 0;
     virtual QList<QByteArray> get_new_values() const = 0;
 
 protected:

@@ -28,7 +28,7 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 
-BoolEditor::BoolEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+BoolEditor::BoolEditor(const QString attribute, QWidget *parent)
 : AttributeEditor(parent) {
     setWindowTitle(tr("Edit boolean"));
 
@@ -37,20 +37,6 @@ BoolEditor::BoolEditor(const QString attribute, const QList<QByteArray> values, 
     true_button = new QRadioButton(tr("True"));
     false_button = new QRadioButton(tr("False"));
     unset_button = new QRadioButton(tr("Unset"));
-
-    if (values.isEmpty()) {
-        unset_button->setChecked(true);
-    } else {
-        const QByteArray value = values[0];
-        const QString value_string = QString(value);
-        const bool value_bool = ad_string_to_bool(value_string);
-
-        if (value_bool) {
-            true_button->setChecked(true);
-        } else {
-            false_button->setChecked(true);
-        }
-    }
 
     QDialogButtonBox *button_box = make_button_box(attribute);
     ;
@@ -67,6 +53,22 @@ BoolEditor::BoolEditor(const QString attribute, const QList<QByteArray> values, 
         true_button->setEnabled(false);
         false_button->setEnabled(false);
         unset_button->setEnabled(false);
+    }
+}
+
+void BoolEditor::load(const QList<QByteArray> &values) {
+    if (values.isEmpty()) {
+        unset_button->setChecked(true);
+    } else {
+        const QByteArray value = values[0];
+        const QString value_string = QString(value);
+        const bool value_bool = ad_string_to_bool(value_string);
+
+        if (value_bool) {
+            true_button->setChecked(true);
+        } else {
+            false_button->setChecked(true);
+        }
     }
 }
 

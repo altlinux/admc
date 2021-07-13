@@ -29,9 +29,10 @@ class StringEditor final : public AttributeEditor {
     Q_OBJECT
 
 public:
-    StringEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    StringEditor(const QString attribute, QWidget *parent);
 
-    QList<QByteArray> get_new_values() const;
+    void load(const QList<QByteArray> &values) override;
+    QList<QByteArray> get_new_values() const override;
 
 private:
     QLineEdit *edit;

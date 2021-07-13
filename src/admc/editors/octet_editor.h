@@ -37,11 +37,11 @@ class OctetEditor final : public AttributeEditor {
     Q_OBJECT
 
 public:
-    OctetEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent);
+    OctetEditor(const QString attribute, QWidget *parent);
 
+    void load(const QList<QByteArray> &values) override;
     QList<QByteArray> get_new_values() const override;
     void accept() override;
-    void load(const QList<QByteArray> values);
 
 private slots:
     void on_format_combo();

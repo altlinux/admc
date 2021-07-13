@@ -39,7 +39,7 @@ OctetDisplayFormat current_format(QComboBox *format_combo);
 int format_base(const OctetDisplayFormat format);
 char *itoa(int value, char *result, int base);
 
-OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values, QWidget *parent)
+OctetEditor::OctetEditor(const QString attribute, QWidget *parent)
 : AttributeEditor(parent) {
     setWindowTitle(tr("Edit octet string"));
 
@@ -56,8 +56,6 @@ OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values
     edit = new QPlainTextEdit();
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     edit->setFont(fixed_font);
-
-    load(values);
 
     if (g_adconfig->get_attribute_is_system_only(attribute)) {
         edit->setReadOnly(true);
@@ -93,7 +91,7 @@ void OctetEditor::accept() {
     }
 }
 
-void OctetEditor::load(const QList<QByteArray> values) {
+void OctetEditor::load(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = octet_bytes_to_string(value, current_format(format_combo));
     edit->setPlainText(value_string);
