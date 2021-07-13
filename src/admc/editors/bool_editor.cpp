@@ -38,6 +38,10 @@ BoolEditor::BoolEditor(const QString attribute, QWidget *parent)
     false_button = new QRadioButton(tr("False"));
     unset_button = new QRadioButton(tr("Unset"));
 
+    true_button->setObjectName("true_button");
+    false_button->setObjectName("false_button");
+    unset_button->setObjectName("unset_button");
+
     QDialogButtonBox *button_box = make_button_box(attribute);
     ;
 

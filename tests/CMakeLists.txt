@@ -56,6 +56,7 @@ set(TEST_TARGETS
     admc_test_manager_edit
     admc_test_delegation_edit
     admc_test_octet_editor
+    admc_test_bool_editor
 )
 
 foreach(target ${TEST_TARGETS})
