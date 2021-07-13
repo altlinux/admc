@@ -58,6 +58,7 @@ set(TEST_TARGETS
     admc_test_octet_editor
     admc_test_bool_editor
     admc_test_datetime_editor
+    admc_test_string_editor
 )
 
 foreach(target ${TEST_TARGETS})

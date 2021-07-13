@@ -93,6 +93,7 @@ Tests for ADMC
 %_bindir/admc_test_delegation_edit
 %_bindir/admc_test_octet_editor
 %_bindir/admc_test_bool_editor
+%_bindir/admc_test_string_editor
 
 %changelog
 * Fri Jul 09 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.6.0-alt1
