@@ -289,7 +289,7 @@ void message_box_generic(const QMessageBox::Icon icon, const QString &title, con
     message_box->setAttribute(Qt::WA_DeleteOnClose);
     message_box->setStandardButtons(QMessageBox::Ok);
     message_box->setWindowTitle(title);
-    message_box->setText(title);
+    message_box->setText(text);
     message_box->setIcon(icon);
 
     message_box->open();
