@@ -18,31 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATETIME_EDITOR_H
-#define DATETIME_EDITOR_H
+#ifndef ADMC_TEST_DATE_TIME_EDITOR_H
+#define ADMC_TEST_DATE_TIME_EDITOR_H
 
-/**
- * Editor for datetimes. Note that this is read-only and get
- * f-nd always returns an empty list because all datetime
- * attributes are read-only.
- */
+#include "admc_test.h"
 
-#include "editors/attribute_editor.h"
-
+class DateTimeEditor;
 class QDateTimeEdit;
 
-class DateTimeEditor final : public AttributeEditor {
+class ADMCTestDateTimeEditor : public ADMCTest {
     Q_OBJECT
 
-public:
-    DateTimeEditor(const QString attribute, QWidget *parent);
+private slots:
+    void init() override;
 
-    void load(const QList<QByteArray> &values) override;
-    QList<QByteArray> get_new_values() const override;
+    void load();
+    void get_new_values();
 
 private:
-    QDateTimeEdit *edit;
-    QString attribute;
+    DateTimeEditor *edit;
+    QDateTimeEdit *datetime_edit;
 };
 
-#endif /* DATETIME_EDITOR_H */
+#endif /* ADMC_TEST_DATE_TIME_EDITOR_H */
