@@ -28,7 +28,7 @@ const QList<QByteArray> empty_value = {};
 const QList<QByteArray> true_value = {"TRUE"};
 const QList<QByteArray> false_value = {"FALSE"};
 
-void ADMCTestBoolEdit::init() {
+void ADMCTestBoolEditor::init() {
     ADMCTest::init();
 
     edit = new BoolEditor(ATTRIBUTE_DESCRIPTION, parent_widget);
@@ -45,7 +45,7 @@ void ADMCTestBoolEdit::init() {
     QVERIFY(unset_button);
 }
 
-void ADMCTestBoolEdit::load() {
+void ADMCTestBoolEditor::load() {
     edit->load(empty_value);
     QVERIFY(unset_button->isChecked());
 
@@ -56,7 +56,7 @@ void ADMCTestBoolEdit::load() {
     QVERIFY(false_button->isChecked());
 }
 
-void ADMCTestBoolEdit::get_new_values() {
+void ADMCTestBoolEditor::get_new_values() {
     edit->load(empty_value);
 
     true_button->click();
@@ -72,4 +72,4 @@ void ADMCTestBoolEdit::get_new_values() {
     QVERIFY(empty_value_from_get == empty_value);
 }
 
-QTEST_MAIN(ADMCTestBoolEdit)
+QTEST_MAIN(ADMCTestBoolEditor)

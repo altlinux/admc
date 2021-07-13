@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_BOOL_EDIT_H
-#define ADMC_TEST_BOOL_EDIT_H
+#ifndef ADMC_TEST_BOOL_EDITOR_H
+#define ADMC_TEST_BOOL_EDITOR_H
 
 #include "admc_test.h"
 
 class BoolEditor;
 class QRadioButton;
 
-class ADMCTestBoolEdit : public ADMCTest {
+class ADMCTestBoolEditor : public ADMCTest {
     Q_OBJECT
 
 private slots:
@@ -42,4 +42,4 @@ private:
     QRadioButton *unset_button;
 };
 
-#endif /* ADMC_TEST_BOOL_EDIT_H */
+#endif /* ADMC_TEST_BOOL_EDITOR_H */
