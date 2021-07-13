@@ -57,9 +57,7 @@ OctetEditor::OctetEditor(const QString attribute, const QList<QByteArray> values
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     edit->setFont(fixed_font);
 
-    const QByteArray value = values.value(0, QByteArray());
-    const QString value_string = octet_bytes_to_string(value, current_format(format_combo));
-    edit->setPlainText(value_string);
+    load(values);
 
     if (g_adconfig->get_attribute_is_system_only(attribute)) {
         edit->setReadOnly(true);
@@ -95,9 +93,13 @@ void OctetEditor::accept() {
     }
 }
 
-void OctetEditor::on_format_combo() {
-    static int prev_index = 0;
+void OctetEditor::load(const QList<QByteArray> values) {
+    const QByteArray value = values.value(0, QByteArray());
+    const QString value_string = octet_bytes_to_string(value, current_format(format_combo));
+    edit->setPlainText(value_string);
+}
 
+void OctetEditor::on_format_combo() {
     // Check that input is ok for previous format, otherwise
     // won't be able to convert it to new format
     const bool input_ok_for_prev_format = check_input(prev_format);
@@ -116,7 +118,7 @@ void OctetEditor::on_format_combo() {
         // Revert to previous format if input is invalid for
         // current format
         format_combo->blockSignals(true);
-        format_combo->setCurrentIndex(prev_index);
+        format_combo->setCurrentIndex((int) prev_format);
         format_combo->blockSignals(false);
     }
 }

@@ -27,7 +27,7 @@ class QPlainTextEdit;
 class QComboBox;
 
 enum OctetDisplayFormat {
-    OctetDisplayFormat_Hexadecimal,
+    OctetDisplayFormat_Hexadecimal = 0,
     OctetDisplayFormat_Binary,
     OctetDisplayFormat_Decimal,
     OctetDisplayFormat_Octal,
@@ -41,6 +41,7 @@ public:
 
     QList<QByteArray> get_new_values() const override;
     void accept() override;
+    void load(const QList<QByteArray> values);
 
 private slots:
     void on_format_combo();
