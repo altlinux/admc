@@ -124,6 +124,11 @@ void OctetEditor::on_format_combo() {
 bool OctetEditor::check_input(const OctetDisplayFormat format) {
     const bool ok = [=]() {
         const QString text = edit->toPlainText();
+
+        if (text.isEmpty()) {
+            return true;
+        }
+
         const QList<QString> text_split = text.split(" ");
 
         // Check that all elements of text (separated by
@@ -249,6 +254,10 @@ QString octet_bytes_to_string(const QByteArray bytes, const OctetDisplayFormat f
 }
 
 QByteArray octet_string_to_bytes(const QString string, const OctetDisplayFormat format) {
+    if (string.isEmpty()) {
+        return QByteArray();
+    }
+
     const QList<QString> string_split = string.split(" ");
 
     QByteArray out;
