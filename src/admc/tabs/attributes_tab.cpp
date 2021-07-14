@@ -36,6 +36,8 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
+#include <QMenu>
+#include <QAction>
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -44,20 +46,16 @@ enum AttributesColumn {
     AttributesColumn_COUNT,
 };
 
-QHash<AttributeFilter, bool> get_filter_state_from_settings();
-
 QString attribute_type_display_string(const AttributeType type);
 
 AttributesTab::AttributesTab() {
-    filter_dialog = new AttributesFilterDialog(this);
-
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
-        {
-            {AttributesColumn_Name, tr("Name")},
-            {AttributesColumn_Value, tr("Value")},
-            {AttributesColumn_Type, tr("Type")},
-        });
+    {
+        {AttributesColumn_Name, tr("Name")},
+        {AttributesColumn_Value, tr("Value")},
+        {AttributesColumn_Type, tr("Type")},
+    });
 
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -81,6 +79,8 @@ AttributesTab::AttributesTab() {
     buttons->addStretch();
     buttons->addWidget(filter_button);
 
+    filter_button->setMenu(new AttributesFilterMenu(this));
+
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(view);
@@ -94,13 +94,6 @@ AttributesTab::AttributesTab() {
     connect(
         edit_button, &QAbstractButton::clicked,
         this, &AttributesTab::edit_attribute);
-    connect(
-        filter_button, &QAbstractButton::clicked,
-        filter_dialog, &QDialog::open);
-    connect(
-        filter_dialog, &QDialog::accepted,
-        proxy, &AttributesTabProxy::update_filter_state);
-    proxy->update_filter_state();
 }
 
 void AttributesTab::edit_attribute() {
@@ -209,127 +202,71 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
     row[AttributesColumn_Type]->setText(type_display);
 }
 
-void AttributesTab::update_proxy() {
+AttributesFilterMenu::AttributesFilterMenu(QWidget *parent)
+: QMenu(parent) {
+    auto add_filter_option = [&](const QString text, const BoolSetting setting) {
+        QAction *action = addAction(text);
+        action->setText(text);
+        action->setObjectName(QString::number(setting));
 
-}
+        g_settings->connect_action_to_bool_setting(action, setting);
 
-AttributesFilterDialog::AttributesFilterDialog(QWidget *parent)
-: QDialog(parent) {
-    // Load filter state from settings
-    const QHash<AttributeFilter, bool> filter_state = get_filter_state_from_settings();
-
-    auto add_check = [&](const QString text, const AttributeFilter filter) {
-        auto check = new QCheckBox();
-        check->setText(text);
-        check->setChecked(filter_state[filter]);
-        check->setObjectName(QString::number(filter));
-
-        checks.insert(filter, check);
+        action_map.insert(setting, action);
     };
 
-    add_check(tr("Unset"), AttributeFilter_Unset);
-    add_check(tr("Read-only"), AttributeFilter_ReadOnly);
-    add_check(tr("Mandatory"), AttributeFilter_Mandatory);
-    add_check(tr("Optional"), AttributeFilter_Optional);
-    add_check(tr("System-only"), AttributeFilter_SystemOnly);
-    add_check(tr("Constructed"), AttributeFilter_Constructed);
-    add_check(tr("Backlink"), AttributeFilter_Backlink);
+    add_filter_option(tr("Unset"), BoolSetting_AttributeFilterUnset);
+    add_filter_option(tr("Read-only"), BoolSetting_AttributeFilterReadOnly);
 
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
+    addSeparator();
 
-    // Group checkboxes into frames
-    auto make_frame = []() -> QFrame * {
-        auto frame = new QFrame();
-        frame->setFrameShape(QFrame::Box);
-        frame->setFrameShadow(QFrame::Raised);
-        frame->setLayout(new QVBoxLayout());
+    add_filter_option(tr("Mandatory"), BoolSetting_AttributeFilterMandatory);
+    add_filter_option(tr("Optional"), BoolSetting_AttributeFilterOptional);
 
-        return frame;
+    addSeparator();
+
+    add_filter_option(tr("System-only"), BoolSetting_AttributeFilterSystemOnly);
+    add_filter_option(tr("Constructed"), BoolSetting_AttributeFilterConstructed);
+    add_filter_option(tr("Backlink"), BoolSetting_AttributeFilterBacklink);
+
+    const BoolSettingSignal *read_only_signal = g_settings->get_bool_signal(BoolSetting_AttributeFilterReadOnly);
+    connect(
+        read_only_signal, &BoolSettingSignal::changed,
+        this, &AttributesFilterMenu::on_read_only_changed);
+    on_read_only_changed();
+}
+
+void AttributesFilterMenu::on_read_only_changed() {
+    const bool read_only_is_enabled = g_settings->get_bool(BoolSetting_AttributeFilterReadOnly);
+
+    const QList<BoolSetting> read_only_sub_filters = {
+        BoolSetting_AttributeFilterSystemOnly,
+        BoolSetting_AttributeFilterConstructed,
+        BoolSetting_AttributeFilterBacklink,
     };
 
-    QFrame *first_frame = make_frame();
-    first_frame->layout()->addWidget(checks[AttributeFilter_Unset]);
-    first_frame->layout()->addWidget(checks[AttributeFilter_ReadOnly]);
-
-    QFrame *second_frame = make_frame();
-    second_frame->layout()->addWidget(checks[AttributeFilter_Mandatory]);
-    second_frame->layout()->addWidget(checks[AttributeFilter_Optional]);
-
-    QFrame *third_frame = make_frame();
-    third_frame->layout()->addWidget(new QLabel(tr("Read-only attributes:")));
-    third_frame->layout()->addWidget(checks[AttributeFilter_SystemOnly]);
-    third_frame->layout()->addWidget(checks[AttributeFilter_Constructed]);
-    third_frame->layout()->addWidget(checks[AttributeFilter_Backlink]);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(first_frame);
-    layout->addWidget(second_frame);
-    layout->addWidget(third_frame);
-    layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-    connect(
-        checks[AttributeFilter_ReadOnly], &QCheckBox::stateChanged,
-        this, &AttributesFilterDialog::on_read_only_check);
-    on_read_only_check();
-}
-
-void AttributesFilterDialog::accept() {
-    // Save filters to settings
-    const QVariant filters_variant = [=]() {
-        QList<QVariant> filters_list;
-
-        for (int filter_i = 0; filter_i < AttributeFilter_COUNT; filter_i++) {
-            const AttributeFilter filter = (AttributeFilter) filter_i;
-            const bool filter_is_set = checks[filter]->isChecked();
-
-            filters_list.append(QVariant(filter_is_set));
-        }
-
-        return QVariant(filters_list);
-    }();
-    g_settings->set_variant(VariantSetting_AttributesTabFilter, filters_variant);
-
-    const QHash<AttributeFilter, bool> filter_state = [&]() {
-        QHash<AttributeFilter, bool> out;
-
-        for (const AttributeFilter filter : checks.keys()) {
-            const QCheckBox *check = checks[filter];
-            out[filter] = check->isChecked();
-        }
-
-        return out;
-    }();
-
-    QDialog::accept();
-}
-
-// Enable readonly subtype checks when readonly is enabled
-void AttributesFilterDialog::on_read_only_check() {
-    const bool read_only_enabled = checks[AttributeFilter_ReadOnly]->isChecked();
-
-    checks[AttributeFilter_SystemOnly]->setEnabled(read_only_enabled);
-    checks[AttributeFilter_Constructed]->setEnabled(read_only_enabled);
-    checks[AttributeFilter_Backlink]->setEnabled(read_only_enabled);
+    for (const BoolSetting &setting : read_only_sub_filters) {
+        action_map[setting]->setEnabled(read_only_is_enabled);
+        action_map[setting]->setChecked(read_only_is_enabled);
+    }
 }
 
 AttributesTabProxy::AttributesTabProxy(QObject *parent)
 : QSortFilterProxyModel(parent) {
-
-}
-
-void AttributesTabProxy::update_filter_state() {
-    filter_state = get_filter_state_from_settings();
-
-    invalidate();
+    const QList<BoolSetting> filter_setting_list = {
+        BoolSetting_AttributeFilterUnset,
+        BoolSetting_AttributeFilterReadOnly,
+        BoolSetting_AttributeFilterMandatory,
+        BoolSetting_AttributeFilterOptional,
+        BoolSetting_AttributeFilterSystemOnly,
+        BoolSetting_AttributeFilterConstructed,
+        BoolSetting_AttributeFilterBacklink,
+    };
+    for (const BoolSetting &setting : filter_setting_list) {
+        const BoolSettingSignal *signal = g_settings->get_bool_signal(setting);
+        connect(
+            signal, &BoolSettingSignal::changed,
+            this, &AttributesTabProxy::invalidate);
+    }
 }
 
 void AttributesTabProxy::load(const AdObject &object) {
@@ -349,36 +286,36 @@ bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &sou
     const bool mandatory = mandatory_attributes.contains(attribute);
     const bool optional = optional_attributes.contains(attribute);
 
-    if (!filter_state[AttributeFilter_Unset] && unset) {
+    if (!g_settings->get_bool(BoolSetting_AttributeFilterUnset) && unset) {
         return false;
     }
 
-    if (!filter_state[AttributeFilter_Mandatory] && mandatory) {
+    if (!g_settings->get_bool(BoolSetting_AttributeFilterMandatory) && mandatory) {
         return false;
     }
 
-    if (!filter_state[AttributeFilter_Optional] && optional) {
+    if (!g_settings->get_bool(BoolSetting_AttributeFilterOptional) && optional) {
         return false;
     }
 
-    if (filter_state[AttributeFilter_ReadOnly] && system_only) {
+    if (g_settings->get_bool(BoolSetting_AttributeFilterReadOnly) && system_only) {
         const bool constructed = g_adconfig->get_attribute_is_constructed(attribute);
         const bool backlink = g_adconfig->get_attribute_is_backlink(attribute);
 
-        if (!filter_state[AttributeFilter_SystemOnly] && !constructed && !backlink) {
+        if (!g_settings->get_bool(BoolSetting_AttributeFilterSystemOnly) && !constructed && !backlink) {
             return false;
         }
 
-        if (!filter_state[AttributeFilter_Constructed] && constructed) {
+        if (!g_settings->get_bool(BoolSetting_AttributeFilterConstructed) && constructed) {
             return false;
         }
 
-        if (!filter_state[AttributeFilter_Backlink] && backlink) {
+        if (!g_settings->get_bool(BoolSetting_AttributeFilterBacklink) && backlink) {
             return false;
         }
     }
 
-    if (!filter_state[AttributeFilter_ReadOnly] && system_only) {
+    if (!g_settings->get_bool(BoolSetting_AttributeFilterReadOnly) && system_only) {
         return false;
     }
 
@@ -409,26 +346,4 @@ QString attribute_type_display_string(const AttributeType type) {
         case AttributeType_DSDN: return AttributesTab::tr("Distinguished Name");
     }
     return QString();
-}
-
-QHash<AttributeFilter, bool> get_filter_state_from_settings() {
-    QHash<AttributeFilter, bool> out;
-
-    const QVariant filters_variant = g_settings->get_variant(VariantSetting_AttributesTabFilter);
-    const QList<QVariant> filters_list = filters_variant.toList();
-    for (int filter_i = 0; filter_i < AttributeFilter_COUNT; filter_i++) {
-        const AttributeFilter filter = (AttributeFilter) filter_i;
-
-        const bool filter_is_set = [&]() {
-            if (filter_i < filters_list.size()) {
-                return filters_list[filter_i].toBool();
-            } else {
-                return true;
-            }
-        }();
-
-        out[filter] = filter_is_set;
-    }
-
-    return out;
 }

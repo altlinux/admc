@@ -66,6 +66,14 @@ enum BoolSetting {
     BoolSetting_LogSearches,
     BoolSetting_TimestampLog,
 
+    BoolSetting_AttributeFilterUnset,
+    BoolSetting_AttributeFilterReadOnly,
+    BoolSetting_AttributeFilterMandatory,
+    BoolSetting_AttributeFilterOptional,
+    BoolSetting_AttributeFilterSystemOnly,
+    BoolSetting_AttributeFilterConstructed,
+    BoolSetting_AttributeFilterBacklink,
+
     BoolSetting_COUNT,
 };
 

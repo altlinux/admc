@@ -25,12 +25,13 @@
 
 #include "tabs/attributes_tab.h"
 #include "tabs/attributes_tab_p.h"
+#include "settings.h"
 
 class QStandardItemModel;
 class QSortFilterProxyModel;
 class QPushButton;
 class QTreeView;
-class AttributesFilterDialog;
+class AttributesFilterMenu;
 
 class ADMCTestAttributesTab : public ADMCTest {
     Q_OBJECT
@@ -44,7 +45,7 @@ private slots:
 
 private:
     AttributesTab *attributes_tab;
-    AttributesFilterDialog *filter_dialog;
+    AttributesFilterMenu *filter_menu;
     QTreeView *view;
     QStandardItemModel *model;
     QSortFilterProxyModel *proxy;
@@ -52,7 +53,7 @@ private:
     QPushButton *edit_button;
     QString dn;
 
-    void set_filter(const QList<AttributeFilter> &filter_list, const Qt::CheckState state);
+    void set_filter(const QList<BoolSetting> &filter_list, const bool state);
 };
 
 #endif /* ADMC_TEST_ATTRIBUTES_TAB_H */

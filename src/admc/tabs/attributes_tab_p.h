@@ -21,37 +21,23 @@
 #ifndef ATTRIBUTES_TAB_P_H
 #define ATTRIBUTES_TAB_P_H
 
-#include <QDialog>
+#include "settings.h"
+
 #include <QSortFilterProxyModel>
+#include <QMenu>
 #include <QSet>
+#include <QHash>
 
-class QCheckBox;
-
-// NOTE: "readonly" is really "systemonly", it's just that this set of attributes is broken down into "backlink", "constructed" and "systemonly"(aka, not backlink or constructed but still systemonly). Not sure if this is the ideal behavior, maybe change it to be more logical and aligned with what user needs.
-enum AttributeFilter {
-    AttributeFilter_Unset,
-    AttributeFilter_ReadOnly,
-    AttributeFilter_Mandatory,
-    AttributeFilter_Optional,
-    AttributeFilter_SystemOnly,
-    AttributeFilter_Constructed,
-    AttributeFilter_Backlink,
-
-    AttributeFilter_COUNT,
-};
-
-class AttributesFilterDialog final : public QDialog {
+class AttributesFilterMenu final : public QMenu {
     Q_OBJECT
 
 public:
-    AttributesFilterDialog(QWidget *parent);
-
-    void accept() override;
+    AttributesFilterMenu(QWidget *parent);
 
 private:
-    QHash<AttributeFilter, QCheckBox *> checks;
+    QHash<BoolSetting, QAction *> action_map;
 
-    void on_read_only_check();
+    void on_read_only_changed();
 };
 
 class AttributesTabProxy final : public QSortFilterProxyModel {
@@ -59,14 +45,12 @@ class AttributesTabProxy final : public QSortFilterProxyModel {
 public:
     AttributesTabProxy(QObject *parent);
 
-    void update_filter_state();
     void load(const AdObject &object);
 
 private:
     QSet<QString> set_attributes;
     QSet<QString> mandatory_attributes;
     QSet<QString> optional_attributes;
-    QHash<AttributeFilter, bool> filter_state;
 
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };

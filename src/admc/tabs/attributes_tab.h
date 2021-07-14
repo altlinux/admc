@@ -55,7 +55,6 @@ private:
     QHash<QString, QList<QByteArray>> current;
 
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
-    void update_proxy();
 };
 
 #endif /* ATTRIBUTES_TAB_H */

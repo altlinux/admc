@@ -23,7 +23,6 @@
 #include "editors/multi_editor.h"
 #include "editors/string_editor.h"
 
-#include <QCheckBox>
 #include <QDialog>
 #include <QLineEdit>
 #include <QPushButton>
@@ -34,15 +33,15 @@
 
 // NOTE: can't be set because order is important. Read only
 // has to be set first to enable other filters.
-const QList<AttributeFilter> all_filters = []() {
-    QList<AttributeFilter> out;
-
-    for (int i = 0; i < AttributeFilter_COUNT; i++) {
-        out.append((AttributeFilter) i);
-    }
-
-    return out;
-}();
+const QList<BoolSetting> all_filters = {
+        BoolSetting_AttributeFilterUnset,
+        BoolSetting_AttributeFilterReadOnly,
+        BoolSetting_AttributeFilterMandatory,
+        BoolSetting_AttributeFilterOptional,
+        BoolSetting_AttributeFilterSystemOnly,
+        BoolSetting_AttributeFilterConstructed,
+        BoolSetting_AttributeFilterBacklink,
+};
 
 void ADMCTestAttributesTab::init() {
     ADMCTest::init();
@@ -50,8 +49,8 @@ void ADMCTestAttributesTab::init() {
     attributes_tab = new AttributesTab();
     add_widget(attributes_tab);
 
-    filter_dialog = attributes_tab->findChild<AttributesFilterDialog *>();
-    QVERIFY(filter_dialog != nullptr);
+    filter_menu = attributes_tab->findChild<AttributesFilterMenu *>();
+    QVERIFY(filter_menu != nullptr);
 
     view = attributes_tab->findChild<QTreeView *>();
     QVERIFY(view != nullptr);
@@ -80,7 +79,7 @@ void ADMCTestAttributesTab::init() {
 
     // NOTE: filters might be messed up in settings by user
     // so reset it before tests
-    set_filter(all_filters, Qt::Checked);
+    set_filter(all_filters, true);
 }
 
 void ADMCTestAttributesTab::load() {
@@ -107,7 +106,7 @@ void ADMCTestAttributesTab::load() {
 // Test filters by checking that affected attributes are
 // visible/hidden when their filters are checked/unchecked
 void ADMCTestAttributesTab::filter() {
-    auto test_filter = [&](const AttributeFilter filter, const QString &attribute) {
+    auto test_filter = [&](const BoolSetting filter, const QString &attribute) {
         auto check_filtering = [&](const bool should_be_visible) {
             const QList<QStandardItem *> item_list = model->findItems(attribute);
             QVERIFY2((item_list.size() == 1), qPrintable(QString("Failed to find attribute %1)").arg(attribute)));
@@ -121,30 +120,30 @@ void ADMCTestAttributesTab::filter() {
             QVERIFY2(correct_filtering, qPrintable(QString("filter = %1, attribute = %2, is_visible = %3, should_be_visible = %4").arg(filter).arg(attribute).arg(is_visible).arg(should_be_visible)));
         };
 
-        set_filter({filter}, Qt::Checked);
+        set_filter({filter}, true);
         check_filtering(true);
-        set_filter({filter}, Qt::Unchecked);
+        set_filter({filter}, false);
         check_filtering(false);
-        set_filter({filter}, Qt::Checked);
+        set_filter({filter}, true);
     };
 
-    set_filter(all_filters, Qt::Checked);
+    set_filter(all_filters, true);
 
-    test_filter(AttributeFilter_Unset, ATTRIBUTE_HOME_PHONE);
-    test_filter(AttributeFilter_ReadOnly, ATTRIBUTE_OBJECT_GUID);
-    test_filter(AttributeFilter_SystemOnly, ATTRIBUTE_WHEN_CREATED);
-    test_filter(AttributeFilter_Constructed, "allowedAttributes");
-    test_filter(AttributeFilter_Backlink, ATTRIBUTE_MEMBER_OF);
-    test_filter(AttributeFilter_Mandatory, "instanceType");
-    test_filter(AttributeFilter_Optional, ATTRIBUTE_COUNTRY_CODE);
+    test_filter(BoolSetting_AttributeFilterUnset, ATTRIBUTE_HOME_PHONE);
+    test_filter(BoolSetting_AttributeFilterReadOnly, ATTRIBUTE_OBJECT_GUID);
+    test_filter(BoolSetting_AttributeFilterSystemOnly, ATTRIBUTE_WHEN_CREATED);
+    test_filter(BoolSetting_AttributeFilterConstructed, "allowedAttributes");
+    test_filter(BoolSetting_AttributeFilterBacklink, ATTRIBUTE_MEMBER_OF);
+    test_filter(BoolSetting_AttributeFilterMandatory, "instanceType");
+    test_filter(BoolSetting_AttributeFilterOptional, ATTRIBUTE_COUNTRY_CODE);
 
     // NOTE: read only also needs to affect these read only
     // attributes
-    test_filter(AttributeFilter_ReadOnly, "allowedAttributes");
-    test_filter(AttributeFilter_ReadOnly, ATTRIBUTE_WHEN_CREATED);
-    test_filter(AttributeFilter_ReadOnly, ATTRIBUTE_MEMBER_OF);
+    test_filter(BoolSetting_AttributeFilterReadOnly, "allowedAttributes");
+    test_filter(BoolSetting_AttributeFilterReadOnly, ATTRIBUTE_WHEN_CREATED);
+    test_filter(BoolSetting_AttributeFilterReadOnly, ATTRIBUTE_MEMBER_OF);
 
-    set_filter(all_filters, Qt::Checked);
+    set_filter(all_filters, true);
 }
 
 // Change description attribute, apply and then confirm
@@ -181,20 +180,12 @@ void ADMCTestAttributesTab::apply() {
     QVERIFY(description_value == correct_value);
 }
 
-void ADMCTestAttributesTab::set_filter(const QList<AttributeFilter> &filter_list, const Qt::CheckState state) {
-    filter_button->click();
-
-    QVERIFY(QTest::qWaitForWindowExposed(filter_dialog, 1000));
-
-    for (const AttributeFilter &filter : filter_list) {
-        QCheckBox *checkbox = filter_dialog->findChild<QCheckBox *>(QString::number(filter));
-        QVERIFY(checkbox != nullptr);
-        checkbox->setCheckState(state);
+void ADMCTestAttributesTab::set_filter(const QList<BoolSetting> &filter_list, const bool state) {
+    for (const BoolSetting &filter : filter_list) {
+        QAction *action = filter_menu->findChild<QAction *>(QString::number(filter));
+        QVERIFY(action != nullptr);
+        action->setChecked(state);
     }
-
-    filter_dialog->accept();
-
-    QVERIFY(QTest::qWaitForWindowExposed(attributes_tab, 1000));
 }
 
 QTEST_MAIN(ADMCTestAttributesTab)

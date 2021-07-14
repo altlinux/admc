@@ -151,6 +151,14 @@ bool bool_default_value(const BoolSetting setting) {
         case BoolSetting_LogSearches: return false;
         case BoolSetting_TimestampLog: return true;
 
+        case BoolSetting_AttributeFilterUnset: return true;
+        case BoolSetting_AttributeFilterReadOnly: return true;
+        case BoolSetting_AttributeFilterMandatory: return true;
+        case BoolSetting_AttributeFilterOptional: return true;
+        case BoolSetting_AttributeFilterSystemOnly: return true;
+        case BoolSetting_AttributeFilterConstructed: return true;
+        case BoolSetting_AttributeFilterBacklink: return true;
+
         case BoolSetting_COUNT: break;
     }
 
@@ -174,6 +182,13 @@ QString bool_to_string(const BoolSetting setting) {
         CASE_ENUM_TO_STRING(BoolSetting_LogSearches);
         CASE_ENUM_TO_STRING(BoolSetting_TimestampLog);
         CASE_ENUM_TO_STRING(BoolSetting_COUNT);
+        CASE_ENUM_TO_STRING(BoolSetting_AttributeFilterUnset);
+        CASE_ENUM_TO_STRING(BoolSetting_AttributeFilterReadOnly);
+        CASE_ENUM_TO_STRING(BoolSetting_AttributeFilterMandatory);
+        CASE_ENUM_TO_STRING(BoolSetting_AttributeFilterOptional);
+        CASE_ENUM_TO_STRING(BoolSetting_AttributeFilterSystemOnly);
+        CASE_ENUM_TO_STRING(BoolSetting_AttributeFilterConstructed);
+        CASE_ENUM_TO_STRING(BoolSetting_AttributeFilterBacklink);
     }
     return "";
 }
