@@ -55,6 +55,7 @@ set(TEST_TARGETS
     admc_test_datetime_edit
     admc_test_manager_edit
     admc_test_delegation_edit
+    admc_test_string_other_edit
     admc_test_octet_editor
     admc_test_bool_editor
     admc_test_datetime_editor
