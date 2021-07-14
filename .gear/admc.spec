@@ -83,7 +83,7 @@ Tests for ADMC
 %_bindir/admc_test_members_tab
 %_bindir/admc_test_select_object_dialog
 %_bindir/admc_test_logon_hours_dialog
-%_bindir/admc_test_logon_computers
+%_bindir/admc_test_logon_computers_edit
 %_bindir/admc_test_expiry_edit
 %_bindir/admc_test_password_edit
 %_bindir/admc_test_group_scope_edit

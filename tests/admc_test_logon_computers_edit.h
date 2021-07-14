@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_LOGON_COMPUTERS_H
-#define ADMC_TEST_LOGON_COMPUTERS_H
+#ifndef ADMC_TEST_LOGON_COMPUTERS_EDIT_H
+#define ADMC_TEST_LOGON_COMPUTERS_EDIT_H
 
 #include "admc_test.h"
 
@@ -28,7 +28,7 @@ class LogonComputersDialog;
 class QPushButton;
 class QListWidget;
 
-class ADMCTestLogonComputers : public ADMCTest {
+class ADMCTestLogonComputersEdit : public ADMCTest {
     Q_OBJECT
 
 private slots:
@@ -54,4 +54,4 @@ private:
     void test_list_item(const int row, const QString &text);
 };
 
-#endif /* ADMC_TEST_LOGON_COMPUTERS_H */
+#endif /* ADMC_TEST_LOGON_COMPUTERS_EDIT_H */

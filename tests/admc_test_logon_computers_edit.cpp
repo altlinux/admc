@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "admc_test_logon_computers.h"
+#include "admc_test_logon_computers_edit.h"
 
 #include "edits/logon_computers_edit.h"
 #include "edits/logon_computers_edit_p.h"
@@ -28,7 +28,7 @@
 #include <QListWidget>
 #include <QPushButton>
 
-void ADMCTestLogonComputers::init() {
+void ADMCTestLogonComputersEdit::init() {
     ADMCTest::init();
 
     edit = new LogonComputersEdit(&edits, parent_widget);
@@ -63,7 +63,7 @@ void ADMCTestLogonComputers::init() {
     edit->load(ad, object);
 }
 
-void ADMCTestLogonComputers::load() {
+void ADMCTestLogonComputersEdit::load() {
     open_dialog_button->click();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
@@ -72,7 +72,7 @@ void ADMCTestLogonComputers::load() {
     test_list_item(1, "value");
 }
 
-void ADMCTestLogonComputers::emit_edited_signal() {
+void ADMCTestLogonComputersEdit::emit_edited_signal() {
     bool edited_signal_emitted = false;
     connect(
         edit, &AttributeEdit::edited,
@@ -88,7 +88,7 @@ void ADMCTestLogonComputers::emit_edited_signal() {
     QVERIFY(edited_signal_emitted);
 }
 
-void ADMCTestLogonComputers::add() {
+void ADMCTestLogonComputersEdit::add() {
     open_dialog_button->click();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
@@ -102,7 +102,7 @@ void ADMCTestLogonComputers::add() {
     test_list_item(2, "new");
 }
 
-void ADMCTestLogonComputers::remove() {
+void ADMCTestLogonComputersEdit::remove() {
     open_dialog_button->click();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
@@ -114,17 +114,17 @@ void ADMCTestLogonComputers::remove() {
     test_list_item(0, "value");
 }
 
-void ADMCTestLogonComputers::test_list_item(const int row, const QString &text) {
+void ADMCTestLogonComputersEdit::test_list_item(const int row, const QString &text) {
     auto item = list->item(row);
     QVERIFY(item != nullptr);
     QVERIFY(item->text() == text);
 }
 
-void ADMCTestLogonComputers::apply_unmodified() {
+void ADMCTestLogonComputersEdit::apply_unmodified() {
     test_edit_apply_unmodified(edit, dn);
 }
 
-void ADMCTestLogonComputers::apply() {
+void ADMCTestLogonComputersEdit::apply() {
     open_dialog_button->click();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
@@ -141,4 +141,4 @@ void ADMCTestLogonComputers::apply() {
     QVERIFY(updated_value == "test,value,new");
 }
 
-QTEST_MAIN(ADMCTestLogonComputers)
+QTEST_MAIN(ADMCTestLogonComputersEdit)
