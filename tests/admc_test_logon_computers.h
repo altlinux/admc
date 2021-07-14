@@ -38,6 +38,7 @@ private slots:
     void emit_edited_signal();
     void add();
     void remove();
+    void apply_unmodified();
     void apply();
 
 private:

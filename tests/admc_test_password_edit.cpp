@@ -26,6 +26,9 @@
 #include <QLineEdit>
 #include <QDateEdit>
 
+// NOTE: no apply_unmodified() test because password edit
+// always changes object when applying
+
 void ADMCTestPasswordEdit::init() {
     ADMCTest::init();
 

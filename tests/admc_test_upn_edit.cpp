@@ -90,6 +90,10 @@ void ADMCTestUpnEdit::test_emit_edited() {
     QVERIFY(edited_signal_emitted);
 }
 
+void ADMCTestUpnEdit::apply_unmodified() {
+    test_edit_apply_unmodified(upn_edit, dn);
+}
+
 // Edit should apply changes to suffix
 void ADMCTestUpnEdit::test_apply_suffix() {
     change_suffix_in_edit();

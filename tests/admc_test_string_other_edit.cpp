@@ -107,16 +107,8 @@ void ADMCTestStringOtherEdit::load() {
     }
 }
 
-// Edit should do nothing if value wasn't modified
 void ADMCTestStringOtherEdit::apply_unmodified() {
-    const AdObject object_before_apply = ad.search_object(dn);
-
-    const bool apply_success = edit->apply(ad, dn);
-    QVERIFY(apply_success);
-
-    const AdObject object_after_apply = ad.search_object(dn);
-
-    QVERIFY(object_before_apply.get_attributes_data() == object_after_apply.get_attributes_data());
+    test_edit_apply_unmodified(edit, dn);
 }
 
 void ADMCTestStringOtherEdit::apply_modified_main_value() {

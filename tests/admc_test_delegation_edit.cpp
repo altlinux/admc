@@ -82,6 +82,10 @@ void ADMCTestDelegationEdit::load() {
     do_test(false);
 }
 
+void ADMCTestDelegationEdit::apply_unmodified() {
+    test_edit_apply_unmodified(edit, dn);
+}
+
 void ADMCTestDelegationEdit::apply() {
     auto do_test = [&](const bool is_on) {
         // First set current state to opposite

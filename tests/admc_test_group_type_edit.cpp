@@ -58,6 +58,10 @@ void ADMCTestGroupTypeEdit::load() {
     QVERIFY(combo->currentIndex() == 0);
 }
 
+void ADMCTestGroupTypeEdit::apply_unmodified() {
+    test_edit_apply_unmodified(edit, dn);
+}
+
 void ADMCTestGroupTypeEdit::apply() {
     load();
 

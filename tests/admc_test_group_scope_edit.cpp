@@ -58,6 +58,10 @@ void ADMCTestGroupScopeEdit::load() {
     QVERIFY(combo->currentIndex() == 0);
 }
 
+void ADMCTestGroupScopeEdit::apply_unmodified() {
+    test_edit_apply_unmodified(edit, dn);
+}
+
 void ADMCTestGroupScopeEdit::apply() {
     load();
 

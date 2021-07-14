@@ -34,6 +34,7 @@ private slots:
 
     void test_emit_edited_signal();
     void unchecked_after_load();
+    void apply_unmodified();
     void test_apply_unchecked();
     void test_apply_checked();
     void uncheck_after_apply();

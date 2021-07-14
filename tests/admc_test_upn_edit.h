@@ -35,6 +35,7 @@ private slots:
 
     void test_load();
     void test_emit_edited();
+    void apply_unmodified();
     void test_apply_suffix();
     void test_apply_prefix();
     void test_apply_prefix_and_suffix();

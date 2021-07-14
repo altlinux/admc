@@ -77,6 +77,10 @@ void ADMCTestUnlockEdit::unchecked_after_load() {
     QVERIFY2(checkbox_is_unchecked, "Checkbox wasn't unchecked after load() call");
 }
 
+void ADMCTestUnlockEdit::apply_unmodified() {
+    test_edit_apply_unmodified(unlock_edit, dn);
+}
+
 // Edit should do nothing if checkbox is unchecked (locked
 // user stays locked)
 void ADMCTestUnlockEdit::test_apply_unchecked() {

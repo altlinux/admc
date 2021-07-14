@@ -262,6 +262,23 @@ void ADMCTest::add_widget(QWidget *widget) {
     layout->addWidget(widget);
 }
 
+// Edit should do nothing if value wasn't modified
+void ADMCTest::test_edit_apply_unmodified(AttributeEdit *edit, const QString &dn) {
+    const AdObject object_before = ad.search_object(dn);
+
+    edit->load(ad, object_before);
+
+    const bool apply_success = edit->apply(ad, dn);
+    QVERIFY(apply_success);
+
+    const AdObject object_after = ad.search_object(dn);
+
+    qInfo() << object_before.get_value(ATTRIBUTE_ACCOUNT_EXPIRES);
+    qInfo() << object_after.get_value(ATTRIBUTE_ACCOUNT_EXPIRES);
+
+    QVERIFY(object_before.get_attributes_data() == object_after.get_attributes_data());
+}
+
 void select_base_widget_add(SelectBaseWidget *widget, const QString &dn) {
     auto browse_button = widget->findChild<QPushButton *>();
     QVERIFY(browse_button != nullptr);

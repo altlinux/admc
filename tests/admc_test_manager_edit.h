@@ -35,6 +35,7 @@ private slots:
 
     void load_empty();
     void load();
+    void apply_unmodified();
     void apply_after_change();
     void apply_after_clear();
     void properties();

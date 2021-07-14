@@ -25,6 +25,9 @@
 
 #include <QDateTimeEdit>
 
+// NOTE: no apply_unmodified() test because all datetime
+// attributes are read-only
+
 void ADMCTestDateTimeEdit::init() {
     ADMCTest::init();
 

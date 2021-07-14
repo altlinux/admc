@@ -36,6 +36,7 @@ private slots:
     void edited_signal_from_check();
     void edited_signal_from_date();
     void load();
+    void apply_unmodified();
     void apply_date();
     void apply_never();
 

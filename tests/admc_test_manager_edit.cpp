@@ -66,6 +66,10 @@ void ADMCTestManagerEdit::load() {
     QVERIFY(manager_display->text() == manager_dn);
 }
 
+void ADMCTestManagerEdit::apply_unmodified() {
+    test_edit_apply_unmodified(edit, dn);
+}
+
 void ADMCTestManagerEdit::apply_after_change() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);

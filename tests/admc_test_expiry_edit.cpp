@@ -80,6 +80,10 @@ void ADMCTestExpiryEdit::load() {
     QVERIFY(!end_of_check->isChecked());
 }
 
+void ADMCTestExpiryEdit::apply_unmodified() {
+    test_edit_apply_unmodified(edit, dn);
+}
+
 void ADMCTestExpiryEdit::apply_date() {
     load();
 

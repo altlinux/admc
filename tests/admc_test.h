@@ -108,6 +108,8 @@ protected:
     // Adds a widget to layout in parent widget
     void add_widget(QWidget *widget);
 
+    void test_edit_apply_unmodified(AttributeEdit *edit, const QString &dn);
+
 private:
     QFormLayout *layout;
 };

@@ -120,6 +120,10 @@ void ADMCTestLogonComputers::test_list_item(const int row, const QString &text) 
     QVERIFY(item->text() == text);
 }
 
+void ADMCTestLogonComputers::apply_unmodified() {
+    test_edit_apply_unmodified(edit, dn);
+}
+
 void ADMCTestLogonComputers::apply() {
     open_dialog_button->click();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
