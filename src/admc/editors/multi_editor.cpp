@@ -73,6 +73,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, QWidget *parent)
     list_widget = new QListWidget();
 
     auto remove_button = new QPushButton(tr("Remove"));
+    remove_button->setObjectName("remove_button");
 
     QDialogButtonBox *button_box = make_button_box(attribute);
 
