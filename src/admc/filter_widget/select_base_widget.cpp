@@ -50,6 +50,7 @@ SelectBaseWidget::SelectBaseWidget(const QString &default_base)
 
     auto browse_button = new QPushButton(tr("Browse..."));
     browse_button->setAutoDefault(false);
+    browse_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
     const int last_index = combo->count() - 1;
     combo->setCurrentIndex(last_index);
