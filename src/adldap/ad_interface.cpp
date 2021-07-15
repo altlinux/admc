@@ -1087,9 +1087,9 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             switch (option) {
                 case AccountOption_Disabled: {
                     if (set) {
-                        return QString(tr("Disabled account for user - \"%1\"")).arg(name);
+                        return QString(tr("Disabled account for object - \"%1\"")).arg(name);
                     } else {
-                        return QString(tr("Enabled account for user - \"%1\"")).arg(name);
+                        return QString(tr("Enabled account for object - \"%1\"")).arg(name);
                     }
                 }
                 default: {

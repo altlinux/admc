@@ -531,6 +531,7 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
     const bool is_user = (object_class == CLASS_USER);
     const bool is_group = (object_class == CLASS_GROUP);
     const bool is_domain = (object_class == CLASS_DOMAIN);
+    const bool is_computer = (object_class == CLASS_COMPUTER);
 
     const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
     const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();
@@ -552,7 +553,9 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
 
         if (is_user) {
             my_visible_actions.insert(ConsoleAction_ResetPassword);
+        }
 
+        if (is_user || is_computer) {
             if (account_disabled) {
                 my_visible_actions.insert(ConsoleAction_Enable);
             } else {
