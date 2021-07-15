@@ -110,28 +110,32 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     //
     const QString connect_error_context = tr("Failed to connect");
 
-    const QString uri = [&]() {
-        const QString dc = [&]() {
-            const QList<QString> dc_list = get_domain_hosts(d->domain, QString());
-            if (dc_list.isEmpty()) {
-                d->error_message_plain(tr("Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational."));
+    const QString dc = [&]() {
+        const QList<QString> dc_list = get_domain_hosts(d->domain, QString());
+        if (dc_list.isEmpty()) {
+            d->error_message_plain(tr("Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational."));
 
-                return QString();
-            }
+            return QString();
+        }
 
-            if (!AdInterfacePrivate::s_dc.isEmpty()) {
-                if (dc_list.contains(AdInterfacePrivate::s_dc)) {
-                    return AdInterfacePrivate::s_dc;
-                } else {
-                    d->error_message_plain(tr("Failed to load DC defined in settings. Switching to default DC"));
-
-                    return dc_list[0];
-                }
+        if (!AdInterfacePrivate::s_dc.isEmpty()) {
+            if (dc_list.contains(AdInterfacePrivate::s_dc)) {
+                return AdInterfacePrivate::s_dc;
             } else {
+                d->error_message_plain(tr("Failed to load DC defined in settings. Switching to default DC"));
+
                 return dc_list[0];
             }
-        }();
+        } else {
+            return dc_list[0];
+        }
+    }();
 
+    if (AdInterfacePrivate::s_dc.isEmpty()) {
+        AdInterfacePrivate::s_dc = dc;
+    }
+
+    const QString uri = [&]() {
         if (!dc.isEmpty()) {
             const QString out = "ldap://" + dc;
             return out;
@@ -1564,25 +1568,25 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
 
         switch (interact->id) {
             case SASL_CB_GETREALM:
-                if (defaults)
-                    dflt = defaults->realm;
-                break;
+            if (defaults)
+                dflt = defaults->realm;
+            break;
             case SASL_CB_AUTHNAME:
-                if (defaults)
-                    dflt = defaults->authcid;
-                break;
+            if (defaults)
+                dflt = defaults->authcid;
+            break;
             case SASL_CB_PASS:
-                if (defaults)
-                    dflt = defaults->passwd;
-                break;
+            if (defaults)
+                dflt = defaults->passwd;
+            break;
             case SASL_CB_USER:
-                if (defaults)
-                    dflt = defaults->authzid;
-                break;
+            if (defaults)
+                dflt = defaults->authzid;
+            break;
             case SASL_CB_NOECHOPROMPT:
-                break;
+            break;
             case SASL_CB_ECHOPROMPT:
-                break;
+            break;
         }
 
         if (dflt && !*dflt) {
