@@ -55,13 +55,12 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_base
     filter_widget_frame->setFrameShape(QFrame::Box);
 
     {
-        auto select_base_layout = new QFormLayout();
-        select_base_layout->setFormAlignment(Qt::AlignHCenter | Qt::AlignTop);
-        select_base_layout->addRow(tr("Search in:"), select_base_widget);
+        auto select_base_layout_inner = new QFormLayout();
+        select_base_layout_inner->addRow(tr("Search in:"), select_base_widget);
 
-        auto select_base_layout_wrapper = new QHBoxLayout();
-        select_base_layout_wrapper->addLayout(select_base_layout);
-        select_base_layout_wrapper->setAlignment(select_base_layout, Qt::AlignRight);
+        auto select_base_layout = new QHBoxLayout();
+        select_base_layout->addLayout(select_base_layout_inner);
+        select_base_layout->addStretch();
 
         auto button_layout = new QHBoxLayout();
         button_layout->addWidget(find_button);
@@ -70,7 +69,7 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_base
 
         auto layout = new QVBoxLayout();
         filter_widget_frame->setLayout(layout);
-        layout->addLayout(select_base_layout_wrapper);
+        layout->addLayout(select_base_layout);
         layout->addWidget(filter_widget);
         layout->addLayout(button_layout);
     }

@@ -35,6 +35,7 @@ SelectBaseWidget::SelectBaseWidget(const QString &default_base)
     const QString domain_head = g_adconfig->domain_head();
 
     combo = new QComboBox();
+    combo->setMinimumWidth(200);
 
     auto add_base_to_combo = [this](const QString dn) {
         const QString name = dn_get_name(dn);
