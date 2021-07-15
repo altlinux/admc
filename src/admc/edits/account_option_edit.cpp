@@ -26,10 +26,8 @@
 
 #include <QCheckBox>
 #include <QFormLayout>
-#include <QGridLayout>
-#include <QLabel>
-#include <QScrollArea>
 #include <QMap>
+#include <QGroupBox>
 
 void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
     QHash<AccountOption, QCheckBox *> check_map;
@@ -44,33 +42,23 @@ void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<Accou
 }
 
 QWidget *AccountOptionEdit::layout_many(const QList<AccountOption> &options, const QMap<AccountOption, AccountOptionEdit *> &option_edits) {
-    auto checks_layout = new QGridLayout();
+    auto group_box = new QGroupBox(tr("Account options:"));
+    auto layout = new QVBoxLayout();
+    group_box->setLayout(layout);
+
     for (const auto option : options) {
         auto edit = option_edits[option];
-
-        const int row = checks_layout->rowCount();
-        const QString label_text = account_option_string(edit->option);
-        checks_layout->addWidget(edit->check, row, 0);
-        checks_layout->addWidget(new QLabel(label_text), row, 1);
+        layout->addWidget(edit->check, 0);
     }
 
-    auto layout = new QVBoxLayout();
-    layout->addWidget(new QLabel(tr("Account options:")));
-    layout->addLayout(checks_layout);
-
-    auto options_widget = new QWidget();
-    options_widget->setLayout(layout);
-
-    auto options_scroll = new QScrollArea();
-    options_scroll->setWidget(options_widget);
-
-    return options_scroll;
+    return group_box;
 }
 
 AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     option = option_arg;
-    check = new QCheckBox();
+    const QString label_text = account_option_string(option);
+    check = new QCheckBox(label_text);
 
     QObject::connect(
         check, &QCheckBox::stateChanged,
@@ -89,8 +77,7 @@ void AccountOptionEdit::set_read_only(const bool read_only) {
 }
 
 void AccountOptionEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = account_option_string(option) + ":";
-    layout->addRow(label_text, check);
+    layout->addRow(check);
 }
 
 bool AccountOptionEdit::apply(AdInterface &ad, const QString &dn) const {
