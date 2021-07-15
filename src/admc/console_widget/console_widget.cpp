@@ -337,12 +337,10 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
         QHeaderView *header = view->detail_view()->header();
         connect(
             header, &QHeaderView::sectionCountChanged,
-            [header, default_columns](int oldCount, int) {
-                if (oldCount == 0) {
-                    for (int i = 0; i < header->count(); i++) {
-                        const bool hidden = !default_columns.contains(i);
-                        header->setSectionHidden(i, hidden);
-                    }
+            [header, default_columns, id](int oldCount, int) {
+                for (int i = 0; i < header->count(); i++) {
+                    const bool hidden = !default_columns.contains(i);
+                    header->setSectionHidden(i, hidden);
                 }
             });
     }
