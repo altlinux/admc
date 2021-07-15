@@ -80,7 +80,7 @@ GroupPolicyTab::GroupPolicyTab() {
     edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
 
-    auto add_button = new QPushButton(tr("Add"));
+    auto add_button = new QPushButton(tr("Add..."));
     auto remove_button = new QPushButton(tr("Remove"));
     auto button_layout = new QHBoxLayout();
     button_layout->addWidget(add_button);

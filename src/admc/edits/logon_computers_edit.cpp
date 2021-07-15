@@ -32,7 +32,7 @@
 
 LogonComputersEdit::LogonComputersEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    button = new QPushButton(tr("Logon computers"));
+    button = new QPushButton(tr("Logon computers..."));
     button->setObjectName("logon_computers_edit_button");
     
     dialog = new LogonComputersDialog(button);
@@ -83,7 +83,7 @@ LogonComputersDialog::LogonComputersDialog(QWidget *parent)
     edit = new QLineEdit();
     edit->setObjectName("edit");
 
-    auto add_button = new QPushButton(tr("Add"));
+    auto add_button = new QPushButton(tr("Add..."));
     add_button->setObjectName("add_button");
     
     auto remove_button = new QPushButton(tr("Remove"));

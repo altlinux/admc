@@ -37,7 +37,7 @@ SelectClassesWidget::SelectClassesWidget(const QList<QString> class_list)
     classes_display = new QLineEdit();
     classes_display->setReadOnly(true);
 
-    auto select_classes_button = new QPushButton(tr("Select"));
+    auto select_classes_button = new QPushButton(tr("Select..."));
     select_classes_button->setAutoDefault(false);
 
     auto layout = new QHBoxLayout();

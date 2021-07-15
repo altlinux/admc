@@ -39,7 +39,7 @@
 
 LogonHoursEdit::LogonHoursEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    button = new QPushButton(tr("Logon hours"));
+    button = new QPushButton(tr("Logon hours..."));
     dialog = new LogonHoursDialog(button);
 
     connect(

@@ -70,7 +70,7 @@ AttributesTab::AttributesTab() {
 
     g_settings->setup_header_state(view->header(), VariantSetting_AttributesHeader);
 
-    auto edit_button = new QPushButton(tr("Edit"));
+    auto edit_button = new QPushButton(tr("Edit..."));
     edit_button->setObjectName("edit_button");
     auto filter_button = new QPushButton(tr("Filter"));
     filter_button->setObjectName("filter_button");

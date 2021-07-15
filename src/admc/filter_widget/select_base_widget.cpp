@@ -48,7 +48,7 @@ SelectBaseWidget::SelectBaseWidget(const QString &default_base)
         add_base_to_combo(default_base);
     }
 
-    auto browse_button = new QPushButton(tr("Browse"));
+    auto browse_button = new QPushButton(tr("Browse..."));
     browse_button->setAutoDefault(false);
 
     const int last_index = combo->count() - 1;

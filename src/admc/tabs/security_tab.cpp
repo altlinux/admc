@@ -91,8 +91,8 @@ SecurityTab::SecurityTab() {
     trustee_view->setSelectionMode(QAbstractItemView::SingleSelection);
 
     auto trustee_button_box = new QDialogButtonBox();
-    auto add_trustee_button = trustee_button_box->addButton(tr("Add"), QDialogButtonBox::ActionRole);
-    auto add_well_known_trustee_button = trustee_button_box->addButton(tr("Add well-known trustee"), QDialogButtonBox::ActionRole);
+    auto add_trustee_button = trustee_button_box->addButton(tr("Add..."), QDialogButtonBox::ActionRole);
+    auto add_well_known_trustee_button = trustee_button_box->addButton(tr("Add well-known trustee..."), QDialogButtonBox::ActionRole);
     auto remove_trustee_button = trustee_button_box->addButton(tr("Remove"), QDialogButtonBox::ActionRole);
 
     ace_model = new QStandardItemModel(0, AceColumn_COUNT, this);

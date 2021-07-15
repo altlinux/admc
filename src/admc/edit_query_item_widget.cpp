@@ -54,7 +54,7 @@ EditQueryItemWidget::EditQueryItemWidget()
     filter_display = new QTextEdit();
     filter_display->setReadOnly(true);
 
-    auto edit_filter_button = new QPushButton(tr("Edit"));
+    auto edit_filter_button = new QPushButton(tr("Edit..."));
 
     auto form_layout = new QFormLayout();
     form_layout->addRow(tr("Name:"), name_edit);

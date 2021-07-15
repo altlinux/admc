@@ -39,20 +39,20 @@ ConsoleActions::ConsoleActions(QObject *parent)
                 case ConsoleAction_NewComputer: return tr("&Computer");
                 case ConsoleAction_NewOU: return tr("&Organization");
                 case ConsoleAction_NewGroup: return tr("&Group");
-                case ConsoleAction_Find: return tr("&Find");
-                case ConsoleAction_AddToGroup: return tr("&Add to group");
+                case ConsoleAction_Find: return tr("&Find...");
+                case ConsoleAction_AddToGroup: return tr("&Add to group...");
                 case ConsoleAction_Enable: return tr("&Enable account");
                 case ConsoleAction_Disable: return tr("D&isable account");
-                case ConsoleAction_ResetPassword: return tr("Reset &Password");
-                case ConsoleAction_Rename: return tr("&Rename");
+                case ConsoleAction_ResetPassword: return tr("Reset &Password...");
+                case ConsoleAction_Rename: return tr("&Rename...");
                 case ConsoleAction_Delete: return tr("&Delete");
-                case ConsoleAction_Move: return tr("&Move");
-                case ConsoleAction_EditUpnSuffixes: return tr("Edit &Upn Suffixes");
-                case ConsoleAction_ChangeDC: return tr("Change domain controller");
+                case ConsoleAction_Move: return tr("&Move...");
+                case ConsoleAction_EditUpnSuffixes: return tr("Edit &Upn Suffixes...");
+                case ConsoleAction_ChangeDC: return tr("Change domain controller...");
 
                 case ConsoleAction_PolicyCreate: return tr("&Policy");
-                case ConsoleAction_PolicyAddLink: return tr("&Add link");
-                case ConsoleAction_PolicyRename: return tr("&Rename");
+                case ConsoleAction_PolicyAddLink: return tr("&Add link...");
+                case ConsoleAction_PolicyRename: return tr("&Rename...");
                 case ConsoleAction_PolicyDelete: return tr("&Delete");
 
                 case ConsoleAction_QueryCreateFolder: return tr("&Folder");
@@ -60,11 +60,11 @@ ConsoleActions::ConsoleActions(QObject *parent)
                 case ConsoleAction_QueryEditFolder: return tr("&Edit");
                 case ConsoleAction_QueryEditItem: return tr("&Edit");
                 case ConsoleAction_QueryDeleteItemOrFolder: return tr("&Delete");
-                case ConsoleAction_QueryCutItemOrFolder: return tr("Cut");
-                case ConsoleAction_QueryCopyItemOrFolder: return tr("&Copy");
+                case ConsoleAction_QueryCutItemOrFolder: return tr("Cut...");
+                case ConsoleAction_QueryCopyItemOrFolder: return tr("&Copy...");
                 case ConsoleAction_QueryPasteItemOrFolder: return tr("&Paste");
-                case ConsoleAction_QueryExport: return tr("&Export query");
-                case ConsoleAction_QueryImport: return tr("&Import query");
+                case ConsoleAction_QueryExport: return tr("&Export query...");
+                case ConsoleAction_QueryImport: return tr("&Import query...");
 
                 case ConsoleAction_LAST: break;
             }
