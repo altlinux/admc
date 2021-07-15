@@ -58,11 +58,19 @@ MainWindow::MainWindow()
 
     setup_menubar();
 
-    const QByteArray geometry = g_settings->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
-    restoreGeometry(geometry);
+    if (g_settings->contains_variant(VariantSetting_MainWindowGeometry)) {
+        const QByteArray geometry = g_settings->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
+        restoreGeometry(geometry);
+    } else {
+        resize(1280, 720);
+    }
 
-    const QByteArray state = g_settings->get_variant(VariantSetting_MainWindowState).toByteArray();
-    restoreState(state);
+    if (g_settings->contains_variant(VariantSetting_MainWindowState)) {
+        const QByteArray state = g_settings->get_variant(VariantSetting_MainWindowState).toByteArray();
+        restoreState(state);
+    } else {
+        message_log_dock->hide();
+    }
 
     connect_to_server();
 }
