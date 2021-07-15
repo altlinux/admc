@@ -22,6 +22,7 @@
 
 #include "adldap.h"
 #include "edits/string_edit.h"
+#include "edits/upn_edit.h"
 #include "globals.h"
 #include "status.h"
 #include "utils.h"
@@ -56,14 +57,11 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
     name_edit->setObjectName("name_edit");
 
     if (object.is_class(CLASS_USER)) {
-        const QList<QString> attributes = {
-            ATTRIBUTE_FIRST_NAME,
-            ATTRIBUTE_LAST_NAME,
-            ATTRIBUTE_DISPLAY_NAME,
-            ATTRIBUTE_USER_PRINCIPAL_NAME,
-            ATTRIBUTE_SAMACCOUNT_NAME,
-        };
-        StringEdit::make_many(attributes, object_class, &all_edits, this);
+        new StringEdit(ATTRIBUTE_FIRST_NAME, object_class, &all_edits, this);
+        new StringEdit(ATTRIBUTE_LAST_NAME, object_class, &all_edits, this);
+        new StringEdit(ATTRIBUTE_DISPLAY_NAME, object_class, &all_edits, this);
+        new UpnEdit(&all_edits, ad, this);
+        new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
     } else if (object.is_class(CLASS_GROUP)) {
         auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
         sama_edit->get_edit()->setObjectName("sama_edit");
