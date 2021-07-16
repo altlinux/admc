@@ -50,7 +50,7 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
         return;
     }
 
-    setWindowTitle(tr("Properties for multiple objects"));
+    setWindowTitle(tr("Properties for Multiple Objects"));
 
     setMinimumHeight(700);
     setMinimumWidth(500);

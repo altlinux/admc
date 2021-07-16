@@ -601,11 +601,11 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     const int result = ldap_modify_ext_s(d->ld, cstr(dn), attrs, NULL, NULL);
 
     if (result == LDAP_SUCCESS) {
-        d->success_message(QString(tr("Changed attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display), do_msg);
+        d->success_message(QString(tr("Attribute %1 of object %2 was changed from \"%3\" to \"%4\".")).arg(attribute, name, old_values_display, values_display), do_msg);
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to change attribute \"%1\" of object \"%2\" from \"%3\" to \"%4\"")).arg(attribute, name, old_values_display, values_display);
+        const QString context = QString(tr("Failed to change attribute %1 of object %2 from \"%3\" to \"%4\".")).arg(attribute, name, old_values_display, values_display);
 
         d->error_message(context, d->default_error(), do_msg);
 
@@ -652,13 +652,13 @@ bool AdInterface::attribute_add_value(const QString &dn, const QString &attribut
     const QString new_display_value = attribute_display_value(attribute, value, d->adconfig);
 
     if (result == LDAP_SUCCESS) {
-        const QString context = QString(tr("Added value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
+        const QString context = QString(tr("Value \"%1\" was added for attribute %2 of object %3.")).arg(new_display_value, attribute, name);
 
         d->success_message(context, do_msg);
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to add value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(new_display_value, attribute, name);
+        const QString context = QString(tr("Failed to add value \"%1\" for attribute %2 of object %3.")).arg(new_display_value, attribute, name);
 
         d->error_message(context, d->default_error(), do_msg);
 
@@ -692,7 +692,7 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
     free(data_copy);
 
     if (result == LDAP_SUCCESS) {
-        const QString context = QString(tr("Deleted value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
+        const QString context = QString(tr("Value \"%1\" for attribute %2 of object %3 was deleted")).arg(value_display, attribute, name);
 
         d->success_message(context, do_msg);
 
@@ -739,11 +739,11 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
     const int result = ldap_add_ext_s(d->ld, cstr(dn), attrs, NULL, NULL);
 
     if (result == LDAP_SUCCESS) {
-        d->success_message(QString(tr("Created object \"%1\"")).arg(dn));
+        d->success_message(QString(tr("Object %1 was created.")).arg(dn));
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to create object \"%1\"")).arg(dn);
+        const QString context = QString(tr("Failed to create object %1.")).arg(dn);
 
         d->error_message(context, d->default_error());
 
@@ -762,7 +762,7 @@ bool AdInterface::object_delete(const QString &dn) {
     const QString name = dn_get_name(dn);
 
     auto error_message = [this, name](const QString &error) {
-        const QString context = QString(tr("Failed to delete object \"%1\"")).arg(name);
+        const QString context = QString(tr("Failed to delete object %1.")).arg(name);
 
         d->error_message(context, error);
     };
@@ -791,7 +791,7 @@ bool AdInterface::object_delete(const QString &dn) {
     cleanup();
 
     if (result == LDAP_SUCCESS) {
-        d->success_message(QString(tr("Deleted object \"%1\"")).arg(name));
+        d->success_message(QString(tr("Object %1 was deleted.")).arg(name));
 
         return true;
     } else {
@@ -810,11 +810,11 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     const int result = ldap_rename_s(d->ld, cstr(dn), cstr(rdn), cstr(new_container), 1, NULL, NULL);
 
     if (result == LDAP_SUCCESS) {
-        d->success_message(QString(tr("Moved object \"%1\" to \"%2\"")).arg(object_name, container_name));
+        d->success_message(QString(tr("Object %1 was moved to %2.")).arg(object_name, container_name));
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to move object \"%1\" to \"%2\"")).arg(object_name, container_name);
+        const QString context = QString(tr("Failed to move object %1 to %2.")).arg(object_name, container_name);
 
         d->error_message(context, d->default_error());
 
@@ -830,11 +830,11 @@ bool AdInterface::object_rename(const QString &dn, const QString &new_name) {
     const int result = ldap_rename_s(d->ld, cstr(dn), cstr(new_rdn), NULL, 1, NULL, NULL);
 
     if (result == LDAP_SUCCESS) {
-        d->success_message(QString(tr("Renamed object \"%1\" to \"%2\"")).arg(old_name, new_name));
+        d->success_message(QString(tr("Object %1 was renamed to %2.")).arg(old_name, new_name));
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to rename object \"%1\" to \"%2\"")).arg(old_name, new_name);
+        const QString context = QString(tr("Failed to rename object %1 to %2.")).arg(old_name, new_name);
 
         d->error_message(context, d->default_error());
 
@@ -850,11 +850,11 @@ bool AdInterface::group_add_member(const QString &group_dn, const QString &user_
     const QString group_name = dn_get_name(group_dn);
 
     if (success) {
-        d->success_message(QString(tr("Added user \"%1\" to group \"%2\"")).arg(user_name, group_name));
+        d->success_message(QString(tr("Object %1 was added to group %2.")).arg(user_name, group_name));
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to add user \"%1\" to group \"%2\"")).arg(user_name, group_name);
+        const QString context = QString(tr("Failed to add object %1 to group %2.")).arg(user_name, group_name);
 
         d->error_message(context, d->default_error());
 
@@ -870,11 +870,11 @@ bool AdInterface::group_remove_member(const QString &group_dn, const QString &us
     const QString group_name = dn_get_name(group_dn);
 
     if (success) {
-        d->success_message(QString(tr("Removed user \"%1\" from group \"%2\"")).arg(user_name, group_name));
+        d->success_message(QString(tr("Object %1 was removed from group %2.")).arg(user_name, group_name));
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to remove user \"%1\" from group \"%2\"")).arg(user_name, group_name);
+        const QString context = QString(tr("Failed to remove object %1 from group %2.")).arg(user_name, group_name);
 
         d->error_message(context, d->default_error());
 
@@ -917,11 +917,11 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope, const DoS
 
     const bool result = attribute_replace_int(dn, ATTRIBUTE_GROUP_TYPE, group_type);
     if (result) {
-        d->success_message(QString(tr("Set scope for group \"%1\" to \"%2\"")).arg(name, scope_string), do_msg);
+        d->success_message(QString(tr("Group scope for %1 to \"%2\".")).arg(name, scope_string), do_msg);
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to set scope for group \"%1\" to \"%2\"")).arg(name, scope_string);
+        const QString context = QString(tr("Failed to change group scope for %1 to \"%2\".")).arg(name, scope_string);
 
         d->error_message(context, d->default_error(), do_msg);
 
@@ -943,11 +943,11 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
 
     const bool result = attribute_replace_string(dn, ATTRIBUTE_GROUP_TYPE, update_group_type_string);
     if (result) {
-        d->success_message(QString(tr("Set type for group \"%1\" to \"%2\"")).arg(name, type_string));
+        d->success_message(QString(tr("Group type for %1 was changed to \"%2\".")).arg(name, type_string));
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to set type for group \"%1\" to \"%2\"")).arg(name, type_string);
+        const QString context = QString(tr("Failed to change group type for %1 to \"%2\".")).arg(name, type_string);
         d->error_message(context, d->default_error());
 
         return false;
@@ -973,11 +973,11 @@ bool AdInterface::user_set_primary_group(const QString &group_dn, const QString 
     const QString group_name = dn_get_name(group_dn);
 
     if (success) {
-        d->success_message(QString(tr("Set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name));
+        d->success_message(QString(tr("Primary group for object %1 was changed to %2.")).arg(user_name, group_name));
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to set primary group for user \"%1\" to \"%2\"")).arg(user_name, group_name);
+        const QString context = QString(tr("Failed to change primary group for user %1 to %2.")).arg(user_name, group_name);
 
         d->error_message(context, d->default_error());
 
@@ -1006,11 +1006,11 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const QString name = dn_get_name(dn);
 
     if (success) {
-        d->success_message(QString(tr("Set password for user \"%1\"")).arg(name));
+        d->success_message(QString(tr("Password for object %1 was changed.")).arg(name));
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to set password for user \"%1\"")).arg(name);
+        const QString context = QString(tr("Failed to change password for object %1.")).arg(name);
 
         const QString error = [this]() {
             const int ldap_result = d->get_ldap_result();
@@ -1091,18 +1091,18 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             switch (option) {
                 case AccountOption_Disabled: {
                     if (set) {
-                        return QString(tr("Disabled account for object - \"%1\"")).arg(name);
+                        return QString(tr("Object %1 has been disabled.")).arg(name);
                     } else {
-                        return QString(tr("Enabled account for object - \"%1\"")).arg(name);
+                        return QString(tr("Object %1 has been enabled.")).arg(name);
                     }
                 }
                 default: {
                     const QString description = account_option_string(option);
 
                     if (set) {
-                        return QString(tr("Turned ON account option \"%1\" for user \"%2\"")).arg(description, name);
+                        return QString(tr("Account option \"%1\" was turned ON for object %2.")).arg(description, name);
                     } else {
-                        return QString(tr("Turned OFF account option \"%1\" for user \"%2\"")).arg(description, name);
+                        return QString(tr("Account option \"%1\" was turned OFF for object %2.")).arg(description, name);
                     }
                 }
             }
@@ -1116,18 +1116,18 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             switch (option) {
                 case AccountOption_Disabled: {
                     if (set) {
-                        return QString(tr("Failed to disable account for user \"%1\"")).arg(name);
+                        return QString(tr("Failed to disable object %1.")).arg(name);
                     } else {
-                        return QString(tr("Failed to enable account for user \"%1\"")).arg(name);
+                        return QString(tr("Failed to enable object %1.")).arg(name);
                     }
                 }
                 default: {
                     const QString description = account_option_string(option);
 
                     if (set) {
-                        return QString(tr("Failed to turn ON account option \"%1\" for user \"%2\"")).arg(description, name);
+                        return QString(tr("Failed to turn ON account option \"%1\" for object %2.")).arg(description, name);
                     } else {
-                        return QString(tr("Failed to turn OFF account option \"%1\" for user \"%2\"")).arg(description, name);
+                        return QString(tr("Failed to turn OFF account option \"%1\" for object %2.")).arg(description, name);
                     }
                 }
             }
@@ -1145,11 +1145,11 @@ bool AdInterface::user_unlock(const QString &dn) {
     const QString name = dn_get_name(dn);
 
     if (result) {
-        d->success_message(QString(tr("Unlocked user \"%1\"")).arg(name));
+        d->success_message(QString(tr("User \"%1\" was unlocked.")).arg(name));
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to unlock user \"%1\"")).arg(name);
+        const QString context = QString(tr("Failed to unlock user %1.")).arg(name);
 
         d->error_message(context, d->default_error());
 

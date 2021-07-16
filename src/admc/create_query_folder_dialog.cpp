@@ -37,7 +37,7 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {
     console = console_arg;
 
-    const auto title = QString(tr("Create query folder"));
+    const auto title = QString(tr("Create Query Folder"));
     setWindowTitle(title);
 
     name_edit = new QLineEdit();

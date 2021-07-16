@@ -48,11 +48,19 @@ void add_select_object_to_model(QStandardItemModel *model, const AdObject &objec
 
 SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent) {
-    setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle("Select dialog");
-
     class_list = class_list_arg;
     multi_selection = multi_selection_arg;
+
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    const QString title = [&]() {
+        if (multi_selection == SelectObjectDialogMultiSelection_Yes) {
+            return tr("Select Objects");
+        } else {
+            return tr("Select Object");
+        }
+    }();
+    setWindowTitle(title);
 
     resize(600, 400);
 

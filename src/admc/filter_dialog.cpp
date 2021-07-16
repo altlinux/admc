@@ -40,7 +40,7 @@
 
 FilterDialog::FilterDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle(tr("Filter contents"));
+    setWindowTitle(tr("Edit Console Filter"));
     resize(400, 400);
 
     const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();

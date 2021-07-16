@@ -41,7 +41,7 @@ char *itoa(int value, char *result, int base);
 
 OctetEditor::OctetEditor(const QString attribute, QWidget *parent)
 : AttributeEditor(parent) {
-    setWindowTitle(tr("Edit octet string"));
+    setWindowTitle(tr("Edit Octet String"));
 
     prev_format = OctetDisplayFormat_Hexadecimal;
 

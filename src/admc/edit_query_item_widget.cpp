@@ -139,7 +139,7 @@ void EditQueryItemWidget::update_filter_display() {
 
 EditQueryItemFilterDialog::EditQueryItemFilterDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle("Edit filter");
+    setWindowTitle("Edit Filter");
 
     filter_widget = new FilterWidget(filter_classes);
 

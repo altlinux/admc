@@ -46,9 +46,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 
     const AdObject object = ad.search_object(target);
 
-    const QString name = dn_get_name(target);
-    const QString title = QString(tr("Change password of object \"%1\"")).arg(name);
-    setWindowTitle(title);
+    setWindowTitle(tr("Change Password"));
 
     new PasswordEdit(&edits, this);
 

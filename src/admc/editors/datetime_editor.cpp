@@ -30,7 +30,7 @@
 
 DateTimeEditor::DateTimeEditor(const QString attribute_arg, QWidget *parent)
 : AttributeEditor(parent) {
-    setWindowTitle(tr("Edit datetime"));
+    setWindowTitle(tr("Edit Datetime"));
 
     attribute = attribute_arg;
 

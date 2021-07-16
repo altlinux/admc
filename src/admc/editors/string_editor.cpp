@@ -35,13 +35,13 @@ StringEditor::StringEditor(const QString attribute, QWidget *parent)
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
         switch (type) {
-            case AttributeType_Integer: return tr("Edit integer");
-            case AttributeType_LargeInteger: return tr("Edit large integer");
-            case AttributeType_Enumeration: return tr("Edit enumeration");
+            case AttributeType_Integer: return tr("Edit Integer");
+            case AttributeType_LargeInteger: return tr("Edit Large Integer");
+            case AttributeType_Enumeration: return tr("Edit Enumeration");
             default: break;
         };
 
-        return tr("Edit string");
+        return tr("Edit String");
     }();
     setWindowTitle(title);
 

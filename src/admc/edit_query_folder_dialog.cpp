@@ -36,7 +36,7 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {
     console = console_arg;
 
-    const auto title = QString(tr("Edit query folder"));
+    const auto title = QString(tr("Edit Query Folder"));
     setWindowTitle(title);
 
     name_edit = new QLineEdit();

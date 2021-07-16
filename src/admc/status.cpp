@@ -123,7 +123,7 @@ void ad_error_log(const AdInterface &ad, QWidget *parent) {
     }
 
     auto dialog = new QDialog(parent);
-    dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors occured"));
+    dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors Occured"));
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->setMinimumWidth(600);
 
@@ -145,7 +145,7 @@ void ad_error_log(const AdInterface &ad, QWidget *parent) {
     errors_display->setPlainText(errors_text);
 
     auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
+    button_box->addButton(QDialogButtonBox::Close);
 
     auto layout = new QVBoxLayout();
     dialog->setLayout(layout);

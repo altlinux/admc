@@ -32,7 +32,7 @@ FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString d
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(tr("Find objects"));
+    setWindowTitle(tr("Find Objects"));
 
     auto menubar = new QMenuBar();
     auto action_menu = menubar->addMenu(tr("&Action"));

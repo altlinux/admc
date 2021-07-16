@@ -43,8 +43,6 @@ MainWindow::MainWindow()
 : QMainWindow() {
     setStatusBar(g_status()->status_bar());
 
-    g_status()->status_bar()->showMessage(tr("Ready"));
-
     message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle(tr("Message Log"));
     message_log_dock->setWidget(g_status()->message_log());
@@ -222,7 +220,7 @@ void MainWindow::setup_menubar() {
                 if (checked) {
                     g_settings->set_variant(VariantSetting_Locale, QLocale(language));
 
-                    message_box_information(this, tr("Info"), tr("App needs to be restarted for the language option to take effect."));
+                    message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
                 }
             });
     }

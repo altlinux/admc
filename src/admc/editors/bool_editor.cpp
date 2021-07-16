@@ -30,7 +30,7 @@
 
 BoolEditor::BoolEditor(const QString attribute, QWidget *parent)
 : AttributeEditor(parent) {
-    setWindowTitle(tr("Edit boolean"));
+    setWindowTitle(tr("Edit Boolean"));
 
     QLabel *attribute_label = make_attribute_label(attribute);
 

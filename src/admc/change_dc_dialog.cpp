@@ -36,7 +36,7 @@ ChangeDCDialog::ChangeDCDialog(QStandardItem *domain_head_item_arg, QWidget *par
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
     setMinimumSize(500, 200);
-    setWindowTitle(tr("Change domain controller"));
+    setWindowTitle(tr("Change Domain Controller"));
 
     domain_head_item = domain_head_item_arg;
 

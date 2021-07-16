@@ -80,6 +80,8 @@ QList<bool> shift_list(const QList<bool> &list, const int shift_amount);
 
 LogonHoursDialog::LogonHoursDialog(QWidget *parent)
 : QDialog(parent) {
+    setWindowTitle(tr("Edit Logon Hours"));
+
     model = new QStandardItemModel(DAYS_IN_WEEK, HOURS_IN_DAY, this);
     model->setVerticalHeaderLabels({
         tr("Sunday"),

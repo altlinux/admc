@@ -31,7 +31,7 @@ SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> clas
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(tr("Find and select objects"));
+    setWindowTitle(tr("Select Objects"));
 
     find_widget = new FindWidget(classes, g_adconfig->domain_head());
 

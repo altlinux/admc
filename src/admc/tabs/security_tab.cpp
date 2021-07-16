@@ -448,7 +448,7 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
 SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle("Select dialog");
+    setWindowTitle("Select Well-Known Trustees");
 
     resize(600, 400);
     

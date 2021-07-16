@@ -128,7 +128,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         const QString target_name = dn_get_name(target_arg);
         
         if (!target_name.isEmpty()) {
-            return QString(tr("\"%1\" Properties")).arg(target_name);
+            return QString(tr("%1 Properties")).arg(target_name);
         } else {
             return tr("Properties");
         }

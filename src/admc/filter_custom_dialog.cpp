@@ -35,7 +35,7 @@
 
 FilterCustomDialog::FilterCustomDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle(tr("Custom filter"));
+    setWindowTitle(tr("Edit Custom Filter"));
 
     // NOTE: Can't filter out container objects, because
     // otherwise the whole tree can't be displayed, so only

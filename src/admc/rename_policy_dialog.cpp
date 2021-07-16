@@ -38,7 +38,7 @@ RenamePolicyDialog::RenamePolicyDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {
     console = console_arg;
 
-    const auto title = QString(tr("Rename policy"));
+    const auto title = QString(tr("Rename Policy"));
     setWindowTitle(title);
 
     name_edit = new QLineEdit();

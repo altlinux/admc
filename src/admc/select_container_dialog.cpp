@@ -39,7 +39,7 @@ QStandardItem *make_container_node(const AdObject &object);
 SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(tr("Select a container"));
+    setWindowTitle(tr("Select Container"));
 
     AdInterface ad;
     if (ad_failed(ad)) {

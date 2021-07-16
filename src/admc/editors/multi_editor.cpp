@@ -41,14 +41,14 @@ MultiEditor::MultiEditor(const QString attribute_arg, QWidget *parent)
     const QString title = [this]() {
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
-        const QString octet_title = tr("Edit multi-valued octet");
-        const QString datetime_title = tr("Edit multi-valued datetime");
+        const QString octet_title = tr("Edit Multi-Valued Octet");
+        const QString datetime_title = tr("Edit Multi-Valued Datetime");
 
         switch (type) {
-            case AttributeType_Integer: return tr("Edit  multi-valued integer");
-            case AttributeType_LargeInteger: return tr("Edit  multi-valued large integer");
-            case AttributeType_Enumeration: return tr("Edit  multi-valued enumeration");
-            case AttributeType_Boolean: return tr("Edit multi-valued boolean");
+            case AttributeType_Integer: return tr("Edit  Multi-Valued Integer");
+            case AttributeType_LargeInteger: return tr("Edit  Multi-Valued Large Integer");
+            case AttributeType_Enumeration: return tr("Edit  Multi-Valued Enumeration");
+            case AttributeType_Boolean: return tr("Edit Multi-Valued Boolean");
 
             case AttributeType_Octet: return octet_title;
             case AttributeType_Sid: return octet_title;
@@ -59,7 +59,7 @@ MultiEditor::MultiEditor(const QString attribute_arg, QWidget *parent)
             default: break;
         };
 
-        return tr("Edit multi-valued string");
+        return tr("Edit Multi-Valued String");
     }();
     setWindowTitle(title);
 

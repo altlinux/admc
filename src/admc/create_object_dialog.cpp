@@ -62,7 +62,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
     setMinimumWidth(400);
 
     const QString class_name = g_adconfig->get_class_display_name(object_class);
-    const auto title = QString(tr("Create object - \"%1\"")).arg(class_name);
+    const auto title = tr("Create Object - %1").arg(class_name);;
     setWindowTitle(title);
 
     name_edit = new QLineEdit();
@@ -248,7 +248,7 @@ void CreateObjectDialog::accept() {
     }
 
     auto fail_msg = [name]() {
-        const QString message = QString(tr("Failed to create object \"%1\"")).arg(name);
+        const QString message = QString(tr("Failed to create object %1")).arg(name);
         g_status()->add_message(message, StatusType_Error);
     };
 
@@ -271,7 +271,7 @@ void CreateObjectDialog::accept() {
     g_status()->display_ad_messages(ad, this);
 
     if (final_success) {
-        const QString message = QString(tr("Created object \"%1\"")).arg(name);
+        const QString message = QString(tr("Object %1 was created")).arg(name);
 
         g_status()->add_message(message, StatusType_Success);
     } else {
