@@ -692,13 +692,13 @@ bool AdInterface::attribute_delete_value(const QString &dn, const QString &attri
     free(data_copy);
 
     if (result == LDAP_SUCCESS) {
-        const QString context = QString(tr("Value \"%1\" for attribute %2 of object %3 was deleted")).arg(value_display, attribute, name);
+        const QString context = QString(tr("Value \"%1\" for attribute %2 of object %3 was deleted.")).arg(value_display, attribute, name);
 
         d->success_message(context, do_msg);
 
         return true;
     } else {
-        const QString context = QString(tr("Failed to delete value \"%1\" for attribute \"%2\" of object \"%3\"")).arg(value_display, attribute, name);
+        const QString context = QString(tr("Failed to delete value \"%1\" for attribute %2 of object %3.")).arg(value_display, attribute, name);
 
         d->error_message(context, d->default_error(), do_msg);
 
@@ -917,7 +917,7 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope, const DoS
 
     const bool result = attribute_replace_int(dn, ATTRIBUTE_GROUP_TYPE, group_type);
     if (result) {
-        d->success_message(QString(tr("Group scope for %1 to \"%2\".")).arg(name, scope_string), do_msg);
+        d->success_message(QString(tr("Group scope for %1 was changed to \"%2\".")).arg(name, scope_string), do_msg);
 
         return true;
     } else {

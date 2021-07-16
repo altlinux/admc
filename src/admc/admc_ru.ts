@@ -4,17 +4,17 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="about_dialog.cpp" line="32"/>
+        <location filename="about_dialog.cpp" line="31"/>
         <source>Version %1</source>
         <translation>Версия %1</translation>
     </message>
     <message>
-        <location filename="about_dialog.cpp" line="35"/>
+        <location filename="about_dialog.cpp" line="34"/>
         <source>ADMC is a tool for Active Directory administration.</source>
         <translation>ADMC - это инструмент для администрирования Active Directory.</translation>
     </message>
     <message>
-        <location filename="about_dialog.cpp" line="37"/>
+        <location filename="about_dialog.cpp" line="36"/>
         <source>Copyright (C) 2020 BaseALT Ltd.</source>
         <translation>Copyright (C) 2020 BaseALT Ltd.</translation>
     </message>
@@ -22,7 +22,7 @@
 <context>
     <name>AccountOptionEdit</name>
     <message>
-        <location filename="edits/account_option_edit.cpp" line="61"/>
+        <location filename="edits/account_option_edit.cpp" line="45"/>
         <source>Account options:</source>
         <translation>Опции учетной записи:</translation>
     </message>
@@ -30,7 +30,7 @@
 <context>
     <name>AccountOptionMultiEdit</name>
     <message>
-        <location filename="multi_edits/account_option_multi_edit.cpp" line="37"/>
+        <location filename="multi_edits/account_option_multi_edit.cpp" line="38"/>
         <source>Account options:</source>
         <translation>Опции учетной записи:</translation>
     </message>
@@ -38,189 +38,184 @@
 <context>
     <name>AttributeEditor</name>
     <message>
-        <location filename="editors/attribute_editor.cpp" line="105"/>
+        <location filename="editors/attribute_editor.cpp" line="113"/>
         <source>Attribute: %1</source>
         <translation>Атрибут: %1</translation>
     </message>
 </context>
 <context>
-    <name>AttributesFilterDialog</name>
+    <name>AttributesFilterMenu</name>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="233"/>
+        <location filename="tabs/attributes_tab.cpp" line="217"/>
         <source>Unset</source>
         <translation>Без значения</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="234"/>
+        <location filename="tabs/attributes_tab.cpp" line="218"/>
         <source>Read-only</source>
-        <translation>Нередактируемые</translation>
+        <translation>Не редактируемые</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="235"/>
+        <location filename="tabs/attributes_tab.cpp" line="222"/>
         <source>Mandatory</source>
         <translation>Обязательные</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="236"/>
+        <location filename="tabs/attributes_tab.cpp" line="223"/>
         <source>Optional</source>
-        <translation>Необезятельные</translation>
+        <translation>Не обезятельные</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="237"/>
+        <location filename="tabs/attributes_tab.cpp" line="227"/>
         <source>System-only</source>
         <translation>Системные</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="238"/>
+        <location filename="tabs/attributes_tab.cpp" line="228"/>
         <source>Constructed</source>
-        <translation>Созданные</translation>
+        <translation>Построенные</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="239"/>
+        <location filename="tabs/attributes_tab.cpp" line="229"/>
         <source>Backlink</source>
         <translation>Обратные ссылки</translation>
-    </message>
-    <message>
-        <location filename="tabs/attributes_tab.cpp" line="264"/>
-        <source>Read-only attributes:</source>
-        <translation>Нередактируемые атрибуты:</translation>
     </message>
 </context>
 <context>
     <name>AttributesTab</name>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="60"/>
+        <location filename="tabs/attributes_tab.cpp" line="55"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="61"/>
+        <location filename="tabs/attributes_tab.cpp" line="56"/>
         <source>Value</source>
         <translation>Значение</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="62"/>
+        <location filename="tabs/attributes_tab.cpp" line="57"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="78"/>
-        <source>Edit</source>
-        <translation>Изменить</translation>
+        <location filename="tabs/attributes_tab.cpp" line="73"/>
+        <source>Edit...</source>
+        <translation>Редактировать...</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="80"/>
+        <location filename="tabs/attributes_tab.cpp" line="75"/>
         <source>Filter</source>
         <translation>Фильтр</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="148"/>
+        <location filename="tabs/attributes_tab.cpp" line="138"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="148"/>
+        <location filename="tabs/attributes_tab.cpp" line="138"/>
         <source>No editor is available for this attribute type.</source>
         <translation>Отсутствует редактор для этого типа атрибута.</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="393"/>
+        <location filename="tabs/attributes_tab.cpp" line="327"/>
         <source>Boolean</source>
         <translation>Булево</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="394"/>
+        <location filename="tabs/attributes_tab.cpp" line="328"/>
         <source>Enumeration</source>
         <translation>Перечисление</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="395"/>
+        <location filename="tabs/attributes_tab.cpp" line="329"/>
         <source>Integer</source>
         <translation>Целое число</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="396"/>
+        <location filename="tabs/attributes_tab.cpp" line="330"/>
         <source>Large Integer</source>
         <translation>Перечисление</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="397"/>
+        <location filename="tabs/attributes_tab.cpp" line="331"/>
         <source>String Case</source>
         <translation>Строка</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="398"/>
+        <location filename="tabs/attributes_tab.cpp" line="332"/>
         <source>IA5</source>
         <translation>IA5</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="399"/>
+        <location filename="tabs/attributes_tab.cpp" line="333"/>
         <source>NT Security Descriptor</source>
         <translation>NT Security Descriptor</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="400"/>
+        <location filename="tabs/attributes_tab.cpp" line="334"/>
         <source>Numeric</source>
         <translatorcomment>what&apos;s the difference between this and integer?</translatorcomment>
         <translation>Цифра</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="401"/>
+        <location filename="tabs/attributes_tab.cpp" line="335"/>
         <source>Object Identifier</source>
         <translation>Идентификатор объекта</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="402"/>
+        <location filename="tabs/attributes_tab.cpp" line="336"/>
         <source>Octet</source>
         <translation>Октет</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="403"/>
+        <location filename="tabs/attributes_tab.cpp" line="337"/>
         <source>Replica Link</source>
         <translation>Ссылка реплики</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="404"/>
+        <location filename="tabs/attributes_tab.cpp" line="338"/>
         <source>Printable</source>
         <translation>Печатное</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="405"/>
+        <location filename="tabs/attributes_tab.cpp" line="339"/>
         <source>SID</source>
         <translation>SID</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="406"/>
+        <location filename="tabs/attributes_tab.cpp" line="340"/>
         <source>Teletex</source>
         <translation>Телетекс</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="407"/>
+        <location filename="tabs/attributes_tab.cpp" line="341"/>
         <source>Unicode</source>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="408"/>
+        <location filename="tabs/attributes_tab.cpp" line="342"/>
         <source>UTC Time</source>
         <translation>Время UTC</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="409"/>
+        <location filename="tabs/attributes_tab.cpp" line="343"/>
         <source>Generalized Time</source>
         <translation>Обобщенное время</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="410"/>
+        <location filename="tabs/attributes_tab.cpp" line="344"/>
         <source>DN String</source>
         <translation>DN строка</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="411"/>
+        <location filename="tabs/attributes_tab.cpp" line="345"/>
         <source>DN Binary</source>
         <translation>DN бинарное</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="412"/>
+        <location filename="tabs/attributes_tab.cpp" line="346"/>
         <source>Distinguished Name</source>
         <translation>Уникальное имя</translation>
     </message>
@@ -228,22 +223,22 @@
 <context>
     <name>BoolEditor</name>
     <message>
-        <location filename="editors/bool_editor.cpp" line="32"/>
-        <source>Edit boolean</source>
-        <translation>Редактировать булево</translation>
+        <location filename="editors/bool_editor.cpp" line="33"/>
+        <source>Edit Boolean</source>
+        <translation>Редактировать Булево</translation>
     </message>
     <message>
-        <location filename="editors/bool_editor.cpp" line="36"/>
+        <location filename="editors/bool_editor.cpp" line="37"/>
         <source>True</source>
         <translation>Истина</translation>
     </message>
     <message>
-        <location filename="editors/bool_editor.cpp" line="37"/>
+        <location filename="editors/bool_editor.cpp" line="38"/>
         <source>False</source>
         <translation>Ложь</translation>
     </message>
     <message>
-        <location filename="editors/bool_editor.cpp" line="38"/>
+        <location filename="editors/bool_editor.cpp" line="39"/>
         <source>Unset</source>
         <translation>Без значения</translation>
     </message>
@@ -266,12 +261,12 @@
         <translation>&amp;Показать неконтейнерные объекты в дереве консоли</translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="511"/>
+        <location filename="central_widget.cpp" line="512"/>
         <source>Are you sure you want to delete this policy and all of it&apos;s links?</source>
         <translation>Вы действительно хотите удалить эту политику и все линки на нее?</translation>
     </message>
     <message numerus="yes">
-        <location filename="central_widget.cpp" line="727"/>
+        <location filename="central_widget.cpp" line="728"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
@@ -280,7 +275,7 @@
         </translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="731"/>
+        <location filename="central_widget.cpp" line="732"/>
         <source> [Filtering results]</source>
         <translation> [Фильтрация результатов]</translation>
     </message>
@@ -289,8 +284,9 @@
     <name>ChangeDCDialog</name>
     <message>
         <location filename="change_dc_dialog.cpp" line="39"/>
-        <source>Change domain controller</source>
-        <translation>Изменить контроллер домена</translation>
+        <source>Change Domain Controller</source>
+        <oldsource>Change domain controller</oldsource>
+        <translation>Изменить Контроллер Домена</translation>
     </message>
     <message>
         <location filename="change_dc_dialog.cpp" line="52"/>
@@ -322,13 +318,15 @@
     </message>
     <message>
         <location filename="console_actions.cpp" line="42"/>
-        <source>&amp;Find</source>
-        <translation>&amp;Поиск</translation>
+        <source>&amp;Find...</source>
+        <oldsource>&amp;Find</oldsource>
+        <translation>&amp;Поиск...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="43"/>
-        <source>&amp;Add to group</source>
-        <translation>&amp;Добавить в группу</translation>
+        <source>&amp;Add to group...</source>
+        <oldsource>&amp;Add to group</oldsource>
+        <translation>&amp;Добавить в группу...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="44"/>
@@ -342,14 +340,16 @@
     </message>
     <message>
         <location filename="console_actions.cpp" line="46"/>
-        <source>Reset &amp;Password</source>
-        <translation>&amp;Поменять пароль</translation>
+        <source>Reset &amp;Password...</source>
+        <oldsource>Reset &amp;Password</oldsource>
+        <translation>&amp;Поменять пароль...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="47"/>
         <location filename="console_actions.cpp" line="55"/>
-        <source>&amp;Rename</source>
-        <translation>&amp;Переименовать</translation>
+        <source>&amp;Rename...</source>
+        <oldsource>&amp;Rename</oldsource>
+        <translation>&amp;Переименовать...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="48"/>
@@ -360,18 +360,21 @@
     </message>
     <message>
         <location filename="console_actions.cpp" line="49"/>
-        <source>&amp;Move</source>
-        <translation>&amp;Переместить</translation>
+        <source>&amp;Move...</source>
+        <oldsource>&amp;Move</oldsource>
+        <translation>&amp;Переместить...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="50"/>
-        <source>Edit &amp;Upn Suffixes</source>
-        <translation>&amp;Редактировать upn суффиксы</translation>
+        <source>Edit &amp;Upn Suffixes...</source>
+        <oldsource>Edit &amp;Upn Suffixes</oldsource>
+        <translation>&amp;Редактировать upn суффиксы...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="51"/>
-        <source>Change domain controller</source>
-        <translation>Изменить контроллер домена</translation>
+        <source>Change domain controller...</source>
+        <oldsource>Change domain controller</oldsource>
+        <translation>Изменить контроллер домена...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="53"/>
@@ -380,8 +383,9 @@
     </message>
     <message>
         <location filename="console_actions.cpp" line="54"/>
-        <source>&amp;Add link</source>
-        <translation>&amp;Добавить линк</translation>
+        <source>&amp;Add link...</source>
+        <oldsource>&amp;Add link</oldsource>
+        <translation>&amp;Добавить линк...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="58"/>
@@ -401,13 +405,15 @@
     </message>
     <message>
         <location filename="console_actions.cpp" line="63"/>
-        <source>Cut</source>
-        <translation>Вырезать</translation>
+        <source>Cut...</source>
+        <oldsource>Cut</oldsource>
+        <translation>Вырезать...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="64"/>
-        <source>&amp;Copy</source>
-        <translation>&amp;Копировать</translation>
+        <source>&amp;Copy...</source>
+        <oldsource>&amp;Copy</oldsource>
+        <translation>&amp;Копировать...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="65"/>
@@ -416,13 +422,15 @@
     </message>
     <message>
         <location filename="console_actions.cpp" line="66"/>
-        <source>&amp;Export query</source>
-        <translation>&amp;Экспортировать поиск</translation>
+        <source>&amp;Export query...</source>
+        <oldsource>&amp;Export query</oldsource>
+        <translation>&amp;Экспортировать поиск...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="67"/>
-        <source>&amp;Import query</source>
-        <translation>&amp;Импортировать поиск</translation>
+        <source>&amp;Import query...</source>
+        <oldsource>&amp;Import query</oldsource>
+        <translation>&amp;Импортировать поиск...</translation>
     </message>
     <message>
         <location filename="console_actions.cpp" line="77"/>
@@ -430,7 +438,7 @@
         <translation>&amp;Создать</translation>
     </message>
     <message>
-        <location filename="console_types/console_object.cpp" line="604"/>
+        <location filename="console_types/console_object.cpp" line="606"/>
         <source>Are you sure you want to delete this object?</source>
         <translation>Вы уверены, что хотите удалить этот объект?</translation>
     </message>
@@ -486,7 +494,7 @@
 <context>
     <name>CountryWidget</name>
     <message>
-        <location filename="edits/country_widget.cpp" line="88"/>
+        <location filename="edits/country_widget.cpp" line="87"/>
         <source>None</source>
         <translation>None</translation>
     </message>
@@ -494,36 +502,36 @@
 <context>
     <name>CreateObjectDialog</name>
     <message>
-        <location filename="create_object_dialog.cpp" line="64"/>
-        <source>Create object - &quot;%1&quot;</source>
-        <translation>Создать обьект - &quot;%1&quot;</translation>
+        <location filename="create_object_dialog.cpp" line="65"/>
+        <source>Create Object - %1</source>
+        <translation>Создать Объект - %1</translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="106"/>
+        <location filename="create_object_dialog.cpp" line="107"/>
         <source>Full name:</source>
         <translation>Полное имя:</translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="163"/>
-        <location filename="create_object_dialog.cpp" line="178"/>
-        <location filename="create_object_dialog.cpp" line="189"/>
+        <location filename="create_object_dialog.cpp" line="164"/>
+        <location filename="create_object_dialog.cpp" line="179"/>
+        <location filename="create_object_dialog.cpp" line="190"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="196"/>
+        <location filename="create_object_dialog.cpp" line="197"/>
         <source>Create</source>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="250"/>
-        <source>Failed to create object &quot;%1&quot;</source>
-        <translation>Не удалось создать объект &quot;%1&quot;</translation>
+        <location filename="create_object_dialog.cpp" line="251"/>
+        <source>Failed to create object %1</source>
+        <translation>Не удалось создать объект %1</translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="273"/>
-        <source>Created object &quot;%1&quot;</source>
-        <translation>Создан объект &quot;%1&quot;</translation>
+        <location filename="create_object_dialog.cpp" line="274"/>
+        <source>Object %1 was created</source>
+        <translation>Объект %1 был создан</translation>
     </message>
 </context>
 <context>
@@ -558,8 +566,9 @@
     <name>CreateQueryFolderDialog</name>
     <message>
         <location filename="create_query_folder_dialog.cpp" line="40"/>
-        <source>Create query folder</source>
-        <translation>Создать папку поисков</translation>
+        <source>Create Query Folder</source>
+        <oldsource>Create query folder</oldsource>
+        <translation>Создать Папку Поисков</translation>
     </message>
     <message>
         <location filename="create_query_folder_dialog.cpp" line="49"/>
@@ -585,7 +594,7 @@
 <context>
     <name>CreateQueryItemDialog</name>
     <message>
-        <location filename="create_query_item_dialog.cpp" line="37"/>
+        <location filename="create_query_item_dialog.cpp" line="38"/>
         <source>Create Query</source>
         <translation>Создать поиск</translation>
     </message>
@@ -594,8 +603,9 @@
     <name>DateTimeEditor</name>
     <message>
         <location filename="editors/datetime_editor.cpp" line="33"/>
-        <source>Edit datetime</source>
-        <translation>Редактировать дату и время</translation>
+        <source>Edit Datetime</source>
+        <oldsource>Edit datetime</oldsource>
+        <translation>Редактировать Дату и Время</translation>
     </message>
 </context>
 <context>
@@ -615,8 +625,9 @@
     <name>EditQueryFolderDialog</name>
     <message>
         <location filename="edit_query_folder_dialog.cpp" line="39"/>
-        <source>Edit query folder</source>
-        <translation>Редактировать папку поиска</translation>
+        <source>Edit Query Folder</source>
+        <oldsource>Edit query folder</oldsource>
+        <translation>Редактировать Папку Поиска</translation>
     </message>
     <message>
         <location filename="edit_query_folder_dialog.cpp" line="51"/>
@@ -632,7 +643,7 @@
 <context>
     <name>EditQueryItemDialog</name>
     <message>
-        <location filename="edit_query_item_dialog.cpp" line="37"/>
+        <location filename="edit_query_item_dialog.cpp" line="38"/>
         <source>Edit Query</source>
         <translation>Редактировать поиск</translation>
     </message>
@@ -640,32 +651,32 @@
 <context>
     <name>EditQueryItemWidget</name>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="51"/>
+        <location filename="edit_query_item_widget.cpp" line="52"/>
         <source>Include subcontainers</source>
         <translation>Включать под-контейнеры</translation>
     </message>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="56"/>
-        <source>Edit</source>
-        <translation>Изменить</translation>
+        <location filename="edit_query_item_widget.cpp" line="57"/>
+        <source>Edit...</source>
+        <translation>Редактировать...</translation>
     </message>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="59"/>
+        <location filename="edit_query_item_widget.cpp" line="60"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="60"/>
+        <location filename="edit_query_item_widget.cpp" line="61"/>
         <source>Description:</source>
         <translation>Описка:</translation>
     </message>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="61"/>
+        <location filename="edit_query_item_widget.cpp" line="62"/>
         <source>Search in:</source>
         <translation>Искать в:</translation>
     </message>
     <message>
-        <location filename="edit_query_item_widget.cpp" line="63"/>
+        <location filename="edit_query_item_widget.cpp" line="64"/>
         <source>Filter:</source>
         <translation>Фильтр:</translation>
     </message>
@@ -678,7 +689,7 @@
         <translation>Никогда</translation>
     </message>
     <message>
-        <location filename="edits/expiry_widget.cpp" line="42"/>
+        <location filename="edits/expiry_widget.cpp" line="44"/>
         <source>End of:</source>
         <translation>Конец:</translation>
     </message>
@@ -686,22 +697,22 @@
 <context>
     <name>FilterBuilder</name>
     <message>
-        <location filename="filter_widget/filter_builder.cpp" line="51"/>
+        <location filename="filter_widget/filter_builder.cpp" line="52"/>
         <source>Attribute class:</source>
         <translation>Класс атрибута:</translation>
     </message>
     <message>
-        <location filename="filter_widget/filter_builder.cpp" line="52"/>
+        <location filename="filter_widget/filter_builder.cpp" line="53"/>
         <source>Attribute:</source>
         <translation>Атрибут:</translation>
     </message>
     <message>
-        <location filename="filter_widget/filter_builder.cpp" line="53"/>
+        <location filename="filter_widget/filter_builder.cpp" line="54"/>
         <source>Condition:</source>
         <translation>Состояние:</translation>
     </message>
     <message>
-        <location filename="filter_widget/filter_builder.cpp" line="54"/>
+        <location filename="filter_widget/filter_builder.cpp" line="55"/>
         <source>Value:</source>
         <translation>Значение:</translation>
     </message>
@@ -723,34 +734,35 @@
     <name>FilterCustomDialog</name>
     <message>
         <location filename="filter_custom_dialog.cpp" line="38"/>
-        <source>Custom filter</source>
-        <translation>Специальный фильтр</translation>
+        <source>Edit Custom Filter</source>
+        <oldsource>Custom filter</oldsource>
+        <translation>Редактировать Специальный фильтр</translation>
     </message>
 </context>
 <context>
     <name>FilterDialog</name>
     <message>
-        <location filename="filter_dialog.cpp" line="46"/>
-        <source>Filter contents</source>
-        <translation>Фильтровать содержимое</translation>
+        <location filename="filter_dialog.cpp" line="43"/>
+        <source>Edit Console Filter</source>
+        <translation>Редактировать Фильтр Консоли</translation>
     </message>
     <message>
-        <location filename="filter_dialog.cpp" line="55"/>
+        <location filename="filter_dialog.cpp" line="52"/>
         <source>Show all</source>
         <translation>Показать все</translation>
     </message>
     <message>
-        <location filename="filter_dialog.cpp" line="56"/>
+        <location filename="filter_dialog.cpp" line="53"/>
         <source>Show only these types</source>
         <translation>Показывать только эти типы</translation>
     </message>
     <message>
-        <location filename="filter_dialog.cpp" line="57"/>
+        <location filename="filter_dialog.cpp" line="54"/>
         <source>Create custom</source>
         <translation>Создать специальный</translation>
     </message>
     <message>
-        <location filename="filter_dialog.cpp" line="61"/>
+        <location filename="filter_dialog.cpp" line="58"/>
         <source>Custom</source>
         <translation>Специальный</translation>
     </message>
@@ -812,12 +824,12 @@
 <context>
     <name>FilterWidgetSimpleTab</name>
     <message>
-        <location filename="filter_widget/filter_widget_simple_tab.cpp" line="37"/>
+        <location filename="filter_widget/filter_widget_simple_tab.cpp" line="38"/>
         <source>Classes:</source>
         <translation>Классы:</translation>
     </message>
     <message>
-        <location filename="filter_widget/filter_widget_simple_tab.cpp" line="38"/>
+        <location filename="filter_widget/filter_widget_simple_tab.cpp" line="39"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
@@ -825,17 +837,17 @@
 <context>
     <name>FindObjectDialog</name>
     <message>
-        <location filename="find_object_dialog.cpp" line="40"/>
-        <source>Find objects</source>
-        <translation>Поиск объектов</translation>
+        <location filename="find_object_dialog.cpp" line="35"/>
+        <source>Find Objects</source>
+        <translation>Искать Объекты</translation>
     </message>
     <message>
-        <location filename="find_object_dialog.cpp" line="43"/>
+        <location filename="find_object_dialog.cpp" line="38"/>
         <source>&amp;Action</source>
         <translation>&amp;Действие</translation>
     </message>
     <message>
-        <location filename="find_object_dialog.cpp" line="44"/>
+        <location filename="find_object_dialog.cpp" line="39"/>
         <source>&amp;View</source>
         <translation>&amp;Вид</translation>
     </message>
@@ -843,17 +855,17 @@
 <context>
     <name>FindResults</name>
     <message>
-        <location filename="find_results.cpp" line="53"/>
+        <location filename="find_results.cpp" line="51"/>
         <source>&amp;Properties</source>
         <translation>&amp;Свойства</translation>
     </message>
     <message>
-        <location filename="find_results.cpp" line="73"/>
+        <location filename="find_results.cpp" line="71"/>
         <source>&amp;Customize columns</source>
         <translation>&amp;Выбрать колонки</translation>
     </message>
     <message numerus="yes">
-        <location filename="find_results.cpp" line="162"/>
+        <location filename="find_results.cpp" line="160"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
@@ -865,17 +877,17 @@
 <context>
     <name>FindWidget</name>
     <message>
-        <location filename="find_widget.cpp" line="46"/>
+        <location filename="find_widget.cpp" line="44"/>
         <source>Find</source>
         <translation>Поиск</translation>
     </message>
     <message>
-        <location filename="find_widget.cpp" line="50"/>
+        <location filename="find_widget.cpp" line="48"/>
         <source>Stop</source>
         <translation>Остановить</translation>
     </message>
     <message>
-        <location filename="find_widget.cpp" line="61"/>
+        <location filename="find_widget.cpp" line="59"/>
         <source>Search in:</source>
         <translation>Искать в:</translation>
     </message>
@@ -883,12 +895,12 @@
 <context>
     <name>GeneralMultiTab</name>
     <message>
-        <location filename="multi_tabs/general_multi_tab.cpp" line="36"/>
+        <location filename="multi_tabs/general_multi_tab.cpp" line="31"/>
         <source>Multiple objects selected</source>
         <translation>Выбраны несколько обьектов</translation>
     </message>
     <message>
-        <location filename="multi_tabs/general_multi_tab.cpp" line="38"/>
+        <location filename="multi_tabs/general_multi_tab.cpp" line="33"/>
         <source>To change a property for multiple objects, first select the checkbox to enable the change and then type the change. Depending on the number of selected objects, you might have to wait while the changes are applied.</source>
         <translation>Чтобы изменить свойство для нескольких объектов, сначала установите флажок, чтобы включить изменение, а затем введите изменение. В зависимости от количества выбранных объектов вам, возможно, придется подождать, пока изменения вступят в силу.</translation>
     </message>
@@ -896,7 +908,7 @@
 <context>
     <name>GeneralTab</name>
     <message>
-        <location filename="tabs/general_tab.cpp" line="41"/>
+        <location filename="tabs/general_tab.cpp" line="42"/>
         <source>Failed to load object information. Check your connection.</source>
         <translation>Не получилось загрузить информацию об обьекте. Проверьте соединение.</translation>
     </message>
@@ -904,7 +916,7 @@
 <context>
     <name>GpoLinksTab</name>
     <message>
-        <location filename="tabs/gpo_links_tab.cpp" line="54"/>
+        <location filename="tabs/gpo_links_tab.cpp" line="53"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
@@ -936,8 +948,9 @@
     </message>
     <message>
         <location filename="tabs/group_policy_tab.cpp" line="83"/>
-        <source>Add</source>
-        <translation>Добавить</translation>
+        <source>Add...</source>
+        <oldsource>Add</oldsource>
+        <translation>Добавить...</translation>
     </message>
     <message>
         <location filename="tabs/group_policy_tab.cpp" line="84"/>
@@ -963,7 +976,7 @@
 <context>
     <name>GroupScopeEdit</name>
     <message>
-        <location filename="edits/group_scope_edit.cpp" line="56"/>
+        <location filename="edits/group_scope_edit.cpp" line="57"/>
         <source>Group scope</source>
         <translation>Сфера группы</translation>
     </message>
@@ -971,7 +984,7 @@
 <context>
     <name>GroupTypeEdit</name>
     <message>
-        <location filename="edits/group_type_edit.cpp" line="56"/>
+        <location filename="edits/group_type_edit.cpp" line="57"/>
         <source>Group type:</source>
         <translation>Тип группы:</translation>
     </message>
@@ -985,8 +998,9 @@
     </message>
     <message>
         <location filename="edits/logon_computers_edit.cpp" line="86"/>
-        <source>Add</source>
-        <translation>Добавить</translation>
+        <source>Add...</source>
+        <oldsource>Add</oldsource>
+        <translation>Добавить...</translation>
     </message>
     <message>
         <location filename="edits/logon_computers_edit.cpp" line="89"/>
@@ -1003,54 +1017,60 @@
     <name>LogonComputersEdit</name>
     <message>
         <location filename="edits/logon_computers_edit.cpp" line="35"/>
-        <source>Logon computers</source>
-        <translation>Подключения к компьютерам</translation>
+        <source>Logon computers...</source>
+        <oldsource>Logon computers</oldsource>
+        <translation>Подключения к компьютерам...</translation>
     </message>
 </context>
 <context>
     <name>LogonHoursDialog</name>
     <message>
-        <location filename="logon_hours_dialog.cpp" line="41"/>
+        <location filename="edits/logon_hours_edit.cpp" line="83"/>
+        <source>Edit Logon Hours</source>
+        <translation>Редактировать Время Подключения</translation>
+    </message>
+    <message>
+        <location filename="edits/logon_hours_edit.cpp" line="87"/>
         <source>Sunday</source>
         <translation>Воскресенье</translation>
     </message>
     <message>
-        <location filename="logon_hours_dialog.cpp" line="42"/>
+        <location filename="edits/logon_hours_edit.cpp" line="88"/>
         <source>Monday</source>
         <translation>Понедельник</translation>
     </message>
     <message>
-        <location filename="logon_hours_dialog.cpp" line="43"/>
+        <location filename="edits/logon_hours_edit.cpp" line="89"/>
         <source>Tuesday</source>
         <translation>Вторник</translation>
     </message>
     <message>
-        <location filename="logon_hours_dialog.cpp" line="44"/>
+        <location filename="edits/logon_hours_edit.cpp" line="90"/>
         <source>Wednesday</source>
         <translation>Среда</translation>
     </message>
     <message>
-        <location filename="logon_hours_dialog.cpp" line="45"/>
+        <location filename="edits/logon_hours_edit.cpp" line="91"/>
         <source>Thursday</source>
         <translation>Четверг</translation>
     </message>
     <message>
-        <location filename="logon_hours_dialog.cpp" line="46"/>
+        <location filename="edits/logon_hours_edit.cpp" line="92"/>
         <source>Friday</source>
         <translation>Пятница</translation>
     </message>
     <message>
-        <location filename="logon_hours_dialog.cpp" line="47"/>
+        <location filename="edits/logon_hours_edit.cpp" line="93"/>
         <source>Saturday</source>
         <translation>Суббота</translation>
     </message>
     <message>
-        <location filename="logon_hours_dialog.cpp" line="65"/>
+        <location filename="edits/logon_hours_edit.cpp" line="111"/>
         <source>Local time</source>
         <translation>Местное время</translation>
     </message>
     <message>
-        <location filename="logon_hours_dialog.cpp" line="66"/>
+        <location filename="edits/logon_hours_edit.cpp" line="112"/>
         <source>UTC time</source>
         <translation>UTC время</translation>
     </message>
@@ -1058,138 +1078,133 @@
 <context>
     <name>LogonHoursEdit</name>
     <message>
-        <location filename="edits/logon_hours_edit.cpp" line="34"/>
-        <source>Logon hours</source>
-        <translation>Время подключения</translation>
+        <location filename="edits/logon_hours_edit.cpp" line="42"/>
+        <source>Logon hours...</source>
+        <translation>Время подключения...</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="main_window.cpp" line="48"/>
-        <source>Ready</source>
-        <translation>Готово</translation>
-    </message>
-    <message>
-        <location filename="main_window.cpp" line="51"/>
+        <location filename="main_window.cpp" line="47"/>
         <source>Message Log</source>
         <translation>Журнал сообщений</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="91"/>
+        <location filename="main_window.cpp" line="95"/>
         <source>&amp;Connect</source>
         <translation>&amp;Подключится</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="92"/>
+        <location filename="main_window.cpp" line="96"/>
         <source>&amp;Quit</source>
         <translation>&amp;Выйти</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="94"/>
+        <location filename="main_window.cpp" line="98"/>
         <source>&amp;Manual</source>
         <translation>&amp;Руководство</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="95"/>
+        <location filename="main_window.cpp" line="99"/>
         <source>&amp;About ADMC</source>
         <translation>&amp;Об ADMC</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="97"/>
+        <location filename="main_window.cpp" line="101"/>
         <source>&amp;Advanced Features</source>
         <translation>&amp;Дополнительные возможности</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="98"/>
+        <location filename="main_window.cpp" line="102"/>
         <source>&amp;Confirm actions</source>
         <translation>Потверждать &amp;действия</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="99"/>
+        <location filename="main_window.cpp" line="103"/>
         <source>&amp;Put last name before first name when creating users</source>
         <translation>&amp;Ставить фамилию перед именем при создании пользователей</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="100"/>
+        <location filename="main_window.cpp" line="104"/>
         <source>Log searches</source>
         <translation>Логировать поиски</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="101"/>
+        <location filename="main_window.cpp" line="105"/>
         <source>Timestamps in message log</source>
         <translation>Время в журнале</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="102"/>
+        <location filename="main_window.cpp" line="106"/>
         <source>Console Tree</source>
         <translation>Дерево консоли</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="103"/>
+        <location filename="main_window.cpp" line="107"/>
         <source>Description Bar</source>
         <translation>Описание</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="149"/>
+        <location filename="main_window.cpp" line="153"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="150"/>
+        <location filename="main_window.cpp" line="154"/>
         <source>&amp;Action</source>
         <translation>&amp;Действие</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="151"/>
+        <location filename="main_window.cpp" line="155"/>
         <source>&amp;Navigation</source>
         <translation>&amp;Навигация</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="152"/>
+        <location filename="main_window.cpp" line="156"/>
         <source>&amp;View</source>
         <translation>&amp;Вид</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="153"/>
+        <location filename="main_window.cpp" line="157"/>
         <source>&amp;Preferences</source>
         <translation>&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="154"/>
+        <location filename="main_window.cpp" line="158"/>
         <source>&amp;Language</source>
         <translation>&amp;Язык</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="155"/>
+        <location filename="main_window.cpp" line="159"/>
         <source>&amp;Help</source>
         <translation>&amp;Помощь</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="219"/>
+        <location filename="main_window.cpp" line="223"/>
         <source>Info</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="219"/>
-        <source>App needs to be restarted for the language option to take effect.</source>
-        <translation>Язык поменяется при следующем запуске приложения.</translation>
+        <location filename="main_window.cpp" line="223"/>
+        <source>Restart the app to switch to the selected language.</source>
+        <translation>Перезапустите приложение, чтобы переключиться на выбранный язык.</translation>
     </message>
 </context>
 <context>
     <name>ManagerWidget</name>
     <message>
-        <location filename="edits/manager_widget.cpp" line="39"/>
-        <source>Change</source>
-        <translation>Изменить</translation>
+        <location filename="edits/manager_widget.cpp" line="41"/>
+        <source>Change...</source>
+        <translation>Изменить...</translation>
     </message>
     <message>
-        <location filename="edits/manager_widget.cpp" line="40"/>
+        <location filename="edits/manager_widget.cpp" line="42"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
-        <location filename="edits/manager_widget.cpp" line="41"/>
+        <location filename="edits/manager_widget.cpp" line="43"/>
         <source>Clear</source>
         <translation>Очистить</translation>
     </message>
@@ -1197,52 +1212,52 @@
 <context>
     <name>MembershipTab</name>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="76"/>
+        <location filename="tabs/membership_tab.cpp" line="74"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="77"/>
+        <location filename="tabs/membership_tab.cpp" line="75"/>
         <source>Folder</source>
         <translation>Папка</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="82"/>
+        <location filename="tabs/membership_tab.cpp" line="80"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
         <location filename="tabs/membership_tab.cpp" line="83"/>
-        <source>Add</source>
-        <translation>Добавить</translation>
-    </message>
-    <message>
-        <location filename="tabs/membership_tab.cpp" line="85"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="87"/>
+        <location filename="tabs/membership_tab.cpp" line="85"/>
         <source>Set primary group</source>
         <translation>Установить основную группу</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="438"/>
+        <location filename="tabs/membership_tab.cpp" line="436"/>
         <source>Primary group: </source>
         <translation>Основная группа: </translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="366"/>
+        <location filename="tabs/membership_tab.cpp" line="364"/>
         <source>Can&apos;t remove because this group is a primary group to selected user.</source>
         <translation>Невозможно удалить, поскольку эта группа является основной для выбранного пользователя.</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="367"/>
+        <location filename="tabs/membership_tab.cpp" line="81"/>
+        <source>Add...</source>
+        <translation>Добавить...</translation>
+    </message>
+    <message>
+        <location filename="tabs/membership_tab.cpp" line="365"/>
         <source>Can&apos;t remove because selected group is a primary group to this user.</source>
         <translation>Невозможно удалить, поскольку выбранная группа является основной для этого пользователя.</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="372"/>
+        <location filename="tabs/membership_tab.cpp" line="370"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -1250,52 +1265,56 @@
 <context>
     <name>MultiEditor</name>
     <message>
-        <location filename="editors/multi_editor.cpp" line="46"/>
-        <source>Edit multi-valued octet</source>
-        <translation>Редактировать многозначный октет</translation>
+        <location filename="editors/multi_editor.cpp" line="44"/>
+        <source>Edit Multi-Valued Octet</source>
+        <translation>Редактировать Многозначный Октет</translation>
     </message>
     <message>
-        <location filename="editors/multi_editor.cpp" line="47"/>
-        <source>Edit multi-valued datetime</source>
-        <translation>Редактировать многозначную дату и время</translation>
+        <location filename="editors/multi_editor.cpp" line="45"/>
+        <source>Edit Multi-Valued Datetime</source>
+        <translation>Редактировать Многозначую Дату и Время</translation>
+    </message>
+    <message>
+        <location filename="editors/multi_editor.cpp" line="48"/>
+        <source>Edit Multi-Valued Integer</source>
+        <oldsource>Edit  Multi-Valued Integer</oldsource>
+        <translation>Редактировать Многозначное Число</translation>
+    </message>
+    <message>
+        <location filename="editors/multi_editor.cpp" line="49"/>
+        <source>Edit Multi-Valued Large Integer</source>
+        <oldsource>Edit  Multi-Valued Large Integer</oldsource>
+        <translation>Редактировать Многозначное Большое Число</translation>
     </message>
     <message>
         <location filename="editors/multi_editor.cpp" line="50"/>
-        <source>Edit  multi-valued integer</source>
-        <translation>Редактировать многозначное число</translation>
+        <source>Edit Multi-Valued Enumeration</source>
+        <oldsource>Edit  Multi-Valued Enumeration</oldsource>
+        <translation>Редактировать Многозначное Перечисление</translation>
     </message>
     <message>
         <location filename="editors/multi_editor.cpp" line="51"/>
-        <source>Edit  multi-valued large integer</source>
-        <translation>Редактировать многозначное большое число</translation>
+        <source>Edit Multi-Valued Boolean</source>
+        <oldsource>Edit  multi-valued large integer</oldsource>
+        <translation>Редактировать Многозначое Булево</translation>
     </message>
     <message>
-        <location filename="editors/multi_editor.cpp" line="52"/>
-        <source>Edit  multi-valued enumeration</source>
-        <translation>Редактировать многозначное перечисление</translation>
+        <location filename="editors/multi_editor.cpp" line="62"/>
+        <source>Edit Multi-Valued String</source>
+        <translation>Редактировать Многозначную Строку</translation>
     </message>
     <message>
-        <location filename="editors/multi_editor.cpp" line="53"/>
-        <source>Edit multi-valued boolean</source>
-        <translation>Редактировать многозначное булево</translation>
+        <location filename="editors/multi_editor.cpp" line="68"/>
+        <source>Add...</source>
+        <translation>Добавить...</translation>
     </message>
     <message>
-        <location filename="editors/multi_editor.cpp" line="64"/>
-        <source>Edit multi-valued string</source>
-        <translation>Редактировать многозначную строку</translation>
-    </message>
-    <message>
-        <location filename="editors/multi_editor.cpp" line="70"/>
-        <source>Add</source>
-        <translation>Добавить</translation>
-    </message>
-    <message>
-        <location filename="editors/multi_editor.cpp" line="73"/>
+        <location filename="editors/multi_editor.cpp" line="71"/>
         <source>Values:</source>
         <translation>Значения:</translation>
     </message>
     <message>
-        <location filename="editors/multi_editor.cpp" line="81"/>
+        <location filename="editors/multi_editor.cpp" line="75"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
@@ -1303,32 +1322,32 @@
 <context>
     <name>ObjectMultiPropertiesDialog</name>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="56"/>
-        <source>Properties for multiple objects</source>
-        <translation>Свойства для нескольких обьектов</translation>
+        <location filename="object_multi_properties_dialog.cpp" line="53"/>
+        <source>Properties for Multiple Objects</source>
+        <translation>Свойства для Нескольких Объектов</translation>
     </message>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="80"/>
+        <location filename="object_multi_properties_dialog.cpp" line="77"/>
         <source>General</source>
         <translation>Общее</translation>
     </message>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="83"/>
+        <location filename="object_multi_properties_dialog.cpp" line="80"/>
         <source>Account</source>
         <translation>Учётная запись</translation>
     </message>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="84"/>
+        <location filename="object_multi_properties_dialog.cpp" line="81"/>
         <source>Address</source>
         <translation>Адрес</translation>
     </message>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="85"/>
+        <location filename="object_multi_properties_dialog.cpp" line="82"/>
         <source>Profile</source>
         <translation>Профиль</translation>
     </message>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="86"/>
+        <location filename="object_multi_properties_dialog.cpp" line="83"/>
         <source>Organization</source>
         <translation>Организация</translation>
     </message>
@@ -1336,52 +1355,52 @@
 <context>
     <name>OctetEditor</name>
     <message>
-        <location filename="editors/octet_editor.cpp" line="45"/>
-        <source>Edit octet string</source>
-        <translation>Редактировать октет</translation>
+        <location filename="editors/octet_editor.cpp" line="44"/>
+        <source>Edit Octet String</source>
+        <translation>Редактировать Октет Строку</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="52"/>
+        <location filename="editors/octet_editor.cpp" line="51"/>
         <source>Hexadecimal</source>
         <translation>Шестнадцатеричный</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="53"/>
+        <location filename="editors/octet_editor.cpp" line="52"/>
         <source>Binary</source>
         <translation>Двоичный</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="54"/>
+        <location filename="editors/octet_editor.cpp" line="53"/>
         <source>Decimal</source>
         <translation>Десятичный</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="55"/>
+        <location filename="editors/octet_editor.cpp" line="54"/>
         <source>Octal</source>
         <translation>Восьмеричный</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="187"/>
+        <location filename="editors/octet_editor.cpp" line="191"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="191"/>
+        <location filename="editors/octet_editor.cpp" line="195"/>
         <source>Input must be strings of 2 hexadecimal digits separated by spaces. Example: &quot;0a 00 b5 ff&quot;</source>
         <translation>Ввод должны быть строками из 2 шестнадцатеричных цифр, разделенных пробелами. Пример: &quot;0a 00 b5 ff&quot;</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="192"/>
+        <location filename="editors/octet_editor.cpp" line="196"/>
         <source>Input must be strings of 8 binary digits separated by spaces. Example: &quot;01010010 01000010 01000010&quot;</source>
         <translation>Ввод должен быть строкой из 8 двоичных цифр, разделенных пробелами. Пример: &quot;01010010 01000010 01000010&quot;</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="193"/>
+        <location filename="editors/octet_editor.cpp" line="197"/>
         <source>Input must be strings of 3 decimal digits (0-255) separated by spaces. Example: &quot;010 000 191&quot;</source>
         <translation>Вводимые данные должны состоять из трех десятичных цифр (0–255), разделенных пробелами. Пример: &quot;010 000 191&quot;</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="194"/>
+        <location filename="editors/octet_editor.cpp" line="198"/>
         <source>Input must be strings of 3 octal digits (0-377) separated by spaces.. Example: &quot;070 343 301&quot;</source>
         <translation>Введите строки из трех восьмеричных цифр (0–377), разделенных пробелами. Пример: &quot;070 343 301&quot;</translation>
     </message>
@@ -1389,17 +1408,17 @@
 <context>
     <name>OrganizationTab</name>
     <message>
-        <location filename="tabs/organization_tab.cpp" line="58"/>
+        <location filename="tabs/organization_tab.cpp" line="59"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="tabs/organization_tab.cpp" line="59"/>
+        <location filename="tabs/organization_tab.cpp" line="60"/>
         <source>Folder</source>
         <translation>Папка</translation>
     </message>
     <message>
-        <location filename="tabs/organization_tab.cpp" line="62"/>
+        <location filename="tabs/organization_tab.cpp" line="63"/>
         <source>Reports:</source>
         <translation>Отчетные:</translation>
     </message>
@@ -1407,9 +1426,9 @@
 <context>
     <name>PasswordDialog</name>
     <message>
-        <location filename="password_dialog.cpp" line="50"/>
-        <source>Change password of object &quot;%1&quot;</source>
-        <translation>Изменить пароль объекта &quot;%1&quot;</translation>
+        <location filename="password_dialog.cpp" line="49"/>
+        <source>Change Password</source>
+        <translation>Изменить Пароль</translation>
     </message>
 </context>
 <context>
@@ -1444,27 +1463,27 @@
 <context>
     <name>PolicyResultsWidget</name>
     <message>
-        <location filename="policy_results_widget.cpp" line="72"/>
+        <location filename="policy_results_widget.cpp" line="71"/>
         <source>Delete link</source>
         <translation>Удалить линк</translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="82"/>
+        <location filename="policy_results_widget.cpp" line="81"/>
         <source>Location</source>
         <translation>Местонахождение</translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="83"/>
+        <location filename="policy_results_widget.cpp" line="82"/>
         <source>Enforced</source>
         <translation>Принудительно</translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="84"/>
+        <location filename="policy_results_widget.cpp" line="83"/>
         <source>Disabled</source>
         <translation>Выключено</translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="85"/>
+        <location filename="policy_results_widget.cpp" line="84"/>
         <source>Path</source>
         <translation>Путь</translation>
     </message>
@@ -1478,8 +1497,9 @@
     </message>
     <message>
         <location filename="properties_dialog.cpp" line="131"/>
-        <source>&quot;%1&quot; Properties</source>
-        <translation>&quot;%1&quot; Свойства</translation>
+        <source>%1 Properties</source>
+        <oldsource>&quot;%1&quot; Properties</oldsource>
+        <translation>%1 Свойства</translation>
     </message>
     <message>
         <location filename="properties_dialog.cpp" line="156"/>
@@ -1587,17 +1607,17 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="utils.cpp" line="136"/>
+        <location filename="utils.cpp" line="138"/>
         <source>Confirm action</source>
         <translation>Потвердить действие</translation>
     </message>
     <message>
-        <location filename="edits/account_option_edit.cpp" line="134"/>
+        <location filename="edits/account_option_edit.cpp" line="118"/>
         <source>Can&apos;t set &quot;%1&quot; when &quot;%2&quot; is set.</source>
         <translation>Невозможно установить &quot;%1&quot;, если задано &quot;%2&quot;.</translation>
     </message>
     <message>
-        <location filename="edits/account_option_edit.cpp" line="135"/>
+        <location filename="edits/account_option_edit.cpp" line="119"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -1605,35 +1625,35 @@
 <context>
     <name>RenameObjectDialog</name>
     <message>
-        <location filename="rename_object_dialog.cpp" line="52"/>
-        <source>Rename object &quot;%1&quot;</source>
-        <translation>Переименовать объект &quot;%1&quot;</translation>
+        <location filename="rename_object_dialog.cpp" line="53"/>
+        <source>Rename Object - %1</source>
+        <translation>Переименовать Объект - %1</translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="78"/>
+        <location filename="rename_object_dialog.cpp" line="76"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="111"/>
-        <source>Renamed object &quot;%1&quot;</source>
-        <translation>Переименован объект &quot;%1&quot;</translation>
+        <location filename="rename_object_dialog.cpp" line="109"/>
+        <source>Object %1 was renamed.</source>
+        <translation>Объект %1 был переименован.</translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="116"/>
-        <source>Failed to rename object &quot;%1&quot;</source>
-        <translation>Не удалось переименовать объект &quot;%1&quot;</translation>
+        <location filename="rename_object_dialog.cpp" line="114"/>
+        <source>Failed to rename object %1</source>
+        <translation>Не удалось переименовать объект %1</translation>
     </message>
 </context>
 <context>
     <name>RenamePolicyDialog</name>
     <message>
-        <location filename="rename_policy_dialog.cpp" line="42"/>
-        <source>Rename policy</source>
-        <translation>Переименовать политику</translation>
+        <location filename="rename_policy_dialog.cpp" line="41"/>
+        <source>Rename Policy</source>
+        <translation>Переименовать Политику</translation>
     </message>
     <message>
-        <location filename="rename_policy_dialog.cpp" line="55"/>
+        <location filename="rename_policy_dialog.cpp" line="54"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
@@ -1641,42 +1661,42 @@
 <context>
     <name>SecurityTab</name>
     <message>
+        <location filename="tabs/security_tab.cpp" line="94"/>
+        <source>Add...</source>
+        <translation>Добавить...</translation>
+    </message>
+    <message>
         <location filename="tabs/security_tab.cpp" line="95"/>
-        <source>Add</source>
-        <translation>Добавить</translation>
+        <source>Add well-known trustee...</source>
+        <translation>Добавить известного попечителя</translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="96"/>
-        <source>Add well-known trustee</source>
-        <translation>Добавить специальное доверенное лицо</translation>
-    </message>
-    <message>
-        <location filename="tabs/security_tab.cpp" line="97"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="102"/>
+        <location filename="tabs/security_tab.cpp" line="101"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="103"/>
+        <location filename="tabs/security_tab.cpp" line="102"/>
         <source>Allowed</source>
         <translation>Разрешено</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="104"/>
+        <location filename="tabs/security_tab.cpp" line="103"/>
         <source>Denied</source>
         <translation>Запрещено</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="445"/>
+        <location filename="tabs/security_tab.cpp" line="444"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="445"/>
+        <location filename="tabs/security_tab.cpp" line="444"/>
         <source>Failed to add some trustee&apos;s because they are already in the list.</source>
         <translation>Не удалось добавить некоторых доверенных лиц, потому что они уже есть в списке.</translation>
     </message>
@@ -1684,110 +1704,118 @@
 <context>
     <name>SelectBaseWidget</name>
     <message>
-        <location filename="filter_widget/select_base_widget.cpp" line="51"/>
-        <source>Browse</source>
-        <translation>Выбор</translation>
+        <location filename="filter_widget/select_base_widget.cpp" line="52"/>
+        <source>Browse...</source>
+        <translation>Выбрать...</translation>
     </message>
 </context>
 <context>
     <name>SelectClassesWidget</name>
     <message>
         <location filename="filter_widget/select_classes_widget.cpp" line="40"/>
-        <source>Select</source>
-        <translation>Выбрать</translation>
+        <source>Select...</source>
+        <oldsource>Select</oldsource>
+        <translation>Выбрать...</translation>
     </message>
 </context>
 <context>
     <name>SelectContainerDialog</name>
     <message>
         <location filename="select_container_dialog.cpp" line="42"/>
-        <source>Select a container</source>
-        <translation>Выберите контейнер</translation>
+        <source>Select Container</source>
+        <oldsource>Select a container</oldsource>
+        <translation>Выберите Контейнер</translation>
     </message>
 </context>
 <context>
     <name>SelectObjectAdvancedDialog</name>
     <message>
-        <location filename="select_object_advanced_dialog.cpp" line="35"/>
-        <source>Find and select objects</source>
-        <translation>Найдите и выберите объекты</translation>
+        <location filename="select_object_advanced_dialog.cpp" line="34"/>
+        <source>Select Objects</source>
+        <translation>Выбрать Объекты</translation>
     </message>
 </context>
 <context>
     <name>SelectObjectDialog</name>
     <message>
-        <location filename="select_object_dialog.cpp" line="68"/>
+        <location filename="select_object_dialog.cpp" line="58"/>
+        <source>Select Objects</source>
+        <translation>Выбрать Объекты</translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="60"/>
+        <source>Select Object</source>
+        <translation>Выбрать Объект</translation>
+    </message>
+    <message>
+        <location filename="select_object_dialog.cpp" line="75"/>
         <source>Add</source>
         <translation>Добавить</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="79"/>
+        <location filename="select_object_dialog.cpp" line="86"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="80"/>
+        <location filename="select_object_dialog.cpp" line="87"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="81"/>
+        <location filename="select_object_dialog.cpp" line="88"/>
         <source>Folder</source>
         <translation>Папка</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="93"/>
+        <location filename="select_object_dialog.cpp" line="100"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="99"/>
+        <location filename="select_object_dialog.cpp" line="106"/>
         <source>Advanced</source>
         <translation>Продвинутый</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="102"/>
+        <location filename="select_object_dialog.cpp" line="109"/>
         <source>Classes:</source>
         <translation>Классы:</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="103"/>
+        <location filename="select_object_dialog.cpp" line="110"/>
         <source>Search in:</source>
         <translation>Искать в:</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="104"/>
+        <location filename="select_object_dialog.cpp" line="111"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="105"/>
+        <location filename="select_object_dialog.cpp" line="112"/>
         <source>Selected objects:</source>
         <translation>Выбранные обьекты:</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="153"/>
-        <source>Warning</source>
-        <translation>Предупреждение</translation>
-    </message>
-    <message>
-        <location filename="select_object_dialog.cpp" line="236"/>
-        <location filename="select_object_dialog.cpp" line="293"/>
+        <location filename="select_object_dialog.cpp" line="160"/>
+        <location filename="select_object_dialog.cpp" line="243"/>
+        <location filename="select_object_dialog.cpp" line="300"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="236"/>
+        <location filename="select_object_dialog.cpp" line="243"/>
         <source>Failed to find any matches.</source>
         <translation>Не удалось найти поисковые совпадения.</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="293"/>
+        <location filename="select_object_dialog.cpp" line="300"/>
         <source>Selected object is already in the list.</source>
         <translation>Выбранный обьект уже в списке.</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="153"/>
+        <location filename="select_object_dialog.cpp" line="160"/>
         <source>This selection accepts only one object. Remove extra objects to proceed.</source>
         <translation>Этот выбор принимает только один объект. Чтобы продолжить, уберите лишние объекты.</translation>
     </message>
@@ -1795,7 +1823,7 @@
 <context>
     <name>SelectObjectMatchDialog</name>
     <message>
-        <location filename="select_object_dialog.cpp" line="300"/>
+        <location filename="select_object_dialog.cpp" line="307"/>
         <source>There are multiple matches. Select one or more to add to the list.</source>
         <translation>Нашлось несколько совпадений. Выберите одно или более чтобы добавить в список.</translation>
     </message>
@@ -1804,31 +1832,36 @@
     <name>Status</name>
     <message>
         <location filename="status.cpp" line="126"/>
-        <source>Errors occured</source>
-        <translation>Произошли ошибки</translation>
+        <source>Errors Occured</source>
+        <oldsource>Errors occured</oldsource>
+        <translation>Произошли Ошибки</translation>
     </message>
 </context>
 <context>
     <name>StringEditor</name>
     <message>
         <location filename="editors/string_editor.cpp" line="38"/>
-        <source>Edit integer</source>
-        <translation>Редактировать число</translation>
+        <source>Edit Integer</source>
+        <oldsource>Edit integer</oldsource>
+        <translation>Редактировать Число</translation>
     </message>
     <message>
         <location filename="editors/string_editor.cpp" line="39"/>
-        <source>Edit large integer</source>
-        <translation>Редактировать большое число</translation>
+        <source>Edit Large Integer</source>
+        <oldsource>Edit large integer</oldsource>
+        <translation>Редактировать Большое Число</translation>
     </message>
     <message>
         <location filename="editors/string_editor.cpp" line="40"/>
-        <source>Edit enumeration</source>
-        <translation>Редактировать перечисление</translation>
+        <source>Edit Enumeration</source>
+        <oldsource>Edit enumeration</oldsource>
+        <translation>Редактировать Перечисление</translation>
     </message>
     <message>
         <location filename="editors/string_editor.cpp" line="44"/>
-        <source>Edit string</source>
-        <translation>Редактировать строку</translation>
+        <source>Edit String</source>
+        <oldsource>Edit string</oldsource>
+        <translation>Редактировать Строку</translation>
     </message>
 </context>
 <context>
@@ -1850,18 +1883,18 @@
 <context>
     <name>UpnEdit</name>
     <message>
-        <location filename="edits/upn_edit.cpp" line="74"/>
+        <location filename="edits/upn_edit.cpp" line="73"/>
         <source>UPN may not be empty.</source>
         <translation>UPN не может быть пустым.</translation>
     </message>
     <message>
-        <location filename="edits/upn_edit.cpp" line="75"/>
-        <location filename="edits/upn_edit.cpp" line="98"/>
+        <location filename="edits/upn_edit.cpp" line="74"/>
+        <location filename="edits/upn_edit.cpp" line="97"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="edits/upn_edit.cpp" line="97"/>
+        <location filename="edits/upn_edit.cpp" line="96"/>
         <source>The specified user logon name already exists.</source>
         <translation>Указанное имя для входа уже существует.</translation>
     </message>
@@ -1869,18 +1902,18 @@
 <context>
     <name>console_query.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="467"/>
+        <location filename="console_types/console_query.cpp" line="465"/>
         <source>Export Query</source>
         <translation>Экспортировать поиск</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="469"/>
-        <location filename="console_types/console_query.cpp" line="494"/>
+        <location filename="console_types/console_query.cpp" line="467"/>
+        <location filename="console_types/console_query.cpp" line="492"/>
         <source>JSON (*.json)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="492"/>
+        <location filename="console_types/console_query.cpp" line="490"/>
         <source>Import Query</source>
         <translation>Импортировать поиск</translation>
     </message>
@@ -1904,7 +1937,7 @@
 <context>
     <name>query</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="174"/>
+        <location filename="console_types/console_query.cpp" line="172"/>
         <source>Saved Queries</source>
         <translation>Сохраненные поиски</translation>
     </message>
@@ -1912,30 +1945,30 @@
 <context>
     <name>query.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="285"/>
+        <location filename="console_types/console_query.cpp" line="283"/>
         <source>Name may not be empty</source>
         <translation>Имя не может быть пустым</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="286"/>
-        <location filename="console_types/console_query.cpp" line="318"/>
-        <location filename="console_types/console_query.cpp" line="321"/>
-        <location filename="console_types/console_query.cpp" line="514"/>
+        <location filename="console_types/console_query.cpp" line="284"/>
+        <location filename="console_types/console_query.cpp" line="316"/>
+        <location filename="console_types/console_query.cpp" line="319"/>
+        <location filename="console_types/console_query.cpp" line="512"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="317"/>
+        <location filename="console_types/console_query.cpp" line="315"/>
         <source>There&apos;s already an item with this name.</source>
         <translation>Указанное имя уже существует.</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="320"/>
+        <location filename="console_types/console_query.cpp" line="318"/>
         <source>Names cannot contain &quot;/&quot;.</source>
         <translation>Имена не могут содержать &quot;/&quot;.</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="513"/>
+        <location filename="console_types/console_query.cpp" line="511"/>
         <source>Query file is corrupted.</source>
         <translation>Файл поиска поврежден.</translation>
     </message>
@@ -1943,12 +1976,12 @@
 <context>
     <name>query_folder.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="61"/>
+        <location filename="console_types/console_query.cpp" line="59"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="62"/>
+        <location filename="console_types/console_query.cpp" line="60"/>
         <source>Description</source>
         <translation>Описание</translation>
     </message>
