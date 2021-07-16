@@ -27,10 +27,11 @@ class OctetEditor;
 class QComboBox;
 class QPlainTextEdit;
 
-class ADMCTestOctetEdit : public ADMCTest {
+class ADMCTestOctetEditor : public ADMCTest {
     Q_OBJECT
 
 private slots:
+    void initTestCase_data();
     void init() override;
 
     void display();

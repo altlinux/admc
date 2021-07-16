@@ -25,32 +25,21 @@
 #include <QPlainTextEdit>
 #include <QComboBox>
 
-enum FormatIndex {
-    FormatIndex_Hex = 0,
-    FormatIndex_Bin,
-    FormatIndex_Dec,
-    FormatIndex_Oct,
-};
-
-const QList<FormatIndex> index_list = {
-    FormatIndex_Hex,
-    FormatIndex_Bin,
-    FormatIndex_Dec,
-    FormatIndex_Oct,
-};
-
-const QHash<FormatIndex, QString> formatted_value_list = {
-    {FormatIndex_Hex, "31 32 33 34 35"},
-    {FormatIndex_Bin, "00110001 00110010 00110011 00110100 00110101"},
-    {FormatIndex_Dec, "049 050 051 052 053"},
-    {FormatIndex_Oct, "061 062 063 064 065"},
-};
-
 const QList<QByteArray> value_bytes = {QByteArray("12345")};
 
-FormatIndex next_format_index(const FormatIndex index);
+void ADMCTestOctetEditor::initTestCase_data() {
+    QTest::addColumn<int>("index");
+    QTest::addColumn<int>("other_index");
+    QTest::addColumn<QString>("value");
 
-void ADMCTestOctetEdit::init() {
+    QTest::newRow("hex") << 0 << 1 << "31 32 33 34 35";
+    QTest::newRow("bin") << 1 << 2 << "00110001 00110010 00110011 00110100 00110101";
+    QTest::newRow("dec") << 2 << 3 << "049 050 051 052 053";
+    QTest::newRow("oct") << 3 << 0 << "061 062 063 064 065";
+    ;
+}
+
+void ADMCTestOctetEditor::init() {
     ADMCTest::init();
 
     edit = new OctetEditor(ATTRIBUTE_DESCRIPTION, parent_widget);
@@ -64,76 +53,66 @@ void ADMCTestOctetEdit::init() {
     QVERIFY(text_edit);
 }
 
-void ADMCTestOctetEdit::display() {
+void ADMCTestOctetEditor::display() {
+    QFETCH_GLOBAL(int, index);
+    QFETCH_GLOBAL(QString, value);
+
     edit->load(value_bytes);
 
-    for (const FormatIndex &index : index_list) {
-        format_combo->setCurrentIndex(index);
-        const QString correct_value = formatted_value_list[index];
-        const QString value = text_edit->toPlainText();
-        QVERIFY(value == correct_value);
-    }
+    format_combo->setCurrentIndex(index);
+    QCOMPARE(text_edit->toPlainText(), value);
 }
 
 // Check that edit correctly converts formatted strings back
 // to bytes for each format
-void ADMCTestOctetEdit::get_new_values() {
+void ADMCTestOctetEditor::get_new_values() {
+    QFETCH_GLOBAL(int, index);
+    QFETCH_GLOBAL(QString, value);
+
     edit->load({});
 
-    for (const FormatIndex &index : index_list) {
-        format_combo->setCurrentIndex(index);
-        const QString value = formatted_value_list[index];
-        text_edit->setPlainText(value);
+    format_combo->setCurrentIndex(index);
+    text_edit->setPlainText(value);
 
-        const QList<QByteArray> current_value_bytes = edit->get_new_values();
-        QVERIFY(current_value_bytes == value_bytes);
-    }
+    QCOMPARE(edit->get_new_values(), value_bytes);
 }
 
-void ADMCTestOctetEdit::handle_empty_value() {
+void ADMCTestOctetEditor::handle_empty_value() {
+    QFETCH_GLOBAL(int, index);
+    QFETCH_GLOBAL(int, other_index);
+    QFETCH_GLOBAL(QString, value);
+
     edit->load({});
     
-    for (const FormatIndex &index : index_list) {
-        // Check that empty value correctly loads and is
-        // displayed as empty string
-        format_combo->setCurrentIndex(index);
-        QVERIFY(text_edit->toPlainText().isEmpty());
+    // Check that empty value correctly loads and is
+    // displayed as empty string
+    format_combo->setCurrentIndex(index);
+    QCOMPARE(text_edit->toPlainText(), "");
 
-        // Check that edit correctly switches formats when
-        // value is empty
-        const FormatIndex next_index = next_format_index(index);
-        format_combo->setCurrentIndex(next_index);
-        QVERIFY(format_combo->currentIndex() == next_index);
-    }
+    // Check that edit correctly switches formats when
+    // value is empty
+    format_combo->setCurrentIndex(other_index);
+    QCOMPARE(format_combo->currentIndex(), other_index);
 }
 
 // Check that when incorrectly formatted value is entered,
 // edit fails to switch to different format
-void ADMCTestOctetEdit::handle_incorrect_input() {
+void ADMCTestOctetEditor::handle_incorrect_input() {
+    QFETCH_GLOBAL(int, index);
+    QFETCH_GLOBAL(int, other_index);
+    QFETCH_GLOBAL(QString, value);
+
     edit->load({});
     
-    for (const FormatIndex &index : index_list) {
-        text_edit->setPlainText("");
+    text_edit->setPlainText("");
 
-        format_combo->setCurrentIndex(index);
-        text_edit->setPlainText("incorrect format");
+    format_combo->setCurrentIndex(index);
+    text_edit->setPlainText("incorrect format");
 
-        const FormatIndex next_index = next_format_index(index);
-        format_combo->setCurrentIndex(next_index);
-        close_message_box();
+    format_combo->setCurrentIndex(other_index);
+    close_message_box();
 
-        QVERIFY(format_combo->currentIndex() == index);
-    }
+    QCOMPARE(format_combo->currentIndex(), index);
 }
 
-FormatIndex next_format_index(const FormatIndex index) {
-    int out = index + 1;
-
-    if (!index_list.contains((FormatIndex) out)) {
-        out = index_list[0];
-    }
-
-    return (FormatIndex) out;
-}
-
-QTEST_MAIN(ADMCTestOctetEdit)
+QTEST_MAIN(ADMCTestOctetEditor)

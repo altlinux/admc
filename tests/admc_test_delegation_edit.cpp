@@ -25,17 +25,23 @@
 
 #include <QRadioButton>
 
+void ADMCTestDelegationEdit::initTestCase_data() {
+    QTest::addColumn<QString>("button_name");
+    QTest::addColumn<bool>("is_on");
+
+    QTest::newRow("on") << "on_button" << true;
+    QTest::newRow("off") << "off_button" << false;
+}
+
 void ADMCTestDelegationEdit::init() {
     ADMCTest::init();
 
     edit = new DelegationEdit(&edits, parent_widget);
     add_attribute_edit(edit);
 
-    off_button = parent_widget->findChild<QRadioButton *>("off_button");
-    QVERIFY(off_button);
-
-    on_button = parent_widget->findChild<QRadioButton *>("on_button");
-    QVERIFY(on_button);
+    QFETCH_GLOBAL(QString, button_name);
+    button = parent_widget->findChild<QRadioButton *>(button_name);
+    QVERIFY(button != nullptr);
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
@@ -51,35 +57,20 @@ void ADMCTestDelegationEdit::emit_edited_signal() {
             edited_signal_emitted = true;
         });
 
-    on_button->click();
-    QVERIFY(edited_signal_emitted);
-
-    edited_signal_emitted = false;
-    off_button->click();
+    button->click();
     QVERIFY(edited_signal_emitted);
 }
 
 void ADMCTestDelegationEdit::load() {
-    auto do_test = [&](const bool is_on) {
-        const bool success = ad.user_set_account_option(dn, AccountOption_TrustedForDelegation, is_on);
-        QVERIFY(success);
+    QFETCH_GLOBAL(bool, is_on);
 
-        const AdObject object = ad.search_object(dn);
-        edit->load(ad, object);
+    const bool success = ad.user_set_account_option(dn, AccountOption_TrustedForDelegation, is_on);
+    QVERIFY(success);
 
-        QRadioButton *button_that_should_be_checked = [&]() {
-            if (is_on) {
-                return on_button;
-            } else {
-                return off_button;
-            }
-        }();
+    const AdObject object = ad.search_object(dn);
+    edit->load(ad, object);
 
-        QVERIFY(button_that_should_be_checked->isChecked());
-    };
-
-    do_test(true);
-    do_test(false);
+    QVERIFY(button->isChecked());
 }
 
 void ADMCTestDelegationEdit::apply_unmodified() {
@@ -87,34 +78,23 @@ void ADMCTestDelegationEdit::apply_unmodified() {
 }
 
 void ADMCTestDelegationEdit::apply() {
-    auto do_test = [&](const bool is_on) {
-        // First set current state to opposite
-        const bool success = ad.user_set_account_option(dn, AccountOption_TrustedForDelegation, !is_on);
-        QVERIFY(success);
+    QFETCH_GLOBAL(bool, is_on);
 
-        const AdObject object = ad.search_object(dn);
-        edit->load(ad, object);
+    // First set current state to opposite
+    const bool success = ad.user_set_account_option(dn, AccountOption_TrustedForDelegation, !is_on);
+    QVERIFY(success);
 
-        QRadioButton *button_to_click = [&]() {
-            if (is_on) {
-                return on_button;
-            } else {
-                return off_button;
-            }
-        }();
+    const AdObject object = ad.search_object(dn);
+    edit->load(ad, object);
 
-        button_to_click->click();
+    button->click();
 
-        const bool apply_success = edit->apply(ad, dn);
-        QVERIFY(apply_success);
+    const bool apply_success = edit->apply(ad, dn);
+    QVERIFY(apply_success);
 
-        const AdObject updated_object = ad.search_object(dn);
-        const bool updated_state = updated_object.get_account_option(AccountOption_TrustedForDelegation, g_adconfig);
-        QVERIFY(updated_state == is_on);
-    };
-
-    do_test(true);
-    do_test(false);
+    const AdObject updated_object = ad.search_object(dn);
+    const bool updated_state = updated_object.get_account_option(AccountOption_TrustedForDelegation, g_adconfig);
+    QCOMPARE(updated_state, is_on);
 }
 
 QTEST_MAIN(ADMCTestDelegationEdit)

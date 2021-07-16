@@ -31,20 +31,18 @@ class ADMCTestExpiryEdit : public ADMCTest {
     Q_OBJECT
 
 private slots:
+    void initTestCase_data();
     void init() override;
 
-    void edited_signal_from_check();
-    void edited_signal_from_date();
+    void edited_signal();
     void load();
     void apply_unmodified();
-    void apply_date();
-    void apply_never();
+    void apply();
 
 private:
     ExpiryEdit *edit;
     QString dn;
-    QCheckBox *never_check;
-    QCheckBox *end_of_check;
+    QCheckBox *check;
     QDateEdit *date_edit;
 };
 

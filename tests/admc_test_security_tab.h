@@ -32,6 +32,7 @@ class ADMCTestSecurityTab : public ADMCTest {
 private slots:
     void init() override;
 
+    void load_data();
     void load();
     void allow_then_deny();
     void allow_full();

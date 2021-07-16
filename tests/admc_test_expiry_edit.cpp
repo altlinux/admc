@@ -27,15 +27,27 @@
 #include <QCheckBox>
 #include <QDateEdit>
 
+void ADMCTestExpiryEdit::initTestCase_data() {
+    QTest::addColumn<QString>("check_name");
+    QTest::addColumn<QDate>("date");
+    QTest::addColumn<QString>("value");
+
+    QTest::newRow("end of") << "end_of_check" << QDate(2011, 11, 11) << "129655295400000000";
+    QTest::newRow("never") << "never_check" << QDate() << AD_LARGE_INTEGER_DATETIME_NEVER_2;
+    ;
+}
+
 void ADMCTestExpiryEdit::init() {
     ADMCTest::init();
 
     edit = new ExpiryEdit(&edits, parent_widget);
     add_attribute_edit(edit);
 
-    never_check = parent_widget->findChild<QCheckBox *>("never_check");
-    end_of_check = parent_widget->findChild<QCheckBox *>("end_of_check");
     date_edit = parent_widget->findChild<QDateEdit *>("date_edit");
+
+    QFETCH_GLOBAL(QString, check_name);
+    check = parent_widget->findChild<QCheckBox *>(check_name);
+    QVERIFY(check != nullptr);
 
     // Create test user
     const QString name = TEST_USER;
@@ -44,7 +56,7 @@ void ADMCTestExpiryEdit::init() {
     QVERIFY(create_success);
 }
 
-void ADMCTestExpiryEdit::edited_signal_from_check() {
+void ADMCTestExpiryEdit::edited_signal() {
     bool edited_signal_emitted = false;
     connect(
         edit, &AttributeEdit::edited,
@@ -52,67 +64,44 @@ void ADMCTestExpiryEdit::edited_signal_from_check() {
             edited_signal_emitted = true;
         });
 
-    end_of_check->setChecked(true);
-    QVERIFY(edited_signal_emitted);
-}
-
-void ADMCTestExpiryEdit::edited_signal_from_date() {
-    end_of_check->setChecked(true);
-   
-    bool edited_signal_emitted = false;
-    connect(
-        edit, &AttributeEdit::edited,
-        [&edited_signal_emitted]() {
-            edited_signal_emitted = true;
-        });
-
-    const QDate date = date_edit->date();
-    const QDate new_date = date.addDays(1);
-    date_edit->setDate(new_date);
+    check->setChecked(true);
     QVERIFY(edited_signal_emitted);
 }
 
 void ADMCTestExpiryEdit::load() {
+    QFETCH_GLOBAL(QDate, date);
+    QFETCH_GLOBAL(QString, value);
+
+    ad.attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, value);
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    QVERIFY(never_check->isChecked());
-    QVERIFY(!end_of_check->isChecked());
+    QVERIFY(check->isChecked());
+    if (date_edit->isEnabled()) {
+        QCOMPARE(date_edit->date(), date);
+    }
 }
 
 void ADMCTestExpiryEdit::apply_unmodified() {
     test_edit_apply_unmodified(edit, dn);
 }
 
-void ADMCTestExpiryEdit::apply_date() {
-    load();
+void ADMCTestExpiryEdit::apply() {
+    QFETCH_GLOBAL(QDate, date);
+    QFETCH_GLOBAL(QString, value);
 
-    end_of_check->setChecked(true);
-   
-    // NOTE: Skyrim release date
-    const QDate new_date = QDate(2011, 11, 11);
-    date_edit->setDate(new_date);
+    // Replace value into something different before testing
+    ad.attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, "129655295400000001");
 
-    const bool apply_success = edit->apply(ad, dn);
-    QVERIFY(apply_success);
+    check->setChecked(true);
+    date_edit->setDate(date);
 
-    const AdObject updated_object = ad.search_object(dn);
-    const QDateTime datetime = updated_object.get_datetime(ATTRIBUTE_ACCOUNT_EXPIRES, g_adconfig);
-    const QDate date = datetime.date();
-    QVERIFY(date == new_date);
-}
-
-void ADMCTestExpiryEdit::apply_never() {
-    apply_date();
-    
-    never_check->setChecked(true);
-   
     const bool apply_success = edit->apply(ad, dn);
     QVERIFY(apply_success);
 
     const AdObject updated_object = ad.search_object(dn);
     const QString expiry_string = updated_object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);
-    QVERIFY(expiry_string == AD_LARGE_INTEGER_DATETIME_NEVER_1 || expiry_string == AD_LARGE_INTEGER_DATETIME_NEVER_2);
+    QCOMPARE(expiry_string, value);
 }
 
 QTEST_MAIN(ADMCTestExpiryEdit)

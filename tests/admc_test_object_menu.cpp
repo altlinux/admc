@@ -198,48 +198,33 @@ void ADMCTestObjectMenu::object_menu_move() {
     QVERIFY(true);
 }
 
-void ADMCTestObjectMenu::object_menu_disable_enable_account() {
-    auto test_disable_enable = [=](const bool initial_disabled_state) {
-        const QString dn = [=]() {
-            const QString name = [=]() {
-                if (initial_disabled_state) {
-                    return QString("disabled-%1").arg(TEST_USER);
-                } else {
-                    return QString("enabled-%1").arg(TEST_USER);
-                }
-            }();
+void ADMCTestObjectMenu::object_menu_able_account_data() {
+    QTest::addColumn<bool>("final_state");
+    QTest::addColumn<QDate>("date");
+    QTest::addColumn<QString>("value");
 
-            return test_object_dn(name, CLASS_USER);
-        }();
+    QTest::newRow("enable") << true << QDate(2011, 11, 11) << "129655295400000000";
+    QTest::newRow("disable") << false << QDate() << AD_LARGE_INTEGER_DATETIME_NEVER_2;
+    ;
+}
 
-        const bool create_success = ad.object_add(dn, CLASS_USER);
-        QVERIFY2(create_success, qPrintable(QString("Failed to create user - %1").arg(dn)));
-        QVERIFY2(object_exists(dn), qPrintable(QString("Created user doesn't exist - %1").arg(dn)));
+void ADMCTestObjectMenu::object_menu_able_account() {
+    QFETCH(bool, final_state);
 
-        // Setup initial disabled state
-        const bool set_disabled_success = ad.user_set_account_option(dn, AccountOption_Disabled, initial_disabled_state);
-        QVERIFY2(set_disabled_success, qPrintable(QString("Failed to set disabled account option for user - %1").arg(dn)));
+    const QString dn = test_object_dn(TEST_USER, CLASS_USER);
 
-        // Modify state using object menu
-        object_operation_set_disabled({dn}, !initial_disabled_state, parent_widget);
+    ad.object_add(dn, CLASS_USER);
 
-        // Check that final disabled state has changed
-        const AdObject object = ad.search_object(dn);
-        const bool final_disabled_state = object.get_account_option(AccountOption_Disabled, ad.adconfig());
-        const bool disabled_state_changed = (final_disabled_state != initial_disabled_state);
+    // Setup initial disabled state
+    ad.user_set_account_option(dn, AccountOption_Disabled, !final_state);
 
-        const QString error_text = [=]() {
-            if (initial_disabled_state) {
-                return QString("Failed to enable user - %1").arg(dn);
-            } else {
-                return QString("Failed to disable user - %1").arg(dn);
-            }
-        }();
-        QVERIFY2(disabled_state_changed, qPrintable(error_text));
-    };
+    // Modify state using object menu
+    object_operation_set_disabled({dn}, final_state, parent_widget);
 
-    test_disable_enable(true);
-    test_disable_enable(false);
+    // Check that final disabled state has changed
+    const AdObject update_object = ad.search_object(dn);
+    const bool current_state = update_object.get_account_option(AccountOption_Disabled, ad.adconfig());
+    QCOMPARE(current_state, final_state);
 }
 
 void ADMCTestObjectMenu::object_menu_find_simple() {

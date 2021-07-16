@@ -273,9 +273,6 @@ void ADMCTest::test_edit_apply_unmodified(AttributeEdit *edit, const QString &dn
 
     const AdObject object_after = ad.search_object(dn);
 
-    qInfo() << object_before.get_value(ATTRIBUTE_ACCOUNT_EXPIRES);
-    qInfo() << object_after.get_value(ATTRIBUTE_ACCOUNT_EXPIRES);
-
     QVERIFY(object_before.get_attributes_data() == object_after.get_attributes_data());
 }
 

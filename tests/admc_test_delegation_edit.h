@@ -30,6 +30,7 @@ class ADMCTestDelegationEdit : public ADMCTest {
     Q_OBJECT
 
 private slots:
+    void initTestCase_data();
     void init() override;
 
     void emit_edited_signal();
@@ -40,8 +41,7 @@ private slots:
 private:
     QString dn;
     DelegationEdit *edit;
-    QRadioButton *off_button;
-    QRadioButton *on_button;
+    QRadioButton *button;
 };
 
 #endif /* ADMC_TEST_DELEGATION_EDIT_H */

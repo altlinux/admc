@@ -24,52 +24,40 @@
 
 #include <QRadioButton>
 
-const QList<QByteArray> empty_value = {};
-const QList<QByteArray> true_value = {"TRUE"};
-const QList<QByteArray> false_value = {"FALSE"};
+void ADMCTestBoolEditor::initTestCase_data() {
+    QTest::addColumn<QString>("button_name");
+    QTest::addColumn<QList<QByteArray>>("value");
+
+    QTest::newRow("true") << "true_button" << QList<QByteArray>({"TRUE"});
+    QTest::newRow("false") << "false_button" << QList<QByteArray>({"FALSE"});
+    QTest::newRow("unset") << "unset_button" << QList<QByteArray>();
+}
 
 void ADMCTestBoolEditor::init() {
     ADMCTest::init();
 
     edit = new BoolEditor(ATTRIBUTE_DESCRIPTION, parent_widget);
+    edit->load(QList<QByteArray>());
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
-    true_button = edit->findChild<QRadioButton *>("true_button");
-    QVERIFY(true_button);
-
-    false_button = edit->findChild<QRadioButton *>("false_button");
-    QVERIFY(false_button);
-
-    unset_button = edit->findChild<QRadioButton *>("unset_button");
-    QVERIFY(unset_button);
+    QFETCH_GLOBAL(QString, button_name);
+    button = parent_widget->findChild<QRadioButton *>(button_name);
+    QVERIFY(button != nullptr);
 }
 
 void ADMCTestBoolEditor::load() {
-    edit->load(empty_value);
-    QVERIFY(unset_button->isChecked());
+    QFETCH_GLOBAL(QList<QByteArray>, value);
 
-    edit->load(true_value);
-    QVERIFY(true_button->isChecked());
-
-    edit->load(false_value);
-    QVERIFY(false_button->isChecked());
+    edit->load(value);
+    QVERIFY(button->isChecked());
 }
 
 void ADMCTestBoolEditor::get_new_values() {
-    edit->load(empty_value);
+    QFETCH_GLOBAL(QList<QByteArray>, value);
 
-    true_button->click();
-    const QList<QByteArray> true_value_from_get = edit->get_new_values();
-    QVERIFY(true_value_from_get == true_value);
-
-    false_button->click();
-    const QList<QByteArray> false_value_from_get = edit->get_new_values();
-    QVERIFY(false_value_from_get == false_value);
-
-    unset_button->click();
-    const QList<QByteArray> empty_value_from_get = edit->get_new_values();
-    QVERIFY(empty_value_from_get == empty_value);
+    button->click();
+    QCOMPARE(edit->get_new_values(), value);
 }
 
 QTEST_MAIN(ADMCTestBoolEditor)

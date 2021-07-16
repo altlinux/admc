@@ -28,6 +28,8 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+Q_DECLARE_METATYPE(AcePermission)
+
 void ADMCTestSecurityTab::init() {
     ADMCTest::init();
 
@@ -45,29 +47,22 @@ void ADMCTestSecurityTab::init() {
     security_tab->load(ad, object);
 }
 
-// NOTE: just checking that the default security descriptor
-// is laoded correctly. Creating custom security descriptors
-// is too complicated at the moment.
-void ADMCTestSecurityTab::load() {
-    auto test_allowed = [&](const QString &trustee_name, const QSet<AcePermission> allowed_set) {
-        QVERIFY(security_tab->set_trustee(trustee_name));
+void ADMCTestSecurityTab::load_data() {
+    // NOTE: store trustee name in the data tag to avoid repetition
+    // QTest::addColumn<QString>("trustee_name");
+    QTest::addColumn<QSet<AcePermission>>("allowed_set");
 
-        const QSet<AcePermission> none_set = all_permissions - allowed_set;
-        QVERIFY2(state_is(allowed_set, PermissionState_Allowed), qPrintable(trustee_name));
-        QVERIFY2(state_is(none_set, PermissionState_None), qPrintable(trustee_name));
-    };
+    QTest::newRow("Account Operators") << all_permissions;
 
-    test_allowed("Account Operators", all_permissions);
-
-    test_allowed("Administrators", [&]() {
+    QTest::newRow("Administrators") << [&]() {
         QSet<AcePermission> out = all_permissions;
         out -= AcePermission_FullControl;
         out -= AcePermission_DeleteChild;
 
         return out;
-    }());
+    }();
 
-    test_allowed("Authenticated Users", [&]() {
+    QTest::newRow("Authenticated Users") << [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ReadGeneralInfo;
         out += AcePermission_ReadPersonalInfo;
@@ -75,24 +70,24 @@ void ADMCTestSecurityTab::load() {
         out += AcePermission_ReadWebInfo;
 
         return out;
-    }());
+    }();
 
-    test_allowed("Cert Publishers", {});
+    QTest::newRow("Cert Publishers") << QSet<AcePermission>();
 
-    test_allowed("Domain Admins", all_permissions);
+    QTest::newRow("Domain Admins") << all_permissions;
 
-    test_allowed("ENTERPRISE DOMAIN CONTROLLERS", {});
+    QTest::newRow("ENTERPRISE DOMAIN CONTROLLERS") << QSet<AcePermission>();
 
-    test_allowed("Enterprise Admins", all_permissions);
-
-    test_allowed("Everyone", [&]() {
+    QTest::newRow("Enterprise Admins") << all_permissions;
+    
+    QTest::newRow("Everyone") << [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ChangePassword;
 
         return out;
-    }());
+    }();
 
-    test_allowed("Pre-Windows 2000 Compatible Access", [&]() {
+    QTest::newRow("Pre-Windows 2000 Compatible Access") << [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ReadAccountRestrictions;
         out += AcePermission_ReadGeneralInfo;
@@ -101,9 +96,9 @@ void ADMCTestSecurityTab::load() {
         out += AcePermission_ReadRemoteAccessInfo;
 
         return out;
-    }());
+    }();
 
-    test_allowed("RAS and IAS Servers", [&]() {
+    QTest::newRow("RAS and IAS Servers") << [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ReadAccountRestrictions;
         out += AcePermission_ReadGroupMembership;
@@ -111,9 +106,9 @@ void ADMCTestSecurityTab::load() {
         out += AcePermission_ReadRemoteAccessInfo;
 
         return out;
-    }());
+    }();
 
-    test_allowed("SELF", [&]() {
+    QTest::newRow("SELF") << [&]() {
         QSet<AcePermission> out;
         out += AcePermission_Read;
         out += read_prop_permissions;
@@ -126,19 +121,33 @@ void ADMCTestSecurityTab::load() {
         out += AcePermission_WriteWebInfo;
 
         return out;
-    }());
+    }();
 
-    test_allowed("SYSTEM", all_permissions);
+    QTest::newRow("SYSTEM") << all_permissions;
 
-    test_allowed("Terminal Server License Servers", [&]() {
+    QTest::newRow("Terminal Server License Servers") << [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ReadTerminalServerLicenseServer;
         out += AcePermission_WriteTerminalServerLicenseServer;
 
         return out;
-    }());
+    }();
 
-    test_allowed("Windows Authorization Access Group", {});
+    QTest::newRow("Windows Authorization Access Group") << QSet<AcePermission>();
+}
+
+// NOTE: just checking that the default security descriptor
+// is laoded correctly. Creating custom security descriptors
+// is too complicated at the moment.
+void ADMCTestSecurityTab::load() {
+    const QString trustee_name = QTest::currentDataTag();
+    QFETCH(QSet<AcePermission>, allowed_set);
+
+    QVERIFY(security_tab->set_trustee(trustee_name));
+
+    const QSet<AcePermission> none_set = all_permissions - allowed_set;
+    QVERIFY(state_is(allowed_set, PermissionState_Allowed));
+    QVERIFY(state_is(none_set, PermissionState_None));
 }
 
 // When you allow some perm then deny it, the allow checkbox

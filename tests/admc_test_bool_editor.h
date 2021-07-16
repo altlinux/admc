@@ -30,6 +30,7 @@ class ADMCTestBoolEditor : public ADMCTest {
     Q_OBJECT
 
 private slots:
+    void initTestCase_data();
     void init() override;
 
     void load();
@@ -37,9 +38,7 @@ private slots:
 
 private:
     BoolEditor *edit;
-    QRadioButton *true_button;
-    QRadioButton *false_button;
-    QRadioButton *unset_button;
+    QRadioButton *button;
 };
 
 #endif /* ADMC_TEST_BOOL_EDITOR_H */
