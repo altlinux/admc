@@ -64,7 +64,7 @@
 #include <QTreeWidget>
 #include <QVBoxLayout>
 
-CentralWidget::CentralWidget()
+CentralWidget::CentralWidget(AdInterface &ad)
 : QWidget() {
     console_actions = new ConsoleActions(this);
 
@@ -72,15 +72,16 @@ CentralWidget::CentralWidget()
     dev_mode_action = new QAction(tr("Dev mode"), this);
     show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"), this);
 
-    filter_dialog = nullptr;
-    open_filter_action->setEnabled(false);
-
     console = new ConsoleWidget();
 
+    filter_dialog = new FilterDialog(this);
     auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
     auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
     auto create_policy_dialog = new CreatePolicyDialog(console);
     auto rename_policy_dialog = new RenamePolicyDialog(console);
+
+    auto object_results = new ResultsView(this);
+    console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
@@ -92,6 +93,12 @@ CentralWidget::CentralWidget()
     auto query_results = new ResultsView(this);
     query_results->detail_view()->header()->setDefaultSectionSize(200);
     console_query_folder_results_id = console->register_results(query_results, console_query_folder_header_labels(), console_query_folder_default_columns());
+
+    // NOTE: requires all results to be initialized
+    console_object_tree_init(console, ad);
+    console_policy_tree_init(console, ad);
+    console_query_tree_init(console);
+    console->set_current_scope(console_object_head()->index());
 
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
@@ -124,7 +131,10 @@ CentralWidget::CentralWidget()
 
     connect(
         open_filter_action, &QAction::triggered,
-        this, &CentralWidget::open_filter);
+        filter_dialog, &QDialog::open);
+    connect(
+        filter_dialog, &QDialog::accepted,
+        this, &CentralWidget::refresh_head);
 
     connect(
         console_actions->get(ConsoleAction_NewUser), &QAction::triggered,
@@ -236,34 +246,6 @@ CentralWidget::CentralWidget()
         this, &CentralWidget::update_actions_visibility);
 
     update_actions_visibility();
-}
-
-void CentralWidget::go_online(AdInterface &ad) {
-    // NOTE: filter dialog requires a connection to load
-    // display strings from adconfig so create it here
-    filter_dialog = new FilterDialog(this);
-    connect(
-        filter_dialog, &QDialog::accepted,
-        this, &CentralWidget::refresh_head);
-    open_filter_action->setEnabled(true);
-
-    // NOTE: need to create object results here because it
-    // requires header labels which come from ADCONFIG, so
-    // need to be online
-    auto object_results = new ResultsView(this);
-    console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
-
-    console_object_tree_init(console, ad);
-    console_policy_tree_init(console, ad);
-    console_query_tree_init(console);
-
-    console->set_current_scope(console_object_head()->index());
-}
-
-void CentralWidget::open_filter() {
-    if (filter_dialog != nullptr) {
-        filter_dialog->open();
-    }
 }
 
 void CentralWidget::object_delete() {
@@ -771,7 +753,7 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
     const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
 
     if (type == ItemType_Object) {
-        console_object_fetch(console, filter_dialog, index);
+        console_object_fetch(console, filter_dialog->get_filter(), index);
     } else if (type == ItemType_QueryItem) {
         console_query_item_fetch(console, index);
     }

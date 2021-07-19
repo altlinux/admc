@@ -29,7 +29,6 @@
 class QStandardItem;
 class AdObject;
 class AdInterface;
-class FilterDialog;
 class ConsoleActions;
 class QMenu;
 class PolicyResultsWidget;
@@ -64,7 +63,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
 void console_object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
-void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index);
+void console_object_fetch(ConsoleWidget *console, const QString &current_filter, const QModelIndex &index);
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
 void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
 void console_object_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);

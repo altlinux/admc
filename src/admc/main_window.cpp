@@ -50,9 +50,7 @@ MainWindow::MainWindow()
     message_log_dock->setObjectName(MESSAGE_LOG_OBJECT_NAME);
     addDockWidget(Qt::TopDockWidgetArea, message_log_dock);
 
-    central_widget = new CentralWidget();
-    setCentralWidget(central_widget);
-    central_widget->setEnabled(false);
+    setCentralWidget(new QWidget(this));
 
     setup_menubar();
 
@@ -148,9 +146,9 @@ void MainWindow::setup_menubar() {
     // don't add actions. Instead the console adds actions
     // to them.
     auto file_menu = menubar->addMenu(tr("&File"));
-    auto action_menu = menubar->addMenu(tr("&Action"));
-    auto navigation_menu = menubar->addMenu(tr("&Navigation"));
-    auto view_menu = menubar->addMenu(tr("&View"));
+    action_menu = menubar->addMenu(tr("&Action"));
+    navigation_menu = menubar->addMenu(tr("&Navigation"));
+    view_menu = menubar->addMenu(tr("&View"));
     auto preferences_menu = menubar->addMenu(tr("&Preferences"));
     auto language_menu = new QMenu(tr("&Language"));
     auto help_menu = menubar->addMenu(tr("&Help"));
@@ -160,10 +158,6 @@ void MainWindow::setup_menubar() {
     //
     file_menu->addAction(connect_action);
     file_menu->addAction(quit_action);
-
-    central_widget->add_actions_to_action_menu(action_menu);
-    central_widget->add_actions_to_navigation_menu(navigation_menu);
-    central_widget->add_actions_to_view_menu(view_menu);
 
     preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(confirm_actions_action);
@@ -244,7 +238,12 @@ void MainWindow::connect_to_server() {
 
         g_status()->display_ad_messages(ad, this);
 
-        central_widget->go_online(ad);
+        central_widget = new CentralWidget(ad);
+        setCentralWidget(central_widget);
+
+        central_widget->add_actions_to_action_menu(action_menu);
+        central_widget->add_actions_to_navigation_menu(navigation_menu);
+        central_widget->add_actions_to_view_menu(view_menu);
         
         central_widget->setEnabled(true);
         connect_action->setEnabled(false);

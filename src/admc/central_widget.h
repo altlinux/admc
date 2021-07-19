@@ -62,9 +62,8 @@ class CentralWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    CentralWidget();
+    CentralWidget(AdInterface &ad);
 
-    void go_online(AdInterface &ad);
     void add_actions_to_action_menu(QMenu *menu);
     void add_actions_to_navigation_menu(QMenu *menu);
     void add_actions_to_view_menu(QMenu *menu);
@@ -73,8 +72,6 @@ signals:
     void context_menu(const QPoint pos);
 
 private slots:
-    void open_filter();
-
     void object_properties();
     void object_delete();
     void object_rename();

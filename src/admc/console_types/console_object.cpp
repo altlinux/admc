@@ -25,7 +25,6 @@
 #include "console_actions.h"
 #include "console_types/console_policy.h"
 #include "console_types/console_query.h"
-#include "filter_dialog.h"
 #include "globals.h"
 #include "search_thread.h"
 #include "select_object_dialog.h"
@@ -350,7 +349,7 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 
 // Load children of this item in scope tree
 // and load results linked to this scope item
-void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, const QModelIndex &index) {
+void console_object_fetch(ConsoleWidget *console, const QString &current_filter, const QModelIndex &index) {
     const QString base = index.data(ObjectRole_DN).toString();
 
     const SearchScope scope = SearchScope_Children;
@@ -366,8 +365,7 @@ void console_object_fetch(ConsoleWidget *console, FilterDialog *filter_dialog, c
         // NOTE: OR user filter with containers filter so
         // that container objects are always shown, even if
         // they are filtered out by user filter
-        const QString user_filter = filter_dialog->get_filter();
-        out = filter_OR({user_filter, out});
+        out = filter_OR({current_filter, out});
 
         advanced_features_filter(out);
         dev_mode_filter(out);

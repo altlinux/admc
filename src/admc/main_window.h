@@ -26,6 +26,7 @@
 class QAction;
 class CentralWidget;
 class QDockWidget;
+class QMenu;
 
 class MainWindow final : public QMainWindow {
     Q_OBJECT
@@ -40,6 +41,10 @@ private:
     QAction *connect_action;
     CentralWidget *central_widget;
     QDockWidget *message_log_dock;
+
+    QMenu *action_menu;
+    QMenu *navigation_menu;
+    QMenu *view_menu;
 
     void setup_menubar();
     void connect_to_server();
