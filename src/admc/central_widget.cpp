@@ -98,7 +98,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     console_object_tree_init(console, ad);
     console_policy_tree_init(console, ad);
     console_query_tree_init(console);
-    console->set_current_scope(console_object_head()->index());
 
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
@@ -246,6 +245,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
         this, &CentralWidget::update_actions_visibility);
 
     update_actions_visibility();
+
+    // Set current scope to object head to load it
+    console->set_current_scope(console_object_head()->index());
 }
 
 void CentralWidget::object_delete() {
