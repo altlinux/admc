@@ -60,7 +60,7 @@ MainWindow::MainWindow()
         const QByteArray geometry = g_settings->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
         restoreGeometry(geometry);
     } else {
-        resize(1280, 720);
+        resize(1024, 768);
     }
 
     if (g_settings->contains_variant(VariantSetting_MainWindowState)) {
