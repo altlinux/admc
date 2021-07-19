@@ -153,8 +153,8 @@ void ad_error_log(const AdInterface &ad, QWidget *parent) {
     layout->addWidget(button_box);
 
     QObject::connect(
-        button_box, &QDialogButtonBox::accepted,
-        dialog, &QDialog::accept);
+        button_box, &QDialogButtonBox::rejected,
+        dialog, &QDialog::reject);
 
     dialog->open();
 }
