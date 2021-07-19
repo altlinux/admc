@@ -25,6 +25,7 @@
 #include "filter_custom_dialog.h"
 #include "filter_widget/filter_widget.h"
 #include "globals.h"
+#include "settings.h"
 
 #include <QDialogButtonBox>
 #include <QFrame>
@@ -84,6 +85,8 @@ FilterDialog::FilterDialog(QWidget *parent)
     setLayout(layout);
     layout->addWidget(radio_buttons_frame);
     layout->addWidget(button_box);
+
+    g_settings->setup_dialog_geometry(VariantSetting_FilterDialogGeometry, this);
 
     connect(
         button_box, &QDialogButtonBox::accepted,

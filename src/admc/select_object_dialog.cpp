@@ -24,6 +24,7 @@
 #include "console_types/console_object.h"
 #include "globals.h"
 #include "utils.h"
+#include "settings.h"
 #include "console_types/console_object.h"
 #include "filter_widget/select_classes_widget.h"
 #include "filter_widget/select_base_widget.h"
@@ -121,6 +122,8 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     layout->addLayout(parameters_layout);
     layout->addLayout(object_view_layout);
     layout->addWidget(button_box);
+
+    g_settings->setup_dialog_geometry(VariantSetting_SelectObjectDialogGeometry, this);
 
     connect(
         add_button, &QPushButton::clicked,

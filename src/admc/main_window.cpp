@@ -56,10 +56,8 @@ MainWindow::MainWindow()
 
     setup_menubar();
 
-    if (g_settings->contains_variant(VariantSetting_MainWindowGeometry)) {
-        const QByteArray geometry = g_settings->get_variant(VariantSetting_MainWindowGeometry).toByteArray();
-        restoreGeometry(geometry);
-    } else {
+    const bool restored_geometry = g_settings->restore_geometry(VariantSetting_MainWindowGeometry, this);
+    if (!restored_geometry) {
         resize(1024, 768);
     }
 
@@ -74,8 +72,7 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    const QByteArray geometry = saveGeometry();
-    g_settings->set_variant(VariantSetting_MainWindowGeometry, geometry);
+    g_settings->save_geometry(VariantSetting_MainWindowGeometry, this);
 
     const QByteArray state = saveState();
     g_settings->set_variant(VariantSetting_MainWindowState, state);

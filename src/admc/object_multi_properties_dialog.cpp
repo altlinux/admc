@@ -83,6 +83,8 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
         add_tab(new OrganizationMultiTab(), tr("Organization"));
     }
 
+    g_settings->setup_dialog_geometry(VariantSetting_ObjectMultiDialogGeometry, this);
+
     for (PropertiesMultiTab *tab : tab_list) {
         connect(
             tab, &PropertiesMultiTab::edited,

@@ -26,6 +26,7 @@
 #include <QCheckBox>
 #include <QHeaderView>
 #include <QLocale>
+#include <QDialog>
 
 bool bool_default_value(const BoolSetting setting);
 QString bool_to_string(const BoolSetting setting);
@@ -50,6 +51,32 @@ bool Settings::get_bool(const BoolSetting setting) const {
 void Settings::set_bool(const BoolSetting setting, const bool value) {
     const QString name = bool_to_string(setting);
     qsettings.setValue(name, value);
+}
+
+void Settings::save_geometry(const VariantSetting setting, QWidget *widget) {
+    const QByteArray geometry = widget->saveGeometry();
+    set_variant(setting, geometry);
+}
+
+void Settings::setup_dialog_geometry(const VariantSetting setting, QDialog *dialog) {
+    restore_geometry(setting, dialog);
+
+    QDialog::connect(
+        dialog, &QDialog::finished,
+        [=]() {
+            save_geometry(setting, dialog);
+        });
+}
+
+bool Settings::restore_geometry(const VariantSetting setting, QWidget *widget) {
+    if (contains_variant(setting)) {
+        const QByteArray geometry = get_variant(setting).toByteArray();
+        widget->restoreGeometry(geometry);
+        
+        return true;
+    } else {
+        return false;
+    }
 }
 
 QVariant Settings::get_variant(const VariantSetting setting) const {
@@ -205,6 +232,12 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_AttributesTabFilter);
         CASE_ENUM_TO_STRING(VariantSetting_QueryFolders);
         CASE_ENUM_TO_STRING(VariantSetting_QueryItems);
+        CASE_ENUM_TO_STRING(VariantSetting_PropertiesDialogGeometry);
+        CASE_ENUM_TO_STRING(VariantSetting_FilterDialogGeometry);
+        CASE_ENUM_TO_STRING(VariantSetting_FindObjectDialogGeometry);
+        CASE_ENUM_TO_STRING(VariantSetting_SelectObjectDialogGeometry);
+        CASE_ENUM_TO_STRING(VariantSetting_SelectContainerDialogGeometry);
+        CASE_ENUM_TO_STRING(VariantSetting_ObjectMultiDialogGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";

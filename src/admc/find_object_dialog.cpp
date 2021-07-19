@@ -24,6 +24,7 @@
 #include "find_results.h"
 #include "find_widget.h"
 #include "globals.h"
+#include "settings.h"
 
 #include <QMenuBar>
 #include <QVBoxLayout>
@@ -47,4 +48,6 @@ FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString d
 
     find_widget->find_results->add_actions_to_action_menu(action_menu);
     find_widget->find_results->add_actions_to_view_menu(view_menu);
+
+    g_settings->setup_dialog_geometry(VariantSetting_FindObjectDialogGeometry, this);
 }

@@ -214,6 +214,8 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         reset_internal(ad);
     }
 
+    g_settings->setup_dialog_geometry(VariantSetting_PropertiesDialogGeometry, this);
+    
     connect(
         ok_button, &QPushButton::clicked,
         this, &PropertiesDialog::ok);

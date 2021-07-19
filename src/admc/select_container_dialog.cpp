@@ -91,6 +91,10 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 
     g_status()->display_ad_messages(ad, this);
 
+    // NOTE: geometry is shared with the subclass
+    // MoveObjectDialog but that is intended.
+    g_settings->setup_dialog_geometry(VariantSetting_SelectContainerDialogGeometry, this);
+
     connect(
         button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);

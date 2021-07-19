@@ -39,6 +39,7 @@ class QVariant;
 class QWidget;
 class QCheckBox;
 class QHeaderView;
+class QDialog;
 
 enum VariantSetting {
     VariantSetting_DC,
@@ -51,6 +52,12 @@ enum VariantSetting {
     VariantSetting_AttributesTabFilter,
     VariantSetting_QueryFolders,
     VariantSetting_QueryItems,
+    VariantSetting_PropertiesDialogGeometry,
+    VariantSetting_FilterDialogGeometry,
+    VariantSetting_FindObjectDialogGeometry,
+    VariantSetting_SelectObjectDialogGeometry,
+    VariantSetting_SelectContainerDialogGeometry,
+    VariantSetting_ObjectMultiDialogGeometry,
 
     VariantSetting_COUNT,
 };
@@ -95,6 +102,20 @@ public:
     const BoolSettingSignal *get_bool_signal(const BoolSetting setting) const;
     bool get_bool(const BoolSetting setting) const;
     void set_bool(const BoolSetting setting, const bool value);
+
+    void save_geometry(const VariantSetting setting, QWidget *widget);
+
+    // Does two things. First it restores previously saved
+    // geometry, if it exists. Then it connects to dialogs
+    // finished() signal so that it's geometry is saved when
+    // dialog is finished.
+    void setup_dialog_geometry(const VariantSetting setting, QDialog *dialog);
+
+    // NOTE: If setting is present, restore is performed,
+    // otherwise f-n does nothing and returns false. You
+    // should check for the return and perform default
+    // sizing in the false case.
+    bool restore_geometry(const VariantSetting setting, QWidget *widget);
 
     /** 
      * Connect action and bool setting so that toggling
