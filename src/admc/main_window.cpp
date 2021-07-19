@@ -187,7 +187,7 @@ void MainWindow::setup_menubar() {
         this, &MainWindow::connect_to_server);
     connect(
         quit_action, &QAction::triggered,
-        this, &MainWindow::quit);
+        this, &MainWindow::close);
     connect(
         manual_action, &QAction::triggered,
         manual_dialog, &QDialog::open);
@@ -248,10 +248,6 @@ void MainWindow::connect_to_server() {
         central_widget->setEnabled(true);
         connect_action->setEnabled(false);
     }
-}
-
-void MainWindow::quit() {
-    close();
 }
 
 void MainWindow::on_log_searches_changed() {
