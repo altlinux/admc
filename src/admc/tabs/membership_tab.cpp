@@ -26,6 +26,7 @@
 #include "properties_dialog.h"
 #include "select_object_dialog.h"
 #include "utils.h"
+#include "settings.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -104,6 +105,8 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     layout->addWidget(primary_group_label);
     layout->addLayout(button_layout);
 
+    g_settings->restore_header_state(VariantSetting_MembershipTabHeaderState, view->header());
+
     enable_widget_on_selection(remove_button, view);
     enable_widget_on_selection(properties_button, view);
 
@@ -127,6 +130,10 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
         this, &MembershipTab::on_primary_button);
 
     PropertiesDialog::open_when_view_item_activated(view, MembersRole_DN);
+}
+
+MembershipTab::~MembershipTab() {
+    g_settings->save_header_state(VariantSetting_MembershipTabHeaderState, view->header());   
 }
 
 void MembershipTab::load(AdInterface &ad, const AdObject &object) {
@@ -494,12 +501,4 @@ QString MembershipTab::get_membership_attribute() {
         case MembershipTabType_MemberOf: return ATTRIBUTE_MEMBER_OF;
     }
     return "";
-}
-
-void MembershipTab::showEvent(QShowEvent *event) {
-    resize_columns(view,
-        {
-            {MembersColumn_Name, 0.4},
-            {MembersColumn_Parent, 0.6},
-        });
 }

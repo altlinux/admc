@@ -37,6 +37,7 @@ class GpoLinksTab final : public PropertiesTab {
 
 public:
     GpoLinksTab();
+    ~GpoLinksTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
 

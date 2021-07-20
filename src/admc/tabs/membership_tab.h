@@ -56,6 +56,7 @@ protected:
     };
 
     MembershipTab(const MembershipTabType type_arg);
+    ~MembershipTab();
 
 private:
     MembershipTabType type;
@@ -73,7 +74,6 @@ private:
     void add_values(QList<QString> values);
     void remove_values(QList<QString> values);
     QString get_membership_attribute();
-    void showEvent(QShowEvent *event) override;
 };
 
 class MembersTab final : public MembershipTab {

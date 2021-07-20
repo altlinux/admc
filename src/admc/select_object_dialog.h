@@ -40,6 +40,7 @@ Q_OBJECT
 
 public:
     SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent);
+    ~SelectObjectDialog();
 
     QList<QString> get_selected() const;
 

@@ -31,6 +31,7 @@ class OrganizationTab final : public PropertiesTab {
 
 public:
     OrganizationTab();
+    ~OrganizationTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
 

@@ -259,6 +259,13 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_QueryResultsState);
         CASE_ENUM_TO_STRING(VariantSetting_PolicyResultsState);
         CASE_ENUM_TO_STRING(VariantSetting_PolicyContainerResultsState);
+        CASE_ENUM_TO_STRING(VariantSetting_FindResultsHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_SelectObjectHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_MembershipTabHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_OrganizationTabHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_GpoLinksTabHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_GroupPolicyTabHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_SecurityTabHeaderState);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";

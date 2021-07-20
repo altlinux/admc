@@ -25,10 +25,11 @@
  * Provides access to settings via enums rather than plain
  * strings. Settings are saved to file automatically when
  * this object is destructed. Note that you shouldn't save
- * settings in other destructors because they won't be saved
- * to file. Instead use QMainWindow::closeEvent(). Settings
- * of boolean type have BoolSettingSignal objects which emit
- * changed() signal when setting is changed.
+ * settings in destructors that run close to app shutdown
+ * because they won't be saved to file. Instead use
+ * QMainWindow::closeEvent(). Settings of boolean type have
+ * BoolSettingSignal objects which emit changed() signal
+ * when setting is changed.
  */
 
 #include <QObject>
@@ -65,6 +66,13 @@ enum VariantSetting {
     VariantSetting_QueryResultsState,
     VariantSetting_PolicyResultsState,
     VariantSetting_PolicyContainerResultsState,
+    VariantSetting_FindResultsHeaderState,
+    VariantSetting_SelectObjectHeaderState,
+    VariantSetting_MembershipTabHeaderState,
+    VariantSetting_OrganizationTabHeaderState,
+    VariantSetting_GpoLinksTabHeaderState,
+    VariantSetting_GroupPolicyTabHeaderState,
+    VariantSetting_SecurityTabHeaderState,
 
     VariantSetting_COUNT,
 };

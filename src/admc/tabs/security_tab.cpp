@@ -24,6 +24,7 @@
 #include "globals.h"
 #include "select_object_dialog.h"
 #include "utils.h"
+#include "settings.h"
 
 #include "samba/ndr_security.h"
 
@@ -153,6 +154,8 @@ SecurityTab::SecurityTab() {
     layout->addWidget(trustee_label);
     layout->addWidget(ace_view);
 
+    g_settings->restore_header_state(VariantSetting_SecurityTabHeaderState, ace_view->header());
+
     connect(
         trustee_view->selectionModel(), &QItemSelectionModel::currentChanged,
         this, &SecurityTab::load_trustee_acl);
@@ -168,6 +171,10 @@ SecurityTab::SecurityTab() {
     connect(
         remove_trustee_button, &QAbstractButton::clicked,
         this, &SecurityTab::on_remove_trustee_button);
+}
+
+SecurityTab::~SecurityTab() {
+    g_settings->save_header_state(VariantSetting_SecurityTabHeaderState, ace_view->header());   
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {

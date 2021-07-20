@@ -25,6 +25,7 @@
 #include "globals.h"
 #include "select_policy_dialog.h"
 #include "utils.h"
+#include "settings.h"
 
 #include <QDebug>
 #include <QFormLayout>
@@ -93,6 +94,8 @@ GroupPolicyTab::GroupPolicyTab() {
     layout->addLayout(button_layout);
     layout->addLayout(edits_layout);
 
+    g_settings->restore_header_state(VariantSetting_GroupPolicyTabHeaderState, view->header());
+
     enable_widget_on_selection(remove_button, view);
 
     connect(
@@ -107,6 +110,10 @@ GroupPolicyTab::GroupPolicyTab() {
     connect(
         model, &QStandardItemModel::itemChanged,
         this, &GroupPolicyTab::on_item_changed);
+}
+
+GroupPolicyTab::~GroupPolicyTab() {
+    g_settings->save_header_state(VariantSetting_GroupPolicyTabHeaderState, view->header());   
 }
 
 void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {

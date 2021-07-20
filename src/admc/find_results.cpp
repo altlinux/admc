@@ -43,6 +43,7 @@
 #include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
+#include <QTreeView>
 
 FindResults::FindResults()
 : QWidget() {
@@ -69,6 +70,8 @@ FindResults::FindResults()
     layout->addWidget(view);
 
     customize_columns_action = new QAction(tr("&Customize columns"), this);
+
+    g_settings->restore_header_state(VariantSetting_FindResultsHeaderState, view->detail_view()->header());
 
     connect(
         customize_columns_action, &QAction::triggered,
@@ -113,6 +116,10 @@ FindResults::FindResults()
     connect(
         object_actions->get(ConsoleAction_ResetPassword), &QAction::triggered,
         this, &FindResults::reset_password);
+}
+
+FindResults::~FindResults() {
+    g_settings->save_header_state(VariantSetting_FindResultsHeaderState, view->detail_view()->header());   
 }
 
 void FindResults::add_actions_to_action_menu(QMenu *menu) {

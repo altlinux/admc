@@ -41,6 +41,7 @@ class FindResults final : public QWidget {
 
 public:
     FindResults();
+    ~FindResults();
 
     void clear();
 
