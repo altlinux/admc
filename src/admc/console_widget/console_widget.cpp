@@ -25,7 +25,7 @@
 #include "console_widget/customize_columns_dialog.h"
 #include "console_widget/results_description.h"
 #include "console_widget/results_view.h"
-#include "console_widget/scope_model.h"
+#include "console_widget/scope_proxy_model.h"
 
 #include <QAction>
 #include <QApplication>
@@ -59,12 +59,12 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     // NOTE: this makes it so that you can't drag drop between rows (even though name/description don't say anything about that)
     d->scope_view->setDragDropOverwriteMode(true);
 
-    d->scope_model = new ConsoleDragModel(this);
+    d->model = new ConsoleDragModel(this);
 
     // NOTE: using a proxy model for scope to be able to do
     // case insensitive sorting
-    d->scope_proxy_model = new ScopeModel(this);
-    d->scope_proxy_model->setSourceModel(d->scope_model);
+    d->scope_proxy_model = new ScopeProxyModel(this);
+    d->scope_proxy_model->setSourceModel(d->model);
     d->scope_proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
 
     d->scope_view->setModel(d->scope_proxy_model);
@@ -132,13 +132,13 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
         d, &ConsoleWidgetPrivate::on_current_scope_item_changed);
     connect(
-        d->scope_model, &QStandardItemModel::rowsAboutToBeRemoved,
+        d->model, &QStandardItemModel::rowsAboutToBeRemoved,
         d, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
     connect(
-        d->scope_model, &QAbstractItemModel::rowsInserted,
+        d->model, &QAbstractItemModel::rowsInserted,
         this, &ConsoleWidget::results_count_changed);
     connect(
-        d->scope_model, &QAbstractItemModel::rowsRemoved,
+        d->model, &QAbstractItemModel::rowsRemoved,
         this, &ConsoleWidget::results_count_changed);
 
     // TODO: for now properties are opened by user of console
@@ -181,7 +181,15 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         qApp, &QApplication::focusChanged,
         d, &ConsoleWidgetPrivate::on_focus_changed);
 
-    d->connect_to_drag_model(d->scope_model);
+    connect(
+        d->model, &ConsoleDragModel::start_drag,
+        d, &ConsoleWidgetPrivate::on_start_drag);
+    connect(
+        d->model, &ConsoleDragModel::can_drop,
+        d, &ConsoleWidgetPrivate::on_can_drop);
+    connect(
+        d->model, &ConsoleDragModel::drop,
+        d, &ConsoleWidgetPrivate::on_drop);
 
     d->update_navigation_actions();
     d->update_view_actions();
@@ -189,7 +197,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
 QStandardItem * ConsoleWidget::add_top_item(const int results_id, const ScopeNodeType scope_type) {
     auto item = new QStandardItem();
-    d->scope_model->appendRow(item);
+    d->model->appendRow(item);
 
     item->setData(results_id, ConsoleRole_ResultsId);
     const bool is_dynamic = (scope_type == ScopeNodeType_Dynamic);
@@ -225,9 +233,9 @@ QList<QStandardItem *> ConsoleWidget::add_scope_item(const int results_id, const
 QList<QStandardItem *> ConsoleWidget::add_results_item(const QModelIndex &parent) {
     QStandardItem *parent_item = [&]() {
         if (parent.isValid()) {
-            return d->scope_model->itemFromIndex(parent);
+            return d->model->itemFromIndex(parent);
         } else {
-            return d->scope_model->invisibleRootItem();
+            return d->model->invisibleRootItem();
         }
     }();
 
@@ -237,7 +245,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_item(const QModelIndex &parent
         
         const int column_count =
         [&]() {
-            if (parent_item == d->scope_model->invisibleRootItem()) {
+            if (parent_item == d->model->invisibleRootItem()) {
                 return 1;
             } else {
                 const int parent_results_id = parent.data(ConsoleRole_ResultsId).toInt();
@@ -279,7 +287,7 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
         set_current_scope(index.parent());
     }
 
-    d->scope_model->removeRows(index.row(), 1, index.parent());
+    d->model->removeRows(index.row(), 1, index.parent());
 }
 
 void ConsoleWidget::set_current_scope(const QModelIndex &index) {
@@ -292,7 +300,7 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
         return;
     }
 
-    d->scope_model->removeRows(0, d->scope_model->rowCount(index), index);
+    d->model->removeRows(0, d->model->rowCount(index), index);
 
     // Emit item_fetched() so that user of console can
     // reload item's results
@@ -320,7 +328,7 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
     d->results_stacked_widget->addWidget(widget);
 
     if (view != nullptr) {
-        view->set_model(d->scope_model);
+        view->set_model(d->model);
         view->set_parent(get_current_scope_item());
 
         connect(
@@ -403,10 +411,10 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int ro
     const QList<QModelIndex> all_matches = [&]() {
         QList<QModelIndex> out;
 
-        const bool parent_has_descendants = (d->scope_model->rowCount(parent) > 0);
+        const bool parent_has_descendants = (d->model->rowCount(parent) > 0);
         if (parent_has_descendants) {
             const QModelIndex start = get_item(parent)->child(0, 0)->index();
-            const QList<QModelIndex> descendant_matches= d->scope_model->match(start, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+            const QList<QModelIndex> descendant_matches= d->model->match(start, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
             out.append(descendant_matches);
         }
 
@@ -458,19 +466,19 @@ QModelIndex ConsoleWidget::get_current_scope_item() const {
 int ConsoleWidget::get_current_results_count() const {
     const QModelIndex current_scope = get_current_scope_item();
 
-    return d->scope_model->rowCount(current_scope);
+    return d->model->rowCount(current_scope);
 }
 
 QStandardItem *ConsoleWidget::get_item(const QModelIndex &index) const {
-    return d->scope_model->itemFromIndex(index);
+    return d->model->itemFromIndex(index);
 }
 
 QList<QStandardItem *> ConsoleWidget::get_row(const QModelIndex &index) const {
     QList<QStandardItem *> row;
 
-    for (int col = 0; col < d->scope_model->columnCount(index.parent()); col++) {
+    for (int col = 0; col < d->model->columnCount(index.parent()); col++) {
         const QModelIndex sibling = index.siblingAtColumn(col);
-        QStandardItem *item = d->scope_model->itemFromIndex(sibling);
+        QStandardItem *item = d->model->itemFromIndex(sibling);
         row.append(item);
     }
 
@@ -487,18 +495,6 @@ QWidget *ConsoleWidget::get_scope_view() const {
 
 QWidget *ConsoleWidget::get_description_bar() const {
     return d->description_bar;
-}
-
-void ConsoleWidgetPrivate::connect_to_drag_model(ConsoleDragModel *model) {
-    connect(
-        model, &ConsoleDragModel::start_drag,
-        this, &ConsoleWidgetPrivate::on_start_drag);
-    connect(
-        model, &ConsoleDragModel::can_drop,
-        this, &ConsoleWidgetPrivate::on_can_drop);
-    connect(
-        model, &ConsoleDragModel::drop,
-        this, &ConsoleWidgetPrivate::on_drop);
 }
 
 void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
@@ -588,7 +584,7 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
     // exists
     const bool results_view_exists = (results.view() != nullptr);
     if (results_view_exists) {
-        scope_model->setHorizontalHeaderLabels(results.column_labels());
+        model->setHorizontalHeaderLabels(results.column_labels());
 
         // NOTE: setting horizontal labes may make columns
         // visible again in scope view, so re-hide them
@@ -599,7 +595,7 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
         // NOTE: need to add a dummy row if new current item
         // has no children because otherwise view header
         // will be hidden. Dummy row is removed later.
-        const bool need_dummy = (scope_model->rowCount(current) == 0);
+        const bool need_dummy = (model->rowCount(current) == 0);
         if (need_dummy) {
             q->add_results_item(current);
         }
@@ -607,7 +603,7 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
         results.view()->set_parent(current);
 
         if (need_dummy) {
-            scope_model->removeRow(0, current);
+            model->removeRow(0, current);
         }
     }
 
@@ -629,8 +625,8 @@ void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex 
         QStack<QStandardItem *> stack;
 
         for (int r = first; r <= last; r++) {
-            const QModelIndex removed_index = scope_model->index(r, 0, parent);
-            auto removed_item = scope_model->itemFromIndex(removed_index);
+            const QModelIndex removed_index = model->index(r, 0, parent);
+            auto removed_item = model->itemFromIndex(removed_index);
             stack.push(removed_item);
         }
 
@@ -881,7 +877,7 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
     const bool was_fetched = index.data(ConsoleRole_WasFetched).toBool();
 
     if (!was_fetched) {
-        scope_model->setData(index, true, ConsoleRole_WasFetched);
+        model->setData(index, true, ConsoleRole_WasFetched);
 
         emit q->item_fetched(index);
     }

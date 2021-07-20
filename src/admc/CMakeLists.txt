@@ -146,7 +146,7 @@ set(ADMC_SOURCES
     edits/logon_computers_edit.cpp
 
     console_widget/console_widget.cpp
-    console_widget/scope_model.cpp
+    console_widget/scope_proxy_model.cpp
     console_widget/customize_columns_dialog.cpp
     console_widget/results_description.cpp
     console_widget/results_view.cpp

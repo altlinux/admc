@@ -18,16 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SCOPE_MODEL_H
-#define SCOPE_MODEL_H
+#ifndef SCOPE_PROXY_MODEL_H
+#define SCOPE_PROXY_MODEL_H
 
 #include <QSortFilterProxyModel>
 
 /**
- * Implements showing expander for unfetched items.
+ * Proxy model for the scope pane of the console. Filters
+ * out items that shouldn't be shown in scope. Also
+ * implements showing expander for items that haven't been
+ * fetched yet.
  */
 
-class ScopeModel : public QSortFilterProxyModel {
+class ScopeProxyModel : public QSortFilterProxyModel {
     Q_OBJECT
 
 public:
@@ -37,4 +40,4 @@ public:
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
-#endif /* SCOPE_MODEL_H */
+#endif /* SCOPE_PROXY_MODEL_H */

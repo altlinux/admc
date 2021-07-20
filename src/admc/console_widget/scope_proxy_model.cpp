@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_widget/scope_model.h"
+#include "console_widget/scope_proxy_model.h"
 
 #include "console_widget/console_widget_p.h"
 
@@ -26,7 +26,7 @@
 // has children while the item is unfetched. This causes the
 // expander to be shown while the item is unfetched. After
 // the item is fetched, normal behavior is restored.
-bool ScopeModel::hasChildren(const QModelIndex &parent) const {
+bool ScopeProxyModel::hasChildren(const QModelIndex &parent) const {
     const bool was_fetched = parent.data(ConsoleRole_WasFetched).toBool();
     const bool unfetched = !was_fetched;
 
@@ -37,7 +37,7 @@ bool ScopeModel::hasChildren(const QModelIndex &parent) const {
     }
 }
 
-bool ScopeModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
+bool ScopeProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
     const QModelIndex source_index = sourceModel()->index(source_row, 0, source_parent);
 
     const bool is_scope = source_index.data(ConsoleRole_IsScope).toBool();
