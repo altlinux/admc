@@ -113,17 +113,17 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     results_layout->addWidget(d->description_bar);
     results_layout->addWidget(d->results_stacked_widget);
 
-    auto splitter = new QSplitter(Qt::Horizontal);
-    splitter->addWidget(d->scope_view);
-    splitter->addWidget(results_wrapper);
-    splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(1, 2);
+    d->splitter = new QSplitter(Qt::Horizontal);
+    d->splitter->addWidget(d->scope_view);
+    d->splitter->addWidget(results_wrapper);
+    d->splitter->setStretchFactor(0, 1);
+    d->splitter->setStretchFactor(1, 2);
 
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     setLayout(layout);
-    layout->addWidget(splitter);
+    layout->addWidget(d->splitter);
 
     connect(
         d->scope_view, &QTreeView::expanded,
@@ -496,6 +496,14 @@ QWidget *ConsoleWidget::get_scope_view() const {
 
 QWidget *ConsoleWidget::get_description_bar() const {
     return d->description_bar;
+}
+
+QByteArray ConsoleWidget::save_state() const {
+    return d->splitter->saveState();
+}
+
+void ConsoleWidget::restore_state(const QByteArray &state) {
+    d->splitter->restoreState(state);
 }
 
 void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {

@@ -74,6 +74,11 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     console = new ConsoleWidget();
 
+    if (g_settings->contains_variant(VariantSetting_ConsoleWidgetState)) {
+        const QByteArray console_widget_state = g_settings->get_variant(VariantSetting_ConsoleWidgetState).toByteArray();
+        console->restore_state(console_widget_state);
+    }
+
     filter_dialog = new FilterDialog(this);
     auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
     auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
@@ -256,6 +261,8 @@ CentralWidget::CentralWidget(AdInterface &ad)
 }
 
 void CentralWidget::save_state() {
+    const QByteArray console_widget_state = console->save_state();
+    g_settings->set_variant(VariantSetting_ConsoleWidgetState, console_widget_state);
 
     g_settings->save_header_state(VariantSetting_ObjectResultsState, object_results->detail_view()->header());
     g_settings->save_header_state(VariantSetting_QueryResultsState, query_results->detail_view()->header());

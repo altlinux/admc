@@ -171,6 +171,9 @@ public:
     QWidget *get_scope_view() const;
     QWidget *get_description_bar() const;
 
+    QByteArray save_state() const;
+    void restore_state(const QByteArray &state);
+
 signals:
     // Emitted when a dynamic scope item is expanded or
     // selected for the first time. User of this widget

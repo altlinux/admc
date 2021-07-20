@@ -60,6 +60,7 @@ enum VariantSetting {
     VariantSetting_SelectObjectDialogGeometry,
     VariantSetting_SelectContainerDialogGeometry,
     VariantSetting_ObjectMultiDialogGeometry,
+    VariantSetting_ConsoleWidgetState,
     VariantSetting_ObjectResultsState,
     VariantSetting_QueryResultsState,
     VariantSetting_PolicyResultsState,
