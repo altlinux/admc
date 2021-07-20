@@ -49,7 +49,7 @@ enum VariantSetting {
     VariantSetting_Locale,
     VariantSetting_ResultsHeader,
     VariantSetting_FindResultsHeader,
-    VariantSetting_AttributesHeader,
+    VariantSetting_AttributesTabHeaderState,
     VariantSetting_MainWindowGeometry,
     VariantSetting_MainWindowState,
     VariantSetting_AttributesTabFilter,
@@ -143,8 +143,6 @@ public:
     void connect_action_to_bool_setting(QAction *action, const BoolSetting setting);
 
     void connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting setting);
-
-    void setup_header_state(QHeaderView *header, const VariantSetting setting);
 
     void connect_toggle_widget(QWidget *widget, const BoolSetting setting);
 

@@ -68,8 +68,6 @@ AttributesTab::AttributesTab() {
     proxy->setSourceModel(model);
     view->setModel(proxy);
 
-    g_settings->setup_header_state(view->header(), VariantSetting_AttributesHeader);
-
     auto edit_button = new QPushButton(tr("Edit..."));
     edit_button->setObjectName("edit_button");
     auto filter_button = new QPushButton(tr("Filter"));
@@ -86,6 +84,8 @@ AttributesTab::AttributesTab() {
     layout->addWidget(view);
     layout->addLayout(buttons);
 
+    g_settings->restore_header_state(VariantSetting_AttributesTabHeaderState, view->header());
+
     enable_widget_on_selection(edit_button, view);
 
     connect(
@@ -94,6 +94,10 @@ AttributesTab::AttributesTab() {
     connect(
         edit_button, &QAbstractButton::clicked,
         this, &AttributesTab::edit_attribute);
+}
+
+AttributesTab::~AttributesTab() {
+    g_settings->save_header_state(VariantSetting_AttributesTabHeaderState, view->header());
 }
 
 void AttributesTab::edit_attribute() {
