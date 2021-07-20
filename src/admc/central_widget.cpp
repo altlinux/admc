@@ -682,7 +682,7 @@ void CentralWidget::on_object_properties_applied() {
     for (const QString &target : target_list) {
         const AdObject object = ad.search_object(target);
 
-        const QList<QModelIndex> index_list = console->search_items(console_object_head()->index(), ObjectRole_DN, target, ItemType_Object);
+        const QList<QModelIndex> index_list = console->search_items(QModelIndex(), ObjectRole_DN, target, ItemType_Object);
         for (const QModelIndex &index : index_list) {
             const QList<QStandardItem *> row = console->get_row(index);
             console_object_load(row, object);
@@ -774,7 +774,7 @@ void CentralWidget::enable_disable_helper(const bool disabled) {
     }
 
     for (const QString &dn : changed_objects) {
-        const QList<QModelIndex> index_list = console->search_items(console_object_head()->index(), ObjectRole_DN, dn, ItemType_Object);
+        const QList<QModelIndex> index_list = console->search_items(QModelIndex(), ObjectRole_DN, dn, ItemType_Object);
         for (const QModelIndex &index : index_list) {
             QStandardItem *item = console->get_item(index);
             item->setData(disabled, ObjectRole_AccountDisabled);
