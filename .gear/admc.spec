@@ -65,6 +65,7 @@ Tests for ADMC
 %_bindir/admc
 %_libdir/libadldap.so
 %_man1dir/admc*
+%_datadir/applications/admc.desktop
 
 %files test
 %_libdir/libadmctest.so
