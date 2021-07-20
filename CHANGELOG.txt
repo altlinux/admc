@@ -2,6 +2,29 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.6.1 (Released 20-07-2021)
+-----------------------------------------------------------------------
+- Action menu: Added "Enable account" and "Disable account"
+  actions for computer objects. (#236)
+- Console: Fixed a bug where creating objects at domain
+  object did not add those objects in console. Also fixed
+  similar issue with moving objects to domain object. (#240)
+- Console: Fixed results pane showing always showing all
+  columns. Now it hides non-default columns as it should. (#237)
+- Console: Fixed changes to object properties not updating
+  objects in queries.(#241)
+- Rename dialog: For the user version, updated the UPN edit
+  to the new version used everywhere else. (#238)
+- Misc: Improved text in labels, titles and messages.
+- Misc: Fixed "Close" button in error log dialog not closing
+  the dialog. (#235)
+- Misc: Fixed empty text in some message boxes. (#234)
+- Misc: Fixed crash caused by performing object operations
+  like delete, while "Saved Queries" is empty. (#239)
+- Misc: Added .desktop file so that the app appears in app
+  list. (#231)
+
+-----------------------------------------------------------------------
  VERSION 0.6.0 (Released 08-07-2021)
 -----------------------------------------------------------------------
 - Properties dialog: Improved how connection failure is
