@@ -150,8 +150,9 @@ public:
     QModelIndex get_selected_item() const;
 
     // NOTE: Search is inclusive, examining the given parent
-    // and all of it's descendants. If no type is given,
-    // then items of all types will be returned.
+    // and all of it's descendants. Pass QModelIndex()
+    // parent to search the whole model. If no type is
+    // given, then items of all types will be returned.
     QList<QModelIndex> search_items(const QModelIndex &parent, int role, const QVariant &value, const int type = -1) const;
 
     QModelIndex get_current_scope_item() const;

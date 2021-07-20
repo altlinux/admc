@@ -411,15 +411,16 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int ro
     const QList<QModelIndex> all_matches = [&]() {
         QList<QModelIndex> out;
 
-        const bool parent_has_descendants = (d->model->rowCount(parent) > 0);
-        if (parent_has_descendants) {
-            const QModelIndex start = get_item(parent)->child(0, 0)->index();
-            const QList<QModelIndex> descendant_matches= d->model->match(start, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+        // NOTE: start index may be invalid if parent has no
+        // children
+        const QModelIndex start_index = d->model->index(0, 0, parent);
+        if (start_index.isValid()) {
+            const QList<QModelIndex> descendant_matches= d->model->match(start_index, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
             out.append(descendant_matches);
         }
 
         const QVariant parent_value = parent.data(role);
-        const bool parent_is_match = (parent_value == value);
+        const bool parent_is_match = (parent_value.isValid() && parent_value == value);
         if (parent_is_match) {
             out.append(parent);
         }
