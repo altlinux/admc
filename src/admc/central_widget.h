@@ -43,6 +43,7 @@ class AdInterface;
 class ConsoleWidget;
 class ConsoleActions;
 class PolicyResultsWidget;
+class ResultsView;
 template <typename T>
 class QList;
 
@@ -63,6 +64,7 @@ class CentralWidget final : public QWidget {
 
 public:
     CentralWidget(AdInterface &ad);
+    void save_state();
 
     void add_actions_to_action_menu(QMenu *menu);
     void add_actions_to_navigation_menu(QMenu *menu);
@@ -112,6 +114,10 @@ private:
     PolicyResultsWidget *policy_results_widget;
 
     ConsoleActions *console_actions;
+
+    ResultsView *object_results;
+    ResultsView *query_results;
+    ResultsView *policy_container_results;
 
     QAction *open_filter_action;
     QAction *show_noncontainers_action;

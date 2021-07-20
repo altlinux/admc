@@ -42,6 +42,8 @@ public:
     // index is not a policy.
     void update(const QModelIndex &index);
 
+    ResultsView *get_view() const;
+
 private:
     ResultsView *view;
     QStandardItemModel *model;

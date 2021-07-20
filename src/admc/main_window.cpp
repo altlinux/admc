@@ -41,6 +41,8 @@
 
 MainWindow::MainWindow()
 : QMainWindow() {
+    central_widget = nullptr;
+
     setStatusBar(g_status()->status_bar());
 
     message_log_dock = new QDockWidget();
@@ -74,6 +76,12 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
     const QByteArray state = saveState();
     g_settings->set_variant(VariantSetting_MainWindowState, state);
+
+    if (central_widget != nullptr) {
+        central_widget->save_state();
+    }
+
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::setup_menubar() {

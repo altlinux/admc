@@ -24,9 +24,11 @@
 /**
  * Provides access to settings via enums rather than plain
  * strings. Settings are saved to file automatically when
- * this object is destructed. Settings of boolean type have
- * BoolSettingSignal objects which emit changed() signal
- * when setting is changed.
+ * this object is destructed. Note that you shouldn't save
+ * settings in other destructors because they won't be saved
+ * to file. Instead use QMainWindow::closeEvent(). Settings
+ * of boolean type have BoolSettingSignal objects which emit
+ * changed() signal when setting is changed.
  */
 
 #include <QObject>
@@ -58,6 +60,10 @@ enum VariantSetting {
     VariantSetting_SelectObjectDialogGeometry,
     VariantSetting_SelectContainerDialogGeometry,
     VariantSetting_ObjectMultiDialogGeometry,
+    VariantSetting_ObjectResultsState,
+    VariantSetting_QueryResultsState,
+    VariantSetting_PolicyResultsState,
+    VariantSetting_PolicyContainerResultsState,
 
     VariantSetting_COUNT,
 };
@@ -116,6 +122,9 @@ public:
     // should check for the return and perform default
     // sizing in the false case.
     bool restore_geometry(const VariantSetting setting, QWidget *widget);
+
+    void save_header_state(const VariantSetting setting, QHeaderView *header);
+    bool restore_header_state(const VariantSetting setting, QHeaderView *header);
 
     /** 
      * Connect action and bool setting so that toggling

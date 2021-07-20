@@ -176,6 +176,10 @@ void PolicyResultsWidget::update(const QModelIndex &index) {
     }
 }
 
+ResultsView *PolicyResultsWidget::get_view() const {
+    return view;
+}
+
 void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
     const PolicyResultsColumn column = (PolicyResultsColumn) item->column();
     if (!option_columns.contains(column)) {

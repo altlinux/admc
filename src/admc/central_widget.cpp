@@ -80,17 +80,17 @@ CentralWidget::CentralWidget(AdInterface &ad)
     auto create_policy_dialog = new CreatePolicyDialog(console);
     auto rename_policy_dialog = new RenamePolicyDialog(console);
 
-    auto object_results = new ResultsView(this);
+    object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
-    auto policy_container_results = new ResultsView(this);
+    policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
     policy_container_results_id = console->register_results(policy_container_results, console_policy_header_labels(), console_policy_default_columns());
 
     policy_results_widget = new PolicyResultsWidget();
     policy_results_id = console->register_results(policy_results_widget);
 
-    auto query_results = new ResultsView(this);
+    query_results = new ResultsView(this);
     query_results->detail_view()->header()->setDefaultSectionSize(200);
     console_query_folder_results_id = console->register_results(query_results, console_query_folder_header_labels(), console_query_folder_default_columns());
 
@@ -104,6 +104,11 @@ CentralWidget::CentralWidget(AdInterface &ad)
     layout->setSpacing(0);
     setLayout(layout);
     layout->addWidget(console);
+
+    g_settings->restore_header_state(VariantSetting_ObjectResultsState, object_results->detail_view()->header());
+    g_settings->restore_header_state(VariantSetting_QueryResultsState, query_results->detail_view()->header());
+    g_settings->restore_header_state(VariantSetting_PolicyContainerResultsState, policy_container_results->detail_view()->header());
+    g_settings->restore_header_state(VariantSetting_PolicyResultsState, policy_results_widget->get_view()->detail_view()->header());
 
     // Refresh head when settings affecting the filter
     // change. This reloads the model with an updated filter
@@ -248,6 +253,14 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     // Set current scope to object head to load it
     console->set_current_scope(console_object_head()->index());
+}
+
+void CentralWidget::save_state() {
+
+    g_settings->save_header_state(VariantSetting_ObjectResultsState, object_results->detail_view()->header());
+    g_settings->save_header_state(VariantSetting_QueryResultsState, query_results->detail_view()->header());
+    g_settings->save_header_state(VariantSetting_PolicyContainerResultsState, policy_container_results->detail_view()->header());
+    g_settings->save_header_state(VariantSetting_PolicyResultsState, policy_results_widget->get_view()->detail_view()->header());
 }
 
 void CentralWidget::object_delete() {

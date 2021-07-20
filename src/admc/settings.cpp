@@ -79,6 +79,22 @@ bool Settings::restore_geometry(const VariantSetting setting, QWidget *widget) {
     }
 }
 
+void Settings::save_header_state(const VariantSetting setting, QHeaderView *header) {
+    const QByteArray state = header->saveState();
+    set_variant(setting, state);
+}
+
+bool Settings::restore_header_state(const VariantSetting setting, QHeaderView *header) {
+    if (contains_variant(setting)) {
+        const QByteArray state = get_variant(setting).toByteArray();
+        header->restoreState(state);
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
 QVariant Settings::get_variant(const VariantSetting setting) const {
     const QString name = variant_to_string(setting);
     const QVariant value = qsettings.value(name);
@@ -238,6 +254,10 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_SelectObjectDialogGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_SelectContainerDialogGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_ObjectMultiDialogGeometry);
+        CASE_ENUM_TO_STRING(VariantSetting_ObjectResultsState);
+        CASE_ENUM_TO_STRING(VariantSetting_QueryResultsState);
+        CASE_ENUM_TO_STRING(VariantSetting_PolicyResultsState);
+        CASE_ENUM_TO_STRING(VariantSetting_PolicyContainerResultsState);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";
