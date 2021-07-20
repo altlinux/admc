@@ -104,11 +104,3 @@ void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
 
     PropertiesTab::load(ad, object);
 }
-
-void OrganizationTab::showEvent(QShowEvent *event) {
-    resize_columns(reports_view,
-        {
-            {ReportsColumn_Name, 0.5},
-            {ReportsColumn_Folder, 0.5},
-        });
-}

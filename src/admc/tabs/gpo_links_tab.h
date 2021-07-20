@@ -44,8 +44,6 @@ public:
 private:
     QTreeView *view;
     QStandardItemModel *model;
-
-    void showEvent(QShowEvent *event) override;
 };
 
 #endif /* GPO_LINKS_TAB_H */

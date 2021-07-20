@@ -112,15 +112,6 @@ void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
     do_it();
 }
 
-void resize_columns(QTreeView *view, const QHash<int, double> widths) {
-    for (const int col : widths.keys()) {
-        const double width_ratio = widths[col];
-        const int width = (int) (view->width() * width_ratio);
-
-        view->setColumnWidth(col, width);
-    }
-}
-
 void show_busy_indicator() {
     QGuiApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 }

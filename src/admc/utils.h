@@ -66,13 +66,6 @@ void set_line_edit_to_numbers_only(QLineEdit *edit);
 
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view);
 
-// Provide a mapping of columns to widths as ratio of total
-// view width. For example: {{column 1 => 0.5}, {column 2 =>
-// 0.25}} would give first column 50% of total width and
-// second 25% of total width. Omit columns if you don't care
-// about their max width.
-void resize_columns(QTreeView *view, const QHash<int, double> widths);
-
 void show_busy_indicator();
 void hide_busy_indicator();
 
