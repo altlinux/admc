@@ -248,6 +248,7 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_GpoLinksTabHeaderState);
         CASE_ENUM_TO_STRING(VariantSetting_GroupPolicyTabHeaderState);
         CASE_ENUM_TO_STRING(VariantSetting_SecurityTabHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_FilterDialogState);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";

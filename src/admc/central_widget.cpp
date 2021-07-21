@@ -111,6 +111,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
     const QVariant policy_results_state = g_settings->get_variant(VariantSetting_PolicyResultsState);
     policy_results_widget->restore_state(policy_results_state);
 
+    const QVariant filter_dialog_state = g_settings->get_variant(VariantSetting_FilterDialogState);
+    filter_dialog->restore_state(filter_dialog_state);
+
     // Refresh head when settings affecting the filter
     // change. This reloads the model with an updated filter
     const BoolSettingSignal *advanced_features = g_settings->get_bool_signal(BoolSetting_AdvancedFeatures);
@@ -262,6 +265,9 @@ void CentralWidget::save_state() {
 
     const QVariant policy_results_state = policy_results_widget->save_state();
     g_settings->set_variant(VariantSetting_PolicyResultsState, policy_results_state);
+
+    const QVariant filter_dialog_state = filter_dialog->save_state();
+    g_settings->set_variant(VariantSetting_FilterDialogState, filter_dialog_state);
 }
 
 void CentralWidget::object_delete() {

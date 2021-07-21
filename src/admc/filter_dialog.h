@@ -44,6 +44,9 @@ public:
     QString get_filter() const;
     bool filtering_ON() const;
 
+    QVariant save_state() const;
+    void restore_state(const QVariant &state);
+
 private:
     FilterCustomDialog *custom_dialog;
     QRadioButton *all_button;
@@ -52,7 +55,8 @@ private:
     QPushButton *custom_dialog_button;
     FilterClassesWidget *filter_classes_widget;
     FilterWidget *filter_widget;
-
+    QHash<QString, QRadioButton *> button_state_name_map;
+    
     void on_custom_button();
     void on_classes_button();
 };

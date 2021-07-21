@@ -70,6 +70,7 @@ enum VariantSetting {
     VariantSetting_GpoLinksTabHeaderState,
     VariantSetting_GroupPolicyTabHeaderState,
     VariantSetting_SecurityTabHeaderState,
+    VariantSetting_FilterDialogState,
 
     VariantSetting_COUNT,
 };
