@@ -156,3 +156,23 @@ QList<QModelIndex> ResultsView::get_selected_indexes() const {
 
     return source_indexes;
 }
+
+
+QVariant ResultsView::save_state() const {
+    QHeaderView *header = detail_view()->header();
+
+    return QVariant(header->saveState());
+}
+
+void ResultsView::restore_state(const QVariant &state_variant, const QList<int> &default_columns) {
+    QHeaderView *header = detail_view()->header();
+
+    if (state_variant.isValid()) {
+        header->restoreState(state_variant.toByteArray());
+    } else {
+        for (int i = 0; i < header->count(); i++) {
+            const bool hidden = !default_columns.contains(i);
+            header->setSectionHidden(i, hidden);
+        }
+    }
+}

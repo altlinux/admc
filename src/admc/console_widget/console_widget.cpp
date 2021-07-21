@@ -39,6 +39,10 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#define SPLITTER_STATE_NAME "splitter_state"
+
+QString results_state_name(const int results_id);
+
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 : QObject(q_arg) {
     q = q_arg;
@@ -337,20 +341,6 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
         connect(
             view, &ResultsView::context_menu,
             this, &ConsoleWidget::context_menu);
-
-        // Hide non-default results view columns. Note that
-        // at creation, view header doesnt have any
-        // sections. Sections appear once a model is set.
-        // Therefore we have to do this in the slot.
-        QHeaderView *header = view->detail_view()->header();
-        connect(
-            header, &QHeaderView::sectionCountChanged,
-            [header, default_columns, id](int oldCount, int) {
-                for (int i = 0; i < header->count(); i++) {
-                    const bool hidden = !default_columns.contains(i);
-                    header->setSectionHidden(i, hidden);
-                }
-            });
     }
 
     return id;
@@ -498,12 +488,39 @@ QWidget *ConsoleWidget::get_description_bar() const {
     return d->description_bar;
 }
 
-QByteArray ConsoleWidget::save_state() const {
-    return d->splitter->saveState();
+QVariant ConsoleWidget::save_state() const {
+    QHash<QString, QVariant> state;
+
+    const QByteArray splitter_state = d->splitter->saveState();
+    state[SPLITTER_STATE_NAME] = QVariant(splitter_state);
+
+    for (const int results_id : d->results_descriptions.keys()) {
+        const ResultsDescription results = d->results_descriptions[results_id];
+        const QString results_name = results_state_name(results_id);
+        const QVariant results_state = results.save_state();
+
+        state[results_name] = results_state;
+    }
+
+    return QVariant(state);
 }
 
-void ConsoleWidget::restore_state(const QByteArray &state) {
-    d->splitter->restoreState(state);
+void ConsoleWidget::restore_state(const QVariant &state_variant) {
+    const QHash<QString, QVariant> state = state_variant.toHash();
+
+    const QByteArray splitter_state = state.value(SPLITTER_STATE_NAME, QVariant()).toByteArray();
+    d->splitter->restoreState(splitter_state);
+
+    for (const int results_id : d->results_descriptions.keys()) {
+        ResultsDescription results = d->results_descriptions[results_id];
+
+        d->model->setHorizontalHeaderLabels(results.column_labels());
+
+        const QString results_name = results_state_name(results_id);
+        const QVariant results_state = state.value(results_name, QVariant());
+
+        results.restore_state(results_state);
+    }
 }
 
 void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
@@ -890,4 +907,8 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 
         emit q->item_fetched(index);
     }
+}
+
+QString results_state_name(const int results_id) {
+    return QString("results_state_%1").arg(results_id);
 }

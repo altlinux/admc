@@ -77,12 +77,12 @@ PolicyResultsWidget::PolicyResultsWidget() {
 
     model = new QStandardItemModel(0, PolicyResultsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
-        {
-            {PolicyResultsColumn_Name, tr("Location")},
-            {PolicyResultsColumn_Enforced, tr("Enforced")},
-            {PolicyResultsColumn_Disabled, tr("Disabled")},
-            {PolicyResultsColumn_Path, tr("Path")},
-        });
+    {
+        {PolicyResultsColumn_Name, tr("Location")},
+        {PolicyResultsColumn_Enforced, tr("Enforced")},
+        {PolicyResultsColumn_Disabled, tr("Disabled")},
+        {PolicyResultsColumn_Path, tr("Path")},
+    });
 
     view->set_model(model);
 
@@ -106,6 +106,21 @@ PolicyResultsWidget::PolicyResultsWidget() {
     connect(
         delete_link_action, &QAction::triggered,
         this, &PolicyResultsWidget::delete_link);
+}
+
+QVariant PolicyResultsWidget::save_state() {
+    const QVariant view_state = view->save_state();
+
+    return view_state;
+}
+
+void PolicyResultsWidget::restore_state(const QVariant &state) {
+    view->restore_state(state, {
+        PolicyResultsColumn_Name,
+        PolicyResultsColumn_Enforced,
+        PolicyResultsColumn_Disabled,
+        PolicyResultsColumn_Path,
+    });
 }
 
 void PolicyResultsWidget::update(const QModelIndex &index) {

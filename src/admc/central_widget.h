@@ -43,7 +43,6 @@ class AdInterface;
 class ConsoleWidget;
 class ConsoleActions;
 class PolicyResultsWidget;
-class ResultsView;
 template <typename T>
 class QList;
 
@@ -114,10 +113,6 @@ private:
     PolicyResultsWidget *policy_results_widget;
 
     ConsoleActions *console_actions;
-
-    ResultsView *object_results;
-    ResultsView *query_results;
-    ResultsView *policy_container_results;
 
     QAction *open_filter_action;
     QAction *show_noncontainers_action;

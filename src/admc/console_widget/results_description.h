@@ -26,6 +26,7 @@
 
 class ResultsView;
 class QWidget;
+class QVariant;
 
 class ResultsDescription {
 
@@ -41,6 +42,9 @@ public:
     QList<QString> column_labels() const;
     QList<int> default_columns() const;
     int column_count() const;
+
+    QVariant save_state() const;
+    void restore_state(const QVariant &state);
 
 private:
     QWidget *m_widget;

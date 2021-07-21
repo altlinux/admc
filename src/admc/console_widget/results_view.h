@@ -61,6 +61,12 @@ public:
     // index per selected row at column 0
     QList<QModelIndex> get_selected_indexes() const;
 
+    QVariant save_state() const;
+    
+    // NOTE: if state is empty, default columns are shown
+    // and others are hidden
+    void restore_state(const QVariant &state, const QList<int> &default_columns);
+
 signals:
     void activated(const QModelIndex &index);
     void context_menu(const QPoint pos);

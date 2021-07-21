@@ -74,28 +74,23 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     console = new ConsoleWidget();
 
-    if (g_settings->contains_variant(VariantSetting_ConsoleWidgetState)) {
-        const QByteArray console_widget_state = g_settings->get_variant(VariantSetting_ConsoleWidgetState).toByteArray();
-        console->restore_state(console_widget_state);
-    }
-
     filter_dialog = new FilterDialog(this);
     auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
     auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
     auto create_policy_dialog = new CreatePolicyDialog(console);
     auto rename_policy_dialog = new RenamePolicyDialog(console);
 
-    object_results = new ResultsView(this);
+    auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
-    policy_container_results = new ResultsView(this);
+    auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
     policy_container_results_id = console->register_results(policy_container_results, console_policy_header_labels(), console_policy_default_columns());
 
     policy_results_widget = new PolicyResultsWidget();
     policy_results_id = console->register_results(policy_results_widget);
 
-    query_results = new ResultsView(this);
+    auto query_results = new ResultsView(this);
     query_results->detail_view()->header()->setDefaultSectionSize(200);
     console_query_folder_results_id = console->register_results(query_results, console_query_folder_header_labels(), console_query_folder_default_columns());
 
@@ -110,10 +105,11 @@ CentralWidget::CentralWidget(AdInterface &ad)
     setLayout(layout);
     layout->addWidget(console);
 
-    g_settings->restore_header_state(VariantSetting_ObjectResultsState, object_results->detail_view()->header());
-    g_settings->restore_header_state(VariantSetting_QueryResultsState, query_results->detail_view()->header());
-    g_settings->restore_header_state(VariantSetting_PolicyContainerResultsState, policy_container_results->detail_view()->header());
-    g_settings->restore_header_state(VariantSetting_PolicyResultsState, policy_results_widget->get_view()->detail_view()->header());
+    const QVariant console_widget_state = g_settings->get_variant(VariantSetting_ConsoleWidgetState);
+    console->restore_state(console_widget_state);
+
+    const QVariant policy_results_state = g_settings->get_variant(VariantSetting_PolicyResultsState);
+    policy_results_widget->restore_state(policy_results_state);
 
     // Refresh head when settings affecting the filter
     // change. This reloads the model with an updated filter
@@ -261,13 +257,11 @@ CentralWidget::CentralWidget(AdInterface &ad)
 }
 
 void CentralWidget::save_state() {
-    const QByteArray console_widget_state = console->save_state();
+    const QVariant console_widget_state = console->save_state();
     g_settings->set_variant(VariantSetting_ConsoleWidgetState, console_widget_state);
 
-    g_settings->save_header_state(VariantSetting_ObjectResultsState, object_results->detail_view()->header());
-    g_settings->save_header_state(VariantSetting_QueryResultsState, query_results->detail_view()->header());
-    g_settings->save_header_state(VariantSetting_PolicyContainerResultsState, policy_container_results->detail_view()->header());
-    g_settings->save_header_state(VariantSetting_PolicyResultsState, policy_results_widget->get_view()->detail_view()->header());
+    const QVariant policy_results_state = policy_results_widget->save_state();
+    g_settings->set_variant(VariantSetting_PolicyResultsState, policy_results_state);
 }
 
 void CentralWidget::object_delete() {

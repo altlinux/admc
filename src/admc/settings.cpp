@@ -240,11 +240,8 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_SelectContainerDialogGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_ObjectMultiDialogGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_ConsoleWidgetState);
-        CASE_ENUM_TO_STRING(VariantSetting_ObjectResultsState);
-        CASE_ENUM_TO_STRING(VariantSetting_QueryResultsState);
         CASE_ENUM_TO_STRING(VariantSetting_PolicyResultsState);
-        CASE_ENUM_TO_STRING(VariantSetting_PolicyContainerResultsState);
-        CASE_ENUM_TO_STRING(VariantSetting_FindResultsHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_FindResultsViewState);
         CASE_ENUM_TO_STRING(VariantSetting_SelectObjectHeaderState);
         CASE_ENUM_TO_STRING(VariantSetting_MembershipTabHeaderState);
         CASE_ENUM_TO_STRING(VariantSetting_OrganizationTabHeaderState);
