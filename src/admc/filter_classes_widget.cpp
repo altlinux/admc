@@ -133,30 +133,26 @@ void FilterClassesWidget::clear_selection() {
     }
 }
 
-void FilterClassesWidget::save_state(QHash<QString, QVariant> &state) const {
-    const QHash<QString, QVariant> check_state = [&]() {
-        QHash<QString, QVariant> out;
+QVariant FilterClassesWidget::save_state() const {
+    QHash<QString, QVariant> state;
 
-        for (const QString &object_class : checkbox_map.keys()) {
-            QCheckBox *checkbox = checkbox_map[object_class];
-            const bool checked = checkbox->isChecked();
+    for (const QString &object_class : checkbox_map.keys()) {
+        QCheckBox *checkbox = checkbox_map[object_class];
+        const bool checked = checkbox->isChecked();
 
-            out[object_class] = QVariant(checked);
-        }
+        state[object_class] = QVariant(checked);
+    }
 
-        return out;
-    }();
-
-    state["check_state"] = check_state;
+    return QVariant(state);
 }
 
-void FilterClassesWidget::load_state(const QHash<QString, QVariant> &state) {
-    const QHash<QString, QVariant> check_state = state["check_state"].toHash();
+void FilterClassesWidget::restore_state(const QVariant &state_variant) {
+    const QHash<QString, QVariant> state = state_variant.toHash();
 
     for (const QString &object_class : checkbox_map.keys()) {
         const bool checked = [&]() {
-            if (check_state.contains(object_class)) {
-                const bool out = check_state[object_class].toBool();
+            if (state.contains(object_class)) {
+                const bool out = state[object_class].toBool();
 
                 return out;
             } else {

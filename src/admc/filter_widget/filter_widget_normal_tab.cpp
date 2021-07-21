@@ -143,10 +143,10 @@ void FilterWidgetNormalTab::clear_filters() {
     filter_list->clear();
 }
 
-void FilterWidgetNormalTab::save_state(QHash<QString, QVariant> &state) const {
-    QHash<QString, QVariant> select_classes_state;
-    select_classes->save_state(select_classes_state);
-    state["select_classes"] = select_classes_state;
+QVariant FilterWidgetNormalTab::save_state() const {
+    QHash<QString, QVariant> state;
+
+    state["select_classes"] = select_classes->save_state();
 
     QList<QString> filter_display_list;
     QList<QString> filter_value_list;
@@ -161,11 +161,14 @@ void FilterWidgetNormalTab::save_state(QHash<QString, QVariant> &state) const {
 
     state["filter_display_list"] = QVariant(filter_display_list);
     state["filter_value_list"] = QVariant(filter_value_list);
+
+    return QVariant(state);
 }
 
-void FilterWidgetNormalTab::load_state(const QHash<QString, QVariant> &state) {
-    const QHash<QString, QVariant> select_classes_state = state["select_classes"].toHash();
-    select_classes->load_state(select_classes_state);
+void FilterWidgetNormalTab::restore_state(const QVariant &state_variant) {
+    const QHash<QString, QVariant> state = state_variant.toHash();
+
+    select_classes->restore_state(state["select_classes"]);
 
     const QList<QString> filter_display_list = state["filter_display_list"].toStringList();
     const QList<QString> filter_value_list = state["filter_value_list"].toStringList();

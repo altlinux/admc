@@ -37,8 +37,8 @@ public:
 
     QString get_base() const;
 
-    void save_state(QHash<QString, QVariant> &state) const;
-    void load_state(const QHash<QString, QVariant> &state);
+    QVariant save_state() const;
+    void restore_state(const QVariant &state);
 
 private:
     QComboBox *combo;

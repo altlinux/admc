@@ -95,7 +95,7 @@ void ADMCTestFilterWidget::test_simple_tab() {
     name_edit->setText("changed");
 
     // Deserialize
-    filter_widget->load_state(state);
+    filter_widget->restore_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
     QVERIFY(correct_filter == filter_deserialized);
@@ -149,7 +149,7 @@ void ADMCTestFilterWidget::test_normal_tab() {
     add_button->click();
 
     // Deserialize
-    filter_widget->load_state(state);
+    filter_widget->restore_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
     QVERIFY(correct_filter == filter_deserialized);
@@ -175,7 +175,7 @@ void ADMCTestFilterWidget::test_advanced_tab() {
     edit->setPlainText("changed");
 
     // Deserialize
-    filter_widget->load_state(state);
+    filter_widget->restore_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
     QVERIFY(correct_filter == filter_deserialized);

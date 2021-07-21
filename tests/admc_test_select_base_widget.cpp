@@ -105,7 +105,7 @@ void ADMCTestSelectBaseWidget::save_state() {
     combo->setCurrentIndex(2);
 
     // Deserialize
-    select_base_widget->load_state(state);
+    select_base_widget->restore_state(state);
 
     // Check that deserialization successfully restored
     // original state

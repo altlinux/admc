@@ -83,12 +83,12 @@ void SelectClassesWidget::update_classes_display() {
     classes_display->setCursorPosition(0);
 }
 
-void SelectClassesWidget::save_state(QHash<QString, QVariant> &state) const {
-    dialog->filter_classes_widget->save_state(state);
+QVariant SelectClassesWidget::save_state() const {
+    return dialog->filter_classes_widget->save_state();
 }
 
-void SelectClassesWidget::load_state(const QHash<QString, QVariant> &state) {
-    dialog->filter_classes_widget->load_state(state);
+void SelectClassesWidget::restore_state(const QVariant &state) {
+    dialog->filter_classes_widget->restore_state(state);
     update_classes_display();
 }
 
@@ -120,7 +120,7 @@ SelectClassesDialog::SelectClassesDialog(const QList<QString> class_list, QWidge
 void SelectClassesDialog::open() {
     // Save state to later restore if dialog is dialog is
     // rejected
-    filter_classes_widget->save_state(state_to_restore);
+    state_to_restore = filter_classes_widget->save_state();
 
     QDialog::open();
 }
@@ -132,5 +132,5 @@ void SelectClassesDialog::reject() {
 }
 
 void SelectClassesDialog::reset() {
-    filter_classes_widget->load_state(state_to_restore);
+    filter_classes_widget->restore_state(state_to_restore);
 }

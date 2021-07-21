@@ -39,8 +39,8 @@ public:
 
     QString get_filter() const;
     QList<QString> get_selected_classes() const;
-    void save_state(QHash<QString, QVariant> &state) const;
-    void load_state(const QHash<QString, QVariant> &state);
+    QVariant save_state() const;
+    void restore_state(const QVariant &state);
 
 private:
     QHash<QString, QCheckBox *> checkbox_map;

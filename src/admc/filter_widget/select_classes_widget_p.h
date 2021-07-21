@@ -22,6 +22,7 @@
 #define SELECT_CLASSES_WIDGET_P_H
 
 #include <QDialog>
+#include <QVariant>
 
 class FilterClassesWidget;
 
@@ -37,7 +38,7 @@ public:
     void reset();
 
 private:
-    QHash<QString, QVariant> state_to_restore;
+    QVariant state_to_restore;
 };
 
 #endif /* SELECT_CLASSES_WIDGET_P_H */

@@ -122,14 +122,8 @@ bool FilterDialog::filtering_ON() const {
 QVariant FilterDialog::save_state() const {
     QHash<QString, QVariant> state;
 
-    // TODO: very bad
-    QHash<QString, QVariant> filter_widget_state;
-    filter_widget->save_state(filter_widget_state);
-    state[FILTER_WIDGET_STATE] = filter_widget_state;
-
-    QHash<QString, QVariant> filter_classes_state;
-    filter_classes_widget->save_state(filter_classes_state);
-    state[FILTER_CLASSES_STATE] = filter_classes_state;
+    state[FILTER_WIDGET_STATE] = filter_widget->save_state();
+    state[FILTER_CLASSES_STATE] = filter_classes_widget->save_state();
 
     for (const QString &state_name : button_state_name_map.keys()) {
         QRadioButton *button = button_state_name_map[state_name];
@@ -143,23 +137,14 @@ QVariant FilterDialog::save_state() const {
 void FilterDialog::restore_state(const QVariant &state_variant) {
     const QHash<QString, QVariant> state = state_variant.toHash();
     
-    const QVariant filter_widget_state = state[FILTER_WIDGET_STATE];
-    if (filter_widget_state.isValid()) {
-        filter_widget->load_state(filter_widget_state.toHash());
-    }
-
-    const QVariant filter_classes_state = state[FILTER_CLASSES_STATE];
-    if (filter_classes_state.isValid()) {
-        filter_classes_widget->load_state(filter_classes_state.toHash());
-    }
+    filter_widget->restore_state(state[FILTER_WIDGET_STATE]);
+    filter_classes_widget->restore_state(state[FILTER_CLASSES_STATE]);
 
     for (const QString &state_name : button_state_name_map.keys()) {
         QRadioButton *button = button_state_name_map[state_name];
 
         const QVariant button_state = state[state_name];
-        if (button_state.isValid()) {
-            button->setChecked(button_state.toBool());
-        }
+        button->setChecked(button_state.toBool());
     }
 }
 

@@ -41,12 +41,13 @@ QString FilterWidgetAdvancedTab::get_filter() const {
     return filter;
 }
 
-void FilterWidgetAdvancedTab::save_state(QHash<QString, QVariant> &state) const {
+QVariant FilterWidgetAdvancedTab::save_state() const {
     const QString filter = ldap_filter_edit->toPlainText();
-    state["filter"] = filter;
+
+    return QVariant(filter);
 }
 
-void FilterWidgetAdvancedTab::load_state(const QHash<QString, QVariant> &state) {
-    const QString filter = state["filter"].toString();
+void FilterWidgetAdvancedTab::restore_state(const QVariant &state_variant) {
+    const QString filter = state_variant.toString();
     ldap_filter_edit->setPlainText(filter);
 }

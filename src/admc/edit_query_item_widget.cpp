@@ -90,8 +90,8 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     const QHash<QString, QVariant> select_base_widget_state = state["select_base_widget"].toHash();
     const QHash<QString, QVariant> filter_widget_state = state["filter_widget"].toHash();
 
-    select_base_widget->load_state(select_base_widget_state);
-    dialog->filter_widget->load_state(filter_widget_state);
+    select_base_widget->restore_state(select_base_widget_state);
+    dialog->filter_widget->restore_state(filter_widget_state);
 
     update_filter_display();
 
@@ -113,15 +113,10 @@ void EditQueryItemWidget::save(QString &name, QString &description, QString &fil
     scope_is_children = !scope_checkbox->isChecked();
 
     filter_state = [&]() {
-        QHash<QString, QVariant> select_base_widget_state;
-        QHash<QString, QVariant> filter_widget_state;
-
-        select_base_widget->save_state(select_base_widget_state);
-        dialog->filter_widget->save_state(filter_widget_state);
-
         QHash<QString, QVariant> state;
-        state["select_base_widget"] = select_base_widget_state;
-        state["filter_widget"] = filter_widget_state;
+
+        state["select_base_widget"] = select_base_widget->save_state();
+        state["filter_widget"] = dialog->filter_widget->save_state();
         state["filter"] = filter;
 
         QByteArray out;

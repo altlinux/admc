@@ -55,19 +55,18 @@ QString FilterWidgetSimpleTab::get_filter() const {
     return filter_AND({name_filter, classes_filter});
 }
 
-void FilterWidgetSimpleTab::save_state(QHash<QString, QVariant> &state) const {
-    QHash<QString, QVariant> select_classes_state;
-    select_classes->save_state(select_classes_state);
-    state["select_classes"] = select_classes_state;
+QVariant FilterWidgetSimpleTab::save_state() const {
+    QHash<QString, QVariant> state;
 
-    const QString name = name_edit->text();
-    state["name"] = name;
+    state["select_classes"] = select_classes->save_state();
+    state["name"] = name_edit->text();
+
+    return QVariant(state);
 }
 
-void FilterWidgetSimpleTab::load_state(const QHash<QString, QVariant> &state) {
-    const QHash<QString, QVariant> select_classes_state = state["select_classes"].toHash();
-    select_classes->load_state(select_classes_state);
+void FilterWidgetSimpleTab::restore_state(const QVariant &state_variant) {
+    const QHash<QString, QVariant> state = state_variant.toHash();
 
-    const QString name = state["name"].toString();
-    name_edit->setText(name);
+    select_classes->restore_state(state["select_classes"]);
+    name_edit->setText(state["name"].toString());
 }

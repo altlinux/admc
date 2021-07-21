@@ -93,13 +93,13 @@ void SelectBaseWidget::browse() {
     dialog->open();
 }
 
-void SelectBaseWidget::save_state(QHash<QString, QVariant> &state) const {
+QVariant SelectBaseWidget::save_state() const {
     const QString base = combo->currentData().toString();
-    state["base"] = QVariant(base);
+    return QVariant(base);
 }
 
-void SelectBaseWidget::load_state(const QHash<QString, QVariant> &state) {
-    const QString base = state["base"].toString();
+void SelectBaseWidget::restore_state(const QVariant &state_variant) {
+    const QString base = state_variant.toString();
     const QString base_name = dn_get_name(base);
     combo->clear();
     combo->addItem(base_name, base);
