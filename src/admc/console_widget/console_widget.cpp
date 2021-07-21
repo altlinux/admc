@@ -514,6 +514,10 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
     for (const int results_id : d->results_descriptions.keys()) {
         ResultsDescription results = d->results_descriptions[results_id];
 
+        // NOTE: need to call this before restoring results
+        // state because otherwise results view header can
+        // have incorrect sections which breaks state
+        // restoration
         d->model->setHorizontalHeaderLabels(results.column_labels());
 
         const QString results_name = results_state_name(results_id);
