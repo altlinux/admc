@@ -63,6 +63,7 @@ class CentralWidget final : public QWidget {
 
 public:
     CentralWidget(AdInterface &ad);
+    void save_state();
 
     void add_actions_to_action_menu(QMenu *menu);
     void add_actions_to_navigation_menu(QMenu *menu);

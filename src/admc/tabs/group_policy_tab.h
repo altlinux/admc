@@ -42,6 +42,7 @@ class GroupPolicyTab final : public PropertiesTab {
 
 public:
     GroupPolicyTab();
+    ~GroupPolicyTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;

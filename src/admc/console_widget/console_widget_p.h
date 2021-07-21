@@ -38,6 +38,7 @@ class QStandardItemModel;
 class ConsoleDragModel;
 class ConsoleWidget;
 class QMenu;
+class QSplitter;
 
 enum ConsoleRole {
     // Determines whether scope item was fetched
@@ -77,6 +78,7 @@ public:
     QAbstractItemView *focused_view;
     QStackedWidget *results_stacked_widget;
     QHash<int, ResultsDescription> results_descriptions;
+    QSplitter *splitter;
 
     QAction *properties_action;
     QAction *refresh_action;

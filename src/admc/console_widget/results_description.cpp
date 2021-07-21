@@ -20,6 +20,10 @@
 
 #include "console_widget/results_description.h"
 
+#include "console_widget/results_view.h"
+
+#include <QVariant>
+
 // NOTE: empty ctor is needed by QHash
 ResultsDescription::ResultsDescription() {
     m_widget = nullptr;
@@ -53,4 +57,18 @@ QList<int> ResultsDescription::default_columns() const {
 // count, but should be fine
 int ResultsDescription::column_count() const {
     return m_column_labels.size();
+}
+
+QVariant ResultsDescription::save_state() const {
+    if (m_view != nullptr) {
+        return m_view->save_state();
+    } else {
+        return QVariant();
+    }
+}
+
+void ResultsDescription::restore_state(const QVariant &state) {
+    if (m_view != nullptr) {
+        m_view->restore_state(state, m_default_columns);
+    }
 }

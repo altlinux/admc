@@ -56,6 +56,8 @@ class SecurityTab final : public PropertiesTab {
 
 public:
     SecurityTab();
+    ~SecurityTab();
+
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;
 

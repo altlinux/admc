@@ -38,9 +38,14 @@ class PolicyResultsWidget final : public QWidget {
 public:
     PolicyResultsWidget();
 
+    QVariant save_state();
+    void restore_state(const QVariant &state);
+
     // Loads links for this policy. Nothing is done if given
     // index is not a policy.
     void update(const QModelIndex &index);
+
+    ResultsView *get_view() const;
 
 private:
     ResultsView *view;

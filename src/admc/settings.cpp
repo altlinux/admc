@@ -79,6 +79,22 @@ bool Settings::restore_geometry(const VariantSetting setting, QWidget *widget) {
     }
 }
 
+void Settings::save_header_state(const VariantSetting setting, QHeaderView *header) {
+    const QByteArray state = header->saveState();
+    set_variant(setting, state);
+}
+
+bool Settings::restore_header_state(const VariantSetting setting, QHeaderView *header) {
+    if (contains_variant(setting)) {
+        const QByteArray state = get_variant(setting).toByteArray();
+        header->restoreState(state);
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
 QVariant Settings::get_variant(const VariantSetting setting) const {
     const QString name = variant_to_string(setting);
     const QVariant value = qsettings.value(name);
@@ -126,21 +142,6 @@ void Settings::connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSett
             set_bool(setting, checked);
 
             emit bools[setting].changed();
-        });
-}
-
-void Settings::setup_header_state(QHeaderView *header, const VariantSetting setting) {
-    if (contains_variant(setting)) {
-        auto header_width = get_variant(setting).toByteArray();
-        header->restoreState(header_width);
-    } else {
-        header->setDefaultSectionSize(200);
-    }
-
-    QObject::connect(
-        header, &QHeaderView::destroyed,
-        [this, header, setting]() {
-            set_variant(setting, header->saveState());
         });
 }
 
@@ -228,7 +229,7 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_Locale);
         CASE_ENUM_TO_STRING(VariantSetting_ResultsHeader);
         CASE_ENUM_TO_STRING(VariantSetting_FindResultsHeader);
-        CASE_ENUM_TO_STRING(VariantSetting_AttributesHeader);
+        CASE_ENUM_TO_STRING(VariantSetting_AttributesTabHeaderState);
         CASE_ENUM_TO_STRING(VariantSetting_AttributesTabFilter);
         CASE_ENUM_TO_STRING(VariantSetting_QueryFolders);
         CASE_ENUM_TO_STRING(VariantSetting_QueryItems);
@@ -238,6 +239,16 @@ QString variant_to_string(const VariantSetting setting) {
         CASE_ENUM_TO_STRING(VariantSetting_SelectObjectDialogGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_SelectContainerDialogGeometry);
         CASE_ENUM_TO_STRING(VariantSetting_ObjectMultiDialogGeometry);
+        CASE_ENUM_TO_STRING(VariantSetting_ConsoleWidgetState);
+        CASE_ENUM_TO_STRING(VariantSetting_PolicyResultsState);
+        CASE_ENUM_TO_STRING(VariantSetting_FindResultsViewState);
+        CASE_ENUM_TO_STRING(VariantSetting_SelectObjectHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_MembershipTabHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_OrganizationTabHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_GpoLinksTabHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_GroupPolicyTabHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_SecurityTabHeaderState);
+        CASE_ENUM_TO_STRING(VariantSetting_FilterDialogState);
         CASE_ENUM_TO_STRING(VariantSetting_COUNT);
     }
     return "";

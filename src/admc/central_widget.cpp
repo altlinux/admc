@@ -105,6 +105,15 @@ CentralWidget::CentralWidget(AdInterface &ad)
     setLayout(layout);
     layout->addWidget(console);
 
+    const QVariant console_widget_state = g_settings->get_variant(VariantSetting_ConsoleWidgetState);
+    console->restore_state(console_widget_state);
+
+    const QVariant policy_results_state = g_settings->get_variant(VariantSetting_PolicyResultsState);
+    policy_results_widget->restore_state(policy_results_state);
+
+    const QVariant filter_dialog_state = g_settings->get_variant(VariantSetting_FilterDialogState);
+    filter_dialog->restore_state(filter_dialog_state);
+
     // Refresh head when settings affecting the filter
     // change. This reloads the model with an updated filter
     const BoolSettingSignal *advanced_features = g_settings->get_bool_signal(BoolSetting_AdvancedFeatures);
@@ -248,6 +257,17 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     // Set current scope to object head to load it
     console->set_current_scope(console_object_head()->index());
+}
+
+void CentralWidget::save_state() {
+    const QVariant console_widget_state = console->save_state();
+    g_settings->set_variant(VariantSetting_ConsoleWidgetState, console_widget_state);
+
+    const QVariant policy_results_state = policy_results_widget->save_state();
+    g_settings->set_variant(VariantSetting_PolicyResultsState, policy_results_state);
+
+    const QVariant filter_dialog_state = filter_dialog->save_state();
+    g_settings->set_variant(VariantSetting_FilterDialogState, filter_dialog_state);
 }
 
 void CentralWidget::object_delete() {

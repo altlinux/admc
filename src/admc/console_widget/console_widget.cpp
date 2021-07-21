@@ -39,6 +39,10 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#define SPLITTER_STATE "SPLITTER_STATE"
+
+QString results_state_name(const int results_id);
+
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 : QObject(q_arg) {
     q = q_arg;
@@ -113,17 +117,17 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     results_layout->addWidget(d->description_bar);
     results_layout->addWidget(d->results_stacked_widget);
 
-    auto splitter = new QSplitter(Qt::Horizontal);
-    splitter->addWidget(d->scope_view);
-    splitter->addWidget(results_wrapper);
-    splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(1, 2);
+    d->splitter = new QSplitter(Qt::Horizontal);
+    d->splitter->addWidget(d->scope_view);
+    d->splitter->addWidget(results_wrapper);
+    d->splitter->setStretchFactor(0, 1);
+    d->splitter->setStretchFactor(1, 2);
 
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     setLayout(layout);
-    layout->addWidget(splitter);
+    layout->addWidget(d->splitter);
 
     connect(
         d->scope_view, &QTreeView::expanded,
@@ -337,20 +341,6 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
         connect(
             view, &ResultsView::context_menu,
             this, &ConsoleWidget::context_menu);
-
-        // Hide non-default results view columns. Note that
-        // at creation, view header doesnt have any
-        // sections. Sections appear once a model is set.
-        // Therefore we have to do this in the slot.
-        QHeaderView *header = view->detail_view()->header();
-        connect(
-            header, &QHeaderView::sectionCountChanged,
-            [header, default_columns, id](int oldCount, int) {
-                for (int i = 0; i < header->count(); i++) {
-                    const bool hidden = !default_columns.contains(i);
-                    header->setSectionHidden(i, hidden);
-                }
-            });
     }
 
     return id;
@@ -496,6 +486,45 @@ QWidget *ConsoleWidget::get_scope_view() const {
 
 QWidget *ConsoleWidget::get_description_bar() const {
     return d->description_bar;
+}
+
+QVariant ConsoleWidget::save_state() const {
+    QHash<QString, QVariant> state;
+
+    const QByteArray splitter_state = d->splitter->saveState();
+    state[SPLITTER_STATE] = QVariant(splitter_state);
+
+    for (const int results_id : d->results_descriptions.keys()) {
+        const ResultsDescription results = d->results_descriptions[results_id];
+        const QString results_name = results_state_name(results_id);
+        const QVariant results_state = results.save_state();
+
+        state[results_name] = results_state;
+    }
+
+    return QVariant(state);
+}
+
+void ConsoleWidget::restore_state(const QVariant &state_variant) {
+    const QHash<QString, QVariant> state = state_variant.toHash();
+
+    const QByteArray splitter_state = state.value(SPLITTER_STATE, QVariant()).toByteArray();
+    d->splitter->restoreState(splitter_state);
+
+    for (const int results_id : d->results_descriptions.keys()) {
+        ResultsDescription results = d->results_descriptions[results_id];
+
+        // NOTE: need to call this before restoring results
+        // state because otherwise results view header can
+        // have incorrect sections which breaks state
+        // restoration
+        d->model->setHorizontalHeaderLabels(results.column_labels());
+
+        const QString results_name = results_state_name(results_id);
+        const QVariant results_state = state.value(results_name, QVariant());
+
+        results.restore_state(results_state);
+    }
 }
 
 void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
@@ -882,4 +911,8 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 
         emit q->item_fetched(index);
     }
+}
+
+QString results_state_name(const int results_id) {
+    return QString("RESULTS_STATE_%1").arg(results_id);
 }

@@ -24,6 +24,7 @@
 #include "globals.h"
 #include "properties_dialog.h"
 #include "utils.h"
+#include "settings.h"
 
 #include <algorithm>
 
@@ -60,6 +61,12 @@ GpoLinksTab::GpoLinksTab() {
     layout->addWidget(view);
 
     PropertiesDialog::open_when_view_item_activated(view, GpoLinksRole_DN);
+
+    g_settings->restore_header_state(VariantSetting_GpoLinksTabHeaderState, view->header());
+}
+
+GpoLinksTab::~GpoLinksTab() {
+    g_settings->save_header_state(VariantSetting_GpoLinksTabHeaderState, view->header());   
 }
 
 void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {
@@ -86,11 +93,4 @@ void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {
     }
 
     model->sort(GpoLinksColumn_Name);
-}
-
-void GpoLinksTab::showEvent(QShowEvent *event) {
-    resize_columns(view,
-        {
-            {GpoLinksColumn_Name, 0.5},
-        });
 }

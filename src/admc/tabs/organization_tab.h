@@ -31,14 +31,13 @@ class OrganizationTab final : public PropertiesTab {
 
 public:
     OrganizationTab();
+    ~OrganizationTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
 
 private:
     QStandardItemModel *reports_model;
     QTreeView *reports_view;
-
-    void showEvent(QShowEvent *event) override;
 };
 
 #endif /* ORGANIZATION_TAB_H */

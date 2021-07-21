@@ -39,6 +39,7 @@ class AttributesTab final : public PropertiesTab {
 
 public:
     AttributesTab();
+    ~AttributesTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;

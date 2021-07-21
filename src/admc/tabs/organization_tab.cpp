@@ -25,6 +25,8 @@
 #include "edits/string_edit.h"
 #include "properties_dialog.h"
 #include "utils.h"
+#include "settings.h"
+#include "globals.h"
 
 #include <QFormLayout>
 #include <QLabel>
@@ -75,6 +77,12 @@ OrganizationTab::OrganizationTab() {
     edits_add_to_layout(edits, layout);
     layout->addRow(reports_label);
     layout->addRow(reports_view);
+
+    g_settings->restore_header_state(VariantSetting_OrganizationTabHeaderState, reports_view->header());
+}
+
+OrganizationTab::~OrganizationTab() {
+    g_settings->save_header_state(VariantSetting_OrganizationTabHeaderState, reports_view->header());   
 }
 
 void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
@@ -95,12 +103,4 @@ void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
     }
 
     PropertiesTab::load(ad, object);
-}
-
-void OrganizationTab::showEvent(QShowEvent *event) {
-    resize_columns(reports_view,
-        {
-            {ReportsColumn_Name, 0.5},
-            {ReportsColumn_Folder, 0.5},
-        });
 }

@@ -24,7 +24,10 @@
 /**
  * Provides access to settings via enums rather than plain
  * strings. Settings are saved to file automatically when
- * this object is destructed. Settings of boolean type have
+ * this object is destructed. Note that you shouldn't save
+ * settings in destructors that run close to app shutdown
+ * because they won't be saved to file. Instead use
+ * QMainWindow::closeEvent(). Settings of boolean type have
  * BoolSettingSignal objects which emit changed() signal
  * when setting is changed.
  */
@@ -46,7 +49,7 @@ enum VariantSetting {
     VariantSetting_Locale,
     VariantSetting_ResultsHeader,
     VariantSetting_FindResultsHeader,
-    VariantSetting_AttributesHeader,
+    VariantSetting_AttributesTabHeaderState,
     VariantSetting_MainWindowGeometry,
     VariantSetting_MainWindowState,
     VariantSetting_AttributesTabFilter,
@@ -58,6 +61,16 @@ enum VariantSetting {
     VariantSetting_SelectObjectDialogGeometry,
     VariantSetting_SelectContainerDialogGeometry,
     VariantSetting_ObjectMultiDialogGeometry,
+    VariantSetting_ConsoleWidgetState,
+    VariantSetting_PolicyResultsState,
+    VariantSetting_FindResultsViewState,
+    VariantSetting_SelectObjectHeaderState,
+    VariantSetting_MembershipTabHeaderState,
+    VariantSetting_OrganizationTabHeaderState,
+    VariantSetting_GpoLinksTabHeaderState,
+    VariantSetting_GroupPolicyTabHeaderState,
+    VariantSetting_SecurityTabHeaderState,
+    VariantSetting_FilterDialogState,
 
     VariantSetting_COUNT,
 };
@@ -117,6 +130,9 @@ public:
     // sizing in the false case.
     bool restore_geometry(const VariantSetting setting, QWidget *widget);
 
+    void save_header_state(const VariantSetting setting, QHeaderView *header);
+    bool restore_header_state(const VariantSetting setting, QHeaderView *header);
+
     /** 
      * Connect action and bool setting so that toggling
      * the action updates the setting value
@@ -125,8 +141,6 @@ public:
     void connect_action_to_bool_setting(QAction *action, const BoolSetting setting);
 
     void connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting setting);
-
-    void setup_header_state(QHeaderView *header, const VariantSetting setting);
 
     void connect_toggle_widget(QWidget *widget, const BoolSetting setting);
 

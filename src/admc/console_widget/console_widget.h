@@ -127,7 +127,9 @@ public:
     // assigned to this results view, which should be used
     // when creating scope items. Note that if results is
     // just a widget, then you can't add or get results
-    // rows.
+    // rows. Note that call order is important for correct
+    // state restoration so register your results in
+    // the same order every time.
     int register_results(QWidget *widget);
     int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
     int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
@@ -170,6 +172,11 @@ public:
     // These getters are only for showing/hiding these widgets
     QWidget *get_scope_view() const;
     QWidget *get_description_bar() const;
+
+    QVariant save_state() const;
+    // NOTE: all results should be registered before this is
+    // called so that their state can be restored
+    void restore_state(const QVariant &state);
 
 signals:
     // Emitted when a dynamic scope item is expanded or
