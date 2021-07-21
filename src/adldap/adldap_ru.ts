@@ -252,7 +252,7 @@
     <message>
         <location filename="ad_interface.cpp" line="1152"/>
         <source>Failed to unlock user %1.</source>
-        <translation>Не удалось открыть пользователя %1.</translation>
+        <translation>Не удалось разблокировать пользователя %1.</translation>
     </message>
     <message>
         <location filename="ad_interface.cpp" line="604"/>
@@ -344,7 +344,7 @@
         <location filename="ad_interface.cpp" line="1148"/>
         <source>User &quot;%1&quot; was unlocked.</source>
         <oldsource>Failed to unlock user &quot;%1&quot;</oldsource>
-        <translation>Пользователь %1 был открыт.</translation>
+        <translation>Пользователь %1 был разблокирован.</translation>
     </message>
 </context>
 <context>

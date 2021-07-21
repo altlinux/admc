@@ -1877,7 +1877,7 @@
     <message>
         <location filename="edits/unlock_edit.cpp" line="47"/>
         <source>Unlock account</source>
-        <translation>Открыть учетную запись</translation>
+        <translation>Разблокировать учетную запись</translation>
     </message>
 </context>
 <context>
