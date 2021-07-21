@@ -39,7 +39,7 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-#define SPLITTER_STATE_NAME "splitter_state"
+#define SPLITTER_STATE "SPLITTER_STATE"
 
 QString results_state_name(const int results_id);
 
@@ -492,7 +492,7 @@ QVariant ConsoleWidget::save_state() const {
     QHash<QString, QVariant> state;
 
     const QByteArray splitter_state = d->splitter->saveState();
-    state[SPLITTER_STATE_NAME] = QVariant(splitter_state);
+    state[SPLITTER_STATE] = QVariant(splitter_state);
 
     for (const int results_id : d->results_descriptions.keys()) {
         const ResultsDescription results = d->results_descriptions[results_id];
@@ -508,7 +508,7 @@ QVariant ConsoleWidget::save_state() const {
 void ConsoleWidget::restore_state(const QVariant &state_variant) {
     const QHash<QString, QVariant> state = state_variant.toHash();
 
-    const QByteArray splitter_state = state.value(SPLITTER_STATE_NAME, QVariant()).toByteArray();
+    const QByteArray splitter_state = state.value(SPLITTER_STATE, QVariant()).toByteArray();
     d->splitter->restoreState(splitter_state);
 
     for (const int results_id : d->results_descriptions.keys()) {
@@ -910,5 +910,5 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 }
 
 QString results_state_name(const int results_id) {
-    return QString("results_state_%1").arg(results_id);
+    return QString("RESULTS_STATE_%1").arg(results_id);
 }
