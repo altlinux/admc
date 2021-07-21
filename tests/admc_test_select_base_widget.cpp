@@ -98,8 +98,7 @@ void ADMCTestSelectBaseWidget::save_state() {
     const QString base_original = select_base_widget->get_base();
 
     // Serialize
-    QHash<QString, QVariant> state;
-    select_base_widget->save_state(state);
+    const QVariant state = select_base_widget->save_state();
 
     // Change state
     combo->setCurrentIndex(2);

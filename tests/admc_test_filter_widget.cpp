@@ -88,8 +88,7 @@ void ADMCTestFilterWidget::test_simple_tab() {
     QVERIFY(correct_filter == filter);
 
     // Serialize
-    QHash<QString, QVariant> state;
-    filter_widget->save_state(state);
+    const QVariant state = filter_widget->save_state();
 
     // Change state
     name_edit->setText("changed");
@@ -141,8 +140,7 @@ void ADMCTestFilterWidget::test_normal_tab() {
     QVERIFY(correct_filter == filter);
 
     // Serialize
-    QHash<QString, QVariant> state;
-    filter_widget->save_state(state);
+    const QVariant state = filter_widget->save_state();
 
     // Change state
     value_edit->setText("value 2");
@@ -168,8 +166,7 @@ void ADMCTestFilterWidget::test_advanced_tab() {
     QVERIFY(correct_filter == filter);
 
     // Serialize
-    QHash<QString, QVariant> state;
-    filter_widget->save_state(state);
+    const QVariant state = filter_widget->save_state();
 
     // Change state
     edit->setPlainText("changed");
