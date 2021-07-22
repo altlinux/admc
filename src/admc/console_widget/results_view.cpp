@@ -159,16 +159,25 @@ QList<QModelIndex> ResultsView::get_selected_indexes() const {
 
 
 QVariant ResultsView::save_state() const {
-    QHeaderView *header = detail_view()->header();
+    QHash<QString, QVariant> state;
 
-    return QVariant(header->saveState());
+    state["header"] = detail_view()->header()->saveState();
+    state["view_type"] = m_current_view_type;
+
+    return QVariant(state);
 }
 
 void ResultsView::restore_state(const QVariant &state_variant, const QList<int> &default_columns) {
     QHeaderView *header = detail_view()->header();
 
     if (state_variant.isValid()) {
-        header->restoreState(state_variant.toByteArray());
+        const QHash<QString, QVariant> state = state_variant.toHash();
+
+        const QByteArray header_state = state["header"].toByteArray();
+        header->restoreState(header_state);
+
+        const ResultsViewType view_type = (ResultsViewType) state["view_type"].toInt();
+        set_view_type(view_type);
     } else {
         for (int i = 0; i < header->count(); i++) {
             const bool hidden = !default_columns.contains(i);
