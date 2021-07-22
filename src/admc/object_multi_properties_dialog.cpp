@@ -52,9 +52,6 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
 
     setWindowTitle(tr("Properties for Multiple Objects"));
 
-    setMinimumHeight(700);
-    setMinimumWidth(500);
-
     auto tab_widget = new TabWidget();
 
     auto button_box = new QDialogButtonBox();

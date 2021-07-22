@@ -106,7 +106,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setMinimumHeight(700);
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
     apply_button = button_box->addButton(QDialogButtonBox::Apply);
