@@ -27,8 +27,8 @@
 TabWidget::TabWidget()
 : QWidget() {
     list_widget = new QListWidget();
-    list_widget->setMinimumWidth(50);
-    list_widget->setMaximumWidth(150);
+    list_widget->setMinimumWidth(175);
+    list_widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 
     stacked_widget = new QStackedWidget();
     stacked_widget->setFrameStyle(QFrame::Raised);
@@ -45,6 +45,7 @@ TabWidget::TabWidget()
 }
 
 void TabWidget::add_tab(QWidget *tab, const QString &title) {
+    list_widget->setMaximumWidth(200);
     list_widget->addItem(title);
     stacked_widget->addWidget(tab);
 }
