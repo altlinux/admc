@@ -44,7 +44,7 @@ void UnlockEdit::set_read_only(const bool read_only) {
 }
 
 void UnlockEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(tr("Unlock account"), check);
+    layout->addRow(tr("Unlock account:"), check);
 }
 
 bool UnlockEdit::apply(AdInterface &ad, const QString &dn) const {
