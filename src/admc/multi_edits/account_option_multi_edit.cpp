@@ -75,7 +75,8 @@ AccountOptionMultiEdit::AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edit
 }
 
 void AccountOptionMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(check_and_label_wrapper, options_scroll);
+    layout->addRow(check_and_label_wrapper);
+    layout->addRow(options_scroll);
 }
 
 // NOTE: this is slightly inefficient because every account

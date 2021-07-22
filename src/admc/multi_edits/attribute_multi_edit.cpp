@@ -44,6 +44,7 @@ AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, Q
     check_and_label_wrapper->setLayout(layout);
     layout->addWidget(apply_check);
     layout->addWidget(label);
+    layout->addStretch();
 
     connect(
         apply_check, &QAbstractButton::toggled,
