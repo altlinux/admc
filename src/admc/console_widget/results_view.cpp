@@ -31,7 +31,6 @@ ResultsView::ResultsView(QWidget *parent)
 : QWidget(parent) {
     // Setup child views
     m_detail_view = new QTreeView();
-    m_detail_view->sortByColumn(0, Qt::AscendingOrder);
     m_detail_view->setSortingEnabled(true);
     m_detail_view->header()->setDefaultSectionSize(200);
     m_detail_view->setRootIsDecorated(false);

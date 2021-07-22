@@ -94,7 +94,6 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSortingEnabled(true);
     view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    view->sortByColumn(0, Qt::AscendingOrder);
 
     view->setModel(model);
 
