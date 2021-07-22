@@ -27,7 +27,7 @@
 TabWidget::TabWidget()
 : QWidget() {
     list_widget = new QListWidget();
-    list_widget->setMinimumWidth(175);
+    list_widget->setMaximumWidth(175);
     list_widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 
     stacked_widget = new QStackedWidget();
