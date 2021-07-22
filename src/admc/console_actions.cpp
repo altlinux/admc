@@ -44,6 +44,7 @@ ConsoleActions::ConsoleActions(QObject *parent)
                 case ConsoleAction_Enable: return tr("&Enable account");
                 case ConsoleAction_Disable: return tr("D&isable account");
                 case ConsoleAction_ResetPassword: return tr("Reset &Password...");
+                case ConsoleAction_ResetComputerAccount: return tr("Reset account");
                 case ConsoleAction_Rename: return tr("&Rename...");
                 case ConsoleAction_Delete: return tr("&Delete");
                 case ConsoleAction_Move: return tr("&Move...");

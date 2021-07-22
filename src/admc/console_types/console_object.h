@@ -75,6 +75,7 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
 QList<QString> object_operation_delete(const QList<QString> &targets, QWidget *parent);
 QList<QString> object_operation_set_disabled(const QList<QString> &targets, const bool disabled, QWidget *parent);
 void object_operation_add_to_group(const QList<QString> &targets, QWidget *parent);
+void object_operation_reset_computer_account(const QList<QString> &target_list);
 
 bool console_object_is_ou(const QModelIndex &index);
 void console_object_load_domain_head_text(QStandardItem *item);

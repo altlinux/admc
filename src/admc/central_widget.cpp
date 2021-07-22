@@ -178,6 +178,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
         console_actions->get(ConsoleAction_ResetPassword), &QAction::triggered,
         this, &CentralWidget::object_reset_password);
     connect(
+        console_actions->get(ConsoleAction_ResetComputerAccount), &QAction::triggered,
+        this, &CentralWidget::object_reset_computer_account);
+    connect(
         console_actions->get(ConsoleAction_Find), &QAction::triggered,
         this, &CentralWidget::object_find);
     connect(
@@ -416,6 +419,11 @@ void CentralWidget::object_reset_password() {
     const QString target = get_selected_dn();
     const auto password_dialog = new PasswordDialog(target, this);
     password_dialog->open();
+}
+
+void CentralWidget::object_reset_computer_account() {
+    const QList<QString> target_list = get_selected_dns();
+    object_operation_reset_computer_account(target_list);
 }
 
 void CentralWidget::object_create_user() {

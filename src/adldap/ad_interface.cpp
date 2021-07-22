@@ -985,7 +985,7 @@ bool AdInterface::user_set_primary_group(const QString &group_dn, const QString 
     }
 }
 
-bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
+bool AdInterface::user_set_pass(const QString &dn, const QString &password, const DoStatusMsg do_msg) {
     // NOTE: AD requires that the password:
     // 1. is surrounded by quotes
     // 2. is encoded as UTF16-LE
@@ -1006,7 +1006,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
     const QString name = dn_get_name(dn);
 
     if (success) {
-        d->success_message(QString(tr("Password for object %1 was changed.")).arg(name));
+        d->success_message(QString(tr("Password for object %1 was changed.")).arg(name), do_msg);
 
         return true;
     } else {
@@ -1021,7 +1021,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password) {
             }
         }();
 
-        d->error_message(context, error);
+        d->error_message(context, error, do_msg);
 
         return false;
     }
@@ -1154,6 +1154,25 @@ bool AdInterface::user_unlock(const QString &dn) {
         d->error_message(context, d->default_error());
 
         return result;
+    }
+}
+
+bool AdInterface::computer_reset_account(const QString &dn) {
+    const QString name = dn_get_name(dn);
+    const QString reset_password = QString("%1$").arg(name);
+
+    const bool success = user_set_pass(dn, reset_password, DoStatusMsg_No);
+
+    if (success) {
+        d->success_message(QString(tr("Computer \"%1\" was reset.")).arg(name));
+
+        return true;
+    } else {
+        const QString context = QString(tr("Failed to reset computer %1.")).arg(name);
+
+        d->error_message(context, d->default_error());
+
+        return false;
     }
 }
 

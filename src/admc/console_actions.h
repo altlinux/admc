@@ -43,6 +43,7 @@ enum ConsoleAction {
     ConsoleAction_Enable,
     ConsoleAction_Disable,
     ConsoleAction_ResetPassword,
+    ConsoleAction_ResetComputerAccount,
     ConsoleAction_Rename,
     ConsoleAction_Delete,
     ConsoleAction_Move,

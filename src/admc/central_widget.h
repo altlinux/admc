@@ -82,6 +82,7 @@ private slots:
     void object_disable();
     void object_find();
     void object_reset_password();
+    void object_reset_computer_account();
     void object_create_user();
     void object_create_computer();
     void object_create_ou();

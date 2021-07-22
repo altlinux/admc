@@ -500,6 +500,9 @@ void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_Disable));
     menu->addAction(actions->get(ConsoleAction_ResetPassword));
 
+    // Computer
+    menu->addAction(actions->get(ConsoleAction_ResetComputerAccount));
+
     // Other
     menu->addAction(actions->get(ConsoleAction_EditUpnSuffixes));
     menu->addAction(actions->get(ConsoleAction_ChangeDC));
@@ -561,6 +564,10 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
             }
         }
 
+        if (is_computer) {
+            my_visible_actions.insert(ConsoleAction_ResetComputerAccount);
+        }
+
         if (is_domain) {
             my_visible_actions.insert(ConsoleAction_EditUpnSuffixes);
             my_visible_actions.insert(ConsoleAction_ChangeDC);
@@ -582,6 +589,10 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
         if (is_user) {
             my_visible_actions.insert(ConsoleAction_Enable);
             my_visible_actions.insert(ConsoleAction_Disable);
+        }
+
+        if (is_computer) {
+            my_visible_actions.insert(ConsoleAction_ResetComputerAccount);
         }
     }
 
@@ -682,6 +693,17 @@ void object_operation_add_to_group(const QList<QString> &targets, QWidget *paren
         });
 
     dialog->open();
+}
+
+void object_operation_reset_computer_account(const QList<QString> &target_list) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    for (const QString &target : target_list) {
+        ad.computer_reset_account(target);
+    }
 }
 
 bool console_object_is_ou(const QModelIndex &index) {

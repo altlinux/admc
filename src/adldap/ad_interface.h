@@ -155,9 +155,11 @@ public:
     bool group_set_type(const QString &dn, GroupType type);
 
     bool user_set_primary_group(const QString &group_dn, const QString &user_dn);
-    bool user_set_pass(const QString &dn, const QString &password);
+    bool user_set_pass(const QString &dn, const QString &password, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool user_set_account_option(const QString &dn, AccountOption option, bool set);
     bool user_unlock(const QString &dn);
+
+    bool computer_reset_account(const QString &dn);
 
     // "dn_out" is set to the dn of created gpo
     bool create_gpo(const QString &name, QString &dn_out);
