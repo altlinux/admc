@@ -45,7 +45,6 @@ TabWidget::TabWidget()
 }
 
 void TabWidget::add_tab(QWidget *tab, const QString &title) {
-    list_widget->setMaximumWidth(200);
     list_widget->addItem(title);
     stacked_widget->addWidget(tab);
 }
