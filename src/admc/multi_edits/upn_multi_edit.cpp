@@ -25,14 +25,14 @@
 #include "globals.h"
 
 #include <QFormLayout>
-#include <QLabel>
+#include <QCheckBox>
 
 UpnMultiEdit::UpnMultiEdit(QList<AttributeMultiEdit *> &edits_out, AdInterface &ad, QObject *parent)
 : AttributeMultiEdit(edits_out, parent) {
     upn_suffix_widget = new UpnSuffixWidget(ad);
 
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER) + ":";
-    label->setText(label_text);
+    apply_check->setText(label_text);
 
     connect(
         upn_suffix_widget, &UpnSuffixWidget::edited,
@@ -42,7 +42,7 @@ UpnMultiEdit::UpnMultiEdit(QList<AttributeMultiEdit *> &edits_out, AdInterface &
 }
 
 void UpnMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(check_and_label_wrapper, upn_suffix_widget);
+    layout->addRow(apply_check, upn_suffix_widget);
 }
 
 bool UpnMultiEdit::apply_internal(AdInterface &ad, const QString &target) {

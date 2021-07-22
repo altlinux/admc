@@ -26,8 +26,6 @@
 
 #include <QCheckBox>
 #include <QFormLayout>
-#include <QGridLayout>
-#include <QLabel>
 #include <QScrollArea>
 
 // TODO: slight duplication of account_option_edit.cpp, but
@@ -35,9 +33,9 @@
 
 AccountOptionMultiEdit::AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : AttributeMultiEdit(edits_out, parent) {
-    label->setText(tr("Account options:"));
+    apply_check->setText(tr("Account options:"));
 
-    auto checks_layout = new QGridLayout();
+    auto checks_layout = new QVBoxLayout();
 
     const QList<AccountOption> option_list = {
         AccountOption_Disabled,
@@ -50,14 +48,10 @@ AccountOptionMultiEdit::AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edit
     };
 
     for (const AccountOption &option : option_list) {
-        auto check = new QCheckBox();
-
+        const QString option_string = account_option_string(option);
+        auto check = new QCheckBox(option_string);
         check_map[option] = check;
-
-        const int row = checks_layout->rowCount();
-        const QString label_text = account_option_string(option);
-        checks_layout->addWidget(check, row, 0);
-        checks_layout->addWidget(new QLabel(label_text), row, 1);
+        checks_layout->addWidget(check);
     }
 
     auto layout = new QVBoxLayout();
@@ -75,7 +69,7 @@ AccountOptionMultiEdit::AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edit
 }
 
 void AccountOptionMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(check_and_label_wrapper);
+    layout->addRow(apply_check);
     layout->addRow(options_scroll);
 }
 

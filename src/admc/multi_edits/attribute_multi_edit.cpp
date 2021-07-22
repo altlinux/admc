@@ -24,8 +24,6 @@
 
 #include <QCheckBox>
 #include <QDebug>
-#include <QHBoxLayout>
-#include <QLabel>
 
 AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : QObject(parent) {
@@ -36,15 +34,6 @@ AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, Q
     }
 
     apply_check = new QCheckBox();
-    label = new QLabel();
-
-    check_and_label_wrapper = new QWidget();
-    auto layout = new QHBoxLayout();
-    layout->setContentsMargins(0, 0, 0, 0);
-    check_and_label_wrapper->setLayout(layout);
-    layout->addWidget(apply_check);
-    layout->addWidget(label);
-    layout->addStretch();
 
     connect(
         apply_check, &QAbstractButton::toggled,

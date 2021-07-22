@@ -24,7 +24,7 @@
 #include "globals.h"
 
 #include <QFormLayout>
-#include <QLabel>
+#include <QCheckBox>
 #include <QLineEdit>
 
 StringMultiEdit::StringMultiEdit(const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
@@ -35,7 +35,7 @@ StringMultiEdit::StringMultiEdit(const QString &attribute_arg, QList<AttributeMu
     // attribute display name because multi edits are mostly
     // for users
     const QString label_text = g_adconfig->get_attribute_display_name(attribute, CLASS_USER) + ":";
-    label->setText(label_text);
+    apply_check->setText(label_text);
 
     edit = new QLineEdit();
 
@@ -47,7 +47,7 @@ StringMultiEdit::StringMultiEdit(const QString &attribute_arg, QList<AttributeMu
 }
 
 void StringMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(check_and_label_wrapper, edit);
+    layout->addRow(apply_check, edit);
 }
 
 bool StringMultiEdit::apply_internal(AdInterface &ad, const QString &target) {

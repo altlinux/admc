@@ -25,12 +25,12 @@
 #include "globals.h"
 
 #include <QFormLayout>
-#include <QLabel>
+#include <QCheckBox>
 
 CountryMultiEdit::CountryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : AttributeMultiEdit(edits_out, parent) {
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
-    label->setText(label_text);
+    apply_check->setText(label_text);
 
     country_widget = new CountryWidget();
 
@@ -42,7 +42,7 @@ CountryMultiEdit::CountryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObje
 }
 
 void CountryMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(check_and_label_wrapper, country_widget);
+    layout->addRow(apply_check, country_widget);
 }
 
 bool CountryMultiEdit::apply_internal(AdInterface &ad, const QString &target) {

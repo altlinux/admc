@@ -27,7 +27,7 @@
 
 GpoptionsEdit::GpoptionsEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    check = new QCheckBox();
+    check = new QCheckBox(tr("Block policy inheritance"));
 
     QObject::connect(
         check, &QCheckBox::stateChanged,
@@ -48,8 +48,7 @@ void GpoptionsEdit::set_read_only(const bool read_only) {
 }
 
 void GpoptionsEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = tr("Block policy inheritance:");
-    layout->addRow(label_text, check);
+    layout->addRow(check);
 }
 
 bool GpoptionsEdit::apply(AdInterface &ad, const QString &dn) const {

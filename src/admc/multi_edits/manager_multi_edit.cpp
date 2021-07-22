@@ -25,12 +25,12 @@
 #include "globals.h"
 
 #include <QFormLayout>
-#include <QLabel>
+#include <QCheckBox>
 
 ManagerMultiEdit::ManagerMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : AttributeMultiEdit(edits_out, parent) {
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_MANAGER, CLASS_USER) + ":";
-    label->setText(label_text);
+    apply_check->setText(label_text);
 
     widget = new ManagerWidget(ATTRIBUTE_MANAGER);
 
@@ -42,7 +42,7 @@ ManagerMultiEdit::ManagerMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObje
 }
 
 void ManagerMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(check_and_label_wrapper, widget);
+    layout->addRow(apply_check, widget);
 }
 
 bool ManagerMultiEdit::apply_internal(AdInterface &ad, const QString &target) {

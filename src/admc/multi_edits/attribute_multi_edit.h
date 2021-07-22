@@ -49,14 +49,10 @@ signals:
     void edited();
 
 protected:
-    QLabel *label;
-    QWidget *check_and_label_wrapper;
-
+    QCheckBox *apply_check;
+    
     virtual bool apply_internal(AdInterface &ad, const QString &target) = 0;
     virtual void set_enabled(const bool enabled) = 0;
-
-private:
-    QCheckBox *apply_check;
 };
 
 #define DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS()                              \
