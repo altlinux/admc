@@ -227,8 +227,8 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
 void advanced_features_filter(QString &filter) {
     const bool advanced_features_OFF = !g_settings->get_bool(BoolSetting_AdvancedFeatures);
     if (advanced_features_OFF) {
-        const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "true");
-        filter = filter_OR({filter, advanced_features});
+        const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, LDAP_BOOL_TRUE);
+        filter = filter_AND({filter, advanced_features});
     }
 }
 
