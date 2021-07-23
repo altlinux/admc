@@ -305,17 +305,10 @@ QString get_default_domain_from_krb5() {
     krb5_ccache default_cache;
     krb5_principal default_principal;
 
-    auto cleanup = [&]() {
-        krb5_free_principal(context, default_principal);
-        krb5_cc_close(context, default_cache);
-        krb5_free_context(context);
-    };
-
     result = krb5_init_context(&context);
     if (result) {
         qDebug() << "Failed to init krb5 context";
 
-        cleanup();
         return QString();
     }
 
@@ -323,7 +316,8 @@ QString get_default_domain_from_krb5() {
     if (result) {
         qDebug() << "Failed to get default krb5 ccache";
 
-        cleanup();
+        krb5_free_context(context);
+
         return QString();
     }
 
@@ -331,13 +325,17 @@ QString get_default_domain_from_krb5() {
     if (result) {
         qDebug() << "Failed to get default krb5 principal";
 
-        cleanup();
+        krb5_cc_close(context, default_cache);
+        krb5_free_context(context);
+
         return QString();
     }
 
     const QString out = QString::fromLocal8Bit(default_principal->realm.data, default_principal->realm.length);
 
-    cleanup();
+    krb5_free_principal(context, default_principal);
+    krb5_cc_close(context, default_cache);
+    krb5_free_context(context);
 
     return out;
 }
