@@ -69,8 +69,15 @@ CentralWidget::CentralWidget(AdInterface &ad)
     console_actions = new ConsoleActions(this);
 
     open_filter_action = new QAction(tr("&Filter objects"), this);
-    dev_mode_action = new QAction(tr("Dev mode"), this);
-    show_noncontainers_action = new QAction(tr("&Show non-container objects in Console tree"), this);
+
+    // NOTE: these actions are not connected here because
+    // they need to be connected to a custom slot
+    dev_mode_action = settings_make_action(BoolSetting_DevMode, tr("Dev mode"), this);
+    show_noncontainers_action = settings_make_action(BoolSetting_ShowNonContainersInConsoleTree, tr("&Show non-container objects in Console tree"), this);
+    advanced_features_action = settings_make_action(BoolSetting_AdvancedFeatures, tr("Advanced features"), this);
+
+    toggle_console_tree_action = settings_make_and_connect_action(BoolSetting_AdvancedFeatures, tr("Console Tree"), this);
+    toggle_description_bar_action = settings_make_and_connect_action(BoolSetting_ShowResultsHeader, tr("Description Bar"), this);
 
     console = new ConsoleWidget();
 
@@ -105,37 +112,28 @@ CentralWidget::CentralWidget(AdInterface &ad)
     setLayout(layout);
     layout->addWidget(console);
 
-    const QVariant console_widget_state = g_settings->get_variant(VariantSetting_ConsoleWidgetState);
+    const QVariant console_widget_state = settings_get_variant(VariantSetting_ConsoleWidgetState);
     console->restore_state(console_widget_state);
 
-    const QVariant policy_results_state = g_settings->get_variant(VariantSetting_PolicyResultsState);
-    policy_results_widget->restore_state(policy_results_state);
-
-    const QVariant filter_dialog_state = g_settings->get_variant(VariantSetting_FilterDialogState);
-    filter_dialog->restore_state(filter_dialog_state);
-
-    // Refresh head when settings affecting the filter
-    // change. This reloads the model with an updated filter
-    const BoolSettingSignal *advanced_features = g_settings->get_bool_signal(BoolSetting_AdvancedFeatures);
     connect(
-        advanced_features, &BoolSettingSignal::changed,
-        this, &CentralWidget::refresh_head);
-
-    const BoolSettingSignal *show_non_containers = g_settings->get_bool_signal(BoolSetting_ShowNonContainersInConsoleTree);
+        show_noncontainers_action, &QAction::toggled,
+        this, &CentralWidget::on_show_non_containers);
+    on_show_non_containers();
+    
     connect(
-        show_non_containers, &BoolSettingSignal::changed,
-        this, &CentralWidget::refresh_head);
+        dev_mode_action, &QAction::toggled,
+        this, &CentralWidget::on_dev_mode);
+    on_dev_mode();
 
-    const BoolSettingSignal *dev_mode_signal = g_settings->get_bool_signal(BoolSetting_DevMode);
     connect(
-        dev_mode_signal, &BoolSettingSignal::changed,
-        this, &CentralWidget::refresh_head);
+        toggle_console_tree_action, &QAction::toggled,
+        this, &CentralWidget::on_toggle_console_tree);
+    on_toggle_console_tree();
 
-    g_settings->connect_toggle_widget(console->get_scope_view(), BoolSetting_ShowConsoleTree);
-    g_settings->connect_toggle_widget(console->get_description_bar(), BoolSetting_ShowResultsHeader);
-
-    g_settings->connect_action_to_bool_setting(dev_mode_action, BoolSetting_DevMode);
-    g_settings->connect_action_to_bool_setting(show_noncontainers_action, BoolSetting_ShowNonContainersInConsoleTree);
+    connect(
+        toggle_description_bar_action, &QAction::toggled,
+        this, &CentralWidget::on_toggle_description_bar);
+    on_toggle_description_bar();
 
     connect(
         open_filter_action, &QAction::triggered,
@@ -262,15 +260,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
     console->set_current_scope(console_object_head()->index());
 }
 
-void CentralWidget::save_state() {
-    const QVariant console_widget_state = console->save_state();
-    g_settings->set_variant(VariantSetting_ConsoleWidgetState, console_widget_state);
-
-    const QVariant policy_results_state = policy_results_widget->save_state();
-    g_settings->set_variant(VariantSetting_PolicyResultsState, policy_results_state);
-
-    const QVariant filter_dialog_state = filter_dialog->save_state();
-    g_settings->set_variant(VariantSetting_FilterDialogState, filter_dialog_state);
+CentralWidget::~CentralWidget() {
+    const QVariant state = console->save_state();
+    settings_set_variant(VariantSetting_ConsoleWidgetState, state);
 }
 
 void CentralWidget::object_delete() {
@@ -722,6 +714,34 @@ void CentralWidget::on_object_properties_applied() {
     update_actions_visibility();
 }
 
+void CentralWidget::on_show_non_containers() {
+    settings_set_bool(BoolSetting_ShowNonContainersInConsoleTree, show_noncontainers_action->isChecked());
+
+    refresh_head();
+}
+
+void CentralWidget::on_dev_mode() {
+    settings_set_bool(BoolSetting_DevMode, dev_mode_action->isChecked());
+
+    refresh_head();
+}
+
+void CentralWidget::on_advanced_features() {
+    settings_set_bool(BoolSetting_AdvancedFeatures, advanced_features_action->isChecked());
+
+    refresh_head();
+}
+
+void CentralWidget::on_toggle_console_tree() {
+    const bool visible = toggle_console_tree_action->isChecked();
+    console->get_scope_view()->setVisible(visible);
+}
+
+void CentralWidget::on_toggle_description_bar() {
+    const bool visible = toggle_description_bar_action->isChecked();
+    console->get_description_bar()->setVisible(visible);
+}
+
 void CentralWidget::refresh_head() {
     show_busy_indicator();
 
@@ -753,30 +773,34 @@ void CentralWidget::update_description_bar() {
     console->set_description_bar_text(text);
 }
 
-void CentralWidget::add_actions_to_action_menu(QMenu *menu) {
-    console_actions->add_to_menu(menu);
+void CentralWidget::add_actions_to_menus(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu) {
+    // Action
+    console_actions->add_to_menu(action_menu);
 
-    menu->addSeparator();
+    action_menu->addSeparator();
 
-    console->add_actions_to_action_menu(menu);
-}
+    console->add_actions_to_action_menu(action_menu);
 
-void CentralWidget::add_actions_to_navigation_menu(QMenu *menu) {
-    console->add_actions_to_navigation_menu(menu);
-}
+    // Navigation
+    console->add_actions_to_navigation_menu(navigation_menu);
 
-void CentralWidget::add_actions_to_view_menu(QMenu *menu) {
-    console->add_actions_to_view_menu(menu);
+    // View
+    console->add_actions_to_view_menu(view_menu);
 
-    menu->addSeparator();
+    view_menu->addSeparator();
 
-    menu->addAction(open_filter_action);
+    view_menu->addAction(open_filter_action);
 
-    menu->addAction(show_noncontainers_action);
+    view_menu->addAction(show_noncontainers_action);
 
 #ifdef QT_DEBUG
-    menu->addAction(dev_mode_action);
+    view_menu->addAction(dev_mode_action);
 #endif
+
+    // Preferences
+    preferences_menu->addAction(advanced_features_action);
+    preferences_menu->addAction(toggle_console_tree_action);
+    preferences_menu->addAction(toggle_description_bar_action);
 }
 
 void CentralWidget::fetch_scope_node(const QModelIndex &index) {

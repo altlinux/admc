@@ -122,9 +122,9 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     layout->addLayout(object_view_layout);
     layout->addWidget(button_box);
 
-    g_settings->setup_dialog_geometry(VariantSetting_SelectObjectDialogGeometry, this);
+    settings_setup_dialog_geometry(VariantSetting_SelectObjectDialogGeometry, this);
 
-    g_settings->restore_header_state(VariantSetting_SelectObjectHeaderState, view->header());
+    settings_restore_header_state(VariantSetting_SelectObjectHeaderState, view->header());
 
     connect(
         add_button, &QPushButton::clicked,
@@ -144,7 +144,7 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 }
 
 SelectObjectDialog::~SelectObjectDialog() {
-    g_settings->save_header_state(VariantSetting_SelectObjectHeaderState, view->header());   
+    settings_save_header_state(VariantSetting_SelectObjectHeaderState, view->header());   
 }
 
 QList<QString> SelectObjectDialog::get_selected() const {

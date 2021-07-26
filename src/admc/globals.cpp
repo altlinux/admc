@@ -21,11 +21,9 @@
 #include "globals.h"
 
 #include "adldap.h"
-#include "settings.h"
 #include "status.h"
 
 AdConfig *g_adconfig = new AdConfig();
-Settings *g_settings = new Settings();
 
 // NOTE: status has to be in a function because it creates a
 // widget so needs to be created after app is created

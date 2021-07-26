@@ -78,22 +78,6 @@ void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap
     }
 }
 
-void show_only_in_dev_mode(QWidget *widget) {
-    const BoolSettingSignal *dev_mode_signal = g_settings->get_bool_signal(BoolSetting_DevMode);
-
-    const auto do_it = [widget]() {
-        const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
-        widget->setVisible(dev_mode);
-    };
-    do_it();
-
-    QObject::connect(
-        dev_mode_signal, &BoolSettingSignal::changed,
-        [do_it]() {
-            do_it();
-        });
-}
-
 void set_line_edit_to_numbers_only(QLineEdit *edit) {
     edit->setValidator(new QRegExpValidator(QRegExp("[0-9]*"), edit));
 }
@@ -121,7 +105,7 @@ void hide_busy_indicator() {
 }
 
 bool confirmation_dialog(const QString &text, QWidget *parent) {
-    const bool confirm_actions = g_settings->get_bool(BoolSetting_ConfirmActions);
+    const bool confirm_actions = settings_get_bool(BoolSetting_ConfirmActions);
     if (!confirm_actions) {
         return true;
     }
@@ -225,7 +209,7 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
 // Hide advanced view only" objects if advanced view setting
 // is off
 void advanced_features_filter(QString &filter) {
-    const bool advanced_features_OFF = !g_settings->get_bool(BoolSetting_AdvancedFeatures);
+    const bool advanced_features_OFF = !settings_get_bool(BoolSetting_AdvancedFeatures);
     if (advanced_features_OFF) {
         const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, LDAP_BOOL_TRUE);
         filter = filter_AND({filter, advanced_features});
@@ -235,7 +219,7 @@ void advanced_features_filter(QString &filter) {
 // OR filter with some dev mode object classes, so that they
 // show up no matter what when dev mode is on
 void dev_mode_filter(QString &filter) {
-    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
+    const bool dev_mode = settings_get_bool(BoolSetting_DevMode);
     if (!dev_mode) {
         return;
     }
@@ -259,7 +243,7 @@ void dev_mode_filter(QString &filter) {
 // they don't show up in regular searches. Have to use
 // search_object() and manually add them to search results.
 void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base) {
-    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
+    const bool dev_mode = settings_get_bool(BoolSetting_DevMode);
     if (!dev_mode) {
         return;
     }

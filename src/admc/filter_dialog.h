@@ -40,12 +40,10 @@ class FilterDialog final : public QDialog {
 
 public:
     FilterDialog(QWidget *parent);
+    ~FilterDialog();
 
     QString get_filter() const;
     bool filtering_ON() const;
-
-    QVariant save_state() const;
-    void restore_state(const QVariant &state);
 
 private:
     FilterCustomDialog *custom_dialog;

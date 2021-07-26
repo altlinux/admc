@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
 
-    const QLocale saved_locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
+    const QLocale saved_locale = settings_get_variant(VariantSetting_Locale).toLocale();
 
     QTranslator translator;
     const bool loaded_admc_translation = translator.load(saved_locale, "admc", "_", ":/admc");

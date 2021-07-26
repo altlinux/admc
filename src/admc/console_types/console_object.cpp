@@ -270,7 +270,7 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
                 return filter_containers.contains(object_class);
             }();
 
-            const bool show_non_containers_ON = g_settings->get_bool(BoolSetting_ShowNonContainersInConsoleTree);
+            const bool show_non_containers_ON = settings_get_bool(BoolSetting_ShowNonContainersInConsoleTree);
 
             return (is_container || show_non_containers_ON);
         }();
@@ -377,7 +377,7 @@ void console_object_fetch(ConsoleWidget *console, const QString &current_filter,
 
     // NOTE: do an extra search before real search for
     // objects that should be visible in dev mode
-    const bool dev_mode = g_settings->get_bool(BoolSetting_DevMode);
+    const bool dev_mode = settings_get_bool(BoolSetting_DevMode);
     if (dev_mode) {
         AdInterface ad;
         if (ad_connected(ad)) {

@@ -94,7 +94,7 @@ GroupPolicyTab::GroupPolicyTab() {
     layout->addLayout(button_layout);
     layout->addLayout(edits_layout);
 
-    g_settings->restore_header_state(VariantSetting_GroupPolicyTabHeaderState, view->header());
+    settings_restore_header_state(VariantSetting_GroupPolicyTabHeaderState, view->header());
 
     enable_widget_on_selection(remove_button, view);
 
@@ -113,7 +113,7 @@ GroupPolicyTab::GroupPolicyTab() {
 }
 
 GroupPolicyTab::~GroupPolicyTab() {
-    g_settings->save_header_state(VariantSetting_GroupPolicyTabHeaderState, view->header());   
+    settings_save_header_state(VariantSetting_GroupPolicyTabHeaderState, view->header());   
 }
 
 void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {

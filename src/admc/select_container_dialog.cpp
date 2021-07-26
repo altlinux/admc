@@ -93,7 +93,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 
     // NOTE: geometry is shared with the subclass
     // MoveObjectDialog but that is intended.
-    g_settings->setup_dialog_geometry(VariantSetting_SelectContainerDialogGeometry, this);
+    settings_setup_dialog_geometry(VariantSetting_SelectContainerDialogGeometry, this);
 
     connect(
         button_box, &QDialogButtonBox::accepted,

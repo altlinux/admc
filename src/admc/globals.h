@@ -22,11 +22,9 @@
 #define GLOBALS_H
 
 class AdConfig;
-class Settings;
 class Status;
 
 extern AdConfig *g_adconfig;
-extern Settings *g_settings;
 Status *g_status();
 
 #endif /* GLOBALS_H */

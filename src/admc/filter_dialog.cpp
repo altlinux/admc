@@ -89,13 +89,25 @@ FilterDialog::FilterDialog(QWidget *parent)
     layout->addWidget(radio_buttons_frame);
     layout->addWidget(button_box);
 
-    g_settings->setup_dialog_geometry(VariantSetting_FilterDialogGeometry, this);
+    settings_setup_dialog_geometry(VariantSetting_FilterDialogGeometry, this);
 
     button_state_name_map = {
         {"ALL_BUTTON_STATE", all_button},
         {"CLASSES_BUTTON_STATE", classes_button},
         {"CUSTOM_BUTTON_STATE", custom_button},
     };
+
+    const QHash<QString, QVariant> state = settings_get_variant(VariantSetting_FilterDialogState).toHash();
+    
+    filter_widget->restore_state(state[FILTER_WIDGET_STATE]);
+    filter_classes_widget->restore_state(state[FILTER_CLASSES_STATE]);
+
+    for (const QString &state_name : button_state_name_map.keys()) {
+        QRadioButton *button = button_state_name_map[state_name];
+
+        const QVariant button_state = state[state_name];
+        button->setChecked(button_state.toBool());
+    }
 
     connect(
         button_box, &QDialogButtonBox::accepted,
@@ -119,7 +131,7 @@ bool FilterDialog::filtering_ON() const {
     return !all_button->isChecked();
 }
 
-QVariant FilterDialog::save_state() const {
+FilterDialog::~FilterDialog() {
     QHash<QString, QVariant> state;
 
     state[FILTER_WIDGET_STATE] = filter_widget->save_state();
@@ -131,21 +143,7 @@ QVariant FilterDialog::save_state() const {
         state[state_name] = button->isChecked();
     }
 
-    return QVariant(state);
-}
-
-void FilterDialog::restore_state(const QVariant &state_variant) {
-    const QHash<QString, QVariant> state = state_variant.toHash();
-    
-    filter_widget->restore_state(state[FILTER_WIDGET_STATE]);
-    filter_classes_widget->restore_state(state[FILTER_CLASSES_STATE]);
-
-    for (const QString &state_name : button_state_name_map.keys()) {
-        QRadioButton *button = button_state_name_map[state_name];
-
-        const QVariant button_state = state[state_name];
-        button->setChecked(button_state.toBool());
-    }
+    settings_set_variant(VariantSetting_FilterDialogState, state);
 }
 
 QString FilterDialog::get_filter() const {

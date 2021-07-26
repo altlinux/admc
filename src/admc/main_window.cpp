@@ -41,8 +41,6 @@
 
 MainWindow::MainWindow()
 : QMainWindow() {
-    central_widget = nullptr;
-
     setStatusBar(g_status()->status_bar());
 
     message_log_dock = new QDockWidget();
@@ -56,13 +54,13 @@ MainWindow::MainWindow()
 
     setup_menubar();
 
-    const bool restored_geometry = g_settings->restore_geometry(VariantSetting_MainWindowGeometry, this);
+    const bool restored_geometry = settings_restore_geometry(VariantSetting_MainWindowGeometry, this);
     if (!restored_geometry) {
         resize(1024, 768);
     }
 
-    if (g_settings->contains_variant(VariantSetting_MainWindowState)) {
-        const QByteArray state = g_settings->get_variant(VariantSetting_MainWindowState).toByteArray();
+    const QByteArray state = settings_get_variant(VariantSetting_MainWindowState).toByteArray();
+    if (!state.isEmpty()) {
         restoreState(state);
     } else {
         message_log_dock->hide();
@@ -72,14 +70,11 @@ MainWindow::MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    g_settings->save_geometry(VariantSetting_MainWindowGeometry, this);
+    const QByteArray geometry = saveGeometry();
+    settings_set_variant(VariantSetting_MainWindowGeometry, geometry);
 
     const QByteArray state = saveState();
-    g_settings->set_variant(VariantSetting_MainWindowState, state);
-
-    if (central_widget != nullptr) {
-        central_widget->save_state();
-    }
+    settings_set_variant(VariantSetting_MainWindowState, state);
 
     QMainWindow::closeEvent(event);
 }
@@ -101,13 +96,10 @@ void MainWindow::setup_menubar() {
     auto manual_action = new QAction(tr("&Manual"), this);
     auto about_action = new QAction(tr("&About ADMC"), this);
 
-    auto advanced_features_action = new QAction(tr("&Advanced Features"), this);
-    auto confirm_actions_action = new QAction(tr("&Confirm actions"), this);
-    auto last_before_first_name_action = new QAction(tr("&Put last name before first name when creating users"), this);
-    auto log_searches_action = new QAction(tr("Log searches"), this);
-    auto timestamp_log_action = new QAction(tr("Timestamps in message log"), this);
-    auto toggle_console_tree_action = new QAction(tr("Console Tree"), this);
-    auto toggle_description_bar_action = new QAction(tr("Description Bar"), this);
+    auto confirm_actions_action = settings_make_and_connect_action(BoolSetting_ConfirmActions, tr("&Confirm actions"), this);
+    auto last_before_first_name_action = settings_make_and_connect_action(BoolSetting_LastNameBeforeFirstName, tr("&Put last name before first name when creating users"), this);
+    auto log_searches_action = settings_make_and_connect_action(BoolSetting_LogSearches, tr("Log searches"), this);
+    auto timestamp_log_action = settings_make_and_connect_action(BoolSetting_TimestampLog, tr("Timestamps in message log"), this);
 
     const QList<QLocale::Language> language_list = {
         QLocale::English,
@@ -135,7 +127,7 @@ void MainWindow::setup_menubar() {
             language_group->addAction(action);
 
             const bool is_checked = [=]() {
-                const QLocale current_locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
+                const QLocale current_locale = settings_get_variant(VariantSetting_Locale).toLocale();
 
                 return (current_locale == locale);
             }();
@@ -157,7 +149,7 @@ void MainWindow::setup_menubar() {
     action_menu = menubar->addMenu(tr("&Action"));
     navigation_menu = menubar->addMenu(tr("&Navigation"));
     view_menu = menubar->addMenu(tr("&View"));
-    auto preferences_menu = menubar->addMenu(tr("&Preferences"));
+    preferences_menu = menubar->addMenu(tr("&Preferences"));
     auto language_menu = new QMenu(tr("&Language"));
     auto help_menu = menubar->addMenu(tr("&Help"));
 
@@ -167,7 +159,6 @@ void MainWindow::setup_menubar() {
     file_menu->addAction(connect_action);
     file_menu->addAction(quit_action);
 
-    preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(confirm_actions_action);
     preferences_menu->addAction(last_before_first_name_action);
     preferences_menu->addAction(log_searches_action);
@@ -175,8 +166,6 @@ void MainWindow::setup_menubar() {
     preferences_menu->addMenu(language_menu);
     preferences_menu->addSeparator();
     preferences_menu->addAction(message_log_dock->toggleViewAction());
-    preferences_menu->addAction(toggle_console_tree_action);
-    preferences_menu->addAction(toggle_description_bar_action);
 
     for (const auto language : language_list) {
         QAction *language_action = language_actions[language];
@@ -202,13 +191,6 @@ void MainWindow::setup_menubar() {
     connect(
         about_action, &QAction::triggered,
         about_dialog, &QDialog::open);
-    g_settings->connect_action_to_bool_setting(advanced_features_action, BoolSetting_AdvancedFeatures);
-    g_settings->connect_action_to_bool_setting(confirm_actions_action, BoolSetting_ConfirmActions);
-    g_settings->connect_action_to_bool_setting(last_before_first_name_action, BoolSetting_LastNameBeforeFirstName);
-    g_settings->connect_action_to_bool_setting(log_searches_action, BoolSetting_LogSearches);
-    g_settings->connect_action_to_bool_setting(timestamp_log_action, BoolSetting_TimestampLog);
-    g_settings->connect_action_to_bool_setting(toggle_console_tree_action, BoolSetting_ShowConsoleTree);
-    g_settings->connect_action_to_bool_setting(toggle_description_bar_action, BoolSetting_ShowResultsHeader);
 
     for (const auto language : language_actions.keys()) {
         QAction *action = language_actions[language];
@@ -217,7 +199,7 @@ void MainWindow::setup_menubar() {
             action, &QAction::toggled,
             [this, language](bool checked) {
                 if (checked) {
-                    g_settings->set_variant(VariantSetting_Locale, QLocale(language));
+                    settings_set_variant(VariantSetting_Locale, QLocale(language));
 
                     message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
                 }
@@ -225,19 +207,19 @@ void MainWindow::setup_menubar() {
     }
 
     connect(
-        g_settings->get_bool_signal(BoolSetting_LogSearches), &BoolSettingSignal::changed,
+        log_searches_action, &QAction::toggled,
         this, &MainWindow::on_log_searches_changed);
     on_log_searches_changed();
 }
 
 void MainWindow::connect_to_server() {
-    const QString saved_dc = g_settings->get_variant(VariantSetting_DC).toString();
+    const QString saved_dc = settings_get_variant(VariantSetting_DC).toString();
     AdInterface::set_dc(saved_dc);
 
     AdInterface ad;
     if (ad_connected(ad)) {
         // TODO: check for load failure
-        const QLocale locale = g_settings->get_variant(VariantSetting_Locale).toLocale();
+        const QLocale locale = settings_get_variant(VariantSetting_Locale).toLocale();
         g_adconfig->load(ad, locale);
 
         qDebug() << "domain =" << g_adconfig->domain();
@@ -246,20 +228,17 @@ void MainWindow::connect_to_server() {
 
         g_status()->display_ad_messages(ad, this);
 
-        central_widget = new CentralWidget(ad);
+        auto central_widget = new CentralWidget(ad);
         setCentralWidget(central_widget);
 
-        central_widget->add_actions_to_action_menu(action_menu);
-        central_widget->add_actions_to_navigation_menu(navigation_menu);
-        central_widget->add_actions_to_view_menu(view_menu);
+        central_widget->add_actions_to_menus(action_menu, navigation_menu, view_menu, preferences_menu);
         
-        central_widget->setEnabled(true);
         connect_action->setEnabled(false);
     }
 }
 
 void MainWindow::on_log_searches_changed() {
-    const bool log_searches_ON = g_settings->get_bool(BoolSetting_LogSearches);
+    const bool log_searches_ON = settings_get_bool(BoolSetting_LogSearches);
 
     AdInterface::set_log_searches(log_searches_ON);
 }

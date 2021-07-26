@@ -29,6 +29,7 @@
 #include "gplink.h"
 #include "status.h"
 #include "utils.h"
+#include "settings.h"
 
 #include <QAction>
 #include <QHeaderView>
@@ -97,6 +98,14 @@ PolicyResultsWidget::PolicyResultsWidget() {
     layout->setSpacing(0);
     layout->addWidget(view);
 
+    const QVariant state = settings_get_variant(VariantSetting_PolicyResultsState);
+    view->restore_state(state, {
+        PolicyResultsColumn_Name,
+        PolicyResultsColumn_Enforced,
+        PolicyResultsColumn_Disabled,
+        PolicyResultsColumn_Path,
+    });
+
     connect(
         model, &QStandardItemModel::itemChanged,
         this, &PolicyResultsWidget::on_item_changed);
@@ -108,19 +117,9 @@ PolicyResultsWidget::PolicyResultsWidget() {
         this, &PolicyResultsWidget::delete_link);
 }
 
-QVariant PolicyResultsWidget::save_state() {
-    const QVariant view_state = view->save_state();
-
-    return view_state;
-}
-
-void PolicyResultsWidget::restore_state(const QVariant &state) {
-    view->restore_state(state, {
-        PolicyResultsColumn_Name,
-        PolicyResultsColumn_Enforced,
-        PolicyResultsColumn_Disabled,
-        PolicyResultsColumn_Path,
-    });
+PolicyResultsWidget::~PolicyResultsWidget() {
+    const QVariant state = view->save_state();
+    settings_set_variant(VariantSetting_PolicyResultsState, state);
 }
 
 void PolicyResultsWidget::update(const QModelIndex &index) {

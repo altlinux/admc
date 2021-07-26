@@ -59,8 +59,6 @@ void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoin
 // Columns not in the map get empty labels
 void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap<int, QString> &labels_map);
 
-void show_only_in_dev_mode(QWidget *widget);
-
 // Prohibits leading zeroes
 void set_line_edit_to_numbers_only(QLineEdit *edit);
 

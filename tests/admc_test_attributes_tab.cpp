@@ -31,16 +31,18 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+Q_DECLARE_METATYPE(AttributeFilter)
+
 // NOTE: can't be set because order is important. Read only
 // has to be set first to enable other filters.
-const QList<BoolSetting> all_filters = {
-        BoolSetting_AttributeFilterUnset,
-        BoolSetting_AttributeFilterReadOnly,
-        BoolSetting_AttributeFilterMandatory,
-        BoolSetting_AttributeFilterOptional,
-        BoolSetting_AttributeFilterSystemOnly,
-        BoolSetting_AttributeFilterConstructed,
-        BoolSetting_AttributeFilterBacklink,
+const QList<AttributeFilter> all_filters = {
+    AttributeFilter_Unset,
+    AttributeFilter_ReadOnly,
+    AttributeFilter_Mandatory,
+    AttributeFilter_Optional,
+    AttributeFilter_SystemOnly,
+    AttributeFilter_Constructed,
+    AttributeFilter_Backlink,
 };
 
 void ADMCTestAttributesTab::init() {
@@ -103,46 +105,55 @@ void ADMCTestAttributesTab::load() {
     check_value("distinguishedName", dn);
 }
 
-// Test filters by checking that affected attributes are
-// visible/hidden when their filters are checked/unchecked
-void ADMCTestAttributesTab::filter() {
-    auto test_filter = [&](const BoolSetting filter, const QString &attribute) {
-        auto check_filtering = [&](const bool should_be_visible) {
-            const QList<QStandardItem *> item_list = model->findItems(attribute);
-            QVERIFY2((item_list.size() == 1), qPrintable(QString("Failed to find attribute %1)").arg(attribute)));
+void ADMCTestAttributesTab::filter_data() {
+    QTest::addColumn<AttributeFilter>("filter");
+    QTest::addColumn<QString>("attribute");
 
-            QStandardItem *item = item_list[0];
-            const QModelIndex index = item->index();
-            const QModelIndex proxy_index = proxy->mapFromSource(index);
-            const bool is_visible = proxy_index.isValid();
-
-            const bool correct_filtering = (is_visible == should_be_visible);
-            QVERIFY2(correct_filtering, qPrintable(QString("filter = %1, attribute = %2, is_visible = %3, should_be_visible = %4").arg(filter).arg(attribute).arg(is_visible).arg(should_be_visible)));
-        };
-
-        set_filter({filter}, true);
-        check_filtering(true);
-        set_filter({filter}, false);
-        check_filtering(false);
-        set_filter({filter}, true);
-    };
-
-    set_filter(all_filters, true);
-
-    test_filter(BoolSetting_AttributeFilterUnset, ATTRIBUTE_HOME_PHONE);
-    test_filter(BoolSetting_AttributeFilterReadOnly, ATTRIBUTE_OBJECT_GUID);
-    test_filter(BoolSetting_AttributeFilterSystemOnly, ATTRIBUTE_WHEN_CREATED);
-    test_filter(BoolSetting_AttributeFilterConstructed, "allowedAttributes");
-    test_filter(BoolSetting_AttributeFilterBacklink, ATTRIBUTE_MEMBER_OF);
-    test_filter(BoolSetting_AttributeFilterMandatory, "instanceType");
-    test_filter(BoolSetting_AttributeFilterOptional, ATTRIBUTE_COUNTRY_CODE);
+    QTest::newRow("unset") << AttributeFilter_Unset << ATTRIBUTE_HOME_PHONE;
+    QTest::newRow("read only") << AttributeFilter_ReadOnly << ATTRIBUTE_OBJECT_GUID;
+    QTest::newRow("system only") << AttributeFilter_SystemOnly << ATTRIBUTE_WHEN_CREATED;
+    QTest::newRow("constructed") << AttributeFilter_Constructed << "allowedAttributes";
+    QTest::newRow("backlink") << AttributeFilter_Backlink << ATTRIBUTE_MEMBER_OF;
+    QTest::newRow("mandatory") << AttributeFilter_Mandatory << "instanceType";
+    QTest::newRow("optional") << AttributeFilter_Optional << ATTRIBUTE_COUNTRY_CODE;
 
     // NOTE: read only also needs to affect these read only
     // attributes
-    test_filter(BoolSetting_AttributeFilterReadOnly, "allowedAttributes");
-    test_filter(BoolSetting_AttributeFilterReadOnly, ATTRIBUTE_WHEN_CREATED);
-    test_filter(BoolSetting_AttributeFilterReadOnly, ATTRIBUTE_MEMBER_OF);
+    QTest::newRow("read only allowed") << AttributeFilter_ReadOnly << "allowedAttributes";
+    QTest::newRow("read only when created") << AttributeFilter_ReadOnly << ATTRIBUTE_WHEN_CREATED;
+    QTest::newRow("read only member of") << AttributeFilter_ReadOnly << ATTRIBUTE_MEMBER_OF;
+}
 
+// Test filters by checking that affected attributes are
+// visible/hidden when their filters are checked/unchecked
+void ADMCTestAttributesTab::filter() {
+    QFETCH(AttributeFilter, filter);
+    QFETCH(QString, attribute);
+
+    auto check_filtering = [&](const bool should_be_visible) {
+        const QList<QStandardItem *> item_list = model->findItems(attribute);
+        QVERIFY2((item_list.size() == 1), qPrintable(QString("Failed to find attribute %1)").arg(attribute)));
+
+        QStandardItem *item = item_list[0];
+        const QModelIndex index = item->index();
+        const QModelIndex proxy_index = proxy->mapFromSource(index);
+        const bool is_visible = proxy_index.isValid();
+
+        const bool correct_filtering = (is_visible == should_be_visible);
+        QVERIFY2(correct_filtering, qPrintable(QString("filter = %1, attribute = %2, is_visible = %3, should_be_visible = %4").arg(filter).arg(attribute).arg(is_visible).arg(should_be_visible)));
+    };
+
+    // Disable(check) all filters (to filter nothing) and
+    // check that attribute is shown
+    set_filter(all_filters, true);
+    check_filtering(true);
+
+    // Enable(uncheck) filter and check that attribute is
+    // hidden
+    set_filter({filter}, false);
+    check_filtering(false);
+
+    // Reset after test is done
     set_filter(all_filters, true);
 }
 
@@ -180,8 +191,8 @@ void ADMCTestAttributesTab::apply() {
     QVERIFY(description_value == correct_value);
 }
 
-void ADMCTestAttributesTab::set_filter(const QList<BoolSetting> &filter_list, const bool state) {
-    for (const BoolSetting &filter : filter_list) {
+void ADMCTestAttributesTab::set_filter(const QList<AttributeFilter> &filter_list, const bool state) {
+    for (const AttributeFilter &filter : filter_list) {
         QAction *action = filter_menu->findChild<QAction *>(QString::number(filter));
         QVERIFY(action != nullptr);
         action->setChecked(state);

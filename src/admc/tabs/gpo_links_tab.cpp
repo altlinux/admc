@@ -62,11 +62,11 @@ GpoLinksTab::GpoLinksTab() {
 
     PropertiesDialog::open_when_view_item_activated(view, GpoLinksRole_DN);
 
-    g_settings->restore_header_state(VariantSetting_GpoLinksTabHeaderState, view->header());
+    settings_restore_header_state(VariantSetting_GpoLinksTabHeaderState, view->header());
 }
 
 GpoLinksTab::~GpoLinksTab() {
-    g_settings->save_header_state(VariantSetting_GpoLinksTabHeaderState, view->header());   
+    settings_save_header_state(VariantSetting_GpoLinksTabHeaderState, view->header());   
 }
 
 void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {

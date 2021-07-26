@@ -105,7 +105,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     layout->addWidget(primary_group_label);
     layout->addLayout(button_layout);
 
-    g_settings->restore_header_state(VariantSetting_MembershipTabHeaderState, view->header());
+    settings_restore_header_state(VariantSetting_MembershipTabHeaderState, view->header());
 
     enable_widget_on_selection(remove_button, view);
     enable_widget_on_selection(properties_button, view);
@@ -133,7 +133,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
 }
 
 MembershipTab::~MembershipTab() {
-    g_settings->save_header_state(VariantSetting_MembershipTabHeaderState, view->header());   
+    settings_save_header_state(VariantSetting_MembershipTabHeaderState, view->header());   
 }
 
 void MembershipTab::load(AdInterface &ad, const AdObject &object) {

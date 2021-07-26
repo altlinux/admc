@@ -28,14 +28,32 @@
 #include <QSet>
 #include <QHash>
 
+enum AttributeFilter {
+    AttributeFilter_Unset,
+    AttributeFilter_ReadOnly,
+    AttributeFilter_Mandatory,
+    AttributeFilter_Optional,
+    AttributeFilter_SystemOnly,
+    AttributeFilter_Constructed,
+    AttributeFilter_Backlink,
+
+    AttributeFilter_COUNT,
+};
+
 class AttributesFilterMenu final : public QMenu {
     Q_OBJECT
 
 public:
     AttributesFilterMenu(QWidget *parent);
+    ~AttributesFilterMenu();
+
+    bool filter_is_enabled(const AttributeFilter filter) const;
+
+signals:
+    void filter_changed();
 
 private:
-    QHash<BoolSetting, QAction *> action_map;
+    QHash<AttributeFilter, QAction *> action_map;
 
     void on_read_only_changed();
 };
@@ -43,11 +61,12 @@ private:
 class AttributesTabProxy final : public QSortFilterProxyModel {
 
 public:
-    AttributesTabProxy(QObject *parent);
+    AttributesTabProxy(AttributesFilterMenu *filter_menu, QObject *parent);
 
     void load(const AdObject &object);
 
 private:
+    AttributesFilterMenu *filter_menu;
     QSet<QString> set_attributes;
     QSet<QString> mandatory_attributes;
     QSet<QString> optional_attributes;

@@ -22,27 +22,19 @@
 #define SETTINGS_H
 
 /**
- * Provides access to settings via enums rather than plain
- * strings. Settings are saved to file automatically when
- * this object is destructed. Note that you shouldn't save
- * settings in destructors that run close to app shutdown
- * because they won't be saved to file. Instead use
- * QMainWindow::closeEvent(). Settings of boolean type have
- * BoolSettingSignal objects which emit changed() signal
- * when setting is changed.
+ * Utility f-ns for saving and loading settings using
+ * QSettings.
  */
 
-#include <QObject>
-
-#include <QSettings>
+#include <QVariant>
 
 class QAction;
-class QSettings;
 class QVariant;
 class QWidget;
-class QCheckBox;
 class QHeaderView;
 class QDialog;
+class QString;
+class QObject;
 
 enum VariantSetting {
     VariantSetting_DC,
@@ -52,7 +44,7 @@ enum VariantSetting {
     VariantSetting_AttributesTabHeaderState,
     VariantSetting_MainWindowGeometry,
     VariantSetting_MainWindowState,
-    VariantSetting_AttributesTabFilter,
+    VariantSetting_AttributesTabFilterState,
     VariantSetting_QueryFolders,
     VariantSetting_QueryItems,
     VariantSetting_PropertiesDialogGeometry,
@@ -86,67 +78,40 @@ enum BoolSetting {
     BoolSetting_LogSearches,
     BoolSetting_TimestampLog,
 
-    BoolSetting_AttributeFilterUnset,
-    BoolSetting_AttributeFilterReadOnly,
-    BoolSetting_AttributeFilterMandatory,
-    BoolSetting_AttributeFilterOptional,
-    BoolSetting_AttributeFilterSystemOnly,
-    BoolSetting_AttributeFilterConstructed,
-    BoolSetting_AttributeFilterBacklink,
-
     BoolSetting_COUNT,
 };
 
-class BoolSettingSignal final : public QObject {
-    Q_OBJECT
-signals:
-    void changed();
-};
+QVariant settings_get_variant(const VariantSetting setting, const QVariant &default_value = QVariant());
+void settings_set_variant(const VariantSetting setting, const QVariant &value);
 
-class Settings {
+// NOTE: returns default value if it's defined in
+// settings.cpp
+bool settings_get_bool(const BoolSetting setting);
+void settings_set_bool(const BoolSetting setting, const bool value);
 
-public:
-    Settings();
+// Does two things. First it restores previously saved
+// geometry, if it exists. Then it connects to dialogs
+// finished() signal so that it's geometry is saved when
+// dialog is finished.
+void settings_setup_dialog_geometry(const VariantSetting setting, QDialog *dialog);
 
-    QVariant get_variant(const VariantSetting setting) const;
-    void set_variant(const VariantSetting setting, const QVariant &value);
-    bool contains_variant(const VariantSetting setting) const;
+// NOTE: If setting is present, restore is performed,
+// otherwise f-n does nothing and returns false. You
+// should check for the return and perform default
+// sizing in the false case.
+bool settings_restore_geometry(const VariantSetting setting, QWidget *widget);
 
-    const BoolSettingSignal *get_bool_signal(const BoolSetting setting) const;
-    bool get_bool(const BoolSetting setting) const;
-    void set_bool(const BoolSetting setting, const bool value);
+void settings_save_header_state(const VariantSetting setting, QHeaderView *header);
+bool settings_restore_header_state(const VariantSetting setting, QHeaderView *header);
 
-    void save_geometry(const VariantSetting setting, QWidget *widget);
-
-    // Does two things. First it restores previously saved
-    // geometry, if it exists. Then it connects to dialogs
-    // finished() signal so that it's geometry is saved when
-    // dialog is finished.
-    void setup_dialog_geometry(const VariantSetting setting, QDialog *dialog);
-
-    // NOTE: If setting is present, restore is performed,
-    // otherwise f-n does nothing and returns false. You
-    // should check for the return and perform default
-    // sizing in the false case.
-    bool restore_geometry(const VariantSetting setting, QWidget *widget);
-
-    void save_header_state(const VariantSetting setting, QHeaderView *header);
-    bool restore_header_state(const VariantSetting setting, QHeaderView *header);
-
-    /** 
-     * Connect action and bool setting so that toggling
-     * the action updates the setting value
-     * Action becomes checkable
-     */
-    void connect_action_to_bool_setting(QAction *action, const BoolSetting setting);
-
-    void connect_checkbox_to_bool_setting(QCheckBox *check, const BoolSetting setting);
-
-    void connect_toggle_widget(QWidget *widget, const BoolSetting setting);
-
-private:
-    QSettings qsettings;
-    BoolSettingSignal bools[BoolSetting_COUNT];
-};
+/** 
+ * Make a checkable QAction that is connected to a bool
+ * setting. Action state will be initialized to the current
+ * setting value. The "connect" version of the f-n also
+ * connects the action for you so that when toggling the
+ * action modifies the setting.
+ */
+QAction *settings_make_action(const BoolSetting setting, const QString &text, QObject *parent);
+QAction *settings_make_and_connect_action(const BoolSetting setting, const QString &text, QObject *parent);
 
 #endif /* SETTINGS_H */

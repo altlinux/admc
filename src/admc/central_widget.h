@@ -63,11 +63,9 @@ class CentralWidget final : public QWidget {
 
 public:
     CentralWidget(AdInterface &ad);
-    void save_state();
+    ~CentralWidget();
 
-    void add_actions_to_action_menu(QMenu *menu);
-    void add_actions_to_navigation_menu(QMenu *menu);
-    void add_actions_to_view_menu(QMenu *menu);
+    void add_actions_to_menus(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu);
 
 signals:
     void context_menu(const QPoint pos);
@@ -108,6 +106,12 @@ private slots:
     void on_current_scope_changed();
     void on_object_properties_applied();
 
+    void on_show_non_containers();
+    void on_dev_mode();
+    void on_advanced_features();
+    void on_toggle_console_tree();
+    void on_toggle_description_bar();
+
 private:
     ConsoleWidget *console;
     FilterDialog *filter_dialog;
@@ -118,6 +122,9 @@ private:
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
     QAction *dev_mode_action;
+    QAction *advanced_features_action;
+    QAction *toggle_console_tree_action;
+    QAction *toggle_description_bar_action;
 
     void update_description_bar();
     void enable_disable_helper(const bool disabled);

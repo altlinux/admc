@@ -38,6 +38,7 @@
 #include <QVBoxLayout>
 #include <QMenu>
 #include <QAction>
+#include <QHeaderView>
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -57,13 +58,15 @@ AttributesTab::AttributesTab() {
         {AttributesColumn_Type, tr("Type")},
     });
 
+    auto filter_menu = new AttributesFilterMenu(this);
+
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
     view->setAllColumnsShowFocus(true);
     view->setSortingEnabled(true);
 
-    proxy = new AttributesTabProxy(this);
+    proxy = new AttributesTabProxy(filter_menu, this);
 
     proxy->setSourceModel(model);
     view->setModel(proxy);
@@ -77,16 +80,20 @@ AttributesTab::AttributesTab() {
     buttons->addStretch();
     buttons->addWidget(filter_button);
 
-    filter_button->setMenu(new AttributesFilterMenu(this));
+    filter_button->setMenu(filter_menu);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(view);
     layout->addLayout(buttons);
 
-    g_settings->restore_header_state(VariantSetting_AttributesTabHeaderState, view->header());
-
     enable_widget_on_selection(edit_button, view);
+
+    settings_restore_header_state(VariantSetting_AttributesTabHeaderState, view->header());
+
+    const QHash<QString, QVariant> state = settings_get_variant(VariantSetting_AttributesTabHeaderState).toHash();
+
+    view->header()->restoreState(state["header"].toByteArray());
 
     connect(
         view, &QAbstractItemView::doubleClicked,
@@ -94,10 +101,13 @@ AttributesTab::AttributesTab() {
     connect(
         edit_button, &QAbstractButton::clicked,
         this, &AttributesTab::edit_attribute);
+    connect(
+        filter_menu, &AttributesFilterMenu::filter_changed,
+        proxy, &AttributesTabProxy::invalidate);
 }
 
 AttributesTab::~AttributesTab() {
-    g_settings->save_header_state(VariantSetting_AttributesTabHeaderState, view->header());
+    settings_set_variant(VariantSetting_AttributesTabHeaderState, view->header()->saveState());
 }
 
 void AttributesTab::edit_attribute() {
@@ -208,69 +218,96 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
 
 AttributesFilterMenu::AttributesFilterMenu(QWidget *parent)
 : QMenu(parent) {
-    auto add_filter_option = [&](const QString text, const BoolSetting setting) {
+    const QList<QVariant> state = settings_get_variant(VariantSetting_AttributesTabFilterState).toList();
+
+    auto add_filter_action = [&](const QString text, const AttributeFilter filter) {
         QAction *action = addAction(text);
         action->setText(text);
-        action->setObjectName(QString::number(setting));
+        action->setObjectName(QString::number(filter));
+        action->setCheckable(true);
 
-        g_settings->connect_action_to_bool_setting(action, setting);
+        const bool is_checked = [&]() {
+            if (filter < state.size()) {
+                return state[filter].toBool();
+            } else {
+                return true;
+            }
+        }();
+        action->setChecked(is_checked);
 
-        action_map.insert(setting, action);
+        action_map.insert(filter, action);
+
+        connect(
+            action, &QAction::toggled,
+            this, &AttributesFilterMenu::filter_changed);
     };
 
-    add_filter_option(tr("Unset"), BoolSetting_AttributeFilterUnset);
-    add_filter_option(tr("Read-only"), BoolSetting_AttributeFilterReadOnly);
+    add_filter_action(tr("Unset"), AttributeFilter_Unset);
+    add_filter_action(tr("Read-only"), AttributeFilter_ReadOnly);
 
     addSeparator();
 
-    add_filter_option(tr("Mandatory"), BoolSetting_AttributeFilterMandatory);
-    add_filter_option(tr("Optional"), BoolSetting_AttributeFilterOptional);
+    add_filter_action(tr("Mandatory"), AttributeFilter_Mandatory);
+    add_filter_action(tr("Optional"), AttributeFilter_Optional);
 
     addSeparator();
 
-    add_filter_option(tr("System-only"), BoolSetting_AttributeFilterSystemOnly);
-    add_filter_option(tr("Constructed"), BoolSetting_AttributeFilterConstructed);
-    add_filter_option(tr("Backlink"), BoolSetting_AttributeFilterBacklink);
+    add_filter_action(tr("System-only"), AttributeFilter_SystemOnly);
+    add_filter_action(tr("Constructed"), AttributeFilter_Constructed);
+    add_filter_action(tr("Backlink"), AttributeFilter_Backlink);
 
-    const BoolSettingSignal *read_only_signal = g_settings->get_bool_signal(BoolSetting_AttributeFilterReadOnly);
     connect(
-        read_only_signal, &BoolSettingSignal::changed,
+        action_map[AttributeFilter_ReadOnly], &QAction::toggled,
         this, &AttributesFilterMenu::on_read_only_changed);
     on_read_only_changed();
 }
 
-void AttributesFilterMenu::on_read_only_changed() {
-    const bool read_only_is_enabled = g_settings->get_bool(BoolSetting_AttributeFilterReadOnly);
+AttributesFilterMenu::~AttributesFilterMenu() {
+    const QList<QVariant> state = [&]() {
+        QList<QVariant> out;
 
-    const QList<BoolSetting> read_only_sub_filters = {
-        BoolSetting_AttributeFilterSystemOnly,
-        BoolSetting_AttributeFilterConstructed,
-        BoolSetting_AttributeFilterBacklink,
+        for (int fitler_i = 0; fitler_i < AttributeFilter_COUNT; fitler_i++) {
+            const AttributeFilter filter = (AttributeFilter) fitler_i;
+            const QAction *action = action_map[filter];
+            const QVariant filter_state = QVariant(action->isChecked());
+
+            out.append(filter_state);
+        }
+
+        return out;
+    }();
+
+    settings_set_variant(VariantSetting_AttributesTabFilterState, state);
+}
+
+void AttributesFilterMenu::on_read_only_changed() {
+    const bool read_only_is_enabled = action_map[AttributeFilter_ReadOnly]->isChecked();
+
+    const QList<AttributeFilter> read_only_sub_filters = {
+        AttributeFilter_SystemOnly,
+        AttributeFilter_Constructed,
+        AttributeFilter_Backlink,
     };
 
-    for (const BoolSetting &setting : read_only_sub_filters) {
-        action_map[setting]->setEnabled(read_only_is_enabled);
-        action_map[setting]->setChecked(read_only_is_enabled);
+    for (const AttributeFilter &filter : read_only_sub_filters) {
+        action_map[filter]->setEnabled(read_only_is_enabled);
+        
+        // Turning off read only turns off the sub read only
+        // filters. Note that turning ON read only doesn't do
+        // the opposite.
+        if (!read_only_is_enabled) {
+            action_map[filter]->setChecked(false);
+        }
     }
 }
 
-AttributesTabProxy::AttributesTabProxy(QObject *parent)
+bool AttributesFilterMenu::filter_is_enabled(const AttributeFilter filter) const {
+    return action_map[filter]->isChecked();
+}
+
+AttributesTabProxy::AttributesTabProxy(AttributesFilterMenu *filter_menu_arg, QObject *parent)
 : QSortFilterProxyModel(parent) {
-    const QList<BoolSetting> filter_setting_list = {
-        BoolSetting_AttributeFilterUnset,
-        BoolSetting_AttributeFilterReadOnly,
-        BoolSetting_AttributeFilterMandatory,
-        BoolSetting_AttributeFilterOptional,
-        BoolSetting_AttributeFilterSystemOnly,
-        BoolSetting_AttributeFilterConstructed,
-        BoolSetting_AttributeFilterBacklink,
-    };
-    for (const BoolSetting &setting : filter_setting_list) {
-        const BoolSettingSignal *signal = g_settings->get_bool_signal(setting);
-        connect(
-            signal, &BoolSettingSignal::changed,
-            this, &AttributesTabProxy::invalidate);
-    }
+    filter_menu = filter_menu_arg;
 }
 
 void AttributesTabProxy::load(const AdObject &object) {
@@ -290,36 +327,36 @@ bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &sou
     const bool mandatory = mandatory_attributes.contains(attribute);
     const bool optional = optional_attributes.contains(attribute);
 
-    if (!g_settings->get_bool(BoolSetting_AttributeFilterUnset) && unset) {
+    if (!filter_menu->filter_is_enabled(AttributeFilter_Unset) && unset) {
         return false;
     }
 
-    if (!g_settings->get_bool(BoolSetting_AttributeFilterMandatory) && mandatory) {
+    if (!filter_menu->filter_is_enabled(AttributeFilter_Mandatory) && mandatory) {
         return false;
     }
 
-    if (!g_settings->get_bool(BoolSetting_AttributeFilterOptional) && optional) {
+    if (!filter_menu->filter_is_enabled(AttributeFilter_Optional) && optional) {
         return false;
     }
 
-    if (g_settings->get_bool(BoolSetting_AttributeFilterReadOnly) && system_only) {
+    if (filter_menu->filter_is_enabled(AttributeFilter_ReadOnly) && system_only) {
         const bool constructed = g_adconfig->get_attribute_is_constructed(attribute);
         const bool backlink = g_adconfig->get_attribute_is_backlink(attribute);
 
-        if (!g_settings->get_bool(BoolSetting_AttributeFilterSystemOnly) && !constructed && !backlink) {
+        if (!filter_menu->filter_is_enabled(AttributeFilter_SystemOnly) && !constructed && !backlink) {
             return false;
         }
 
-        if (!g_settings->get_bool(BoolSetting_AttributeFilterConstructed) && constructed) {
+        if (!filter_menu->filter_is_enabled(AttributeFilter_Constructed) && constructed) {
             return false;
         }
 
-        if (!g_settings->get_bool(BoolSetting_AttributeFilterBacklink) && backlink) {
+        if (!filter_menu->filter_is_enabled(AttributeFilter_Backlink) && backlink) {
             return false;
         }
     }
 
-    if (!g_settings->get_bool(BoolSetting_AttributeFilterReadOnly) && system_only) {
+    if (!filter_menu->filter_is_enabled(AttributeFilter_ReadOnly) && system_only) {
         return false;
     }
 

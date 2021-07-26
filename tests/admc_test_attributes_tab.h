@@ -41,6 +41,7 @@ private slots:
 
     void apply();
     void load();
+    void filter_data();
     void filter();
 
 private:
@@ -53,7 +54,7 @@ private:
     QPushButton *edit_button;
     QString dn;
 
-    void set_filter(const QList<BoolSetting> &filter_list, const bool state);
+    void set_filter(const QList<AttributeFilter> &filter_list, const bool state);
 };
 
 #endif /* ADMC_TEST_ATTRIBUTES_TAB_H */

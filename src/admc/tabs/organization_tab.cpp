@@ -78,11 +78,11 @@ OrganizationTab::OrganizationTab() {
     layout->addRow(reports_label);
     layout->addRow(reports_view);
 
-    g_settings->restore_header_state(VariantSetting_OrganizationTabHeaderState, reports_view->header());
+    settings_restore_header_state(VariantSetting_OrganizationTabHeaderState, reports_view->header());
 }
 
 OrganizationTab::~OrganizationTab() {
-    g_settings->save_header_state(VariantSetting_OrganizationTabHeaderState, reports_view->header());   
+    settings_save_header_state(VariantSetting_OrganizationTabHeaderState, reports_view->header());   
 }
 
 void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
