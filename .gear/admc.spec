@@ -93,6 +93,7 @@ Tests for ADMC
 %_bindir/admc_test_manager_edit
 %_bindir/admc_test_delegation_edit
 %_bindir/admc_test_string_other_edit
+%_bindir/admc_test_account_option_edit
 %_bindir/admc_test_octet_editor
 %_bindir/admc_test_bool_editor
 %_bindir/admc_test_string_editor

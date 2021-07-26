@@ -39,6 +39,8 @@ public:
 
     void set_checked(const bool checked);
 
+    QCheckBox *get_check() const;
+
 private:
     AccountOption option;
     QCheckBox *check;

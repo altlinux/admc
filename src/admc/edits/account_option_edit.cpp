@@ -91,6 +91,10 @@ void AccountOptionEdit::set_checked(const bool checked) {
     check->setChecked(checked);
 }
 
+QCheckBox *AccountOptionEdit::get_check() const {
+    return check;
+}
+
 // PasswordExpired conflicts with (DontExpirePassword and
 // CantChangePassword) When PasswordExpired is set, the
 // other two can't be set When any of the other two are set,
