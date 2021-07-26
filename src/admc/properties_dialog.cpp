@@ -208,8 +208,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     }
 
     if (ad.is_connected()) {
-        g_status()->display_ad_messages(ad, this);
-        
         reset_internal(ad);
     }
 
