@@ -154,7 +154,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     add_tab(new GeneralTab(object), tr("General"));
 
-    const bool advanced_view_ON = settings_get_bool(BoolSetting_AdvancedFeatures);
+    const bool advanced_view_ON = settings_get_bool(SETTING_advanced_features);
     if (advanced_view_ON) {
         add_tab(new ObjectTab(), tr("Object"));
 
@@ -213,7 +213,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         reset_internal(ad);
     }
 
-    settings_setup_dialog_geometry(VariantSetting_PropertiesDialogGeometry, this);
+    settings_setup_dialog_geometry(SETTING_properties_dialog_geometry, this);
     
     connect(
         ok_button, &QPushButton::clicked,

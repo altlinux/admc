@@ -175,8 +175,8 @@ void console_query_tree_init(ConsoleWidget *console) {
     query_tree_head->setDragEnabled(false);
 
     // Add rest of tree
-    const QHash<QString, QVariant> folder_list = settings_get_variant(VariantSetting_QueryFolders).toHash();
-    const QHash<QString, QVariant> item_list = settings_get_variant(VariantSetting_QueryItems).toHash();
+    const QHash<QString, QVariant> folder_list = settings_get_variant(SETTING_query_folders).toHash();
+    const QHash<QString, QVariant> item_list = settings_get_variant(SETTING_query_items).toHash();
 
     QStack<QPersistentModelIndex> folder_stack;
     folder_stack.append(query_tree_head->index());
@@ -274,8 +274,8 @@ void console_query_tree_save(ConsoleWidget *console) {
     const QVariant folder_variant = QVariant(folder_list);
     const QVariant item_variant = QVariant(item_list);
 
-    settings_set_variant(VariantSetting_QueryFolders, folder_variant);
-    settings_set_variant(VariantSetting_QueryItems, item_variant);
+    settings_set_variant(SETTING_query_folders, folder_variant);
+    settings_set_variant(SETTING_query_items, item_variant);
 }
 
 bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index) {

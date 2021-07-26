@@ -54,12 +54,12 @@ MainWindow::MainWindow()
 
     setup_menubar();
 
-    const bool restored_geometry = settings_restore_geometry(VariantSetting_MainWindowGeometry, this);
+    const bool restored_geometry = settings_restore_geometry(SETTING_main_window_geometry, this);
     if (!restored_geometry) {
         resize(1024, 768);
     }
 
-    const QByteArray state = settings_get_variant(VariantSetting_MainWindowState).toByteArray();
+    const QByteArray state = settings_get_variant(SETTING_main_window_state).toByteArray();
     if (!state.isEmpty()) {
         restoreState(state);
     } else {
@@ -71,10 +71,10 @@ MainWindow::MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     const QByteArray geometry = saveGeometry();
-    settings_set_variant(VariantSetting_MainWindowGeometry, geometry);
+    settings_set_variant(SETTING_main_window_geometry, geometry);
 
     const QByteArray state = saveState();
-    settings_set_variant(VariantSetting_MainWindowState, state);
+    settings_set_variant(SETTING_main_window_state, state);
 
     QMainWindow::closeEvent(event);
 }
@@ -96,10 +96,10 @@ void MainWindow::setup_menubar() {
     auto manual_action = new QAction(tr("&Manual"), this);
     auto about_action = new QAction(tr("&About ADMC"), this);
 
-    auto confirm_actions_action = settings_make_and_connect_action(BoolSetting_ConfirmActions, tr("&Confirm actions"), this);
-    auto last_before_first_name_action = settings_make_and_connect_action(BoolSetting_LastNameBeforeFirstName, tr("&Put last name before first name when creating users"), this);
-    auto log_searches_action = settings_make_and_connect_action(BoolSetting_LogSearches, tr("Log searches"), this);
-    auto timestamp_log_action = settings_make_and_connect_action(BoolSetting_TimestampLog, tr("Timestamps in message log"), this);
+    auto confirm_actions_action = settings_make_and_connect_action(SETTING_confirm_actions, tr("&Confirm actions"), this);
+    auto last_before_first_name_action = settings_make_and_connect_action(SETTING_last_name_before_first_name, tr("&Put last name before first name when creating users"), this);
+    auto log_searches_action = settings_make_and_connect_action(SETTING_log_searches, tr("Log searches"), this);
+    auto timestamp_log_action = settings_make_and_connect_action(SETTING_timestamp_log, tr("Timestamps in message log"), this);
 
     const QList<QLocale::Language> language_list = {
         QLocale::English,
@@ -127,7 +127,7 @@ void MainWindow::setup_menubar() {
             language_group->addAction(action);
 
             const bool is_checked = [=]() {
-                const QLocale current_locale = settings_get_variant(VariantSetting_Locale).toLocale();
+                const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
 
                 return (current_locale == locale);
             }();
@@ -199,7 +199,7 @@ void MainWindow::setup_menubar() {
             action, &QAction::toggled,
             [this, language](bool checked) {
                 if (checked) {
-                    settings_set_variant(VariantSetting_Locale, QLocale(language));
+                    settings_set_variant(SETTING_locale, QLocale(language));
 
                     message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
                 }
@@ -213,13 +213,13 @@ void MainWindow::setup_menubar() {
 }
 
 void MainWindow::connect_to_server() {
-    const QString saved_dc = settings_get_variant(VariantSetting_DC).toString();
+    const QString saved_dc = settings_get_variant(SETTING_dc).toString();
     AdInterface::set_dc(saved_dc);
 
     AdInterface ad;
     if (ad_connected(ad)) {
         // TODO: check for load failure
-        const QLocale locale = settings_get_variant(VariantSetting_Locale).toLocale();
+        const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
         g_adconfig->load(ad, locale);
 
         qDebug() << "domain =" << g_adconfig->domain();
@@ -238,7 +238,7 @@ void MainWindow::connect_to_server() {
 }
 
 void MainWindow::on_log_searches_changed() {
-    const bool log_searches_ON = settings_get_bool(BoolSetting_LogSearches);
+    const bool log_searches_ON = settings_get_bool(SETTING_log_searches);
 
     AdInterface::set_log_searches(log_searches_ON);
 }

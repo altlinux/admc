@@ -28,28 +28,41 @@
 #include <QDialog>
 #include <QSettings>
 
-bool bool_default_value(const BoolSetting setting);
-QString bool_to_string(const BoolSetting setting);
-QString variant_to_string(const VariantSetting setting);
+const QHash<QString, bool> bool_setting_default_map = {
+    {SETTING_advanced_features, false},
+    {SETTING_confirm_actions, true},
+    {SETTING_dev_mode, false},
+    {SETTING_show_non_containers_in_console_tree, false},
+    {SETTING_last_name_before_first_name, [&]() {
+        const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
+        if (locale_is_russian) {
+            return true;
+        } else {
+            return false;
+        }
+    }()},
+    {SETTING_show_console_tree, true},
+    {SETTING_show_results_header, true},
+    {SETTING_log_searches, false},
+    {SETTING_timestamp_log, true},
+};
 
-bool settings_get_bool(const BoolSetting setting) {
+bool settings_get_bool(const QString setting) {
     QSettings settings;
 
-    const QString setting_str = bool_to_string(setting);
-    const bool default_value = bool_default_value(setting);
-    const bool value = settings.value(setting_str, default_value).toBool();
+    const bool default_value = bool_setting_default_map.value(setting, false);
+    const bool value = settings.value(setting, default_value).toBool();
 
     return value;
 }
 
-void settings_set_bool(const BoolSetting setting, const bool value) {
+void settings_set_bool(const QString setting, const bool value) {
     QSettings settings;
-   
-    const QString name = bool_to_string(setting);
-    settings.setValue(name, value);
+
+    settings.setValue(setting, value);
 }
 
-void settings_setup_dialog_geometry(const VariantSetting setting, QDialog *dialog) {
+void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
     settings_restore_geometry(setting, dialog);
 
     QDialog::connect(
@@ -60,7 +73,7 @@ void settings_setup_dialog_geometry(const VariantSetting setting, QDialog *dialo
         });
 }
 
-bool settings_restore_geometry(const VariantSetting setting, QWidget *widget) {
+bool settings_restore_geometry(const QString setting, QWidget *widget) {
     const QByteArray geometry = settings_get_variant(setting).toByteArray();
     if (!geometry.isEmpty()) {
         widget->restoreGeometry(geometry);
@@ -71,12 +84,12 @@ bool settings_restore_geometry(const VariantSetting setting, QWidget *widget) {
     }
 }
 
-void settings_save_header_state(const VariantSetting setting, QHeaderView *header) {
+void settings_save_header_state(const QString setting, QHeaderView *header) {
     const QByteArray state = header->saveState();
     settings_set_variant(setting, state);
 }
 
-bool settings_restore_header_state(const VariantSetting setting, QHeaderView *header) {
+bool settings_restore_header_state(const QString setting, QHeaderView *header) {
     const QByteArray state = settings_get_variant(setting).toByteArray();
     if (!state.isEmpty()) {
         header->restoreState(state);
@@ -87,21 +100,20 @@ bool settings_restore_header_state(const VariantSetting setting, QHeaderView *he
     }
 }
 
-QVariant settings_get_variant(const VariantSetting setting, const QVariant &default_value) {
+QVariant settings_get_variant(const QString setting, const QVariant &default_value) {
     QSettings settings;
-    const QString name = variant_to_string(setting);
-    const QVariant value = settings.value(name, default_value);
+    const QVariant value = settings.value(setting, default_value);
 
     return value;
 }
 
-void settings_set_variant(const VariantSetting setting, const QVariant &value) {
+void settings_set_variant(const QString setting, const QVariant &value) {
     QSettings settings;
-    const QString name = variant_to_string(setting);
-    settings.setValue(name, value);
+
+    settings.setValue(setting, value);
 }
 
-void settings_connect_action_to_bool_setting(QAction *action, const BoolSetting setting) {
+void settings_connect_action_to_bool_setting(QAction *action, const QString setting) {
     action->setCheckable(true);
 
     // Init action state to saved value
@@ -116,7 +128,7 @@ void settings_connect_action_to_bool_setting(QAction *action, const BoolSetting 
         });
 }
 
-QAction *settings_make_action(const BoolSetting setting, const QString &text, QObject *parent) {
+QAction *settings_make_action(const QString setting, const QString &text, QObject *parent) {
     auto action = new QAction(text, parent);
     action->setCheckable(true);
 
@@ -127,7 +139,7 @@ QAction *settings_make_action(const BoolSetting setting, const QString &text, QO
     return action;
 }
 
-QAction *settings_make_and_connect_action(const BoolSetting setting, const QString &text, QObject *parent) {
+QAction *settings_make_and_connect_action(const QString setting, const QString &text, QObject *parent) {
     auto action = settings_make_action(setting, text, parent);
 
     // Update saved value when action is toggled
@@ -138,85 +150,4 @@ QAction *settings_make_and_connect_action(const BoolSetting setting, const QStri
         });
 
     return action;
-}
-
-
-// NOTE: DON'T define "default:" branch, want to be warned and forced to define a default value for all settings
-bool bool_default_value(const BoolSetting setting) {
-    switch (setting) {
-        case BoolSetting_AdvancedFeatures: return false;
-        case BoolSetting_ConfirmActions: return true;
-        case BoolSetting_DevMode: return false;
-        case BoolSetting_ShowNonContainersInConsoleTree: return false;
-        case BoolSetting_LastNameBeforeFirstName: {
-            const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
-            if (locale_is_russian) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        case BoolSetting_ShowConsoleTree: return true;
-        case BoolSetting_ShowResultsHeader: return true;
-        case BoolSetting_LogSearches: return false;
-        case BoolSetting_TimestampLog: return true;
-
-        case BoolSetting_COUNT: break;
-    }
-
-    return false;
-}
-
-#define CASE_ENUM_TO_STRING(ENUM) \
-case ENUM: return #ENUM
-
-// Convert enum to string literal via macro
-// BoolSetting_Foo => "BoolSetting_Foo"
-QString bool_to_string(const BoolSetting setting) {
-    switch (setting) {
-        CASE_ENUM_TO_STRING(BoolSetting_AdvancedFeatures);
-        CASE_ENUM_TO_STRING(BoolSetting_ConfirmActions);
-        CASE_ENUM_TO_STRING(BoolSetting_DevMode);
-        CASE_ENUM_TO_STRING(BoolSetting_ShowNonContainersInConsoleTree);
-        CASE_ENUM_TO_STRING(BoolSetting_LastNameBeforeFirstName);
-        CASE_ENUM_TO_STRING(BoolSetting_ShowConsoleTree);
-        CASE_ENUM_TO_STRING(BoolSetting_ShowResultsHeader);
-        CASE_ENUM_TO_STRING(BoolSetting_LogSearches);
-        CASE_ENUM_TO_STRING(BoolSetting_TimestampLog);
-        CASE_ENUM_TO_STRING(BoolSetting_COUNT);
-    }
-    return "";
-}
-
-QString variant_to_string(const VariantSetting setting) {
-    switch (setting) {
-        CASE_ENUM_TO_STRING(VariantSetting_DC);
-        CASE_ENUM_TO_STRING(VariantSetting_MainWindowGeometry);
-        CASE_ENUM_TO_STRING(VariantSetting_MainWindowState);
-        CASE_ENUM_TO_STRING(VariantSetting_Locale);
-        CASE_ENUM_TO_STRING(VariantSetting_ResultsHeader);
-        CASE_ENUM_TO_STRING(VariantSetting_FindResultsHeader);
-        CASE_ENUM_TO_STRING(VariantSetting_AttributesTabHeaderState);
-        CASE_ENUM_TO_STRING(VariantSetting_AttributesTabFilterState);
-        CASE_ENUM_TO_STRING(VariantSetting_QueryFolders);
-        CASE_ENUM_TO_STRING(VariantSetting_QueryItems);
-        CASE_ENUM_TO_STRING(VariantSetting_PropertiesDialogGeometry);
-        CASE_ENUM_TO_STRING(VariantSetting_FilterDialogGeometry);
-        CASE_ENUM_TO_STRING(VariantSetting_FindObjectDialogGeometry);
-        CASE_ENUM_TO_STRING(VariantSetting_SelectObjectDialogGeometry);
-        CASE_ENUM_TO_STRING(VariantSetting_SelectContainerDialogGeometry);
-        CASE_ENUM_TO_STRING(VariantSetting_ObjectMultiDialogGeometry);
-        CASE_ENUM_TO_STRING(VariantSetting_ConsoleWidgetState);
-        CASE_ENUM_TO_STRING(VariantSetting_PolicyResultsState);
-        CASE_ENUM_TO_STRING(VariantSetting_FindResultsViewState);
-        CASE_ENUM_TO_STRING(VariantSetting_SelectObjectHeaderState);
-        CASE_ENUM_TO_STRING(VariantSetting_MembershipTabHeaderState);
-        CASE_ENUM_TO_STRING(VariantSetting_OrganizationTabHeaderState);
-        CASE_ENUM_TO_STRING(VariantSetting_GpoLinksTabHeaderState);
-        CASE_ENUM_TO_STRING(VariantSetting_GroupPolicyTabHeaderState);
-        CASE_ENUM_TO_STRING(VariantSetting_SecurityTabHeaderState);
-        CASE_ENUM_TO_STRING(VariantSetting_FilterDialogState);
-        CASE_ENUM_TO_STRING(VariantSetting_COUNT);
-    }
-    return "";
 }

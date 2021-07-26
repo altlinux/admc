@@ -89,9 +89,9 @@ AttributesTab::AttributesTab() {
 
     enable_widget_on_selection(edit_button, view);
 
-    settings_restore_header_state(VariantSetting_AttributesTabHeaderState, view->header());
+    settings_restore_header_state(SETTING_attributes_tab_header_state, view->header());
 
-    const QHash<QString, QVariant> state = settings_get_variant(VariantSetting_AttributesTabHeaderState).toHash();
+    const QHash<QString, QVariant> state = settings_get_variant(SETTING_attributes_tab_header_state).toHash();
 
     view->header()->restoreState(state["header"].toByteArray());
 
@@ -107,7 +107,7 @@ AttributesTab::AttributesTab() {
 }
 
 AttributesTab::~AttributesTab() {
-    settings_set_variant(VariantSetting_AttributesTabHeaderState, view->header()->saveState());
+    settings_set_variant(SETTING_attributes_tab_header_state, view->header()->saveState());
 }
 
 void AttributesTab::edit_attribute() {
@@ -218,7 +218,7 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
 
 AttributesFilterMenu::AttributesFilterMenu(QWidget *parent)
 : QMenu(parent) {
-    const QList<QVariant> state = settings_get_variant(VariantSetting_AttributesTabFilterState).toList();
+    const QList<QVariant> state = settings_get_variant(SETTING_attributes_tab_filter_state).toList();
 
     auto add_filter_action = [&](const QString text, const AttributeFilter filter) {
         QAction *action = addAction(text);
@@ -277,7 +277,7 @@ AttributesFilterMenu::~AttributesFilterMenu() {
         return out;
     }();
 
-    settings_set_variant(VariantSetting_AttributesTabFilterState, state);
+    settings_set_variant(SETTING_attributes_tab_filter_state, state);
 }
 
 void AttributesFilterMenu::on_read_only_changed() {

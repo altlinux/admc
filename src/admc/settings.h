@@ -33,76 +33,81 @@ class QVariant;
 class QWidget;
 class QHeaderView;
 class QDialog;
-class QString;
 class QObject;
 
-enum VariantSetting {
-    VariantSetting_DC,
-    VariantSetting_Locale,
-    VariantSetting_ResultsHeader,
-    VariantSetting_FindResultsHeader,
-    VariantSetting_AttributesTabHeaderState,
-    VariantSetting_MainWindowGeometry,
-    VariantSetting_MainWindowState,
-    VariantSetting_AttributesTabFilterState,
-    VariantSetting_QueryFolders,
-    VariantSetting_QueryItems,
-    VariantSetting_PropertiesDialogGeometry,
-    VariantSetting_FilterDialogGeometry,
-    VariantSetting_FindObjectDialogGeometry,
-    VariantSetting_SelectObjectDialogGeometry,
-    VariantSetting_SelectContainerDialogGeometry,
-    VariantSetting_ObjectMultiDialogGeometry,
-    VariantSetting_ConsoleWidgetState,
-    VariantSetting_PolicyResultsState,
-    VariantSetting_FindResultsViewState,
-    VariantSetting_SelectObjectHeaderState,
-    VariantSetting_MembershipTabHeaderState,
-    VariantSetting_OrganizationTabHeaderState,
-    VariantSetting_GpoLinksTabHeaderState,
-    VariantSetting_GroupPolicyTabHeaderState,
-    VariantSetting_SecurityTabHeaderState,
-    VariantSetting_FilterDialogState,
+// NOTE: define setting names this way to guarantee that all
+// setting names are unique
+// const QString SETTING = "SETTING";
+#define DEFINE_SETTING(SETTING) \
+const QString SETTING = #SETTING;
 
-    VariantSetting_COUNT,
-};
+// Widget state
+DEFINE_SETTING(SETTING_main_window_state);
+DEFINE_SETTING(SETTING_attributes_tab_filter_state);
+DEFINE_SETTING(SETTING_console_widget_state);
+DEFINE_SETTING(SETTING_policy_results_state);
+DEFINE_SETTING(SETTING_find_results_state);
+DEFINE_SETTING(SETTING_filter_dialog_state);
 
-enum BoolSetting {
-    BoolSetting_AdvancedFeatures,
-    BoolSetting_ConfirmActions,
-    BoolSetting_DevMode,
-    BoolSetting_ShowNonContainersInConsoleTree,
-    BoolSetting_LastNameBeforeFirstName,
-    BoolSetting_ShowConsoleTree,
-    BoolSetting_ShowResultsHeader,
-    BoolSetting_LogSearches,
-    BoolSetting_TimestampLog,
+// Widget geometry
+DEFINE_SETTING(SETTING_main_window_geometry);
+DEFINE_SETTING(SETTING_properties_dialog_geometry);
+DEFINE_SETTING(SETTING_filter_dialog_geometry);
+DEFINE_SETTING(SETTING_find_object_dialog_geometry);
+DEFINE_SETTING(SETTING_select_object_dialog_geometry);
+DEFINE_SETTING(SETTING_select_container_dialog_geometry);
+DEFINE_SETTING(SETTING_object_multi_dialog_geometry);
 
-    BoolSetting_COUNT,
-};
+// Header state
+DEFINE_SETTING(SETTING_results_header);
+DEFINE_SETTING(SETTING_find_results_header);
+DEFINE_SETTING(SETTING_attributes_tab_header_state);
+DEFINE_SETTING(SETTING_select_object_header_state);
+DEFINE_SETTING(SETTING_membership_tab_header_state);
+DEFINE_SETTING(SETTING_organization_tab_header_state);
+DEFINE_SETTING(SETTING_gpo_links_tab_header_state);
+DEFINE_SETTING(SETTING_group_policy_tab_header_state);
+DEFINE_SETTING(SETTING_security_tab_header_state);
 
-QVariant settings_get_variant(const VariantSetting setting, const QVariant &default_value = QVariant());
-void settings_set_variant(const VariantSetting setting, const QVariant &value);
+// Bool
+DEFINE_SETTING(SETTING_advanced_features);
+DEFINE_SETTING(SETTING_confirm_actions);
+DEFINE_SETTING(SETTING_dev_mode);
+DEFINE_SETTING(SETTING_show_non_containers_in_console_tree);
+DEFINE_SETTING(SETTING_last_name_before_first_name);
+DEFINE_SETTING(SETTING_show_console_tree);
+DEFINE_SETTING(SETTING_show_results_header);
+DEFINE_SETTING(SETTING_log_searches);
+DEFINE_SETTING(SETTING_timestamp_log);
+
+// Other
+DEFINE_SETTING(SETTING_dc);
+DEFINE_SETTING(SETTING_locale);
+DEFINE_SETTING(SETTING_query_folders);
+DEFINE_SETTING(SETTING_query_items);
+
+QVariant settings_get_variant(const QString setting, const QVariant &default_value = QVariant());
+void settings_set_variant(const QString setting, const QVariant &value);
 
 // NOTE: returns default value if it's defined in
 // settings.cpp
-bool settings_get_bool(const BoolSetting setting);
-void settings_set_bool(const BoolSetting setting, const bool value);
+bool settings_get_bool(const QString setting);
+void settings_set_bool(const QString setting, const bool value);
 
 // Does two things. First it restores previously saved
 // geometry, if it exists. Then it connects to dialogs
 // finished() signal so that it's geometry is saved when
 // dialog is finished.
-void settings_setup_dialog_geometry(const VariantSetting setting, QDialog *dialog);
+void settings_setup_dialog_geometry(const QString setting, QDialog *dialog);
 
 // NOTE: If setting is present, restore is performed,
 // otherwise f-n does nothing and returns false. You
 // should check for the return and perform default
 // sizing in the false case.
-bool settings_restore_geometry(const VariantSetting setting, QWidget *widget);
+bool settings_restore_geometry(const QString setting, QWidget *widget);
 
-void settings_save_header_state(const VariantSetting setting, QHeaderView *header);
-bool settings_restore_header_state(const VariantSetting setting, QHeaderView *header);
+void settings_save_header_state(const QString setting, QHeaderView *header);
+bool settings_restore_header_state(const QString setting, QHeaderView *header);
 
 /** 
  * Make a checkable QAction that is connected to a bool
@@ -111,7 +116,7 @@ bool settings_restore_header_state(const VariantSetting setting, QHeaderView *he
  * connects the action for you so that when toggling the
  * action modifies the setting.
  */
-QAction *settings_make_action(const BoolSetting setting, const QString &text, QObject *parent);
-QAction *settings_make_and_connect_action(const BoolSetting setting, const QString &text, QObject *parent);
+QAction *settings_make_action(const QString setting, const QString &text, QObject *parent);
+QAction *settings_make_and_connect_action(const QString setting, const QString &text, QObject *parent);
 
 #endif /* SETTINGS_H */

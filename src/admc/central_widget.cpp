@@ -72,12 +72,12 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     // NOTE: these actions are not connected here because
     // they need to be connected to a custom slot
-    dev_mode_action = settings_make_action(BoolSetting_DevMode, tr("Dev mode"), this);
-    show_noncontainers_action = settings_make_action(BoolSetting_ShowNonContainersInConsoleTree, tr("&Show non-container objects in Console tree"), this);
-    advanced_features_action = settings_make_action(BoolSetting_AdvancedFeatures, tr("Advanced features"), this);
+    dev_mode_action = settings_make_action(SETTING_dev_mode, tr("Dev mode"), this);
+    show_noncontainers_action = settings_make_action(SETTING_show_non_containers_in_console_tree, tr("&Show non-container objects in Console tree"), this);
+    advanced_features_action = settings_make_action(SETTING_advanced_features, tr("Advanced features"), this);
 
-    toggle_console_tree_action = settings_make_and_connect_action(BoolSetting_AdvancedFeatures, tr("Console Tree"), this);
-    toggle_description_bar_action = settings_make_and_connect_action(BoolSetting_ShowResultsHeader, tr("Description Bar"), this);
+    toggle_console_tree_action = settings_make_and_connect_action(SETTING_advanced_features, tr("Console Tree"), this);
+    toggle_description_bar_action = settings_make_and_connect_action(SETTING_show_results_header, tr("Description Bar"), this);
 
     console = new ConsoleWidget();
 
@@ -112,7 +112,7 @@ CentralWidget::CentralWidget(AdInterface &ad)
     setLayout(layout);
     layout->addWidget(console);
 
-    const QVariant console_widget_state = settings_get_variant(VariantSetting_ConsoleWidgetState);
+    const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
     console->restore_state(console_widget_state);
 
     connect(
@@ -262,7 +262,7 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
 CentralWidget::~CentralWidget() {
     const QVariant state = console->save_state();
-    settings_set_variant(VariantSetting_ConsoleWidgetState, state);
+    settings_set_variant(SETTING_console_widget_state, state);
 }
 
 void CentralWidget::object_delete() {
@@ -715,19 +715,19 @@ void CentralWidget::on_object_properties_applied() {
 }
 
 void CentralWidget::on_show_non_containers() {
-    settings_set_bool(BoolSetting_ShowNonContainersInConsoleTree, show_noncontainers_action->isChecked());
+    settings_set_bool(SETTING_show_non_containers_in_console_tree, show_noncontainers_action->isChecked());
 
     refresh_head();
 }
 
 void CentralWidget::on_dev_mode() {
-    settings_set_bool(BoolSetting_DevMode, dev_mode_action->isChecked());
+    settings_set_bool(SETTING_dev_mode, dev_mode_action->isChecked());
 
     refresh_head();
 }
 
 void CentralWidget::on_advanced_features() {
-    settings_set_bool(BoolSetting_AdvancedFeatures, advanced_features_action->isChecked());
+    settings_set_bool(SETTING_advanced_features, advanced_features_action->isChecked());
 
     refresh_head();
 }

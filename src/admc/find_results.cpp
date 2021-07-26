@@ -71,7 +71,7 @@ FindResults::FindResults()
 
     customize_columns_action = new QAction(tr("&Customize columns"), this);
 
-    const QVariant view_state = settings_get_variant(VariantSetting_FindResultsViewState);
+    const QVariant view_state = settings_get_variant(SETTING_find_results_state);
     view->restore_state(view_state, console_object_default_columns());
 
     connect(
@@ -121,7 +121,7 @@ FindResults::FindResults()
 
 FindResults::~FindResults() {
     const QVariant view_state = view->save_state();
-    settings_set_variant(VariantSetting_FindResultsViewState, view_state);
+    settings_set_variant(SETTING_find_results_state, view_state);
 }
 
 void FindResults::add_actions_to_action_menu(QMenu *menu) {

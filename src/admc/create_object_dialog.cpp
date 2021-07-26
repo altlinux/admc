@@ -118,7 +118,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
                 const QString first_name = first_name_edit->get_input();
                 const QString last_name = last_name_edit->get_input();
 
-                const bool last_name_first = settings_get_bool(BoolSetting_LastNameBeforeFirstName);
+                const bool last_name_first = settings_get_bool(SETTING_last_name_before_first_name);
                 if (!first_name.isEmpty() && !last_name.isEmpty()) {
                     if (last_name_first) {
                         return last_name + " " + first_name;

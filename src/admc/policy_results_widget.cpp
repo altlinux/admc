@@ -98,7 +98,7 @@ PolicyResultsWidget::PolicyResultsWidget() {
     layout->setSpacing(0);
     layout->addWidget(view);
 
-    const QVariant state = settings_get_variant(VariantSetting_PolicyResultsState);
+    const QVariant state = settings_get_variant(SETTING_policy_results_state);
     view->restore_state(state, {
         PolicyResultsColumn_Name,
         PolicyResultsColumn_Enforced,
@@ -119,7 +119,7 @@ PolicyResultsWidget::PolicyResultsWidget() {
 
 PolicyResultsWidget::~PolicyResultsWidget() {
     const QVariant state = view->save_state();
-    settings_set_variant(VariantSetting_PolicyResultsState, state);
+    settings_set_variant(SETTING_policy_results_state, state);
 }
 
 void PolicyResultsWidget::update(const QModelIndex &index) {

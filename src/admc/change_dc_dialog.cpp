@@ -77,7 +77,7 @@ void ChangeDCDialog::accept() {
     console_object_load_domain_head_text(domain_head_item);
 
     if (save_dc_checkbox->isChecked()) {
-        settings_set_variant(VariantSetting_DC, current_dc);
+        settings_set_variant(SETTING_dc, current_dc);
     }
 
     QDialog::accept();

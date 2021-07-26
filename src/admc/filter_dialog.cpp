@@ -89,7 +89,7 @@ FilterDialog::FilterDialog(QWidget *parent)
     layout->addWidget(radio_buttons_frame);
     layout->addWidget(button_box);
 
-    settings_setup_dialog_geometry(VariantSetting_FilterDialogGeometry, this);
+    settings_setup_dialog_geometry(SETTING_filter_dialog_geometry, this);
 
     button_state_name_map = {
         {"ALL_BUTTON_STATE", all_button},
@@ -97,7 +97,7 @@ FilterDialog::FilterDialog(QWidget *parent)
         {"CUSTOM_BUTTON_STATE", custom_button},
     };
 
-    const QHash<QString, QVariant> state = settings_get_variant(VariantSetting_FilterDialogState).toHash();
+    const QHash<QString, QVariant> state = settings_get_variant(SETTING_filter_dialog_state).toHash();
     
     filter_widget->restore_state(state[FILTER_WIDGET_STATE]);
     filter_classes_widget->restore_state(state[FILTER_CLASSES_STATE]);
@@ -143,7 +143,7 @@ FilterDialog::~FilterDialog() {
         state[state_name] = button->isChecked();
     }
 
-    settings_set_variant(VariantSetting_FilterDialogState, state);
+    settings_set_variant(SETTING_filter_dialog_state, state);
 }
 
 QString FilterDialog::get_filter() const {

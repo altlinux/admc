@@ -154,7 +154,7 @@ SecurityTab::SecurityTab() {
     layout->addWidget(trustee_label);
     layout->addWidget(ace_view);
 
-    settings_restore_header_state(VariantSetting_SecurityTabHeaderState, ace_view->header());
+    settings_restore_header_state(SETTING_security_tab_header_state, ace_view->header());
 
     connect(
         trustee_view->selectionModel(), &QItemSelectionModel::currentChanged,
@@ -174,7 +174,7 @@ SecurityTab::SecurityTab() {
 }
 
 SecurityTab::~SecurityTab() {
-    settings_save_header_state(VariantSetting_SecurityTabHeaderState, ace_view->header());   
+    settings_save_header_state(SETTING_security_tab_header_state, ace_view->header());   
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {

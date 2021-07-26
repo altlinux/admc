@@ -60,7 +60,7 @@ void Status::add_message(const QString &msg, const StatusType &type) {
 
     const QString timestamped_msg = QString("%1 %2").arg(timestamp, msg);
 
-    const bool timestamps_ON = settings_get_bool(BoolSetting_TimestampLog);
+    const bool timestamps_ON = settings_get_bool(SETTING_timestamp_log);
 
     const QColor color = [type]() {
         switch (type) {
