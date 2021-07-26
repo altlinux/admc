@@ -37,6 +37,7 @@ set(TEST_TARGETS
     admc_test_unlock_edit
     admc_test_upn_edit
     admc_test_string_edit
+    admc_test_string_large_edit
     admc_test_country_edit
     admc_test_gplink
     admc_test_select_base_widget
