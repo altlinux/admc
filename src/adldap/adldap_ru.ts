@@ -255,6 +255,16 @@
         <translation>Не удалось разблокировать пользователя %1.</translation>
     </message>
     <message>
+        <location filename="ad_interface.cpp" line="1167"/>
+        <source>Computer &quot;%1&quot; was reset.</source>
+        <translation>Компьютер &quot;%1&quot; был сброшен.</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1171"/>
+        <source>Failed to reset computer %1.</source>
+        <translation>Не удалось сбросить компьютер %1.</translation>
+    </message>
+    <message>
         <location filename="ad_interface.cpp" line="604"/>
         <source>Attribute %1 of object %2 was changed from &quot;%3&quot; to &quot;%4&quot;.</source>
         <oldsource>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</oldsource>
@@ -350,32 +360,32 @@
 <context>
     <name>AdInterfacePrivate</name>
     <message>
-        <location filename="ad_interface.cpp" line="1386"/>
+        <location filename="ad_interface.cpp" line="1405"/>
         <source>. Error: &quot;%1&quot;</source>
         <translation>. Ошибка: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1406"/>
+        <location filename="ad_interface.cpp" line="1425"/>
         <source>No such object</source>
         <translation>Нет такого объекта</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1407"/>
+        <location filename="ad_interface.cpp" line="1426"/>
         <source>Constraint violation</source>
         <translation>Нарушение ограничений</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1408"/>
+        <location filename="ad_interface.cpp" line="1427"/>
         <source>Server is unwilling to perform</source>
         <translation>Сервер не хочет выполнять</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1409"/>
+        <location filename="ad_interface.cpp" line="1428"/>
         <source>Already exists</source>
         <translation>Объект уже существует</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1413"/>
+        <location filename="ad_interface.cpp" line="1432"/>
         <source>Server error: %1</source>
         <translation>Ошибка сервера: %1</translation>
     </message>
@@ -421,6 +431,11 @@
         <location filename="ad_utils.cpp" line="130"/>
         <source>Don&apos;t require Kerberos preauthentication</source>
         <translation>Не требовать предварительной аутентификации Kerberos</translation>
+    </message>
+    <message>
+        <location filename="ad_utils.cpp" line="131"/>
+        <source>Trusted for delegation</source>
+        <translation>Доверяется для делегации</translation>
     </message>
     <message>
         <location filename="ad_utils.cpp" line="176"/>

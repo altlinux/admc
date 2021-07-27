@@ -128,7 +128,7 @@ QString account_option_string(const AccountOption &option) {
         case AccountOption_SmartcardRequired: return QCoreApplication::translate("ad_utils", "Smartcard is required for interactive logon");
         case AccountOption_CantDelegate: return QCoreApplication::translate("ad_utils", "Account is sensitive and cannot be delegated");
         case AccountOption_DontRequirePreauth: return QCoreApplication::translate("ad_utils", "Don't require Kerberos preauthentication");
-        case AccountOption_TrustedForDelegation: return "Trusted for delegation";
+        case AccountOption_TrustedForDelegation: return QCoreApplication::translate("ad_utils", "Trusted for delegation");
         case AccountOption_COUNT: return QString("AccountOption_COUNT");
     }
 
