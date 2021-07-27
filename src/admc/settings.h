@@ -79,12 +79,15 @@ DEFINE_SETTING(SETTING_show_console_tree);
 DEFINE_SETTING(SETTING_show_results_header);
 DEFINE_SETTING(SETTING_log_searches);
 DEFINE_SETTING(SETTING_timestamp_log);
+DEFINE_SETTING(SETTING_sasl_nocanon);
 
 // Other
 DEFINE_SETTING(SETTING_dc);
 DEFINE_SETTING(SETTING_locale);
 DEFINE_SETTING(SETTING_query_folders);
 DEFINE_SETTING(SETTING_query_items);
+DEFINE_SETTING(SETTING_port);
+DEFINE_SETTING(SETTING_cert_strategy);
 
 QVariant settings_get_variant(const QString setting, const QVariant &default_value = QVariant());
 void settings_set_variant(const QString setting, const QVariant &value);

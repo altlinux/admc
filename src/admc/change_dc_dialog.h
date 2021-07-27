@@ -28,8 +28,10 @@
 #include <QDialog>
 
 class QStandardItem;
+class QLineEdit;
 class QListWidget;
 class QCheckBox;
+class QRadioButton;
 
 class ChangeDCDialog : public QDialog {
     Q_OBJECT
@@ -43,6 +45,8 @@ private:
     QListWidget *list_widget;
     QStandardItem *domain_head_item;
     QCheckBox *save_dc_checkbox;
+    QLineEdit *custom_dc_edit;
+    QRadioButton *select_button;
 };
 
 #endif /* CHANGE_DC_DIALOG_H */

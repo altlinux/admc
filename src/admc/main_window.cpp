@@ -25,6 +25,7 @@
 #include "central_widget.h"
 #include "globals.h"
 #include "manual_dialog.h"
+#include "connection_options_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
@@ -42,6 +43,8 @@
 MainWindow::MainWindow()
 : QMainWindow() {
     setStatusBar(g_status()->status_bar());
+
+    connection_options_dialog = new ConnectionOptionsDialog(this);
 
     message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle(tr("Message Log"));
@@ -65,6 +68,11 @@ MainWindow::MainWindow()
     } else {
         message_log_dock->hide();
     }
+
+    connect(
+        connection_options_dialog, &QDialog::accepted,
+        this, &MainWindow::load_connection_options);
+    load_connection_options();
 
     connect_to_server();
 }
@@ -91,6 +99,7 @@ void MainWindow::setup_menubar() {
     // Create actions
     //
     connect_action = new QAction(tr("&Connect"), this);
+    auto connection_options_action = new QAction(tr("Connection options"), this);
     auto quit_action = new QAction(tr("&Quit"), this);
 
     auto manual_action = new QAction(tr("&Manual"), this);
@@ -157,6 +166,7 @@ void MainWindow::setup_menubar() {
     // Fill menus
     //
     file_menu->addAction(connect_action);
+    file_menu->addAction(connection_options_action);
     file_menu->addAction(quit_action);
 
     preferences_menu->addAction(confirm_actions_action);
@@ -182,6 +192,9 @@ void MainWindow::setup_menubar() {
     connect(
         connect_action, &QAction::triggered,
         this, &MainWindow::connect_to_server);
+    connect(
+        connection_options_action, &QAction::triggered,
+        connection_options_dialog, &QDialog::open);
     connect(
         quit_action, &QAction::triggered,
         this, &MainWindow::close);
@@ -241,4 +254,31 @@ void MainWindow::on_log_searches_changed() {
     const bool log_searches_ON = settings_get_bool(SETTING_log_searches);
 
     AdInterface::set_log_searches(log_searches_ON);
+}
+
+void MainWindow::load_connection_options() {
+    const QVariant sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon);
+    if (sasl_nocanon.isValid()) {
+        AdInterface::set_sasl_nocanon(sasl_nocanon.toBool());
+    } else {
+        AdInterface::set_sasl_nocanon(true);
+    }
+
+    const QVariant port = settings_get_variant(SETTING_port);
+    if (port.isValid()) {
+        AdInterface::set_port(port.toString());
+    } else {
+        AdInterface::set_port(QString());
+    }
+
+    const QString cert_strategy_string = settings_get_variant(SETTING_cert_strategy).toString();
+    const QHash<QString, CertStrategy> cert_strategy_map = {
+        {"never", CertStrategy_Never},
+        {"hard", CertStrategy_Hard},
+        {"demand", CertStrategy_Demand},
+        {"allow", CertStrategy_Allow},
+        {"try", CertStrategy_Try},
+    };
+    const CertStrategy cert_strategy = cert_strategy_map.value(cert_strategy_string, CertStrategy_Never);
+    AdInterface::set_cert_strategy(cert_strategy);
 }

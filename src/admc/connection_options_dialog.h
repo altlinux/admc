@@ -18,39 +18,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef CONNECTION_OPTIONS_DIALOG_H
+#define CONNECTION_OPTIONS_DIALOG_H
 
-#include <QMainWindow>
+/**
+ * Dialog that allows user to change connection options.
+ */
 
-class QAction;
-class QDockWidget;
-class QMenu;
-class ConnectionOptionsDialog;
+#include <QDialog>
 
-class MainWindow final : public QMainWindow {
+class QLineEdit;
+class QCheckBox;
+class QComboBox;
+
+class ConnectionOptionsDialog : public QDialog {
     Q_OBJECT
 
 public:
-    MainWindow();
+    ConnectionOptionsDialog(QWidget *parent);
 
-protected:
-    void closeEvent(QCloseEvent *event);
+    void accept() override;
+    void reject() override;
 
 private:
-    QAction *connect_action;
-    ConnectionOptionsDialog *connection_options_dialog;
-    QDockWidget *message_log_dock;
+    QCheckBox *sasl_nocanon_check;
+    QLineEdit *port_edit;
+    QComboBox *require_cert_combobox;
 
-    QMenu *action_menu;
-    QMenu *navigation_menu;
-    QMenu *view_menu;
-    QMenu *preferences_menu;
-
-    void setup_menubar();
-    void connect_to_server();
-    void on_log_searches_changed();
-    void load_connection_options();
+    void reset();
+    void return_defaults();
 };
 
-#endif /* MAIN_WINDOW_H */
+#endif /* CONNECTION_OPTIONS_DIALOG_H */

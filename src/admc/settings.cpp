@@ -45,6 +45,7 @@ const QHash<QString, bool> bool_setting_default_map = {
     {SETTING_show_results_header, true},
     {SETTING_log_searches, false},
     {SETTING_timestamp_log, true},
+    {SETTING_sasl_nocanon, true},
 };
 
 bool settings_get_bool(const QString setting) {

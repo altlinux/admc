@@ -287,4 +287,12 @@ enum SearchScope {
     SearchScope_All,
 };
 
+enum CertStrategy {
+    CertStrategy_Never,
+    CertStrategy_Hard,
+    CertStrategy_Demand,
+    CertStrategy_Allow,
+    CertStrategy_Try,
+};
+
 #endif /* AD_DEFINES_H */
