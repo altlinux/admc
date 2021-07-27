@@ -25,6 +25,7 @@
 #include "central_widget.h"
 #include "globals.h"
 #include "manual_dialog.h"
+#include "connection_options_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
@@ -42,6 +43,8 @@
 MainWindow::MainWindow()
 : QMainWindow() {
     setStatusBar(g_status()->status_bar());
+
+    connection_options_dialog = new ConnectionOptionsDialog(this);
 
     message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle(tr("Message Log"));
@@ -91,6 +94,7 @@ void MainWindow::setup_menubar() {
     // Create actions
     //
     connect_action = new QAction(tr("&Connect"), this);
+    auto connection_options_action = new QAction(tr("Connection options"), this);
     auto quit_action = new QAction(tr("&Quit"), this);
 
     auto manual_action = new QAction(tr("&Manual"), this);
@@ -157,6 +161,7 @@ void MainWindow::setup_menubar() {
     // Fill menus
     //
     file_menu->addAction(connect_action);
+    file_menu->addAction(connection_options_action);
     file_menu->addAction(quit_action);
 
     preferences_menu->addAction(confirm_actions_action);
@@ -182,6 +187,9 @@ void MainWindow::setup_menubar() {
     connect(
         connect_action, &QAction::triggered,
         this, &MainWindow::connect_to_server);
+    connect(
+        connection_options_action, &QAction::triggered,
+        connection_options_dialog, &QDialog::open);
     connect(
         quit_action, &QAction::triggered,
         this, &MainWindow::close);
