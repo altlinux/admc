@@ -27,10 +27,7 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QLineEdit>
-#include <QListWidget>
-#include <QRadioButton>
 #include <QVBoxLayout>
-#include <QCheckBox>
 #include <QFormLayout>
 #include <QComboBox>
 #include <QPushButton>
