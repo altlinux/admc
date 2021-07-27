@@ -110,6 +110,7 @@ public:
     static void set_dc(const QString &dc);
     static void set_sasl_nocanon(const bool is_on);
     static void set_port(const QString &port);
+    static void set_cert_strategy(const CertStrategy strategy);
     static QString get_dc();
 
     bool is_connected() const;

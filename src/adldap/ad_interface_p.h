@@ -40,6 +40,7 @@ public:
     static QString s_dc;
     static void *s_sasl_nocanon;
     static QString s_port;
+    static CertStrategy s_cert_strat;
     AdConfig *adconfig;
     LDAP *ld;
     SMBCCTX *smbc;

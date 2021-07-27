@@ -77,6 +77,7 @@ bool AdInterfacePrivate::s_log_searches = false;
 QString AdInterfacePrivate::s_dc = QString();
 void *AdInterfacePrivate::s_sasl_nocanon = LDAP_OPT_ON;
 QString AdInterfacePrivate::s_port = QString();
+CertStrategy AdInterfacePrivate::s_cert_strat = CertStrategy_Never;
 
 void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup, int maxLenWorkgroup, char *pUsername, int maxLenUsername, char *pPassword, int maxLenPassword) {
 }
@@ -199,8 +200,19 @@ AdInterface::AdInterface(AdConfig *adconfig) {
         return;
     }
 
-    // TODO: add option to turn off
-    ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_NEVER);
+    const void *cert_strategy = [&]() {
+        switch (AdInterfacePrivate::s_cert_strat) {
+            case CertStrategy_Never: return (void *) LDAP_OPT_X_TLS_NEVER;
+            case CertStrategy_Hard: return (void *) LDAP_OPT_X_TLS_HARD;
+            case CertStrategy_Demand: return (void *) LDAP_OPT_X_TLS_DEMAND;
+            case CertStrategy_Allow: return (void *) LDAP_OPT_X_TLS_ALLOW;
+            case CertStrategy_Try: return (void *) LDAP_OPT_X_TLS_TRY;
+        }
+
+        return (void *) LDAP_OPT_X_TLS_NEVER;
+    }();
+    
+    ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, cert_strategy);
     if (result != LDAP_SUCCESS) {
         option_error("LDAP_OPT_X_TLS_REQUIRE_CERT");
         return;
@@ -282,6 +294,10 @@ void AdInterface::set_sasl_nocanon(const bool is_on) {
 
 void AdInterface::set_port(const QString &port) {
     AdInterfacePrivate::s_port = port;
+}
+
+void AdInterface::set_cert_strategy(const CertStrategy strategy) {
+    AdInterfacePrivate::s_cert_strat = strategy;
 }
 
 QString AdInterface::get_dc() {
