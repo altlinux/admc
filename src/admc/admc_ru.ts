@@ -63,7 +63,7 @@
     <message>
         <location filename="tabs/attributes_tab.cpp" line="223"/>
         <source>Optional</source>
-        <translation>Не обезятельные</translation>
+        <translation>Hеобязательные</translation>
     </message>
     <message>
         <location filename="tabs/attributes_tab.cpp" line="227"/>
@@ -668,7 +668,7 @@
     <message>
         <location filename="edit_query_item_widget.cpp" line="61"/>
         <source>Description:</source>
-        <translation>Описка:</translation>
+        <translation>Описание:</translation>
     </message>
     <message>
         <location filename="edit_query_item_widget.cpp" line="62"/>
@@ -772,7 +772,7 @@
     <message>
         <location filename="filter_widget/filter_widget.cpp" line="41"/>
         <source>Simple</source>
-        <translation>Упрошенный</translation>
+        <translation>Упрощенный</translation>
     </message>
     <message>
         <location filename="filter_widget/filter_widget.cpp" line="42"/>
