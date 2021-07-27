@@ -46,6 +46,7 @@ private:
     QComboBox *require_cert_combobox;
 
     void reset();
+    void return_defaults();
 };
 
 #endif /* CONNECTION_OPTIONS_DIALOG_H */

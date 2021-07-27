@@ -35,6 +35,8 @@
 #include <QComboBox>
 #include <QPushButton>
 
+const QString CERT_STRATEGY_NEVER = "never";
+
 ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 : QDialog(parent) {
     setWindowTitle(tr("Change Domain Controller"));
@@ -46,7 +48,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 
     require_cert_combobox = new QComboBox();
     const QList<QString> require_cert_list = {
-        "never",
+        CERT_STRATEGY_NEVER,
         "hard",
         "demand",
         "allow",
@@ -59,7 +61,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     auto button_box = new QDialogButtonBox();
     button_box->addButton(QDialogButtonBox::Ok);
     button_box->addButton(QDialogButtonBox::Cancel);
-    auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
+    auto defaults_button = button_box->addButton(tr("Defaults"), QDialogButtonBox::ResetRole);
 
     auto form_layout = new QFormLayout();
     form_layout->addRow(tr("Port:"), port_edit);
@@ -78,8 +80,8 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
         button_box, &QDialogButtonBox::rejected,
         this, &QDialog::reject);
     connect(
-        reset_button, &QPushButton::clicked,
-        this, &ConnectionOptionsDialog::reset);
+        defaults_button, &QPushButton::clicked,
+        this, &ConnectionOptionsDialog::return_defaults);
 
     reset();
 }
@@ -92,7 +94,7 @@ void ConnectionOptionsDialog::reset() {
     sasl_nocanon_check->setChecked(sasl_nocanon);
 
     // TODO: verify that this is indeed the default value
-    const QString cert_strategy = settings_get_variant(SETTING_cert_strategy, "never").toString();
+    const QString cert_strategy = settings_get_variant(SETTING_cert_strategy, CERT_STRATEGY_NEVER).toString();
     const int cert_strategy_index = require_cert_combobox->findText(cert_strategy);
     require_cert_combobox->setCurrentIndex(cert_strategy_index);
 }
@@ -114,4 +116,13 @@ void ConnectionOptionsDialog::accept() {
     settings_set_variant(SETTING_cert_strategy, cert_strategy);
 
     QDialog::accept();
+}
+
+void ConnectionOptionsDialog::return_defaults() {
+    port_edit->setText(QString());
+
+    sasl_nocanon_check->setChecked(true);
+
+    const int never_index = require_cert_combobox->findText(CERT_STRATEGY_NEVER);
+    require_cert_combobox->setCurrentIndex(never_index);
 }
