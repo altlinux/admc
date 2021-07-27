@@ -79,7 +79,7 @@ DEFINE_SETTING(SETTING_show_console_tree);
 DEFINE_SETTING(SETTING_show_results_header);
 DEFINE_SETTING(SETTING_log_searches);
 DEFINE_SETTING(SETTING_timestamp_log);
-DEFINE_SETTING(SETTING_sasl_canon);
+DEFINE_SETTING(SETTING_sasl_nocanon);
 
 // Other
 DEFINE_SETTING(SETTING_dc);

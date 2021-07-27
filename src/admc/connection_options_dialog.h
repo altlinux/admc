@@ -41,7 +41,7 @@ public:
     void reject() override;
 
 private:
-    QCheckBox *sasl_canon_check;
+    QCheckBox *sasl_nocanon_check;
     QLineEdit *port_edit;
     QComboBox *require_cert_combobox;
 

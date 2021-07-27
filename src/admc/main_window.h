@@ -50,6 +50,7 @@ private:
     void setup_menubar();
     void connect_to_server();
     void on_log_searches_changed();
+    void load_connection_options();
 };
 
 #endif /* MAIN_WINDOW_H */

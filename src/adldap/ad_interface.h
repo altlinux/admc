@@ -108,6 +108,7 @@ public:
     static void set_log_searches(const bool enabled);
 
     static void set_dc(const QString &dc);
+    static void set_sasl_nocanon(const bool is_on);
     static QString get_dc();
 
     bool is_connected() const;

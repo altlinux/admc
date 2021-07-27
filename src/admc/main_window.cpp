@@ -69,6 +69,11 @@ MainWindow::MainWindow()
         message_log_dock->hide();
     }
 
+    connect(
+        connection_options_dialog, &QDialog::accepted,
+        this, &MainWindow::load_connection_options);
+    load_connection_options();
+
     connect_to_server();
 }
 
@@ -249,4 +254,13 @@ void MainWindow::on_log_searches_changed() {
     const bool log_searches_ON = settings_get_bool(SETTING_log_searches);
 
     AdInterface::set_log_searches(log_searches_ON);
+}
+
+void MainWindow::load_connection_options() {
+    const QVariant sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon);
+    if (sasl_nocanon.isValid()) {
+        AdInterface::set_sasl_nocanon(sasl_nocanon.toBool());
+    } else {
+        AdInterface::set_sasl_nocanon(true);
+    }
 }

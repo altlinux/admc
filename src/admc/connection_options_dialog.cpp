@@ -39,7 +39,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 : QDialog(parent) {
     setWindowTitle(tr("Change Domain Controller"));
 
-    sasl_canon_check = new QCheckBox(tr("Canonize hostname"));
+    sasl_nocanon_check = new QCheckBox(tr("Canonize hostname"));
 
     port_edit = new QLineEdit();
     set_line_edit_to_numbers_only(port_edit);
@@ -67,7 +67,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 
     auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addWidget(sasl_canon_check);
+    layout->addWidget(sasl_nocanon_check);
     layout->addLayout(form_layout);
     layout->addWidget(button_box);
 
@@ -88,8 +88,8 @@ void ConnectionOptionsDialog::reset() {
     const QString port = settings_get_variant(SETTING_port).toString();
     port_edit->setText(port);
     
-    const bool sasl_canon = settings_get_variant(SETTING_sasl_canon).toBool();
-    sasl_canon_check->setChecked(sasl_canon);
+    const bool sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon).toBool();
+    sasl_nocanon_check->setChecked(sasl_nocanon);
 
     // TODO: verify that this is indeed the default value
     const QString cert_strategy = settings_get_variant(SETTING_cert_strategy, "never").toString();
@@ -107,8 +107,8 @@ void ConnectionOptionsDialog::accept() {
     const QString port = port_edit->text();
     settings_set_variant(SETTING_port, port);
 
-    const bool sasl_canon = sasl_canon_check->isChecked();
-    settings_set_variant(SETTING_sasl_canon, sasl_canon);
+    const bool sasl_nocanon = sasl_nocanon_check->isChecked();
+    settings_set_variant(SETTING_sasl_nocanon, sasl_nocanon);
 
     const QString cert_strategy = require_cert_combobox->currentText();
     settings_set_variant(SETTING_cert_strategy, cert_strategy);
