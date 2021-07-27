@@ -263,4 +263,11 @@ void MainWindow::load_connection_options() {
     } else {
         AdInterface::set_sasl_nocanon(true);
     }
+
+    const QVariant port = settings_get_variant(SETTING_port);
+    if (port.isValid()) {
+        AdInterface::set_port(port.toString());
+    } else {
+        AdInterface::set_port(QString());
+    }
 }

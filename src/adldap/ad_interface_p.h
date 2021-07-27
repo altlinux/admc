@@ -38,7 +38,8 @@ public:
     static AdConfig *s_adconfig;
     static bool s_log_searches;
     static QString s_dc;
-    static void *sasl_nocanon;
+    static void *s_sasl_nocanon;
+    static QString s_port;
     AdConfig *adconfig;
     LDAP *ld;
     SMBCCTX *smbc;

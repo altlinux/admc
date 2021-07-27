@@ -75,7 +75,8 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
 QString AdInterfacePrivate::s_dc = QString();
-void *AdInterfacePrivate::sasl_nocanon = LDAP_OPT_ON;
+void *AdInterfacePrivate::s_sasl_nocanon = LDAP_OPT_ON;
+QString AdInterfacePrivate::s_port = QString();
 
 void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup, int maxLenWorkgroup, char *pUsername, int maxLenUsername, char *pPassword, int maxLenPassword) {
 }
@@ -137,12 +138,17 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     }
 
     const QString uri = [&]() {
+        QString out;
+
         if (!dc.isEmpty()) {
-            const QString out = "ldap://" + dc;
-            return out;
-        } else {
-            return QString();
+            out = "ldap://" + dc;
+
+            if (!AdInterfacePrivate::s_port.isEmpty()) {
+                out = out + ":" + AdInterfacePrivate::s_port;
+            }
         }
+
+        return out;
     }();
 
     if (uri.isEmpty()) {
@@ -187,7 +193,7 @@ AdInterface::AdInterface(AdConfig *adconfig) {
         return;
     }
 
-    result = ldap_set_option(d->ld, LDAP_OPT_X_SASL_NOCANON, AdInterfacePrivate::sasl_nocanon);
+    result = ldap_set_option(d->ld, LDAP_OPT_X_SASL_NOCANON, AdInterfacePrivate::s_sasl_nocanon);
     if (result != LDAP_SUCCESS) {
         option_error("LDAP_OPT_X_SASL_NOCANON");
         return;
@@ -265,13 +271,17 @@ void AdInterface::set_dc(const QString &dc) {
 }
 
 void AdInterface::set_sasl_nocanon(const bool is_on) {
-    AdInterfacePrivate::sasl_nocanon = [&]() {
+    AdInterfacePrivate::s_sasl_nocanon = [&]() {
         if (is_on) {
             return LDAP_OPT_ON;
         } else {
             return LDAP_OPT_OFF;
         }
     }();
+}
+
+void AdInterface::set_port(const QString &port) {
+    AdInterfacePrivate::s_port = port;
 }
 
 QString AdInterface::get_dc() {
