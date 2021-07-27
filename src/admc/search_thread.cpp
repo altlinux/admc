@@ -44,7 +44,7 @@ void SearchThread::stop() {
 void SearchThread::run() {
     // TODO: handle search/connect failure
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (!ad.is_connected()) {
         return;
     }
 
