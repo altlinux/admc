@@ -86,25 +86,6 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     reset();
 }
 
-void ConnectionOptionsDialog::reset() {
-    const QString port = settings_get_variant(SETTING_port).toString();
-    port_edit->setText(port);
-    
-    const bool sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon).toBool();
-    sasl_nocanon_check->setChecked(sasl_nocanon);
-
-    // TODO: verify that this is indeed the default value
-    const QString cert_strategy = settings_get_variant(SETTING_cert_strategy, CERT_STRATEGY_NEVER).toString();
-    const int cert_strategy_index = require_cert_combobox->findText(cert_strategy);
-    require_cert_combobox->setCurrentIndex(cert_strategy_index);
-}
-
-void ConnectionOptionsDialog::reject() {
-    reset();
-
-    QDialog::reject();
-}
-
 void ConnectionOptionsDialog::accept() {
     const QString port = port_edit->text();
     settings_set_variant(SETTING_port, port);
@@ -116,6 +97,25 @@ void ConnectionOptionsDialog::accept() {
     settings_set_variant(SETTING_cert_strategy, cert_strategy);
 
     QDialog::accept();
+}
+
+void ConnectionOptionsDialog::reject() {
+    reset();
+
+    QDialog::reject();
+}
+
+void ConnectionOptionsDialog::reset() {
+    const QString port = settings_get_variant(SETTING_port).toString();
+    port_edit->setText(port);
+    
+    const bool sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon).toBool();
+    sasl_nocanon_check->setChecked(sasl_nocanon);
+
+    // TODO: verify that this is indeed the default value
+    const QString cert_strategy = settings_get_variant(SETTING_cert_strategy, CERT_STRATEGY_NEVER).toString();
+    const int cert_strategy_index = require_cert_combobox->findText(cert_strategy);
+    require_cert_combobox->setCurrentIndex(cert_strategy_index);
 }
 
 void ConnectionOptionsDialog::return_defaults() {
