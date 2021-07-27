@@ -109,7 +109,7 @@ void ConnectionOptionsDialog::reset() {
     const QString port = settings_get_variant(SETTING_port).toString();
     port_edit->setText(port);
     
-    const bool sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon).toBool();
+    const bool sasl_nocanon = settings_get_bool(SETTING_sasl_nocanon);
     sasl_nocanon_check->setChecked(sasl_nocanon);
 
     // TODO: verify that this is indeed the default value
