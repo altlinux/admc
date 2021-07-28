@@ -268,7 +268,7 @@
         <location filename="ad_interface.cpp" line="604"/>
         <source>Attribute %1 of object %2 was changed from &quot;%3&quot; to &quot;%4&quot;.</source>
         <oldsource>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</oldsource>
-        <translation>Не удалось изменить атрибут %1 объекта %2 с &quot;%3&quot; на &quot;%4&quot;.</translation>
+        <translation>Атрибут %1 объекта %2 был изменен с &quot;%3&quot; на &quot;%4&quot;.</translation>
     </message>
     <message>
         <location filename="ad_interface.cpp" line="701"/>
