@@ -136,7 +136,7 @@
     <message>
         <location filename="tabs/attributes_tab.cpp" line="371"/>
         <source>Large Integer</source>
-        <translation>Перечисление</translation>
+        <translation>Большое целое число</translation>
     </message>
     <message>
         <location filename="tabs/attributes_tab.cpp" line="372"/>
