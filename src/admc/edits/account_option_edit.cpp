@@ -112,14 +112,14 @@ void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &che
 
         QObject::connect(
             subject, &QCheckBox::stateChanged,
-            [&, subject, blocker]() {
+            [subject, blocker, subject_option, blocker_option]() {
                 const bool conflict = (subject->isChecked() && blocker->isChecked());
                 if (conflict) {
                     subject->setChecked(false);
 
                     const QString subject_name = account_option_string(subject_option);
                     const QString blocker_name = account_option_string(blocker_option);
-                    const QString error = QString(QObject::tr("Can't set \"%1\" when \"%2\" is set.")).arg(blocker_name, subject_name);
+                    const QString error = QString(QObject::tr("Can't set \"%1\" when \"%2\" is set.")).arg(subject_name, blocker_name);
                     message_box_warning(blocker, QObject::tr("Error"), error);
                 }
             });
