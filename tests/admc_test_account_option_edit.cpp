@@ -167,10 +167,17 @@ void ADMCTestAccountOptionEdit::conflicts() {
     blocker_check->setChecked(true);
 
     // Attempt to check subject, should get blocked
-    subject_check->setChecked(true);
+    subject_check->click();
     close_message_box();
-
     QCOMPARE(subject_check->isChecked(), false);
+
+    // Attempt to check again, conflicts should be blocked
+    // every time
+    for (int i = 0; i < 3; i++) {
+        subject_check->click();
+        close_message_box();
+        QCOMPARE(subject_check->isChecked(), false);
+    }
 }
 
 QTEST_MAIN(ADMCTestAccountOptionEdit)
