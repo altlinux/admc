@@ -38,7 +38,7 @@
 #define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
 
-const QDate ntfs_epoch = QDate(1601, 1, 1);
+const QDateTime ntfs_epoch = QDateTime(QDate(1601, 1, 1), QTime(), Qt::UTC);
 
 bool large_integer_datetime_is_never(const QString &value) {
     const bool is_never = (value == AD_LARGE_INTEGER_DATETIME_NEVER_1 || value == AD_LARGE_INTEGER_DATETIME_NEVER_2);
@@ -55,7 +55,7 @@ QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &
 
     switch (type) {
         case AttributeType_LargeInteger: {
-            const qint64 millis = QDateTime(ntfs_epoch).msecsTo(datetime);
+            const qint64 millis = ntfs_epoch.msecsTo(datetime);
             const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
 
             return QString::number(hundred_nanos);
@@ -91,7 +91,7 @@ QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &
                 const LargeIntegerSubtype subtype = adconfig->get_attribute_large_integer_subtype(attribute);
 
                 if (subtype == LargeIntegerSubtype_Datetime) {
-                    QDateTime out = QDateTime(ntfs_epoch);
+                    QDateTime out = ntfs_epoch;
 
                     const qint64 hundred_nanos = raw_value.toLongLong();
                     const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
@@ -113,9 +113,13 @@ QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &
         return QDateTime();
     }();
 
-    datetime.setTimeSpec(Qt::UTC);
+    // NOTE: change timespec without changing the datetime.
+    // All datetimes are UTC by default. Calling
+    // setTimeSpec() would alter the datetime so we don't
+    // use that.
+    const QDateTime utc_datetime = QDateTime(datetime.date(), datetime.time(), Qt::UTC);
 
-    return datetime;
+    return utc_datetime;
 }
 
 QString account_option_string(const AccountOption &option) {

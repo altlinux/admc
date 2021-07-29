@@ -119,8 +119,7 @@ bool ExpiryWidget::apply(AdInterface &ad, const QString &dn) const {
     if (never) {
         return ad.attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGE_INTEGER_DATETIME_NEVER_2);
     } else {
-        const QDate date = edit->date();
-        const QDateTime datetime(date, END_OF_DAY);
+        const QDateTime datetime = QDateTime(edit->date(), END_OF_DAY, Qt::UTC);
 
         return ad.attribute_replace_datetime(dn, ATTRIBUTE_ACCOUNT_EXPIRES, datetime);
     }
