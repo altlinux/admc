@@ -2,6 +2,31 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.6.2 (Released 29-07-2021)
+-----------------------------------------------------------------------
+- Console: Added "Reset account" action for computer objects.
+  (#245)
+- Console: Fixed "Advanced features" setting not hiding
+  advanced objects when the setting is turned off. (#247)
+- UI: Implemented saving and restoring of state and geometry
+  of UI elements. Things like sizes of dialogs, column
+  customization and column widths. (#242)
+- Options: Added connection options to "File" menu. (#248)
+- Misc: Fixed crash on startup if there are no Kerberos
+  tickets. (#246)
+- Misc: Fixed crash caused by threaded search when a
+  connection error happened. (#249)
+- Misc: Fixed incorrect error message for account option
+  conflicts. Error message contained incorrect or empty
+  strings for account options. (#251)
+- Misc: Fixed account option conflicts not being enforced
+  correctly. Was able to set conflicting account option
+  after closign the error message. (#252)
+- Misc: Fixed expiry edit behaving incorrectly in some
+  timezones. The edit was setting the date to the next day.
+  (#253)
+
+-----------------------------------------------------------------------
  VERSION 0.6.1 (Released 20-07-2021)
 -----------------------------------------------------------------------
 - Action menu: Added "Enable account" and "Disable account"
