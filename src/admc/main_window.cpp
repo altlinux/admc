@@ -200,7 +200,7 @@ void MainWindow::setup_menubar() {
         this, &MainWindow::close);
     connect(
         manual_action, &QAction::triggered,
-        manual_dialog, &QDialog::open);
+        manual_dialog, &QDialog::show);
     connect(
         about_action, &QAction::triggered,
         about_dialog, &QDialog::open);
