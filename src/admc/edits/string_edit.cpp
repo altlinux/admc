@@ -68,7 +68,7 @@ void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
 }
 
 void StringEdit::set_read_only(const bool read_only) {
-    edit->setReadOnly(read_only);
+    edit->setDisabled(read_only);
 }
 
 void StringEdit::add_to_layout(QFormLayout *layout) {

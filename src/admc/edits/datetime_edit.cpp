@@ -47,7 +47,7 @@ void DateTimeEdit::load_internal(AdInterface &ad, const AdObject &object) {
 }
 
 void DateTimeEdit::set_read_only(const bool read_only) {
-    edit->setReadOnly(read_only);
+    edit->setDisabled(read_only);
 }
 
 void DateTimeEdit::add_to_layout(QFormLayout *layout) {

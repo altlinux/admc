@@ -53,7 +53,7 @@ void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
 }
 
 void UpnEdit::set_read_only(const bool read_only) {
-    prefix_edit->setReadOnly(read_only);
+    prefix_edit->setDisabled(read_only);
 }
 
 void UpnEdit::add_to_layout(QFormLayout *layout) {

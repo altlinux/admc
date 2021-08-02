@@ -55,8 +55,8 @@ void PasswordEdit::load_internal(AdInterface &ad, const AdObject &object) {
 }
 
 void PasswordEdit::set_read_only(const bool read_only) {
-    edit->setReadOnly(read_only);
-    confirm_edit->setReadOnly(read_only);
+    edit->setDisabled(read_only);
+    confirm_edit->setDisabled(read_only);
 }
 
 void PasswordEdit::add_to_layout(QFormLayout *layout) {

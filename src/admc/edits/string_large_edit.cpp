@@ -63,7 +63,7 @@ void StringLargeEdit::load_internal(AdInterface &ad, const AdObject &object) {
 }
 
 void StringLargeEdit::set_read_only(const bool read_only) {
-    edit->setReadOnly(read_only);
+    edit->setDisabled(read_only);
 }
 
 void StringLargeEdit::add_to_layout(QFormLayout *layout) {
