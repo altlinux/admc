@@ -47,6 +47,12 @@ enum SelectColumn {
 
 void add_select_object_to_model(QStandardItemModel *model, const AdObject &object);
 
+const QList<QString> header_labels = {
+    QCoreApplication::translate("SelectObjectDialog", "Name"),        
+    QCoreApplication::translate("SelectObjectDialog", "Type"),        
+    QCoreApplication::translate("SelectObjectDialog", "Folder"),        
+};
+
 SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent) {
     class_list = class_list_arg;
@@ -83,11 +89,6 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 
     model = new QStandardItemModel(this);
 
-    const QList<QString> header_labels = {
-        tr("Name"),        
-        tr("Type"),        
-        tr("Folder"),        
-    };
     model->setHorizontalHeaderLabels(header_labels);
 
     view = new QTreeView(this);
@@ -317,7 +318,6 @@ SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> 
 
     auto model = new QStandardItemModel(this);
 
-    const QList<QString> header_labels = console_object_header_labels();
     model->setHorizontalHeaderLabels(header_labels);
 
     for (const AdObject &object : search_results) {
