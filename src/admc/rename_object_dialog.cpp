@@ -72,8 +72,16 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
     reset_button = button_box->addButton(QDialogButtonBox::Reset);
     button_box->addButton(QDialogButtonBox::Cancel);
 
+    const QString name_edit_label = [&]() {
+        if (object.is_class(CLASS_USER)) {
+            return tr("Name:", "In Russian this needs to be different from just <Name> because in Russian <First Name> translates to <Name> as well and there's a First name edit below this one.");
+        } else {
+            return tr("Name:");
+        }
+    }();
+
     const auto edits_layout = new QFormLayout();
-    edits_layout->addRow(tr("Name:"), name_edit);
+    edits_layout->addRow(name_edit_label, name_edit);
     edits_add_to_layout(all_edits, edits_layout);
 
     const auto top_layout = new QVBoxLayout();
