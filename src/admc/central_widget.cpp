@@ -765,9 +765,15 @@ void CentralWidget::update_description_bar() {
         const QModelIndex current_scope = console->get_current_scope_item();
         const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
 
-        if (type == ItemType_Object) {
+        const QString object_count_text = [&]() {
             const int results_count = console->get_current_results_count();
-            QString out = tr("%n object(s)", "", results_count);
+            const QString out = tr("%n object(s)", "", results_count);
+
+            return out;
+        }();
+
+        if (type == ItemType_Object) {
+            QString out = object_count_text;
 
             const bool filtering_ON = filter_dialog->filtering_ON();
             if (filtering_ON) {
@@ -775,6 +781,8 @@ void CentralWidget::update_description_bar() {
             }
 
             return out;
+        } else if (type == ItemType_QueryItem) {
+            return object_count_text;
         } else {
             return QString();
         }
