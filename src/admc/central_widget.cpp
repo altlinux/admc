@@ -485,6 +485,7 @@ void CentralWidget::policy_add_link() {
     }
 
     auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, this);
+    dialog->setWindowTitle(tr("Add Link"));
 
     QObject::connect(
         dialog, &SelectObjectDialog::accepted,

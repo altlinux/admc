@@ -311,6 +311,7 @@ void SelectObjectDialog::duplicate_message_box() {
 SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
+    setWindowTitle("Select Match");
 
     auto label = new QLabel(tr("There are multiple matches. Select one or more to add to the list."));
 

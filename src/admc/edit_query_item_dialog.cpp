@@ -35,8 +35,7 @@ EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
 
     console = console_arg;
 
-    const auto title = QString(tr("Edit Query"));
-    setWindowTitle(title);
+    setWindowTitle(tr("Edit Query"));
 
     edit_query_widget = new EditQueryItemWidget();
 

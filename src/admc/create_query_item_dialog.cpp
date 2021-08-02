@@ -35,8 +35,7 @@ CreateQueryItemDialog::CreateQueryItemDialog(ConsoleWidget *console_arg)
 
     console = console_arg;
 
-    const auto title = QString(tr("Create Query"));
-    setWindowTitle(title);
+    setWindowTitle(tr("Create Query"));
 
     edit_query_widget = new EditQueryItemWidget();
 

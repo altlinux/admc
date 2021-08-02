@@ -35,6 +35,7 @@
 ManualDialog::ManualDialog(QWidget *parent)
 : QDialog(parent) {
     setMinimumSize(800, 600);
+    setWindowTitle(tr("Manual"));
 
     const QString help_collection_path = QStandardPaths::writableLocation(QStandardPaths::QStandardPaths::AppDataLocation) + "/admc.qhc";
 

@@ -38,8 +38,7 @@ CreatePolicyDialog::CreatePolicyDialog(ConsoleWidget *console_arg)
 
     setMinimumWidth(400);
 
-    const auto title = QString(tr("Create GPO"));
-    setWindowTitle(title);
+    setWindowTitle(tr("Create GPO"));
 
     name_edit = new QLineEdit();
     name_edit->setText("New Group Policy Object");

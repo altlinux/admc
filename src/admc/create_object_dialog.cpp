@@ -62,7 +62,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
     setMinimumWidth(400);
 
     const QString class_name = g_adconfig->get_class_display_name(object_class);
-    const auto title = tr("Create Object - %1").arg(class_name);;
+    const QString title = tr("Create Object - %1").arg(class_name);
     setWindowTitle(title);
 
     name_edit = new QLineEdit();

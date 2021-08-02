@@ -36,7 +36,7 @@ const QString CERT_STRATEGY_NEVER = "never";
 
 ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle(tr("Change Domain Controller"));
+    setWindowTitle(tr("Connection Options"));
 
     sasl_nocanon_check = new QCheckBox(tr("Canonize hostname"));
 

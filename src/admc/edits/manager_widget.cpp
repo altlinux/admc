@@ -91,6 +91,7 @@ void ManagerWidget::reset() {
 
 void ManagerWidget::on_change() {
     auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_CONTACT}, SelectObjectDialogMultiSelection_No, edit);
+    dialog->setWindowTitle(tr("Select Manager"));
 
     connect(
         dialog, &SelectObjectDialog::accepted,

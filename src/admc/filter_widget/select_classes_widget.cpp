@@ -94,6 +94,8 @@ void SelectClassesWidget::restore_state(const QVariant &state) {
 
 SelectClassesDialog::SelectClassesDialog(const QList<QString> class_list, QWidget *parent)
 : QDialog(parent) {
+    setWindowTitle(tr("Select Classes"));
+
     filter_classes_widget = new FilterClassesWidget(class_list);
 
     auto button_box = new QDialogButtonBox();

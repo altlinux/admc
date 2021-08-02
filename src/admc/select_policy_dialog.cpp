@@ -34,6 +34,7 @@
 
 SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 : QDialog(parent) {
+    setWindowTitle(tr("Select Policy"));
     setAttribute(Qt::WA_DeleteOnClose);
     setMinimumWidth(400);
     setMinimumHeight(500);

@@ -123,7 +123,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     setLayout(layout);
     layout->setSpacing(0);
 
-    const QString window_title = [&]() {
+    const QString title = [&]() {
         const QString target_name = dn_get_name(target_arg);
         
         if (!target_name.isEmpty()) {
@@ -132,7 +132,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
             return tr("Properties");
         }
     }();
-    setWindowTitle(window_title);
+    setWindowTitle(title);
 
     AdObject object;
 
@@ -147,9 +147,9 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     layout->addWidget(button_box);
 
     // Create new tabs
-    const auto add_tab = [this, tab_widget](PropertiesTab *tab, const QString &title) {
+    const auto add_tab = [this, tab_widget](PropertiesTab *tab, const QString &tab_title) {
         tabs.append(tab);
-        tab_widget->add_tab(tab, title);
+        tab_widget->add_tab(tab, tab_title);
     };
 
     add_tab(new GeneralTab(object), tr("General"));

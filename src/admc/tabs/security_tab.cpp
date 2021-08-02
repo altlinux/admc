@@ -301,6 +301,7 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
 
 void SecurityTab::on_add_trustee_button() {
     auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, this);
+    dialog->setWindowTitle(tr("Add Trustee"));
 
     QObject::connect(
         dialog, &SelectObjectDialog::accepted,
@@ -455,7 +456,7 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
 SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle("Select Well-Known Trustees");
+    setWindowTitle(tr("Select Well-Known Trustees"));
 
     resize(600, 400);
     

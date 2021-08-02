@@ -74,7 +74,7 @@ bool LogonComputersEdit::apply(AdInterface &ad, const QString &dn) const {
 
 LogonComputersDialog::LogonComputersDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle("Edit Logon Computers");
+    setWindowTitle(tr("Edit Logon Computers"));
 
     resize(400, 400);
 

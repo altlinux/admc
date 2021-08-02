@@ -668,6 +668,7 @@ QList<QString> object_operation_set_disabled(const QList<QString> &targets, cons
 
 void object_operation_add_to_group(const QList<QString> &targets, QWidget *parent) {
     auto dialog = new SelectObjectDialog({CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, parent);
+    dialog->setWindowTitle(QObject::tr("Add to Group"));
 
     QObject::connect(
         dialog, &SelectObjectDialog::accepted,
