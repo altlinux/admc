@@ -52,7 +52,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 
     auto pass_expired_check = new AccountOptionEdit(AccountOption_PasswordExpired, &edits, this);
 
-    new UnlockEdit(&edits, this);
+    new UnlockEdit(&edits, UnlockEditStyle_CheckOnLeft, this);
 
     auto button_box = new QDialogButtonBox();
     button_box->addButton(QDialogButtonBox::Ok);

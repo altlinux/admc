@@ -24,9 +24,23 @@
 #include <QCheckBox>
 #include <QFormLayout>
 
-UnlockEdit::UnlockEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
+const QString label_text = QCoreApplication::translate("UnlockEdit", "Unlock account");
+
+UnlockEdit::UnlockEdit(QList<AttributeEdit *> *edits_out, const UnlockEditStyle style_arg, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    check = new QCheckBox();
+    style = style_arg;
+
+    // NOTE: if check is on left, then put text in the
+    // checkbox
+    const QString check_text = [&]() {
+        switch (style) {
+            case UnlockEditStyle_CheckOnLeft: return label_text;
+            case UnlockEditStyle_CheckOnRight: return QString();
+        }
+        return QString();
+    }();
+
+    check = new QCheckBox(check_text);
 
     connect(
         check, &QCheckBox::stateChanged,
@@ -44,7 +58,18 @@ void UnlockEdit::set_read_only(const bool read_only) {
 }
 
 void UnlockEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(tr("Unlock account:"), check);
+    switch (style) {
+        case UnlockEditStyle_CheckOnLeft: {
+            layout->addRow(check);
+
+            break;
+        }
+        case UnlockEditStyle_CheckOnRight: {
+            layout->addRow(QString("%:").arg(label_text), check);
+
+            break;
+        }
+    }
 }
 
 bool UnlockEdit::apply(AdInterface &ad, const QString &dn) const {

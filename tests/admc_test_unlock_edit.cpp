@@ -34,7 +34,7 @@
 void ADMCTestUnlockEdit::init() {
     ADMCTest::init();
 
-    unlock_edit = new UnlockEdit(&edits, parent_widget);
+    unlock_edit = new UnlockEdit(&edits, UnlockEditStyle_CheckOnLeft, parent_widget);
     add_attribute_edit(unlock_edit);
 
     checkbox = parent_widget->findChild<QCheckBox *>();

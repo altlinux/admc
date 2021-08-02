@@ -21,22 +21,35 @@
 #ifndef UNLOCK_EDIT_H
 #define UNLOCK_EDIT_H
 
-// Unlocks the account, if pressed down (when being applied,
-// NOT immediately. Doesn't implement the reverse operation
-// (locking) because that's only doable by the server.
+/**
+ * Unlocks the account, if pressed down (when being applied,
+ * NOT immediately. Doesn't implement the reverse operation
+ * (locking) because that's only doable by the server. The
+ * edit changes has two style options, to put the checkbox
+ * on the right or left side of texts. Right checkbox style
+ * is to fit in with forms with other similar edits (account
+ * tab). Left checkbox style is to fit next to other
+ * checkboxes (change password dialog).
+ */
 
 #include "edits/attribute_edit.h"
 
 class QCheckBox;
 
+enum UnlockEditStyle {
+    UnlockEditStyle_CheckOnLeft,
+    UnlockEditStyle_CheckOnRight,
+};
+
 class UnlockEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    UnlockEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
+    UnlockEdit(QList<AttributeEdit *> *edits_out, const UnlockEditStyle style, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     QCheckBox *check;
+    UnlockEditStyle style;
 };
 
 #endif /* UNLOCK_EDIT_H */
