@@ -349,6 +349,7 @@ QString AdConfig::get_attribute_display_name(const Attribute &attribute, const O
         {ATTRIBUTE_SAMACCOUNT_NAME, QCoreApplication::translate("AdConfig", "Logon name (pre-Windows 2000)")},
         {ATTRIBUTE_MAIL, QCoreApplication::translate("AdConfig", "E-mail")},
         {ATTRIBUTE_LOCATION, QCoreApplication::translate("AdConfig", "Location")},
+        {ATTRIBUTE_MANAGED_BY, QCoreApplication::translate("managedBy", "Managed by")},
     };
 
     return fallback_display_names.value(attribute, attribute);
