@@ -43,39 +43,38 @@ enum TrusteeItemRole {
     TrusteeItemRole_Sid = Qt::UserRole,
 };
 
-#define trS(x) QCoreApplication::translate("Security", x)
 const QHash<AcePermission, QString> ace_permission_to_name_map = {
-    {AcePermission_FullControl, trS("Full control")},
-    {AcePermission_Read, trS("Read")},
-    {AcePermission_Write, trS("Write")},
-    {AcePermission_CreateChild, trS("Create child")},
-    {AcePermission_DeleteChild, trS("Delete child")},
-    {AcePermission_AllowedToAuthenticate, trS("Allowed to authenticate")},
-    {AcePermission_ChangePassword, trS("Change password")},
-    {AcePermission_ReceiveAs, trS("Receive as")},
-    {AcePermission_ResetPassword, trS("Reset password")},
-    {AcePermission_SendAs, trS("Send as")},
-    {AcePermission_ReadAccountRestrictions, trS("Read Account restrictions")},
-    {AcePermission_WriteAccountRestrictions, trS("Write Account restrictions")},
-    {AcePermission_ReadGeneralInfo, trS("Read general info")},
-    {AcePermission_WriteGeneralInfo, trS("Write general info")},
-    {AcePermission_ReadGroupMembership, trS("Read group membership")},
-    {AcePermission_ReadLogonInfo, trS("Read logon info")},
-    {AcePermission_WriteLogonInfo, trS("Write logon info")},
-    {AcePermission_ReadPersonalInfo, trS("Read personal info")},
-    {AcePermission_WritePersonalInfo, trS("Write personal info")},
-    {AcePermission_ReadPhoneAndMailOptions, trS("Read phone and mail options")},
-    {AcePermission_WritePhoneAndMailOptions, trS("Write phone and mail options")},
-    {AcePermission_ReadPrivateInfo, trS("Read private info")},
-    {AcePermission_WritePrivateInfo, trS("Write private info")},
-    {AcePermission_ReadPublicInfo, trS("Read public info")},
-    {AcePermission_WritePublicInfo, trS("Write public info")},
-    {AcePermission_ReadRemoteAccessInfo, trS("Read remote access info")},
-    {AcePermission_WriteRemoteAccessInfo, trS("Write remote access info")},
-    {AcePermission_ReadTerminalServerLicenseServer, trS("Read terminal server license server")},
-    {AcePermission_WriteTerminalServerLicenseServer, trS("Write terminal server license server")},
-    {AcePermission_ReadWebInfo, trS("Read web info")},
-    {AcePermission_WriteWebInfo, trS("Write web info")},
+    {AcePermission_FullControl, QCoreApplication::translate("Security", "Full control")},
+    {AcePermission_Read, QCoreApplication::translate("Security", "Read")},
+    {AcePermission_Write, QCoreApplication::translate("Security", "Write")},
+    {AcePermission_CreateChild, QCoreApplication::translate("Security", "Create child")},
+    {AcePermission_DeleteChild, QCoreApplication::translate("Security", "Delete child")},
+    {AcePermission_AllowedToAuthenticate, QCoreApplication::translate("Security", "Allowed to authenticate")},
+    {AcePermission_ChangePassword, QCoreApplication::translate("Security", "Change password")},
+    {AcePermission_ReceiveAs, QCoreApplication::translate("Security", "Receive as")},
+    {AcePermission_ResetPassword, QCoreApplication::translate("Security", "Reset password")},
+    {AcePermission_SendAs, QCoreApplication::translate("Security", "Send as")},
+    {AcePermission_ReadAccountRestrictions, QCoreApplication::translate("Security", "Read Account restrictions")},
+    {AcePermission_WriteAccountRestrictions, QCoreApplication::translate("Security", "Write Account restrictions")},
+    {AcePermission_ReadGeneralInfo, QCoreApplication::translate("Security", "Read general info")},
+    {AcePermission_WriteGeneralInfo, QCoreApplication::translate("Security", "Write general info")},
+    {AcePermission_ReadGroupMembership, QCoreApplication::translate("Security", "Read group membership")},
+    {AcePermission_ReadLogonInfo, QCoreApplication::translate("Security", "Read logon info")},
+    {AcePermission_WriteLogonInfo, QCoreApplication::translate("Security", "Write logon info")},
+    {AcePermission_ReadPersonalInfo, QCoreApplication::translate("Security", "Read personal info")},
+    {AcePermission_WritePersonalInfo, QCoreApplication::translate("Security", "Write personal info")},
+    {AcePermission_ReadPhoneAndMailOptions, QCoreApplication::translate("Security", "Read phone and mail options")},
+    {AcePermission_WritePhoneAndMailOptions, QCoreApplication::translate("Security", "Write phone and mail options")},
+    {AcePermission_ReadPrivateInfo, QCoreApplication::translate("Security", "Read private info")},
+    {AcePermission_WritePrivateInfo, QCoreApplication::translate("Security", "Write private info")},
+    {AcePermission_ReadPublicInfo, QCoreApplication::translate("Security", "Read public info")},
+    {AcePermission_WritePublicInfo, QCoreApplication::translate("Security", "Write public info")},
+    {AcePermission_ReadRemoteAccessInfo, QCoreApplication::translate("Security", "Read remote access info")},
+    {AcePermission_WriteRemoteAccessInfo, QCoreApplication::translate("Security", "Write remote access info")},
+    {AcePermission_ReadTerminalServerLicenseServer, QCoreApplication::translate("Security", "Read terminal server license server")},
+    {AcePermission_WriteTerminalServerLicenseServer, QCoreApplication::translate("Security", "Write terminal server license server")},
+    {AcePermission_ReadWebInfo, QCoreApplication::translate("Security", "Read web info")},
+    {AcePermission_WriteWebInfo, QCoreApplication::translate("Security", "Write web info")},
 };
 
 SecurityTab::SecurityTab() {
@@ -207,7 +206,7 @@ void SecurityTab::load_trustee_acl() {
     const QString label_text = [&]() {
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QString trustee_name = current_item->text();
-        const QString text = QString("Permissions for %1").arg(trustee_name);
+        const QString text = QString(tr("Permissions for %1")).arg(trustee_name);
 
         return text;
     }();
