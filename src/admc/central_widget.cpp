@@ -777,7 +777,7 @@ void CentralWidget::update_description_bar() {
 
             const bool filtering_ON = filter_dialog->filtering_ON();
             if (filtering_ON) {
-                out += tr(" [Filtering results]");
+                out += tr(" [Filtering enabled]");
             }
 
             return out;
