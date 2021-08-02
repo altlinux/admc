@@ -66,10 +66,6 @@ FilterDialog::FilterDialog(QWidget *parent)
     auto button_box = new QDialogButtonBox();
     button_box->addButton(QDialogButtonBox::Ok);
 
-    auto radio_buttons_frame = new QFrame();
-    radio_buttons_frame->setFrameStyle(QFrame::Raised);
-    radio_buttons_frame->setFrameShape(QFrame::Box);
-
     auto classes_row_layout = new QVBoxLayout();
     classes_row_layout->addWidget(classes_button);
     classes_row_layout->addWidget(filter_classes_widget);
@@ -78,15 +74,11 @@ FilterDialog::FilterDialog(QWidget *parent)
     custom_row_layout->addWidget(custom_button);
     custom_row_layout->addWidget(custom_dialog_button);
 
-    auto radio_layout = new QVBoxLayout();
-    radio_buttons_frame->setLayout(radio_layout);
-    radio_layout->addWidget(all_button);
-    radio_layout->addLayout(classes_row_layout);
-    radio_layout->addLayout(custom_row_layout);
-
     auto layout = new QVBoxLayout();
     setLayout(layout);
-    layout->addWidget(radio_buttons_frame);
+    layout->addWidget(all_button);
+    layout->addLayout(classes_row_layout);
+    layout->addLayout(custom_row_layout);
     layout->addWidget(button_box);
 
     settings_setup_dialog_geometry(SETTING_filter_dialog_geometry, this);
