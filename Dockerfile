@@ -7,6 +7,9 @@ RUN apt-get install -y qt5-base-devel cmake qt5-tools-devel qt5-tools libuuid-de
 
 RUN useradd -ms /bin/bash builder && mkdir /app && chown root:builder /app
 
+RUN pwd && ls
+RUN cd home && pwd && ls
+
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY script/build.sh /build.sh
 
