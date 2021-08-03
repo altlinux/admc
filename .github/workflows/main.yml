@@ -11,6 +11,6 @@ jobs:
         uses: actions/checkout@v2        
       - run: docker build . --file Dockerfile --tag build-environment
 #       - run: docker run pwd && ls
-      - run: docker run -i --log-driver=none -a stdin -a stdout -a stderr -v "$(pwd)":/app build-environment bash -c "pwd && ls"
+      - run: docker run -i --log-driver=none -a stdin -a stdout -a stderr -v "$(pwd)":/app build-environment bash -c "pwd && ls && cd app && pwd && ls && cmake ."
 #       "$(pwd)":/app build-environment
 #       - run: docker run -i --log-driver=none -a stdin -a stdout -a stderr -v "$(pwd)":/app build-environment
