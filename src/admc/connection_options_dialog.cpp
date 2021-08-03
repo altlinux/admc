@@ -70,6 +70,8 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     layout->addLayout(form_layout);
     layout->addWidget(button_box);
 
+    settings_setup_dialog_geometry(SETTING_connection_options_dialog_geometry, this);
+
     connect(
         button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
