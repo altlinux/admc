@@ -1,3 +1,8 @@
-#!/bin/bash
+#!/bin/bash 
+set -euxo pipefail
 
-cd /app/ && gear-rpm -ba
+cp -r /app/ $HOME/app 
+cd $HOME/app 
+mkdir build 
+cd build && cmake ..
+make -j `nproc`
