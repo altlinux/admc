@@ -1,3 +1,3 @@
 #!/bin/bash
 
-ls && cd /app/ && ls
+pwd && ls && cd /app/ && pwd && ls
