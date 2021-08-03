@@ -49,7 +49,7 @@ EditQueryItemWidget::EditQueryItemWidget()
 
     description_edit = new QLineEdit();
 
-    scope_checkbox = new QCheckBox(tr("Include subcontainers"));
+    scope_checkbox = new QCheckBox(tr("Recursive search"));
 
     filter_display = new QTextEdit();
     filter_display->setReadOnly(true);
