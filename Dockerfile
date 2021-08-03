@@ -20,4 +20,5 @@ USER builder
 WORKDIR /home/builder
 
 # Code file to execute when the docker container starts up (`build.sh`)
-ENTRYPOINT ["/build.sh"]
+# ENTRYPOINT ["/build.sh"]
+CMD pwd && ls && cd app && ls && cmake .
