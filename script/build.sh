@@ -1,5 +1,3 @@
 #!/bin/bash
 
-cd /app/
-cmake .
-make -j12
+cd /app/ && cmake .
