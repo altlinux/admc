@@ -65,7 +65,7 @@ void UnlockEdit::add_to_layout(QFormLayout *layout) {
             break;
         }
         case UnlockEditStyle_CheckOnRight: {
-            layout->addRow(QString("%:").arg(label_text), check);
+            layout->addRow(QString("%1:").arg(label_text), check);
 
             break;
         }
