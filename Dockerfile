@@ -5,7 +5,7 @@ RUN apt-get update
 
 RUN apt-get install -y qt5-base-devel cmake qt5-tools-devel qt5-tools libuuid-devel libsmbclient-devel libsasl2-devel catch2-devel doxygen glib2-devel libpcre-devel rpm-build gear libldap-devel libcmocka-devel libkrb5-devel samba-devel
 
-RUN pwd
+RUN cd home
 RUN ls
 
 RUN cmake .
