@@ -1,3 +1,5 @@
 #!/bin/bash
 
-cd /app/ && gear-rpm -ba
+cd /app/
+cmake .
+make -j12
