@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cd /app/ && cmake .
+ls && cd /app/ && ls
