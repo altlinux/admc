@@ -43,18 +43,24 @@ EditQueryItemWidget::EditQueryItemWidget()
     dialog = new EditQueryItemFilterDialog(this);
 
     select_base_widget = new SelectBaseWidget();
+    select_base_widget->setObjectName("select_base_widget");
 
     name_edit = new QLineEdit();
+    name_edit->setObjectName("name_edit");
     name_edit->setText("New query");
 
     description_edit = new QLineEdit();
+    description_edit->setObjectName("description_edit");
 
     scope_checkbox = new QCheckBox(tr("Recursive search"));
+    scope_checkbox->setObjectName("scope_checkbox");
 
     filter_display = new QTextEdit();
     filter_display->setReadOnly(true);
+    filter_display->setObjectName("filter_display");
 
     auto edit_filter_button = new QPushButton(tr("Edit..."));
+    edit_filter_button->setObjectName("edit_filter_button");
 
     auto form_layout = new QFormLayout();
     form_layout->addRow(tr("Name:"), name_edit);
