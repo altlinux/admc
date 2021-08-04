@@ -64,6 +64,7 @@ set(TEST_TARGETS
     admc_test_datetime_editor
     admc_test_string_editor
     admc_test_multi_editor
+    admc_test_edit_query_item_widget
 )
 
 foreach(target ${TEST_TARGETS})

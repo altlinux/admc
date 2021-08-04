@@ -44,6 +44,13 @@ enum QueryItemRole {
     QueryItemRole_LAST = ConsoleRole_LAST + 7,
 };
 
+enum QueryColumn {
+    QueryColumn_Name,
+    QueryColumn_Description,
+
+    QueryColumn_COUNT,
+};
+
 extern int console_query_folder_results_id;
 
 QList<QString> console_query_folder_header_labels();

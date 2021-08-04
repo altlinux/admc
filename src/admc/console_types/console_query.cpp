@@ -38,13 +38,6 @@
 
 #define QUERY_ROOT "QUERY_ROOT"
 
-enum QueryColumn {
-    QueryColumn_Name,
-    QueryColumn_Description,
-
-    QueryColumn_COUNT,
-};
-
 int console_query_folder_results_id;
 QStandardItem *query_tree_head = nullptr;
 
