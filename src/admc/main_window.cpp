@@ -101,6 +101,7 @@ void MainWindow::setup_menubar() {
     connect_action = new QAction(tr("&Connect"), this);
     auto connection_options_action = new QAction(tr("Connection options"), this);
     auto quit_action = new QAction(tr("&Quit"), this);
+    quit_action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
 
     auto manual_action = new QAction(tr("&Manual"), this);
     auto about_action = new QAction(tr("&About ADMC"), this);

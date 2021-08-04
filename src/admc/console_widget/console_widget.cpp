@@ -92,6 +92,10 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->set_results_to_list_action = new QAction(tr("&List"), this);
     d->set_results_to_detail_action = new QAction(tr("&Detail"), this);
 
+    d->navigate_up_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_0));
+    d->navigate_back_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_Minus));
+    d->navigate_forward_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_Plus));
+
     // NOTE: need to add a dummy view until a real view is
     // added when a scope item is selected. If this is not
     // done and stacked widget is left empty, it's sizing is
