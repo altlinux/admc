@@ -93,11 +93,8 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     QHash<QString, QVariant> state;
     filter_state_stream >> state;
 
-    const QHash<QString, QVariant> select_base_widget_state = state["select_base_widget"].toHash();
-    const QHash<QString, QVariant> filter_widget_state = state["filter_widget"].toHash();
-
-    select_base_widget->restore_state(select_base_widget_state);
-    dialog->filter_widget->restore_state(filter_widget_state);
+    select_base_widget->restore_state(state["select_base_widget"]);
+    dialog->filter_widget->restore_state(state["filter_widget"]);
 
     update_filter_display();
 
