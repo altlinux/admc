@@ -265,6 +265,71 @@
         <translation>Не удалось сбросить компьютер %1.</translation>
     </message>
     <message>
+        <location filename="ad_interface.cpp" line="1218"/>
+        <source>Failed to create GPO</source>
+        <translation>Не удалось создать GPO</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1247"/>
+        <source>Failed to create policy main dir</source>
+        <translation>Не удалось создать папку политики</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1255"/>
+        <source>Failed to create policy machine dir</source>
+        <translation>Не удалось создать папку Machine</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1263"/>
+        <source>Failed to create policy user dir</source>
+        <translation>Не удалось создать папку User</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1274"/>
+        <source>Failed to write policy ini</source>
+        <translation>Не удалось написать .ini политики</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1286"/>
+        <source>Failed to create object for GPO</source>
+        <translation>Не удалось создать объект политики</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1305"/>
+        <source>Failed to create user folder object for GPO</source>
+        <translation>Не удалось создать объект для папки User</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1315"/>
+        <source>Failed to create machine folder object for GPO</source>
+        <translation>Не удалось создать объект для папки Machine</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1366"/>
+        <source>Failed to create gpo sd</source>
+        <translation>Не удалось создать sd</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1400"/>
+        <source>Failed to set gpo sd</source>
+        <translation>Не удалось назначить sd</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1422"/>
+        <source>Failed to delete GPO on sysvol</source>
+        <translation>Не удалось удалить политику на SYSVOL</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1429"/>
+        <source>Failed to delete GPO</source>
+        <translation>Не удалось удалить политику</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1429"/>
+        <source>Failed to delete the object on domain</source>
+        <translation>Не удалось удалить объект политики</translation>
+    </message>
+    <message>
         <location filename="ad_interface.cpp" line="641"/>
         <source>Attribute %1 of object %2 was changed from &quot;%3&quot; to &quot;%4&quot;.</source>
         <oldsource>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</oldsource>
@@ -360,32 +425,32 @@
 <context>
     <name>AdInterfacePrivate</name>
     <message>
-        <location filename="ad_interface.cpp" line="1442"/>
+        <location filename="ad_interface.cpp" line="1472"/>
         <source>. Error: &quot;%1&quot;</source>
         <translation>. Ошибка: &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1462"/>
+        <location filename="ad_interface.cpp" line="1492"/>
         <source>No such object</source>
         <translation>Нет такого объекта</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1463"/>
+        <location filename="ad_interface.cpp" line="1493"/>
         <source>Constraint violation</source>
         <translation>Нарушение ограничений</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1464"/>
+        <location filename="ad_interface.cpp" line="1494"/>
         <source>Server is unwilling to perform</source>
         <translation>Сервер не хочет выполнять</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1465"/>
+        <location filename="ad_interface.cpp" line="1495"/>
         <source>Already exists</source>
         <translation>Объект уже существует</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1469"/>
+        <location filename="ad_interface.cpp" line="1499"/>
         <source>Server error: %1</source>
         <translation>Ошибка сервера: %1</translation>
     </message>
