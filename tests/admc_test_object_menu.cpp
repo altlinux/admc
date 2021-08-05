@@ -184,7 +184,7 @@ void ADMCTestObjectMenu::object_menu_move() {
     move_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(move_dialog, 1000));
 
-    QTreeView *move_dialog_view = qobject_cast<QTreeView *>(move_dialog);
+    QTreeView *move_dialog_view = move_dialog->findChild<QTreeView *>();
     QVERIFY2((move_dialog_view != nullptr), "Failed to cast move_dialog_view");
 
     // Select move target in the view
