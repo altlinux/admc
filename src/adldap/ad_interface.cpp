@@ -1214,6 +1214,10 @@ bool AdInterface::computer_reset_account(const QString &dn) {
 }
 
 bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
+    auto error_message = [&](const QString &error) {
+        d->error_message(tr("Failed to create GPO"), error);
+    };
+
     //
     // Generate UUID used for directory and object names
     //
@@ -1237,24 +1241,27 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(AdInterfacePrivate::s_dc, d->domain.toLower(), uuid);
+    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
     const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
     if (result_mkdir_main != 0) {
-        qDebug() << "Failed to create policy main dir";
+        error_message(tr("Failed to create policy main dir"));
+
         return false;
     }
 
     const QString machine_dir = main_dir + "/Machine";
     const int result_mkdir_machine = smbc_mkdir(cstr(machine_dir), 0);
     if (result_mkdir_machine != 0) {
-        qDebug() << "Failed to create policy machine dir";
+        error_message(tr("Failed to create policy machine dir"));
+
         return false;
     }
 
     const QString user_dir = main_dir + "/User";
     const int result_mkdir_user = smbc_mkdir(cstr(user_dir), 0);
     if (result_mkdir_user != 0) {
-        qDebug() << "Failed to create policy user dir";
+        error_message(tr("Failed to create policy user dir"));
+
         return false;
     }
 
@@ -1264,7 +1271,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     const char *ini_contents = "[General]\r\nVersion=0\r\n";
     const int result_write_ini = smbc_write(ini_file, ini_contents, strlen(ini_contents));
     if (result_write_ini < 0) {
-        qDebug() << "Failed to write policy ini";
+        error_message(tr("Failed to write policy ini"));
+
         return false;
     }
 
@@ -1275,12 +1283,13 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     dn_out = dn;
     const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
     if (!result_add) {
-        qDebug() << "Failed to create gpo";
+        error_message(tr("Failed to create object for GPO"));
+
         return false;
     }
     attribute_replace_string(dn, ATTRIBUTE_DISPLAY_NAME, display_name);
     // "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), uuid);
+    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
     attribute_replace_string(dn, ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath);
     // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
     attribute_replace_string(dn, ATTRIBUTE_FLAGS, "1");
@@ -1293,7 +1302,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     const bool result_add_user = object_add(user_dn, CLASS_CONTAINER);
     attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_user) {
-        qDebug() << "Failed to create gpo user";
+        error_message(tr("Failed to create user folder object for GPO"));
+
         return false;
     }
 
@@ -1302,13 +1312,22 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     const bool result_add_machine = object_add(machine_dn, CLASS_CONTAINER);
     attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_machine) {
-        qDebug() << "Failed to create gpo machine";
+        error_message(tr("Failed to create machine folder object for GPO"));
+       
         return false;
     }
 
     //
     // Set security descriptor for sysvol dir
     //
+
+    // STOPPING AT THIS POINT FOR NOW
+
+    // TODO: figure out what's wrong with security
+    // descriptor, operations are failing because sd's have
+    // NULL group sid's which seems ok but why do operations
+    // expect it to be non-NULL then?
+    return true;
 
     // First get descriptor of the GPO
     const QString base = dn;
@@ -1344,7 +1363,9 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     struct security_descriptor *sysvol_sd;
     const NTSTATUS create_sd_status = gp_create_gpt_security_descriptor(tmp_ctx, &domain_sd, &sysvol_sd);
     if (!NT_STATUS_IS_OK(create_sd_status)) {
-        qDebug() << "Failed to create gpo sd";
+        error_message(tr("Failed to create gpo sd"));
+        talloc_free(tmp_ctx);
+
         return false;
     }
 
@@ -1376,7 +1397,9 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     // Set descriptor
     const int set_sd_result = smbc_setxattr(cstr(main_dir), "system.nt_sec_desc.*", sysvol_sd_cstr, sysvol_sd_string_bytes.size(), 0);
     if (set_sd_result != 0) {
-        qDebug() << "Failed to set gpo sd. Error:" << strerror(errno);
+        error_message(tr("Failed to set gpo sd"));
+        talloc_free(tmp_ctx);
+        
         return false;
     }
 
@@ -1386,22 +1409,29 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 }
 
 bool AdInterface::delete_gpo(const QString &gpo_dn) {
-    const bool delete_success = object_delete(gpo_dn);
-    if (!delete_success) {
-        qDebug() << "Failed to delete gpo object";
-        return false;
-    }
+    // NOTE: don't exit if sysvol delete fails, still try to
+    // delete on domain
+    bool result = true;
 
+    // Delete on sysvol
     const AdObject object = search_object(gpo_dn, {ATTRIBUTE_GPC_FILE_SYS_PATH});
     const QString sysvol_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
     const QString url = sysvol_path_to_smb(sysvol_path);
-    const int result_rmdir = smbc_rmdir(cstr(url));
+    const int result_rmdir = smbc_unlink(cstr(url));
     if (result_rmdir < 0) {
-        qDebug() << "Failed to remove gpo dir";
-        return false;
+        d->error_message(tr("Failed to delete GPO on sysvol"), strerror(errno));
+        
+        result = false;
     }
 
-    return true;
+    const bool delete_success = object_delete(gpo_dn);
+    if (!delete_success) {
+        d->error_message(tr("Failed to delete GPO"), tr("Failed to delete the object on domain"));
+      
+        result = false;
+    }
+
+    return result;
 }
 
 QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
@@ -1418,7 +1448,7 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     const int sysvol_i = out.indexOf("sysvol");
     out.remove(0, sysvol_i);
 
-    out = QString("smb://%1/%2").arg(AdInterfacePrivate::s_dc, out);
+    out = QString("smb://%1/%2").arg(d->domain.toLower(), out);
 
     return out;
 }
