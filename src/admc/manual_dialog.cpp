@@ -21,6 +21,7 @@
 #include "manual_dialog.h"
 
 #include "help_browser.h"
+#include "settings.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -87,4 +88,6 @@ ManualDialog::ManualDialog(QWidget *parent)
     auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->addWidget(splitter);
+
+    settings_setup_dialog_geometry(SETTING_manual_dialog_geometry, this);
 }

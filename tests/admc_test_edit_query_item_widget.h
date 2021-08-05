@@ -18,30 +18,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_AD_INTERFACE_H
-#define ADMC_TEST_AD_INTERFACE_H
+#ifndef ADMC_TEST_EDIT_QUERY_ITEM_WIDGET_H
+#define ADMC_TEST_EDIT_QUERY_ITEM_WIDGET_H
 
 #include "admc_test.h"
 
-class ADMCTestAdInterface : public ADMCTest {
+class EditQueryItemWidget;
+class QLineEdit;
+class QCheckBox;
+class QComboBox;
+class QPushButton;
+class QTextEdit;
+
+class ADMCTestEditQueryItemWidget : public ADMCTest {
     Q_OBJECT
 
 private slots:
-    void create_and_delete_gpo();
+    void init() override;
 
-    void object_add();
-    void object_delete();
-    void object_move();
-    void object_rename();
-
-    void group_add_member();
-    void group_remove_member();
-    void group_set_scope();
-    void group_set_type();
-
-    void user_set_account_option();
+    void save_and_load();
 
 private:
+    EditQueryItemWidget *widget;
+    QLineEdit *name_edit;
+    QLineEdit *description_edit;
+    QCheckBox *scope_checkbox;
+    QComboBox *base_combo;
+    QPushButton *edit_filter_button;
+    QTextEdit *filter_display;
 };
 
-#endif /* ADMC_TEST_AD_INTERFACE_H */
+#endif /* ADMC_TEST_EDIT_QUERY_ITEM_WIDGET_H */

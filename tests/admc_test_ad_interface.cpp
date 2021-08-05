@@ -22,6 +22,40 @@
 
 #include <QTest>
 
+void ADMCTestAdInterface::create_and_delete_gpo() {
+    const QString gpo_name = "test_policy_for_admc_test_ad_interface";
+
+    auto find_policy_dn = [&]() {
+        const QString base = ad.adconfig()->domain_head();
+        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, gpo_name);
+        const QList<QString> attributes = QList<QString>();
+        const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, attributes);
+
+        if (!search_results.isEmpty()) {
+            return search_results.keys()[0];
+        } else {
+            return QString();
+        }
+    };
+
+    // Delete old gpo, if it was leftover from previous test
+    const QString dn_before = find_policy_dn();
+    if (!dn_before.isEmpty()) {
+        const bool delete_before_success = ad.delete_gpo(dn_before);
+        QVERIFY(delete_before_success);
+    }
+
+    // Create new gpo
+    QString created_dn;
+    const bool create_success = ad.create_gpo(gpo_name, created_dn);
+    QVERIFY(create_success);
+    QVERIFY(!created_dn.isEmpty());
+
+    // Delete again;
+    const bool delete_created_success = ad.delete_gpo(created_dn);
+    QVERIFY(delete_created_success);
+}
+
 void ADMCTestAdInterface::object_add() {
     const QString dn = test_object_dn(TEST_USER, CLASS_USER);
 

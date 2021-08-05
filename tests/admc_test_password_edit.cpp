@@ -65,17 +65,13 @@ void ADMCTestPasswordEdit::load() {
     QVERIFY(confirm_edit->text().isEmpty());
 }
 
-void ADMCTestPasswordEdit::apply_with_bad_confirm() {
-    load();
-    const QString password = "pass123!";
-
+void ADMCTestPasswordEdit::verify() {
     main_edit->setText("test");
     confirm_edit->setText("no-match");
 
-    qInfo() << "NOTE: the following error is to be expected";
-    const bool apply_success = edit->apply(ad, dn);
+    const bool verify_success = edit->verify(ad, dn);
     close_message_box();
-    QVERIFY(!apply_success);
+    QCOMPARE(verify_success, false);
 }
 
 void ADMCTestPasswordEdit::apply() {

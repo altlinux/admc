@@ -5,16 +5,21 @@
     <name>AboutDialog</name>
     <message>
         <location filename="about_dialog.cpp" line="31"/>
+        <source>About</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="about_dialog.cpp" line="33"/>
         <source>Version %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="about_dialog.cpp" line="34"/>
+        <location filename="about_dialog.cpp" line="36"/>
         <source>ADMC is a tool for Active Directory administration.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="about_dialog.cpp" line="36"/>
+        <location filename="about_dialog.cpp" line="38"/>
         <source>Copyright (C) 2020 BaseALT Ltd.</source>
         <translation></translation>
     </message>
@@ -275,12 +280,17 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="516"/>
+        <location filename="central_widget.cpp" line="488"/>
+        <source>Add Link</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="central_widget.cpp" line="522"/>
         <source>Are you sure you want to delete this policy and all of it&apos;s links?</source>
         <translation></translation>
     </message>
     <message numerus="yes">
-        <location filename="central_widget.cpp" line="760"/>
+        <location filename="central_widget.cpp" line="770"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
@@ -288,22 +298,70 @@
         </translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="764"/>
-        <source> [Filtering results]</source>
+        <location filename="central_widget.cpp" line="780"/>
+        <source> [Filtering enabled]</source>
         <translation></translation>
     </message>
 </context>
 <context>
     <name>ChangeDCDialog</name>
     <message>
-        <location filename="change_dc_dialog.cpp" line="39"/>
+        <location filename="change_dc_dialog.cpp" line="41"/>
         <source>Change Domain Controller</source>
         <oldsource>Change domain controller</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="change_dc_dialog.cpp" line="52"/>
+        <location filename="change_dc_dialog.cpp" line="45"/>
+        <source>Select:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="change_dc_dialog.cpp" line="46"/>
+        <source>Custom:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="change_dc_dialog.cpp" line="59"/>
         <source>Save this setting</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="change_dc_dialog.cpp" line="107"/>
+        <source>Error</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="change_dc_dialog.cpp" line="107"/>
+        <source>Select or enter a domain controller.</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>ConnectionOptionsDialog</name>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="39"/>
+        <source>Connection Options</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="41"/>
+        <source>Canonize hostname</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="61"/>
+        <source>Defaults</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="64"/>
+        <source>Port:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="65"/>
+        <source>Require cert strategy:</source>
         <translation></translation>
     </message>
 </context>
@@ -560,22 +618,22 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="48"/>
+        <location filename="create_policy_dialog.cpp" line="47"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="51"/>
+        <location filename="create_policy_dialog.cpp" line="50"/>
         <source>Create</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="97"/>
+        <location filename="create_policy_dialog.cpp" line="96"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="97"/>
+        <location filename="create_policy_dialog.cpp" line="96"/>
         <source>Group Policy Object with this name already exists.</source>
         <translation></translation>
     </message>
@@ -589,22 +647,22 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="49"/>
+        <location filename="create_query_folder_dialog.cpp" line="48"/>
         <source>Create</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="53"/>
+        <location filename="create_query_folder_dialog.cpp" line="52"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="54"/>
+        <location filename="create_query_folder_dialog.cpp" line="53"/>
         <source>Description:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="70"/>
+        <location filename="create_query_folder_dialog.cpp" line="69"/>
         <source>New folder</source>
         <translation></translation>
     </message>
@@ -614,6 +672,14 @@
     <message>
         <location filename="create_query_item_dialog.cpp" line="38"/>
         <source>Create Query</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>CustomizeColumnsDialog</name>
+    <message>
+        <location filename="console_widget/customize_columns_dialog.cpp" line="42"/>
+        <source>Customize Columns</source>
         <translation></translation>
     </message>
 </context>
@@ -648,12 +714,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_folder_dialog.cpp" line="51"/>
+        <location filename="edit_query_folder_dialog.cpp" line="50"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_folder_dialog.cpp" line="52"/>
+        <location filename="edit_query_folder_dialog.cpp" line="51"/>
         <source>Description:</source>
         <translation></translation>
     </message>
@@ -667,10 +733,18 @@
     </message>
 </context>
 <context>
+    <name>EditQueryItemFilterDialog</name>
+    <message>
+        <location filename="edit_query_item_widget.cpp" line="137"/>
+        <source>Edit Filter</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>EditQueryItemWidget</name>
     <message>
         <location filename="edit_query_item_widget.cpp" line="52"/>
-        <source>Include subcontainers</source>
+        <source>Recursive search</source>
         <translation></translation>
     </message>
     <message>
@@ -1009,6 +1083,11 @@
 <context>
     <name>LogonComputersDialog</name>
     <message>
+        <location filename="edits/logon_computers_edit.cpp" line="77"/>
+        <source>Edit Logon Computers</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="edits/logon_computers_edit.cpp" line="81"/>
         <source>New value:</source>
         <translation></translation>
@@ -1103,92 +1182,97 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="main_window.cpp" line="47"/>
+        <location filename="main_window.cpp" line="50"/>
         <source>Message Log</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="93"/>
+        <location filename="main_window.cpp" line="101"/>
         <source>&amp;Connect</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="94"/>
+        <location filename="main_window.cpp" line="102"/>
+        <source>Connection options</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.cpp" line="103"/>
         <source>&amp;Quit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="96"/>
+        <location filename="main_window.cpp" line="105"/>
         <source>&amp;Manual</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="97"/>
+        <location filename="main_window.cpp" line="106"/>
         <source>&amp;About ADMC</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="99"/>
+        <location filename="main_window.cpp" line="108"/>
         <source>&amp;Confirm actions</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="100"/>
+        <location filename="main_window.cpp" line="109"/>
         <source>&amp;Put last name before first name when creating users</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="101"/>
+        <location filename="main_window.cpp" line="110"/>
         <source>Log searches</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="102"/>
+        <location filename="main_window.cpp" line="111"/>
         <source>Timestamps in message log</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="148"/>
+        <location filename="main_window.cpp" line="157"/>
         <source>&amp;File</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="149"/>
+        <location filename="main_window.cpp" line="158"/>
         <source>&amp;Action</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="150"/>
+        <location filename="main_window.cpp" line="159"/>
         <source>&amp;Navigation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="151"/>
+        <location filename="main_window.cpp" line="160"/>
         <source>&amp;View</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="152"/>
+        <location filename="main_window.cpp" line="161"/>
         <source>&amp;Preferences</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="153"/>
+        <location filename="main_window.cpp" line="162"/>
         <source>&amp;Language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="154"/>
+        <location filename="main_window.cpp" line="163"/>
         <source>&amp;Help</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="204"/>
+        <location filename="main_window.cpp" line="217"/>
         <source>Info</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="204"/>
+        <location filename="main_window.cpp" line="217"/>
         <source>Restart the app to switch to the selected language.</source>
         <translation></translation>
     </message>
@@ -1208,6 +1292,19 @@
     <message>
         <location filename="edits/manager_widget.cpp" line="43"/>
         <source>Clear</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="edits/manager_widget.cpp" line="94"/>
+        <source>Select Manager</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>ManualDialog</name>
+    <message>
+        <location filename="manual_dialog.cpp" line="38"/>
+        <source>Manual</source>
         <translation></translation>
     </message>
 </context>
@@ -1239,12 +1336,22 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="443"/>
+        <location filename="tabs/membership_tab.cpp" line="338"/>
+        <source>Add Member</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/membership_tab.cpp" line="339"/>
+        <source>Add to Group</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/membership_tab.cpp" line="452"/>
         <source>Primary group: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="371"/>
+        <location filename="tabs/membership_tab.cpp" line="380"/>
         <source>Can&apos;t remove because this group is a primary group to selected user.</source>
         <translation></translation>
     </message>
@@ -1254,12 +1361,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="372"/>
+        <location filename="tabs/membership_tab.cpp" line="381"/>
         <source>Can&apos;t remove because selected group is a primary group to this user.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="377"/>
+        <location filename="tabs/membership_tab.cpp" line="386"/>
         <source>Error</source>
         <translation></translation>
     </message>
@@ -1623,6 +1730,11 @@
         <source>Error</source>
         <translation></translation>
     </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="671"/>
+        <source>Add to Group</source>
+        <translation></translation>
+    </message>
 </context>
 <context>
     <name>RenameObjectDialog</name>
@@ -1632,17 +1744,23 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="76"/>
+        <location filename="rename_object_dialog.cpp" line="77"/>
+        <source>Name:</source>
+        <comment>In Russian this needs to be different from just &lt;Name&gt; because in Russian &lt;First Name&gt; translates to &lt;Name&gt; as well and there&apos;s a First name edit below this one.</comment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="rename_object_dialog.cpp" line="79"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="109"/>
+        <location filename="rename_object_dialog.cpp" line="117"/>
         <source>Object %1 was renamed.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.cpp" line="114"/>
+        <location filename="rename_object_dialog.cpp" line="122"/>
         <source>Failed to rename object %1</source>
         <translation></translation>
     </message>
@@ -1655,41 +1773,209 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_policy_dialog.cpp" line="54"/>
+        <location filename="rename_policy_dialog.cpp" line="53"/>
         <source>Name:</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>Security</name>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="47"/>
+        <source>Full control</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="48"/>
+        <source>Read</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="49"/>
+        <source>Write</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="50"/>
+        <source>Create child</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="51"/>
+        <source>Delete child</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="52"/>
+        <source>Allowed to authenticate</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="53"/>
+        <source>Change password</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="54"/>
+        <source>Receive as</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="55"/>
+        <source>Reset password</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="56"/>
+        <source>Send as</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="57"/>
+        <source>Read Account restrictions</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="58"/>
+        <source>Write Account restrictions</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="59"/>
+        <source>Read general info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="60"/>
+        <source>Write general info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="61"/>
+        <source>Read group membership</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="62"/>
+        <source>Read logon info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="63"/>
+        <source>Write logon info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="64"/>
+        <source>Read personal info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="65"/>
+        <source>Write personal info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="66"/>
+        <source>Read phone and mail options</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="67"/>
+        <source>Write phone and mail options</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="68"/>
+        <source>Read private info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="69"/>
+        <source>Write private info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="70"/>
+        <source>Read public info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="71"/>
+        <source>Write public info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="72"/>
+        <source>Read remote access info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="73"/>
+        <source>Write remote access info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="74"/>
+        <source>Read terminal server license server</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="75"/>
+        <source>Write terminal server license server</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="76"/>
+        <source>Read web info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="77"/>
+        <source>Write web info</source>
         <translation></translation>
     </message>
 </context>
 <context>
     <name>SecurityTab</name>
     <message>
-        <location filename="tabs/security_tab.cpp" line="95"/>
+        <location filename="tabs/security_tab.cpp" line="94"/>
         <source>Add...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="96"/>
+        <location filename="tabs/security_tab.cpp" line="95"/>
         <source>Add well-known trustee...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="97"/>
+        <location filename="tabs/security_tab.cpp" line="96"/>
         <source>Remove</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="102"/>
+        <location filename="tabs/security_tab.cpp" line="101"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="103"/>
+        <location filename="tabs/security_tab.cpp" line="102"/>
         <source>Allowed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="104"/>
+        <location filename="tabs/security_tab.cpp" line="103"/>
         <source>Denied</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="209"/>
+        <source>Permissions for %1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="303"/>
+        <source>Add Trustee</source>
         <translation></translation>
     </message>
     <message>
@@ -1708,6 +1994,14 @@
     <message>
         <location filename="filter_widget/select_base_widget.cpp" line="52"/>
         <source>Browse...</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>SelectClassesDialog</name>
+    <message>
+        <location filename="filter_widget/select_classes_widget.cpp" line="97"/>
+        <source>Select Classes</source>
         <translation></translation>
     </message>
 </context>
@@ -1740,84 +2034,84 @@
 <context>
     <name>SelectObjectDialog</name>
     <message>
-        <location filename="select_object_dialog.cpp" line="59"/>
+        <location filename="select_object_dialog.cpp" line="65"/>
         <source>Select Objects</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="61"/>
+        <location filename="select_object_dialog.cpp" line="67"/>
         <source>Select Object</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="76"/>
+        <location filename="select_object_dialog.cpp" line="82"/>
         <source>Add</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="87"/>
+        <location filename="select_object_dialog.cpp" line="51"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="88"/>
+        <location filename="select_object_dialog.cpp" line="52"/>
         <source>Type</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="89"/>
+        <location filename="select_object_dialog.cpp" line="53"/>
         <source>Folder</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="100"/>
+        <location filename="select_object_dialog.cpp" line="101"/>
         <source>Remove</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="106"/>
+        <location filename="select_object_dialog.cpp" line="107"/>
         <source>Advanced</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="109"/>
+        <location filename="select_object_dialog.cpp" line="110"/>
         <source>Classes:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="110"/>
+        <location filename="select_object_dialog.cpp" line="111"/>
         <source>Search in:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="111"/>
+        <location filename="select_object_dialog.cpp" line="112"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="112"/>
+        <location filename="select_object_dialog.cpp" line="113"/>
         <source>Selected objects:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="168"/>
-        <location filename="select_object_dialog.cpp" line="251"/>
-        <location filename="select_object_dialog.cpp" line="308"/>
+        <location filename="select_object_dialog.cpp" line="169"/>
+        <location filename="select_object_dialog.cpp" line="252"/>
+        <location filename="select_object_dialog.cpp" line="309"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="251"/>
+        <location filename="select_object_dialog.cpp" line="252"/>
         <source>Failed to find any matches.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="308"/>
+        <location filename="select_object_dialog.cpp" line="309"/>
         <source>Selected object is already in the list.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="168"/>
+        <location filename="select_object_dialog.cpp" line="169"/>
         <source>This selection accepts only one object. Remove extra objects to proceed.</source>
         <translation></translation>
     </message>
@@ -1825,8 +2119,24 @@
 <context>
     <name>SelectObjectMatchDialog</name>
     <message>
-        <location filename="select_object_dialog.cpp" line="315"/>
+        <location filename="select_object_dialog.cpp" line="317"/>
         <source>There are multiple matches. Select one or more to add to the list.</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>SelectPolicyDialog</name>
+    <message>
+        <location filename="select_policy_dialog.cpp" line="37"/>
+        <source>Select Policy</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>SelectWellKnownTrusteeDialog</name>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="458"/>
+        <source>Select Well-Known Trustees</source>
         <translation></translation>
     </message>
 </context>
@@ -1877,9 +2187,8 @@
 <context>
     <name>UnlockEdit</name>
     <message>
-        <location filename="edits/unlock_edit.cpp" line="47"/>
-        <source>Unlock account:</source>
-        <oldsource>Unlock account</oldsource>
+        <location filename="edits/unlock_edit.cpp" line="27"/>
+        <source>Unlock account</source>
         <translation></translation>
     </message>
 </context>

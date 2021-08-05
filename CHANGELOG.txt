@@ -2,6 +2,30 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.6.4 (Released 05-08-2021)
+-----------------------------------------------------------------------
+- Queries: Fixed query edit dialog not loading state
+  correctly. Was loading some fields as blank. (#255)
+- Policies: Fixed policy creation dialog not closing. (#264)
+- Policies: Fixed policy creation dialog not displaying
+  errors.
+- Policies: Fixed policy results not loading
+  state(enforced/disabled) of links correctly. Was loading
+  blank every time. (#263)
+- Policies: Fixed policy delete action not deleting GPO
+  files on sysvol.
+- Policies: Disabled imprinting of policy security
+  descriptors on their sysvol files temporarily. For the
+  time being, sysvol files of newly created gpo's will have
+  default SD's. This is because the current process for
+  imprinting SD's causes problems.
+- Misc: Fixed dialog titles.
+- Misc: Added object count to description bar for queries.
+  (#256)
+- Menubar: Added shortcuts for navigation actions and quit.
+  (#262)
+
+-----------------------------------------------------------------------
  VERSION 0.6.3 (Released 02-08-2021)
 -----------------------------------------------------------------------
 - Misc: Added manual generated from the wiki page. (#218)

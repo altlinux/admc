@@ -533,7 +533,7 @@ void CentralWidget::policy_delete() {
 
     for (const QPersistentModelIndex &index : selected) {
         const QString dn = index.data(PolicyRole_DN).toString();
-        const bool success = ad.object_delete(dn);
+        const bool success = ad.delete_gpo(dn);
 
         if (success) {
             // Remove deleted policy from console
