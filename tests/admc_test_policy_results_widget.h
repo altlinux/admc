@@ -18,30 +18,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_AD_INTERFACE_H
-#define ADMC_TEST_AD_INTERFACE_H
+#ifndef ADMC_TEST_POLICY_RESULTS_WIDGET_H
+#define ADMC_TEST_POLICY_RESULTS_WIDGET_H
 
 #include "admc_test.h"
 
-class ADMCTestAdInterface : public ADMCTest {
+class PolicyResultsWidget;
+class QTreeView;
+class QStandardItemModel;
+
+class ADMCTestPolicyResultsWidget : public ADMCTest {
     Q_OBJECT
 
 private slots:
-    void create_and_delete_gpo();
+    void initTestCase() override;
+    void cleanupTestCase() override;
 
-    void object_add();
-    void object_delete();
-    void object_move();
-    void object_rename();
+    void init() override;
 
-    void group_add_member();
-    void group_remove_member();
-    void group_set_scope();
-    void group_set_type();
-
-    void user_set_account_option();
+    void load_empty();
+    void load();
 
 private:
+    PolicyResultsWidget *widget;
+    QTreeView *view;
+    QStandardItemModel *model;
+    QString gpo;
 };
 
-#endif /* ADMC_TEST_AD_INTERFACE_H */
+#endif /* ADMC_TEST_POLICY_RESULTS_WIDGET_H */
