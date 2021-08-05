@@ -54,11 +54,11 @@ public slots:
     // Called before first test
     virtual void initTestCase();
     // Called after last test
-    void cleanupTestCase();
+    virtual void cleanupTestCase();
 
     // Called before and after each test
     virtual void init();
-    void cleanup();
+    virtual void cleanup();
 
 protected:
     AdInterface ad;

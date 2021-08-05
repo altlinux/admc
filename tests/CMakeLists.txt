@@ -65,6 +65,7 @@ set(TEST_TARGETS
     admc_test_string_editor
     admc_test_multi_editor
     admc_test_edit_query_item_widget
+    admc_test_policy_results_widget
 )
 
 foreach(target ${TEST_TARGETS})

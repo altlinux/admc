@@ -18,44 +18,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef POLICY_RESULTS_WIDGET_H
-#define POLICY_RESULTS_WIDGET_H
+#ifndef ADMC_TEST_POLICY_RESULTS_WIDGET_H
+#define ADMC_TEST_POLICY_RESULTS_WIDGET_H
 
-/**
- * Displays OU's linked to currently selected policy.
- */
+#include "admc_test.h"
 
-#include <QWidget>
-
+class PolicyResultsWidget;
+class QTreeView;
 class QStandardItemModel;
-class QStandardItem;
-class QMenu;
-class ResultsView;
 
-class PolicyResultsWidget final : public QWidget {
+class ADMCTestPolicyResultsWidget : public ADMCTest {
     Q_OBJECT
 
-public:
-    PolicyResultsWidget();
-    ~PolicyResultsWidget();
+private slots:
+    void initTestCase() override;
+    void cleanupTestCase() override;
 
-    // Loads links for this policy. Nothing is done if given
-    // index is not a policy.
-    void update(const QModelIndex &index);
-    
-    void update(const QString &gpo);
+    void init() override;
 
-    ResultsView *get_view() const;
+    void load_empty();
+    void load();
 
 private:
-    ResultsView *view;
+    PolicyResultsWidget *widget;
+    QTreeView *view;
     QStandardItemModel *model;
     QString gpo;
-    QMenu *context_menu;
-
-    void on_item_changed(QStandardItem *item);
-    void open_context_menu(const QPoint &pos);
-    void delete_link();
 };
 
-#endif /* POLICY_RESULTS_WIDGET_H */
+#endif /* ADMC_TEST_POLICY_RESULTS_WIDGET_H */

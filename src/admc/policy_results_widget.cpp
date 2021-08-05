@@ -128,6 +128,12 @@ void PolicyResultsWidget::update(const QModelIndex &index) {
         return;
     }
 
+    const QString new_gpo = index.data(PolicyRole_DN).toString();
+
+    update(new_gpo);
+}
+
+void PolicyResultsWidget::update(const QString &new_gpo) {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -135,7 +141,7 @@ void PolicyResultsWidget::update(const QModelIndex &index) {
 
     model->removeRows(0, model->rowCount());
 
-    gpo = index.data(PolicyRole_DN).toString();
+    gpo = new_gpo;
 
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;
