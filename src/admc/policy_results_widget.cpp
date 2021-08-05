@@ -162,7 +162,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
         const Gplink gplink = Gplink(gplink_string);
 
         const Qt::CheckState enforced_checkstate = [&]() {
-            const bool is_enforced = gplink.get_option(dn, GplinkOption_Enforced);
+            const bool is_enforced = gplink.get_option(gpo, GplinkOption_Enforced);
             if (is_enforced) {
                 return Qt::Checked;
             } else {
@@ -178,7 +178,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
             const Qt::CheckState checkstate = [=]() {
                 const GplinkOption option = column_to_option[column];
-                const bool option_is_set = gplink.get_option(dn, option);
+                const bool option_is_set = gplink.get_option(gpo, option);
                 if (option_is_set) {
                     return Qt::Checked;
                 } else {
