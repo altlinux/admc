@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_compile_options(-Wall -Wshadow -Werror=switch)
 
-project(admc VERSION 0.6.3)
+project(admc VERSION 0.6.4)
 
 message(STATUS "Project version is: " ${VERSION})
 
