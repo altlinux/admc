@@ -32,6 +32,8 @@
 #include <QStandardPaths>
 #include <QTabWidget>
 #include <QVBoxLayout>
+#include <QFileInfo>
+#include <QDir>
 
 ManualDialog::ManualDialog(QWidget *parent)
 : QDialog(parent) {
@@ -60,6 +62,12 @@ ManualDialog::ManualDialog(QWidget *parent)
 
     qDebug() << ".qhc = " << help_collection_path;
     qDebug() << ".qch = " << compressed_help_path;
+
+    const QFileInfo help_collection_info = QFileInfo(help_collection_path);
+    const QDir help_collection_dir = help_collection_info.absoluteDir();
+    if (!help_collection_dir.exists()) {
+        help_collection_dir.mkpath(help_collection_dir.absolutePath());
+    }
 
     auto help_engine = new QHelpEngine(help_collection_path, this);
     const bool help_setup_success = help_engine->setupData();
