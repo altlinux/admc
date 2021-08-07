@@ -1,7 +1,12 @@
 %define _unpackaged_files_terminate_build 1
+%define _development 1
+%if %_development
+%define _git_commit %(git rev-parse --short HEAD)
+%define _development_release (development release %_git_commit)
+%endif
 
 Name: admc
-Version: 0.6.3
+Version: 0.6.4
 Release: alt1
 
 Summary: AD editor
@@ -103,6 +108,9 @@ Tests for ADMC
 %_bindir/admc_test_datetime_editor
 
 %changelog
+* %(LC_TIME=C date "+%%a %%b %%d %%Y") %{?package_signer:%package_signer}%{!?package_signer:%packager} %version-%release
+- Build for admc-%version-%release%{?_development_release: %_development_release}.
+
 * Mon Aug 02 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.6.3-alt1
 - 0.6.3
 
