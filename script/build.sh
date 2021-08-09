@@ -1,8 +1,8 @@
-#!/bin/bash 
-set -euxo pipefail
+#!/bin/bash
 
-cp -r /app/ $HOME/app 
-cd $HOME/app 
-mkdir build 
-cd build && cmake ..
-make -j `nproc`
+# Need to add this so that the %packager macro used in .spec
+# is defined, actual value doesn't matter since this is just
+# for testing
+echo "%packager Docker <docker@email.com>" >> ~/.rpmmacros
+
+cd /app/ && gear-rpm -ba

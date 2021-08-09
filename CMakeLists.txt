@@ -7,7 +7,20 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_compile_options(-Wall -Wshadow -Werror=switch)
 
-project(admc VERSION 0.6.4)
+# You can get version from spec by first finding Versions keyword.
+# After that you can use awk to split line by : and then select second part of it.
+# Finally you want to clear all the spaces around version.
+# OUTPUT_VARIABLE argument of execute_process allows you to capture output of the command.
+execute_process(
+    COMMAND
+    bash -c "grep Version: .gear/admc.spec | awk -F\":\" '{ print $2 }' | tr -d [:space:]"
+    OUTPUT_VARIABLE GEAR_VERSION
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+# To ensure that we have indeed captured the project version we use message to provide us with console output.
+message(STATUS "Project version is: " ${GEAR_VERSION})
+
+project(admc VERSION ${GEAR_VERSION})
 
 message(STATUS "Project version is: " ${VERSION})
 
