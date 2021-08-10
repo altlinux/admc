@@ -1437,18 +1437,13 @@ bool AdInterface::delete_gpo(const QString &gpo_dn) {
 QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     QString out = sysvol_path;
 
+    // NOTE: sysvol paths created by windows have this weird
+    // capitalization and smbclient does NOT like it
+    out.replace("\\SysVol\\", "\\sysvol\\");
+    
     out.replace("\\", "/");
 
-    // TODO: file sys path as it is, is like this:
-    // "smb://domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
-    // But that fails to load the whole directory sometimes
-    // Replacing domain at the start with current host fixes it
-    // "smb://dc0.domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
-    // not sure if this is required and which host/DC is the correct one
-    const int sysvol_i = out.indexOf("sysvol");
-    out.remove(0, sysvol_i);
-
-    out = QString("smb://%1/%2").arg(d->domain.toLower(), out);
+    out.prepend("smb:");
 
     return out;
 }
