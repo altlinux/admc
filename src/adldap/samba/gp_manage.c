@@ -131,6 +131,15 @@ NTSTATUS gp_create_gpt_security_descriptor(TALLOC_CTX *mem_ctx, struct security_
         /* Get a directory access mask from the assigned access mask on the LDAP object */
         ace->access_mask = gp_ads_to_dir_access_mask(ace->access_mask);
 
+        // NOTE: ACE may become empty when it's access mask
+        // is transformed for sysvol format. In that case,
+        // skip it.
+        const bool ace_is_empty = (ace->access_mask == 0x00000000);
+        if (ace_is_empty) {
+            talloc_free(trustee);
+            continue;
+        }
+
         /* Add the ace to the security descriptor DACL */
         status = security_descriptor_dacl_add(fs_sd, ace);
         if (!NT_STATUS_IS_OK(status)) {
