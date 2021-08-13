@@ -54,6 +54,13 @@ void ADMCTestGplink::to_string() {
     QCOMPARE(gplink.to_string(), test_gplink_string);
 }
 
+void ADMCTestGplink::equals() {
+    Gplink gplink_1(test_gplink_string);
+    Gplink gplink_2(test_gplink_string);
+
+    QVERIFY(gplink_1.equals(gplink_2));
+}
+
 void ADMCTestGplink::contains_data() {
     QTest::addColumn<QString>("gpo");
     QTest::addColumn<bool>("contains_value");

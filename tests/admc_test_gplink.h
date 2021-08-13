@@ -36,6 +36,7 @@ public slots:
 
 private slots:
     void to_string();
+    void equals();
     void contains_data();
     void contains();
     void add_data();

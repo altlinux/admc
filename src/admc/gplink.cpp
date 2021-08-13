@@ -219,5 +219,5 @@ void Gplink::set_option(const QString &gpo_case, const GplinkOption option, cons
 }
 
 bool Gplink::equals(const Gplink &other) const {
-    return equals(other.to_string());
+    return (to_string() == other.to_string());
 }
