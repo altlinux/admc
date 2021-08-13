@@ -253,20 +253,18 @@ void GroupPolicyTab::reload_gplink() {
     const QList<QString> attributes = {ATTRIBUTE_DISPLAY_NAME};
     const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-    const QList<QString> gpos = gplink.get_gpos();
-
-    for (auto dn : results.keys()) {
-        if (!gpos.contains(dn)) {
+    for (auto gpo : results.keys()) {
+        if (!gplink.contains(gpo)) {
             continue;
         }
 
-        const AdObject object = results[dn];
+        const AdObject object = results[gpo];
 
         const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
 
         const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
         row[GplinkColumn_Name]->setText(display_name);
-        set_data_for_row(row, dn, GplinkRole_DN);
+        set_data_for_row(row, gpo, GplinkRole_DN);
 
         for (const auto column : option_columns) {
             QStandardItem *item = row[column];
@@ -274,7 +272,7 @@ void GroupPolicyTab::reload_gplink() {
 
             const Qt::CheckState checkstate = [=]() {
                 const GplinkOption option = column_to_option[column];
-                const bool option_is_set = gplink.get_option(dn, option);
+                const bool option_is_set = gplink.get_option(gpo, option);
                 if (option_is_set) {
                     return Qt::Checked;
                 } else {
