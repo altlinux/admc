@@ -23,16 +23,21 @@
 #include <QHelpContentWidget>
 #include <QHelpEngine>
 #include <QHelpIndexWidget>
+#include <QHelpContentModel>
 
 HelpBrowser::HelpBrowser(QHelpEngine *help_engine_arg) {
     help_engine = help_engine_arg;
 
-    // Change source when links are activate in help
-    // engine's content and index widgets. Calling
-    // setSource() causes a call to loadResource()
+    // NOTE: use currentChanged() from selection model
+    // instead of linkActivated() signal so that can use
+    // single-click instead of double-click and also switch
+    // pages by keyboard navigation
+    QHelpContentWidget *content_widget = help_engine->contentWidget();
+    QItemSelectionModel *selection_model = content_widget->selectionModel();
     connect(
-        help_engine->contentWidget(), &QHelpContentWidget::linkActivated,
-        this, QOverload<const QUrl &>::of(&HelpBrowser::setSource));
+        selection_model, &QItemSelectionModel::currentChanged,
+        this, &HelpBrowser::on_content_clicked);
+    
     connect(
         help_engine->indexWidget(), &QHelpIndexWidget::linkActivated,
         this, QOverload<const QUrl &>::of(&HelpBrowser::setSource));
@@ -45,4 +50,26 @@ QVariant HelpBrowser::loadResource(int type, const QUrl &name) {
     const QByteArray file_data = help_engine->fileData(name);
 
     return QVariant(file_data);
+}
+
+void HelpBrowser::on_content_clicked(const QModelIndex &index) {
+    const QHelpContentWidget *content_widget = help_engine->contentWidget();
+    if (content_widget == nullptr) {
+        return;
+    }
+
+    const QHelpContentModel *contentModel = qobject_cast<QHelpContentModel*>(content_widget->model());
+    if (contentModel == nullptr) {
+        return;
+    }
+
+    const QHelpContentItem *item = contentModel->contentItemAt(index);
+    if (item == nullptr) {
+        return;
+    }
+
+    const QUrl url = item->url();
+    if (url.isValid()) {
+        setSource(url);
+    }
 }

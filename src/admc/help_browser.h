@@ -42,6 +42,8 @@ public:
 
 private:
     QHelpEngine *help_engine;
+
+    void on_content_clicked(const QModelIndex &index);
 };
 
 #endif /* HELP_BROWSER_H */
