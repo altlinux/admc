@@ -143,6 +143,7 @@ void ad_error_log(const AdInterface &ad, QWidget *parent) {
 
     auto errors_display = new QPlainTextEdit();
     errors_display->setPlainText(errors_text);
+    errors_display->setReadOnly(true);
 
     auto button_box = new QDialogButtonBox();
     button_box->addButton(QDialogButtonBox::Close);
