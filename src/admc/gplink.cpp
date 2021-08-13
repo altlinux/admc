@@ -35,104 +35,168 @@ Gplink::Gplink(const QString &gplink_string) {
             continue;
         }
 
-        QString gpo_case = part_split[0];
-        gpo_case.replace(LDAP_PREFIX, "", Qt::CaseSensitive);
+        // "LDAP://cn={UUID},cn=something,DC=a,DC=b"
+        // =>
+        // "cn={uuid},cn=something,dc=a,dc=b"
+        const QString gpo = [&]() {
+            QString out;
 
-        const QString gpo = gpo_case.toLower();
+            out = part_split[0];
+            out.remove(LDAP_PREFIX);
+            out = out.toLower();
 
-        gpo_case_map[gpo] = gpo_case;
+            return out;
+        }();
 
-        const QString option_string = part_split[1];
-        const int option = option_string.toInt();
+        const int option = [&]() {
+            const QString option_string = part_split[1];
+            const int option_int = option_string.toInt();
 
-        gpos_in_order.append(gpo);
+            return option_int;
+        }();
+
+        gpo_list.append(gpo);
         options[gpo] = option;
     }
 }
 
+// Transform into gplink format. Have to uppercase some
+// parts of the output.
 QString Gplink::to_string() const {
-    QString gplink_string;
+    QList<QString> part_list;
 
-    for (auto gpo : gpos_in_order) {
-        const QString gpo_case = gpo_case_map[gpo];
+    for (auto gpo : gpo_list) {
+        // Convert gpo dn from lower case to gplink case
+        // format
+        const QString gpo_case = [&]() {            
+            const QList<QString> rdn_list = gpo.split(",");
+
+            QList<QString> rdn_list_case;
+
+            for (const QString &rdn : rdn_list) {
+                const QString rdn_case = [&]() {
+                    const QList<QString> attribute_value = rdn.split("=");
+                    
+                    // Do no processing if data is malformed
+                    if (attribute_value.size() != 2) {
+                        return rdn;
+                    }
+
+                    const QString attribute = attribute_value[0];
+                    const QString value = attribute_value[1];
+
+                    const QString attribute_case = [&]() {
+                        // "DC" attribute is upper-cased
+                        if (attribute == "dc") {
+                            return attribute.toUpper();
+                        } else {
+                            return attribute;
+                        }
+                    }();
+
+                    const QString value_case = [&]() {
+                        // uuid (the first rdn) is upper-cased
+                        if (rdn_list.indexOf(rdn) == 0) {
+                            return value.toUpper();
+                        } else {
+                            return value;
+                        }
+                    }();
+
+                    const QList<QString> attribute_value_case = {
+                        attribute_case,
+                        value_case,
+                    };
+
+                    const QString out = attribute_value_case.join("=");
+
+                    return out;
+                }();
+
+                rdn_list_case.append(rdn_case);
+            }
+
+            const QString out = rdn_list_case.join(",");
+
+            return out;
+        }();
         const int option = options[gpo];
         const QString option_string = QString::number(option);
 
         const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo_case, option_string);
 
-        gplink_string += part;
+        part_list.append(part);
     }
 
-    return gplink_string;
-}
-
-QList<QString> Gplink::get_gpos() const {
-    QList<QString> out;
-
-    for (const QString &gpo : gpos_in_order) {
-        const QString gpo_case = gpo_case_map[gpo];
-        out.append(gpo_case);
-    }
+    const QString out = part_list.join("");
 
     return out;
+}
+
+bool Gplink::contains(const QString &gpo_case) const {
+    const QString gpo = gpo_case.toLower();
+
+    return options.contains(gpo);
 }
 
 void Gplink::add(const QString &gpo_case) {
     const QString gpo = gpo_case.toLower();
 
-    const bool gpo_already_in_link = gpo_case_map.contains(gpo);
+    const bool gpo_already_in_link = contains(gpo);
     if (gpo_already_in_link) {
         return;
     }
 
-    gpos_in_order.append(gpo);
+    gpo_list.append(gpo);
     options[gpo] = 0;
-    gpo_case_map[gpo] = gpo_case;
 }
 
 void Gplink::remove(const QString &gpo_case) {
     const QString gpo = gpo_case.toLower();
-    if (!gpo_case_map.contains(gpo)) {
+
+    if (!contains(gpo)) {
         return;
     }
 
-    gpos_in_order.removeAll(gpo);
+    gpo_list.removeAll(gpo);
     options.remove(gpo);
-    gpo_case_map.remove(gpo);
 }
 
 void Gplink::move_up(const QString &gpo_case) {
     const QString gpo = gpo_case.toLower();
-    if (!gpo_case_map.contains(gpo)) {
+
+    if (!contains(gpo)) {
         return;
     }
 
-    const int current_index = gpos_in_order.indexOf(gpo);
+    const int current_index = gpo_list.indexOf(gpo);
 
     if (current_index > 0) {
         const int new_index = current_index - 1;
-        gpos_in_order.move(current_index, new_index);
+        gpo_list.move(current_index, new_index);
     }
 }
 
 void Gplink::move_down(const QString &gpo_case) {
     const QString gpo = gpo_case.toLower();
-    if (!gpo_case_map.contains(gpo)) {
+
+    if (!contains(gpo)) {
         return;
     }
 
-    const int current_index = gpos_in_order.indexOf(gpo);
+    const int current_index = gpo_list.indexOf(gpo);
 
-    if (current_index < gpos_in_order.size() - 1) {
+    if (current_index < gpo_list.size() - 1) {
         const int new_index = current_index + 1;
 
-        gpos_in_order.move(current_index, new_index);
+        gpo_list.move(current_index, new_index);
     }
 }
 
 bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) const {
     const QString gpo = gpo_case.toLower();
-    if (!gpo_case_map.contains(gpo)) {
+    
+    if (!contains(gpo)) {
         return false;
     }
 
@@ -144,7 +208,8 @@ bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) cons
 
 void Gplink::set_option(const QString &gpo_case, const GplinkOption option, const bool value) {
     const QString gpo = gpo_case.toLower();
-    if (!gpo_case_map.contains(gpo)) {
+    
+    if (!contains(gpo)) {
         return;
     }
 
@@ -153,13 +218,6 @@ void Gplink::set_option(const QString &gpo_case, const GplinkOption option, cons
     options[gpo] = option_bits_new;
 }
 
-bool Gplink::equals(const QString &other_string) const {
-    const QString a = to_string().toLower();
-    const QString b = other_string.toLower();
-
-    return (a == b);
-}
-
 bool Gplink::equals(const Gplink &other) const {
-    return equals(other.to_string());
+    return (to_string() == other.to_string());
 }

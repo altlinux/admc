@@ -35,15 +35,22 @@ public slots:
     void cleanup();
 
 private slots:
-    void test_to_string();
-    void test_get_gpos();
-    void test_add();
-    void test_remove();
-    void test_move_up();
-    void test_move_down();
-    void test_get_option();
-    void test_set_option();
-    void test_equals();
+    void to_string();
+    void equals();
+    void contains_data();
+    void contains();
+    void add_data();
+    void add();
+    void remove_data();
+    void remove();
+    void move_up_data();
+    void move_up();
+    void move_down_data();
+    void move_down();
+    void get_option_data();
+    void get_option();
+    void set_option_data();
+    void set_option();
 };
 
 #endif /* ADMC_TEST_GPLINK_H */
