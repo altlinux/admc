@@ -28,5 +28,6 @@
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_utils.h"
+#include "gplink.h"
 
 #endif /* ADLDAP_H */

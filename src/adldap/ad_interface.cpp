@@ -26,6 +26,7 @@
 #include "ad_object.h"
 #include "ad_security.h"
 #include "ad_utils.h"
+#include "gplink.h"
 #include "samba/dom_sid.h"
 #include "samba/gp_manage.h"
 #include "samba/libsmb_xattr.h"
@@ -1429,6 +1430,21 @@ bool AdInterface::delete_gpo(const QString &gpo_dn) {
         d->error_message(tr("Failed to delete GPO"), tr("Failed to delete the object on domain"));
       
         result = false;
+    }
+
+    // Unlink policy
+    const QString base = d->domain_head;
+    const SearchScope scope = SearchScope_All;
+    const QList<QString> attributes = {ATTRIBUTE_GPLINK};
+    const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, gpo_dn);
+    const QHash<QString, AdObject> results = search(base, scope, filter, attributes);
+    for (const AdObject &linked_object : results.values()) {
+        const QString gplink_old_string = linked_object.get_string(ATTRIBUTE_GPLINK);
+
+        Gplink gplink = Gplink(gplink_old_string);
+        gplink.remove(gpo_dn);
+
+        attribute_replace_string(linked_object.get_dn(), ATTRIBUTE_GPLINK, gplink.to_string());
     }
 
     return result;

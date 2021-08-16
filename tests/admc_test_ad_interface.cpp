@@ -20,6 +20,8 @@
 
 #include "admc_test_ad_interface.h"
 
+#include "gplink.h"
+
 #include <QTest>
 
 void ADMCTestAdInterface::create_and_delete_gpo() {
@@ -46,14 +48,40 @@ void ADMCTestAdInterface::create_and_delete_gpo() {
     }
 
     // Create new gpo
-    QString created_dn;
-    const bool create_success = ad.create_gpo(gpo_name, created_dn);
+    QString gpo_dn;
+    const bool create_success = ad.create_gpo(gpo_name, gpo_dn);
     QVERIFY(create_success);
-    QVERIFY(!created_dn.isEmpty());
+    QVERIFY(!gpo_dn.isEmpty());
+
+    // Create test ou
+    const QString ou_dn = test_object_dn(TEST_OU, CLASS_OU);
+    ad.object_add(ou_dn, CLASS_OU);
+
+    // Link gpo to ou
+    {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        Gplink gplink = Gplink(ou_object.get_string(ATTRIBUTE_GPLINK));
+        gplink.add(gpo_dn);
+        ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
+    }
+
+    auto ou_is_linked_to_gpo = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        Gplink gplink = Gplink(ou_object.get_string(ATTRIBUTE_GPLINK));
+        const bool out = gplink.contains(gpo_dn);
+
+        return out;
+    };
+
+    const bool linked_before = ou_is_linked_to_gpo();
+    QCOMPARE(linked_before, true);
 
     // Delete again;
-    const bool delete_created_success = ad.delete_gpo(created_dn);
+    const bool delete_created_success = ad.delete_gpo(gpo_dn);
     QVERIFY(delete_created_success);
+
+    const bool linked_after = ou_is_linked_to_gpo();
+    QCOMPARE(linked_after, false);
 }
 
 void ADMCTestAdInterface::object_add() {

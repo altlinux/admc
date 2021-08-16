@@ -49,7 +49,6 @@ set(ADMC_SOURCES
     utils.cpp
     settings.cpp
     policy_results_widget.cpp
-    gplink.cpp
     filter_classes_widget.cpp
     edit_query_item_widget.cpp
     
