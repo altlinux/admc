@@ -45,6 +45,7 @@ public:
 
     QString to_string() const;
     bool contains(const QString &gpo) const;
+    QList<QString> get_gpo_list() const;
 
     void add(const QString &gpo);
     void remove(const QString &gpo);

@@ -139,6 +139,10 @@ bool Gplink::contains(const QString &gpo_case) const {
     return options.contains(gpo);
 }
 
+QList<QString> Gplink::get_gpo_list() const {
+    return gpo_list;
+}
+
 void Gplink::add(const QString &gpo_case) {
     const QString gpo = gpo_case.toLower();
 

@@ -251,19 +251,42 @@ void GroupPolicyTab::reload_gplink() {
     const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
     const QList<QString> attributes = {ATTRIBUTE_DISPLAY_NAME};
-    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+    const QHash<QString, AdObject> results_case = ad.search(base, scope, filter, attributes);
+    // NOTE: need to convert all dn keys to lowercase
+    // because gplink stores them in lower case
+    const QHash<QString, AdObject> results = [&]() {
+        QHash<QString, AdObject> out;
 
-    for (auto gpo : results.keys()) {
-        if (!gplink.contains(gpo)) {
-            continue;
+        for (const QString &key_case : results_case.keys()) {
+            const QString key = key_case.toLower();
+            const AdObject value = results_case[key_case];
+            out[key] = value;
         }
 
-        const AdObject object = results[gpo];
+        return out;
+    }();
 
-        const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    const QList<QString> gpo_list = gplink.get_gpo_list();
+
+    for (const QString &gpo : gpo_list) {
+        // NOTE: Gplink may contain deleted gpo's, in which
+        // case the link is "invalid" and there's no real
+        // object for the policy
+        const bool link_is_valid = results.contains(gpo);
+
+        const QString name = [&]() {
+            if (link_is_valid) {
+                const AdObject object = results[gpo];
+                const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+
+                return display_name;
+            } else {
+                return tr("Not found");
+            }
+        }();
 
         const QList<QStandardItem *> row = make_item_row(GplinkColumn_COUNT);
-        row[GplinkColumn_Name]->setText(display_name);
+        row[GplinkColumn_Name]->setText(name);
         set_data_for_row(row, gpo, GplinkRole_DN);
 
         for (const auto column : option_columns) {
@@ -280,6 +303,14 @@ void GroupPolicyTab::reload_gplink() {
                 }
             }();
             item->setCheckState(checkstate);
+        }
+
+        if (!link_is_valid) {
+            row[GplinkColumn_Name]->setIcon(QIcon::fromTheme("dialog-error"));
+
+            for (QStandardItem *item : row) {
+                item->setToolTip(tr("The GPO for this link could not be found. It maybe have been recently created and is being replicated or it could have been deleted."));
+            }
         }
 
         model->appendRow(row);
