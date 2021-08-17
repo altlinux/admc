@@ -81,11 +81,10 @@ NTSTATUS gp_create_gpt_security_descriptor(TALLOC_CTX *mem_ctx, struct security_
         return NT_STATUS_NO_MEMORY;
     }
 
-    fs_sd->group_sid = talloc_memdup(fs_sd, ds_sd->group_sid, sizeof(struct dom_sid));
-    if (fs_sd->group_sid == NULL) {
-        TALLOC_FREE(fs_sd);
-        return NT_STATUS_NO_MEMORY;
-    }
+    // NOTE: group sid of domain object by default is NULL,
+    // so just copy the owner sid which is by default
+    // "Domain Admins"
+    fs_sd->group_sid = fs_sd->owner_sid;
 
     fs_sd->type = ds_sd->type;
     fs_sd->revision = ds_sd->revision;
