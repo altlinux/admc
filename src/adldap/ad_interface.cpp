@@ -45,6 +45,9 @@
 #include <resolv.h>
 #include <sasl/sasl.h>
 #include <uuid/uuid.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include <QDebug>
 #include <QTextCodec>
@@ -789,7 +792,7 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
     }
 }
 
-bool AdInterface::object_delete(const QString &dn) {
+bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {
     int result;
     LDAPControl *tree_delete_control = NULL;
 
@@ -799,16 +802,12 @@ bool AdInterface::object_delete(const QString &dn) {
 
     const QString name = dn_get_name(dn);
 
-    auto error_message = [this, name](const QString &error) {
-        const QString context = QString(tr("Failed to delete object %1.")).arg(name);
-
-        d->error_message(context, error);
-    };
+    const QString error_context = QString(tr("Failed to delete object %1.")).arg(name);
 
     // Use a tree delete control to enable recursive delete
     tree_delete_control = (LDAPControl *) malloc(sizeof(LDAPControl));
     if (tree_delete_control == NULL) {
-        error_message(tr("LDAP Operation error - Failed to allocate tree delete control"));
+        d->error_message(error_context, tr("LDAP Operation error - Failed to allocate tree delete control"));
         cleanup();
 
         return false;
@@ -816,7 +815,7 @@ bool AdInterface::object_delete(const QString &dn) {
 
     result = ldap_control_create(LDAP_CONTROL_X_TREE_DELETE, 1, NULL, 0, &tree_delete_control);
     if (result != LDAP_SUCCESS) {
-        error_message(tr("LDAP Operation error - Failed to create tree delete control"));
+        d->error_message(error_context, tr("LDAP Operation error - Failed to create tree delete control"));
         cleanup();
 
         return false;
@@ -829,11 +828,11 @@ bool AdInterface::object_delete(const QString &dn) {
     cleanup();
 
     if (result == LDAP_SUCCESS) {
-        d->success_message(QString(tr("Object %1 was deleted.")).arg(name));
+        d->success_message(QString(tr("Object %1 was deleted.")).arg(name), do_msg);
 
         return true;
     } else {
-        error_message(d->default_error());
+        d->error_message(error_context, d->default_error(), do_msg);
 
         return false;
     }
@@ -1316,7 +1315,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_machine) {
         error_message(tr("Failed to create machine folder object for GPO"));
-       
+
         return false;
     }
 
@@ -1416,52 +1415,64 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
             return false;
         }
-     }
+    }
 
     talloc_free(tmp_ctx);
 
     return true;
 }
 
-bool AdInterface::delete_gpo(const QString &gpo_dn) {
-    // NOTE: don't exit if sysvol delete fails, still try to
-    // delete on domain
-    bool result = true;
+bool AdInterface::delete_gpo(const QString &dn) {
+    // NOTE: try to execute both steps, even if first one
+    // (deleting gpc) fails
 
-    // Delete on sysvol
-    const AdObject object = search_object(gpo_dn, {ATTRIBUTE_GPC_FILE_SYS_PATH});
-    const QString sysvol_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-    const QString url = sysvol_path_to_smb(sysvol_path);
-    const int result_rmdir = smbc_unlink(cstr(url));
-    if (result_rmdir < 0) {
-        d->error_message(tr("Failed to delete GPO on sysvol"), strerror(errno));
-        
-        result = false;
+    // NOTE: get filesys path before deleting object,
+    // otherwise it won't be available!
+    const AdObject object = search_object(dn, {ATTRIBUTE_GPC_FILE_SYS_PATH, ATTRIBUTE_DISPLAY_NAME});
+    const QString filesys_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+
+    const QString name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    const QString smb_path = sysvol_path_to_smb(filesys_path);
+
+    const bool delete_gpc_success = object_delete(dn);
+    if (!delete_gpc_success) {
+        d->error_message(tr("Failed to delete GPC."), d->default_error());
     }
 
-    const bool delete_success = object_delete(gpo_dn);
-    if (!delete_success) {
-        d->error_message(tr("Failed to delete GPO"), tr("Failed to delete the object on domain"));
-      
-        result = false;
+    const bool delete_gpt_success = d->delete_gpt(smb_path);
+    if (!delete_gpt_success) {
+        d->error_message_plain(tr("Failed to delete GPT."));
     }
 
     // Unlink policy
     const QString base = d->domain_head;
     const SearchScope scope = SearchScope_All;
     const QList<QString> attributes = {ATTRIBUTE_GPLINK};
-    const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, gpo_dn);
+    const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, dn);
     const QHash<QString, AdObject> results = search(base, scope, filter, attributes);
     for (const AdObject &linked_object : results.values()) {
         const QString gplink_old_string = linked_object.get_string(ATTRIBUTE_GPLINK);
 
         Gplink gplink = Gplink(gplink_old_string);
-        gplink.remove(gpo_dn);
+        gplink.remove(dn);
 
         attribute_replace_string(linked_object.get_dn(), ATTRIBUTE_GPLINK, gplink.to_string());
     }
+    
+    const bool total_success = (delete_gpc_success && delete_gpt_success);
 
-    return result;
+    if (total_success) {
+        d->success_message(QString(tr("Group policy %1 was deleted.")).arg(name));
+    } else {
+        const bool partial_success = (delete_gpc_success || delete_gpt_success);
+        if (partial_success) {
+            d->success_message(QString(tr("Errors happened while trying to delete policy %1.")).arg(name));
+        } else {
+            d->success_message(QString(tr("Failed to delete policy %1.")).arg(name));
+        }
+    }
+
+    return total_success;
 }
 
 QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
@@ -1538,6 +1549,126 @@ int AdInterfacePrivate::get_ldap_result() const {
     ldap_get_option(ld, LDAP_OPT_RESULT_CODE, &result);
 
     return result;
+}
+
+bool AdInterfacePrivate::delete_gpt(const QString &parent_path) {
+    bool ok = true;
+
+    // Collect all contents of the path into a list
+    const QList<QString> path_list = [&]() {
+        QList<QString> explore_stack;
+        QList<QString> seen_stack;
+
+        explore_stack.append(parent_path);
+
+        while (!explore_stack.isEmpty()) {
+            const QString path = explore_stack.takeLast();
+
+            const int dirp = smbc_opendir(cstr(path));
+
+            if (dirp < 0) {
+                ok = false;
+
+                return QList<QString>();
+            }
+
+            // NOTE: set errno to 0, so that we know
+            // when readdir() fails because it will
+            // change errno.
+            errno = 0;
+
+            smbc_dirent *child_dirent;
+            while ((child_dirent = smbc_readdir(dirp)) != NULL) {
+                const QString child_name = QString(child_dirent->name);
+
+                const bool is_dot_path = (child_name == "." || child_name == "..");
+                if (is_dot_path) {
+                    continue;
+                } else {
+                    const QString child_path = path + "/" + child_name;
+
+                    const bool child_is_dir = smb_path_is_dir(child_path, &ok);
+                    if (!ok) {
+                        return QList<QString>();
+                    }
+
+                    if (child_is_dir) {
+                        explore_stack.append(child_path);
+                    }
+                }
+            }
+
+            if (errno != 0) {
+                ok = false;
+
+                error_message(QString(tr("Failed to read contents of folder %1")).arg(path), strerror(errno));
+                qDebug() << "smbc_readdir() error" << path << strerror(errno);
+
+                return QList<QString>();
+            }
+
+            smbc_closedir(dirp);
+        }
+
+        // Reverse so that deepest files are first in order
+        std::reverse(seen_stack.begin(), seen_stack.end());
+
+        return seen_stack;
+    }();
+
+    if (!ok) {
+        return false;
+    }
+
+    for (const QString &path : path_list) {
+        const bool is_dir = smb_path_is_dir(path, &ok);
+        if (!ok) {
+            return false;
+        }
+
+        if (is_dir) {
+            const int result_rmdir = smbc_rmdir(cstr(path));
+
+            qDebug() << "smbc_rmdir()" << path;
+
+            if (result_rmdir != 0) {
+                error_message(QString(tr("Failed to delete GPT folder %1")).arg(path), strerror(errno));
+                qDebug() << "smbc_rmdir() error" << path << result_rmdir << strerror(errno);
+
+                return false;
+            }
+        } else {
+            const int result_unlink = smbc_unlink(cstr(path));
+
+            qDebug() << "smbc_unlink()" << path;
+
+            if (result_unlink != 0) {
+                error_message(QString(tr("Failed to delete GPT file %1")).arg(path), strerror(errno));
+                qDebug() << "smbc_unlink() error" << path << result_unlink << strerror(errno);
+
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
+    struct stat filestat;
+    const int stat_result = smbc_stat(cstr(path), &filestat);
+    if (stat_result < 0) {
+        error_message(QString(tr("Failed to get filestat for \"%1\"")).arg(path), strerror(errno));
+        qDebug() << "smbc_stat() error" << path << stat_result << strerror(errno);
+
+        *ok = false;
+    } else {
+        *ok = true;
+    }
+
+    const bool is_dir = S_ISDIR(filestat.st_mode);
+
+    return is_dir;
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {

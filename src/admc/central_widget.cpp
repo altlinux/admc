@@ -535,7 +535,14 @@ void CentralWidget::policy_delete() {
         const QString dn = index.data(PolicyRole_DN).toString();
         const bool success = ad.delete_gpo(dn);
 
-        if (success) {
+        // NOTE: object may get deleted successfuly but
+        // deleting GPT fails which makes delete_gpo() fail
+        // as a whole, but we still want to remove gpo from
+        // the console in that case
+        const AdObject gpo_object = ad.search_object(dn);
+        const bool object_deleted = gpo_object.is_empty();
+
+        if (success || object_deleted) {
             // Remove deleted policy from console
             console->delete_item(index);
 

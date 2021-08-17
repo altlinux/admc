@@ -148,7 +148,7 @@ public:
     bool attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime);
 
     bool object_add(const QString &dn, const QString &object_class);
-    bool object_delete(const QString &dn);
+    bool object_delete(const QString &dn, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool object_move(const QString &dn, const QString &new_container);
     bool object_rename(const QString &dn, const QString &new_name);
 
