@@ -1245,7 +1245,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
     const QString main_dir = sysvol_path_to_smb(gPCFileSysPath);
-    const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
+    const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0755);
     if (result_mkdir_main != 0) {
         error_message(tr("Failed to create policy main dir"));
 
@@ -1253,7 +1253,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }
 
     const QString machine_dir = main_dir + "/Machine";
-    const int result_mkdir_machine = smbc_mkdir(cstr(machine_dir), 0);
+    const int result_mkdir_machine = smbc_mkdir(cstr(machine_dir), 0755);
     if (result_mkdir_machine != 0) {
         error_message(tr("Failed to create policy machine dir"));
 
@@ -1261,7 +1261,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }
 
     const QString user_dir = main_dir + "/User";
-    const int result_mkdir_user = smbc_mkdir(cstr(user_dir), 0);
+    const int result_mkdir_user = smbc_mkdir(cstr(user_dir), 0755);
     if (result_mkdir_user != 0) {
         error_message(tr("Failed to create policy user dir"));
 
@@ -1269,7 +1269,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }
 
     const QString init_file_path = main_dir + "/GPT.INI";
-    const int ini_file = smbc_open(cstr(init_file_path), O_WRONLY | O_CREAT, 0);
+    const int ini_file = smbc_open(cstr(init_file_path), O_WRONLY | O_CREAT, 0644);
 
     const char *ini_contents = "[General]\r\nVersion=0\r\n";
     const int result_write_ini = smbc_write(ini_file, ini_contents, strlen(ini_contents));
