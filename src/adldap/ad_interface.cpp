@@ -1235,13 +1235,16 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
         return out;
     }();
 
+    // Ex: "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
+    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
+
     //
     // Create dirs and files for policy on sysvol
     //
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
+    const QString main_dir = sysvol_path_to_smb(gPCFileSysPath);
     const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
     if (result_mkdir_main != 0) {
         error_message(tr("Failed to create policy main dir"));
@@ -1288,8 +1291,6 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
         return false;
     }
     attribute_replace_string(dn, ATTRIBUTE_DISPLAY_NAME, display_name);
-    // "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
     attribute_replace_string(dn, ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath);
     // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
     attribute_replace_string(dn, ATTRIBUTE_FLAGS, "1");
