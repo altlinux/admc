@@ -47,6 +47,7 @@ public:
     bool is_connected;
     QString domain;
     QString domain_head;
+    QString dc;
     QList<AdMessage> messages;
 
     void success_message(const QString &msg, const DoStatusMsg do_msg = DoStatusMsg_Yes);

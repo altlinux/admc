@@ -114,7 +114,7 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     //
     const QString connect_error_context = tr("Failed to connect");
 
-    const QString dc = [&]() {
+    d->dc = [&]() {
         const QList<QString> dc_list = get_domain_hosts(d->domain, QString());
         if (dc_list.isEmpty()) {
             d->error_message_plain(tr("Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational."));
@@ -136,14 +136,14 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     }();
 
     if (AdInterfacePrivate::s_dc.isEmpty()) {
-        AdInterfacePrivate::s_dc = dc;
+        AdInterfacePrivate::s_dc = d->dc;
     }
 
     const QString uri = [&]() {
         QString out;
 
-        if (!dc.isEmpty()) {
-            out = "ldap://" + dc;
+        if (!d->dc.isEmpty()) {
+            out = "ldap://" + d->dc;
 
             if (!AdInterfacePrivate::s_port.isEmpty()) {
                 out = out + ":" + AdInterfacePrivate::s_port;
@@ -1236,14 +1236,17 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
         return out;
     }();
 
+    // Ex: "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
+    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
+
     //
     // Create dirs and files for policy on sysvol
     //
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = QString("smb://%1/sysvol/%2/Policies/%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
-    const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0);
+    const QString main_dir = sysvol_path_to_smb(gPCFileSysPath);
+    const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0755);
     if (result_mkdir_main != 0) {
         error_message(tr("Failed to create policy main dir"));
 
@@ -1251,7 +1254,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }
 
     const QString machine_dir = main_dir + "/Machine";
-    const int result_mkdir_machine = smbc_mkdir(cstr(machine_dir), 0);
+    const int result_mkdir_machine = smbc_mkdir(cstr(machine_dir), 0755);
     if (result_mkdir_machine != 0) {
         error_message(tr("Failed to create policy machine dir"));
 
@@ -1259,18 +1262,19 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }
 
     const QString user_dir = main_dir + "/User";
-    const int result_mkdir_user = smbc_mkdir(cstr(user_dir), 0);
+    const int result_mkdir_user = smbc_mkdir(cstr(user_dir), 0755);
     if (result_mkdir_user != 0) {
         error_message(tr("Failed to create policy user dir"));
 
         return false;
     }
 
-    const QString init_file_path = main_dir + "/GPT.INI";
-    const int ini_file = smbc_open(cstr(init_file_path), O_WRONLY | O_CREAT, 0);
+    const QString ini_file_path = main_dir + "/GPT.INI";
+    const int ini_file = smbc_open(cstr(ini_file_path), O_WRONLY | O_CREAT, 0644);
 
     const char *ini_contents = "[General]\r\nVersion=0\r\n";
     const int result_write_ini = smbc_write(ini_file, ini_contents, strlen(ini_contents));
+    smbc_close(ini_file);
     if (result_write_ini < 0) {
         error_message(tr("Failed to write policy ini"));
 
@@ -1289,8 +1293,6 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
         return false;
     }
     attribute_replace_string(dn, ATTRIBUTE_DISPLAY_NAME, display_name);
-    // "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
     attribute_replace_string(dn, ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath);
     // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
     attribute_replace_string(dn, ATTRIBUTE_FLAGS, "1");
@@ -1322,14 +1324,6 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     // Set security descriptor for sysvol dir
     //
 
-    // STOPPING AT THIS POINT FOR NOW
-
-    // TODO: figure out what's wrong with security
-    // descriptor, operations are failing because sd's have
-    // NULL group sid's which seems ok but why do operations
-    // expect it to be non-NULL then?
-    return true;
-
     // First get descriptor of the GPO
     const QString base = dn;
     const SearchScope scope = SearchScope_Object;
@@ -1352,13 +1346,6 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     struct security_descriptor domain_sd;
     ndr_pull_security_descriptor(ndr_pull, NDR_SCALARS | NDR_BUFFERS, &domain_sd);
 
-    // TODO: not sure why but my
-    // gp_create_gpt_security_descriptor() call creates an
-    // sd that has 1 extra ace than samba's version
-    // (ACL:S-1-5-11:5/3/0x00000000)
-    // sid = S-1-5-11 = SID_NT_AUTHENTICATED_USERS
-    // type = 5 = SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT
-
     // Create sysvol descriptor from domain descriptor (not
     // one to one, some modifications are needed)
     struct security_descriptor *sysvol_sd;
@@ -1371,38 +1358,65 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }
 
     const QString sysvol_sd_string = [tmp_ctx, &sysvol_sd]() {
-        QString out;
+        QList<QString> all_elements;
 
-        out += QString("REVISION:%1,OWNER:%2,GROUP:%3,").arg(QString::number(sysvol_sd->revision), dom_sid_string(tmp_ctx, sysvol_sd->owner_sid), dom_sid_string(tmp_ctx, sysvol_sd->group_sid));
+        all_elements.append(QString("REVISION:%1").arg(sysvol_sd->revision));
+
+        const QString owner_sid_string = dom_sid_string(tmp_ctx, sysvol_sd->owner_sid);
+        all_elements.append(QString("OWNER:%1").arg(owner_sid_string));
+
+        const QString group_sid_string = dom_sid_string(tmp_ctx, sysvol_sd->group_sid);
+        all_elements.append(QString("GROUP:%1").arg(group_sid_string));
 
         // NOTE: don't need sacl
 
         for (uint32_t i = 0; i < sysvol_sd->dacl->num_aces; i++) {
             struct security_ace ace = sysvol_sd->dacl->aces[i];
 
+            // NOTE: have to use decimal format instead of
+            // hex because of this bug in libsmbclient:
+            // https://bugzilla.samba.org/show_bug.cgi?id=14303
             char access_mask_buffer[100];
-            snprintf(access_mask_buffer, sizeof(access_mask_buffer), "0x%08x", ace.access_mask);
+            snprintf(access_mask_buffer, sizeof(access_mask_buffer), "%d", ace.access_mask);
 
-            if (i > 0) {
-                out += ",";
-            }
-
-            out += QString("ACL:%1:%2/%3/%4").arg(dom_sid_string(tmp_ctx, &ace.trustee), QString::number(ace.type), QString::number(ace.flags), access_mask_buffer);
+            all_elements.append(QString("ACL:%1:%2/%3/%4").arg(dom_sid_string(tmp_ctx, &ace.trustee), QString::number(ace.type), QString::number(ace.flags), access_mask_buffer));
         }
+
+        // NOTE: can get duplicate ace's because ace's are
+        // modified for gpt format, so remove duplicates
+        QList<QString> without_duplicates;
+        for (const QString &element : all_elements) {
+            if (!without_duplicates.contains(element)) {
+                without_duplicates.append(element);
+            }
+        }
+
+        const QString out = without_duplicates.join(",");
 
         return out;
     }();
-    const QByteArray sysvol_sd_string_bytes = sysvol_sd_string.toUtf8();
-    const char *sysvol_sd_cstr = sysvol_sd_string_bytes.constData();
 
-    // Set descriptor
-    const int set_sd_result = smbc_setxattr(cstr(main_dir), "system.nt_sec_desc.*", sysvol_sd_cstr, sysvol_sd_string_bytes.size(), 0);
-    if (set_sd_result != 0) {
-        error_message(tr("Failed to set gpo sd"));
-        talloc_free(tmp_ctx);
-        
-        return false;
+    qDebug() << "sysvol_sd_string:";
+    for (auto e : sysvol_sd_string.split(",")) {
+        qDebug() << e;
     }
+
+    // Set descriptor on all sysvol files that were created
+    const QList<QString> sysvol_list = {
+        main_dir,
+        machine_dir,
+        user_dir,
+        ini_file_path,
+    };
+    for (const QString &path : sysvol_list) {
+        const int set_sd_result = smbc_setxattr(cstr(path), "system.nt_sec_desc.*", cstr(sysvol_sd_string), strlen(cstr(sysvol_sd_string)), 0);
+        if (set_sd_result != 0) {
+            d->error_message(QString(tr("Failed to set permissions for GPT path \"%1\"")).arg(path), strerror(errno));
+            talloc_free(tmp_ctx);
+
+            return false;
+        }
+     }
 
     talloc_free(tmp_ctx);
 
@@ -1453,18 +1467,20 @@ bool AdInterface::delete_gpo(const QString &gpo_dn) {
 QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     QString out = sysvol_path;
 
+    // NOTE: sysvol paths created by windows have this weird
+    // capitalization and smbclient does NOT like it
+    out.replace("\\SysVol\\", "\\sysvol\\");
+    
     out.replace("\\", "/");
 
-    // TODO: file sys path as it is, is like this:
-    // "smb://domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
-    // But that fails to load the whole directory sometimes
-    // Replacing domain at the start with current host fixes it
-    // "smb://dc0.domain.alt/sysvol/domain.alt/Policies/{D7E75BC7-138D-4EE1-8974-105E4A2DE560}"
-    // not sure if this is required and which host/DC is the correct one
-    const int sysvol_i = out.indexOf("sysvol");
+    const int sysvol_i = out.indexOf("/sysvol/");
+
     out.remove(0, sysvol_i);
 
-    out = QString("smb://%1/%2").arg(d->domain.toLower(), out);
+    // TODO: currently using dc that was used for ldap
+    // connection, but maybe there's some specific dc that's
+    // supposed to be used for smb connection?
+    out = QString("smb://%1%2").arg(d->dc, out);
 
     return out;
 }
