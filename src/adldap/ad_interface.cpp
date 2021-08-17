@@ -113,7 +113,7 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     //
     const QString connect_error_context = tr("Failed to connect");
 
-    const QString dc = [&]() {
+    d->dc = [&]() {
         const QList<QString> dc_list = get_domain_hosts(d->domain, QString());
         if (dc_list.isEmpty()) {
             d->error_message_plain(tr("Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational."));
@@ -135,14 +135,14 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     }();
 
     if (AdInterfacePrivate::s_dc.isEmpty()) {
-        AdInterfacePrivate::s_dc = dc;
+        AdInterfacePrivate::s_dc = d->dc;
     }
 
     const QString uri = [&]() {
         QString out;
 
-        if (!dc.isEmpty()) {
-            out = "ldap://" + dc;
+        if (!d->dc.isEmpty()) {
+            out = "ldap://" + d->dc;
 
             if (!AdInterfacePrivate::s_port.isEmpty()) {
                 out = out + ":" + AdInterfacePrivate::s_port;
@@ -1436,7 +1436,14 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     
     out.replace("\\", "/");
 
-    out.prepend("smb:");
+    const int sysvol_i = out.indexOf("/sysvol/");
+
+    out.remove(0, sysvol_i);
+
+    // TODO: currently using dc that was used for ldap
+    // connection, but maybe there's some specific dc that's
+    // supposed to be used for smb connection?
+    out = QString("smb://%1%2").arg(d->dc, out);
 
     return out;
 }
