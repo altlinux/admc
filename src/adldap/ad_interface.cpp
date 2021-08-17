@@ -1273,6 +1273,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     const char *ini_contents = "[General]\r\nVersion=0\r\n";
     const int result_write_ini = smbc_write(ini_file, ini_contents, strlen(ini_contents));
+    smbc_close(ini_file);
     if (result_write_ini < 0) {
         error_message(tr("Failed to write policy ini"));
 
