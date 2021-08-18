@@ -35,6 +35,7 @@
 class AdInterface;
 class AdConfig;
 class AdObject;
+struct security_descriptor;
 
 extern const QList<QString> well_known_sid_list;
 extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
@@ -51,5 +52,10 @@ QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee)
 bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg);
 QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject *object);
 QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_object(const AdObject *object, AdConfig *adconfig);
+
+// NOTE: have to talloc_free() returned sd
+security_descriptor *ad_security_get_sd(const AdObject *object);
+
+void ad_security_sort_dacl(security_descriptor *sd);
 
 #endif /* AD_SECURITY_H */

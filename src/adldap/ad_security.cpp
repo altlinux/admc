@@ -32,7 +32,6 @@
 #include <QDebug>
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
-security_descriptor *ad_security_get_sd(const AdObject *object);
 QList<security_ace *> ad_security_get_dacl(security_descriptor *sd);
 QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
 QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
@@ -426,7 +425,7 @@ bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, c
         for (security_ace *ace : dacl_qlist) {
             security_descriptor_dacl_add(sd, ace);
         }
-        qsort(sd->dacl->aces, sd->dacl->num_aces, sizeof(security_ace), ace_compare);
+        ad_security_sort_dacl(sd);
 
         DATA_BLOB blob;
         ndr_push_struct_blob(&blob, tmp_ctx, sd, (ndr_push_flags_fn_t) ndr_push_security_descriptor);
@@ -469,7 +468,6 @@ QByteArray dom_sid_to_bytes(const dom_sid &sid) {
     return bytes;
 }
 
-// NOTE: have to talloc_free() returned sd
 security_descriptor *ad_security_get_sd(const AdObject *object) {
     const QByteArray descriptor_bytes = object->get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
     DATA_BLOB blob = data_blob_const(descriptor_bytes.data(), descriptor_bytes.size());
@@ -479,6 +477,10 @@ security_descriptor *ad_security_get_sd(const AdObject *object) {
     ndr_pull_struct_blob(&blob, sd, sd, (ndr_pull_flags_fn_t) ndr_pull_security_descriptor);
 
     return sd;
+}
+
+void ad_security_sort_dacl(security_descriptor *sd) {
+    qsort(sd->dacl->aces, sd->dacl->num_aces, sizeof(security_ace), ace_compare);
 }
 
 QList<security_ace *> ad_security_get_dacl(security_descriptor *sd) {

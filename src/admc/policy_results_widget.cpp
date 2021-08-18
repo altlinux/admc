@@ -38,6 +38,7 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
+#include <QMessageBox>
 
 enum PolicyResultsColumn {
     PolicyResultsColumn_Name,
@@ -134,14 +135,44 @@ void PolicyResultsWidget::update(const QModelIndex &index) {
 }
 
 void PolicyResultsWidget::update(const QString &new_gpo) {
+    gpo = new_gpo;
+
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
     }
 
-    model->removeRows(0, model->rowCount());
+    // When selecting a policy, check it's permissions to
+    // make sure that they permissions of GPT and GPC match.
+    // If they don't, offer to update GPT permissions.
+    const bool perms_ok = ad.check_gpo_perms(new_gpo);
+    if (!perms_ok) {
+        g_status()->display_ad_messages(ad, this);
+        
+        const QMessageBox::Icon icon = QMessageBox::Warning;
+        const QString title = tr("Incorrect permissions detected");
+        const QString text = tr("Permissions for this policy's GPT don't match the permissions for it's GPC object. Would you like to update GPT permissions?");
+        const QMessageBox::StandardButtons buttons = (QMessageBox::Yes | QMessageBox::No);
 
-    gpo = new_gpo;
+        auto message_box = new QMessageBox(icon, title, text, buttons, this);
+
+        connect(
+            message_box, &QDialog::accepted,
+            [this]() {
+                AdInterface ad_inner;
+                if (ad_failed(ad_inner)) {
+                    return;
+                }
+
+                ad_inner.gpo_sync_perms(gpo);
+
+                g_status()->display_ad_messages(ad_inner, this);
+            });
+
+        message_box->open();
+    }
+
+    model->removeRows(0, model->rowCount());
 
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;
