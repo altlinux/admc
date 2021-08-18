@@ -1325,42 +1325,77 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
         return false;
     }
 
-    //
-    // Set security descriptor for sysvol dir
-    //
+    const bool sync_perms_success = gpo_sync_perms(dn);
 
-    // First get descriptor of the GPO
-    const AdObject gpc_object = search_object(dn);
-    const QString gpt_sd_string = get_gpt_sd_string(&gpc_object, AceMaskFormat_Decimal);
-
-    if (gpt_sd_string.isEmpty()) {
-        d->error_message(tr("Failed to create GPO"), tr("Failed to generate GPT security descriptor"));
-
-        return false;
-    }
-
-    qDebug() << "gpt_sd_string:";
-    for (auto e : gpt_sd_string.split(",")) {
-        qDebug() << e;
-    }
-
-    // Set descriptor on all sysvol files that were created
-    const QList<QString> sysvol_list = {
-        main_dir,
-        machine_dir,
-        user_dir,
-        ini_file_path,
-    };
-    for (const QString &path : sysvol_list) {
-        const int set_sd_result = smbc_setxattr(cstr(path), "system.nt_sec_desc.*", cstr(gpt_sd_string), strlen(cstr(gpt_sd_string)), 0);
-        if (set_sd_result != 0) {
-            d->error_message(QString(tr("Failed to set permissions for GPT path \"%1\"")).arg(path), strerror(errno));
-
-            return false;
-        }
+    if (!sync_perms_success) {
+        // NOTE: don't fail if failed to sync perms, user
+        // can retry it later
     }
 
     return true;
+}
+
+QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_path, bool *ok) {
+    // Collect all contents of the path into a list
+    QList<QString> explore_stack;
+    QList<QString> seen_stack;
+
+    explore_stack.append(gpt_root_path);
+    seen_stack.append(gpt_root_path);
+
+    while (!explore_stack.isEmpty()) {
+        const QString path = explore_stack.takeLast();
+
+        const int dirp = smbc_opendir(cstr(path));
+
+        if (dirp < 0) {
+            *ok = false;
+
+            qDebug() << "smbc_opendir() error";
+
+            return QList<QString>();
+        }
+
+        // NOTE: set errno to 0, so that we know
+        // when readdir() fails because it will
+        // change errno.
+        errno = 0;
+
+        smbc_dirent *child_dirent;
+        while ((child_dirent = smbc_readdir(dirp)) != NULL) {
+            const QString child_name = QString(child_dirent->name);
+
+            const bool is_dot_path = (child_name == "." || child_name == "..");
+            if (is_dot_path) {
+                continue;
+            } else {
+                const QString child_path = path + "/" + child_name;
+
+                seen_stack.append(child_path);
+
+                const bool child_is_dir = smb_path_is_dir(child_path, ok);
+                if (!*ok) {
+                    return QList<QString>();
+                }
+
+                if (child_is_dir) {
+                    explore_stack.append(child_path);
+                }
+            }
+        }
+
+        if (errno != 0) {
+            *ok = false;
+
+            qDebug() << "smbc_readdir() error" << path << strerror(errno);
+
+            return QList<QString>();
+        }
+
+        smbc_closedir(dirp);
+    }
+
+    return seen_stack;
 }
 
 bool AdInterface::delete_gpo(const QString &dn) {
@@ -1468,6 +1503,18 @@ bool AdInterface::check_gpo_perms(const QString &gpo) {
         return out;
     }();
 
+    qDebug() << "--------";
+    qDebug() << "gpc_sd:";
+    for (auto e : QString(gpc_sd).split(",")) {
+        qDebug() << e;
+    }
+
+    qDebug() << "--------";
+    qDebug() << "gpt_sd:";
+    for (auto e : QString(gpt_sd).split(",")) {
+        qDebug() << e;
+    }
+
     if (gpc_sd.isEmpty() || gpt_sd.isEmpty()) {
         return false;
     }
@@ -1475,6 +1522,50 @@ bool AdInterface::check_gpo_perms(const QString &gpo) {
     const bool sd_match = (gpc_sd == gpt_sd);
 
     return sd_match;
+}
+
+bool AdInterface::gpo_sync_perms(const QString &dn) {
+    // First get GPC descriptor
+    const AdObject gpc_object = search_object(dn);
+    const QString name = gpc_object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    const QString gpt_sd_string = get_gpt_sd_string(&gpc_object, AceMaskFormat_Decimal);
+
+    const QString error_context = QString(tr("Failed to sync permissions of GPO \"%1\"")).arg(name);
+
+    if (gpt_sd_string.isEmpty()) {
+        d->error_message(error_context, tr("Failed to generate GPT security descriptor"));
+
+        return false;
+    }
+   
+    // Get list of GPT contents
+
+    // NOTE: order is important, have to set perms of parent
+    // folders before their contents, otherwise fails to
+    // set! Default gpo_get_gpt_contents() order is good.
+    const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+    const QString smb_path = sysvol_path_to_smb(filesys_path);
+    bool ok = true;
+    const QList<QString> path_list = d->gpo_get_gpt_contents(smb_path, &ok);
+    if (!ok || path_list.isEmpty()) {
+        d->error_message(error_context, QString(tr("Failed to read GPT contents of \"%1\"")).arg(smb_path));
+        return false;
+    }
+
+    // Set descriptor on all GPT contents
+    for (const QString &path : path_list) {
+        const int set_sd_result = smbc_setxattr(cstr(path), "system.nt_sec_desc.*", cstr(gpt_sd_string), strlen(cstr(gpt_sd_string)), 0);
+        if (set_sd_result != 0) {
+            const QString error = QString(tr("Failed to set permissions, %1")).arg(strerror(errno));
+            d->error_message(error_context, error);
+
+            return false;
+        }
+    }
+
+    d->success_message(QString(tr("Synced permissions of GPO \"%1\".")).arg(name));
+
+    return true;
 }
 
 void AdInterfacePrivate::success_message(const QString &msg, const DoStatusMsg do_msg) {
@@ -1535,71 +1626,15 @@ int AdInterfacePrivate::get_ldap_result() const {
 bool AdInterfacePrivate::delete_gpt(const QString &parent_path) {
     bool ok = true;
 
-    // Collect all contents of the path into a list
-    const QList<QString> path_list = [&]() {
-        QList<QString> explore_stack;
-        QList<QString> seen_stack;
 
-        explore_stack.append(parent_path);
-
-        while (!explore_stack.isEmpty()) {
-            const QString path = explore_stack.takeLast();
-
-            const int dirp = smbc_opendir(cstr(path));
-
-            if (dirp < 0) {
-                ok = false;
-
-                return QList<QString>();
-            }
-
-            // NOTE: set errno to 0, so that we know
-            // when readdir() fails because it will
-            // change errno.
-            errno = 0;
-
-            smbc_dirent *child_dirent;
-            while ((child_dirent = smbc_readdir(dirp)) != NULL) {
-                const QString child_name = QString(child_dirent->name);
-
-                const bool is_dot_path = (child_name == "." || child_name == "..");
-                if (is_dot_path) {
-                    continue;
-                } else {
-                    const QString child_path = path + "/" + child_name;
-
-                    const bool child_is_dir = smb_path_is_dir(child_path, &ok);
-                    if (!ok) {
-                        return QList<QString>();
-                    }
-
-                    if (child_is_dir) {
-                        explore_stack.append(child_path);
-                    }
-                }
-            }
-
-            if (errno != 0) {
-                ok = false;
-
-                error_message(QString(tr("Failed to read contents of folder %1")).arg(path), strerror(errno));
-                qDebug() << "smbc_readdir() error" << path << strerror(errno);
-
-                return QList<QString>();
-            }
-
-            smbc_closedir(dirp);
-        }
-
-        // Reverse so that deepest files are first in order
-        std::reverse(seen_stack.begin(), seen_stack.end());
-
-        return seen_stack;
-    }();
-
+    QList<QString> path_list = gpo_get_gpt_contents(parent_path, &ok);
     if (!ok) {
         return false;
     }
+
+    // NOTE: have to reverse so deepest paths are first to
+    // delete correctly
+    std::reverse(path_list.begin(), path_list.end());
 
     for (const QString &path : path_list) {
         const bool is_dir = smb_path_is_dir(path, &ok);

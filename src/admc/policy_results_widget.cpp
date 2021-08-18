@@ -135,6 +135,8 @@ void PolicyResultsWidget::update(const QModelIndex &index) {
 }
 
 void PolicyResultsWidget::update(const QString &new_gpo) {
+    gpo = new_gpo;
+
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -153,18 +155,24 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
         const QMessageBox::StandardButtons buttons = (QMessageBox::Yes | QMessageBox::No);
 
         auto message_box = new QMessageBox(icon, title, text, buttons, this);
-        message_box->open();
 
         connect(
             message_box, &QDialog::accepted,
-            [&]() {
-                // TODO: update perms
+            [this]() {
+                AdInterface ad_inner;
+                if (ad_failed(ad_inner)) {
+                    return;
+                }
+
+                ad_inner.gpo_sync_perms(gpo);
+
+                g_status()->display_ad_messages(ad_inner, this);
             });
+
+        message_box->open();
     }
 
     model->removeRows(0, model->rowCount());
-
-    gpo = new_gpo;
 
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;
