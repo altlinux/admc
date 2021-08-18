@@ -73,8 +73,14 @@ typedef struct sasl_defaults_gssapi {
     char *authzid;
 } sasl_defaults_gssapi;
 
+enum AceMaskFormat {
+    AceMaskFormat_Hexadecimal,
+    AceMaskFormat_Decimal,
+};
+
 QList<QString> query_server_for_hosts(const char *dname);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
+QString get_gpt_sd_string(const AdObject* gpc_object, const AceMaskFormat format);
 
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
@@ -1324,79 +1330,17 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     //
 
     // First get descriptor of the GPO
-    const QString base = dn;
-    const SearchScope scope = SearchScope_Object;
-    const QString filter = QString();
-    const QList<QString> attributes = {ATTRIBUTE_SECURITY_DESCRIPTOR};
-    const QHash<QString, AdObject> results = search(base, scope, filter, attributes);
+    const AdObject gpc_object = search_object(dn);
+    const QString gpt_sd_string = get_gpt_sd_string(&gpc_object, AceMaskFormat_Decimal);
 
-    const AdObject object = results[dn];
-    const QByteArray descriptor_bytes = object.get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-
-    // Transform descriptor bytes into descriptor struct
-    TALLOC_CTX *tmp_ctx = talloc_new(NULL);
-
-    DATA_BLOB blob;
-    blob.data = (uint8_t *) descriptor_bytes.data();
-    blob.length = descriptor_bytes.size();
-
-    struct ndr_pull *ndr_pull = ndr_pull_init_blob(&blob, tmp_ctx);
-
-    struct security_descriptor domain_sd;
-    ndr_pull_security_descriptor(ndr_pull, NDR_SCALARS | NDR_BUFFERS, &domain_sd);
-
-    // Create sysvol descriptor from domain descriptor (not
-    // one to one, some modifications are needed)
-    struct security_descriptor *sysvol_sd;
-    const NTSTATUS create_sd_status = gp_create_gpt_security_descriptor(tmp_ctx, &domain_sd, &sysvol_sd);
-    if (!NT_STATUS_IS_OK(create_sd_status)) {
-        error_message(tr("Failed to create gpo sd"));
-        talloc_free(tmp_ctx);
+    if (gpt_sd_string.isEmpty()) {
+        d->error_message(tr("Failed to create GPO"), tr("Failed to generate GPT security descriptor"));
 
         return false;
     }
 
-    const QString sysvol_sd_string = [tmp_ctx, &sysvol_sd]() {
-        QList<QString> all_elements;
-
-        all_elements.append(QString("REVISION:%1").arg(sysvol_sd->revision));
-
-        const QString owner_sid_string = dom_sid_string(tmp_ctx, sysvol_sd->owner_sid);
-        all_elements.append(QString("OWNER:%1").arg(owner_sid_string));
-
-        const QString group_sid_string = dom_sid_string(tmp_ctx, sysvol_sd->group_sid);
-        all_elements.append(QString("GROUP:%1").arg(group_sid_string));
-
-        // NOTE: don't need sacl
-
-        for (uint32_t i = 0; i < sysvol_sd->dacl->num_aces; i++) {
-            struct security_ace ace = sysvol_sd->dacl->aces[i];
-
-            // NOTE: have to use decimal format instead of
-            // hex because of this bug in libsmbclient:
-            // https://bugzilla.samba.org/show_bug.cgi?id=14303
-            char access_mask_buffer[100];
-            snprintf(access_mask_buffer, sizeof(access_mask_buffer), "%d", ace.access_mask);
-
-            all_elements.append(QString("ACL:%1:%2/%3/%4").arg(dom_sid_string(tmp_ctx, &ace.trustee), QString::number(ace.type), QString::number(ace.flags), access_mask_buffer));
-        }
-
-        // NOTE: can get duplicate ace's because ace's are
-        // modified for gpt format, so remove duplicates
-        QList<QString> without_duplicates;
-        for (const QString &element : all_elements) {
-            if (!without_duplicates.contains(element)) {
-                without_duplicates.append(element);
-            }
-        }
-
-        const QString out = without_duplicates.join(",");
-
-        return out;
-    }();
-
-    qDebug() << "sysvol_sd_string:";
-    for (auto e : sysvol_sd_string.split(",")) {
+    qDebug() << "gpt_sd_string:";
+    for (auto e : gpt_sd_string.split(",")) {
         qDebug() << e;
     }
 
@@ -1408,16 +1352,13 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
         ini_file_path,
     };
     for (const QString &path : sysvol_list) {
-        const int set_sd_result = smbc_setxattr(cstr(path), "system.nt_sec_desc.*", cstr(sysvol_sd_string), strlen(cstr(sysvol_sd_string)), 0);
+        const int set_sd_result = smbc_setxattr(cstr(path), "system.nt_sec_desc.*", cstr(gpt_sd_string), strlen(cstr(gpt_sd_string)), 0);
         if (set_sd_result != 0) {
             d->error_message(QString(tr("Failed to set permissions for GPT path \"%1\"")).arg(path), strerror(errno));
-            talloc_free(tmp_ctx);
 
             return false;
         }
     }
-
-    talloc_free(tmp_ctx);
 
     return true;
 }
@@ -1494,6 +1435,46 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     out = QString("smb://%1%2").arg(d->dc, out);
 
     return out;
+}
+
+bool AdInterface::check_gpo_perms(const QString &gpo) {
+    const AdObject gpc_object = search_object(gpo);
+
+    const QString gpc_sd = [&]() {
+        const QString out = get_gpt_sd_string(&gpc_object, AceMaskFormat_Hexadecimal);
+
+        if (out.isEmpty()) {
+            d->error_message(tr("Failed to check GPO permissions"), tr("Failed to generate GPT security descriptor"));
+            
+            return QString();
+        }
+
+        return out;
+    }();
+
+    const QString gpt_sd = [&]() {
+        char out_cstr[2000];
+        const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+        const QString smb_path = sysvol_path_to_smb(filesys_path);
+        const int getxattr_result = smbc_getxattr(cstr(smb_path), "system.nt_sec_desc.*", out_cstr, sizeof(out_cstr));
+        if (getxattr_result < 0) {
+            d->error_message(QString(tr("Failed to get permissions for GPT path \"%1\"")).arg(smb_path), strerror(errno));
+
+            return QString();
+        }
+
+        const QString out = QString(out_cstr);
+
+        return out;
+    }();
+
+    if (gpc_sd.isEmpty() || gpt_sd.isEmpty()) {
+        return false;
+    }
+
+    const bool sd_match = (gpc_sd == gpt_sd);
+
+    return sd_match;
 }
 
 void AdInterfacePrivate::success_message(const QString &msg, const DoStatusMsg do_msg) {
@@ -1849,6 +1830,82 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
     }
 
     return LDAP_SUCCESS;
+}
+
+// NOTE: decimal format option is provided to deal with this
+// bug in libsmbclient:
+// https://bugzilla.samba.org/show_bug.cgi?id=14303. You
+// only need to use decimal format when making the string to
+// pass to smbc_setxattr(), otherwise you should use hex
+// format.
+QString get_gpt_sd_string(const AdObject *gpc_object, const AceMaskFormat format_enum) {
+    TALLOC_CTX *mem_ctx = talloc_new(NULL);
+
+    security_descriptor *gpc_sd = ad_security_get_sd(gpc_object);
+
+    // Create sysvol descriptor from domain descriptor (not
+    // one to one, some modifications are needed)
+    struct security_descriptor *gpt_sd;
+    const NTSTATUS create_sd_status = gp_create_gpt_security_descriptor(mem_ctx, gpc_sd, &gpt_sd);
+    
+    talloc_free(gpc_sd);
+
+    if (!NT_STATUS_IS_OK(create_sd_status)) {
+        qDebug() << "Failed to create gpt sd";
+        talloc_free(mem_ctx);
+
+        return QString();
+    }
+
+    ad_security_sort_dacl(gpt_sd);
+    
+    QList<QString> all_elements;
+
+    all_elements.append(QString("REVISION:%1").arg(gpt_sd->revision));
+
+    const QString owner_sid_string = dom_sid_string(mem_ctx, gpt_sd->owner_sid);
+    all_elements.append(QString("OWNER:%1").arg(owner_sid_string));
+
+    const QString group_sid_string = dom_sid_string(mem_ctx, gpt_sd->group_sid);
+    all_elements.append(QString("GROUP:%1").arg(group_sid_string));
+
+    // NOTE: don't need sacl
+
+    for (uint32_t i = 0; i < gpt_sd->dacl->num_aces; i++) {
+        struct security_ace ace = gpt_sd->dacl->aces[i];
+
+        char access_mask_string[100];
+        static const char *hex_format = "0x%08x";
+        static const char *dec_format = "%d";
+        const char *format = [&]() {
+            switch (format_enum) {
+                case AceMaskFormat_Hexadecimal: return hex_format;
+                case AceMaskFormat_Decimal: return dec_format;
+            }
+
+            return hex_format;
+        }();
+        snprintf(access_mask_string, sizeof(access_mask_string), format, ace.access_mask);
+
+        const char *trustee_string = dom_sid_string(mem_ctx, &ace.trustee);
+
+        all_elements.append(QString("ACL:%1:%2/%3/%4").arg(trustee_string, QString::number(ace.type), QString::number(ace.flags), access_mask_string));
+    }
+
+    // NOTE: can get duplicate ace's because ace's are
+    // modified for gpt format, so remove duplicates
+    QList<QString> without_duplicates;
+    for (const QString &element : all_elements) {
+        if (!without_duplicates.contains(element)) {
+            without_duplicates.append(element);
+        }
+    }
+
+    const QString out = without_duplicates.join(",");
+
+    talloc_free(mem_ctx);
+
+    return out;
 }
 
 AdCookie::AdCookie() {

@@ -170,6 +170,8 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
+    bool check_gpo_perms(const QString &gpo);
+
 private:
     AdInterfacePrivate *d;
 };
