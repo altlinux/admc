@@ -82,6 +82,7 @@ public:
 
     QAction *properties_action;
     QAction *refresh_action;
+    QAction *refresh_current_scope_action;
 
     QAction *navigate_up_action;
     QAction *navigate_back_action;
@@ -113,6 +114,7 @@ public:
     void on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last);
     void on_focus_changed(QWidget *old, QWidget *now);
     void refresh();
+    void refresh_current_scope();
     void customize_columns();
     void navigate_up();
     void navigate_back();

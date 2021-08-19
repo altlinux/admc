@@ -37,14 +37,22 @@
 #include <QMenuBar>
 #include <QStatusBar>
 #include <QTextEdit>
+#include <QToolBar>
 
 #define MESSAGE_LOG_OBJECT_NAME "MESSAGE_LOG_OBJECT_NAME"
 
 MainWindow::MainWindow()
 : QMainWindow() {
+    toolbar = new QToolBar(this);
+    toolbar->setObjectName("main_window_toolbar");
+    toolbar->setWindowTitle(tr("Toolbar"));
+    addToolBar(toolbar);
+
     setStatusBar(g_status()->status_bar());
 
     connection_options_dialog = new ConnectionOptionsDialog(this);
+
+    manual_action = new QAction(QIcon::fromTheme("help-faq"), tr("&Manual"), this);
 
     message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle(tr("Message Log"));
@@ -103,7 +111,6 @@ void MainWindow::setup_menubar() {
     auto quit_action = new QAction(tr("&Quit"), this);
     quit_action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
 
-    auto manual_action = new QAction(tr("&Manual"), this);
     auto about_action = new QAction(tr("&About ADMC"), this);
 
     auto confirm_actions_action = settings_make_and_connect_action(SETTING_confirm_actions, tr("&Confirm actions"), this);
@@ -177,6 +184,7 @@ void MainWindow::setup_menubar() {
     preferences_menu->addMenu(language_menu);
     preferences_menu->addSeparator();
     preferences_menu->addAction(message_log_dock->toggleViewAction());
+    preferences_menu->addAction(toolbar->toggleViewAction());
 
     for (const auto language : language_list) {
         QAction *language_action = language_actions[language];
@@ -245,8 +253,10 @@ void MainWindow::connect_to_server() {
         auto central_widget = new CentralWidget(ad);
         setCentralWidget(central_widget);
 
-        central_widget->add_actions(action_menu, navigation_menu, view_menu, preferences_menu);
+        central_widget->add_actions(action_menu, navigation_menu, view_menu, preferences_menu, toolbar);
         
+        toolbar->addAction(manual_action);
+
         connect_action->setEnabled(false);
     }
 }

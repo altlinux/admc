@@ -45,6 +45,7 @@ class ConsoleActions;
 class PolicyResultsWidget;
 template <typename T>
 class QList;
+class QToolBar;
 
 enum ItemType {
     ItemType_Unassigned,
@@ -65,7 +66,7 @@ public:
     CentralWidget(AdInterface &ad);
     ~CentralWidget();
 
-    void add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu);
+    void add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
 
 signals:
     void context_menu(const QPoint pos);
