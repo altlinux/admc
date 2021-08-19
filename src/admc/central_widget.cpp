@@ -835,6 +835,8 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
         console_object_fetch(console, filter_dialog->get_filter(), index);
     } else if (type == ItemType_QueryItem) {
         console_query_item_fetch(console, index);
+    } else if (type == ItemType_PolicyRoot) {
+        console_policy_root_fetch(console);
     }
 }
 

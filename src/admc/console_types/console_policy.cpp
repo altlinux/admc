@@ -71,22 +71,11 @@ void console_policy_create(ConsoleWidget *console, const AdObject &object) {
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
-    policy_tree_head = console->add_top_item(policy_container_results_id, ScopeNodeType_Static);
+    policy_tree_head = console->add_top_item(policy_container_results_id, ScopeNodeType_Dynamic);
     policy_tree_head->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
     policy_tree_head->setIcon(QIcon::fromTheme("folder"));
     policy_tree_head->setData(ItemType_PolicyRoot, ConsoleRole_Type);
-
-    // Add children
-    const QString base = g_adconfig->domain_head();
-    const SearchScope scope = SearchScope_All;
-    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QList<QString> attributes = console_policy_search_attributes();
-    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
-
-    for (const AdObject &object : results.values()) {
-        console_policy_create(console, object);
-    }
 }
 
 void console_policy_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
@@ -199,4 +188,21 @@ void console_policy_add_link(ConsoleWidget *console, const QList<QString> &polic
     hide_busy_indicator();
 
     g_status()->display_ad_messages(ad, console);
+}
+
+void console_policy_root_fetch(ConsoleWidget *console) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+    
+    const QString base = g_adconfig->domain_head();
+    const SearchScope scope = SearchScope_All;
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+    const QList<QString> attributes = console_policy_search_attributes();
+    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+    for (const AdObject &object : results.values()) {
+        console_policy_create(console, object);
+    }
 }
