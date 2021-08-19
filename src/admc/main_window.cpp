@@ -52,6 +52,8 @@ MainWindow::MainWindow()
 
     connection_options_dialog = new ConnectionOptionsDialog(this);
 
+    manual_action = new QAction(QIcon::fromTheme("help-faq"), tr("&Manual"), this);
+
     message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle(tr("Message Log"));
     message_log_dock->setWidget(g_status()->message_log());
@@ -109,7 +111,6 @@ void MainWindow::setup_menubar() {
     auto quit_action = new QAction(tr("&Quit"), this);
     quit_action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
 
-    auto manual_action = new QAction(tr("&Manual"), this);
     auto about_action = new QAction(tr("&About ADMC"), this);
 
     auto confirm_actions_action = settings_make_and_connect_action(SETTING_confirm_actions, tr("&Confirm actions"), this);
@@ -254,6 +255,8 @@ void MainWindow::connect_to_server() {
 
         central_widget->add_actions(action_menu, navigation_menu, view_menu, preferences_menu, toolbar);
         
+        toolbar->addAction(manual_action);
+
         connect_action->setEnabled(false);
     }
 }

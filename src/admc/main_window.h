@@ -40,6 +40,7 @@ protected:
 
 private:
     QAction *connect_action;
+    QAction *manual_action;
     ConnectionOptionsDialog *connection_options_dialog;
     QDockWidget *message_log_dock;
     QToolBar *toolbar;
