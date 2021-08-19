@@ -1276,6 +1276,11 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     const QString ini_file_path = main_dir + "/GPT.INI";
     const int ini_file = smbc_open(cstr(ini_file_path), O_WRONLY | O_CREAT, 0644);
+    if (ini_file < 0) {
+        error_message(tr("Failed to open policy ini"));
+
+        return false;
+    }
 
     const char *ini_contents = "[General]\r\nVersion=0\r\n";
     const int bytes_written = smbc_write(ini_file, ini_contents, strlen(ini_contents));
