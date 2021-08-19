@@ -1550,7 +1550,10 @@ bool AdInterface::check_gpo_perms(const QString &gpo) {
         const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
         const QString smb_path = sysvol_path_to_smb(filesys_path);
         const int getxattr_result = smbc_getxattr(cstr(smb_path), "system.nt_sec_desc.*", out_cstr, sizeof(out_cstr));
-        if (getxattr_result != 0) {
+        // NOTE: for some reason getxattr() returns positive
+        // non-zero return code on success, even though f-n
+        // description says it "returns 0 on success"
+        if (getxattr_result < 0) {
             d->error_message(QString(tr("Failed to get permissions for GPT path \"%1\"")).arg(smb_path), strerror(errno));
 
             return QString();
