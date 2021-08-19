@@ -798,12 +798,12 @@ void CentralWidget::update_description_bar() {
     console->set_description_bar_text(text);
 }
 
-void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu) {
+void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     console_actions->add_to_menu(action_menu);
 
     action_menu->addSeparator();
 
-    console->add_actions(action_menu, navigation_menu, view_menu);
+    console->add_actions(action_menu, navigation_menu, view_menu, toolbar);
 
     view_menu->addSeparator();
 

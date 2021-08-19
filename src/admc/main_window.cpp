@@ -37,11 +37,16 @@
 #include <QMenuBar>
 #include <QStatusBar>
 #include <QTextEdit>
+#include <QToolBar>
 
 #define MESSAGE_LOG_OBJECT_NAME "MESSAGE_LOG_OBJECT_NAME"
 
 MainWindow::MainWindow()
 : QMainWindow() {
+    toolbar = new QToolBar(this);
+    toolbar->setObjectName("main_window_toolbar");
+    addToolBar(toolbar);
+
     setStatusBar(g_status()->status_bar());
 
     connection_options_dialog = new ConnectionOptionsDialog(this);
@@ -245,7 +250,7 @@ void MainWindow::connect_to_server() {
         auto central_widget = new CentralWidget(ad);
         setCentralWidget(central_widget);
 
-        central_widget->add_actions(action_menu, navigation_menu, view_menu, preferences_menu);
+        central_widget->add_actions(action_menu, navigation_menu, view_menu, preferences_menu, toolbar);
         
         connect_action->setEnabled(false);
     }

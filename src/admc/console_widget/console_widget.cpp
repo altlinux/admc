@@ -38,6 +38,7 @@
 #include <QStackedWidget>
 #include <QTreeView>
 #include <QVBoxLayout>
+#include <QToolBar>
 
 #define SPLITTER_STATE "SPLITTER_STATE"
 
@@ -83,9 +84,9 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->results_stacked_widget = new QStackedWidget();
 
     d->properties_action = new QAction(tr("&Properties"), this);
-    d->navigate_up_action = new QAction(tr("&Up one level"), this);
-    d->navigate_back_action = new QAction(tr("&Back"), this);
-    d->navigate_forward_action = new QAction(tr("&Forward"), this);
+    d->navigate_up_action = new QAction(QIcon::fromTheme("go-up"), tr("&Up one level"), this);
+    d->navigate_back_action = new QAction(QIcon::fromTheme("go-previous"), tr("&Back"), this);
+    d->navigate_forward_action = new QAction(QIcon::fromTheme("go-next"), tr("&Forward"), this);
     d->refresh_action = new QAction(tr("&Refresh"), this);
     d->customize_columns_action = new QAction(tr("&Customize columns"), this);
     d->set_results_to_icons_action = new QAction(tr("&Icons"), this);
@@ -851,7 +852,7 @@ void ConsoleWidgetPrivate::update_view_actions() {
     customize_columns_action->setVisible(results_view_exists);
 }
 
-void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu) {
+void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QToolBar *toolbar) {
     // Action
     action_menu->addAction(d->refresh_action);
     action_menu->addSeparator();
@@ -891,6 +892,11 @@ void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMen
     view_menu->addSeparator();
 
     view_menu->addAction(d->customize_columns_action);
+
+    // Toolbar
+    toolbar->addAction(d->navigate_back_action);
+    toolbar->addAction(d->navigate_forward_action);
+    toolbar->addAction(d->navigate_up_action);
 }
 
 const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {

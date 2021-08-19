@@ -49,6 +49,7 @@ class QStandardItem;
 class QMenu;
 class QAbstractItemView;
 class QStandardItemModel;
+class QToolBar;
 
 enum ConsoleRolePublic {
     ConsoleRole_Fetching = Qt::UserRole + 17,
@@ -165,7 +166,7 @@ public:
 
     bool item_was_fetched(const QModelIndex &index) const;
 
-    void add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu);
+    void add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QToolBar *toolbar);
 
     // These getters are only for showing/hiding these widgets
     QWidget *get_scope_view() const;

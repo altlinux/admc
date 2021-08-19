@@ -27,6 +27,7 @@ class QAction;
 class QDockWidget;
 class QMenu;
 class ConnectionOptionsDialog;
+class QToolBar;
 
 class MainWindow final : public QMainWindow {
     Q_OBJECT
@@ -41,6 +42,7 @@ private:
     QAction *connect_action;
     ConnectionOptionsDialog *connection_options_dialog;
     QDockWidget *message_log_dock;
+    QToolBar *toolbar;
 
     QMenu *action_menu;
     QMenu *navigation_menu;
