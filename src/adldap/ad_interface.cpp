@@ -1401,6 +1401,8 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
     explore_stack.append(gpt_root_path);
     seen_stack.append(gpt_root_path);
 
+    const QString error_context = QString(tr("Failed to get contents of GPT \"%1\"")).arg(gpt_root_path);
+
     while (!explore_stack.isEmpty()) {
         const QString path = explore_stack.takeLast();
 
@@ -1409,7 +1411,7 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
         if (dirp < 0) {
             *ok = false;
 
-            qDebug() << "smbc_opendir() error";
+            error_message(error_context, tr("Failed to open dir"));
 
             return QList<QString>();
         }
@@ -1445,7 +1447,7 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
         if (errno != 0) {
             *ok = false;
 
-            qDebug() << "smbc_readdir() error" << path << strerror(errno);
+            error_message(error_context, tr("Failed to read dir"));
 
             return QList<QString>();
         }
@@ -1540,7 +1542,7 @@ bool AdInterface::check_gpo_perms(const QString &gpo, bool *ok) {
         const QString out = get_gpt_sd_string(gpc_object, AceMaskFormat_Hexadecimal);
 
         if (out.isEmpty()) {
-            d->error_message(error_context, tr("Failed to generate GPT security descriptor"));
+            d->error_message(error_context, tr("Failed to get GPT security descriptor"));
             
             return QString();
         }
@@ -1557,7 +1559,7 @@ bool AdInterface::check_gpo_perms(const QString &gpo, bool *ok) {
         // non-zero return code on success, even though f-n
         // description says it "returns 0 on success"
         if (getxattr_result < 0) {
-            const QString text = QString(tr("Failed to get GPC security descriptor, %1")).arg(strerror(errno));
+            const QString text = QString(tr("Failed to get GPT security descriptor, %1")).arg(strerror(errno));
             d->error_message(error_context, text);
 
             return QString();
@@ -1693,7 +1695,6 @@ int AdInterfacePrivate::get_ldap_result() const {
 bool AdInterfacePrivate::delete_gpt(const QString &parent_path) {
     bool ok = true;
 
-
     QList<QString> path_list = gpo_get_gpt_contents(parent_path, &ok);
     if (!ok) {
         return false;
@@ -1712,22 +1713,16 @@ bool AdInterfacePrivate::delete_gpt(const QString &parent_path) {
         if (is_dir) {
             const int result_rmdir = smbc_rmdir(cstr(path));
 
-            qDebug() << "smbc_rmdir()" << path;
-
             if (result_rmdir != 0) {
                 error_message(QString(tr("Failed to delete GPT folder %1")).arg(path), strerror(errno));
-                qDebug() << "smbc_rmdir() error" << path << result_rmdir << strerror(errno);
 
                 return false;
             }
         } else {
             const int result_unlink = smbc_unlink(cstr(path));
 
-            qDebug() << "smbc_unlink()" << path;
-
             if (result_unlink != 0) {
                 error_message(QString(tr("Failed to delete GPT file %1")).arg(path), strerror(errno));
-                qDebug() << "smbc_unlink() error" << path << result_unlink << strerror(errno);
 
                 return false;
             }
@@ -1742,7 +1737,6 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
     const int stat_result = smbc_stat(cstr(path), &filestat);
     if (stat_result != 0) {
         error_message(QString(tr("Failed to get filestat for \"%1\"")).arg(path), strerror(errno));
-        qDebug() << "smbc_stat() error" << path << stat_result << strerror(errno);
 
         *ok = false;
     } else {
