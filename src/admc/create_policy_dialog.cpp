@@ -41,7 +41,6 @@ CreatePolicyDialog::CreatePolicyDialog(ConsoleWidget *console_arg)
     setWindowTitle(tr("Create GPO"));
 
     name_edit = new QLineEdit();
-    name_edit->setText("New Group Policy Object");
 
     const auto edits_layout = new QFormLayout();
     edits_layout->addRow(tr("Name"), name_edit);
@@ -64,7 +63,8 @@ CreatePolicyDialog::CreatePolicyDialog(ConsoleWidget *console_arg)
 }
 
 void CreatePolicyDialog::open() {
-    name_edit->setText("");
+    name_edit->setText("New Group Policy Object");
+    name_edit->selectAll();
 
     QDialog::open();
 }
