@@ -87,7 +87,14 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->navigate_up_action = new QAction(QIcon::fromTheme("go-up"), tr("&Up one level"), this);
     d->navigate_back_action = new QAction(QIcon::fromTheme("go-previous"), tr("&Back"), this);
     d->navigate_forward_action = new QAction(QIcon::fromTheme("go-next"), tr("&Forward"), this);
+    // NOTE: this refresh action is for the action menu.
+    // Refreshes selected object, if it can be refreshed.
+    // Hidden if can't refresh.
     d->refresh_action = new QAction(tr("&Refresh"), this);
+    // NOTE: this refresh action is for the toolbar.
+    // Refreshes current scope item, if it can be refreshed.
+    // Always visible.
+    d->refresh_current_scope_action = new QAction(QIcon::fromTheme("view-refresh"), tr("&Refresh"), this);
     d->customize_columns_action = new QAction(tr("&Customize columns"), this);
     d->set_results_to_icons_action = new QAction(tr("&Icons"), this);
     d->set_results_to_list_action = new QAction(tr("&List"), this);
@@ -169,6 +176,9 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     connect(
         d->refresh_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::refresh);
+    connect(
+        d->refresh_current_scope_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::refresh_current_scope);
     connect(
         d->customize_columns_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::customize_columns);
@@ -567,7 +577,8 @@ void ConsoleWidgetPrivate::update_actions() {
         const QModelIndex selected = selected_list[0];
 
         const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
-        if (is_dynamic) {
+        const bool is_scope = selected.data(ConsoleRole_IsScope).toBool();
+        if (is_scope && is_dynamic) {
             refresh_action->setVisible(true);
         }
 
@@ -710,9 +721,23 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
 }
 
 void ConsoleWidgetPrivate::refresh() {
+    const QList<QModelIndex> selected = q->get_selected_items();
+
+    if (selected.size() == 1) {
+        const QModelIndex index = selected[0];
+
+        q->refresh_scope(index);
+    }
+}
+
+void ConsoleWidgetPrivate::refresh_current_scope() {
     const QModelIndex current_scope = q->get_current_scope_item();
 
-    q->refresh_scope(current_scope);
+    const bool is_dynamic = current_scope.data(ConsoleRole_ScopeIsDynamic).toBool();
+
+    if (is_dynamic) {
+        q->refresh_scope(current_scope);
+    }
 }
 
 void ConsoleWidgetPrivate::customize_columns() {
@@ -897,6 +922,8 @@ void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMen
     toolbar->addAction(d->navigate_back_action);
     toolbar->addAction(d->navigate_forward_action);
     toolbar->addAction(d->navigate_up_action);
+    toolbar->addSeparator();
+    toolbar->addAction(d->refresh_current_scope_action);
 }
 
 const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {
