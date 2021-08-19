@@ -1278,9 +1278,9 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     const int ini_file = smbc_open(cstr(ini_file_path), O_WRONLY | O_CREAT, 0644);
 
     const char *ini_contents = "[General]\r\nVersion=0\r\n";
-    const int result_write_ini = smbc_write(ini_file, ini_contents, strlen(ini_contents));
+    const int bytes_written = smbc_write(ini_file, ini_contents, strlen(ini_contents));
     smbc_close(ini_file);
-    if (result_write_ini < 0) {
+    if (bytes_written < 0) {
         error_message(tr("Failed to write policy ini"));
 
         return false;
@@ -1492,7 +1492,7 @@ bool AdInterface::check_gpo_perms(const QString &gpo) {
         const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
         const QString smb_path = sysvol_path_to_smb(filesys_path);
         const int getxattr_result = smbc_getxattr(cstr(smb_path), "system.nt_sec_desc.*", out_cstr, sizeof(out_cstr));
-        if (getxattr_result < 0) {
+        if (getxattr_result != 0) {
             d->error_message(QString(tr("Failed to get permissions for GPT path \"%1\"")).arg(smb_path), strerror(errno));
 
             return QString();
@@ -1673,7 +1673,7 @@ bool AdInterfacePrivate::delete_gpt(const QString &parent_path) {
 bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
     struct stat filestat;
     const int stat_result = smbc_stat(cstr(path), &filestat);
-    if (stat_result < 0) {
+    if (stat_result != 0) {
         error_message(QString(tr("Failed to get filestat for \"%1\"")).arg(path), strerror(errno));
         qDebug() << "smbc_stat() error" << path << stat_result << strerror(errno);
 
