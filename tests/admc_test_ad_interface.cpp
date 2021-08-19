@@ -24,34 +24,34 @@
 
 #include <QTest>
 
-void ADMCTestAdInterface::create_and_delete_gpo() {
-    const QString gpo_name = "test_policy_for_admc_test_ad_interface";
+#define TEST_GPO "ADMCTestAdInterface_TEST_GPO"
 
-    auto find_policy_dn = [&]() {
-        const QString base = ad.adconfig()->domain_head();
-        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, gpo_name);
-        const QList<QString> attributes = QList<QString>();
-        const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, attributes);
+void ADMCTestAdInterface::cleanup() {
+    // Delete test gpo, if it was leftover from previous test
+    const QString base = ad.adconfig()->domain_head();
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, TEST_GPO);
+    const QList<QString> attributes = QList<QString>();
+    const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, attributes);
 
-        if (!search_results.isEmpty()) {
-            return search_results.keys()[0];
-        } else {
-            return QString();
-        }
-    };
-
-    // Delete old gpo, if it was leftover from previous test
-    const QString dn_before = find_policy_dn();
-    if (!dn_before.isEmpty()) {
-        const bool delete_before_success = ad.delete_gpo(dn_before);
-        QVERIFY(delete_before_success);
+    if (!search_results.isEmpty()) {
+        const QString dn = search_results.keys()[0];
+        const bool delete_success = ad.delete_gpo(dn);
+        QVERIFY(delete_success);
     }
 
+    ADMCTest::cleanup();
+}
+
+void ADMCTestAdInterface::create_and_delete_gpo() {
     // Create new gpo
     QString gpo_dn;
-    const bool create_success = ad.create_gpo(gpo_name, gpo_dn);
+    const bool create_success = ad.create_gpo(TEST_GPO, gpo_dn);
     QVERIFY(create_success);
     QVERIFY(!gpo_dn.isEmpty());
+
+    // Check perms
+    const bool perms_are_ok = ad.check_gpo_perms(gpo_dn);
+    QVERIFY(perms_are_ok);
 
     // Create test ou
     const QString ou_dn = test_object_dn(TEST_OU, CLASS_OU);

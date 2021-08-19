@@ -27,6 +27,8 @@ class ADMCTestAdInterface : public ADMCTest {
     Q_OBJECT
 
 private slots:
+    void cleanup() override;
+    
     void create_and_delete_gpo();
 
     void object_add();
