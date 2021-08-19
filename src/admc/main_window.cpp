@@ -45,6 +45,7 @@ MainWindow::MainWindow()
 : QMainWindow() {
     toolbar = new QToolBar(this);
     toolbar->setObjectName("main_window_toolbar");
+    toolbar->setWindowTitle(tr("Toolbar"));
     addToolBar(toolbar);
 
     setStatusBar(g_status()->status_bar());
@@ -182,6 +183,7 @@ void MainWindow::setup_menubar() {
     preferences_menu->addMenu(language_menu);
     preferences_menu->addSeparator();
     preferences_menu->addAction(message_log_dock->toggleViewAction());
+    preferences_menu->addAction(toolbar->toggleViewAction());
 
     for (const auto language : language_list) {
         QAction *language_action = language_actions[language];
