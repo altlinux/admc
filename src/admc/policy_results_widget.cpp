@@ -145,10 +145,10 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
     // When selecting a policy, check it's permissions to
     // make sure that they permissions of GPT and GPC match.
     // If they don't, offer to update GPT permissions.
-    const bool perms_ok = ad.check_gpo_perms(new_gpo);
-    if (!perms_ok) {
-        g_status()->display_ad_messages(ad, this);
-        
+    bool ok = true;
+    const bool perms_ok = ad.check_gpo_perms(new_gpo, &ok);
+
+    if (!perms_ok && ok) {
         const QMessageBox::Icon icon = QMessageBox::Warning;
         const QString title = tr("Incorrect permissions detected");
         const QString text = tr("Permissions for this policy's GPT don't match the permissions for it's GPC object. Would you like to update GPT permissions?");
@@ -171,6 +171,8 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
         message_box->open();
     }
+
+    g_status()->display_ad_messages(ad, this);
 
     model->removeRows(0, model->rowCount());
 

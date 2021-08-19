@@ -1530,14 +1530,17 @@ QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
     return out;
 }
 
-bool AdInterface::check_gpo_perms(const QString &gpo) {
+bool AdInterface::check_gpo_perms(const QString &gpo, bool *ok) {
     const AdObject gpc_object = search_object(gpo);
+    const QString name = gpc_object.get_string(ATTRIBUTE_DISPLAY_NAME);
+
+    const QString error_context = QString(tr("Failed to check permissions for GPO \"%1\"")).arg(name);
 
     const QString gpc_sd = [&]() {
         const QString out = get_gpt_sd_string(gpc_object, AceMaskFormat_Hexadecimal);
 
         if (out.isEmpty()) {
-            d->error_message(tr("Failed to check GPO permissions"), tr("Failed to generate GPT security descriptor"));
+            d->error_message(error_context, tr("Failed to generate GPT security descriptor"));
             
             return QString();
         }
@@ -1554,7 +1557,8 @@ bool AdInterface::check_gpo_perms(const QString &gpo) {
         // non-zero return code on success, even though f-n
         // description says it "returns 0 on success"
         if (getxattr_result < 0) {
-            d->error_message(QString(tr("Failed to get permissions for GPT path \"%1\"")).arg(smb_path), strerror(errno));
+            const QString text = QString(tr("Failed to get GPC security descriptor, %1")).arg(strerror(errno));
+            d->error_message(error_context, text);
 
             return QString();
         }
@@ -1577,6 +1581,8 @@ bool AdInterface::check_gpo_perms(const QString &gpo) {
     }
 
     if (gpc_sd.isEmpty() || gpt_sd.isEmpty()) {
+        *ok = false;
+
         return false;
     }
 

@@ -170,7 +170,7 @@ public:
 
     QString sysvol_path_to_smb(const QString &sysvol_path) const;
 
-    bool check_gpo_perms(const QString &gpo);
+    bool check_gpo_perms(const QString &gpo, bool *ok);
     bool gpo_sync_perms(const QString &gpo);
 
 private:
