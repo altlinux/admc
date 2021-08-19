@@ -1302,13 +1302,28 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
         return false;
     }
-    attribute_replace_string(dn, ATTRIBUTE_DISPLAY_NAME, display_name);
-    attribute_replace_string(dn, ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath);
-    // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
-    attribute_replace_string(dn, ATTRIBUTE_FLAGS, "1");
-    attribute_replace_string(dn, ATTRIBUTE_VERSION_NUMBER, "0");
-    attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
-    attribute_replace_string(dn, ATTRIBUTE_GPC_FUNCTIONALITY_VERSION, "2");
+
+    const QHash<QString, QString> attribute_value_map = {
+        {ATTRIBUTE_DISPLAY_NAME, display_name},
+        {ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath},
+        // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
+        {ATTRIBUTE_FLAGS, "1"},
+        {ATTRIBUTE_VERSION_NUMBER, "0"},
+        {ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE"},
+        {ATTRIBUTE_GPC_FUNCTIONALITY_VERSION, "2"},
+    };
+
+    for (const QString &attribute : attribute_value_map.keys()) {
+        const QString value = attribute_value_map[attribute];
+
+        const bool replace_success = attribute_replace_string(dn, attribute, value);
+
+        if (!replace_success) {
+            error_message(tr("Failed to set policy attribute"));
+
+            return false;
+        }
+    }
 
     // User object
     const QString user_dn = "CN=User," + dn;
