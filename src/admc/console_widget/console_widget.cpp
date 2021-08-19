@@ -851,17 +851,18 @@ void ConsoleWidgetPrivate::update_view_actions() {
     customize_columns_action->setVisible(results_view_exists);
 }
 
-void ConsoleWidget::add_actions_to_action_menu(QMenu *menu) {
-    menu->addAction(d->refresh_action);
-    menu->addSeparator();
-    menu->addAction(d->properties_action);
+void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu) {
+    // Action
+    action_menu->addAction(d->refresh_action);
+    action_menu->addSeparator();
+    action_menu->addAction(d->properties_action);
 
     d->properties_action->setVisible(false);
     d->refresh_action->setVisible(false);
 
     // Update actions right before menu opens
     connect(
-        menu, &QMenu::aboutToShow,
+        action_menu, &QMenu::aboutToShow,
         d, &ConsoleWidgetPrivate::update_actions);
 
     // Open action menu as context menu for central widget
@@ -873,25 +874,23 @@ void ConsoleWidget::add_actions_to_action_menu(QMenu *menu) {
             if (index.isValid()) {
                 const QPoint global_pos = d->focused_view->mapToGlobal(pos);
 
-                menu->exec(global_pos);
+                action_menu->exec(global_pos);
             }
         });
-}
 
-void ConsoleWidget::add_actions_to_navigation_menu(QMenu *menu) {
-    menu->addAction(d->navigate_up_action);
-    menu->addAction(d->navigate_back_action);
-    menu->addAction(d->navigate_forward_action);
-}
+    // Navigation
+    navigation_menu->addAction(d->navigate_up_action);
+    navigation_menu->addAction(d->navigate_back_action);
+    navigation_menu->addAction(d->navigate_forward_action);
 
-void ConsoleWidget::add_actions_to_view_menu(QMenu *menu) {
-    menu->addAction(d->set_results_to_icons_action);
-    menu->addAction(d->set_results_to_list_action);
-    menu->addAction(d->set_results_to_detail_action);
+    // View
+    view_menu->addAction(d->set_results_to_icons_action);
+    view_menu->addAction(d->set_results_to_list_action);
+    view_menu->addAction(d->set_results_to_detail_action);
 
-    menu->addSeparator();
+    view_menu->addSeparator();
 
-    menu->addAction(d->customize_columns_action);
+    view_menu->addAction(d->customize_columns_action);
 }
 
 const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {

@@ -798,19 +798,12 @@ void CentralWidget::update_description_bar() {
     console->set_description_bar_text(text);
 }
 
-void CentralWidget::add_actions_to_menus(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu) {
-    // Action
+void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu) {
     console_actions->add_to_menu(action_menu);
 
     action_menu->addSeparator();
 
-    console->add_actions_to_action_menu(action_menu);
-
-    // Navigation
-    console->add_actions_to_navigation_menu(navigation_menu);
-
-    // View
-    console->add_actions_to_view_menu(view_menu);
+    console->add_actions(action_menu, navigation_menu, view_menu);
 
     view_menu->addSeparator();
 
@@ -822,7 +815,6 @@ void CentralWidget::add_actions_to_menus(QMenu *action_menu, QMenu *navigation_m
     view_menu->addAction(dev_mode_action);
 #endif
 
-    // Preferences
     preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(toggle_console_tree_action);
     preferences_menu->addAction(toggle_description_bar_action);

@@ -124,15 +124,15 @@ FindResults::~FindResults() {
     settings_set_variant(SETTING_find_results_state, view_state);
 }
 
-void FindResults::add_actions_to_action_menu(QMenu *menu) {
-    object_actions->add_to_menu(menu);
+void FindResults::add_actions(QMenu *action_menu, QMenu *view_menu) {
+    object_actions->add_to_menu(action_menu);
 
-    menu->addSeparator();
+    action_menu->addSeparator();
 
-    menu->addAction(properties_action);
+    action_menu->addAction(properties_action);
 
     connect(
-        menu, &QMenu::aboutToShow,
+        action_menu, &QMenu::aboutToShow,
         this, &FindResults::update_actions_visibility);
 
     connect(
@@ -143,13 +143,11 @@ void FindResults::add_actions_to_action_menu(QMenu *menu) {
             if (index.isValid()) {
                 const QPoint global_pos = view->current_view()->mapToGlobal(pos);
 
-                menu->exec(global_pos);
+                action_menu->exec(global_pos);
             }
         });
-}
 
-void FindResults::add_actions_to_view_menu(QMenu *menu) {
-    menu->addAction(customize_columns_action);
+    view_menu->addAction(customize_columns_action);
 }
 
 void FindResults::clear() {

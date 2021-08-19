@@ -165,9 +165,7 @@ public:
 
     bool item_was_fetched(const QModelIndex &index) const;
 
-    void add_actions_to_action_menu(QMenu *menu);
-    void add_actions_to_navigation_menu(QMenu *menu);
-    void add_actions_to_view_menu(QMenu *menu);
+    void add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu);
 
     // These getters are only for showing/hiding these widgets
     QWidget *get_scope_view() const;

@@ -65,7 +65,7 @@ public:
     CentralWidget(AdInterface &ad);
     ~CentralWidget();
 
-    void add_actions_to_menus(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu);
+    void add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu);
 
 signals:
     void context_menu(const QPoint pos);

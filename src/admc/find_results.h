@@ -51,8 +51,7 @@ public:
     // NOTE: returned items need to be re-parented or deleted!
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
-    void add_actions_to_action_menu(QMenu *menu);
-    void add_actions_to_view_menu(QMenu *menu);
+    void add_actions(QMenu *action_menu, QMenu *view_menu);
 
 private slots:
     void properties();

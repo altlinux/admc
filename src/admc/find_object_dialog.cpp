@@ -46,8 +46,7 @@ FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString d
     layout->setMenuBar(menubar);
     layout->addWidget(find_widget);
 
-    find_widget->find_results->add_actions_to_action_menu(action_menu);
-    find_widget->find_results->add_actions_to_view_menu(view_menu);
+    find_widget->find_results->add_actions(action_menu, view_menu);
 
     settings_setup_dialog_geometry(SETTING_find_object_dialog_geometry, this);
 }

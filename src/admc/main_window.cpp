@@ -245,7 +245,7 @@ void MainWindow::connect_to_server() {
         auto central_widget = new CentralWidget(ad);
         setCentralWidget(central_widget);
 
-        central_widget->add_actions_to_menus(action_menu, navigation_menu, view_menu, preferences_menu);
+        central_widget->add_actions(action_menu, navigation_menu, view_menu, preferences_menu);
         
         connect_action->setEnabled(false);
     }
