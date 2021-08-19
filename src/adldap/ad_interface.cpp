@@ -1243,6 +1243,28 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     // Ex: "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
     const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
+    const QString main_dir = sysvol_path_to_smb(gPCFileSysPath);
+    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_head);
+
+    // After each error case we need to clean up whatever we
+    // have created successfully so far. Don't just use
+    // delete_gpo() because we want to delete partially in
+    // some error cases and that shouldn't print any error
+    // messages.
+    auto cleanup = [&]() {
+        const AdObject gpc_object = search_object(dn);
+        const bool gpc_exists = !gpc_object.is_empty();
+        if (gpc_exists) {
+            object_delete(dn);
+        }
+
+        struct stat filestat;
+        const int stat_result = smbc_stat(cstr(main_dir), &filestat);
+        const bool gpt_exists = (stat_result == 0);
+        if (gpt_exists) {
+            d->delete_gpt(main_dir);
+        }
+    };
 
     //
     // Create dirs and files for policy on sysvol
@@ -1250,10 +1272,11 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     // Create main dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString main_dir = sysvol_path_to_smb(gPCFileSysPath);
     const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0755);
     if (result_mkdir_main != 0) {
         error_message(tr("Failed to create policy main dir"));
+
+        cleanup();
 
         return false;
     }
@@ -1263,6 +1286,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     if (result_mkdir_machine != 0) {
         error_message(tr("Failed to create policy machine dir"));
 
+        cleanup();
+
         return false;
     }
 
@@ -1271,6 +1296,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     if (result_mkdir_user != 0) {
         error_message(tr("Failed to create policy user dir"));
 
+        cleanup();
+
         return false;
     }
 
@@ -1278,6 +1305,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     const int ini_file = smbc_open(cstr(ini_file_path), O_WRONLY | O_CREAT, 0644);
     if (ini_file < 0) {
         error_message(tr("Failed to open policy ini"));
+
+        cleanup();
 
         return false;
     }
@@ -1288,17 +1317,20 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     if (bytes_written < 0) {
         error_message(tr("Failed to write policy ini"));
 
+        cleanup();
+
         return false;
     }
 
     //
     // Create AD object for gpo
     //
-    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_head);
     dn_out = dn;
     const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
     if (!result_add) {
         error_message(tr("Failed to create object for GPO"));
+
+        cleanup();
 
         return false;
     }
@@ -1321,6 +1353,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
         if (!replace_success) {
             error_message(tr("Failed to set policy attribute"));
 
+            cleanup();
+
             return false;
         }
     }
@@ -1332,6 +1366,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     if (!result_add_user) {
         error_message(tr("Failed to create user folder object for GPO"));
 
+        cleanup();
+
         return false;
     }
 
@@ -1341,6 +1377,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_machine) {
         error_message(tr("Failed to create machine folder object for GPO"));
+
+        cleanup();
 
         return false;
     }
@@ -1557,7 +1595,7 @@ bool AdInterface::gpo_sync_perms(const QString &dn) {
 
         return false;
     }
-   
+
     // Get list of GPT contents
 
     // NOTE: order is important, have to set perms of parent
