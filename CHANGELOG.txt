@@ -2,6 +2,36 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.7.0 (Released 19-08-2021)
+-----------------------------------------------------------------------
+- Manual: Fixed manual not opening when app is installed
+  fresh. (#267)
+- Manual: Improved how help pages are selected. Can now
+  single-click to select and also select using arrow keys.
+- Policies: Fixed group policy tab not displaying policies
+  created on Windows. (#270)
+- Policies: Fixed incorrect case in gplink strings outputted
+  by the app. Changed to use the same case style as Windows.
+  (#271)
+- Policies: Added displaying of invalid GPO links in "Group
+  Policy" tab. Invalid links can be caused by slow
+  replication of recently created GPO's or delete GPO's or
+  incorrect deletiong of GPO's without unlinking. (#274)
+- Policies: Fixed deletion of policies not unlinking them as
+  well. (#273)
+- Policies: Fixed incorrect permissions of GPT of newly
+  created policies. (#269)
+- Policies: Fixed incorrect deletion of GPT's (group policy
+  files on the sysvol share). (#277)
+- Policies: Added a check for GPO permission mismatch. If
+  there's a mismatch, user is warned about it and offered to
+  sync permissions. (#281)
+- Policies: Added "Refresh" action to policy tree. (#279)
+- Properties: Added "Security" properties tab to all objects
+  that need it, not just users.
+- Misc: Added a toolbar. (#257)
+
+-----------------------------------------------------------------------
  VERSION 0.6.4 (Released 05-08-2021)
 -----------------------------------------------------------------------
 - Queries: Fixed query edit dialog not loading state
