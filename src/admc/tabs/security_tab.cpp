@@ -180,12 +180,12 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     trustee_model->removeRows(0, trustee_model->rowCount());
 
     // Add items to trustee model
-    const QList<QByteArray> trustee_list = ad_security_get_trustee_list_from_object(&object);
+    const QList<QByteArray> trustee_list = ad_security_get_trustee_list_from_object(object);
     add_trustees(trustee_list, ad);
 
     trustee_model->sort(0, Qt::AscendingOrder);
 
-    permission_state_map = ad_security_get_state_from_object(&object, g_adconfig);
+    permission_state_map = object.get_security_state(g_adconfig);
 
     original_permission_state_map = permission_state_map;
 

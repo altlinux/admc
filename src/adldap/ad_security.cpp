@@ -35,7 +35,6 @@ QByteArray dom_sid_to_bytes(const dom_sid &sid);
 QList<security_ace *> ad_security_get_dacl(security_descriptor *sd);
 QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
 QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
-QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig);
 
 const QList<QString> well_known_sid_list = {
     SID_WORLD_DOMAIN,
@@ -347,7 +346,7 @@ bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, c
 
         // Use original sd as base, only remaking the dacl
         const AdObject object = ad->search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
-        security_descriptor *sd = ad_security_get_sd(&object);
+        security_descriptor *sd = object.get_sd(tmp_ctx);
 
         // Generate new dacl
         const QList<security_ace *> dacl_qlist = [&]() {
@@ -442,22 +441,14 @@ bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, c
     return apply_success;
 }
 
-QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject *object) {
-    security_descriptor *sd = ad_security_get_sd(object);
+QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject &object) {
+    TALLOC_CTX *mem_ctx = talloc_new(NULL);
+
+    security_descriptor *sd = object.get_sd(mem_ctx);
 
     const QList<QByteArray> out = ad_security_get_trustee_list_from_sd(sd);
 
-    talloc_free(sd);
-
-    return out;
-}
-
-QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_object(const AdObject *object, AdConfig *adconfig) {
-    security_descriptor *sd = ad_security_get_sd(object);
-
-    const auto out = ad_security_get_state_from_sd(sd, adconfig);
-
-    talloc_free(sd);
+    talloc_free(mem_ctx);
 
     return out;
 }
@@ -466,17 +457,6 @@ QByteArray dom_sid_to_bytes(const dom_sid &sid) {
     const QByteArray bytes = QByteArray((char *) &sid, sizeof(struct dom_sid));
 
     return bytes;
-}
-
-security_descriptor *ad_security_get_sd(const AdObject *object) {
-    const QByteArray descriptor_bytes = object->get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-    DATA_BLOB blob = data_blob_const(descriptor_bytes.data(), descriptor_bytes.size());
-
-    security_descriptor *sd = talloc(NULL, struct security_descriptor);
-
-    ndr_pull_struct_blob(&blob, sd, sd, (ndr_pull_flags_fn_t) ndr_pull_security_descriptor);
-
-    return sd;
 }
 
 void ad_security_sort_dacl(security_descriptor *sd) {

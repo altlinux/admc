@@ -50,11 +50,11 @@ QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(cons
 QString ad_security_get_well_known_trustee_name(const QByteArray &trustee);
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee);
 bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg);
-QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject *object);
-QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_object(const AdObject *object, AdConfig *adconfig);
+QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject &object);
+QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig);
 
 // NOTE: have to talloc_free() returned sd
-security_descriptor *ad_security_get_sd(const AdObject *object);
+security_descriptor *ad_security_get_sd(const AdObject &object);
 
 void ad_security_sort_dacl(security_descriptor *sd);
 

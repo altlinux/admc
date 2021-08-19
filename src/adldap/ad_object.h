@@ -40,6 +40,8 @@
 
 class QDateTime;
 class AdConfig;
+struct security_descriptor;
+typedef void TALLOC_CTX;
 
 class AdObject {
 
@@ -81,6 +83,9 @@ public:
     QList<QString> get_split_upn() const;
     QString get_upn_prefix() const;
     QString get_upn_suffix() const;
+
+    security_descriptor *get_sd(TALLOC_CTX *mem_ctx) const;
+    QHash<QByteArray, QHash<AcePermission, PermissionState>> get_security_state(AdConfig *adconfig) const;
 
 private:
     QString dn;

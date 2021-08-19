@@ -80,7 +80,7 @@ enum AceMaskFormat {
 
 QList<QString> query_server_for_hosts(const char *dname);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
-QString get_gpt_sd_string(const AdObject* gpc_object, const AceMaskFormat format);
+QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format);
 
 AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
@@ -1084,7 +1084,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
     switch (option) {
         case AccountOption_CantChangePassword: {
             const AdObject object = search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
-            const auto old_security_state = ad_security_get_state_from_object(&object, d->adconfig);
+            const auto old_security_state = object.get_security_state(d->adconfig);
 
             const QByteArray self_trustee = sid_string_to_bytes(SID_NT_SELF);
 
@@ -1476,7 +1476,7 @@ bool AdInterface::check_gpo_perms(const QString &gpo) {
     const AdObject gpc_object = search_object(gpo);
 
     const QString gpc_sd = [&]() {
-        const QString out = get_gpt_sd_string(&gpc_object, AceMaskFormat_Hexadecimal);
+        const QString out = get_gpt_sd_string(gpc_object, AceMaskFormat_Hexadecimal);
 
         if (out.isEmpty()) {
             d->error_message(tr("Failed to check GPO permissions"), tr("Failed to generate GPT security descriptor"));
@@ -1528,7 +1528,7 @@ bool AdInterface::gpo_sync_perms(const QString &dn) {
     // First get GPC descriptor
     const AdObject gpc_object = search_object(dn);
     const QString name = gpc_object.get_string(ATTRIBUTE_DISPLAY_NAME);
-    const QString gpt_sd_string = get_gpt_sd_string(&gpc_object, AceMaskFormat_Decimal);
+    const QString gpt_sd_string = get_gpt_sd_string(gpc_object, AceMaskFormat_Decimal);
 
     const QString error_context = QString(tr("Failed to sync permissions of GPO \"%1\"")).arg(name);
 
@@ -1873,18 +1873,16 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
 // only need to use decimal format when making the string to
 // pass to smbc_setxattr(), otherwise you should use hex
 // format.
-QString get_gpt_sd_string(const AdObject *gpc_object, const AceMaskFormat format_enum) {
+QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format_enum) {
     TALLOC_CTX *mem_ctx = talloc_new(NULL);
 
-    security_descriptor *gpc_sd = ad_security_get_sd(gpc_object);
+    security_descriptor *gpc_sd = gpc_object.get_sd(mem_ctx);
 
     // Create sysvol descriptor from domain descriptor (not
     // one to one, some modifications are needed)
     struct security_descriptor *gpt_sd;
     const NTSTATUS create_sd_status = gp_create_gpt_security_descriptor(mem_ctx, gpc_sd, &gpt_sd);
     
-    talloc_free(gpc_sd);
-
     if (!NT_STATUS_IS_OK(create_sd_status)) {
         qDebug() << "Failed to create gpt sd";
         talloc_free(mem_ctx);
