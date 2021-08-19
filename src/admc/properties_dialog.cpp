@@ -170,10 +170,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         add_tab(new OrganizationTab(), tr("Organization"));
         add_tab(new TelephonesTab(), tr("Telephones"));
         add_tab(new ProfileTab(), tr("Profile"));
-
-        if (advanced_view_ON) {
-            add_tab(new SecurityTab(), tr("Security"));
-        }
     }
     if (object.is_class(CLASS_GROUP)) {
         add_tab(new MembersTab(), tr("Members"));
@@ -199,6 +195,11 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         add_tab(new DelegationTab(), tr("Delegation"));
         add_tab(new MemberOfTab(), tr("Member of"));
         add_tab(new ManagedByTab(), tr("Managed by"));
+    }
+
+    const bool need_security_tab = object.attributes().contains(ATTRIBUTE_SECURITY_DESCRIPTOR);
+    if (need_security_tab && advanced_view_ON) {
+        add_tab(new SecurityTab(), tr("Security"));
     }
 
     for (auto tab : tabs) {
