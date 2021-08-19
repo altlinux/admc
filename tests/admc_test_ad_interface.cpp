@@ -20,7 +20,7 @@
 
 #include "admc_test_ad_interface.h"
 
-#include "gplink.h"
+#include "samba/dom_sid.h"
 
 #include <QTest>
 
@@ -35,8 +35,7 @@ void ADMCTestAdInterface::cleanup() {
 
     if (!search_results.isEmpty()) {
         const QString dn = search_results.keys()[0];
-        const bool delete_success = ad.delete_gpo(dn);
-        QVERIFY(delete_success);
+        ad.delete_gpo(dn);
     }
 
     ADMCTest::cleanup();
@@ -50,7 +49,9 @@ void ADMCTestAdInterface::create_and_delete_gpo() {
     QVERIFY(!gpo_dn.isEmpty());
 
     // Check perms
-    const bool perms_are_ok = ad.check_gpo_perms(gpo_dn);
+    bool check_gpo_perms_ok = true;
+    const bool perms_are_ok = ad.check_gpo_perms(gpo_dn, &check_gpo_perms_ok);
+    QVERIFY(check_gpo_perms_ok);
     QVERIFY(perms_are_ok);
 
     // Create test ou
@@ -82,6 +83,43 @@ void ADMCTestAdInterface::create_and_delete_gpo() {
 
     const bool linked_after = ou_is_linked_to_gpo();
     QCOMPARE(linked_after, false);
+}
+
+void ADMCTestAdInterface::check_gpo_perms() {
+    QString gpc_dn;
+    const bool create_success = ad.create_gpo(TEST_GPO, gpc_dn);
+    QVERIFY(create_success);
+    QVERIFY(!gpc_dn.isEmpty());
+
+    bool check_gpo_perms_ok_1 = true;
+    const bool perms_before = ad.check_gpo_perms(gpc_dn, &check_gpo_perms_ok_1);
+    QVERIFY(check_gpo_perms_ok_1);
+    QCOMPARE(perms_before, true);
+
+    // Change GPC perms so they don't match with GPT perms
+    {
+        const AdObject gpc_object = ad.search_object(gpc_dn);
+        auto permission_state_map = gpc_object.get_security_state(ad.adconfig());
+        const QByteArray trustee = []() {
+            // NOTE: S-1-1-0 is "WORLD"
+            const char *sid_string = "S-1-1-0";
+            dom_sid sid;
+            dom_sid_parse(sid_string, &sid);
+            const QByteArray bytes = dom_sid_to_bytes(sid);
+
+            return bytes;
+        }();
+        permission_state_map = ad_security_modify(permission_state_map, trustee, AcePermission_FullControl, PermissionState_Allowed);
+        attribute_replace_security_descriptor(&ad, gpc_dn, permission_state_map);
+    }
+
+    bool check_gpo_perms_ok_2 = true;
+    const bool perms_after = ad.check_gpo_perms(gpc_dn, &check_gpo_perms_ok_2);
+    QVERIFY(check_gpo_perms_ok_2);
+    QCOMPARE(perms_after, false);
+
+    const bool delete_success = ad.delete_gpo(gpc_dn);
+    QVERIFY(delete_success);
 }
 
 void ADMCTestAdInterface::object_add() {

@@ -30,6 +30,7 @@ private slots:
     void cleanup() override;
     
     void create_and_delete_gpo();
+    void check_gpo_perms();
 
     void object_add();
     void object_delete();

@@ -36,6 +36,7 @@ class AdInterface;
 class AdConfig;
 class AdObject;
 struct security_descriptor;
+struct dom_sid;
 
 extern const QList<QString> well_known_sid_list;
 extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
@@ -57,5 +58,7 @@ QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_f
 security_descriptor *ad_security_get_sd(const AdObject &object);
 
 void ad_security_sort_dacl(security_descriptor *sd);
+
+QByteArray dom_sid_to_bytes(const dom_sid &sid);
 
 #endif /* AD_SECURITY_H */

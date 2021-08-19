@@ -31,7 +31,6 @@
 
 #include <QDebug>
 
-QByteArray dom_sid_to_bytes(const dom_sid &sid);
 QList<security_ace *> ad_security_get_dacl(security_descriptor *sd);
 QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
 QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
