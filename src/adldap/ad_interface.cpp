@@ -1246,9 +1246,9 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }();
 
     // Ex: "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
-    const QString main_dir = sysvol_path_to_smb(gPCFileSysPath);
-    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_head);
+    const QString filesys_path = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
+    const QString gpt_path = filesys_path_to_smb_path(filesys_path);
+    const QString gpc_dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_head);
 
     // After each error case we need to clean up whatever we
     // have created successfully so far. Don't just use
@@ -1256,59 +1256,59 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     // some error cases and that shouldn't print any error
     // messages.
     auto cleanup = [&]() {
-        const AdObject gpc_object = search_object(dn);
+        const AdObject gpc_object = search_object(gpc_dn);
         const bool gpc_exists = !gpc_object.is_empty();
         if (gpc_exists) {
-            object_delete(dn);
+            object_delete(gpc_dn);
         }
 
         struct stat filestat;
-        const int stat_result = smbc_stat(cstr(main_dir), &filestat);
+        const int stat_result = smbc_stat(cstr(gpt_path), &filestat);
         const bool gpt_exists = (stat_result == 0);
         if (gpt_exists) {
-            d->delete_gpt(main_dir);
+            d->delete_gpt(gpt_path);
         }
     };
 
     //
-    // Create dirs and files for policy on sysvol
+    // Create GPT
     //
 
-    // Create main dir
+    // Create root dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0755);
-    if (result_mkdir_main != 0) {
-        error_message(tr("Failed to create policy main dir"));
+    const int result_mkdir_gpt = smbc_mkdir(cstr(gpt_path), 0755);
+    if (result_mkdir_gpt != 0) {
+        error_message(tr("Failed to create GPT root dir"));
 
         cleanup();
 
         return false;
     }
 
-    const QString machine_dir = main_dir + "/Machine";
-    const int result_mkdir_machine = smbc_mkdir(cstr(machine_dir), 0755);
+    const QString gpt_machine_path = gpt_path + "/Machine";
+    const int result_mkdir_machine = smbc_mkdir(cstr(gpt_machine_path), 0755);
     if (result_mkdir_machine != 0) {
-        error_message(tr("Failed to create policy machine dir"));
+        error_message(tr("Failed to create GPT machine dir"));
 
         cleanup();
 
         return false;
     }
 
-    const QString user_dir = main_dir + "/User";
-    const int result_mkdir_user = smbc_mkdir(cstr(user_dir), 0755);
+    const QString gpt_user_path = gpt_path + "/User";
+    const int result_mkdir_user = smbc_mkdir(cstr(gpt_user_path), 0755);
     if (result_mkdir_user != 0) {
-        error_message(tr("Failed to create policy user dir"));
+        error_message(tr("Failed to create GPT user dir"));
 
         cleanup();
 
         return false;
     }
 
-    const QString ini_file_path = main_dir + "/GPT.INI";
-    const int ini_file = smbc_open(cstr(ini_file_path), O_WRONLY | O_CREAT, 0644);
+    const QString gpt_ini_path = gpt_path + "/GPT.INI";
+    const int ini_file = smbc_open(cstr(gpt_ini_path), O_WRONLY | O_CREAT, 0644);
     if (ini_file < 0) {
-        error_message(tr("Failed to open policy ini"));
+        error_message(tr("Failed to open GPT ini file"));
 
         cleanup();
 
@@ -1319,7 +1319,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     const int bytes_written = smbc_write(ini_file, ini_contents, strlen(ini_contents));
     smbc_close(ini_file);
     if (bytes_written < 0) {
-        error_message(tr("Failed to write policy ini"));
+        error_message(tr("Failed to write GPT ini file"));
 
         cleanup();
 
@@ -1329,10 +1329,9 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     //
     // Create AD object for gpo
     //
-    dn_out = dn;
-    const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
+    const bool result_add = object_add(gpc_dn, CLASS_GP_CONTAINER);
     if (!result_add) {
-        error_message(tr("Failed to create object for GPO"));
+        error_message(tr("Failed to create GPC object"));
 
         cleanup();
 
@@ -1341,7 +1340,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     const QHash<QString, QString> attribute_value_map = {
         {ATTRIBUTE_DISPLAY_NAME, display_name},
-        {ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath},
+        {ATTRIBUTE_GPC_FILE_SYS_PATH, filesys_path},
         // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
         {ATTRIBUTE_FLAGS, "1"},
         {ATTRIBUTE_VERSION_NUMBER, "0"},
@@ -1352,10 +1351,10 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     for (const QString &attribute : attribute_value_map.keys()) {
         const QString value = attribute_value_map[attribute];
 
-        const bool replace_success = attribute_replace_string(dn, attribute, value);
+        const bool replace_success = attribute_replace_string(gpc_dn, attribute, value);
 
         if (!replace_success) {
-            error_message(tr("Failed to set policy attribute"));
+            error_message(QString(tr("Failed to set GPC attribute %1")).arg(attribute));
 
             cleanup();
 
@@ -1364,9 +1363,9 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }
 
     // User object
-    const QString user_dn = "CN=User," + dn;
+    const QString user_dn = "CN=User," + gpc_dn;
     const bool result_add_user = object_add(user_dn, CLASS_CONTAINER);
-    attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
+    attribute_replace_string(gpc_dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_user) {
         error_message(tr("Failed to create user folder object for GPO"));
 
@@ -1376,9 +1375,9 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }
 
     // Machine object
-    const QString machine_dn = "CN=Machine," + dn;
+    const QString machine_dn = "CN=Machine," + gpc_dn;
     const bool result_add_machine = object_add(machine_dn, CLASS_CONTAINER);
-    attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
+    attribute_replace_string(gpc_dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_machine) {
         error_message(tr("Failed to create machine folder object for GPO"));
 
@@ -1387,12 +1386,14 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
         return false;
     }
 
-    const bool sync_perms_success = gpo_sync_perms(dn);
+    const bool sync_perms_success = gpo_sync_perms(gpc_dn);
 
     if (!sync_perms_success) {
         // NOTE: don't fail if failed to sync perms, user
         // can retry it later
     }
+
+    dn_out = gpc_dn;
 
     return true;
 }
@@ -1472,7 +1473,7 @@ bool AdInterface::delete_gpo(const QString &dn) {
     const QString filesys_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
 
     const QString name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
-    const QString smb_path = sysvol_path_to_smb(filesys_path);
+    const QString smb_path = filesys_path_to_smb_path(filesys_path);
 
     const bool delete_gpc_success = object_delete(dn);
     if (!delete_gpc_success) {
@@ -1515,8 +1516,8 @@ bool AdInterface::delete_gpo(const QString &dn) {
     return total_success;
 }
 
-QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
-    QString out = sysvol_path;
+QString AdInterface::filesys_path_to_smb_path(const QString &filesys_path) const {
+    QString out = filesys_path;
 
     // NOTE: sysvol paths created by windows have this weird
     // capitalization and smbclient does NOT like it
@@ -1557,7 +1558,7 @@ bool AdInterface::check_gpo_perms(const QString &gpo, bool *ok) {
     const QString gpt_sd = [&]() {
         char out_cstr[2000];
         const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-        const QString smb_path = sysvol_path_to_smb(filesys_path);
+        const QString smb_path = filesys_path_to_smb_path(filesys_path);
         const int getxattr_result = smbc_getxattr(cstr(smb_path), "system.nt_sec_desc.*", out_cstr, sizeof(out_cstr));
         // NOTE: for some reason getxattr() returns positive
         // non-zero return code on success, even though f-n
@@ -1617,7 +1618,7 @@ bool AdInterface::gpo_sync_perms(const QString &dn) {
     // folders before their contents, otherwise fails to
     // set! Default gpo_get_gpt_contents() order is good.
     const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-    const QString smb_path = sysvol_path_to_smb(filesys_path);
+    const QString smb_path = filesys_path_to_smb_path(filesys_path);
     bool ok = true;
     const QList<QString> path_list = d->gpo_get_gpt_contents(smb_path, &ok);
     if (!ok || path_list.isEmpty()) {
@@ -1943,8 +1944,6 @@ QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format
 
     security_descriptor *gpc_sd = gpc_object.get_sd(mem_ctx);
 
-    // Create sysvol descriptor from domain descriptor (not
-    // one to one, some modifications are needed)
     struct security_descriptor *gpt_sd;
     const NTSTATUS create_sd_status = gp_create_gpt_security_descriptor(mem_ctx, gpc_sd, &gpt_sd);
     
