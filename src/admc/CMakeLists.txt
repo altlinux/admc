@@ -144,6 +144,7 @@ set(ADMC_SOURCES
     edits/delegation_edit.cpp
     edits/logon_hours_edit.cpp
     edits/logon_computers_edit.cpp
+    edits/protect_deletion_edit.cpp
 
     console_widget/console_widget.cpp
     console_widget/scope_proxy_model.cpp

@@ -53,6 +53,8 @@ QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee)
 bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg);
 QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject &object);
 QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig);
+bool ad_security_get_protected_against_deletion(const AdObject &object, AdConfig *config);
+bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString dn, AdConfig *config, const bool enabled);
 
 // NOTE: have to talloc_free() returned sd
 security_descriptor *ad_security_get_sd(const AdObject &object);
@@ -60,5 +62,6 @@ security_descriptor *ad_security_get_sd(const AdObject &object);
 void ad_security_sort_dacl(security_descriptor *sd);
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
+QByteArray dom_sid_string_to_bytes(const dom_sid &sid);
 
 #endif /* AD_SECURITY_H */

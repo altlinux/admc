@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "edits/datetime_edit.h"
 #include "edits/string_edit.h"
+#include "edits/protect_deletion_edit.h"
 
 #include <QFormLayout>
 
@@ -37,6 +38,8 @@ ObjectTab::ObjectTab() {
     new StringEdit(ATTRIBUTE_USN_CHANGED, "", &edits, this);
 
     edits_set_read_only(edits, true);
+
+    new ProtectDeletionEdit(&edits, this);
 
     edits_connect_to_tab(edits, this);
 

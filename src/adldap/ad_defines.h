@@ -244,6 +244,8 @@ enum AcePermission {
     AcePermission_FullControl,
     AcePermission_Read,
     AcePermission_Write,
+    AcePermission_Delete,
+    AcePermission_DeleteSubtree,
     AcePermission_CreateChild,
     AcePermission_DeleteChild,
     AcePermission_AllowedToAuthenticate,
