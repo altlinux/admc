@@ -27,6 +27,7 @@
 #include "edits/password_edit.h"
 #include "edits/string_edit.h"
 #include "edits/upn_edit.h"
+#include "edits/protect_deletion_edit.h"
 #include "globals.h"
 #include "settings.h"
 #include "status.h"
@@ -188,6 +189,9 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
             });
     } else if (object_class == CLASS_OU) {
         edits_layout->addRow(tr("Name:"), name_edit);
+        
+        auto protect_deletion_edit = new ProtectDeletionEdit(&all_edits, this);
+        protect_deletion_edit->add_to_layout(edits_layout);
     } else {
         qWarning() << "Class" << object_class << "is unsupported by create dialog";
         return;
