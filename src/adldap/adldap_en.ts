@@ -89,48 +89,48 @@
 <context>
     <name>AdInterface</name>
     <message>
-        <location filename="ad_interface.cpp" line="105"/>
-        <location filename="ad_interface.cpp" line="114"/>
+        <location filename="ad_interface.cpp" line="115"/>
+        <location filename="ad_interface.cpp" line="124"/>
         <source>Failed to connect</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="105"/>
+        <location filename="ad_interface.cpp" line="115"/>
         <source>Failed to get a domain</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="119"/>
+        <location filename="ad_interface.cpp" line="129"/>
         <source>Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="128"/>
+        <location filename="ad_interface.cpp" line="138"/>
         <source>Failed to load DC defined in settings. Switching to default DC</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="165"/>
+        <location filename="ad_interface.cpp" line="175"/>
         <source>Failed to initialize LDAP library</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="171"/>
+        <location filename="ad_interface.cpp" line="181"/>
         <source>Failed to set ldap option %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="236"/>
+        <location filename="ad_interface.cpp" line="246"/>
         <source>Failed to connect to server. Check your connection and make sure you have initialized your credentials using kinit.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="249"/>
+        <location filename="ad_interface.cpp" line="263"/>
         <source>Failed to initialize SMB context</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="513"/>
+        <location filename="ad_interface.cpp" line="527"/>
         <source>Search:
 	filter = &quot;%1&quot;
 	attributes = %2
@@ -139,284 +139,334 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="645"/>
+        <location filename="ad_interface.cpp" line="659"/>
         <source>Failed to change attribute %1 of object %2 from &quot;%3&quot; to &quot;%4&quot;.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="692"/>
+        <location filename="ad_interface.cpp" line="706"/>
         <source>Value &quot;%1&quot; was added for attribute %2 of object %3.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="698"/>
+        <location filename="ad_interface.cpp" line="712"/>
         <source>Failed to add value &quot;%1&quot; for attribute %2 of object %3.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="732"/>
+        <location filename="ad_interface.cpp" line="746"/>
         <source>Value &quot;%1&quot; for attribute %2 of object %3 was deleted.</source>
         <oldsource>Value &quot;%1&quot; for attribute %2 of object %3 was deleted</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="783"/>
+        <location filename="ad_interface.cpp" line="797"/>
         <source>Failed to create object %1.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="802"/>
+        <location filename="ad_interface.cpp" line="815"/>
         <source>Failed to delete object %1.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="831"/>
+        <location filename="ad_interface.cpp" line="841"/>
         <source>Object %1 was deleted.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="854"/>
+        <location filename="ad_interface.cpp" line="864"/>
         <source>Failed to move object %1 to %2.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="874"/>
+        <location filename="ad_interface.cpp" line="884"/>
         <source>Failed to rename object %1 to %2.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="894"/>
+        <location filename="ad_interface.cpp" line="904"/>
         <source>Failed to add object %1 to group %2.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="914"/>
+        <location filename="ad_interface.cpp" line="924"/>
         <source>Failed to remove object %1 from group %2.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="961"/>
+        <location filename="ad_interface.cpp" line="971"/>
         <source>Failed to change group scope for %1 to &quot;%2&quot;.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="987"/>
+        <location filename="ad_interface.cpp" line="997"/>
         <source>Failed to change group type for %1 to &quot;%2&quot;.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1017"/>
+        <location filename="ad_interface.cpp" line="1027"/>
         <source>Failed to change primary group for user %1 to %2.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1131"/>
+        <location filename="ad_interface.cpp" line="1141"/>
         <source>Object %1 has been disabled.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1133"/>
+        <location filename="ad_interface.cpp" line="1143"/>
         <source>Object %1 has been enabled.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1140"/>
+        <location filename="ad_interface.cpp" line="1150"/>
         <source>Account option &quot;%1&quot; was turned ON for object %2.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1142"/>
+        <location filename="ad_interface.cpp" line="1152"/>
         <source>Account option &quot;%1&quot; was turned OFF for object %2.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1156"/>
+        <location filename="ad_interface.cpp" line="1166"/>
         <source>Failed to disable object %1.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1158"/>
+        <location filename="ad_interface.cpp" line="1168"/>
         <source>Failed to enable object %1.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1165"/>
+        <location filename="ad_interface.cpp" line="1175"/>
         <source>Failed to turn ON account option &quot;%1&quot; for object %2.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1167"/>
+        <location filename="ad_interface.cpp" line="1177"/>
         <source>Failed to turn OFF account option &quot;%1&quot; for object %2.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1189"/>
+        <location filename="ad_interface.cpp" line="1199"/>
         <source>Failed to unlock user %1.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1204"/>
+        <location filename="ad_interface.cpp" line="1214"/>
         <source>Computer &quot;%1&quot; was reset.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1208"/>
+        <location filename="ad_interface.cpp" line="1218"/>
         <source>Failed to reset computer %1.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1218"/>
+        <location filename="ad_interface.cpp" line="1228"/>
         <source>Failed to create GPO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1247"/>
+        <location filename="ad_interface.cpp" line="1281"/>
         <source>Failed to create policy main dir</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1255"/>
+        <location filename="ad_interface.cpp" line="1291"/>
         <source>Failed to create policy machine dir</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1263"/>
+        <location filename="ad_interface.cpp" line="1301"/>
         <source>Failed to create policy user dir</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1274"/>
+        <location filename="ad_interface.cpp" line="1311"/>
+        <source>Failed to open policy ini</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1322"/>
         <source>Failed to write policy ini</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1286"/>
+        <location filename="ad_interface.cpp" line="1335"/>
         <source>Failed to create object for GPO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1305"/>
+        <location filename="ad_interface.cpp" line="1358"/>
+        <source>Failed to set policy attribute</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1371"/>
         <source>Failed to create user folder object for GPO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1315"/>
+        <location filename="ad_interface.cpp" line="1383"/>
         <source>Failed to create machine folder object for GPO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1366"/>
-        <source>Failed to create gpo sd</source>
+        <location filename="ad_interface.cpp" line="1479"/>
+        <source>Failed to delete GPC.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1400"/>
-        <source>Failed to set gpo sd</source>
+        <location filename="ad_interface.cpp" line="1484"/>
+        <source>Failed to delete GPT.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1422"/>
-        <source>Failed to delete GPO on sysvol</source>
+        <location filename="ad_interface.cpp" line="1505"/>
+        <source>Group policy %1 was deleted.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1429"/>
-        <source>Failed to delete GPO</source>
+        <location filename="ad_interface.cpp" line="1509"/>
+        <source>Errors happened while trying to delete policy %1.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1429"/>
-        <source>Failed to delete the object on domain</source>
+        <location filename="ad_interface.cpp" line="1511"/>
+        <source>Failed to delete policy %1.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="641"/>
+        <location filename="ad_interface.cpp" line="1543"/>
+        <source>Failed to check permissions for GPO &quot;%1&quot;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1549"/>
+        <source>Failed to get GPT security descriptor</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1566"/>
+        <source>Failed to get GPT security descriptor, %1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1606"/>
+        <source>Failed to sync permissions of GPO &quot;%1&quot;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1609"/>
+        <source>Failed to generate GPT security descriptor</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1624"/>
+        <source>Failed to read GPT contents of &quot;%1&quot;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1632"/>
+        <source>Failed to set permissions, %1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1639"/>
+        <source>Synced permissions of GPO &quot;%1&quot;.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="655"/>
         <source>Attribute %1 of object %2 was changed from &quot;%3&quot; to &quot;%4&quot;.</source>
         <oldsource>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="738"/>
+        <location filename="ad_interface.cpp" line="752"/>
         <source>Failed to delete value &quot;%1&quot; for attribute %2 of object %3.</source>
         <oldsource>Failed to delete value &quot;%1&quot; for attribute &quot;%2&quot; of object &quot;%3&quot;.</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="779"/>
+        <location filename="ad_interface.cpp" line="793"/>
         <source>Object %1 was created.</source>
         <oldsource>Failed to create object &quot;%1&quot;</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="810"/>
+        <location filename="ad_interface.cpp" line="820"/>
         <source>LDAP Operation error - Failed to allocate tree delete control</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="818"/>
+        <location filename="ad_interface.cpp" line="828"/>
         <source>LDAP Operation error - Failed to create tree delete control</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="850"/>
+        <location filename="ad_interface.cpp" line="860"/>
         <source>Object %1 was moved to %2.</source>
         <oldsource>Failed to move object &quot;%1&quot; to &quot;%2&quot;</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="870"/>
+        <location filename="ad_interface.cpp" line="880"/>
         <source>Object %1 was renamed to %2.</source>
         <oldsource>Failed to rename object &quot;%1&quot; to &quot;%2&quot;</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="890"/>
+        <location filename="ad_interface.cpp" line="900"/>
         <source>Object %1 was added to group %2.</source>
         <oldsource>Failed to add user &quot;%1&quot; to group &quot;%2&quot;</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="910"/>
+        <location filename="ad_interface.cpp" line="920"/>
         <source>Object %1 was removed from group %2.</source>
         <oldsource>Failed to remove user &quot;%1&quot; from group &quot;%2&quot;</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="957"/>
+        <location filename="ad_interface.cpp" line="967"/>
         <source>Group scope for %1 was changed to &quot;%2&quot;.</source>
         <oldsource>Group scope for %1 to &quot;%2&quot;.</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="983"/>
+        <location filename="ad_interface.cpp" line="993"/>
         <source>Group type for %1 was changed to &quot;%2&quot;.</source>
         <oldsource>Failed to set type for group &quot;%1&quot; to &quot;%2&quot;</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1013"/>
+        <location filename="ad_interface.cpp" line="1023"/>
         <source>Primary group for object %1 was changed to %2.</source>
         <oldsource>Failed to set primary group for user &quot;%1&quot; to &quot;%2&quot;</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1046"/>
+        <location filename="ad_interface.cpp" line="1056"/>
         <source>Password for object %1 was changed.</source>
         <oldsource>Failed to set password for user &quot;%1&quot;</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1050"/>
+        <location filename="ad_interface.cpp" line="1060"/>
         <source>Failed to change password for object %1.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1055"/>
+        <location filename="ad_interface.cpp" line="1065"/>
         <source>Password doesn&apos;t match rules</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1185"/>
+        <location filename="ad_interface.cpp" line="1195"/>
         <source>User &quot;%1&quot; was unlocked.</source>
         <oldsource>Failed to unlock user &quot;%1&quot;</oldsource>
         <translation></translation>
@@ -425,33 +475,63 @@
 <context>
     <name>AdInterfacePrivate</name>
     <message>
-        <location filename="ad_interface.cpp" line="1472"/>
+        <location filename="ad_interface.cpp" line="1408"/>
+        <source>Failed to get contents of GPT &quot;%1&quot;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1418"/>
+        <source>Failed to open dir</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1454"/>
+        <source>Failed to read dir</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1660"/>
         <source>. Error: &quot;%1&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1492"/>
+        <location filename="ad_interface.cpp" line="1680"/>
         <source>No such object</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1493"/>
+        <location filename="ad_interface.cpp" line="1681"/>
         <source>Constraint violation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1494"/>
+        <location filename="ad_interface.cpp" line="1682"/>
         <source>Server is unwilling to perform</source>
         <translation>Server is unwilling to perform</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1495"/>
+        <location filename="ad_interface.cpp" line="1683"/>
         <source>Already exists</source>
         <translation>Object already exists</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1499"/>
+        <location filename="ad_interface.cpp" line="1687"/>
         <source>Server error: %1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1721"/>
+        <source>Failed to delete GPT folder %1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1729"/>
+        <source>Failed to delete GPT file %1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1743"/>
+        <source>Failed to get filestat for &quot;%1&quot;</source>
         <translation></translation>
     </message>
 </context>
