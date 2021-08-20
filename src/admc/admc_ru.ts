@@ -581,34 +581,34 @@
 <context>
     <name>CreateObjectDialog</name>
     <message>
-        <location filename="create_object_dialog.cpp" line="65"/>
+        <location filename="create_object_dialog.cpp" line="66"/>
         <source>Create Object - %1</source>
         <translation>Создать объект - %1</translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="107"/>
+        <location filename="create_object_dialog.cpp" line="108"/>
         <source>Full name:</source>
         <translation>Полное имя:</translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="164"/>
-        <location filename="create_object_dialog.cpp" line="179"/>
-        <location filename="create_object_dialog.cpp" line="190"/>
+        <location filename="create_object_dialog.cpp" line="165"/>
+        <location filename="create_object_dialog.cpp" line="180"/>
+        <location filename="create_object_dialog.cpp" line="191"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="197"/>
+        <location filename="create_object_dialog.cpp" line="202"/>
         <source>Create</source>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="251"/>
+        <location filename="create_object_dialog.cpp" line="256"/>
         <source>Failed to create object %1</source>
         <translation>Не удалось создать объект %1</translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="274"/>
+        <location filename="create_object_dialog.cpp" line="279"/>
         <source>Object %1 was created</source>
         <translation>Объект %1 был создан</translation>
     </message>
@@ -1743,6 +1743,14 @@
     </message>
 </context>
 <context>
+    <name>ProtectDeletionEdit</name>
+    <message>
+        <location filename="edits/protect_deletion_edit.cpp" line="36"/>
+        <source>Protect against deletion</source>
+        <translation>Защитить от удаления</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="utils.cpp" line="113"/>
@@ -1826,141 +1834,151 @@
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="50"/>
+        <source>Delete</source>
+        <translation>Удалить</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="51"/>
+        <source>Delete subtree</source>
+        <translation>Удалить под-дерево</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="52"/>
         <source>Create child</source>
         <translation>Создать детей</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="51"/>
+        <location filename="tabs/security_tab.cpp" line="53"/>
         <source>Delete child</source>
         <translation>Удалить детей</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="52"/>
+        <location filename="tabs/security_tab.cpp" line="54"/>
         <source>Allowed to authenticate</source>
         <translation>Разрешено аутентифицировать</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="53"/>
+        <location filename="tabs/security_tab.cpp" line="55"/>
         <source>Change password</source>
         <translation>Изменить пароль</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="54"/>
+        <location filename="tabs/security_tab.cpp" line="56"/>
         <source>Receive as</source>
         <translation>Получить как</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="55"/>
+        <location filename="tabs/security_tab.cpp" line="57"/>
         <source>Reset password</source>
         <translation>Сбросить пароль</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="56"/>
+        <location filename="tabs/security_tab.cpp" line="58"/>
         <source>Send as</source>
         <translation>Отправить как</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="57"/>
+        <location filename="tabs/security_tab.cpp" line="59"/>
         <source>Read Account restrictions</source>
         <translation>Читать ограничения учетной записи</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="58"/>
+        <location filename="tabs/security_tab.cpp" line="60"/>
         <source>Write Account restrictions</source>
         <translation>Писать ограничения учетной записи</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="59"/>
+        <location filename="tabs/security_tab.cpp" line="61"/>
         <source>Read general info</source>
         <translation>Читать общую информацию</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="60"/>
+        <location filename="tabs/security_tab.cpp" line="62"/>
         <source>Write general info</source>
         <translation>Писать общую информацию</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="61"/>
+        <location filename="tabs/security_tab.cpp" line="63"/>
         <source>Read group membership</source>
         <translation>Читать участие в группе</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="62"/>
+        <location filename="tabs/security_tab.cpp" line="64"/>
         <source>Read logon info</source>
         <translation>Читать информацию о входе в систему</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="63"/>
+        <location filename="tabs/security_tab.cpp" line="65"/>
         <source>Write logon info</source>
         <translation>Писать информацию о входе в систему</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="64"/>
+        <location filename="tabs/security_tab.cpp" line="66"/>
         <source>Read personal info</source>
         <translation>Писать персональную информацию</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="65"/>
+        <location filename="tabs/security_tab.cpp" line="67"/>
         <source>Write personal info</source>
         <translation>Читать персональную информацию</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="66"/>
+        <location filename="tabs/security_tab.cpp" line="68"/>
         <source>Read phone and mail options</source>
         <translation>Читать опции телефонов и почты</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="67"/>
+        <location filename="tabs/security_tab.cpp" line="69"/>
         <source>Write phone and mail options</source>
         <translation>Писать опции телефонов и почты</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="68"/>
+        <location filename="tabs/security_tab.cpp" line="70"/>
         <source>Read private info</source>
         <translation>Читать приватную информацию</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="69"/>
+        <location filename="tabs/security_tab.cpp" line="71"/>
         <source>Write private info</source>
         <translation>Писать приватную информацию</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="70"/>
+        <location filename="tabs/security_tab.cpp" line="72"/>
         <source>Read public info</source>
         <translation>Читать публичную информацию</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="71"/>
+        <location filename="tabs/security_tab.cpp" line="73"/>
         <source>Write public info</source>
         <translation>Писать публичную информацию</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="72"/>
+        <location filename="tabs/security_tab.cpp" line="74"/>
         <source>Read remote access info</source>
         <translation>Читать информацию удаленного доступа</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="73"/>
+        <location filename="tabs/security_tab.cpp" line="75"/>
         <source>Write remote access info</source>
         <translation>Писать информацию удаленного доступа</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="74"/>
+        <location filename="tabs/security_tab.cpp" line="76"/>
         <source>Read terminal server license server</source>
         <translation>Читать сервер терминалов и сервер лицензий</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="75"/>
+        <location filename="tabs/security_tab.cpp" line="77"/>
         <source>Write terminal server license server</source>
         <translation>Писать сервер терминалов и сервер лицензий</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="76"/>
+        <location filename="tabs/security_tab.cpp" line="78"/>
         <source>Read web info</source>
         <translation>Читать веб-информацию</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="77"/>
+        <location filename="tabs/security_tab.cpp" line="79"/>
         <source>Write web info</source>
         <translation>Писать веб-информацию</translation>
     </message>
@@ -1968,52 +1986,52 @@
 <context>
     <name>SecurityTab</name>
     <message>
-        <location filename="tabs/security_tab.cpp" line="94"/>
+        <location filename="tabs/security_tab.cpp" line="96"/>
         <source>Add...</source>
         <translation>Добавить...</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="95"/>
+        <location filename="tabs/security_tab.cpp" line="97"/>
         <source>Add well-known trustee...</source>
         <translation>Добавить известного доверенного...</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="96"/>
+        <location filename="tabs/security_tab.cpp" line="98"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="101"/>
+        <location filename="tabs/security_tab.cpp" line="103"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="102"/>
+        <location filename="tabs/security_tab.cpp" line="104"/>
         <source>Allowed</source>
         <translation>Разрешено</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="103"/>
+        <location filename="tabs/security_tab.cpp" line="105"/>
         <source>Denied</source>
         <translation>Запрещено</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="209"/>
+        <location filename="tabs/security_tab.cpp" line="211"/>
         <source>Permissions for %1</source>
         <translation>Права для %1</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="303"/>
+        <location filename="tabs/security_tab.cpp" line="305"/>
         <source>Add Trustee</source>
         <translation>Добавить доверенного</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="451"/>
+        <location filename="tabs/security_tab.cpp" line="453"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="451"/>
+        <location filename="tabs/security_tab.cpp" line="453"/>
         <source>Failed to add some trustee&apos;s because they are already in the list.</source>
         <translation>Не удалось добавить некоторых доверенных лиц, потому что они уже есть в списке.</translation>
     </message>
@@ -2164,7 +2182,7 @@
 <context>
     <name>SelectWellKnownTrusteeDialog</name>
     <message>
-        <location filename="tabs/security_tab.cpp" line="458"/>
+        <location filename="tabs/security_tab.cpp" line="460"/>
         <source>Select Well-Known Trustees</source>
         <translation>Выбрать известного доверенного</translation>
     </message>

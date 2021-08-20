@@ -579,34 +579,34 @@
 <context>
     <name>CreateObjectDialog</name>
     <message>
-        <location filename="create_object_dialog.cpp" line="65"/>
+        <location filename="create_object_dialog.cpp" line="66"/>
         <source>Create Object - %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="107"/>
+        <location filename="create_object_dialog.cpp" line="108"/>
         <source>Full name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="164"/>
-        <location filename="create_object_dialog.cpp" line="179"/>
-        <location filename="create_object_dialog.cpp" line="190"/>
+        <location filename="create_object_dialog.cpp" line="165"/>
+        <location filename="create_object_dialog.cpp" line="180"/>
+        <location filename="create_object_dialog.cpp" line="191"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="197"/>
+        <location filename="create_object_dialog.cpp" line="202"/>
         <source>Create</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="251"/>
+        <location filename="create_object_dialog.cpp" line="256"/>
         <source>Failed to create object %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="274"/>
+        <location filename="create_object_dialog.cpp" line="279"/>
         <source>Object %1 was created</source>
         <translation></translation>
     </message>
@@ -1740,6 +1740,14 @@
     </message>
 </context>
 <context>
+    <name>ProtectDeletionEdit</name>
+    <message>
+        <location filename="edits/protect_deletion_edit.cpp" line="36"/>
+        <source>Protect against deletion</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="utils.cpp" line="113"/>
@@ -1823,141 +1831,151 @@
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="50"/>
-        <source>Create child</source>
+        <source>Delete</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="51"/>
-        <source>Delete child</source>
+        <source>Delete subtree</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="52"/>
-        <source>Allowed to authenticate</source>
+        <source>Create child</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="53"/>
-        <source>Change password</source>
+        <source>Delete child</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="54"/>
-        <source>Receive as</source>
+        <source>Allowed to authenticate</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="55"/>
-        <source>Reset password</source>
+        <source>Change password</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="56"/>
-        <source>Send as</source>
+        <source>Receive as</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="57"/>
-        <source>Read Account restrictions</source>
+        <source>Reset password</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="58"/>
-        <source>Write Account restrictions</source>
+        <source>Send as</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="59"/>
-        <source>Read general info</source>
+        <source>Read Account restrictions</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="60"/>
-        <source>Write general info</source>
+        <source>Write Account restrictions</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="61"/>
-        <source>Read group membership</source>
+        <source>Read general info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="62"/>
-        <source>Read logon info</source>
+        <source>Write general info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="63"/>
-        <source>Write logon info</source>
+        <source>Read group membership</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="64"/>
-        <source>Read personal info</source>
+        <source>Read logon info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="65"/>
-        <source>Write personal info</source>
+        <source>Write logon info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="66"/>
-        <source>Read phone and mail options</source>
+        <source>Read personal info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="67"/>
-        <source>Write phone and mail options</source>
+        <source>Write personal info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="68"/>
-        <source>Read private info</source>
+        <source>Read phone and mail options</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="69"/>
-        <source>Write private info</source>
+        <source>Write phone and mail options</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="70"/>
-        <source>Read public info</source>
+        <source>Read private info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="71"/>
-        <source>Write public info</source>
+        <source>Write private info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="72"/>
-        <source>Read remote access info</source>
+        <source>Read public info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="73"/>
-        <source>Write remote access info</source>
+        <source>Write public info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="74"/>
-        <source>Read terminal server license server</source>
+        <source>Read remote access info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="75"/>
-        <source>Write terminal server license server</source>
+        <source>Write remote access info</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="76"/>
-        <source>Read web info</source>
+        <source>Read terminal server license server</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/security_tab.cpp" line="77"/>
+        <source>Write terminal server license server</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="78"/>
+        <source>Read web info</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="79"/>
         <source>Write web info</source>
         <translation></translation>
     </message>
@@ -1965,52 +1983,52 @@
 <context>
     <name>SecurityTab</name>
     <message>
-        <location filename="tabs/security_tab.cpp" line="94"/>
+        <location filename="tabs/security_tab.cpp" line="96"/>
         <source>Add...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="95"/>
+        <location filename="tabs/security_tab.cpp" line="97"/>
         <source>Add well-known trustee...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="96"/>
+        <location filename="tabs/security_tab.cpp" line="98"/>
         <source>Remove</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="101"/>
+        <location filename="tabs/security_tab.cpp" line="103"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="102"/>
+        <location filename="tabs/security_tab.cpp" line="104"/>
         <source>Allowed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="103"/>
+        <location filename="tabs/security_tab.cpp" line="105"/>
         <source>Denied</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="209"/>
+        <location filename="tabs/security_tab.cpp" line="211"/>
         <source>Permissions for %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="303"/>
+        <location filename="tabs/security_tab.cpp" line="305"/>
         <source>Add Trustee</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="451"/>
+        <location filename="tabs/security_tab.cpp" line="453"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="451"/>
+        <location filename="tabs/security_tab.cpp" line="453"/>
         <source>Failed to add some trustee&apos;s because they are already in the list.</source>
         <translation></translation>
     </message>
@@ -2161,7 +2179,7 @@
 <context>
     <name>SelectWellKnownTrusteeDialog</name>
     <message>
-        <location filename="tabs/security_tab.cpp" line="458"/>
+        <location filename="tabs/security_tab.cpp" line="460"/>
         <source>Select Well-Known Trustees</source>
         <translation></translation>
     </message>
