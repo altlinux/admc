@@ -113,6 +113,8 @@ const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
     {AcePermission_Read, (SEC_STD_READ_CONTROL | SEC_ADS_LIST | SEC_ADS_READ_PROP)},
     // {AcePermission_Write, SEC_ADS_GENERIC_WRITE},
     {AcePermission_Write, (SEC_ADS_SELF_WRITE | SEC_ADS_WRITE_PROP)},
+    {AcePermission_Delete, SEC_STD_DELETE},
+    {AcePermission_DeleteSubtree, SEC_DIR_DELETE_CHILD},
     {AcePermission_CreateChild, SEC_ADS_CREATE_CHILD},
     {AcePermission_DeleteChild, SEC_ADS_DELETE_CHILD},
     {AcePermission_AllowedToAuthenticate, SEC_ADS_CONTROL_ACCESS},
@@ -458,6 +460,14 @@ QByteArray dom_sid_to_bytes(const dom_sid &sid) {
     return bytes;
 }
 
+QByteArray dom_sid_string_to_bytes(const QString &string) {
+    dom_sid sid;
+    dom_sid_parse(cstr(string), &sid);
+    const QByteArray bytes = dom_sid_to_bytes(sid);
+
+    return bytes;
+}
+
 void ad_security_sort_dacl(security_descriptor *sd) {
     qsort(sd->dacl->aces, sd->dacl->num_aces, sizeof(security_ace), ace_compare);
 }
@@ -599,4 +609,44 @@ QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_f
     }
 
     return out;
+}
+
+bool ad_security_get_protected_against_deletion(const AdObject &object, AdConfig *adconfig) {
+    QHash<QByteArray, QHash<AcePermission, PermissionState>> permissions = object.get_security_state(adconfig);
+
+    const QByteArray world_trustee = dom_sid_string_to_bytes(SID_WORLD);
+
+    const PermissionState delete_state = permissions[world_trustee][AcePermission_Delete];
+    const PermissionState delete_subtree_state = permissions[world_trustee][AcePermission_DeleteSubtree];
+    const bool out = ((delete_state == PermissionState_Denied) && (delete_subtree_state == PermissionState_Denied));
+
+    return out;
+}
+
+bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString dn, AdConfig *adconfig, const bool enabled) {
+    const AdObject object = ad.search_object(dn);
+    const QHash<QByteArray, QHash<AcePermission, PermissionState>> old_permissions = object.get_security_state(adconfig);
+
+    const QHash<QByteArray, QHash<AcePermission, PermissionState>> new_permissions = [&]() {
+        QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
+
+        const QByteArray world_trustee = dom_sid_string_to_bytes(SID_WORLD);
+
+        const PermissionState state = [&]() {
+            if (enabled) {
+                return PermissionState_Denied;
+            } else {
+                return PermissionState_None;
+            }
+        }();
+        out = old_permissions;
+        out = ad_security_modify(out, world_trustee, AcePermission_Delete, state);
+        out = ad_security_modify(out, world_trustee, AcePermission_DeleteSubtree, state);
+
+        return out;
+    }();
+
+    const bool apply_success = attribute_replace_security_descriptor(&ad, dn, new_permissions);
+
+    return apply_success;
 }

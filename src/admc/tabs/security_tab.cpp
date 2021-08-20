@@ -47,6 +47,8 @@ const QHash<AcePermission, QString> ace_permission_to_name_map = {
     {AcePermission_FullControl, QCoreApplication::translate("Security", "Full control")},
     {AcePermission_Read, QCoreApplication::translate("Security", "Read")},
     {AcePermission_Write, QCoreApplication::translate("Security", "Write")},
+    {AcePermission_Delete, QCoreApplication::translate("Security", "Delete")},
+    {AcePermission_DeleteSubtree, QCoreApplication::translate("Security", "Delete subtree")},
     {AcePermission_CreateChild, QCoreApplication::translate("Security", "Create child")},
     {AcePermission_DeleteChild, QCoreApplication::translate("Security", "Delete child")},
     {AcePermission_AllowedToAuthenticate, QCoreApplication::translate("Security", "Allowed to authenticate")},
