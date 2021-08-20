@@ -165,13 +165,12 @@ public:
     bool computer_reset_account(const QString &dn);
 
     // "dn_out" is set to the dn of created gpo
-    bool create_gpo(const QString &name, QString &dn_out);
-    bool delete_gpo(const QString &dn);
+    bool gpo_add(const QString &name, QString &dn_out);
+    bool gpo_delete(const QString &dn);
+    bool gpo_check_perms(const QString &gpo, bool *ok);
+    bool gpo_sync_perms(const QString &gpo);
 
     QString filesys_path_to_smb_path(const QString &filesys_path) const;
-
-    bool check_gpo_perms(const QString &gpo, bool *ok);
-    bool gpo_sync_perms(const QString &gpo);
 
 private:
     AdInterfacePrivate *d;

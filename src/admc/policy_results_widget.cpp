@@ -146,7 +146,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
     // make sure that they permissions of GPT and GPC match.
     // If they don't, offer to update GPT permissions.
     bool ok = true;
-    const bool perms_ok = ad.check_gpo_perms(new_gpo, &ok);
+    const bool perms_ok = ad.gpo_check_perms(new_gpo, &ok);
 
     if (!perms_ok && ok) {
         const QMessageBox::Icon icon = QMessageBox::Warning;

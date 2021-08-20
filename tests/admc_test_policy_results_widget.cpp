@@ -41,8 +41,8 @@ const QString gpo_name = "test_policy_for_admc_test_results_widget";
 void ADMCTestPolicyResultsWidget::initTestCase() {
     ADMCTest::initTestCase();
 
-    const bool create_gpo_success = ad.create_gpo(gpo_name, gpo);
-    QVERIFY(create_gpo_success);
+    const bool gpo_add_success = ad.gpo_add(gpo_name, gpo);
+    QVERIFY(gpo_add_success);
 }
 
 void ADMCTestPolicyResultsWidget::cleanupTestCase() {
@@ -55,7 +55,7 @@ void ADMCTestPolicyResultsWidget::cleanupTestCase() {
     const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, attributes);
 
     for (const QString &dn : search_results.keys()) {
-        ad.delete_gpo(dn);
+        ad.gpo_delete(dn);
     }
 }
 

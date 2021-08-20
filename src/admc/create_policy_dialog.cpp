@@ -99,7 +99,7 @@ void CreatePolicyDialog::accept() {
     }
 
     QString created_dn;
-    const bool success = ad.create_gpo(name, created_dn);
+    const bool success = ad.gpo_add(name, created_dn);
 
     hide_busy_indicator();
 

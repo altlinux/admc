@@ -35,23 +35,23 @@ void ADMCTestAdInterface::cleanup() {
 
     if (!search_results.isEmpty()) {
         const QString dn = search_results.keys()[0];
-        ad.delete_gpo(dn);
+        ad.gpo_delete(dn);
     }
 
     ADMCTest::cleanup();
 }
 
-void ADMCTestAdInterface::create_and_delete_gpo() {
+void ADMCTestAdInterface::create_and_gpo_delete() {
     // Create new gpo
     QString gpo_dn;
-    const bool create_success = ad.create_gpo(TEST_GPO, gpo_dn);
+    const bool create_success = ad.gpo_add(TEST_GPO, gpo_dn);
     QVERIFY(create_success);
     QVERIFY(!gpo_dn.isEmpty());
 
     // Check perms
-    bool check_gpo_perms_ok = true;
-    const bool perms_are_ok = ad.check_gpo_perms(gpo_dn, &check_gpo_perms_ok);
-    QVERIFY(check_gpo_perms_ok);
+    bool gpo_check_perms_ok = true;
+    const bool perms_are_ok = ad.gpo_check_perms(gpo_dn, &gpo_check_perms_ok);
+    QVERIFY(gpo_check_perms_ok);
     QVERIFY(perms_are_ok);
 
     // Create test ou
@@ -78,22 +78,22 @@ void ADMCTestAdInterface::create_and_delete_gpo() {
     QCOMPARE(linked_before, true);
 
     // Delete again;
-    const bool delete_created_success = ad.delete_gpo(gpo_dn);
+    const bool delete_created_success = ad.gpo_delete(gpo_dn);
     QVERIFY(delete_created_success);
 
     const bool linked_after = ou_is_linked_to_gpo();
     QCOMPARE(linked_after, false);
 }
 
-void ADMCTestAdInterface::check_gpo_perms() {
+void ADMCTestAdInterface::gpo_check_perms() {
     QString gpc_dn;
-    const bool create_success = ad.create_gpo(TEST_GPO, gpc_dn);
+    const bool create_success = ad.gpo_add(TEST_GPO, gpc_dn);
     QVERIFY(create_success);
     QVERIFY(!gpc_dn.isEmpty());
 
-    bool check_gpo_perms_ok_1 = true;
-    const bool perms_before = ad.check_gpo_perms(gpc_dn, &check_gpo_perms_ok_1);
-    QVERIFY(check_gpo_perms_ok_1);
+    bool gpo_check_perms_ok_1 = true;
+    const bool perms_before = ad.gpo_check_perms(gpc_dn, &gpo_check_perms_ok_1);
+    QVERIFY(gpo_check_perms_ok_1);
     QCOMPARE(perms_before, true);
 
     // Change GPC perms so they don't match with GPT perms
@@ -113,12 +113,12 @@ void ADMCTestAdInterface::check_gpo_perms() {
         attribute_replace_security_descriptor(&ad, gpc_dn, permission_state_map);
     }
 
-    bool check_gpo_perms_ok_2 = true;
-    const bool perms_after = ad.check_gpo_perms(gpc_dn, &check_gpo_perms_ok_2);
-    QVERIFY(check_gpo_perms_ok_2);
+    bool gpo_check_perms_ok_2 = true;
+    const bool perms_after = ad.gpo_check_perms(gpc_dn, &gpo_check_perms_ok_2);
+    QVERIFY(gpo_check_perms_ok_2);
     QCOMPARE(perms_after, false);
 
-    const bool delete_success = ad.delete_gpo(gpc_dn);
+    const bool delete_success = ad.gpo_delete(gpc_dn);
     QVERIFY(delete_success);
 }
 

@@ -1223,7 +1223,7 @@ bool AdInterface::computer_reset_account(const QString &dn) {
     }
 }
 
-bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
+bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
     auto error_message = [&](const QString &error) {
         d->error_message(tr("Failed to create GPO"), error);
     };
@@ -1252,7 +1252,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     // After each error case we need to clean up whatever we
     // have created successfully so far. Don't just use
-    // delete_gpo() because we want to delete partially in
+    // gpo_delete() because we want to delete partially in
     // some error cases and that shouldn't print any error
     // messages.
     auto cleanup = [&]() {
@@ -1463,7 +1463,7 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
     return seen_stack;
 }
 
-bool AdInterface::delete_gpo(const QString &dn) {
+bool AdInterface::gpo_delete(const QString &dn) {
     // NOTE: try to execute both steps, even if first one
     // (deleting gpc) fails
 
@@ -1537,7 +1537,7 @@ QString AdInterface::filesys_path_to_smb_path(const QString &filesys_path) const
     return out;
 }
 
-bool AdInterface::check_gpo_perms(const QString &gpo, bool *ok) {
+bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     const AdObject gpc_object = search_object(gpo);
     const QString name = gpc_object.get_string(ATTRIBUTE_DISPLAY_NAME);
 

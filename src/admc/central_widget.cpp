@@ -533,10 +533,10 @@ void CentralWidget::policy_delete() {
 
     for (const QPersistentModelIndex &index : selected) {
         const QString dn = index.data(PolicyRole_DN).toString();
-        const bool success = ad.delete_gpo(dn);
+        const bool success = ad.gpo_delete(dn);
 
         // NOTE: object may get deleted successfuly but
-        // deleting GPT fails which makes delete_gpo() fail
+        // deleting GPT fails which makes gpo_delete() fail
         // as a whole, but we still want to remove gpo from
         // the console in that case
         const AdObject gpo_object = ad.search_object(dn);
