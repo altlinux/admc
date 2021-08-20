@@ -32,16 +32,11 @@ typedef struct _SMBCCTX SMBCCTX;
 class AdInterfacePrivate {
     Q_DECLARE_TR_FUNCTIONS(AdInterfacePrivate)
 
+    friend AdInterface;
+
 public:
     AdInterfacePrivate();
 
-    static AdConfig *s_adconfig;
-    static bool s_log_searches;
-    static QString s_dc;
-    static void *s_sasl_nocanon;
-    static QString s_port;
-    static CertStrategy s_cert_strat;
-    static SMBCCTX *smbc;
     AdConfig *adconfig;
     LDAP *ld;
     bool is_connected;
@@ -63,6 +58,15 @@ public:
     // Returns GPT contents including the root path, in
     // order of increasing depth, so root path is first
     QList<QString> gpo_get_gpt_contents(const QString &gpt_root_path, bool *ok);
+
+private:
+    static AdConfig *s_adconfig;
+    static bool s_log_searches;
+    static QString s_dc;
+    static void *s_sasl_nocanon;
+    static QString s_port;
+    static CertStrategy s_cert_strat;
+    static SMBCCTX *smbc;
 };
 
 #endif /* AD_INTERFACE_P_H */
