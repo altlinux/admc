@@ -41,9 +41,9 @@ public:
     static void *s_sasl_nocanon;
     static QString s_port;
     static CertStrategy s_cert_strat;
+    static SMBCCTX *smbc;
     AdConfig *adconfig;
     LDAP *ld;
-    SMBCCTX *smbc;
     bool is_connected;
     QString domain;
     QString domain_head;

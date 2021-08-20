@@ -88,6 +88,7 @@ QString AdInterfacePrivate::s_dc = QString();
 void *AdInterfacePrivate::s_sasl_nocanon = LDAP_OPT_ON;
 QString AdInterfacePrivate::s_port = QString();
 CertStrategy AdInterfacePrivate::s_cert_strat = CertStrategy_Never;
+SMBCCTX *AdInterfacePrivate::smbc = NULL;
 
 void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup, int maxLenWorkgroup, char *pUsername, int maxLenUsername, char *pPassword, int maxLenPassword) {
 }
@@ -108,7 +109,6 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     }
 
     d->ld = NULL;
-    d->smbc = NULL;
 
     d->domain = get_default_domain_from_krb5();
     if (d->domain.isEmpty()) {
@@ -250,23 +250,27 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     }
 
     // Initialize SMB context
-    // NOTE: this doesn't leak memory. False positive.
-    smbc_init(get_auth_data_fn, 0);
-    d->smbc = smbc_new_context();
-    smbc_setOptionUseKerberos(d->smbc, true);
-    smbc_setOptionFallbackAfterKerberos(d->smbc, true);
-    if (!smbc_init_context(d->smbc)) {
-        d->error_message(connect_error_context, tr("Failed to initialize SMB context"));
-        return;
+    
+    // NOTE: initialize only once, because otherwise
+    // wouldn't be able to have multiple active
+    // AdInterface's instances at the same time
+    if (AdInterfacePrivate::smbc == NULL) {
+        smbc_init(get_auth_data_fn, 0);
+        AdInterfacePrivate::smbc = smbc_new_context();
+        smbc_setOptionUseKerberos(AdInterfacePrivate::smbc, true);
+        smbc_setOptionFallbackAfterKerberos(AdInterfacePrivate::smbc, true);
+        if (!smbc_init_context(AdInterfacePrivate::smbc)) {
+            d->error_message(connect_error_context, tr("Failed to initialize SMB context"));
+
+            return;
+        }
+        smbc_set_context(AdInterfacePrivate::smbc);
     }
-    smbc_set_context(d->smbc);
 
     d->is_connected = true;
 }
 
 AdInterface::~AdInterface() {
-    smbc_free_context(d->smbc, 0);
-
     if (d->is_connected) {
         ldap_unbind_ext(d->ld, NULL, NULL);
     } else {
