@@ -42,6 +42,10 @@ ProtectDeletionEdit::ProtectDeletionEdit(QList<AttributeEdit *> *edits_out, QObj
         });
 }
 
+void ProtectDeletionEdit::set_enabled(const bool enabled) {
+    check->setChecked(enabled);
+}
+
 void ProtectDeletionEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const bool enabled = ad_security_get_protected_against_deletion(object, g_adconfig);
 

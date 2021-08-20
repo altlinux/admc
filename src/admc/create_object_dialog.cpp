@@ -191,6 +191,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         edits_layout->addRow(tr("Name:"), name_edit);
         
         auto protect_deletion_edit = new ProtectDeletionEdit(&all_edits, this);
+        protect_deletion_edit->set_enabled(true);
         protect_deletion_edit->add_to_layout(edits_layout);
     } else {
         qWarning() << "Class" << object_class << "is unsupported by create dialog";

@@ -36,6 +36,8 @@ public:
     ProtectDeletionEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
+    void set_enabled(const bool enabled);
+
 private:
     QCheckBox *check;
 };
