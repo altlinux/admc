@@ -2,7 +2,7 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
- VERSION 0.7.0 (Released 19-08-2021)
+ VERSION 0.7.0 (Released 20-08-2021)
 -----------------------------------------------------------------------
 - Manual: Fixed manual not opening when app is installed
   fresh. (#267)
@@ -29,6 +29,10 @@ CHANGELOG
 - Policies: Added "Refresh" action to policy tree. (#279)
 - Properties: Added "Security" properties tab to all objects
   that need it, not just users.
+- Object tab: Added "Protect against deletion" feature which
+  allows enabling or disabling protection against deletion
+  for objects. Available in Object tab or in create dialog
+  for OU's. (#283)
 - Misc: Added a toolbar. (#257)
 
 -----------------------------------------------------------------------
