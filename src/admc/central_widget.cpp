@@ -547,24 +547,7 @@ void CentralWidget::policy_delete() {
         const bool object_deleted = gpo_object.is_empty();
 
         if (success || object_deleted) {
-            // Remove deleted policy from console
             console->delete_item(index);
-
-            // Remove links to delete policy
-            const QString base = g_adconfig->domain_head();
-            const SearchScope scope = SearchScope_All;
-            const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, dn);
-            const QList<QString> attributes = {ATTRIBUTE_GPLINK};
-            const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
-
-            for (const AdObject &object : results.values()) {
-                const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
-                Gplink gplink = Gplink(gplink_string);
-                gplink.remove(dn);
-
-                const QString updated_gplink_string = gplink.to_string();
-                ad.attribute_replace_string(object.get_dn(), ATTRIBUTE_GPLINK, updated_gplink_string);
-            }
         }
     }
 
