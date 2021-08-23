@@ -63,6 +63,7 @@
 #include <QStandardItemModel>
 #include <QTreeWidget>
 #include <QVBoxLayout>
+#include <QProcess>
 
 CentralWidget::CentralWidget(AdInterface &ad)
 : QWidget() {
@@ -205,6 +206,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
     connect(
         console_actions->get(ConsoleAction_PolicyDelete), &QAction::triggered,
         this, &CentralWidget::policy_delete);
+    connect(
+        console_actions->get(ConsoleAction_PolicyEdit), &QAction::triggered,
+        this, &CentralWidget::policy_edit);
 
     connect(
         console_actions->get(ConsoleAction_QueryCreateFolder), &QAction::triggered,
@@ -567,6 +571,46 @@ void CentralWidget::policy_delete() {
     hide_busy_indicator();
 
     g_status()->display_ad_messages(ad, this);
+}
+
+void CentralWidget::policy_edit() {
+    const QString dn = get_selected_dn();
+
+    const QString filesys_path = [&]() {
+        AdInterface ad;
+        if (ad_failed(ad)) {
+            return QString();
+        }
+
+        const AdObject object = ad.search_object(dn);
+        const QString out = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+
+        return out;
+    }();
+
+    auto process = new QProcess(this);
+    process->setProgram("gpui");
+
+    const QList<QString> args = {
+        dn,
+        filesys_path,
+    };
+    process->setArguments(args);
+
+    connect(
+        process, &QProcess::errorOccurred,
+        [this](QProcess::ProcessError error) {
+            const bool failed_to_start = (error == QProcess::FailedToStart);
+
+            if (failed_to_start) {
+                const QString error_text = "Failed to start gpui. Check that it's installed.";
+                qDebug() << error_text;
+                g_status()->add_message(error_text, StatusType_Error);
+                error_log({error_text}, this);
+            }
+        });
+
+    process->start(QIODevice::ReadOnly);
 }
 
 void CentralWidget::query_create() {

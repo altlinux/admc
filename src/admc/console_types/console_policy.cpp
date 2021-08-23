@@ -83,6 +83,7 @@ void console_policy_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 
     menu->addSeparator();
 
+    menu->addAction(actions->get(ConsoleAction_PolicyEdit));
     menu->addAction(actions->get(ConsoleAction_PolicyRename));
     menu->addAction(actions->get(ConsoleAction_PolicyDelete));
 }
@@ -97,6 +98,8 @@ void console_policy_actions_get_state(const QModelIndex &index, const bool singl
     if (type == ItemType_Policy) {
         if (single_selection) {
             visible_actions->insert(ConsoleAction_PolicyAddLink);
+            // TODO: enable when gpui is ready
+            // visible_actions->insert(ConsoleAction_PolicyEdit);
             visible_actions->insert(ConsoleAction_PolicyRename);
             visible_actions->insert(ConsoleAction_PolicyDelete);
         } else {
