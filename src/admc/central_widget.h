@@ -91,6 +91,7 @@ private slots:
 
     void policy_add_link();
     void policy_delete();
+    void policy_edit();
 
     void query_create();
     void query_edit();
