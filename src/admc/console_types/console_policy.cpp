@@ -98,7 +98,8 @@ void console_policy_actions_get_state(const QModelIndex &index, const bool singl
     if (type == ItemType_Policy) {
         if (single_selection) {
             visible_actions->insert(ConsoleAction_PolicyAddLink);
-            visible_actions->insert(ConsoleAction_PolicyEdit);
+            // TODO: enable when gpui is ready
+            // visible_actions->insert(ConsoleAction_PolicyEdit);
             visible_actions->insert(ConsoleAction_PolicyRename);
             visible_actions->insert(ConsoleAction_PolicyDelete);
         } else {
