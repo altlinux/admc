@@ -55,6 +55,7 @@ ConsoleActions::ConsoleActions(QObject *parent)
                 case ConsoleAction_PolicyAddLink: return tr("&Add link...");
                 case ConsoleAction_PolicyRename: return tr("&Rename...");
                 case ConsoleAction_PolicyDelete: return tr("&Delete");
+                case ConsoleAction_PolicyEdit: return tr("&Edit");
 
                 case ConsoleAction_QueryCreateFolder: return tr("&Folder");
                 case ConsoleAction_QueryCreateItem: return tr("&Query");

@@ -54,6 +54,7 @@ enum ConsoleAction {
     ConsoleAction_PolicyAddLink,
     ConsoleAction_PolicyRename,
     ConsoleAction_PolicyDelete,
+    ConsoleAction_PolicyEdit,
 
     ConsoleAction_QueryCreateFolder,
     ConsoleAction_QueryCreateItem,
