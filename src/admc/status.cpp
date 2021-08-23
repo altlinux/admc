@@ -118,7 +118,25 @@ void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
 }
 
 void ad_error_log(const AdInterface &ad, QWidget *parent) {
-    if (!ad.any_error_messages()) {
+    const QList<QString> error_list = [&]() {
+        QList<QString> out;
+
+        const QList<AdMessage> messages = ad.messages();
+
+        for (const auto &message : messages) {
+            if (message.type() == AdMessageType_Error) {
+                out.append(message.text());
+            }
+        }
+
+        return out;
+    }();
+
+    error_log(error_list, parent);
+}
+
+void error_log(const QList<QString> error_list, QWidget *parent) {
+    if (error_list.isEmpty()) {
         return;
     }
 
@@ -127,19 +145,7 @@ void ad_error_log(const AdInterface &ad, QWidget *parent) {
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->setMinimumWidth(600);
 
-    const QString errors_text = [&]() {
-        QList<QString> errors;
-
-        const QList<AdMessage> messages = ad.messages();
-
-        for (const auto &message : messages) {
-            if (message.type() == AdMessageType_Error) {
-                errors.append(message.text());
-            }
-        }
-
-        return errors.join("\n");
-    }();
+    const QString errors_text = error_list.join("\n");
 
     auto errors_display = new QPlainTextEdit();
     errors_display->setPlainText(errors_text);
