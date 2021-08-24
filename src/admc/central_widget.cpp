@@ -125,7 +125,7 @@ CentralWidget::CentralWidget(AdInterface &ad)
         filter_dialog, &QDialog::open);
     connect(
         filter_dialog, &QDialog::accepted,
-        this, &CentralWidget::refresh_head);
+        this, &CentralWidget::refresh_object_tree);
 
     connect(
         console, &ConsoleWidget::current_scope_item_changed,
@@ -259,19 +259,19 @@ void CentralWidget::on_current_scope_changed() {
 void CentralWidget::on_show_non_containers() {
     settings_set_bool(SETTING_show_non_containers_in_console_tree, show_noncontainers_action->isChecked());
 
-    refresh_head();
+    refresh_object_tree();
 }
 
 void CentralWidget::on_dev_mode() {
     settings_set_bool(SETTING_dev_mode, dev_mode_action->isChecked());
 
-    refresh_head();
+    refresh_object_tree();
 }
 
 void CentralWidget::on_advanced_features() {
     settings_set_bool(SETTING_advanced_features, advanced_features_action->isChecked());
 
-    refresh_head();
+    refresh_object_tree();
 }
 
 void CentralWidget::on_toggle_console_tree() {
@@ -288,7 +288,7 @@ void CentralWidget::on_toggle_description_bar() {
     console->get_description_bar()->setVisible(visible);
 }
 
-void CentralWidget::refresh_head() {
+void CentralWidget::refresh_object_tree() {
     show_busy_indicator();
 
     console->refresh_scope(console_object_head()->index());
