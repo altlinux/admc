@@ -21,30 +21,21 @@
 #include "central_widget.h"
 
 #include "adldap.h"
-#include "change_dc_dialog.h"
 #include "console_actions.h"
 #include "console_types/console_object.h"
 #include "console_types/console_policy.h"
 #include "console_types/console_query.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
-#include "create_object_dialog.h"
 #include "create_policy_dialog.h"
 #include "create_query_folder_dialog.h"
 #include "create_query_item_dialog.h"
 #include "edit_query_folder_dialog.h"
 #include "edit_query_item_dialog.h"
-#include "editors/multi_editor.h"
 #include "filter_dialog.h"
-#include "find_object_dialog.h"
 #include "globals.h"
 #include "gplink.h"
-#include "move_object_dialog.h"
-#include "object_multi_properties_dialog.h"
-#include "password_dialog.h"
 #include "policy_results_widget.h"
-#include "properties_dialog.h"
-#include "rename_object_dialog.h"
 #include "rename_policy_dialog.h"
 #include "select_object_dialog.h"
 #include "settings.h"
@@ -116,6 +107,8 @@ CentralWidget::CentralWidget(AdInterface &ad)
     const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
     console->restore_state(console_widget_state);
 
+    connect_object_actions(console, console_actions);
+
     connect(
         show_noncontainers_action, &QAction::toggled,
         this, &CentralWidget::on_show_non_containers);
@@ -147,52 +140,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     connect(
         filter_dialog, &QDialog::accepted,
         this, &CentralWidget::refresh_head);
-
-    connect(
-        console_actions->get(ConsoleAction_NewUser), &QAction::triggered,
-        this, &CentralWidget::object_create_user);
-    connect(
-        console_actions->get(ConsoleAction_NewComputer), &QAction::triggered,
-        this, &CentralWidget::object_create_computer);
-    connect(
-        console_actions->get(ConsoleAction_NewOU), &QAction::triggered,
-        this, &CentralWidget::object_create_ou);
-    connect(
-        console_actions->get(ConsoleAction_NewGroup), &QAction::triggered,
-        this, &CentralWidget::object_create_group);
-    connect(
-        console_actions->get(ConsoleAction_Delete), &QAction::triggered,
-        this, &CentralWidget::object_delete);
-    connect(
-        console_actions->get(ConsoleAction_Rename), &QAction::triggered,
-        this, &CentralWidget::object_rename);
-    connect(
-        console_actions->get(ConsoleAction_Move), &QAction::triggered,
-        this, &CentralWidget::object_move);
-    connect(
-        console_actions->get(ConsoleAction_AddToGroup), &QAction::triggered,
-        this, &CentralWidget::object_add_to_group);
-    connect(
-        console_actions->get(ConsoleAction_Enable), &QAction::triggered,
-        this, &CentralWidget::object_enable);
-    connect(
-        console_actions->get(ConsoleAction_Disable), &QAction::triggered,
-        this, &CentralWidget::object_disable);
-    connect(
-        console_actions->get(ConsoleAction_ResetPassword), &QAction::triggered,
-        this, &CentralWidget::object_reset_password);
-    connect(
-        console_actions->get(ConsoleAction_ResetComputerAccount), &QAction::triggered,
-        this, &CentralWidget::object_reset_computer_account);
-    connect(
-        console_actions->get(ConsoleAction_Find), &QAction::triggered,
-        this, &CentralWidget::object_find);
-    connect(
-        console_actions->get(ConsoleAction_EditUpnSuffixes), &QAction::triggered,
-        this, &CentralWidget::object_edit_upn_suffixes);
-    connect(
-        console_actions->get(ConsoleAction_ChangeDC), &QAction::triggered,
-        this, &CentralWidget::object_change_dc);
 
     connect(
         console_actions->get(ConsoleAction_PolicyCreate), &QAction::triggered,
@@ -257,13 +204,8 @@ CentralWidget::CentralWidget(AdInterface &ad)
         console, &ConsoleWidget::items_dropped,
         this, &CentralWidget::on_items_dropped);
     connect(
-        console, &ConsoleWidget::properties_requested,
-        this, &CentralWidget::object_properties);
-    connect(
         console, &ConsoleWidget::actions_changed,
-        this, &CentralWidget::update_actions_visibility);
-
-    update_actions_visibility();
+        this, &CentralWidget::on_actions_changed);
 
     // Set current scope to object head to load it
     console->set_current_scope(console_object_head()->index());
@@ -274,212 +216,10 @@ CentralWidget::~CentralWidget() {
     settings_set_variant(SETTING_console_widget_state, state);
 }
 
-void CentralWidget::object_delete() {
-    const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
-    const QList<QString> deleted_objects = object_operation_delete(selected.keys(), this);
+void CentralWidget::on_actions_changed() {
+    const QList<QModelIndex> selected_list = console->get_selected_items();
 
-    console_object_delete(console, deleted_objects);
-}
-
-void CentralWidget::object_properties() {
-    const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
-
-    if (targets.size() == 1) {
-        const QString target = targets.keys()[0];
-
-        PropertiesDialog *dialog = PropertiesDialog::open_for_target(target);
-
-        connect(
-            dialog, &PropertiesDialog::applied,
-            this, &CentralWidget::on_object_properties_applied);
-    } else if (targets.size() > 1) {
-        const QList<QString> class_list = [&]() {
-            QSet<QString> out;
-
-            for (const QPersistentModelIndex &index : targets.values()) {
-                const QList<QString> this_class_list = index.data(ObjectRole_ObjectClasses).toStringList();
-                const QString main_class = this_class_list.last();
-                out.insert(main_class);
-            }
-
-            return out.toList();
-        }();
-
-        auto dialog = new ObjectMultiPropertiesDialog(targets.keys(), class_list);
-        dialog->open();
-
-        connect(
-            dialog, &ObjectMultiPropertiesDialog::applied,
-            this, &CentralWidget::on_object_properties_applied);
-    }
-}
-
-void CentralWidget::object_rename() {
-    const QString target = get_selected_dn();
-
-    auto dialog = new RenameObjectDialog(target, this);
-    dialog->open();
-
-    connect(
-        dialog, &RenameObjectDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            const QString old_dn = target;
-            const QString new_dn = dialog->get_new_dn();
-            const QString parent_dn = dn_get_parent(old_dn);
-            console_object_move(console, ad, {old_dn}, {new_dn}, parent_dn);
-        });
-}
-
-void CentralWidget::object_create_helper(const QString &object_class) {
-    const QString parent_dn = get_selected_dn();
-
-    auto dialog = new CreateObjectDialog(parent_dn, object_class, this);
-    dialog->open();
-
-    // NOTE: can't just add new object to console by adding
-    // to selected index, because you can create an object
-    // by using action menu of an object in a query tree.
-    // Therefore need to search for parent in domain tree.
-    connect(
-        dialog, &CreateObjectDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            show_busy_indicator();
-
-            const QList<QModelIndex> search_parent = console->search_items(console_object_head()->index(), ObjectRole_DN, parent_dn, ItemType_Object);
-
-            if (search_parent.isEmpty()) {
-                hide_busy_indicator();
-                return;
-            }
-
-            const QModelIndex scope_parent_index = search_parent[0];
-            const QString created_dn = dialog->get_created_dn();
-            console_object_create(console, ad, {created_dn}, scope_parent_index);
-
-            hide_busy_indicator();
-        });
-}
-
-void CentralWidget::object_move() {
-    const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
-
-    auto dialog = new MoveObjectDialog(targets.keys(), this);
-    dialog->open();
-
-    connect(
-        dialog, &QDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            const QList<QString> old_dn_list = dialog->get_moved_objects();
-            const QString new_parent_dn = dialog->get_selected();
-            console_object_move(console, ad, old_dn_list, new_parent_dn);
-        });
-}
-
-void CentralWidget::object_add_to_group() {
-    const QList<QString> targets = get_selected_dns();
-    object_operation_add_to_group(targets, this);
-}
-
-void CentralWidget::object_enable() {
-    enable_disable_helper(false);
-}
-
-void CentralWidget::object_disable() {
-    enable_disable_helper(true);
-}
-
-void CentralWidget::object_find() {
-    const QList<QString> targets = get_selected_dns();
-
-    if (targets.size() != 1) {
-        return;
-    }
-
-    const QString target = targets[0];
-
-    auto find_dialog = new FindObjectDialog(filter_classes, target, this);
-    find_dialog->open();
-}
-
-void CentralWidget::object_reset_password() {
-    const QString target = get_selected_dn();
-    const auto password_dialog = new PasswordDialog(target, this);
-    password_dialog->open();
-}
-
-void CentralWidget::object_reset_computer_account() {
-    const QList<QString> target_list = get_selected_dns();
-    object_operation_reset_computer_account(target_list);
-}
-
-void CentralWidget::object_create_user() {
-    object_create_helper(CLASS_USER);
-}
-
-void CentralWidget::object_create_computer() {
-    object_create_helper(CLASS_COMPUTER);
-}
-
-void CentralWidget::object_create_ou() {
-    object_create_helper(CLASS_OU);
-}
-
-void CentralWidget::object_create_group() {
-    object_create_helper(CLASS_GROUP);
-}
-
-void CentralWidget::object_edit_upn_suffixes() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    // Open editor for upn suffixes attribute of partitions
-    // object
-    const QString partitions_dn = g_adconfig->partitions_dn();
-    const AdObject partitions_object = ad.search_object(partitions_dn);
-    const QList<QByteArray> current_values = partitions_object.get_values(ATTRIBUTE_UPN_SUFFIXES);
-
-    g_status()->display_ad_messages(ad, this);
-
-    auto editor = new MultiEditor(ATTRIBUTE_UPN_SUFFIXES, this);
-    editor->load(current_values);
-    editor->open();
-
-    // When editor is accepted, update values of upn
-    // suffixes
-    connect(editor, &QDialog::accepted,
-        [this, editor, partitions_dn]() {
-            AdInterface ad2;
-            if (ad_failed(ad2)) {
-                return;
-            }
-
-            const QList<QByteArray> new_values = editor->get_new_values();
-
-            ad2.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
-            g_status()->display_ad_messages(ad2, this);
-        });
-}
-
-void CentralWidget::object_change_dc() {
-    auto change_dc_dialog = new ChangeDCDialog(console_object_head(), this);
-    change_dc_dialog->open();
+    console_actions->update_actions_visibility(selected_list);
 }
 
 void CentralWidget::policy_add_link() {
@@ -731,29 +471,6 @@ void CentralWidget::on_current_scope_changed() {
     update_description_bar();
 }
 
-void CentralWidget::on_object_properties_applied() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    const QList<QString> target_list = get_selected_dns();
-
-    for (const QString &target : target_list) {
-        const AdObject object = ad.search_object(target);
-
-        const QList<QModelIndex> index_list = console->search_items(QModelIndex(), ObjectRole_DN, target, ItemType_Object);
-        for (const QModelIndex &index : index_list) {
-            const QList<QStandardItem *> row = console->get_row(index);
-            console_object_load(row, object);
-        }
-    }
-
-    g_status()->display_ad_messages(ad, this);
-
-    update_actions_visibility();
-}
-
 void CentralWidget::on_show_non_containers() {
     settings_set_bool(SETTING_show_non_containers_in_console_tree, show_noncontainers_action->isChecked());
 
@@ -857,40 +574,6 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
     } else if (type == ItemType_PolicyRoot) {
         console_policy_root_fetch(console);
     }
-}
-
-void CentralWidget::enable_disable_helper(const bool disabled) {
-    const QHash<QString, QPersistentModelIndex> targets = get_selected_dns_and_indexes();
-
-    show_busy_indicator();
-
-    const QList<QString> changed_objects = object_operation_set_disabled(targets.keys(), disabled, this);
-
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    for (const QString &dn : changed_objects) {
-        const QList<QModelIndex> index_list = console->search_items(QModelIndex(), ObjectRole_DN, dn, ItemType_Object);
-        for (const QModelIndex &index : index_list) {
-            QStandardItem *item = console->get_item(index);
-            item->setData(disabled, ObjectRole_AccountDisabled);
-        }
-    }
-
-    update_actions_visibility();
-
-    hide_busy_indicator();
-}
-
-// First, hide all actions, then show whichever actions are
-// appropriate for current console selection
-void CentralWidget::update_actions_visibility() {
-    // Figure out what kind of types of items are selected
-    const QList<QModelIndex> selected_indexes = console->get_selected_items();
-
-    console_actions->update_actions_visibility(selected_indexes);
 }
 
 // Get selected indexes mapped to their DN's
