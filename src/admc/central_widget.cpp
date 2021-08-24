@@ -27,7 +27,6 @@
 #include "console_types/console_query.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
-#include "create_policy_dialog.h"
 #include "create_query_folder_dialog.h"
 #include "create_query_item_dialog.h"
 #include "edit_query_folder_dialog.h"
@@ -36,25 +35,17 @@
 #include "globals.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
-#include "rename_policy_dialog.h"
-#include "select_object_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
 
-#include <QAbstractItemView>
-#include <QApplication>
 #include <QDebug>
 #include <QHeaderView>
-#include <QLabel>
 #include <QMenu>
-#include <QSortFilterProxyModel>
 #include <QSplitter>
-#include <QStack>
-#include <QStandardItemModel>
-#include <QTreeWidget>
+#include <QStandardItem>
+#include <QTreeView>
 #include <QVBoxLayout>
-#include <QProcess>
 
 CentralWidget::CentralWidget(AdInterface &ad)
 : QWidget() {
@@ -76,8 +67,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     filter_dialog = new FilterDialog(this);
     auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
     auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
-    auto create_policy_dialog = new CreatePolicyDialog(console);
-    auto rename_policy_dialog = new RenamePolicyDialog(console);
 
     auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
@@ -108,6 +97,7 @@ CentralWidget::CentralWidget(AdInterface &ad)
     console->restore_state(console_widget_state);
 
     connect_object_actions(console, console_actions);
+    connect_policy_actions(console, console_actions, policy_results_widget);
 
     connect(
         show_noncontainers_action, &QAction::toggled,
@@ -140,22 +130,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     connect(
         filter_dialog, &QDialog::accepted,
         this, &CentralWidget::refresh_head);
-
-    connect(
-        console_actions->get(ConsoleAction_PolicyCreate), &QAction::triggered,
-        create_policy_dialog, &QDialog::open);
-    connect(
-        console_actions->get(ConsoleAction_PolicyAddLink), &QAction::triggered,
-        this, &CentralWidget::policy_add_link);
-    connect(
-        console_actions->get(ConsoleAction_PolicyRename), &QAction::triggered,
-        rename_policy_dialog, &QDialog::open);
-    connect(
-        console_actions->get(ConsoleAction_PolicyDelete), &QAction::triggered,
-        this, &CentralWidget::policy_delete);
-    connect(
-        console_actions->get(ConsoleAction_PolicyEdit), &QAction::triggered,
-        this, &CentralWidget::policy_edit);
 
     connect(
         console_actions->get(ConsoleAction_QueryCreateFolder), &QAction::triggered,
@@ -220,120 +194,6 @@ void CentralWidget::on_actions_changed() {
     const QList<QModelIndex> selected_list = console->get_selected_items();
 
     console_actions->update_actions_visibility(selected_list);
-}
-
-void CentralWidget::policy_add_link() {
-    const QList<QModelIndex> selected = console->get_selected_items();
-    if (selected.size() == 0) {
-        return;
-    }
-
-    auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, this);
-    dialog->setWindowTitle(tr("Add Link"));
-
-    QObject::connect(
-        dialog, &SelectObjectDialog::accepted,
-        [=]() {
-            const QList<QString> gpos = [selected]() {
-                QList<QString> out;
-
-                for (const QModelIndex &index : selected) {
-                    const QString gpo = index.data(PolicyRole_DN).toString();
-                    out.append(gpo);
-                }
-
-                return out;
-            }();
-
-            const QList<QString> ou_list = dialog->get_selected();
-
-            console_policy_add_link(console, gpos, ou_list, policy_results_widget);
-
-            const QModelIndex current_scope = console->get_current_scope_item();
-            policy_results_widget->update(current_scope);
-        });
-
-    dialog->open();
-}
-
-void CentralWidget::policy_delete() {
-    const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
-
-    if (selected.size() == 0) {
-        return;
-    }
-
-    const bool confirmed = confirmation_dialog(tr("Are you sure you want to delete this policy and all of it's links?"), this);
-    if (!confirmed) {
-        return;
-    }
-
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    for (const QPersistentModelIndex &index : selected) {
-        const QString dn = index.data(PolicyRole_DN).toString();
-        const bool success = ad.gpo_delete(dn);
-
-        // NOTE: object may get deleted successfuly but
-        // deleting GPT fails which makes gpo_delete() fail
-        // as a whole, but we still want to remove gpo from
-        // the console in that case
-        const AdObject gpo_object = ad.search_object(dn);
-        const bool object_deleted = gpo_object.is_empty();
-
-        if (success || object_deleted) {
-            console->delete_item(index);
-        }
-    }
-
-    hide_busy_indicator();
-
-    g_status()->display_ad_messages(ad, this);
-}
-
-void CentralWidget::policy_edit() {
-    const QString dn = get_selected_dn();
-
-    const QString filesys_path = [&]() {
-        AdInterface ad;
-        if (ad_failed(ad)) {
-            return QString();
-        }
-
-        const AdObject object = ad.search_object(dn);
-        const QString out = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-
-        return out;
-    }();
-
-    auto process = new QProcess(this);
-    process->setProgram("gpui");
-
-    const QList<QString> args = {
-        dn,
-        filesys_path,
-    };
-    process->setArguments(args);
-
-    connect(
-        process, &QProcess::errorOccurred,
-        [this](QProcess::ProcessError error) {
-            const bool failed_to_start = (error == QProcess::FailedToStart);
-
-            if (failed_to_start) {
-                const QString error_text = "Failed to start gpui. Check that it's installed.";
-                qDebug() << error_text;
-                g_status()->add_message(error_text, StatusType_Error);
-                error_log({error_text}, this);
-            }
-        });
-
-    process->start(QIODevice::ReadOnly);
 }
 
 void CentralWidget::query_create() {
@@ -573,34 +433,5 @@ void CentralWidget::fetch_scope_node(const QModelIndex &index) {
         console_query_item_fetch(console, index);
     } else if (type == ItemType_PolicyRoot) {
         console_policy_root_fetch(console);
-    }
-}
-
-// Get selected indexes mapped to their DN's
-QHash<QString, QPersistentModelIndex> CentralWidget::get_selected_dns_and_indexes() {
-    QHash<QString, QPersistentModelIndex> out;
-
-    const QList<QModelIndex> indexes = console->get_selected_items();
-    for (const QModelIndex &index : indexes) {
-        const QString dn = index.data(ObjectRole_DN).toString();
-        out[dn] = QPersistentModelIndex(index);
-    }
-
-    return out;
-}
-
-QList<QString> CentralWidget::get_selected_dns() {
-    const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
-
-    return selected.keys();
-}
-
-QString CentralWidget::get_selected_dn() {
-    const QList<QString> dn_list = get_selected_dns();
-
-    if (!dn_list.isEmpty()) {
-        return dn_list[0];
-    } else {
-        return QString();
     }
 }

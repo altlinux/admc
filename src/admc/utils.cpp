@@ -285,3 +285,25 @@ void message_box_question(QWidget *parent, const QString &title, const QString &
 void message_box_warning(QWidget *parent, const QString &title, const QString &text) {
     message_box_generic(QMessageBox::Warning, title, text, parent);
 }
+
+QList<QString> get_selected_dn_list(ConsoleWidget *console, const int dn_role) {
+    QList<QString> out;
+
+    const QList<QModelIndex> indexes = console->get_selected_items();
+    for (const QModelIndex &index : indexes) {
+        const QString dn = index.data(dn_role).toString();
+        out.append(dn);
+    }
+
+    return out;
+}
+
+QString get_selected_dn(ConsoleWidget *console, const int dn_role) {
+    const QList<QString> dn_list = get_selected_dn_list(console, dn_role);
+
+    if (!dn_list.isEmpty()) {
+        return dn_list[0];
+    } else {
+        return QString();
+    }
+}

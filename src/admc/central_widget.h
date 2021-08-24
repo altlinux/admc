@@ -72,10 +72,6 @@ signals:
     void context_menu(const QPoint pos);
 
 private slots:
-    void policy_add_link();
-    void policy_delete();
-    void policy_edit();
-
     void query_create();
     void query_edit();
     void query_delete();
@@ -115,9 +111,6 @@ private:
     void update_description_bar();
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();
-    QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
-    QList<QString> get_selected_dns();
-    QString get_selected_dn();
     void fetch_scope_node(const QModelIndex &index);
     void refresh_head();
 };

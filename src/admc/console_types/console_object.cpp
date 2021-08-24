@@ -61,8 +61,6 @@ void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, c
 bool console_object_create_check(ConsoleWidget *console, const QModelIndex &parent);
 void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
 void console_object_drop_policies(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
-QList<QString> get_selected_dn_list(ConsoleWidget *console);
-QString get_selected_dn(ConsoleWidget *console);
 
 void console_object_load(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
@@ -798,7 +796,7 @@ QStandardItem *console_object_head() {
 }
 
 void object_action_delete(ConsoleWidget *console) {
-    const QList<QString> selected_list = get_selected_dn_list(console);
+    const QList<QString> selected_list = get_selected_dn_list(console, ObjectRole_DN);
 
     const QList<QString> deleted_list = object_operation_delete(selected_list, console);
 
@@ -807,7 +805,7 @@ void object_action_delete(ConsoleWidget *console) {
 
 // TODO: declare all action f-ns
 void object_action_new(ConsoleWidget *console, const QString &object_class) {
-    const QString parent_dn = get_selected_dn(console);
+    const QString parent_dn = get_selected_dn(console, ObjectRole_DN);
 
     auto dialog = new CreateObjectDialog(parent_dn, object_class, console);
     dialog->open();
@@ -842,7 +840,7 @@ void object_action_new(ConsoleWidget *console, const QString &object_class) {
 }
 
 void object_action_rename(ConsoleWidget *console) {
-    const QString dn = get_selected_dn(console);
+    const QString dn = get_selected_dn(console, ObjectRole_DN);
 
     auto dialog = new RenameObjectDialog(dn, console);
     dialog->open();
@@ -863,7 +861,7 @@ void object_action_rename(ConsoleWidget *console) {
 }
 
 void object_action_move(ConsoleWidget *console) {
-    const QList<QString> dn_list = get_selected_dn_list(console);
+    const QList<QString> dn_list = get_selected_dn_list(console, ObjectRole_DN);
 
     auto dialog = new MoveObjectDialog(dn_list, console);
     dialog->open();
@@ -883,12 +881,12 @@ void object_action_move(ConsoleWidget *console) {
 }
 
 void object_action_add_to_group(ConsoleWidget *console) {
-    const QList<QString> dn_list = get_selected_dn_list(console);
+    const QList<QString> dn_list = get_selected_dn_list(console, ObjectRole_DN);
     object_operation_add_to_group(dn_list, console);
 }
 
 void object_action_set_disabled(ConsoleWidget *console, const bool disabled) {
-    const QList<QString> dn_list = get_selected_dn_list(console);
+    const QList<QString> dn_list = get_selected_dn_list(console, ObjectRole_DN);
 
     show_busy_indicator();
 
@@ -913,7 +911,7 @@ void object_action_set_disabled(ConsoleWidget *console, const bool disabled) {
 }
 
 void object_action_find(ConsoleWidget *console) {
-    const QList<QString> dn_list = get_selected_dn_list(console);
+    const QList<QString> dn_list = get_selected_dn_list(console, ObjectRole_DN);
 
     if (dn_list.size() != 1) {
         return;
@@ -926,13 +924,13 @@ void object_action_find(ConsoleWidget *console) {
 }
 
 void object_action_reset_password(ConsoleWidget *console) {
-    const QString dn = get_selected_dn(console);
+    const QString dn = get_selected_dn(console, ObjectRole_DN);
     const auto password_dialog = new PasswordDialog(dn, console);
     password_dialog->open();
 }
 
 void object_action_reset_computer_account(ConsoleWidget *console) {
-    const QList<QString> dn_list = get_selected_dn_list(console);
+    const QList<QString> dn_list = get_selected_dn_list(console, ObjectRole_DN);
     object_operation_reset_computer_account(dn_list);
 }
 
@@ -982,7 +980,7 @@ void object_action_properties(ConsoleWidget *console) {
             return;
         }
 
-        const QList<QString> dn_list = get_selected_dn_list(console);
+        const QList<QString> dn_list = get_selected_dn_list(console, ObjectRole_DN);
 
         for (const QString &dn : dn_list) {
             const AdObject object = ad.search_object(dn);
@@ -997,7 +995,7 @@ void object_action_properties(ConsoleWidget *console) {
         g_status()->display_ad_messages(ad, console);
     };
 
-    const QList<QString> dn_list = get_selected_dn_list(console);
+    const QList<QString> dn_list = get_selected_dn_list(console, ObjectRole_DN);
 
     if (dn_list.size() == 1) {
         const QString dn = dn_list[0];
@@ -1111,26 +1109,4 @@ void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions) {
         [=]() {
             object_action_properties(console);
         });
-}
-
-QList<QString> get_selected_dn_list(ConsoleWidget *console) {
-    QList<QString> out;
-
-    const QList<QModelIndex> indexes = console->get_selected_items();
-    for (const QModelIndex &index : indexes) {
-        const QString dn = index.data(ObjectRole_DN).toString();
-        out.append(dn);
-    }
-
-    return out;
-}
-
-QString get_selected_dn(ConsoleWidget *console) {
-    const QList<QString> dn_list = get_selected_dn_list(console);
-
-    if (!dn_list.isEmpty()) {
-        return dn_list[0];
-    } else {
-        return QString();
-    }
 }

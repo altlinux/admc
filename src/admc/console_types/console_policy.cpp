@@ -30,12 +30,16 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "rename_policy_dialog.h"
+#include "select_object_dialog.h"
+#include "create_policy_dialog.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QList>
 #include <QMenu>
 #include <QStandardItem>
+#include <QProcess>
 
 int policy_container_results_id;
 int policy_results_id;
@@ -208,4 +212,152 @@ void console_policy_root_fetch(ConsoleWidget *console) {
     for (const AdObject &object : results.values()) {
         console_policy_create(console, object);
     }
+}
+
+void policy_action_create(ConsoleWidget *console) {
+    auto dialog = new CreatePolicyDialog(console);
+    dialog->open();
+}
+
+void policy_action_add_link(ConsoleWidget *console, PolicyResultsWidget * policy_results_widget) {
+    const QList<QModelIndex> selected = console->get_selected_items();
+    if (selected.size() == 0) {
+        return;
+    }
+
+    auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, console);
+    dialog->setWindowTitle(QCoreApplication::translate("console_policy", "Add Link"));
+
+    QObject::connect(
+        dialog, &SelectObjectDialog::accepted,
+        [=]() {
+            const QList<QString> gpos = [selected]() {
+                QList<QString> out;
+
+                for (const QModelIndex &index : selected) {
+                    const QString gpo = index.data(PolicyRole_DN).toString();
+                    out.append(gpo);
+                }
+
+                return out;
+            }();
+
+            const QList<QString> ou_list = dialog->get_selected();
+
+            console_policy_add_link(console, gpos, ou_list, policy_results_widget);
+
+            const QModelIndex current_scope = console->get_current_scope_item();
+            policy_results_widget->update(current_scope);
+        });
+
+    dialog->open();
+}
+
+void policy_action_rename(ConsoleWidget *console) {
+    auto dialog = new RenamePolicyDialog(console);
+    dialog->open();
+}
+
+void policy_action_delete(ConsoleWidget *console) {
+    const bool confirmed = confirmation_dialog(QCoreApplication::translate("console_policy", "Are you sure you want to delete this policy and all of it's links?"), console);
+    if (!confirmed) {
+        return;
+    }
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    const QList<QPersistentModelIndex> index_list = persistent_index_list(console->get_selected_items());
+
+    for (const QPersistentModelIndex &index : index_list) {
+        const QString dn = index.data(PolicyRole_DN).toString();
+        const bool success = ad.gpo_delete(dn);
+
+        // NOTE: object may get deleted successfuly but
+        // deleting GPT fails which makes gpo_delete() fail
+        // as a whole, but we still want to remove gpo from
+        // the console in that case
+        const AdObject gpo_object = ad.search_object(dn);
+        const bool object_deleted = gpo_object.is_empty();
+
+        if (success || object_deleted) {
+            console->delete_item(index);
+        }
+    }
+
+    hide_busy_indicator();
+
+    g_status()->display_ad_messages(ad, console);
+}
+
+void policy_action_edit(ConsoleWidget *console) {
+    const QString dn = get_selected_dn(console, PolicyRole_DN);
+
+    const QString filesys_path = [&]() {
+        AdInterface ad;
+        if (ad_failed(ad)) {
+            return QString();
+        }
+
+        const AdObject object = ad.search_object(dn);
+        const QString out = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+
+        return out;
+    }();
+
+    auto process = new QProcess(console);
+    process->setProgram("gpui");
+
+    const QList<QString> args = {
+        dn,
+        filesys_path,
+    };
+    process->setArguments(args);
+
+    QObject::connect(
+        process, &QProcess::errorOccurred,
+        [console](QProcess::ProcessError error) {
+            const bool failed_to_start = (error == QProcess::FailedToStart);
+
+            if (failed_to_start) {
+                const QString error_text = "Failed to start gpui. Check that it's installed.";
+                qDebug() << error_text;
+                g_status()->add_message(error_text, StatusType_Error);
+                error_log({error_text}, console);
+            }
+        });
+
+    process->start(QIODevice::ReadOnly);
+}
+
+void connect_policy_actions(ConsoleWidget *console, ConsoleActions *actions, PolicyResultsWidget *policy_results_widget) {
+    QObject::connect(
+        actions->get(ConsoleAction_PolicyCreate), &QAction::triggered,
+        [=]() {
+            policy_action_create(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_PolicyAddLink), &QAction::triggered,
+        [=]() {
+            policy_action_add_link(console, policy_results_widget);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_PolicyRename), &QAction::triggered,
+        [=]() {
+            policy_action_rename(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_PolicyDelete), &QAction::triggered,
+        [=]() {
+            policy_action_delete(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_PolicyEdit), &QAction::triggered,
+        [=]() {
+            policy_action_edit(console);
+        });
 }
