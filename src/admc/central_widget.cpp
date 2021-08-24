@@ -27,10 +27,7 @@
 #include "console_types/console_query.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
-#include "create_query_folder_dialog.h"
-#include "create_query_item_dialog.h"
-#include "edit_query_folder_dialog.h"
-#include "edit_query_item_dialog.h"
+
 #include "filter_dialog.h"
 #include "globals.h"
 #include "gplink.h"
@@ -65,8 +62,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     console = new ConsoleWidget();
 
     filter_dialog = new FilterDialog(this);
-    auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
-    auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
 
     auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
@@ -98,6 +93,7 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     connect_object_actions(console, console_actions);
     connect_policy_actions(console, console_actions, policy_results_widget);
+    connect_query_actions(console, console_actions);
 
     connect(
         show_noncontainers_action, &QAction::toggled,
@@ -132,37 +128,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
         this, &CentralWidget::refresh_head);
 
     connect(
-        console_actions->get(ConsoleAction_QueryCreateFolder), &QAction::triggered,
-        create_query_folder_dialog, &CreateQueryFolderDialog::open);
-    connect(
-        console_actions->get(ConsoleAction_QueryCreateItem), &QAction::triggered,
-        this, &CentralWidget::query_create);
-    connect(
-        console_actions->get(ConsoleAction_QueryEditFolder), &QAction::triggered,
-        edit_query_folder_dialog, &QDialog::open);
-    connect(
-        console_actions->get(ConsoleAction_QueryEditItem), &QAction::triggered,
-        this, &CentralWidget::query_edit);
-    connect(
-        console_actions->get(ConsoleAction_QueryCutItemOrFolder), &QAction::triggered,
-        this, &CentralWidget::query_cut);
-    connect(
-        console_actions->get(ConsoleAction_QueryCopyItemOrFolder), &QAction::triggered,
-        this, &CentralWidget::query_copy);
-    connect(
-        console_actions->get(ConsoleAction_QueryPasteItemOrFolder), &QAction::triggered,
-        this, &CentralWidget::query_paste);
-    connect(
-        console_actions->get(ConsoleAction_QueryDeleteItemOrFolder), &QAction::triggered,
-        this, &CentralWidget::query_delete);
-    connect(
-        console_actions->get(ConsoleAction_QueryExport), &QAction::triggered,
-        this, &CentralWidget::query_export);
-    connect(
-        console_actions->get(ConsoleAction_QueryImport), &QAction::triggered,
-        this, &CentralWidget::query_import);
-
-    connect(
         console, &ConsoleWidget::current_scope_item_changed,
         this, &CentralWidget::on_current_scope_changed);
     connect(
@@ -194,46 +159,6 @@ void CentralWidget::on_actions_changed() {
     const QList<QModelIndex> selected_list = console->get_selected_items();
 
     console_actions->update_actions_visibility(selected_list);
-}
-
-void CentralWidget::query_create() {
-    auto dialog = new CreateQueryItemDialog(console);
-    dialog->open();
-}
-
-void CentralWidget::query_edit() {
-    auto dialog = new EditQueryItemDialog(console);
-    dialog->open();
-}
-
-void CentralWidget::query_delete() {
-    const QList<QPersistentModelIndex> selected_indexes = persistent_index_list(console->get_selected_items());
-
-    for (const QPersistentModelIndex &index : selected_indexes) {
-        console->delete_item(index);
-    }
-
-    console_query_tree_save(console);
-}
-
-void CentralWidget::query_export() {
-    console_query_export(console);
-}
-
-void CentralWidget::query_import() {
-    console_query_import(console);
-}
-
-void CentralWidget::query_cut() {
-    console_query_cut(console);
-}
-
-void CentralWidget::query_copy() {
-    console_query_copy(console);
-}
-
-void CentralWidget::query_paste() {
-    console_query_paste(console);
 }
 
 void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {

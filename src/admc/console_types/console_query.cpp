@@ -27,6 +27,10 @@
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
+#include "create_query_folder_dialog.h"
+#include "create_query_item_dialog.h"
+#include "edit_query_folder_dialog.h"
+#include "edit_query_item_dialog.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -449,7 +453,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
     console_query_tree_save(console);
 }
 
-void console_query_export(ConsoleWidget *console) {
+void query_action_export(ConsoleWidget *console) {
     const QModelIndex index = console->get_selected_item();
 
     const QString file_path = [&]() {
@@ -476,7 +480,7 @@ void console_query_export(ConsoleWidget *console) {
     file.write(json_bytes);
 }
 
-void console_query_import(ConsoleWidget *console) {
+void query_action_import(ConsoleWidget *console) {
     const QModelIndex parent_index = console->get_selected_item();
 
     const QString file_path = [&]() {
@@ -517,17 +521,17 @@ void console_query_import(ConsoleWidget *console) {
     console_query_tree_save(console);
 }
 
-void console_query_cut(ConsoleWidget *console) {
+void query_action_cut(ConsoleWidget *console) {
     copied_index = console->get_selected_item();
     copied_index_is_cut = true;
 }
 
-void console_query_copy(ConsoleWidget *console) {
+void query_action_copy(ConsoleWidget *console) {
     copied_index = console->get_selected_item();
     copied_index_is_cut = false;
 }
 
-void console_query_paste(ConsoleWidget *console) {
+void query_action_paste(ConsoleWidget *console) {
     const QModelIndex parent_index = console->get_selected_item();
     const bool delete_old_branch = copied_index_is_cut;
     console_query_move(console, {copied_index}, parent_index, delete_old_branch);
@@ -573,4 +577,87 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
 
 QStandardItem *console_query_head() {
     return query_tree_head;
+}
+
+void query_action_create_item(ConsoleWidget *console) {
+    auto dialog = new CreateQueryItemDialog(console);
+    dialog->open();
+}
+
+void query_action_create_folder(ConsoleWidget *console) {
+    auto dialog = new CreateQueryFolderDialog(console);
+    dialog->open();
+}
+
+void query_action_edit_item(ConsoleWidget *console) {
+    auto dialog = new EditQueryItemDialog(console);
+    dialog->open();
+}
+
+void query_action_edit_folder(ConsoleWidget *console) {
+    auto dialog = new EditQueryFolderDialog(console);
+    dialog->open();
+}
+
+void query_action_delete(ConsoleWidget *console) {
+    const QList<QPersistentModelIndex> selected_indexes = persistent_index_list(console->get_selected_items());
+
+    for (const QPersistentModelIndex &index : selected_indexes) {
+        console->delete_item(index);
+    }
+
+    console_query_tree_save(console);
+}
+
+void connect_query_actions(ConsoleWidget *console, ConsoleActions *actions) {
+    QObject::connect(
+        actions->get(ConsoleAction_QueryCreateFolder), &QAction::triggered,
+        [=]() {
+            query_action_create_folder(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_QueryCreateItem), &QAction::triggered,
+        [=]() {
+            query_action_create_item(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_QueryEditFolder), &QAction::triggered,
+        [=]() {
+            query_action_edit_folder(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_QueryEditItem), &QAction::triggered,
+        [=]() {
+            query_action_edit_item(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_QueryCutItemOrFolder), &QAction::triggered,
+        [=]() {
+            query_action_cut(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_QueryCopyItemOrFolder), &QAction::triggered,
+        [=]() {
+            query_action_copy(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_QueryPasteItemOrFolder), &QAction::triggered,
+        [=]() {
+            query_action_paste(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_QueryDeleteItemOrFolder), &QAction::triggered,
+        [=]() {
+            query_action_delete(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_QueryExport), &QAction::triggered,
+        [=]() {
+            query_action_export(console);
+        });
+    QObject::connect(
+        actions->get(ConsoleAction_QueryImport), &QAction::triggered,
+        [=]() {
+            query_action_import(console);
+        });
 }

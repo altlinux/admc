@@ -72,15 +72,6 @@ signals:
     void context_menu(const QPoint pos);
 
 private slots:
-    void query_create();
-    void query_edit();
-    void query_delete();
-    void query_export();
-    void query_import();
-    void query_cut();
-    void query_copy();
-    void query_paste();
-
     void on_items_can_drop(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target, bool *ok);
     void on_items_dropped(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target);
 
