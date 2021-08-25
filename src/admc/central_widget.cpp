@@ -63,15 +63,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     filter_dialog = new FilterDialog(this);
 
-    auto console_object = new ConsoleObject(filter_dialog, console);
-    console->register_type(ItemType_Object, console_object);
-
-    auto console_policy_root = new ConsolePolicyRoot(console);
-    console->register_type(ItemType_PolicyRoot, console_policy_root);
-
-    auto console_query_item = new ConsoleQueryItem(console);
-    console->register_type(ItemType_QueryItem, console_query_item);
-
     auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
@@ -85,6 +76,15 @@ CentralWidget::CentralWidget(AdInterface &ad)
     auto query_results = new ResultsView(this);
     query_results->detail_view()->header()->setDefaultSectionSize(200);
     console_query_folder_results_id = console->register_results(query_results, console_query_folder_header_labels(), console_query_folder_default_columns());
+
+    auto console_object = new ConsoleObject(policy_results_widget, filter_dialog, console);
+    console->register_type(ItemType_Object, console_object);
+
+    auto console_policy_root = new ConsolePolicyRoot(console);
+    console->register_type(ItemType_PolicyRoot, console_policy_root);
+
+    auto console_query_item = new ConsoleQueryItem(console);
+    console->register_type(ItemType_QueryItem, console_query_item);
 
     // NOTE: requires all results to be initialized
     console_object_tree_init(console, ad);
@@ -191,7 +191,6 @@ void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &droppe
     switch (target_type) {
         case ItemType_Unassigned: break;
         case ItemType_Object: {
-            console_object_can_drop(dropped_list, target, dropped_types, ok);
             break;
         }
         case ItemType_PolicyRoot: break;
@@ -228,7 +227,6 @@ void CentralWidget::on_items_dropped(const QList<QPersistentModelIndex> &dropped
     switch (target_type) {
         case ItemType_Unassigned: break;
         case ItemType_Object: {
-            console_object_drop(console, dropped_list, dropped_types, target, policy_results_widget);
             break;
         }
         case ItemType_PolicyRoot: break;

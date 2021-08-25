@@ -66,8 +66,6 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
-void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
-void console_object_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
 void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
 void console_object_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 
@@ -89,12 +87,15 @@ class ConsoleObject final : public ConsoleType {
     Q_OBJECT
 
 public:
-    ConsoleObject(FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg);
+    ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg);
 
     void fetch(const QModelIndex &index);
+    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
+    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
 
 private:
     FilterDialog *filter_dialog;
+    PolicyResultsWidget *policy_results_widget;
 };
 
 #endif /* CONSOLE_OBJECT_H */

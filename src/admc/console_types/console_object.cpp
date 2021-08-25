@@ -415,9 +415,9 @@ QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad)
     return object_tree_head;
 }
 
-void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
-    const bool dropped_are_all_objects = (dropped_types.size() == 1 && dropped_types.contains(ItemType_Object));
-    const bool dropped_are_policies = (dropped_types == QSet<ItemType>({ItemType_Policy}));
+bool ConsoleObject::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    const bool dropped_are_all_objects = (dropped_type_list.size() == 1 && dropped_type_list.contains(ItemType_Object));
+    const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
     if (dropped_are_all_objects) {
         // NOTE: always allow dropping when dragging multiple
@@ -425,25 +425,27 @@ void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, c
         // dropped and if others fail to drop it's not a big
         // deal.
         if (dropped_list.size() != 1) {
-            *ok = true;
+            return true;
         } else {
             const QPersistentModelIndex dropped = dropped_list[0];
 
             const DropType drop_type = console_object_get_drop_type(dropped, target);
             const bool can_drop = (drop_type != DropType_None);
 
-            *ok = can_drop;
+            return can_drop;
         }
     } else if (dropped_are_policies) {
         const bool target_is_ou = console_object_is_ou(target);
 
-        *ok = target_is_ou;
+        return target_is_ou;
+    } else {
+        return false;
     }
 }
 
-void console_object_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget) {
-    const bool dropped_are_all_objects = (dropped_types.size() == 1 && dropped_types.contains(ItemType_Object));
-    const bool dropped_are_policies = (dropped_types == QSet<ItemType>({ItemType_Policy}));
+void ConsoleObject::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    const bool dropped_are_all_objects = (dropped_type_list.size() == 1 && dropped_type_list.contains(ItemType_Object));
+    const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
     if (dropped_are_all_objects) {
         console_object_drop_objects(console, dropped_list, target);
@@ -1113,7 +1115,8 @@ void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions) {
         });
 }
 
-ConsoleObject::ConsoleObject(FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg)
+ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg)
 : ConsoleType(console_arg) {
+    policy_results_widget = policy_results_widget_arg;
     filter_dialog = filter_dialog_arg;
 }
