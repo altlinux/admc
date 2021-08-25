@@ -652,16 +652,9 @@ void connect_query_actions(ConsoleWidget *console, ConsoleActions *actions) {
 }
 
 QString ConsoleQueryItem::get_description(const QModelIndex &index) const {
-    const QString object_count_text = [&]() {
-        const int count = console->get_child_count(index);
-        const QString out_text = tr("%n object(s)", "", count);
+    const QString object_count_text = console_object_count_string(console, index);
 
-        return out_text;
-    }();
-
-    const QString out = object_count_text;
-
-    return out;
+    return object_count_text;
 }
 
 // NOTE: query folders and query root share drop logic

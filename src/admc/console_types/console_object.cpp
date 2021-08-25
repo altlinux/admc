@@ -1116,6 +1116,13 @@ void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions) {
         });
 }
 
+QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index) {
+    const int count = console->get_child_count(index);
+    const QString out = QCoreApplication::translate("console_object", "%n object(s)", "", count);
+
+    return out;
+}
+
 ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg)
 : ConsoleType(console_arg) {
     policy_results_widget = policy_results_widget_arg;
@@ -1125,12 +1132,7 @@ ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, Fil
 QString ConsoleObject::get_description(const QModelIndex &index) const {
     QString out;
 
-    const QString object_count_text = [&]() {
-        const int count = console->get_child_count(index);
-        const QString out_text = tr("%n object(s)", "", count);
-
-        return out_text;
-    }();
+    const QString object_count_text = console_object_count_string(console, index);
 
     out += object_count_text;
 

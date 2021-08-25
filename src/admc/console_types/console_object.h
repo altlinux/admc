@@ -83,6 +83,8 @@ QStandardItem *console_object_head();
 
 void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions);
 
+QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
+
 class ConsoleObject final : public ConsoleType {
     Q_OBJECT
 
