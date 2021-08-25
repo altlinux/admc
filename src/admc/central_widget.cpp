@@ -56,7 +56,7 @@ CentralWidget::CentralWidget(AdInterface &ad)
     show_noncontainers_action = settings_make_action(SETTING_show_non_containers_in_console_tree, tr("&Show non-container objects in Console tree"), this);
     advanced_features_action = settings_make_action(SETTING_advanced_features, tr("Advanced features"), this);
 
-    toggle_console_tree_action = settings_make_action(SETTING_advanced_features, tr("Console Tree"), this);
+    toggle_console_tree_action = settings_make_action(SETTING_show_console_tree, tr("Console Tree"), this);
     toggle_description_bar_action = settings_make_action(SETTING_show_results_header, tr("Description Bar"), this);
 
     console = new ConsoleWidget();
@@ -211,14 +211,14 @@ void CentralWidget::on_advanced_features() {
 void CentralWidget::on_toggle_console_tree() {
     const bool visible = toggle_console_tree_action->isChecked();
     
-    settings_set_bool(SETTING_advanced_features, visible);
+    settings_set_bool(SETTING_show_console_tree, visible);
     console->get_scope_view()->setVisible(visible);
 }
 
 void CentralWidget::on_toggle_description_bar() {
     const bool visible = toggle_description_bar_action->isChecked();
     
-    settings_set_bool(SETTING_advanced_features, visible);
+    settings_set_bool(SETTING_show_results_header, visible);
     console->get_description_bar()->setVisible(visible);
 }
 
