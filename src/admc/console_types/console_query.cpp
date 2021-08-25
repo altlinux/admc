@@ -651,6 +651,19 @@ void connect_query_actions(ConsoleWidget *console, ConsoleActions *actions) {
         });
 }
 
+QString ConsoleQueryItem::get_description(const QModelIndex &index) const {
+    const QString object_count_text = [&]() {
+        const int count = console->get_child_count(index);
+        const QString out_text = tr("%n object(s)", "", count);
+
+        return out_text;
+    }();
+
+    const QString out = object_count_text;
+
+    return out;
+}
+
 // NOTE: query folders and query root share drop logic
 bool ConsoleQueryFolder::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     return console_query_folder_can_drop(dropped_list, dropped_type_list, target, target_type);

@@ -77,6 +77,7 @@ public:
     using ConsoleType::ConsoleType;
 
     void fetch(const QModelIndex &index);
+    QString get_description(const QModelIndex &index) const;
 };
 
 class ConsoleQueryFolder final : public ConsoleType {
