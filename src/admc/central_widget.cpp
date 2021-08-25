@@ -63,6 +63,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     filter_dialog = new FilterDialog(this);
 
+    //
+    // Register console results
+    //
     auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
@@ -77,6 +80,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
     query_results->detail_view()->header()->setDefaultSectionSize(200);
     console_query_folder_results_id = console->register_results(query_results, console_query_folder_header_labels(), console_query_folder_default_columns());
 
+    //
+    // Register console types
+    //
     auto console_object = new ConsoleObject(policy_results_widget, filter_dialog, console);
     console->register_type(ItemType_Object, console_object);
 
@@ -95,6 +101,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
     auto console_query_root = new ConsoleQueryRoot(console);
     console->register_type(ItemType_QueryRoot, console_query_root);
 
+    //
+    //
+    //
     // NOTE: requires all results to be initialized
     console_object_tree_init(console, ad);
     console_policy_tree_init(console, ad);
@@ -174,6 +183,12 @@ void CentralWidget::on_current_scope_changed() {
         policy_results_widget->update(current_scope);
     }
 }
+
+// NOTE: f-ns below need to manually change a setting and
+// then refresh_object_tree() because setting needs to be
+// changed before tree is refreshed. If you do this in a
+// more convenient way by connecting as a slot, call order
+// will be undefined.
 
 void CentralWidget::on_show_non_containers() {
     settings_set_bool(SETTING_show_non_containers_in_console_tree, show_noncontainers_action->isChecked());

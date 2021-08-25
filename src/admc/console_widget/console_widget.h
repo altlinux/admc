@@ -82,6 +82,20 @@ class ConsoleWidget final : public QWidget {
 public:
     ConsoleWidget(QWidget *parent = nullptr);
 
+    // Register results to be used later for scope items.
+    // Must be done BEFORE adding items. Results can be just
+    // a widget, a tree view or a widget that contains a
+    // tree view. Returns the unique id assigned to this
+    // results view, which should be used when creating
+    // scope items. Note that if results is just a widget,
+    // then you can't add or get results rows. Note that
+    // call order is important for correct state restoration
+    // so register your results in the same order every
+    // time.
+    int register_results(QWidget *widget);
+    int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+    int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+
     // NOTE: you must register types before adding items
     void register_type(const int type_id, ConsoleType *type);
 
@@ -101,11 +115,11 @@ public:
     //
     // "scope_type" - scope items can be static or dynamic.
     // Static scope items should be loaded once and never
-    // change after that. Dynamic scope items should be
-    // loaded when item_fetched() signal is emitted for that
-    // scope item. Note that dynamic scope items can be
-    // fetched again via the refresh_scope() f-n or
-    // "Refresh" action of the item menu.
+    // change after that. Dynamic scope items will trigger a
+    // fetch() call on their assigned ConsoleType. Note that
+    // dynamic scope items can be fetched again via the
+    // refresh_scope() f-n or "Refresh" action of the item
+    // menu.
     QStandardItem *add_top_item(const int results_id, const ScopeNodeType scope_type);
     QList<QStandardItem *> add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
     QList<QStandardItem *> add_results_item(const QModelIndex &parent);
@@ -121,23 +135,9 @@ public:
     // Sets current scope item in the scope tree
     void set_current_scope(const QModelIndex &index);
 
-    // Clears children of this scope item, then emits
-    // item_fetched() signal so that the scope item can be
-    // reloaded.
+    // Clears children of this scope item, then fetches them
+    // again.
     void refresh_scope(const QModelIndex &index);
-
-    // Register results to be used later for scope items.
-    // Results can be just a widget, a tree view or a widget
-    // that contains a tree view. Returns the unique id
-    // assigned to this results view, which should be used
-    // when creating scope items. Note that if results is
-    // just a widget, then you can't add or get results
-    // rows. Note that call order is important for correct
-    // state restoration so register your results in
-    // the same order every time.
-    int register_results(QWidget *widget);
-    int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
-    int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
     void set_description_bar_text(const QString &text);
 
