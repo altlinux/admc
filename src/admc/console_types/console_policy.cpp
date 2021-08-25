@@ -112,10 +112,10 @@ void console_policy_actions_get_state(const QModelIndex &index, const bool singl
     }
 }
 
-void console_policy_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
-    const bool dropped_are_objects = (dropped_types == QSet<ItemType>({ItemType_Object}));
+bool ConsolePolicy::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    const bool dropped_are_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
     if (!dropped_are_objects) {
-        return;
+        return false;
     }
 
     const bool dropped_contain_ou = [&]() {
@@ -128,14 +128,10 @@ void console_policy_can_drop(const QList<QPersistentModelIndex> &dropped_list, c
         return false;
     }();
 
-    if (!dropped_contain_ou) {
-        return;
-    }
-
-    *ok = true;
+    return dropped_contain_ou;
 }
 
-void console_policy_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget) {
+void ConsolePolicy::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     const QString policy_dn = target.data(PolicyRole_DN).toString();
     const QList<QString> policy_list = {policy_dn};
 
@@ -360,4 +356,9 @@ void connect_policy_actions(ConsoleWidget *console, ConsoleActions *actions, Pol
         [=]() {
             policy_action_edit(console);
         });
+}
+
+ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg)
+: ConsoleType(console_arg) {
+    policy_results_widget = policy_results_widget_arg;
 }

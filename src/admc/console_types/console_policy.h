@@ -69,4 +69,17 @@ public:
     void fetch(const QModelIndex &index);
 };
 
+class ConsolePolicy final : public ConsoleType {
+    Q_OBJECT
+
+public:
+    ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg);
+
+    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
+    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
+
+private:
+    PolicyResultsWidget *policy_results_widget;
+};
+
 #endif /* CONSOLE_POLICY_H */

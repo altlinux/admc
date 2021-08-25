@@ -83,6 +83,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
     auto console_policy_root = new ConsolePolicyRoot(console);
     console->register_type(ItemType_PolicyRoot, console_policy_root);
 
+    auto console_policy = new ConsolePolicy(policy_results_widget, console);
+    console->register_type(ItemType_Policy, console_policy);
+
     auto console_query_item = new ConsoleQueryItem(console);
     console->register_type(ItemType_QueryItem, console_query_item);
 
@@ -195,7 +198,6 @@ void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &droppe
         }
         case ItemType_PolicyRoot: break;
         case ItemType_Policy: {
-            console_policy_can_drop(dropped_list, target, dropped_types, ok);
             break;
         }
         case ItemType_QueryRoot: {
@@ -231,7 +233,6 @@ void CentralWidget::on_items_dropped(const QList<QPersistentModelIndex> &dropped
         }
         case ItemType_PolicyRoot: break;
         case ItemType_Policy: {
-            console_policy_drop(console, dropped_list, target, policy_results_widget);
             break;
         }
         case ItemType_QueryRoot: {
