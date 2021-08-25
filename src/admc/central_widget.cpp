@@ -215,38 +215,6 @@ void CentralWidget::refresh_object_tree() {
     hide_busy_indicator();
 }
 
-void CentralWidget::update_description_bar() {
-    const QString text = [this]() {
-        const QModelIndex current_scope = console->get_current_scope_item();
-        const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
-
-        const QString object_count_text = [&]() {
-            // const int results_count = console->get_current_results_count();
-            const int results_count = 0;
-            const QString out = tr("%n object(s)", "", results_count);
-
-            return out;
-        }();
-
-        if (type == ItemType_Object) {
-            QString out = object_count_text;
-
-            const bool filtering_ON = filter_dialog->filtering_ON();
-            if (filtering_ON) {
-                out += tr(" [Filtering enabled]");
-            }
-
-            return out;
-        } else if (type == ItemType_QueryItem) {
-            return object_count_text;
-        } else {
-            return QString();
-        }
-    }();
-
-    console->set_description_bar_text(text);
-}
-
 void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     console_actions->add_to_menu(action_menu);
 

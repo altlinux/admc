@@ -96,7 +96,6 @@ private:
     QAction *toggle_console_tree_action;
     QAction *toggle_description_bar_action;
 
-    void update_description_bar();
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();
     void refresh_object_tree();
