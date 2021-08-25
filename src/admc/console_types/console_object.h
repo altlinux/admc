@@ -92,6 +92,7 @@ public:
     void fetch(const QModelIndex &index);
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
+    QString get_description(const QModelIndex &index) const;
 
 private:
     FilterDialog *filter_dialog;

@@ -163,7 +163,7 @@ public:
     QList<QModelIndex> search_items(const QModelIndex &parent, int role, const QVariant &value, const int type = -1) const;
 
     QModelIndex get_current_scope_item() const;
-    int get_current_results_count() const;
+    int get_child_count(const QModelIndex &index) const;
 
     QStandardItem *get_item(const QModelIndex &index) const;
     QList<QStandardItem *> get_row(const QModelIndex &index) const;
@@ -188,13 +188,6 @@ signals:
     // Emitted when a properties dialog is requested via the
     // action menu for a scope or results item.
     void properties_requested();
-
-    // Emitted when item count changes in one of results,
-    // due to items getting added or deleted. Note that this
-    // can be emitted for a non-current results as well.
-    // Useful if you want to display results count in
-    // description bar.
-    void results_count_changed();
 
     // Emitted when actions need to updated due to selection
     // changing.

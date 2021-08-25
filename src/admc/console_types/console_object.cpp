@@ -43,6 +43,7 @@
 #include "editors/multi_editor.h"
 #include "filter_dialog.h"
 
+#include <QDebug>
 #include <QMenu>
 #include <QSet>
 #include <QStandardItemModel>
@@ -1119,4 +1120,24 @@ ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, Fil
 : ConsoleType(console_arg) {
     policy_results_widget = policy_results_widget_arg;
     filter_dialog = filter_dialog_arg;
+}
+
+QString ConsoleObject::get_description(const QModelIndex &index) const {
+    QString out;
+
+    const QString object_count_text = [&]() {
+        const int count = console->get_child_count(index);
+        const QString out_text = tr("%n object(s)", "", count);
+
+        return out_text;
+    }();
+
+    out += object_count_text;
+
+    const bool filtering_ON = filter_dialog->filtering_ON();
+    if (filtering_ON) {
+        out += tr(" [Filtering enabled]");
+    }
+
+    return out;
 }

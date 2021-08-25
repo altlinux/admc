@@ -151,12 +151,14 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     connect(
         d->model, &QStandardItemModel::rowsAboutToBeRemoved,
         d, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
+
+    // Update description bar when results count changes
     connect(
         d->model, &QAbstractItemModel::rowsInserted,
-        this, &ConsoleWidget::results_count_changed);
+        d, &ConsoleWidgetPrivate::update_description);
     connect(
         d->model, &QAbstractItemModel::rowsRemoved,
-        this, &ConsoleWidget::results_count_changed);
+        d, &ConsoleWidgetPrivate::update_description);
 
     // TODO: for now properties are opened by user of console
     // widget but in the future it's planned to move this stuff
@@ -369,15 +371,7 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
 }
 
 void ConsoleWidget::set_description_bar_text(const QString &text) {
-    const QString scope_name = [this]() {
-        const QModelIndex current_scope = get_current_scope_item();
-        const QString out = current_scope.data().toString();
 
-        return out;
-    }();
-
-    d->description_bar_left->setText(scope_name);
-    d->description_bar_right->setText(text);
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
@@ -476,10 +470,10 @@ QModelIndex ConsoleWidget::get_current_scope_item() const {
     }
 }
 
-int ConsoleWidget::get_current_results_count() const {
-    const QModelIndex current_scope = get_current_scope_item();
+int ConsoleWidget::get_child_count(const QModelIndex &index) const {
+    const int out = d->model->rowCount(index);
 
-    return d->model->rowCount(current_scope);
+    return out;
 }
 
 QStandardItem *ConsoleWidget::get_item(const QModelIndex &index) const {
@@ -667,6 +661,8 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
     update_view_actions();
 
     fetch_scope(current);
+
+    update_description();
 
     emit q->current_scope_item_changed(current);
 }
@@ -982,6 +978,18 @@ ConsoleType *ConsoleWidgetPrivate::get_type(const QModelIndex &index) const {
     ConsoleType *type = type_map.value(type_id, default_type);
 
     return type;
+}
+
+void ConsoleWidgetPrivate::update_description() {
+    const QModelIndex current_scope = q->get_current_scope_item();
+
+    const QString scope_name = current_scope.data().toString();
+
+    ConsoleType *type = get_type(current_scope);
+    const QString description = type->get_description(current_scope);
+
+    description_bar_left->setText(scope_name);
+    description_bar_right->setText(description);
 }
 
 QString results_state_name(const int results_id) {

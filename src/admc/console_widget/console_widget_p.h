@@ -133,6 +133,7 @@ public:
     void fetch_scope(const QModelIndex &index);
     const ResultsDescription get_current_results() const;
     ConsoleType *get_type(const QModelIndex &index) const;
+    void update_description();
 };
 
 #endif /* CONSOLE_WIDGET_P_H */

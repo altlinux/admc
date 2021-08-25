@@ -149,9 +149,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
         console, &ConsoleWidget::current_scope_item_changed,
         this, &CentralWidget::on_current_scope_changed);
     connect(
-        console, &ConsoleWidget::results_count_changed,
-        this, &CentralWidget::update_description_bar);
-    connect(
         console, &ConsoleWidget::actions_changed,
         this, &CentralWidget::on_actions_changed);
 
@@ -172,9 +169,10 @@ void CentralWidget::on_actions_changed() {
 
 void CentralWidget::on_current_scope_changed() {
     const QModelIndex current_scope = console->get_current_scope_item();
-    policy_results_widget->update(current_scope);
-
-    update_description_bar();
+    const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
+    if (type == ItemType_Policy) {
+        policy_results_widget->update(current_scope);
+    }
 }
 
 void CentralWidget::on_show_non_containers() {
@@ -223,7 +221,8 @@ void CentralWidget::update_description_bar() {
         const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
 
         const QString object_count_text = [&]() {
-            const int results_count = console->get_current_results_count();
+            // const int results_count = console->get_current_results_count();
+            const int results_count = 0;
             const QString out = tr("%n object(s)", "", results_count);
 
             return out;

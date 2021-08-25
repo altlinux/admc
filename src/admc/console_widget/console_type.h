@@ -54,6 +54,8 @@ public:
     // operations as necessary.
     virtual void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
 
+    virtual QString get_description(const QModelIndex &index) const;
+
 protected:
     ConsoleWidget *console;
 };
