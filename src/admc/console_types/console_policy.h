@@ -66,7 +66,7 @@ class ConsolePolicyRoot final : public ConsoleType {
 public:
     using ConsoleType::ConsoleType;
 
-    void fetch(const QModelIndex &index);
+    void fetch(const QModelIndex &index) override;
 };
 
 class ConsolePolicy final : public ConsoleType {
@@ -75,8 +75,8 @@ class ConsolePolicy final : public ConsoleType {
 public:
     ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg);
 
-    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
-    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
+    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
+    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
 
 private:
     PolicyResultsWidget *policy_results_widget;

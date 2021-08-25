@@ -77,7 +77,7 @@ public:
     using ConsoleType::ConsoleType;
 
     void fetch(const QModelIndex &index);
-    QString get_description(const QModelIndex &index) const;
+    QString get_description(const QModelIndex &index) const override;
 };
 
 class ConsoleQueryFolder final : public ConsoleType {
@@ -86,8 +86,8 @@ class ConsoleQueryFolder final : public ConsoleType {
 public:
     using ConsoleType::ConsoleType;
 
-    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
-    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
+    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
+    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
 };
 
 class ConsoleQueryRoot final : public ConsoleType {
@@ -96,8 +96,8 @@ class ConsoleQueryRoot final : public ConsoleType {
 public:
     using ConsoleType::ConsoleType;
 
-    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
-    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
+    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
+    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
 };
 
 #endif /* CONSOLE_QUERY_H */
