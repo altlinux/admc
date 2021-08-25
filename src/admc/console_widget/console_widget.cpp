@@ -828,16 +828,33 @@ void ConsoleWidgetPrivate::navigate_forward() {
     update_navigation_actions();
 }
 
-void ConsoleWidgetPrivate::on_start_drag(const QList<QPersistentModelIndex> &dropped_arg) {
-    dropped = dropped_arg;
+void ConsoleWidgetPrivate::on_start_drag(const QList<QPersistentModelIndex> &dropped_list_arg) {
+    dropped_list = dropped_list_arg;
+
+    dropped_type_list = [&]() {
+        QSet<int> out;
+
+        for (const QPersistentModelIndex &index : dropped_list) {
+            const int type = index.data(ConsoleRole_Type).toInt();
+            out.insert(type);
+        }
+
+        return out;
+    }();
 }
 
 void ConsoleWidgetPrivate::on_can_drop(const QModelIndex &target, bool *ok) {
-    emit q->items_can_drop(dropped, target, ok);
+    const int target_type = target.data(ConsoleRole_Type).toInt();
+
+    ConsoleType *type = get_type(target);
+    *ok = type->can_drop(dropped_list, dropped_type_list, target, target_type);
 }
 
 void ConsoleWidgetPrivate::on_drop(const QModelIndex &target) {
-    emit q->items_dropped(dropped, target);
+    const int target_type = target.data(ConsoleRole_Type).toInt();
+    
+    ConsoleType *type = get_type(target);
+    type->drop(dropped_list, dropped_type_list, target, target_type);
 }
 
 void ConsoleWidgetPrivate::set_results_to_icons() {

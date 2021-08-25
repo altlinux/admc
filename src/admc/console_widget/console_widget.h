@@ -194,11 +194,9 @@ signals:
     // they can be dropped on target. Set "ok" to true if
     // items can be dropped, false if can't be dropped. "ok"
     // is set to false by default.
-    void items_can_drop(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target, bool *ok);
 
     // Emitted when items are dropped onto target. Modify
     // scope and results in the slot.
-    void items_dropped(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target);
 
     // Emitted when a properties dialog is requested via the
     // action menu for a scope or results item.

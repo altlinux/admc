@@ -30,3 +30,11 @@ ConsoleType::ConsoleType(ConsoleWidget *console_arg)
 void ConsoleType::fetch(const QModelIndex &index) {
 
 }
+
+bool ConsoleType::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    return false;
+}
+
+void ConsoleType::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+
+}

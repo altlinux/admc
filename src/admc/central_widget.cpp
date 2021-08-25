@@ -143,12 +143,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
         console, &ConsoleWidget::results_count_changed,
         this, &CentralWidget::update_description_bar);
     connect(
-        console, &ConsoleWidget::items_can_drop,
-        this, &CentralWidget::on_items_can_drop);
-    connect(
-        console, &ConsoleWidget::items_dropped,
-        this, &CentralWidget::on_items_dropped);
-    connect(
         console, &ConsoleWidget::actions_changed,
         this, &CentralWidget::on_actions_changed);
 

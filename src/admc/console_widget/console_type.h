@@ -35,6 +35,8 @@ public:
     ConsoleType(ConsoleWidget *console_arg);
 
     virtual void fetch(const QModelIndex &index);
+    virtual bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
+    virtual void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
 
 protected:
     ConsoleWidget *console;
