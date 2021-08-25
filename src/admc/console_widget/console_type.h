@@ -54,6 +54,9 @@ public:
     // operations as necessary.
     virtual void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
 
+    // Called when description bar text needs to be updated
+    // and currently selected scope item is of this type.
+    // Return whatever text should be displayed.
     virtual QString get_description(const QModelIndex &index) const;
 
 protected:
