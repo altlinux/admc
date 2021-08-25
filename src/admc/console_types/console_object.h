@@ -82,4 +82,6 @@ void console_object_load_domain_head_text(QStandardItem *item);
 
 QStandardItem *console_object_head();
 
+void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions);
+
 #endif /* CONSOLE_OBJECT_H */

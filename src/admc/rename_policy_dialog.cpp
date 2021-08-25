@@ -36,6 +36,8 @@
 
 RenamePolicyDialog::RenamePolicyDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {
+    setAttribute(Qt::WA_DeleteOnClose);
+    
     console = console_arg;
 
     setWindowTitle(tr("Rename Policy"));

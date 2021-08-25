@@ -72,47 +72,18 @@ signals:
     void context_menu(const QPoint pos);
 
 private slots:
-    void object_properties();
-    void object_delete();
-    void object_rename();
-    void object_move();
-    void object_add_to_group();
-    void object_enable();
-    void object_disable();
-    void object_find();
-    void object_reset_password();
-    void object_reset_computer_account();
-    void object_create_user();
-    void object_create_computer();
-    void object_create_ou();
-    void object_create_group();
-    void object_edit_upn_suffixes();
-    void object_change_dc();
-
-    void policy_add_link();
-    void policy_delete();
-    void policy_edit();
-
-    void query_create();
-    void query_edit();
-    void query_delete();
-    void query_export();
-    void query_import();
-    void query_cut();
-    void query_copy();
-    void query_paste();
-
     void on_items_can_drop(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target, bool *ok);
     void on_items_dropped(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target);
 
     void on_current_scope_changed();
-    void on_object_properties_applied();
 
     void on_show_non_containers();
     void on_dev_mode();
     void on_advanced_features();
     void on_toggle_console_tree();
     void on_toggle_description_bar();
+
+    void on_actions_changed();
 
 private:
     ConsoleWidget *console;
@@ -131,12 +102,8 @@ private:
     void update_description_bar();
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();
-    void object_create_helper(const QString &object_class);
-    QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
-    QList<QString> get_selected_dns();
-    QString get_selected_dn();
     void fetch_scope_node(const QModelIndex &index);
-    void refresh_head();
+    void refresh_object_tree();
 };
 
 #endif /* CENTRAL_WIDGET_H */
