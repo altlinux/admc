@@ -42,6 +42,8 @@
 #include <QToolBar>
 
 #define SPLITTER_STATE "SPLITTER_STATE"
+const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
+const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
 
 QString results_state_name(const int results_id);
 
@@ -100,6 +102,11 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->set_results_to_icons_action = new QAction(tr("&Icons"), this);
     d->set_results_to_list_action = new QAction(tr("&List"), this);
     d->set_results_to_detail_action = new QAction(tr("&Detail"), this);
+
+    d->toggle_console_tree_action = new QAction(tr("Console Tree"), this);
+    d->toggle_console_tree_action->setCheckable(true);
+    d->toggle_description_bar_action = new QAction(tr("Description Bar"), this);
+    d->toggle_description_bar_action->setCheckable(true);
 
     d->navigate_up_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_0));
     d->navigate_back_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_Minus));
@@ -194,6 +201,12 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     connect(
         d->set_results_to_detail_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::set_results_to_detail);
+    connect(
+        d->toggle_console_tree_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_toggle_console_tree);
+    connect(
+        d->toggle_description_bar_action, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_toggle_description_bar);
 
     connect(
         d->scope_view, &QWidget::customContextMenuRequested,
@@ -486,19 +499,14 @@ bool ConsoleWidget::item_was_fetched(const QModelIndex &index) const {
     return index.data(ConsoleRole_WasFetched).toBool();
 }
 
-QWidget *ConsoleWidget::get_scope_view() const {
-    return d->scope_view;
-}
-
-QWidget *ConsoleWidget::get_description_bar() const {
-    return d->description_bar;
-}
-
 QVariant ConsoleWidget::save_state() const {
     QHash<QString, QVariant> state;
 
     const QByteArray splitter_state = d->splitter->saveState();
     state[SPLITTER_STATE] = QVariant(splitter_state);
+
+    state[CONSOLE_TREE_STATE] = d->toggle_console_tree_action->isChecked();
+    state[DESCRIPTION_BAR_STATE] = d->toggle_description_bar_action->isChecked();
 
     for (const int results_id : d->results_descriptions.keys()) {
         const ResultsDescription results = d->results_descriptions[results_id];
@@ -516,6 +524,12 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
 
     const QByteArray splitter_state = state.value(SPLITTER_STATE, QVariant()).toByteArray();
     d->splitter->restoreState(splitter_state);
+
+    d->toggle_console_tree_action->setChecked(state[CONSOLE_TREE_STATE].toBool());
+    d->on_toggle_console_tree();
+
+    d->toggle_description_bar_action->setChecked(state[DESCRIPTION_BAR_STATE].toBool());
+    d->on_toggle_description_bar();
 
     for (const int results_id : d->results_descriptions.keys()) {
         ResultsDescription results = d->results_descriptions[results_id];
@@ -865,6 +879,16 @@ void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
     }
 }
 
+void ConsoleWidgetPrivate::on_toggle_console_tree() {
+    const bool visible = toggle_console_tree_action->isChecked();
+    scope_view->setVisible(visible);
+}
+
+void ConsoleWidgetPrivate::on_toggle_description_bar() {
+    const bool visible = toggle_description_bar_action->isChecked();
+    description_bar->setVisible(visible);
+}
+
 // NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
 void ConsoleWidgetPrivate::update_navigation_actions() {
     const bool can_navigate_up = [this]() {
@@ -889,7 +913,7 @@ void ConsoleWidgetPrivate::update_view_actions() {
     customize_columns_action->setVisible(results_view_exists);
 }
 
-void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QToolBar *toolbar) {
+void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     // Action
     action_menu->addAction(d->refresh_action);
     action_menu->addSeparator();
@@ -929,6 +953,9 @@ void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMen
     view_menu->addSeparator();
 
     view_menu->addAction(d->customize_columns_action);
+    
+    preferences_menu->addAction(d->toggle_console_tree_action);
+    preferences_menu->addAction(d->toggle_description_bar_action);
 
     // Toolbar
     toolbar->addAction(d->navigate_back_action);

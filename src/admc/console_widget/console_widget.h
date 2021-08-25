@@ -171,11 +171,7 @@ public:
 
     bool item_was_fetched(const QModelIndex &index) const;
 
-    void add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QToolBar *toolbar);
-
-    // These getters are only for showing/hiding these widgets
-    QWidget *get_scope_view() const;
-    QWidget *get_description_bar() const;
+    void add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
 
     QVariant save_state() const;
     // NOTE: all results should be registered before this is

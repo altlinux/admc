@@ -94,6 +94,8 @@ public:
     QAction *set_results_to_list_action;
     QAction *set_results_to_detail_action;
     QAction *customize_columns_action;
+    QAction *toggle_console_tree_action;
+    QAction *toggle_description_bar_action;
 
     QList<QPersistentModelIndex> dropped_list;
     QSet<int> dropped_type_list;
@@ -129,6 +131,8 @@ public:
     void set_results_to_list();
     void set_results_to_detail();
     void set_results_to_type(const ResultsViewType type);
+    void on_toggle_console_tree();
+    void on_toggle_description_bar();
     void fetch_scope(const QModelIndex &index);
     const ResultsDescription get_current_results() const;
     ConsoleType *get_type(const QModelIndex &index) const;

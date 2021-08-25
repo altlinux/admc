@@ -77,8 +77,6 @@ private slots:
     void on_show_non_containers();
     void on_dev_mode();
     void on_advanced_features();
-    void on_toggle_console_tree();
-    void on_toggle_description_bar();
 
     void on_actions_changed();
 
@@ -93,8 +91,6 @@ private:
     QAction *show_noncontainers_action;
     QAction *dev_mode_action;
     QAction *advanced_features_action;
-    QAction *toggle_console_tree_action;
-    QAction *toggle_description_bar_action;
 
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();

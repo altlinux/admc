@@ -56,9 +56,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     show_noncontainers_action = settings_make_action(SETTING_show_non_containers_in_console_tree, tr("&Show non-container objects in Console tree"), this);
     advanced_features_action = settings_make_action(SETTING_advanced_features, tr("Advanced features"), this);
 
-    toggle_console_tree_action = settings_make_action(SETTING_show_console_tree, tr("Console Tree"), this);
-    toggle_description_bar_action = settings_make_action(SETTING_show_results_header, tr("Description Bar"), this);
-
     console = new ConsoleWidget();
 
     filter_dialog = new FilterDialog(this);
@@ -138,16 +135,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     on_dev_mode();
 
     connect(
-        toggle_console_tree_action, &QAction::toggled,
-        this, &CentralWidget::on_toggle_console_tree);
-    on_toggle_console_tree();
-
-    connect(
-        toggle_description_bar_action, &QAction::toggled,
-        this, &CentralWidget::on_toggle_description_bar);
-    on_toggle_description_bar();
-
-    connect(
         open_filter_action, &QAction::triggered,
         filter_dialog, &QDialog::open);
     connect(
@@ -208,20 +195,6 @@ void CentralWidget::on_advanced_features() {
     refresh_object_tree();
 }
 
-void CentralWidget::on_toggle_console_tree() {
-    const bool visible = toggle_console_tree_action->isChecked();
-    
-    settings_set_bool(SETTING_show_console_tree, visible);
-    console->get_scope_view()->setVisible(visible);
-}
-
-void CentralWidget::on_toggle_description_bar() {
-    const bool visible = toggle_description_bar_action->isChecked();
-    
-    settings_set_bool(SETTING_show_results_header, visible);
-    console->get_description_bar()->setVisible(visible);
-}
-
 void CentralWidget::refresh_object_tree() {
     show_busy_indicator();
 
@@ -235,7 +208,9 @@ void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMen
 
     action_menu->addSeparator();
 
-    console->add_actions(action_menu, navigation_menu, view_menu, toolbar);
+    preferences_menu->addAction(advanced_features_action);
+
+    console->add_actions(action_menu, navigation_menu, view_menu, preferences_menu, toolbar);
 
     view_menu->addSeparator();
 
@@ -246,8 +221,4 @@ void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMen
 #ifdef QT_DEBUG
     view_menu->addAction(dev_mode_action);
 #endif
-
-    preferences_menu->addAction(advanced_features_action);
-    preferences_menu->addAction(toggle_console_tree_action);
-    preferences_menu->addAction(toggle_description_bar_action);
 }
