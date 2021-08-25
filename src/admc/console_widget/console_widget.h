@@ -182,21 +182,8 @@ public:
     void restore_state(const QVariant &state);
 
 signals:
-    // Emitted when a dynamic scope item is expanded or
-    // selected for the first time. User of this widget
-    // should connect to this signal and load item's
-    // children in the slot using add_item().
-
     // Emitted when current scope item changes.
     void current_scope_item_changed(const QModelIndex &index);
-
-    // Emitted while items are dragged to determine whether
-    // they can be dropped on target. Set "ok" to true if
-    // items can be dropped, false if can't be dropped. "ok"
-    // is set to false by default.
-
-    // Emitted when items are dropped onto target. Modify
-    // scope and results in the slot.
 
     // Emitted when a properties dialog is requested via the
     // action menu for a scope or results item.
