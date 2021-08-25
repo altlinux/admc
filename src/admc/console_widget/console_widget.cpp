@@ -210,7 +210,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     connect(
         d->scope_view, &QWidget::customContextMenuRequested,
-        this, &ConsoleWidget::context_menu);
+        d, &ConsoleWidgetPrivate::context_menu);
 
     connect(
         qApp, &QApplication::focusChanged,
@@ -367,7 +367,7 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
             d, &ConsoleWidgetPrivate::on_results_activated);
         connect(
             view, &ResultsView::context_menu,
-            this, &ConsoleWidget::context_menu);
+            d, &ConsoleWidgetPrivate::context_menu);
     }
 
     return id;
@@ -929,7 +929,7 @@ void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMen
 
     // Open action menu as context menu for central widget
     connect(
-        this, &ConsoleWidget::context_menu,
+        d, &ConsoleWidgetPrivate::context_menu,
         [=](const QPoint pos) {
             const QModelIndex index = d->focused_view->indexAt(pos);
 

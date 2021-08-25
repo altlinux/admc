@@ -26,13 +26,13 @@
  */
 
 #include "console_widget/results_view.h"
+#include "console_widget/results_description.h"
 
 #include <QCoreApplication>
 #include <QSet>
 
 class QLabel;
 class QStackedWidget;
-class ResultsDescription;
 class ScopeProxyModel;
 class ConsoleDragModel;
 class QStandardItemModel;
@@ -65,7 +65,7 @@ enum ConsoleRole {
 };
 
 class ConsoleWidgetPrivate : public QObject {
-    Q_DECLARE_TR_FUNCTIONS(ConsoleWidgetPrivate)
+    Q_OBJECT
 
 public:
     ConsoleWidget *q;
@@ -137,6 +137,9 @@ public:
     const ResultsDescription get_current_results() const;
     ConsoleType *get_type(const QModelIndex &index) const;
     void update_description();
+
+signals:
+    void context_menu(const QPoint pos);
 };
 
 #endif /* CONSOLE_WIDGET_P_H */

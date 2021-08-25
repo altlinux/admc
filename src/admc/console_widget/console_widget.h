@@ -189,11 +189,6 @@ signals:
     // Emitted when actions need to updated due to selection
     // changing.
     void actions_changed();
-
-    // Emitted when context menu needs to open, used
-    // internally.
-    void context_menu(const QPoint pos);
-
 private:
     ConsoleWidgetPrivate *d;
 
