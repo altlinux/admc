@@ -52,7 +52,7 @@ MainWindow::MainWindow()
 
     connection_options_dialog = new ConnectionOptionsDialog(this);
 
-    manual_action = new QAction(QIcon::fromTheme("help-faq"), tr("&Manual"), this);
+    manual_action = new QAction(QIcon::fromTheme("help-contents"), tr("&Manual"), this);
 
     message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle(tr("Message Log"));
