@@ -98,9 +98,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     auto console_query_root = new ConsoleQueryRoot(console);
     console->register_type(ItemType_QueryRoot, console_query_root);
 
-    //
-    //
-    //
     // NOTE: requires all results to be initialized
     console_object_tree_init(console, ad);
     console_policy_tree_init(console, ad);
