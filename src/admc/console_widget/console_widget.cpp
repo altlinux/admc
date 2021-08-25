@@ -203,16 +203,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         qApp, &QApplication::focusChanged,
         d, &ConsoleWidgetPrivate::on_focus_changed);
 
-    connect(
-        d->model, &ConsoleDragModel::start_drag,
-        d, &ConsoleWidgetPrivate::on_start_drag);
-    connect(
-        d->model, &ConsoleDragModel::can_drop,
-        d, &ConsoleWidgetPrivate::on_can_drop);
-    connect(
-        d->model, &ConsoleDragModel::drop,
-        d, &ConsoleWidgetPrivate::on_drop);
-
     d->update_navigation_actions();
     d->update_view_actions();
 }
@@ -824,7 +814,7 @@ void ConsoleWidgetPrivate::navigate_forward() {
     update_navigation_actions();
 }
 
-void ConsoleWidgetPrivate::on_start_drag(const QList<QPersistentModelIndex> &dropped_list_arg) {
+void ConsoleWidgetPrivate::start_drag(const QList<QPersistentModelIndex> &dropped_list_arg) {
     dropped_list = dropped_list_arg;
 
     dropped_type_list = [&]() {
@@ -839,14 +829,16 @@ void ConsoleWidgetPrivate::on_start_drag(const QList<QPersistentModelIndex> &dro
     }();
 }
 
-void ConsoleWidgetPrivate::on_can_drop(const QModelIndex &target, bool *ok) {
+bool ConsoleWidgetPrivate::can_drop(const QModelIndex &target) {
     const int target_type = target.data(ConsoleRole_Type).toInt();
 
     ConsoleType *type = get_type(target);
-    *ok = type->can_drop(dropped_list, dropped_type_list, target, target_type);
+    const bool ok = type->can_drop(dropped_list, dropped_type_list, target, target_type);
+
+    return ok;
 }
 
-void ConsoleWidgetPrivate::on_drop(const QModelIndex &target) {
+void ConsoleWidgetPrivate::drop(const QModelIndex &target) {
     const int target_type = target.data(ConsoleRole_Type).toInt();
     
     ConsoleType *type = get_type(target);

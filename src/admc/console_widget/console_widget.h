@@ -51,6 +51,7 @@ class QAbstractItemView;
 class QStandardItemModel;
 class QToolBar;
 class ConsoleType;
+class ConsoleDragModel;
 
 enum ConsoleRolePublic {
     ConsoleRole_Fetching = Qt::UserRole + 17,
@@ -199,6 +200,8 @@ signals:
 
 private:
     ConsoleWidgetPrivate *d;
+
+    friend ConsoleDragModel;
 };
 
 #endif /* CONSOLE_WIDGET_H */
