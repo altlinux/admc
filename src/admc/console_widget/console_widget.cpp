@@ -330,9 +330,7 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
 
     d->model->removeRows(0, d->model->rowCount(index), index);
 
-    // Emit item_fetched() so that user of console can
-    // reload item's results
-    emit item_fetched(index);
+    d->fetch_scope(index);
 }
 
 // No view, only widget
@@ -954,7 +952,8 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
     if (!was_fetched) {
         model->setData(index, true, ConsoleRole_WasFetched);
 
-        emit q->item_fetched(index);
+        ConsoleType *type = get_type(index);
+        type->fetch(index);
     }
 }
 

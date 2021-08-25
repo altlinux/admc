@@ -34,6 +34,8 @@ class ConsoleType : public QObject {
 public:
     ConsoleType(ConsoleWidget *console_arg);
 
+    virtual void fetch(const QModelIndex &index);
+
 protected:
     ConsoleWidget *console;
 };

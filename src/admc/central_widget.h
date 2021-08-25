@@ -102,7 +102,6 @@ private:
     void update_description_bar();
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();
-    void fetch_scope_node(const QModelIndex &index);
     void refresh_object_tree();
 };
 

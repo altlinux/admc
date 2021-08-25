@@ -41,6 +41,7 @@
 #include "object_multi_properties_dialog.h"
 #include "password_dialog.h"
 #include "editors/multi_editor.h"
+#include "filter_dialog.h"
 
 #include <QMenu>
 #include <QSet>
@@ -359,7 +360,7 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 
 // Load children of this item in scope tree
 // and load results linked to this scope item
-void console_object_fetch(ConsoleWidget *console, const QString &current_filter, const QModelIndex &index) {
+void ConsoleObject::fetch(const QModelIndex &index) {
     const QString base = index.data(ObjectRole_DN).toString();
 
     const SearchScope scope = SearchScope_Children;
@@ -375,6 +376,7 @@ void console_object_fetch(ConsoleWidget *console, const QString &current_filter,
         // NOTE: OR user filter with containers filter so
         // that container objects are always shown, even if
         // they are filtered out by user filter
+        const QString current_filter = filter_dialog->get_filter();
         out = filter_OR({current_filter, out});
 
         advanced_features_filter(out);
@@ -1109,4 +1111,9 @@ void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions) {
         [=]() {
             object_action_properties(console);
         });
+}
+
+ConsoleObject::ConsoleObject(FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg)
+: ConsoleType(console_arg) {
+    filter_dialog = filter_dialog_arg;
 }

@@ -63,6 +63,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     filter_dialog = new FilterDialog(this);
 
+    auto console_object = new ConsoleObject(filter_dialog, console);
+    console->register_type(ItemType_Object, console_object);
+
     auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
@@ -133,9 +136,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     connect(
         console, &ConsoleWidget::results_count_changed,
         this, &CentralWidget::update_description_bar);
-    connect(
-        console, &ConsoleWidget::item_fetched,
-        this, &CentralWidget::fetch_scope_node);
     connect(
         console, &ConsoleWidget::items_can_drop,
         this, &CentralWidget::on_items_can_drop);
@@ -347,16 +347,4 @@ void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMen
     preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(toggle_console_tree_action);
     preferences_menu->addAction(toggle_description_bar_action);
-}
-
-void CentralWidget::fetch_scope_node(const QModelIndex &index) {
-    const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
-
-    if (type == ItemType_Object) {
-        console_object_fetch(console, filter_dialog->get_filter(), index);
-    } else if (type == ItemType_QueryItem) {
-        console_query_item_fetch(console, index);
-    } else if (type == ItemType_PolicyRoot) {
-        console_policy_root_fetch(console);
-    }
 }

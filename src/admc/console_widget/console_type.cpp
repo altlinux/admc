@@ -26,3 +26,7 @@ ConsoleType::ConsoleType(ConsoleWidget *console_arg)
 : QObject(console_arg) {
     console = console_arg;
 }
+
+void ConsoleType::fetch(const QModelIndex &index) {
+
+}

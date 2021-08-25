@@ -186,7 +186,6 @@ signals:
     // selected for the first time. User of this widget
     // should connect to this signal and load item's
     // children in the slot using add_item().
-    void item_fetched(const QModelIndex &index);
 
     // Emitted when current scope item changes.
     void current_scope_item_changed(const QModelIndex &index);

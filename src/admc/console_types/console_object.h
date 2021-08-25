@@ -25,6 +25,7 @@
 #include "central_widget.h"
 #include "console_actions.h"
 #include "console_widget/console_widget.h"
+#include "console_widget/console_type.h"
 
 class QStandardItem;
 class AdObject;
@@ -34,6 +35,7 @@ class QMenu;
 class PolicyResultsWidget;
 template <typename T>
 class QList;
+class FilterDialog;
 
 /**
  * Some f-ns used for models that store objects.
@@ -83,5 +85,17 @@ void console_object_load_domain_head_text(QStandardItem *item);
 QStandardItem *console_object_head();
 
 void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions);
+
+class ConsoleObject final : public ConsoleType {
+    Q_OBJECT
+
+public:
+    ConsoleObject(FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg);
+
+    void fetch(const QModelIndex &index);
+
+private:
+    FilterDialog *filter_dialog;
+};
 
 #endif /* CONSOLE_OBJECT_H */
