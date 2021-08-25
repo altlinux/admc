@@ -89,6 +89,12 @@ CentralWidget::CentralWidget(AdInterface &ad)
     auto console_query_item = new ConsoleQueryItem(console);
     console->register_type(ItemType_QueryItem, console_query_item);
 
+    auto console_query_folder = new ConsoleQueryFolder(console);
+    console->register_type(ItemType_QueryFolder, console_query_folder);
+
+    auto console_query_root = new ConsoleQueryRoot(console);
+    console->register_type(ItemType_QueryRoot, console_query_root);
+
     // NOTE: requires all results to be initialized
     console_object_tree_init(console, ad);
     console_policy_tree_init(console, ad);
@@ -201,11 +207,9 @@ void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &droppe
             break;
         }
         case ItemType_QueryRoot: {
-            console_query_can_drop(dropped_list, target, dropped_types, ok);
             break;
         }
         case ItemType_QueryFolder: {
-            console_query_can_drop(dropped_list, target, dropped_types, ok);
             break;
         }
         case ItemType_QueryItem: break;
@@ -236,11 +240,9 @@ void CentralWidget::on_items_dropped(const QList<QPersistentModelIndex> &dropped
             break;
         }
         case ItemType_QueryRoot: {
-            console_query_drop(console, dropped_list, target);
             break;
         }
         case ItemType_QueryFolder: {
-            console_query_drop(console, dropped_list, target);
             break;
         }
         case ItemType_QueryItem: break;
