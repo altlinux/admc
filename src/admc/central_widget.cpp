@@ -66,6 +66,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
     auto console_object = new ConsoleObject(filter_dialog, console);
     console->register_type(ItemType_Object, console_object);
 
+    auto console_policy_root = new ConsolePolicyRoot(console);
+    console->register_type(ItemType_PolicyRoot, console_policy_root);
+
     auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 

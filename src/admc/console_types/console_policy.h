@@ -24,6 +24,7 @@
 #include "central_widget.h"
 #include "console_actions.h"
 #include "console_widget/console_widget.h"
+#include "console_widget/console_type.h"
 
 class QStandardItem;
 class AdObject;
@@ -57,7 +58,15 @@ void console_policy_actions_get_state(const QModelIndex &index, const bool singl
 void console_policy_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
 void console_policy_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
 void console_policy_add_link(ConsoleWidget *console, const QList<QString> &policy_list, const QList<QString> &ou_list, PolicyResultsWidget *policy_results_widget);
-void console_policy_root_fetch(ConsoleWidget *console);
 void connect_policy_actions(ConsoleWidget *console, ConsoleActions *actions, PolicyResultsWidget *policy_results_widget);
+
+class ConsolePolicyRoot final : public ConsoleType {
+    Q_OBJECT
+
+public:
+    using ConsoleType::ConsoleType;
+
+    void fetch(const QModelIndex &index);
+};
 
 #endif /* CONSOLE_POLICY_H */

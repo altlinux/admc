@@ -197,7 +197,7 @@ void console_policy_add_link(ConsoleWidget *console, const QList<QString> &polic
     g_status()->display_ad_messages(ad, console);
 }
 
-void console_policy_root_fetch(ConsoleWidget *console) {
+void ConsolePolicyRoot::fetch(const QModelIndex &index) {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
