@@ -148,7 +148,7 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 }
 
-void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
+void ConsoleQueryItem::fetch(const QModelIndex &index) {
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QString base = index.data(QueryItemRole_Base).toString();
     const QList<QString> search_attributes = console_object_search_attributes();

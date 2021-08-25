@@ -69,6 +69,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
     auto console_policy_root = new ConsolePolicyRoot(console);
     console->register_type(ItemType_PolicyRoot, console_policy_root);
 
+    auto console_query_item = new ConsoleQueryItem(console);
+    console->register_type(ItemType_QueryItem, console_query_item);
+
     auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
