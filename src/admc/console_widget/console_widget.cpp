@@ -26,6 +26,7 @@
 #include "console_widget/results_description.h"
 #include "console_widget/results_view.h"
 #include "console_widget/scope_proxy_model.h"
+#include "console_widget/console_type.h"
 
 #include <QAction>
 #include <QApplication>
@@ -212,6 +213,14 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     d->update_navigation_actions();
     d->update_view_actions();
+}
+
+void ConsoleWidget::register_type(const int type_id, ConsoleType *type) {
+    if (!d->type_map.contains(type_id)) {
+        d->type_map[type_id] = type;
+    } else {
+        qDebug() << "Duplicate register_type() call for type" << type_id;
+    }
 }
 
 QStandardItem * ConsoleWidget::add_top_item(const int results_id, const ScopeNodeType scope_type) {
@@ -947,6 +956,16 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 
         emit q->item_fetched(index);
     }
+}
+
+ConsoleType *ConsoleWidgetPrivate::get_type(const QModelIndex &index) const {
+    // NOTE: default type uses base class which will do nothing
+    static ConsoleType *default_type = new ConsoleType(q);
+
+    const int type_id = index.data(ConsoleRole_Type).toInt();
+    ConsoleType *type = type_map.value(type_id, default_type);
+
+    return type;
 }
 
 QString results_state_name(const int results_id) {

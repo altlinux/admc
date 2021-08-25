@@ -152,6 +152,7 @@ set(ADMC_SOURCES
     console_widget/results_description.cpp
     console_widget/results_view.cpp
     console_widget/console_drag_model.cpp
+    console_widget/console_type.cpp
 
     admc.qrc
 )

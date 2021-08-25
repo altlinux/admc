@@ -39,6 +39,7 @@ class ConsoleDragModel;
 class ConsoleWidget;
 class QMenu;
 class QSplitter;
+class ConsoleType;
 
 enum ConsoleRole {
     // Determines whether scope item was fetched
@@ -79,6 +80,7 @@ public:
     QStackedWidget *results_stacked_widget;
     QHash<int, ResultsDescription> results_descriptions;
     QSplitter *splitter;
+    QHash<int, ConsoleType *> type_map;
 
     QAction *properties_action;
     QAction *refresh_action;
@@ -128,6 +130,7 @@ public:
     void set_results_to_type(const ResultsViewType type);
     void fetch_scope(const QModelIndex &index);
     const ResultsDescription get_current_results() const;
+    ConsoleType *get_type(const QModelIndex &index) const;
 };
 
 #endif /* CONSOLE_WIDGET_P_H */

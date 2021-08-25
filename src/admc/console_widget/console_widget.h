@@ -50,6 +50,7 @@ class QMenu;
 class QAbstractItemView;
 class QStandardItemModel;
 class QToolBar;
+class ConsoleType;
 
 enum ConsoleRolePublic {
     ConsoleRole_Fetching = Qt::UserRole + 17,
@@ -80,6 +81,9 @@ class ConsoleWidget final : public QWidget {
 
 public:
     ConsoleWidget(QWidget *parent = nullptr);
+
+    // NOTE: you must register types before adding items
+    void register_type(const int type_id, ConsoleType *type);
 
     // These f-ns are for adding items to console. Items
     // returned from these f-ns should be used to set text,
