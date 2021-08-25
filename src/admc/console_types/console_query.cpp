@@ -50,6 +50,7 @@ QPersistentModelIndex copied_index;
 
 QHash<QString, QVariant> console_query_item_save(const QModelIndex &index);
 void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index);
+bool console_query_folder_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
 
 QList<QString> console_query_folder_header_labels() {
     return {
@@ -148,7 +149,7 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 }
 
-void console_query_item_fetch(ConsoleWidget *console, const QModelIndex &index) {
+void ConsoleQueryItem::fetch(const QModelIndex &index) {
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QString base = index.data(QueryItemRole_Base).toString();
     const QList<QString> search_attributes = console_object_search_attributes();
@@ -371,26 +372,14 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
     visible_actions->unite(my_visible_actions);
 }
 
-void console_query_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok) {
-    const bool dropped_are_query_item_or_folder = (dropped_types - QSet<ItemType>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
-    if (!dropped_are_query_item_or_folder) {
-        return;
-    }
+bool console_query_folder_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    const bool dropped_are_query_item_or_folder = (dropped_type_list - QSet<int>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
 
     const bool target_is_fetching = target.data(ConsoleRole_Fetching).toBool();
-    if (target_is_fetching) {
-        return;
-    }
 
-    const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
+    const bool can_drop = (dropped_are_query_item_or_folder && !target_is_fetching);
 
-    const bool target_is_query_folder_or_root = (target_type == ItemType_QueryFolder || target_type == ItemType_QueryRoot);
-
-    *ok = target_is_query_folder_or_root;
-}
-
-void console_query_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
-    console_query_move(console, dropped_list, target);
+    return can_drop;
 }
 
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch) {
@@ -660,4 +649,27 @@ void connect_query_actions(ConsoleWidget *console, ConsoleActions *actions) {
         [=]() {
             query_action_import(console);
         });
+}
+
+QString ConsoleQueryItem::get_description(const QModelIndex &index) const {
+    const QString object_count_text = console_object_count_string(console, index);
+
+    return object_count_text;
+}
+
+// NOTE: query folders and query root share drop logic
+bool ConsoleQueryFolder::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    return console_query_folder_can_drop(dropped_list, dropped_type_list, target, target_type);
+}
+
+void ConsoleQueryFolder::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    console_query_move(console, dropped_list, target);
+}
+
+bool ConsoleQueryRoot::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    return console_query_folder_can_drop(dropped_list, dropped_type_list, target, target_type);
+}
+
+void ConsoleQueryRoot::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    console_query_move(console, dropped_list, target);
 }

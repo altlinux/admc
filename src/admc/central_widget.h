@@ -72,9 +72,6 @@ signals:
     void context_menu(const QPoint pos);
 
 private slots:
-    void on_items_can_drop(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target, bool *ok);
-    void on_items_dropped(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target);
-
     void on_current_scope_changed();
 
     void on_show_non_containers();
@@ -99,10 +96,8 @@ private:
     QAction *toggle_console_tree_action;
     QAction *toggle_description_bar_action;
 
-    void update_description_bar();
     void enable_disable_helper(const bool disabled);
     void update_actions_visibility();
-    void fetch_scope_node(const QModelIndex &index);
     void refresh_object_tree();
 };
 

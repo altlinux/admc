@@ -28,6 +28,7 @@
 #include "console_widget/results_view.h"
 
 #include <QCoreApplication>
+#include <QSet>
 
 class QLabel;
 class QStackedWidget;
@@ -35,10 +36,10 @@ class ResultsDescription;
 class ScopeProxyModel;
 class ConsoleDragModel;
 class QStandardItemModel;
-class ConsoleDragModel;
 class ConsoleWidget;
 class QMenu;
 class QSplitter;
+class ConsoleType;
 
 enum ConsoleRole {
     // Determines whether scope item was fetched
@@ -79,6 +80,7 @@ public:
     QStackedWidget *results_stacked_widget;
     QHash<int, ResultsDescription> results_descriptions;
     QSplitter *splitter;
+    QHash<int, ConsoleType *> type_map;
 
     QAction *properties_action;
     QAction *refresh_action;
@@ -93,7 +95,8 @@ public:
     QAction *set_results_to_detail_action;
     QAction *customize_columns_action;
 
-    QList<QPersistentModelIndex> dropped;
+    QList<QPersistentModelIndex> dropped_list;
+    QSet<int> dropped_type_list;
 
     // NOTE: target history stores target items' id's.
     // History lists are in order of ascending time.
@@ -119,15 +122,17 @@ public:
     void navigate_up();
     void navigate_back();
     void navigate_forward();
-    void on_start_drag(const QList<QPersistentModelIndex> &dropped);
-    void on_can_drop(const QModelIndex &target, bool *ok);
-    void on_drop(const QModelIndex &target);
+    void start_drag(const QList<QPersistentModelIndex> &dropped_list_arg);
+    bool can_drop(const QModelIndex &target);
+    void drop(const QModelIndex &target);
     void set_results_to_icons();
     void set_results_to_list();
     void set_results_to_detail();
     void set_results_to_type(const ResultsViewType type);
     void fetch_scope(const QModelIndex &index);
     const ResultsDescription get_current_results() const;
+    ConsoleType *get_type(const QModelIndex &index) const;
+    void update_description();
 };
 
 #endif /* CONSOLE_WIDGET_P_H */

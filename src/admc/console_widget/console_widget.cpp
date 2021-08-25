@@ -26,6 +26,7 @@
 #include "console_widget/results_description.h"
 #include "console_widget/results_view.h"
 #include "console_widget/scope_proxy_model.h"
+#include "console_widget/console_type.h"
 
 #include <QAction>
 #include <QApplication>
@@ -150,12 +151,14 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     connect(
         d->model, &QStandardItemModel::rowsAboutToBeRemoved,
         d, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
+
+    // Update description bar when results count changes
     connect(
         d->model, &QAbstractItemModel::rowsInserted,
-        this, &ConsoleWidget::results_count_changed);
+        d, &ConsoleWidgetPrivate::update_description);
     connect(
         d->model, &QAbstractItemModel::rowsRemoved,
-        this, &ConsoleWidget::results_count_changed);
+        d, &ConsoleWidgetPrivate::update_description);
 
     // TODO: for now properties are opened by user of console
     // widget but in the future it's planned to move this stuff
@@ -200,18 +203,16 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         qApp, &QApplication::focusChanged,
         d, &ConsoleWidgetPrivate::on_focus_changed);
 
-    connect(
-        d->model, &ConsoleDragModel::start_drag,
-        d, &ConsoleWidgetPrivate::on_start_drag);
-    connect(
-        d->model, &ConsoleDragModel::can_drop,
-        d, &ConsoleWidgetPrivate::on_can_drop);
-    connect(
-        d->model, &ConsoleDragModel::drop,
-        d, &ConsoleWidgetPrivate::on_drop);
-
     d->update_navigation_actions();
     d->update_view_actions();
+}
+
+void ConsoleWidget::register_type(const int type_id, ConsoleType *type) {
+    if (!d->type_map.contains(type_id)) {
+        d->type_map[type_id] = type;
+    } else {
+        qDebug() << "Duplicate register_type() call for type" << type_id;
+    }
 }
 
 QStandardItem * ConsoleWidget::add_top_item(const int results_id, const ScopeNodeType scope_type) {
@@ -321,9 +322,7 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
 
     d->model->removeRows(0, d->model->rowCount(index), index);
 
-    // Emit item_fetched() so that user of console can
-    // reload item's results
-    emit item_fetched(index);
+    d->fetch_scope(index);
 }
 
 // No view, only widget
@@ -362,15 +361,7 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
 }
 
 void ConsoleWidget::set_description_bar_text(const QString &text) {
-    const QString scope_name = [this]() {
-        const QModelIndex current_scope = get_current_scope_item();
-        const QString out = current_scope.data().toString();
 
-        return out;
-    }();
-
-    d->description_bar_left->setText(scope_name);
-    d->description_bar_right->setText(text);
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
@@ -469,10 +460,10 @@ QModelIndex ConsoleWidget::get_current_scope_item() const {
     }
 }
 
-int ConsoleWidget::get_current_results_count() const {
-    const QModelIndex current_scope = get_current_scope_item();
+int ConsoleWidget::get_child_count(const QModelIndex &index) const {
+    const int out = d->model->rowCount(index);
 
-    return d->model->rowCount(current_scope);
+    return out;
 }
 
 QStandardItem *ConsoleWidget::get_item(const QModelIndex &index) const {
@@ -661,6 +652,8 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
 
     fetch_scope(current);
 
+    update_description();
+
     emit q->current_scope_item_changed(current);
 }
 
@@ -821,16 +814,35 @@ void ConsoleWidgetPrivate::navigate_forward() {
     update_navigation_actions();
 }
 
-void ConsoleWidgetPrivate::on_start_drag(const QList<QPersistentModelIndex> &dropped_arg) {
-    dropped = dropped_arg;
+void ConsoleWidgetPrivate::start_drag(const QList<QPersistentModelIndex> &dropped_list_arg) {
+    dropped_list = dropped_list_arg;
+
+    dropped_type_list = [&]() {
+        QSet<int> out;
+
+        for (const QPersistentModelIndex &index : dropped_list) {
+            const int type = index.data(ConsoleRole_Type).toInt();
+            out.insert(type);
+        }
+
+        return out;
+    }();
 }
 
-void ConsoleWidgetPrivate::on_can_drop(const QModelIndex &target, bool *ok) {
-    emit q->items_can_drop(dropped, target, ok);
+bool ConsoleWidgetPrivate::can_drop(const QModelIndex &target) {
+    const int target_type = target.data(ConsoleRole_Type).toInt();
+
+    ConsoleType *type = get_type(target);
+    const bool ok = type->can_drop(dropped_list, dropped_type_list, target, target_type);
+
+    return ok;
 }
 
-void ConsoleWidgetPrivate::on_drop(const QModelIndex &target) {
-    emit q->items_dropped(dropped, target);
+void ConsoleWidgetPrivate::drop(const QModelIndex &target) {
+    const int target_type = target.data(ConsoleRole_Type).toInt();
+    
+    ConsoleType *type = get_type(target);
+    type->drop(dropped_list, dropped_type_list, target, target_type);
 }
 
 void ConsoleWidgetPrivate::set_results_to_icons() {
@@ -945,8 +957,31 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
     if (!was_fetched) {
         model->setData(index, true, ConsoleRole_WasFetched);
 
-        emit q->item_fetched(index);
+        ConsoleType *type = get_type(index);
+        type->fetch(index);
     }
+}
+
+ConsoleType *ConsoleWidgetPrivate::get_type(const QModelIndex &index) const {
+    // NOTE: default type uses base class which will do nothing
+    static ConsoleType *default_type = new ConsoleType(q);
+
+    const int type_id = index.data(ConsoleRole_Type).toInt();
+    ConsoleType *type = type_map.value(type_id, default_type);
+
+    return type;
+}
+
+void ConsoleWidgetPrivate::update_description() {
+    const QModelIndex current_scope = q->get_current_scope_item();
+
+    const QString scope_name = current_scope.data().toString();
+
+    ConsoleType *type = get_type(current_scope);
+    const QString description = type->get_description(current_scope);
+
+    description_bar_left->setText(scope_name);
+    description_bar_right->setText(description);
 }
 
 QString results_state_name(const int results_id) {

@@ -50,6 +50,8 @@ class QMenu;
 class QAbstractItemView;
 class QStandardItemModel;
 class QToolBar;
+class ConsoleType;
+class ConsoleDragModel;
 
 enum ConsoleRolePublic {
     ConsoleRole_Fetching = Qt::UserRole + 17,
@@ -81,6 +83,23 @@ class ConsoleWidget final : public QWidget {
 public:
     ConsoleWidget(QWidget *parent = nullptr);
 
+    // Register results to be used later for scope items.
+    // Must be done BEFORE adding items. Results can be just
+    // a widget, a tree view or a widget that contains a
+    // tree view. Returns the unique id assigned to this
+    // results view, which should be used when creating
+    // scope items. Note that if results is just a widget,
+    // then you can't add or get results rows. Note that
+    // call order is important for correct state restoration
+    // so register your results in the same order every
+    // time.
+    int register_results(QWidget *widget);
+    int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+    int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+
+    // NOTE: you must register types before adding items
+    void register_type(const int type_id, ConsoleType *type);
+
     // These f-ns are for adding items to console. Items
     // returned from these f-ns should be used to set text,
     // icon and your custom data roles. add_top_item() adds
@@ -97,11 +116,11 @@ public:
     //
     // "scope_type" - scope items can be static or dynamic.
     // Static scope items should be loaded once and never
-    // change after that. Dynamic scope items should be
-    // loaded when item_fetched() signal is emitted for that
-    // scope item. Note that dynamic scope items can be
-    // fetched again via the refresh_scope() f-n or
-    // "Refresh" action of the item menu.
+    // change after that. Dynamic scope items will trigger a
+    // fetch() call on their assigned ConsoleType. Note that
+    // dynamic scope items can be fetched again via the
+    // refresh_scope() f-n or "Refresh" action of the item
+    // menu.
     QStandardItem *add_top_item(const int results_id, const ScopeNodeType scope_type);
     QList<QStandardItem *> add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
     QList<QStandardItem *> add_results_item(const QModelIndex &parent);
@@ -117,23 +136,9 @@ public:
     // Sets current scope item in the scope tree
     void set_current_scope(const QModelIndex &index);
 
-    // Clears children of this scope item, then emits
-    // item_fetched() signal so that the scope item can be
-    // reloaded.
+    // Clears children of this scope item, then fetches them
+    // again.
     void refresh_scope(const QModelIndex &index);
-
-    // Register results to be used later for scope items.
-    // Results can be just a widget, a tree view or a widget
-    // that contains a tree view. Returns the unique id
-    // assigned to this results view, which should be used
-    // when creating scope items. Note that if results is
-    // just a widget, then you can't add or get results
-    // rows. Note that call order is important for correct
-    // state restoration so register your results in
-    // the same order every time.
-    int register_results(QWidget *widget);
-    int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
-    int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
     void set_description_bar_text(const QString &text);
 
@@ -159,7 +164,7 @@ public:
     QList<QModelIndex> search_items(const QModelIndex &parent, int role, const QVariant &value, const int type = -1) const;
 
     QModelIndex get_current_scope_item() const;
-    int get_current_results_count() const;
+    int get_child_count(const QModelIndex &index) const;
 
     QStandardItem *get_item(const QModelIndex &index) const;
     QList<QStandardItem *> get_row(const QModelIndex &index) const;
@@ -178,35 +183,12 @@ public:
     void restore_state(const QVariant &state);
 
 signals:
-    // Emitted when a dynamic scope item is expanded or
-    // selected for the first time. User of this widget
-    // should connect to this signal and load item's
-    // children in the slot using add_item().
-    void item_fetched(const QModelIndex &index);
-
     // Emitted when current scope item changes.
     void current_scope_item_changed(const QModelIndex &index);
-
-    // Emitted while items are dragged to determine whether
-    // they can be dropped on target. Set "ok" to true if
-    // items can be dropped, false if can't be dropped. "ok"
-    // is set to false by default.
-    void items_can_drop(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target, bool *ok);
-
-    // Emitted when items are dropped onto target. Modify
-    // scope and results in the slot.
-    void items_dropped(const QList<QPersistentModelIndex> &dropped, const QPersistentModelIndex &target);
 
     // Emitted when a properties dialog is requested via the
     // action menu for a scope or results item.
     void properties_requested();
-
-    // Emitted when item count changes in one of results,
-    // due to items getting added or deleted. Note that this
-    // can be emitted for a non-current results as well.
-    // Useful if you want to display results count in
-    // description bar.
-    void results_count_changed();
 
     // Emitted when actions need to updated due to selection
     // changing.
@@ -218,6 +200,8 @@ signals:
 
 private:
     ConsoleWidgetPrivate *d;
+
+    friend ConsoleDragModel;
 };
 
 #endif /* CONSOLE_WIDGET_H */

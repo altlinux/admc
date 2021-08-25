@@ -25,6 +25,7 @@
 #include "central_widget.h"
 #include "console_actions.h"
 #include "console_widget/console_widget.h"
+#include "console_widget/console_type.h"
 
 class QStandardItem;
 class AdObject;
@@ -34,6 +35,7 @@ class QMenu;
 class PolicyResultsWidget;
 template <typename T>
 class QList;
+class FilterDialog;
 
 /**
  * Some f-ns used for models that store objects.
@@ -63,10 +65,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
 void console_object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
-void console_object_fetch(ConsoleWidget *console, const QString &current_filter, const QModelIndex &index);
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
-void console_object_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
-void console_object_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QSet<ItemType> &dropped_types, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
 void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
 void console_object_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 
@@ -83,5 +82,23 @@ void console_object_load_domain_head_text(QStandardItem *item);
 QStandardItem *console_object_head();
 
 void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions);
+
+QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
+
+class ConsoleObject final : public ConsoleType {
+    Q_OBJECT
+
+public:
+    ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg);
+
+    void fetch(const QModelIndex &index);
+    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
+    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
+    QString get_description(const QModelIndex &index) const override;
+
+private:
+    FilterDialog *filter_dialog;
+    PolicyResultsWidget *policy_results_widget;
+};
 
 #endif /* CONSOLE_OBJECT_H */

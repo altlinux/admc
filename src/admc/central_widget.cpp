@@ -63,6 +63,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     filter_dialog = new FilterDialog(this);
 
+    //
+    // Register console results
+    //
     auto object_results = new ResultsView(this);
     console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
 
@@ -77,6 +80,30 @@ CentralWidget::CentralWidget(AdInterface &ad)
     query_results->detail_view()->header()->setDefaultSectionSize(200);
     console_query_folder_results_id = console->register_results(query_results, console_query_folder_header_labels(), console_query_folder_default_columns());
 
+    //
+    // Register console types
+    //
+    auto console_object = new ConsoleObject(policy_results_widget, filter_dialog, console);
+    console->register_type(ItemType_Object, console_object);
+
+    auto console_policy_root = new ConsolePolicyRoot(console);
+    console->register_type(ItemType_PolicyRoot, console_policy_root);
+
+    auto console_policy = new ConsolePolicy(policy_results_widget, console);
+    console->register_type(ItemType_Policy, console_policy);
+
+    auto console_query_item = new ConsoleQueryItem(console);
+    console->register_type(ItemType_QueryItem, console_query_item);
+
+    auto console_query_folder = new ConsoleQueryFolder(console);
+    console->register_type(ItemType_QueryFolder, console_query_folder);
+
+    auto console_query_root = new ConsoleQueryRoot(console);
+    console->register_type(ItemType_QueryRoot, console_query_root);
+
+    //
+    //
+    //
     // NOTE: requires all results to be initialized
     console_object_tree_init(console, ad);
     console_policy_tree_init(console, ad);
@@ -131,18 +158,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
         console, &ConsoleWidget::current_scope_item_changed,
         this, &CentralWidget::on_current_scope_changed);
     connect(
-        console, &ConsoleWidget::results_count_changed,
-        this, &CentralWidget::update_description_bar);
-    connect(
-        console, &ConsoleWidget::item_fetched,
-        this, &CentralWidget::fetch_scope_node);
-    connect(
-        console, &ConsoleWidget::items_can_drop,
-        this, &CentralWidget::on_items_can_drop);
-    connect(
-        console, &ConsoleWidget::items_dropped,
-        this, &CentralWidget::on_items_dropped);
-    connect(
         console, &ConsoleWidget::actions_changed,
         this, &CentralWidget::on_actions_changed);
 
@@ -161,100 +176,19 @@ void CentralWidget::on_actions_changed() {
     console_actions->update_actions_visibility(selected_list);
 }
 
-void CentralWidget::on_items_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, bool *ok) {
-    const bool dropped_contains_target = [&]() {
-        for (const QPersistentModelIndex &dropped : dropped_list) {
-            if (dropped == target) {
-                return true;
-            }
-        }
-
-        return false;
-    }();
-
-    if (dropped_contains_target) {
-        return;
-    }
-
-    const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
-    const QSet<ItemType> dropped_types = [&]() {
-        QSet<ItemType> out;
-
-        for (const QPersistentModelIndex &index : dropped_list) {
-            const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
-            out.insert(type);
-        }
-
-        return out;
-    }();
-
-    switch (target_type) {
-        case ItemType_Unassigned: break;
-        case ItemType_Object: {
-            console_object_can_drop(dropped_list, target, dropped_types, ok);
-            break;
-        }
-        case ItemType_PolicyRoot: break;
-        case ItemType_Policy: {
-            console_policy_can_drop(dropped_list, target, dropped_types, ok);
-            break;
-        }
-        case ItemType_QueryRoot: {
-            console_query_can_drop(dropped_list, target, dropped_types, ok);
-            break;
-        }
-        case ItemType_QueryFolder: {
-            console_query_can_drop(dropped_list, target, dropped_types, ok);
-            break;
-        }
-        case ItemType_QueryItem: break;
-        case ItemType_LAST: break;
-    }
-}
-
-void CentralWidget::on_items_dropped(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
-    const ItemType target_type = (ItemType) target.data(ConsoleRole_Type).toInt();
-    const QSet<ItemType> dropped_types = [&]() {
-        QSet<ItemType> out;
-
-        for (const QPersistentModelIndex &index : dropped_list) {
-            const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
-            out.insert(type);
-        }
-
-        return out;
-    }();
-
-    switch (target_type) {
-        case ItemType_Unassigned: break;
-        case ItemType_Object: {
-            console_object_drop(console, dropped_list, dropped_types, target, policy_results_widget);
-            break;
-        }
-        case ItemType_PolicyRoot: break;
-        case ItemType_Policy: {
-            console_policy_drop(console, dropped_list, target, policy_results_widget);
-            break;
-        }
-        case ItemType_QueryRoot: {
-            console_query_drop(console, dropped_list, target);
-            break;
-        }
-        case ItemType_QueryFolder: {
-            console_query_drop(console, dropped_list, target);
-            break;
-        }
-        case ItemType_QueryItem: break;
-        case ItemType_LAST: break;
-    }
-}
-
 void CentralWidget::on_current_scope_changed() {
     const QModelIndex current_scope = console->get_current_scope_item();
-    policy_results_widget->update(current_scope);
-
-    update_description_bar();
+    const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
+    if (type == ItemType_Policy) {
+        policy_results_widget->update(current_scope);
+    }
 }
+
+// NOTE: f-ns below need to manually change a setting and
+// then refresh_object_tree() because setting needs to be
+// changed before tree is refreshed. If you do this in a
+// more convenient way by connecting as a slot, call order
+// will be undefined.
 
 void CentralWidget::on_show_non_containers() {
     settings_set_bool(SETTING_show_non_containers_in_console_tree, show_noncontainers_action->isChecked());
@@ -296,37 +230,6 @@ void CentralWidget::refresh_object_tree() {
     hide_busy_indicator();
 }
 
-void CentralWidget::update_description_bar() {
-    const QString text = [this]() {
-        const QModelIndex current_scope = console->get_current_scope_item();
-        const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
-
-        const QString object_count_text = [&]() {
-            const int results_count = console->get_current_results_count();
-            const QString out = tr("%n object(s)", "", results_count);
-
-            return out;
-        }();
-
-        if (type == ItemType_Object) {
-            QString out = object_count_text;
-
-            const bool filtering_ON = filter_dialog->filtering_ON();
-            if (filtering_ON) {
-                out += tr(" [Filtering enabled]");
-            }
-
-            return out;
-        } else if (type == ItemType_QueryItem) {
-            return object_count_text;
-        } else {
-            return QString();
-        }
-    }();
-
-    console->set_description_bar_text(text);
-}
-
 void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     console_actions->add_to_menu(action_menu);
 
@@ -347,16 +250,4 @@ void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMen
     preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(toggle_console_tree_action);
     preferences_menu->addAction(toggle_description_bar_action);
-}
-
-void CentralWidget::fetch_scope_node(const QModelIndex &index) {
-    const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
-
-    if (type == ItemType_Object) {
-        console_object_fetch(console, filter_dialog->get_filter(), index);
-    } else if (type == ItemType_QueryItem) {
-        console_query_item_fetch(console, index);
-    } else if (type == ItemType_PolicyRoot) {
-        console_policy_root_fetch(console);
-    }
 }
