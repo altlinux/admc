@@ -56,7 +56,6 @@ enum ConsoleRole {
     // ConsoleRole_LAST (defined in public header)
 
     // NOTE: these roles are "public" defined in public header
-    // ConsoleRole_HasProperties = Qt::UserRole + 18,
     // ConsoleRole_LAST = Qt::UserRole + 20
 };
 

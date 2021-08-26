@@ -42,3 +42,7 @@ void ConsoleType::drop(const QList<QPersistentModelIndex> &dropped_list, const Q
 QString ConsoleType::get_description(const QModelIndex &index) const {
     return QString();
 }
+
+void ConsoleType::activate(const QModelIndex &index) {
+
+}

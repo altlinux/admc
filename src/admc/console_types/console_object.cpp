@@ -102,8 +102,6 @@ void console_object_load(const QList<QStandardItem *> row, const AdObject &objec
 }
 
 void console_object_item_data_load(QStandardItem *item, const AdObject &object) {
-    item->setData(true, ConsoleRole_HasProperties);
-
     const QIcon icon = get_object_icon(object);
     item->setIcon(icon);
 
@@ -526,6 +524,10 @@ void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_Delete));
     menu->addAction(actions->get(ConsoleAction_Rename));
     menu->addAction(actions->get(ConsoleAction_Move));
+
+    menu->addSeparator();
+
+    menu->addAction(actions->get(ConsoleAction_Properties));
 }
 
 void console_object_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
@@ -616,6 +618,7 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
 
     my_visible_actions.insert(ConsoleAction_Move);
     my_visible_actions.insert(ConsoleAction_Delete);
+    my_visible_actions.insert(ConsoleAction_Properties);
 
     visible_actions->unite(my_visible_actions);
 }
@@ -1107,11 +1110,6 @@ void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions) {
         [=]() {
             object_action_change_dc(console);
         });
-    QObject::connect(
-        console, &ConsoleWidget::properties_requested,
-        [=]() {
-            object_action_properties(console);
-        });
 }
 
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index) {
@@ -1140,4 +1138,8 @@ QString ConsoleObject::get_description(const QModelIndex &index) const {
     }
 
     return out;
+}
+
+void ConsoleObject::activate(const QModelIndex &index) {
+    object_action_properties(console);
 }

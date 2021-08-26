@@ -59,6 +59,8 @@ public:
     // Return whatever text should be displayed.
     virtual QString get_description(const QModelIndex &index) const;
 
+    virtual void activate(const QModelIndex &index);
+
 protected:
     ConsoleWidget *console;
 };

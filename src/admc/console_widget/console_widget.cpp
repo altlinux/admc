@@ -86,7 +86,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     d->results_stacked_widget = new QStackedWidget();
 
-    d->properties_action = new QAction(tr("&Properties"), this);
     d->navigate_up_action = new QAction(QIcon::fromTheme("go-up"), tr("&Up one level"), this);
     d->navigate_back_action = new QAction(QIcon::fromTheme("go-previous"), tr("&Back"), this);
     d->navigate_forward_action = new QAction(QIcon::fromTheme("go-next"), tr("&Forward"), this);
@@ -171,13 +170,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->model, &QAbstractItemModel::rowsRemoved,
         d, &ConsoleWidgetPrivate::update_description);
 
-    // TODO: for now properties are opened by user of console
-    // widget but in the future it's planned to move this stuff
-    // here, which will make this do more than just emit a
-    // signal.
-    connect(
-        d->properties_action, &QAction::triggered,
-        this, &ConsoleWidget::properties_requested);
     connect(
         d->navigate_up_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::navigate_up);
@@ -290,11 +282,6 @@ QList<QStandardItem *> ConsoleWidget::add_results_item(const int type, const QMo
     parent_item->appendRow(row);
 
     return row;
-}
-
-void ConsoleWidget::set_has_properties(const QModelIndex &index, const bool has_properties) {
-    QAbstractItemModel *model = (QAbstractItemModel *) index.model();
-    model->setData(index, has_properties, ConsoleRole_HasProperties);
 }
 
 void ConsoleWidget::delete_item(const QModelIndex &index) {
@@ -534,7 +521,7 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
     if (is_scope) {
         q->set_current_scope(main_index);
     } else {
-        emit q->properties_requested();
+        emit q->results_item_activated(index);
     }
 }
 
@@ -547,10 +534,8 @@ void ConsoleWidgetPrivate::update_actions() {
         return;
     }
 
-    properties_action->setVisible(false);
     refresh_action->setVisible(false);
 
-    properties_action->setEnabled(true);
     refresh_action->setEnabled(true);
 
     if (selected_list.size() == 1) {
@@ -560,26 +545,6 @@ void ConsoleWidgetPrivate::update_actions() {
         const bool is_scope = selected.data(ConsoleRole_IsScope).toBool();
         if (is_scope && is_dynamic) {
             refresh_action->setVisible(true);
-        }
-
-        const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
-        if (has_properties) {
-            properties_action->setVisible(true);
-        }
-    } else if (selected_list.size() > 1) {
-        const bool all_have_properties = [&]() {
-            for (const QModelIndex &selected : selected_list) {
-                const bool has_properties = selected.data(ConsoleRole_HasProperties).toBool();
-                if (!has_properties) {
-                    return false;
-                }
-            }
-
-            return true;
-        }();
-
-        if (all_have_properties) {
-            properties_action->setVisible(true);
         }
     }
 
@@ -891,10 +856,7 @@ void ConsoleWidgetPrivate::update_view_actions() {
 void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     // Action
     action_menu->addAction(d->refresh_action);
-    action_menu->addSeparator();
-    action_menu->addAction(d->properties_action);
 
-    d->properties_action->setVisible(false);
     d->refresh_action->setVisible(false);
 
     // Update actions right before menu opens

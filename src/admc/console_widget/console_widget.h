@@ -54,8 +54,6 @@ class ConsoleType;
 class ConsoleDragModel;
 
 enum ConsoleRolePublic {
-    ConsoleRole_HasProperties = Qt::UserRole + 18,
-
     // NOTE: when implementing custom roles, make sure they do
     // not conflict with console roles, like this:
     //
@@ -114,11 +112,6 @@ public:
     QList<QStandardItem *> add_scope_item(const int type, const ScopeNodeType scope_type, const QModelIndex &parent);
     QList<QStandardItem *> add_results_item(const int type, const QModelIndex &parent);
 
-    // Sets whether a given item should have "Properties"
-    // action in it's menu, which opens the Properties
-    // dialog.
-    void set_has_properties(const QModelIndex &index, const bool has_properties);
-
     // Deletes an item and all of it's columns
     void delete_item(const QModelIndex &index);
 
@@ -167,13 +160,15 @@ signals:
     // Emitted when current scope item changes.
     void current_scope_item_changed(const QModelIndex &index);
 
-    // Emitted when a properties dialog is requested via the
-    // action menu for a scope or results item.
-    void properties_requested();
+    // Emitted when a results item is double-clicked or
+    // pressed ENTER on. Connect this signal to an
+    // appropriate default action.
+    void results_item_activated(const QModelIndex);
 
     // Emitted when actions need to updated due to selection
     // changing.
     void actions_changed();
+
 private:
     ConsoleWidgetPrivate *d;
 
