@@ -48,8 +48,6 @@
 #include <QSet>
 #include <QStandardItemModel>
 
-int console_object_results_id;
-
 enum DropType {
     DropType_Move,
     DropType_AddToGroup,
@@ -289,7 +287,7 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
 
         const QList<QStandardItem *> row = [&]() {
             if (should_be_in_scope) {
-                return console->add_scope_item(console_object_results_id, ScopeNodeType_Dynamic, parent);
+                return console->add_scope_item(ScopeNodeType_Dynamic, parent);
             } else {
                 return console->add_results_item(parent);
             }
@@ -406,7 +404,7 @@ void ConsoleObject::fetch(const QModelIndex &index) {
 
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     // Create tree head
-    const QList<QStandardItem *> head_row = console->add_scope_item(console_object_results_id, ScopeNodeType_Dynamic, QModelIndex());
+    const QList<QStandardItem *> head_row = console->add_scope_item(ScopeNodeType_Dynamic, QModelIndex());
     object_tree_head = head_row[0];
 
     const QString top_dn = g_adconfig->domain_head();

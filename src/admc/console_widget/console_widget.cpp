@@ -232,10 +232,8 @@ void ConsoleWidget::register_type(const int type_id, ConsoleType *type) {
     }
 }
 
-QList<QStandardItem *> ConsoleWidget::add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent) {
+QList<QStandardItem *> ConsoleWidget::add_scope_item(const ScopeNodeType scope_type, const QModelIndex &parent) {
     const QList<QStandardItem *> row = add_results_item(parent);
-
-    row[0]->setData(results_id, ConsoleRole_ResultsId);
 
     const bool is_dynamic = (scope_type == ScopeNodeType_Dynamic);
 

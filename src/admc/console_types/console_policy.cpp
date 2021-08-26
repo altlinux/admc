@@ -41,9 +41,6 @@
 #include <QStandardItem>
 #include <QProcess>
 
-int policy_container_results_id;
-int policy_results_id;
-
 QStandardItem *policy_tree_head = nullptr;
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
@@ -69,13 +66,13 @@ QList<QString> console_policy_search_attributes() {
 }
 
 void console_policy_create(ConsoleWidget *console, const AdObject &object) {
-    const QList<QStandardItem *> row = console->add_scope_item(policy_results_id, ScopeNodeType_Static, policy_tree_head->index());
+    const QList<QStandardItem *> row = console->add_scope_item(ScopeNodeType_Static, policy_tree_head->index());
 
     console_policy_load(row, object);
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
-    const QList<QStandardItem *> head_row = console->add_scope_item(policy_container_results_id, ScopeNodeType_Dynamic, QModelIndex());
+    const QList<QStandardItem *> head_row = console->add_scope_item(ScopeNodeType_Dynamic, QModelIndex());
     policy_tree_head = head_row[0];
     policy_tree_head->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);

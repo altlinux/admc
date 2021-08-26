@@ -109,10 +109,6 @@ public:
     //
     // Arguments:
     //
-    // "results_id" - id of the results description that
-    // should've been previously registered by calling
-    // register_results().
-    //
     // "scope_type" - scope items can be static or dynamic.
     // Static scope items should be loaded once and never
     // change after that. Dynamic scope items will trigger a
@@ -120,7 +116,7 @@ public:
     // dynamic scope items can be fetched again via the
     // refresh_scope() f-n or "Refresh" action of the item
     // menu.
-    QList<QStandardItem *> add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
+    QList<QStandardItem *> add_scope_item(const ScopeNodeType scope_type, const QModelIndex &parent);
     QList<QStandardItem *> add_results_item(const QModelIndex &parent);
 
     // Sets whether a given item should have "Properties"

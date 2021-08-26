@@ -52,8 +52,6 @@ enum QueryColumn {
     QueryColumn_COUNT,
 };
 
-extern int console_query_folder_results_id;
-
 QList<QString> console_query_folder_header_labels();
 QList<int> console_query_folder_default_columns();
 void console_query_folder_load(const QList<QStandardItem *> &row, const QString &name, const QString &description);

@@ -42,7 +42,6 @@
 
 #define QUERY_ROOT "QUERY_ROOT"
 
-int console_query_folder_results_id;
 QStandardItem *query_tree_head = nullptr;
 
 bool copied_index_is_cut = false;
@@ -123,7 +122,7 @@ void console_query_folder_load(const QList<QStandardItem *> &row, const QString 
 }
 
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
-    const QList<QStandardItem *> row = console->add_scope_item(console_query_folder_results_id, ScopeNodeType_Static, parent);
+    const QList<QStandardItem *> row = console->add_scope_item(ScopeNodeType_Static, parent);
     console_query_folder_load(row, name, description);
 
     return row[0]->index();
@@ -144,7 +143,7 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
 }
 
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
-    const QList<QStandardItem *> row = console->add_scope_item(console_object_results_id, ScopeNodeType_Dynamic, parent);
+    const QList<QStandardItem *> row = console->add_scope_item(ScopeNodeType_Dynamic, parent);
 
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 }
@@ -166,7 +165,7 @@ void ConsoleQueryItem::fetch(const QModelIndex &index) {
 }
 
 void console_query_tree_init(ConsoleWidget *console) {
-    const QList<QStandardItem *> head_row = console->add_scope_item(console_query_folder_results_id, ScopeNodeType_Static, QModelIndex());
+    const QList<QStandardItem *> head_row = console->add_scope_item(ScopeNodeType_Static, QModelIndex());
     query_tree_head = head_row[0];
     query_tree_head->setText(QCoreApplication::translate("query", "Saved Queries"));
     query_tree_head->setIcon(QIcon::fromTheme("folder"));

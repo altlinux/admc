@@ -45,10 +45,6 @@ enum ConsoleRole {
     // Determines whether scope item was fetched
     ConsoleRole_WasFetched = Qt::UserRole + 1,
 
-    // Id of results view that should be used for this for
-    // this scope item. Doesn't apply to results items.
-    ConsoleRole_ResultsId = Qt::UserRole + 2,
-
     ConsoleRole_IsScope = Qt::UserRole + 3,
 
     // Determines whether scope is dynamic.

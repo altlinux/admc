@@ -52,8 +52,6 @@ enum ObjectRole {
     ObjectRole_LAST = ConsoleRole_LAST + 7,
 };
 
-extern int console_object_results_id;
-
 void console_object_load(const QList<QStandardItem *> row, const AdObject &object);
 void console_object_item_data_load(QStandardItem *item, const AdObject &object);
 QList<QString> console_object_header_labels();
