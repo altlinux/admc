@@ -58,9 +58,6 @@ enum ConsoleRolePublic {
 
     ConsoleRole_HasProperties = Qt::UserRole + 18,
 
-    // Use this role to set and get item types
-    ConsoleRole_Type = Qt::UserRole + 19,
-
     // NOTE: when implementing custom roles, make sure they do
     // not conflict with console roles, like this:
     //
@@ -116,8 +113,8 @@ public:
     // dynamic scope items can be fetched again via the
     // refresh_scope() f-n or "Refresh" action of the item
     // menu.
-    QList<QStandardItem *> add_scope_item(const ScopeNodeType scope_type, const QModelIndex &parent);
-    QList<QStandardItem *> add_results_item(const QModelIndex &parent);
+    QList<QStandardItem *> add_scope_item(const int type, const ScopeNodeType scope_type, const QModelIndex &parent);
+    QList<QStandardItem *> add_results_item(const int type, const QModelIndex &parent);
 
     // Sets whether a given item should have "Properties"
     // action in it's menu, which opens the Properties
@@ -186,5 +183,7 @@ private:
 
     friend ConsoleDragModel;
 };
+
+int console_get_item_type(const QModelIndex &index);
 
 #endif /* CONSOLE_WIDGET_H */

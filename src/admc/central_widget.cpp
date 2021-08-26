@@ -164,7 +164,7 @@ void CentralWidget::on_actions_changed() {
 
 void CentralWidget::on_current_scope_changed() {
     const QModelIndex current_scope = console->get_current_scope_item();
-    const ItemType type = (ItemType) current_scope.data(ConsoleRole_Type).toInt();
+    const ItemType type = (ItemType) console_get_item_type(current_scope);
     if (type == ItemType_Policy) {
         policy_results_widget->update(current_scope);
     }

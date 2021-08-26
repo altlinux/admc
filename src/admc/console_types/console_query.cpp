@@ -31,6 +31,7 @@
 #include "create_query_item_dialog.h"
 #include "edit_query_folder_dialog.h"
 #include "edit_query_item_dialog.h"
+#include "central_widget.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -114,7 +115,6 @@ QString console_query_folder_path(const QModelIndex &index) {
 void console_query_folder_load(const QList<QStandardItem *> &row, const QString &name, const QString &description) {
     QStandardItem *main_item = row[0];
     main_item->setData(description, QueryItemRole_Description);
-    main_item->setData(ItemType_QueryFolder, ConsoleRole_Type);
     main_item->setIcon(QIcon::fromTheme("folder"));
 
     row[QueryColumn_Name]->setText(name);
@@ -122,7 +122,7 @@ void console_query_folder_load(const QList<QStandardItem *> &row, const QString 
 }
 
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
-    const QList<QStandardItem *> row = console->add_scope_item(ScopeNodeType_Static, parent);
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryFolder, ScopeNodeType_Static, parent);
     console_query_folder_load(row, name, description);
 
     return row[0]->index();
@@ -130,7 +130,6 @@ QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &n
 
 void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
     QStandardItem *main_item = row[0];
-    main_item->setData(ItemType_QueryItem, ConsoleRole_Type);
     main_item->setData(description, QueryItemRole_Description);
     main_item->setData(filter, QueryItemRole_Filter);
     main_item->setData(filter_state, QueryItemRole_FilterState);
@@ -143,7 +142,7 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
 }
 
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
-    const QList<QStandardItem *> row = console->add_scope_item(ScopeNodeType_Dynamic, parent);
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, ScopeNodeType_Dynamic, parent);
 
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 }
@@ -165,11 +164,10 @@ void ConsoleQueryItem::fetch(const QModelIndex &index) {
 }
 
 void console_query_tree_init(ConsoleWidget *console) {
-    const QList<QStandardItem *> head_row = console->add_scope_item(ScopeNodeType_Static, QModelIndex());
+    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_QueryRoot, ScopeNodeType_Static, QModelIndex());
     query_tree_head = head_row[0];
     query_tree_head->setText(QCoreApplication::translate("query", "Saved Queries"));
     query_tree_head->setIcon(QIcon::fromTheme("folder"));
-    query_tree_head->setData(ItemType_QueryRoot, ConsoleRole_Type);
     query_tree_head->setDragEnabled(false);
 
     // Add rest of tree
@@ -232,7 +230,7 @@ void console_query_tree_save(ConsoleWidget *console) {
 
         const QString path = console_query_folder_path(index);
         const QString parent_path = console_query_folder_path(index.parent());
-        const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+        const ItemType type = (ItemType) console_get_item_type(index);
 
         const QList<QString> child_list = [&]() {
             QList<QString> out;
@@ -334,7 +332,7 @@ void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 }
 
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
-    const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+    const ItemType type = (ItemType) console_get_item_type(index);
 
     QSet<ConsoleAction> my_visible_actions;
 
@@ -408,7 +406,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
 
             const QPersistentModelIndex new_parent = new_parent_map[index.parent()];
 
-            const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+            const ItemType type = (ItemType) console_get_item_type(index);
             if (type == ItemType_QueryItem) {
                 const QString description = index.data(QueryItemRole_Description).toString();
                 const QString filter = index.data(QueryItemRole_Filter).toString();

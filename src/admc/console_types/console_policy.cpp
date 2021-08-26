@@ -33,6 +33,7 @@
 #include "rename_policy_dialog.h"
 #include "select_object_dialog.h"
 #include "create_policy_dialog.h"
+#include "central_widget.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -46,7 +47,6 @@ QStandardItem *policy_tree_head = nullptr;
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
     QStandardItem *main_item = row[0];
     main_item->setIcon(QIcon::fromTheme("folder-templates"));
-    main_item->setData(ItemType_Policy, ConsoleRole_Type);
     main_item->setData(object.get_dn(), PolicyRole_DN);
     
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
@@ -66,18 +66,17 @@ QList<QString> console_policy_search_attributes() {
 }
 
 void console_policy_create(ConsoleWidget *console, const AdObject &object) {
-    const QList<QStandardItem *> row = console->add_scope_item(ScopeNodeType_Static, policy_tree_head->index());
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, ScopeNodeType_Static, policy_tree_head->index());
 
     console_policy_load(row, object);
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
-    const QList<QStandardItem *> head_row = console->add_scope_item(ScopeNodeType_Dynamic, QModelIndex());
+    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, ScopeNodeType_Dynamic, QModelIndex());
     policy_tree_head = head_row[0];
     policy_tree_head->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
     policy_tree_head->setIcon(QIcon::fromTheme("folder"));
-    policy_tree_head->setData(ItemType_PolicyRoot, ConsoleRole_Type);
 }
 
 void console_policy_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
@@ -91,7 +90,7 @@ void console_policy_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 }
 
 void console_policy_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
-    const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+    const ItemType type = (ItemType) console_get_item_type(index);
 
     if (type == ItemType_PolicyRoot) {
         visible_actions->insert(ConsoleAction_PolicyCreate);

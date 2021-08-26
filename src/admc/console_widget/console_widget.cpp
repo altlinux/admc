@@ -232,8 +232,8 @@ void ConsoleWidget::register_type(const int type_id, ConsoleType *type) {
     }
 }
 
-QList<QStandardItem *> ConsoleWidget::add_scope_item(const ScopeNodeType scope_type, const QModelIndex &parent) {
-    const QList<QStandardItem *> row = add_results_item(parent);
+QList<QStandardItem *> ConsoleWidget::add_scope_item(const int type, const ScopeNodeType scope_type, const QModelIndex &parent) {
+    const QList<QStandardItem *> row = add_results_item(type, parent);
 
     const bool is_dynamic = (scope_type == ScopeNodeType_Dynamic);
 
@@ -252,7 +252,7 @@ QList<QStandardItem *> ConsoleWidget::add_scope_item(const ScopeNodeType scope_t
     return row;
 }
 
-QList<QStandardItem *> ConsoleWidget::add_results_item(const QModelIndex &parent) {
+QList<QStandardItem *> ConsoleWidget::add_results_item(const int type, const QModelIndex &parent) {
     QStandardItem *parent_item = [&]() {
         if (parent.isValid()) {
             return d->model->itemFromIndex(parent);
@@ -285,6 +285,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_item(const QModelIndex &parent
     }();
 
     row[0]->setData(false, ConsoleRole_IsScope);
+    row[0]->setData(type, ConsoleRole_Type);
 
     parent_item->appendRow(row);
 
@@ -626,7 +627,7 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
         // will be hidden. Dummy row is removed later.
         const bool need_dummy = (model->rowCount(current) == 0);
         if (need_dummy) {
-            q->add_results_item(current);
+            q->add_results_item(0, current);
         }
 
         results.view()->set_parent(current);
@@ -998,6 +999,12 @@ void ConsoleWidgetPrivate::update_description() {
 
     description_bar_left->setText(scope_name);
     description_bar_right->setText(description);
+}
+
+int console_get_item_type(const QModelIndex &index) {
+    const int type = index.data(ConsoleRole_Type).toInt();
+
+    return type;
 }
 
 QString results_state_name(const int type) {

@@ -42,6 +42,7 @@
 #include "password_dialog.h"
 #include "editors/multi_editor.h"
 #include "filter_dialog.h"
+#include "central_widget.h"
 
 #include <QDebug>
 #include <QMenu>
@@ -102,8 +103,6 @@ void console_object_load(const QList<QStandardItem *> row, const AdObject &objec
 
 void console_object_item_data_load(QStandardItem *item, const AdObject &object) {
     item->setData(true, ConsoleRole_HasProperties);
-
-    item->setData(ItemType_Object, ConsoleRole_Type);
 
     const QIcon icon = get_object_icon(object);
     item->setIcon(icon);
@@ -287,9 +286,9 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
 
         const QList<QStandardItem *> row = [&]() {
             if (should_be_in_scope) {
-                return console->add_scope_item(ScopeNodeType_Dynamic, parent);
+                return console->add_scope_item(ItemType_Object, ScopeNodeType_Dynamic, parent);
             } else {
-                return console->add_results_item(parent);
+                return console->add_results_item(ItemType_Object, parent);
             }
         }();
 
@@ -404,7 +403,7 @@ void ConsoleObject::fetch(const QModelIndex &index) {
 
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     // Create tree head
-    const QList<QStandardItem *> head_row = console->add_scope_item(ScopeNodeType_Dynamic, QModelIndex());
+    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_Object, ScopeNodeType_Dynamic, QModelIndex());
     object_tree_head = head_row[0];
 
     const QString top_dn = g_adconfig->domain_head();
@@ -530,7 +529,7 @@ void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 }
 
 void console_object_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
-    const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+    const ItemType type = (ItemType) console_get_item_type(index);
     if (type != ItemType_Object) {
         return;
     }
