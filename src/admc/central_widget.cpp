@@ -121,17 +121,12 @@ CentralWidget::CentralWidget(AdInterface &ad)
     connect(
         show_noncontainers_action, &QAction::toggled,
         this, &CentralWidget::on_show_non_containers);
-    on_show_non_containers();
-    
     connect(
         dev_mode_action, &QAction::toggled,
         this, &CentralWidget::on_dev_mode);
-    on_dev_mode();
-
     connect(
         advanced_features_action, &QAction::toggled,
         this, &CentralWidget::on_advanced_features);
-    on_dev_mode();
 
     connect(
         open_filter_action, &QAction::triggered,
