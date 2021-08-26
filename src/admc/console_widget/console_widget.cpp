@@ -45,7 +45,7 @@
 const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
 const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
 
-QString results_state_name(const int results_id);
+QString results_state_name(const int type);
 
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 : QObject(q_arg) {
@@ -148,6 +148,10 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     layout->setSpacing(0);
     setLayout(layout);
     layout->addWidget(d->splitter);
+
+    auto default_results_widget = new QWidget();
+    d->default_results = ResultsDescription(default_results_widget, nullptr, QList<QString>(), QList<int>());
+    d->results_stacked_widget->addWidget(default_results_widget);
 
     connect(
         d->scope_view, &QTreeView::expanded,
@@ -268,8 +272,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_item(const QModelIndex &parent
             if (parent_item == d->model->invisibleRootItem()) {
                 return 1;
             } else {
-                const int parent_results_id = parent.data(ConsoleRole_ResultsId).toInt();
-                const ResultsDescription parent_results = d->results_descriptions[parent_results_id];
+                const ResultsDescription parent_results = d->get_results(parent);
 
                 return parent_results.column_count();
             }
@@ -326,22 +329,18 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
 }
 
 // No view, only widget
-int ConsoleWidget::register_results(QWidget *widget) {
-    return register_results(widget, nullptr, QList<QString>(), QList<int>());
+void ConsoleWidget::register_results(const int type, QWidget *widget) {
+    register_results(type, widget, nullptr, QList<QString>(), QList<int>());
 }
 
 // In this case, view *is* the widget
-int ConsoleWidget::register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
-    return register_results(view, view, column_labels, default_columns);
+void ConsoleWidget::register_results(const int type, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
+    register_results(type, view, view, column_labels, default_columns);
 }
 
 // Base register() f-n
-int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
-    static int id_max = 0;
-    id_max++;
-    const int id = id_max;
-
-    d->results_descriptions[id] = ResultsDescription(widget, view, column_labels, default_columns);
+void ConsoleWidget::register_results(const int type, QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
+    d->results_descriptions[type] = ResultsDescription(widget, view, column_labels, default_columns);
 
     d->results_stacked_widget->addWidget(widget);
 
@@ -356,8 +355,6 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
             view, &ResultsView::context_menu,
             d, &ConsoleWidgetPrivate::context_menu);
     }
-
-    return id;
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {
@@ -491,9 +488,9 @@ QVariant ConsoleWidget::save_state() const {
     state[CONSOLE_TREE_STATE] = d->toggle_console_tree_action->isChecked();
     state[DESCRIPTION_BAR_STATE] = d->toggle_description_bar_action->isChecked();
 
-    for (const int results_id : d->results_descriptions.keys()) {
-        const ResultsDescription results = d->results_descriptions[results_id];
-        const QString results_name = results_state_name(results_id);
+    for (const int type : d->results_descriptions.keys()) {
+        const ResultsDescription results = d->results_descriptions[type];
+        const QString results_name = results_state_name(type);
         const QVariant results_state = results.save_state();
 
         state[results_name] = results_state;
@@ -514,8 +511,8 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
     d->toggle_description_bar_action->setChecked(state[DESCRIPTION_BAR_STATE].toBool());
     d->on_toggle_description_bar();
 
-    for (const int results_id : d->results_descriptions.keys()) {
-        ResultsDescription results = d->results_descriptions[results_id];
+    for (const int type : d->results_descriptions.keys()) {
+        ResultsDescription results = d->results_descriptions[type];
 
         // NOTE: need to call this before restoring results
         // state because otherwise results view header can
@@ -523,7 +520,7 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
         // restoration
         d->model->setHorizontalHeaderLabels(results.column_labels());
 
-        const QString results_name = results_state_name(results_id);
+        const QString results_name = results_state_name(type);
         const QVariant results_state = state.value(results_name, QVariant());
 
         results.restore_state(results_state);
@@ -952,8 +949,7 @@ const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {
     const QModelIndex current_scope = q->get_current_scope_item();
 
     if (current_scope.isValid()) {
-        const int results_id = current_scope.data(ConsoleRole_ResultsId).toInt();
-        const ResultsDescription results = results_descriptions[results_id];
+        const ResultsDescription results = get_results(current_scope);
 
         return results;
     } else {
@@ -982,6 +978,18 @@ ConsoleType *ConsoleWidgetPrivate::get_type(const QModelIndex &index) const {
     return type;
 }
 
+ResultsDescription ConsoleWidgetPrivate::get_results(const QModelIndex &index) const {
+    const int type = index.data(ConsoleRole_Type).toInt();
+
+    if (results_descriptions.contains(type)) {
+        return results_descriptions[type];
+    } else {
+        qDebug() << "No results were registered for type" << type;
+
+        return default_results;
+    }
+}
+
 void ConsoleWidgetPrivate::update_description() {
     const QModelIndex current_scope = q->get_current_scope_item();
 
@@ -994,6 +1002,6 @@ void ConsoleWidgetPrivate::update_description() {
     description_bar_right->setText(description);
 }
 
-QString results_state_name(const int results_id) {
-    return QString("RESULTS_STATE_%1").arg(results_id);
+QString results_state_name(const int type) {
+    return QString("RESULTS_STATE_%1").arg(type);
 }

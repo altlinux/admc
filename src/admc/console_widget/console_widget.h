@@ -93,9 +93,9 @@ public:
     // call order is important for correct state restoration
     // so register your results in the same order every
     // time.
-    int register_results(QWidget *widget);
-    int register_results(ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
-    int register_results(QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+    void register_results(const int type, QWidget *widget);
+    void register_results(const int type, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
+    void register_results(const int type, QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
     // NOTE: you must register types before adding items
     void register_type(const int type_id, ConsoleType *type);

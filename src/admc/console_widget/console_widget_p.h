@@ -79,6 +79,7 @@ public:
     QAbstractItemView *focused_view;
     QStackedWidget *results_stacked_widget;
     QHash<int, ResultsDescription> results_descriptions;
+    ResultsDescription default_results;
     QSplitter *splitter;
     QHash<int, ConsoleType *> type_map;
 
@@ -136,6 +137,7 @@ public:
     void fetch_scope(const QModelIndex &index);
     const ResultsDescription get_current_results() const;
     ConsoleType *get_type(const QModelIndex &index) const;
+    ResultsDescription get_results(const QModelIndex &index) const;
     void update_description();
 
 signals:

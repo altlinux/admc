@@ -64,18 +64,20 @@ CentralWidget::CentralWidget(AdInterface &ad)
     // Register console results
     //
     auto object_results = new ResultsView(this);
-    console_object_results_id = console->register_results(object_results, console_object_header_labels(), console_object_default_columns());
+    console->register_results(ItemType_Object, object_results, console_object_header_labels(), console_object_default_columns());
+    console->register_results(ItemType_QueryItem, object_results, console_object_header_labels(), console_object_default_columns());
 
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
-    policy_container_results_id = console->register_results(policy_container_results, console_policy_header_labels(), console_policy_default_columns());
+    console->register_results(ItemType_PolicyRoot, policy_container_results, console_policy_header_labels(), console_policy_default_columns());
 
     policy_results_widget = new PolicyResultsWidget();
-    policy_results_id = console->register_results(policy_results_widget);
+    console->register_results(ItemType_Policy, policy_results_widget);
 
-    auto query_results = new ResultsView(this);
-    query_results->detail_view()->header()->setDefaultSectionSize(200);
-    console_query_folder_results_id = console->register_results(query_results, console_query_folder_header_labels(), console_query_folder_default_columns());
+    auto query_folder_results = new ResultsView(this);
+    query_folder_results->detail_view()->header()->setDefaultSectionSize(200);
+    console->register_results(ItemType_QueryFolder, query_folder_results, console_query_folder_header_labels(), console_query_folder_default_columns());
+    console->register_results(ItemType_QueryRoot, query_folder_results, console_query_folder_header_labels(), console_query_folder_default_columns());
 
     //
     // Register console types
