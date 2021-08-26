@@ -48,7 +48,7 @@ CentralWidget::CentralWidget(AdInterface &ad)
 : QWidget() {
     console_actions = new ConsoleActions(this);
 
-    open_filter_action = new QAction(tr("&Filter objects"), this);
+    open_filter_action = new QAction(tr("&Filter objects..."), this);
 
     // NOTE: these actions are not connected here because
     // they need to be connected to a custom slot

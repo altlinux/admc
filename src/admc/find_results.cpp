@@ -69,7 +69,7 @@ FindResults::FindResults()
     layout->addWidget(object_count_label);
     layout->addWidget(view);
 
-    customize_columns_action = new QAction(tr("&Customize columns"), this);
+    customize_columns_action = new QAction(tr("&Customize columns..."), this);
 
     const QVariant view_state = settings_get_variant(SETTING_find_results_state);
     view->restore_state(view_state, console_object_default_columns());

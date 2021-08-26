@@ -97,7 +97,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     // Refreshes current scope item, if it can be refreshed.
     // Always visible.
     d->refresh_current_scope_action = new QAction(QIcon::fromTheme("view-refresh"), tr("&Refresh"), this);
-    d->customize_columns_action = new QAction(tr("&Customize columns"), this);
+    d->customize_columns_action = new QAction(tr("&Customize columns..."), this);
     d->set_results_to_icons_action = new QAction(tr("&Icons"), this);
     d->set_results_to_list_action = new QAction(tr("&List"), this);
     d->set_results_to_detail_action = new QAction(tr("&Detail"), this);
