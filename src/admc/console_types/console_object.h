@@ -48,8 +48,9 @@ enum ObjectRole {
     ObjectRole_CannotRename = ConsoleRole_LAST + 4,
     ObjectRole_CannotDelete = ConsoleRole_LAST + 5,
     ObjectRole_AccountDisabled = ConsoleRole_LAST + 6,
+    ObjectRole_Fetching = ConsoleRole_LAST + 7,
 
-    ObjectRole_LAST = ConsoleRole_LAST + 7,
+    ObjectRole_LAST = ConsoleRole_LAST + 8,
 };
 
 void console_object_load(const QList<QStandardItem *> row, const AdObject &object);

@@ -54,8 +54,6 @@ class ConsoleType;
 class ConsoleDragModel;
 
 enum ConsoleRolePublic {
-    ConsoleRole_Fetching = Qt::UserRole + 17,
-
     ConsoleRole_HasProperties = Qt::UserRole + 18,
 
     // NOTE: when implementing custom roles, make sure they do
