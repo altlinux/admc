@@ -62,6 +62,7 @@ void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, c
 bool console_object_create_check(ConsoleWidget *console, const QModelIndex &parent);
 void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
 void console_object_drop_policies(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
+bool console_object_search_id_match(QStandardItem *item, SearchThread *thread);
 
 void console_object_load(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
@@ -294,11 +295,26 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
     }
 }
 
+// NOTE: it is possible for a search to start while a
+// previous one hasn't finished. For that reason, this f-n
+// contains multiple workarounds for issues caused by that
+// case.
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes) {
-    // Save original icon and switch to a different icon
-    // that will indicate that this item is being fetched.
     QStandardItem *item = console->get_item(index);
-    const QIcon original_icon = item->icon();
+
+    // Save original icon
+
+    // NOTE: only save original icon if there isn't one
+    // saved already. If this search overlaps a previous
+    // one, then previous search would've already saved it.
+    const QString icon_before_search_current = item->data(MyConsoleRole_IconBeforeSearch).toString();
+    if (icon_before_search_current.isEmpty()) {
+        const QIcon original_icon = item->icon();
+        const QString original_icon_name = original_icon.name();
+        item->setData(original_icon_name, MyConsoleRole_IconBeforeSearch);
+    }
+
+    // Set icon to indicate that item is in "search" state
     item->setIcon(QIcon::fromTheme("system-search"));
 
     // NOTE: need to set this role to disable actions during
@@ -307,6 +323,11 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
     item->setDragEnabled(false);
 
     auto search_thread = new SearchThread(base, scope, filter, attributes);
+
+    // NOTE: change item's search thread, this will be used
+    // later to handle situations where a thread is started
+    // while another is running
+    item->setData(search_thread->get_id(), MyConsoleRole_SearchThreadId);
 
     const QPersistentModelIndex persistent_index = index;
 
@@ -332,19 +353,44 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
                 return;
             }
 
+            QStandardItem *item_now = console->get_item(persistent_index);
+
+            // NOTE: if another thread was started for this
+            // item, abort this thread
+            const bool thread_id_match = console_object_search_id_match(item_now, search_thread);
+            if (!thread_id_match) {
+                search_thread->stop();
+
+                return;
+            }
+
             console_object_create(console, results.values(), persistent_index);
         },
         Qt::QueuedConnection);
     QObject::connect(
         search_thread, &SearchThread::finished,
         console,
-        [console, persistent_index, original_icon]() {
+        [console, persistent_index, search_thread]() {
             if (!persistent_index.isValid()) {
                 return;
             }
 
             QStandardItem *item_now = console->get_item(persistent_index);
-            item_now->setIcon(original_icon);
+
+            // NOTE: if another thread was started for this
+            // item, don't change item data. It will be
+            // changed by that other thread.
+            const bool thread_id_match = console_object_search_id_match(item_now, search_thread);
+            if (!thread_id_match) {
+                return;
+            }
+
+            const QString original_icon_name = item_now->data(MyConsoleRole_IconBeforeSearch).toString();
+            item_now->setIcon(QIcon::fromTheme(original_icon_name));
+
+            // NOTE: empty IconBeforeSearch so next search
+            // can use this as clean state
+            item_now->setData(QString(), MyConsoleRole_IconBeforeSearch);
 
             item_now->setData(false, ObjectRole_Fetching);
             item_now->setDragEnabled(true);
@@ -1142,4 +1188,13 @@ QString ConsoleObject::get_description(const QModelIndex &index) const {
 
 void ConsoleObject::activate(const QModelIndex &index) {
     object_action_properties(console);
+}
+
+bool console_object_search_id_match(QStandardItem *item, SearchThread *thread) {
+    const int id_from_item = item->data(MyConsoleRole_SearchThreadId).toInt();
+    const int thread_id = thread->get_id();
+
+    const bool match = (id_from_item == thread_id);
+
+    return match;
 }

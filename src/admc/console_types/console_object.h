@@ -26,6 +26,7 @@
 #include "console_actions.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/console_type.h"
+#include "console_types/my_console_role.h"
 
 class QStandardItem;
 class AdObject;
@@ -42,15 +43,16 @@ class FilterDialog;
  */
 
 enum ObjectRole {
-    ObjectRole_DN = ConsoleRole_LAST + 1,
-    ObjectRole_ObjectClasses = ConsoleRole_LAST + 2,
-    ObjectRole_CannotMove = ConsoleRole_LAST + 3,
-    ObjectRole_CannotRename = ConsoleRole_LAST + 4,
-    ObjectRole_CannotDelete = ConsoleRole_LAST + 5,
-    ObjectRole_AccountDisabled = ConsoleRole_LAST + 6,
-    ObjectRole_Fetching = ConsoleRole_LAST + 7,
+    ObjectRole_DN = MyConsoleRole_LAST + 1,
+    ObjectRole_ObjectClasses,
+    ObjectRole_CannotMove,
+    ObjectRole_CannotRename,
+    ObjectRole_CannotDelete,
+    ObjectRole_AccountDisabled,
+    ObjectRole_Fetching,
+    ObjectRole_SearchId,
 
-    ObjectRole_LAST = ConsoleRole_LAST + 8,
+    ObjectRole_LAST,
 };
 
 void console_object_load(const QList<QStandardItem *> row, const AdObject &object);

@@ -310,7 +310,7 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
     }
 
     d->model->removeRows(0, d->model->rowCount(index), index);
-
+    d->model->setData(index, false, ConsoleRole_WasFetched);
     d->fetch_scope(index);
 }
 

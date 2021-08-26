@@ -32,6 +32,10 @@ SearchThread::SearchThread(const QString base_arg, const SearchScope scope_arg, 
     filter = filter_arg;
     attributes = attributes_arg;
 
+    static int id_max = 0;
+    id = id_max;
+    id_max++;
+
     connect(
         this, &SearchThread::finished,
         this, &QObject::deleteLater);
@@ -66,4 +70,8 @@ void SearchThread::run() {
             break;
         }
     }
+}
+
+int SearchThread::get_id() const {
+    return id;
 }

@@ -46,6 +46,7 @@ public:
     SearchThread(const QString base, const SearchScope scope, const QString &filter, const QList<QString> attributes);
 
     void stop();
+    int get_id() const;
 
 signals:
     void results_ready(const QHash<QString, AdObject> &results);
@@ -56,6 +57,7 @@ private:
     SearchScope scope;
     QString filter;
     QList<QString> attributes;
+    int id;
 
     void run() override;
 };

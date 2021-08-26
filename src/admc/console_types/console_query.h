@@ -25,6 +25,7 @@
 #include "console_actions.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/console_type.h"
+#include "console_types/my_console_role.h"
 
 class QStandardItem;
 class QModelIndex;
@@ -36,13 +37,13 @@ template <typename T>
 class QList;
 
 enum QueryItemRole {
-    QueryItemRole_Description = ConsoleRole_LAST + 1,
-    QueryItemRole_Filter = ConsoleRole_LAST + 2,
-    QueryItemRole_FilterState = ConsoleRole_LAST + 3,
-    QueryItemRole_Base = ConsoleRole_LAST + 4,
-    QueryItemRole_ScopeIsChildren = ConsoleRole_LAST + 5,
+    QueryItemRole_Description = MyConsoleRole_LAST + 1,
+    QueryItemRole_Filter,
+    QueryItemRole_FilterState,
+    QueryItemRole_Base,
+    QueryItemRole_ScopeIsChildren,
 
-    QueryItemRole_LAST = ConsoleRole_LAST + 7,
+    QueryItemRole_LAST,
 };
 
 enum QueryColumn {
