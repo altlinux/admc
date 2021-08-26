@@ -82,23 +82,23 @@ CentralWidget::CentralWidget(AdInterface &ad)
     //
     // Register console types
     //
-    auto console_object = new ConsoleObject(policy_results_widget, filter_dialog, console);
-    console->register_type(ItemType_Object, console_object);
+    auto object_impl = new ConsoleObject(policy_results_widget, filter_dialog, console);
+    console->register_impl(ItemType_Object, object_impl);
 
-    auto console_policy_root = new ConsolePolicyRoot(console);
-    console->register_type(ItemType_PolicyRoot, console_policy_root);
+    auto policy_root_impl = new ConsolePolicyRoot(console);
+    console->register_impl(ItemType_PolicyRoot, policy_root_impl);
 
-    auto console_policy = new ConsolePolicy(policy_results_widget, console);
-    console->register_type(ItemType_Policy, console_policy);
+    auto policy_impl = new ConsolePolicy(policy_results_widget, console);
+    console->register_impl(ItemType_Policy, policy_impl);
 
-    auto console_query_item = new ConsoleQueryItem(console);
-    console->register_type(ItemType_QueryItem, console_query_item);
+    auto query_item_impl = new ConsoleQueryItem(console);
+    console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    auto console_query_folder = new ConsoleQueryFolder(console);
-    console->register_type(ItemType_QueryFolder, console_query_folder);
+    auto query_folder_impl = new ConsoleQueryFolder(console);
+    console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
-    auto console_query_root = new ConsoleQueryRoot(console);
-    console->register_type(ItemType_QueryRoot, console_query_root);
+    auto query_root_impl = new ConsoleQueryRoot(console);
+    console->register_impl(ItemType_QueryRoot, query_root_impl);
 
     // NOTE: requires all results to be initialized
     console_object_tree_init(console, ad);

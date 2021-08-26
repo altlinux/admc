@@ -39,7 +39,7 @@ class QStandardItemModel;
 class ConsoleWidget;
 class QMenu;
 class QSplitter;
-class ConsoleType;
+class ConsoleImpl;
 
 enum ConsoleRole {
     // Determines whether scope item was fetched
@@ -76,7 +76,7 @@ public:
     QHash<int, ResultsDescription> results_descriptions;
     ResultsDescription default_results;
     QSplitter *splitter;
-    QHash<int, ConsoleType *> type_map;
+    QHash<int, ConsoleImpl *> impl_map;
 
     QAction *properties_action;
     QAction *refresh_action;
@@ -131,7 +131,7 @@ public:
     void on_toggle_description_bar();
     void fetch_scope(const QModelIndex &index);
     const ResultsDescription get_current_results() const;
-    ConsoleType *get_type(const QModelIndex &index) const;
+    ConsoleImpl *get_impl(const QModelIndex &index) const;
     ResultsDescription get_results(const QModelIndex &index) const;
     void update_description();
 

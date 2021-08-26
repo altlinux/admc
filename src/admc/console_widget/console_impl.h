@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONSOLE_TYPE_H
-#define CONSOLE_TYPE_H
+#ifndef CONSOLE_IMPL_H
+#define CONSOLE_IMPL_H
 
 /**
  * Base class for implementing item logic specific to
@@ -32,11 +32,11 @@
 
 class ConsoleWidget;
 
-class ConsoleType : public QObject {
+class ConsoleImpl : public QObject {
     Q_OBJECT
 
 public:
-    ConsoleType(ConsoleWidget *console_arg);
+    ConsoleImpl(ConsoleWidget *console_arg);
 
     // Called when an item of this type is fetched. Only
     // called on items that are dynamic. You should load
@@ -65,4 +65,4 @@ protected:
     ConsoleWidget *console;
 };
 
-#endif /* CONSOLE_TYPE_H */
+#endif /* CONSOLE_IMPL_H */

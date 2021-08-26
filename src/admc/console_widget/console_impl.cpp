@@ -18,31 +18,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_widget/console_type.h"
+#include "console_widget/console_impl.h"
 
 #include "console_widget/console_widget.h"
 
-ConsoleType::ConsoleType(ConsoleWidget *console_arg)
+ConsoleImpl::ConsoleImpl(ConsoleWidget *console_arg)
 : QObject(console_arg) {
     console = console_arg;
 }
 
-void ConsoleType::fetch(const QModelIndex &index) {
+void ConsoleImpl::fetch(const QModelIndex &index) {
 
 }
 
-bool ConsoleType::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+bool ConsoleImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     return false;
 }
 
-void ConsoleType::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+void ConsoleImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
 
 }
 
-QString ConsoleType::get_description(const QModelIndex &index) const {
+QString ConsoleImpl::get_description(const QModelIndex &index) const {
     return QString();
 }
 
-void ConsoleType::activate(const QModelIndex &index) {
+void ConsoleImpl::activate(const QModelIndex &index) {
 
 }

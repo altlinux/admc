@@ -50,7 +50,7 @@ class QMenu;
 class QAbstractItemView;
 class QStandardItemModel;
 class QToolBar;
-class ConsoleType;
+class ConsoleImpl;
 class ConsoleDragModel;
 
 enum ConsoleRolePublic {
@@ -91,7 +91,7 @@ public:
     void register_results(const int type, QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
     // NOTE: you must register types before adding items
-    void register_type(const int type_id, ConsoleType *type);
+    void register_impl(const int type, ConsoleImpl *impl);
 
     // These f-ns are for adding items to console. Items
     // returned from these f-ns should be used to set text,
@@ -105,7 +105,7 @@ public:
     // "scope_type" - scope items can be static or dynamic.
     // Static scope items should be loaded once and never
     // change after that. Dynamic scope items will trigger a
-    // fetch() call on their assigned ConsoleType. Note that
+    // fetch() call on their assigned ConsoleImpl. Note that
     // dynamic scope items can be fetched again via the
     // refresh_scope() f-n or "Refresh" action of the item
     // menu.

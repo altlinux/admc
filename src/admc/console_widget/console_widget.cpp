@@ -26,7 +26,7 @@
 #include "console_widget/results_description.h"
 #include "console_widget/results_view.h"
 #include "console_widget/scope_proxy_model.h"
-#include "console_widget/console_type.h"
+#include "console_widget/console_impl.h"
 
 #include <QAction>
 #include <QApplication>
@@ -216,11 +216,11 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->update_view_actions();
 }
 
-void ConsoleWidget::register_type(const int type_id, ConsoleType *type) {
-    if (!d->type_map.contains(type_id)) {
-        d->type_map[type_id] = type;
+void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
+    if (!d->impl_map.contains(type)) {
+        d->impl_map[type] = impl;
     } else {
-        qDebug() << "Duplicate register_type() call for type" << type_id;
+        qDebug() << "Duplicate register_impl() call for type" << type;
     }
 }
 
@@ -790,8 +790,8 @@ void ConsoleWidgetPrivate::start_drag(const QList<QPersistentModelIndex> &droppe
 bool ConsoleWidgetPrivate::can_drop(const QModelIndex &target) {
     const int target_type = target.data(ConsoleRole_Type).toInt();
 
-    ConsoleType *type = get_type(target);
-    const bool ok = type->can_drop(dropped_list, dropped_type_list, target, target_type);
+    ConsoleImpl *impl = get_impl(target);
+    const bool ok = impl->can_drop(dropped_list, dropped_type_list, target, target_type);
 
     return ok;
 }
@@ -799,8 +799,8 @@ bool ConsoleWidgetPrivate::can_drop(const QModelIndex &target) {
 void ConsoleWidgetPrivate::drop(const QModelIndex &target) {
     const int target_type = target.data(ConsoleRole_Type).toInt();
     
-    ConsoleType *type = get_type(target);
-    type->drop(dropped_list, dropped_type_list, target, target_type);
+    ConsoleImpl *impl = get_impl(target);
+    impl->drop(dropped_list, dropped_type_list, target, target_type);
 }
 
 void ConsoleWidgetPrivate::set_results_to_icons() {
@@ -922,19 +922,19 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
     if (!was_fetched) {
         model->setData(index, true, ConsoleRole_WasFetched);
 
-        ConsoleType *type = get_type(index);
-        type->fetch(index);
+        ConsoleImpl *impl = get_impl(index);
+        impl->fetch(index);
     }
 }
 
-ConsoleType *ConsoleWidgetPrivate::get_type(const QModelIndex &index) const {
+ConsoleImpl *ConsoleWidgetPrivate::get_impl(const QModelIndex &index) const {
     // NOTE: default type uses base class which will do nothing
-    static ConsoleType *default_type = new ConsoleType(q);
+    static ConsoleImpl *default_type = new ConsoleImpl(q);
 
-    const int type_id = index.data(ConsoleRole_Type).toInt();
-    ConsoleType *type = type_map.value(type_id, default_type);
+    const int type = index.data(ConsoleRole_Type).toInt();
+    ConsoleImpl *impl = impl_map.value(type, default_type);
 
-    return type;
+    return impl;
 }
 
 ResultsDescription ConsoleWidgetPrivate::get_results(const QModelIndex &index) const {
@@ -954,8 +954,8 @@ void ConsoleWidgetPrivate::update_description() {
 
     const QString scope_name = current_scope.data().toString();
 
-    ConsoleType *type = get_type(current_scope);
-    const QString description = type->get_description(current_scope);
+    ConsoleImpl *impl = get_impl(current_scope);
+    const QString description = impl->get_description(current_scope);
 
     description_bar_left->setText(scope_name);
     description_bar_right->setText(description);

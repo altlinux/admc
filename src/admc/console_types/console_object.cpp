@@ -1172,7 +1172,7 @@ QString console_object_count_string(ConsoleWidget *console, const QModelIndex &i
 }
 
 ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg)
-: ConsoleType(console_arg) {
+: ConsoleImpl(console_arg) {
     policy_results_widget = policy_results_widget_arg;
     filter_dialog = filter_dialog_arg;
 }

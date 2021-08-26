@@ -356,6 +356,6 @@ void connect_policy_actions(ConsoleWidget *console, ConsoleActions *actions, Pol
 }
 
 ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg)
-: ConsoleType(console_arg) {
+: ConsoleImpl(console_arg) {
     policy_results_widget = policy_results_widget_arg;
 }

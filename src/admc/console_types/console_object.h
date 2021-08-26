@@ -25,7 +25,7 @@
 #include "central_widget.h"
 #include "console_actions.h"
 #include "console_widget/console_widget.h"
-#include "console_widget/console_type.h"
+#include "console_widget/console_impl.h"
 #include "console_types/my_console_role.h"
 
 class QStandardItem;
@@ -86,7 +86,7 @@ void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions);
 
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
 
-class ConsoleObject final : public ConsoleType {
+class ConsoleObject final : public ConsoleImpl {
     Q_OBJECT
 
 public:

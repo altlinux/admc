@@ -24,7 +24,7 @@
 #include "central_widget.h"
 #include "console_actions.h"
 #include "console_widget/console_widget.h"
-#include "console_widget/console_type.h"
+#include "console_widget/console_impl.h"
 #include "console_types/my_console_role.h"
 
 class QStandardItem;
@@ -69,31 +69,31 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
 QStandardItem *console_query_head();
 void connect_query_actions(ConsoleWidget *console, ConsoleActions *actions);
 
-class ConsoleQueryItem final : public ConsoleType {
+class ConsoleQueryItem final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    using ConsoleType::ConsoleType;
+    using ConsoleImpl::ConsoleImpl;
 
     void fetch(const QModelIndex &index);
     QString get_description(const QModelIndex &index) const override;
 };
 
-class ConsoleQueryFolder final : public ConsoleType {
+class ConsoleQueryFolder final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    using ConsoleType::ConsoleType;
+    using ConsoleImpl::ConsoleImpl;
 
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
 };
 
-class ConsoleQueryRoot final : public ConsoleType {
+class ConsoleQueryRoot final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    using ConsoleType::ConsoleType;
+    using ConsoleImpl::ConsoleImpl;
 
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
