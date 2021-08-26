@@ -373,11 +373,7 @@ void console_query_actions_get_state(const QModelIndex &index, const bool single
 bool console_query_folder_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     const bool dropped_are_query_item_or_folder = (dropped_type_list - QSet<int>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
 
-    const bool target_is_fetching = target.data(ConsoleRole_Fetching).toBool();
-
-    const bool can_drop = (dropped_are_query_item_or_folder && !target_is_fetching);
-
-    return can_drop;
+    return dropped_are_query_item_or_folder;
 }
 
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch) {
