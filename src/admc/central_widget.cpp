@@ -205,6 +205,10 @@ void CentralWidget::refresh_object_tree() {
 void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     console_actions->add_to_menu(action_menu);
 
+    console_object_actions_add_to_menu(console_actions, action_menu, console);
+    console_policy_actions_add_to_menu(console_actions, action_menu);
+    console_query_actions_add_to_menu(console_actions, action_menu);
+
     action_menu->addSeparator();
 
     preferences_menu->addAction(advanced_features_action);

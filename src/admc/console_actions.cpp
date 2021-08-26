@@ -104,10 +104,6 @@ void ConsoleActions::add_to_menu(QMenu *menu) {
     menu->addMenu(new_menu);
 
     menu->addSeparator();
-
-    console_object_actions_add_to_menu(this, menu);
-    console_policy_actions_add_to_menu(this, menu);
-    console_query_actions_add_to_menu(this, menu);
 }
 
 void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes) {

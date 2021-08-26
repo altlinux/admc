@@ -509,6 +509,10 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
     }
 }
 
+QAction *ConsoleWidget::get_refresh_action() const {
+    return d->refresh_action;
+}
+
 void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
     const QModelIndex index = scope_proxy_model->mapToSource(index_proxy);
     fetch_scope(index);
@@ -855,8 +859,6 @@ void ConsoleWidgetPrivate::update_view_actions() {
 
 void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     // Action
-    action_menu->addAction(d->refresh_action);
-
     d->refresh_action->setVisible(false);
 
     // Update actions right before menu opens

@@ -156,6 +156,8 @@ public:
     // called so that their state can be restored
     void restore_state(const QVariant &state);
 
+    QAction *get_refresh_action() const;
+
 signals:
     // Emitted when current scope item changes.
     void current_scope_item_changed(const QModelIndex &index);

@@ -543,7 +543,7 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
     }
 }
 
-void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
+void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu, ConsoleWidget *console) {
     // Container
     menu->addAction(actions->get(ConsoleAction_Find));
 
@@ -572,6 +572,12 @@ void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     menu->addAction(actions->get(ConsoleAction_Move));
 
     menu->addSeparator();
+
+    if (console != nullptr) {
+        menu->addAction(console->get_refresh_action());
+    
+        menu->addSeparator();
+    }
 
     menu->addAction(actions->get(ConsoleAction_Properties));
 }
