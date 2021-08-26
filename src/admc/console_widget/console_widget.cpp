@@ -474,10 +474,6 @@ QList<QStandardItem *> ConsoleWidget::get_row(const QModelIndex &index) const {
     return row;
 }
 
-bool ConsoleWidget::item_was_fetched(const QModelIndex &index) const {
-    return index.data(ConsoleRole_WasFetched).toBool();
-}
-
 QVariant ConsoleWidget::save_state() const {
     QHash<QString, QVariant> state;
 
@@ -1001,10 +997,16 @@ void ConsoleWidgetPrivate::update_description() {
     description_bar_right->setText(description);
 }
 
-int console_get_item_type(const QModelIndex &index) {
+int console_item_get_type(const QModelIndex &index) {
     const int type = index.data(ConsoleRole_Type).toInt();
 
     return type;
+}
+
+bool console_item_get_was_fetched(const QModelIndex &index) {
+    const int was_fetched = index.data(ConsoleRole_WasFetched).toBool();
+
+    return was_fetched;
 }
 
 QString results_state_name(const int type) {

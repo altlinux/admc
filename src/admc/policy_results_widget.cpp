@@ -124,7 +124,7 @@ PolicyResultsWidget::~PolicyResultsWidget() {
 }
 
 void PolicyResultsWidget::update(const QModelIndex &index) {
-    const ItemType type = (ItemType) console_get_item_type(index);
+    const ItemType type = (ItemType) console_item_get_type(index);
     if (type != ItemType_Policy) {
         return;
     }

@@ -252,7 +252,7 @@ bool console_object_create_check(ConsoleWidget *console, const QModelIndex &pare
     // NOTE: don't add if parent wasn't fetched yet. If that
     // is the case then the object will be added naturally
     // when parent is fetched.
-    const bool parent_was_fetched = console->item_was_fetched(parent);
+    const bool parent_was_fetched = console_item_get_was_fetched(parent);
     if (!parent_was_fetched) {
         return false;
     }
@@ -529,7 +529,7 @@ void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 }
 
 void console_object_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
-    const ItemType type = (ItemType) console_get_item_type(index);
+    const ItemType type = (ItemType) console_item_get_type(index);
     if (type != ItemType_Object) {
         return;
     }

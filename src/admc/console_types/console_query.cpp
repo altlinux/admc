@@ -230,7 +230,7 @@ void console_query_tree_save(ConsoleWidget *console) {
 
         const QString path = console_query_folder_path(index);
         const QString parent_path = console_query_folder_path(index.parent());
-        const ItemType type = (ItemType) console_get_item_type(index);
+        const ItemType type = (ItemType) console_item_get_type(index);
 
         const QList<QString> child_list = [&]() {
             QList<QString> out;
@@ -332,7 +332,7 @@ void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 }
 
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
-    const ItemType type = (ItemType) console_get_item_type(index);
+    const ItemType type = (ItemType) console_item_get_type(index);
 
     QSet<ConsoleAction> my_visible_actions;
 
@@ -406,7 +406,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
 
             const QPersistentModelIndex new_parent = new_parent_map[index.parent()];
 
-            const ItemType type = (ItemType) console_get_item_type(index);
+            const ItemType type = (ItemType) console_item_get_type(index);
             if (type == ItemType_QueryItem) {
                 const QString description = index.data(QueryItemRole_Description).toString();
                 const QString filter = index.data(QueryItemRole_Filter).toString();

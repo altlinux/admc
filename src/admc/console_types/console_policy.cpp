@@ -90,7 +90,7 @@ void console_policy_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
 }
 
 void console_policy_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
-    const ItemType type = (ItemType) console_get_item_type(index);
+    const ItemType type = (ItemType) console_item_get_type(index);
 
     if (type == ItemType_PolicyRoot) {
         visible_actions->insert(ConsoleAction_PolicyCreate);

@@ -158,8 +158,6 @@ public:
     QStandardItem *get_item(const QModelIndex &index) const;
     QList<QStandardItem *> get_row(const QModelIndex &index) const;
 
-    bool item_was_fetched(const QModelIndex &index) const;
-
     void add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
 
     QVariant save_state() const;
@@ -184,6 +182,7 @@ private:
     friend ConsoleDragModel;
 };
 
-int console_get_item_type(const QModelIndex &index);
+int console_item_get_type(const QModelIndex &index);
+bool console_item_get_was_fetched(const QModelIndex &index);
 
 #endif /* CONSOLE_WIDGET_H */
