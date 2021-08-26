@@ -857,7 +857,7 @@ void ConsoleWidgetPrivate::update_view_actions() {
     customize_columns_action->setVisible(results_view_exists);
 }
 
-void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
+void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     // Action
     d->refresh_action->setVisible(false);
 
@@ -878,11 +878,6 @@ void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMen
                 action_menu->exec(global_pos);
             }
         });
-
-    // Navigation
-    navigation_menu->addAction(d->navigate_up_action);
-    navigation_menu->addAction(d->navigate_back_action);
-    navigation_menu->addAction(d->navigate_forward_action);
 
     // View
     view_menu->addAction(d->set_results_to_icons_action);

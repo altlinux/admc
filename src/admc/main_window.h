@@ -46,7 +46,6 @@ private:
     QToolBar *toolbar;
 
     QMenu *action_menu;
-    QMenu *navigation_menu;
     QMenu *view_menu;
     QMenu *preferences_menu;
 

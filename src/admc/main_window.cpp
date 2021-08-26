@@ -164,7 +164,6 @@ void MainWindow::setup_menubar() {
     // to them.
     auto file_menu = menubar->addMenu(tr("&File"));
     action_menu = menubar->addMenu(tr("&Action"));
-    navigation_menu = menubar->addMenu(tr("&Navigation"));
     view_menu = menubar->addMenu(tr("&View"));
     preferences_menu = menubar->addMenu(tr("&Preferences"));
     auto language_menu = new QMenu(tr("&Language"));
@@ -253,7 +252,7 @@ void MainWindow::connect_to_server() {
         auto central_widget = new CentralWidget(ad);
         setCentralWidget(central_widget);
 
-        central_widget->add_actions(action_menu, navigation_menu, view_menu, preferences_menu, toolbar);
+        central_widget->add_actions(action_menu, view_menu, preferences_menu, toolbar);
         
         toolbar->addAction(manual_action);
 

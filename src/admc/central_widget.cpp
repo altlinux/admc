@@ -197,7 +197,7 @@ void CentralWidget::refresh_object_tree() {
     hide_busy_indicator();
 }
 
-void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
+void CentralWidget::add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     console_actions->add_to_menu(action_menu);
 
     console_object_actions_add_to_menu(console_actions, action_menu, console);
@@ -208,7 +208,7 @@ void CentralWidget::add_actions(QMenu *action_menu, QMenu *navigation_menu, QMen
 
     preferences_menu->addAction(advanced_features_action);
 
-    console->add_actions(action_menu, navigation_menu, view_menu, preferences_menu, toolbar);
+    console->add_actions(action_menu, view_menu, preferences_menu, toolbar);
 
     view_menu->addSeparator();
 
