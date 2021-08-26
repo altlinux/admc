@@ -166,7 +166,8 @@ void ConsoleQueryItem::fetch(const QModelIndex &index) {
 }
 
 void console_query_tree_init(ConsoleWidget *console) {
-    query_tree_head = console->add_top_item(console_query_folder_results_id, ScopeNodeType_Static);
+    const QList<QStandardItem *> head_row = console->add_scope_item(console_query_folder_results_id, ScopeNodeType_Static, QModelIndex());
+    query_tree_head = head_row[0];
     query_tree_head->setText(QCoreApplication::translate("query", "Saved Queries"));
     query_tree_head->setIcon(QIcon::fromTheme("folder"));
     query_tree_head->setData(ItemType_QueryRoot, ConsoleRole_Type);

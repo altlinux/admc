@@ -406,7 +406,8 @@ void ConsoleObject::fetch(const QModelIndex &index) {
 
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     // Create tree head
-    object_tree_head = console->add_top_item(console_object_results_id, ScopeNodeType_Dynamic);
+    const QList<QStandardItem *> head_row = console->add_scope_item(console_object_results_id, ScopeNodeType_Dynamic, QModelIndex());
+    object_tree_head = head_row[0];
 
     const QString top_dn = g_adconfig->domain_head();
     const AdObject top_object = ad.search_object(top_dn);

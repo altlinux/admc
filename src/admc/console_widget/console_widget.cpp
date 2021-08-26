@@ -228,19 +228,6 @@ void ConsoleWidget::register_type(const int type_id, ConsoleType *type) {
     }
 }
 
-QStandardItem * ConsoleWidget::add_top_item(const int results_id, const ScopeNodeType scope_type) {
-    auto item = new QStandardItem();
-    d->model->appendRow(item);
-
-    item->setData(results_id, ConsoleRole_ResultsId);
-    const bool is_dynamic = (scope_type == ScopeNodeType_Dynamic);
-    item->setData(is_dynamic, ConsoleRole_ScopeIsDynamic);
-    item->setData(false, ConsoleRole_WasFetched);
-    item->setData(true, ConsoleRole_IsScope);
-
-    return item;
-}
-
 QList<QStandardItem *> ConsoleWidget::add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent) {
     const QList<QStandardItem *> row = add_results_item(parent);
 
@@ -371,10 +358,6 @@ int ConsoleWidget::register_results(QWidget *widget, ResultsView *view, const QL
     }
 
     return id;
-}
-
-void ConsoleWidget::set_description_bar_text(const QString &text) {
-
 }
 
 QList<QModelIndex> ConsoleWidget::get_selected_items() const {

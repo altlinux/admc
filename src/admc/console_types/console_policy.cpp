@@ -75,7 +75,8 @@ void console_policy_create(ConsoleWidget *console, const AdObject &object) {
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
-    policy_tree_head = console->add_top_item(policy_container_results_id, ScopeNodeType_Dynamic);
+    const QList<QStandardItem *> head_row = console->add_scope_item(policy_container_results_id, ScopeNodeType_Dynamic, QModelIndex());
+    policy_tree_head = head_row[0];
     policy_tree_head->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
     policy_tree_head->setIcon(QIcon::fromTheme("folder"));

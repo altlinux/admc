@@ -102,8 +102,7 @@ public:
 
     // These f-ns are for adding items to console. Items
     // returned from these f-ns should be used to set text,
-    // icon and your custom data roles. add_top_item() adds
-    // top level items to the scope tree. add_scope_item()
+    // icon and your custom data roles. add_scope_item()
     // adds an item that is shown both in scope and results.
     // add_results_item() adds an item that is shown only in
     // results.
@@ -121,7 +120,6 @@ public:
     // dynamic scope items can be fetched again via the
     // refresh_scope() f-n or "Refresh" action of the item
     // menu.
-    QStandardItem *add_top_item(const int results_id, const ScopeNodeType scope_type);
     QList<QStandardItem *> add_scope_item(const int results_id, const ScopeNodeType scope_type, const QModelIndex &parent);
     QList<QStandardItem *> add_results_item(const QModelIndex &parent);
 
@@ -139,8 +137,6 @@ public:
     // Clears children of this scope item, then fetches them
     // again.
     void refresh_scope(const QModelIndex &index);
-
-    void set_description_bar_text(const QString &text);
 
     // Gets selected item(s) from currently focused view,
     // which could be scope or results. Only the main (first
