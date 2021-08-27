@@ -211,42 +211,6 @@ void ConsolePolicy::on_add_link() {
     dialog->open();
 }
 
-void policy_action_delete(ConsoleWidget *console) {
-    const bool confirmed = confirmation_dialog(QCoreApplication::translate("console_policy", "Are you sure you want to delete this policy and all of it's links?"), console);
-    if (!confirmed) {
-        return;
-    }
-
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    const QList<QPersistentModelIndex> index_list = persistent_index_list(console->get_selected_items());
-
-    for (const QPersistentModelIndex &index : index_list) {
-        const QString dn = index.data(PolicyRole_DN).toString();
-        const bool success = ad.gpo_delete(dn);
-
-        // NOTE: object may get deleted successfuly but
-        // deleting GPT fails which makes gpo_delete() fail
-        // as a whole, but we still want to remove gpo from
-        // the console in that case
-        const AdObject gpo_object = ad.search_object(dn);
-        const bool object_deleted = gpo_object.is_empty();
-
-        if (success || object_deleted) {
-            console->delete_item(index);
-        }
-    }
-
-    hide_busy_indicator();
-
-    g_status()->display_ad_messages(ad, console);
-}
-
 void ConsolePolicy::on_edit() {
     const QString dn = get_selected_dn(console, PolicyRole_DN);
 
@@ -344,7 +308,39 @@ void ConsolePolicy::rename(const QList<QModelIndex> &index_list) {
 }
 
 void ConsolePolicy::delete_action(const QList<QModelIndex> &index_list) {
-    policy_action_delete(console);
+    const bool confirmed = confirmation_dialog(QCoreApplication::translate("console_policy", "Are you sure you want to delete this policy and all of it's links?"), console);
+    if (!confirmed) {
+        return;
+    }
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
+
+    for (const QPersistentModelIndex &index : persistent_list) {
+        const QString dn = index.data(PolicyRole_DN).toString();
+        const bool success = ad.gpo_delete(dn);
+
+        // NOTE: object may get deleted successfuly but
+        // deleting GPT fails which makes gpo_delete() fail
+        // as a whole, but we still want to remove gpo from
+        // the console in that case
+        const AdObject gpo_object = ad.search_object(dn);
+        const bool object_deleted = gpo_object.is_empty();
+
+        if (success || object_deleted) {
+            console->delete_item(index);
+        }
+    }
+
+    hide_busy_indicator();
+
+    g_status()->display_ad_messages(ad, console);
 }
 
 void ConsolePolicy::refresh(const QList<QModelIndex> &index_list) {
