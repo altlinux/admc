@@ -48,6 +48,10 @@ void ConsoleImpl::activate(const QModelIndex &index) {
 
 }
 
+void ConsoleImpl::selected_as_scope(const QModelIndex &index) {
+
+}
+
 QList<QAction *> ConsoleImpl::get_all_custom_actions() const {
     return {};
 }

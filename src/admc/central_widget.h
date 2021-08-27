@@ -42,7 +42,6 @@ class QSortFilterProxyModel;
 class AdInterface;
 class ConsoleWidget;
 class ConsoleActions;
-class PolicyResultsWidget;
 template <typename T>
 class QList;
 class QToolBar;
@@ -71,8 +70,6 @@ signals:
     void context_menu(const QPoint pos);
 
 private slots:
-    void on_current_scope_changed();
-
     void on_show_non_containers();
     void on_dev_mode();
     void on_advanced_features();
@@ -80,7 +77,6 @@ private slots:
 private:
     ConsoleWidget *console;
     FilterDialog *filter_dialog;
-    PolicyResultsWidget *policy_results_widget;
 
     ConsoleActions *console_actions;
 

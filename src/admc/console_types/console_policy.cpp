@@ -336,6 +336,10 @@ ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, Con
         });
 }
 
+void ConsolePolicy::selected_as_scope(const QModelIndex &index) {
+    policy_results_widget->update(index);
+}
+
 QList<QAction *> ConsolePolicy::get_all_custom_actions() const {
     return {
         add_link_action,

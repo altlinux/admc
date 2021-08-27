@@ -814,7 +814,8 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
 
     update_description();
 
-    emit q->current_scope_item_changed(current);
+    ConsoleImpl *impl = get_impl(current);
+    impl->selected_as_scope(current);
 }
 
 void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last) {

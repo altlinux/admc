@@ -154,10 +154,6 @@ public:
 
     void delete_children(const QModelIndex &parent);
 
-signals:
-    // Emitted when current scope item changes.
-    void current_scope_item_changed(const QModelIndex &index);
-
 private:
     ConsoleWidgetPrivate *d;
 

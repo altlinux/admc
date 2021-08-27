@@ -73,7 +73,7 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
     console->register_results(ItemType_PolicyRoot, policy_container_results, console_policy_header_labels(), console_policy_default_columns());
 
-    policy_results_widget = new PolicyResultsWidget();
+    auto policy_results_widget = new PolicyResultsWidget();
     console->register_results(ItemType_Policy, policy_results_widget);
 
     auto query_folder_results = new ResultsView(this);
@@ -129,10 +129,6 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
         filter_dialog, &QDialog::accepted,
         this, &CentralWidget::refresh_object_tree);
 
-    connect(
-        console, &ConsoleWidget::current_scope_item_changed,
-        this, &CentralWidget::on_current_scope_changed);
-
     // Set current scope to object head to load it
     console->set_current_scope(console_object_head()->index());
 }
@@ -140,14 +136,6 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
 CentralWidget::~CentralWidget() {
     const QVariant state = console->save_state();
     settings_set_variant(SETTING_console_widget_state, state);
-}
-
-void CentralWidget::on_current_scope_changed() {
-    const QModelIndex current_scope = console->get_current_scope_item();
-    const ItemType type = (ItemType) console_item_get_type(current_scope);
-    if (type == ItemType_Policy) {
-        policy_results_widget->update(current_scope);
-    }
 }
 
 // NOTE: f-ns below need to manually change a setting and

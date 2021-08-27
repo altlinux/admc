@@ -66,6 +66,10 @@ public:
     // appropriate response if needed.
     virtual void activate(const QModelIndex &index);
 
+    // Called when an item of this type is selected in the
+    // scope pane.
+    virtual void selected_as_scope(const QModelIndex &index);
+
     // Return all custom actions that are available for this
     // type, in the order that they should be displayed.
     virtual QList<QAction *> get_all_custom_actions() const;

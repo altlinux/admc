@@ -81,6 +81,8 @@ public:
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
 
+    void selected_as_scope(const QModelIndex &index) override;
+
     QList<QAction *> get_all_custom_actions() const override;
     QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
