@@ -67,7 +67,7 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
-void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu, ConsoleWidget *console = nullptr);
+void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
 void console_object_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 
 // NOTE: this f-ns don't do anything with console. Just
@@ -81,8 +81,6 @@ bool console_object_is_ou(const QModelIndex &index);
 void console_object_load_domain_head_text(QStandardItem *item);
 
 QStandardItem *console_object_head();
-
-void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions);
 
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
 

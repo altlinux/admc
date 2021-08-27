@@ -112,10 +112,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
     console->restore_state(console_widget_state);
 
-    connect_object_actions(console, console_actions);
-    connect_policy_actions(console, console_actions, policy_results_widget);
-    connect_query_actions(console, console_actions);
-
     connect(
         show_noncontainers_action, &QAction::toggled,
         this, &CentralWidget::on_show_non_containers);
@@ -136,9 +132,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     connect(
         console, &ConsoleWidget::current_scope_item_changed,
         this, &CentralWidget::on_current_scope_changed);
-    connect(
-        console, &ConsoleWidget::actions_changed,
-        this, &CentralWidget::on_actions_changed);
 
     // Set current scope to object head to load it
     console->set_current_scope(console_object_head()->index());
@@ -147,12 +140,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
 CentralWidget::~CentralWidget() {
     const QVariant state = console->save_state();
     settings_set_variant(SETTING_console_widget_state, state);
-}
-
-void CentralWidget::on_actions_changed() {
-    const QList<QModelIndex> selected_list = console->get_selected_items();
-
-    console_actions->update_actions_visibility(selected_list);
 }
 
 void CentralWidget::on_current_scope_changed() {
@@ -196,14 +183,6 @@ void CentralWidget::refresh_object_tree() {
 }
 
 void CentralWidget::add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
-    console_actions->add_to_menu(action_menu);
-
-    console_object_actions_add_to_menu(console_actions, action_menu, console);
-    console_policy_actions_add_to_menu(console_actions, action_menu);
-    console_query_actions_add_to_menu(console_actions, action_menu);
-
-    action_menu->addSeparator();
-
     preferences_menu->addAction(advanced_features_action);
 
     console->add_actions(action_menu, view_menu, preferences_menu, toolbar);

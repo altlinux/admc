@@ -79,7 +79,6 @@ public:
     QList<ResultsView *> registered_results_view_list;
 
     QAction *properties_action;
-    QAction *refresh_action;
     QAction *refresh_current_scope_action;
 
     QAction *navigate_up_action;

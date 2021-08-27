@@ -152,8 +152,6 @@ public:
     // called so that their state can be restored
     void restore_state(const QVariant &state);
 
-    QAction *get_refresh_action() const;
-
     void delete_children(const QModelIndex &parent);
 
 signals:
@@ -164,10 +162,6 @@ signals:
     // pressed ENTER on. Connect this signal to an
     // appropriate default action.
     void results_item_activated(const QModelIndex);
-
-    // Emitted when actions need to updated due to selection
-    // changing.
-    void actions_changed();
 
 private:
     ConsoleWidgetPrivate *d;

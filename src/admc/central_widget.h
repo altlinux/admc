@@ -77,8 +77,6 @@ private slots:
     void on_dev_mode();
     void on_advanced_features();
 
-    void on_actions_changed();
-
 private:
     ConsoleWidget *console;
     FilterDialog *filter_dialog;
@@ -92,7 +90,6 @@ private:
     QAction *advanced_features_action;
 
     void enable_disable_helper(const bool disabled);
-    void update_actions_visibility();
     void refresh_object_tree();
 };
 

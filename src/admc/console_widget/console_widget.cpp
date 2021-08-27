@@ -100,13 +100,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->navigate_up_action = new QAction(QIcon::fromTheme("go-up"), tr("&Up one level"), this);
     d->navigate_back_action = new QAction(QIcon::fromTheme("go-previous"), tr("&Back"), this);
     d->navigate_forward_action = new QAction(QIcon::fromTheme("go-next"), tr("&Forward"), this);
-    // NOTE: this refresh action is for the action menu.
-    // Refreshes selected object, if it can be refreshed.
-    // Hidden if can't refresh.
-    d->refresh_action = new QAction(tr("&Refresh"), this);
-    // NOTE: this refresh action is for the toolbar.
-    // Refreshes current scope item, if it can be refreshed.
-    // Always visible.
     d->refresh_current_scope_action = new QAction(QIcon::fromTheme("view-refresh"), tr("&Refresh"), this);
     d->customize_columns_action = new QAction(tr("&Customize columns..."), this);
     d->set_results_to_icons_action = new QAction(tr("&Icons"), this);
@@ -544,10 +537,6 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
     }
 }
 
-QAction *ConsoleWidget::get_refresh_action() const {
-    return d->refresh_action;
-}
-
 void ConsoleWidget::delete_children(const QModelIndex &parent) {
     d->model->removeRows(0, d->model->rowCount(parent), parent);
 }
@@ -755,25 +744,6 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
         QAction *action = standard_action_map[action_enum];
         action->setDisabled(disabled);
     }
-
-    // TODO: delete code below
-    return;
-
-    refresh_action->setVisible(false);
-
-    refresh_action->setEnabled(true);
-
-    if (selected_list.size() == 1) {
-        // const QModelIndex selected = selected_list[0];
-
-        // const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
-        // const bool is_scope = selected.data(ConsoleRole_IsScope).toBool();
-        // if (is_scope && is_dynamic) {
-        //     refresh_action->setVisible(true);
-        // }
-    }
-
-    emit q->actions_changed();
 }
 
 void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &current_proxy, const QModelIndex &previous_proxy) {
@@ -1065,9 +1035,6 @@ void ConsoleWidgetPrivate::update_view_actions() {
 }
 
 void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
-    // Action
-    d->refresh_action->setVisible(false);
-
     d->action_menu = action_menu;
 
     // Update actions right before menu opens

@@ -323,17 +323,6 @@ bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString 
     return name_is_good;
 }
 
-void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
-    menu->addAction(actions->get(ConsoleAction_QueryEditFolder));
-    menu->addAction(actions->get(ConsoleAction_QueryEditItem));
-    menu->addAction(actions->get(ConsoleAction_QueryCutItemOrFolder));
-    menu->addAction(actions->get(ConsoleAction_QueryCopyItemOrFolder));
-    menu->addAction(actions->get(ConsoleAction_QueryPasteItemOrFolder));
-    menu->addAction(actions->get(ConsoleAction_QueryDeleteItemOrFolder));
-    menu->addAction(actions->get(ConsoleAction_QueryExport));
-    menu->addAction(actions->get(ConsoleAction_QueryImport));
-}
-
 void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
     const ItemType type = (ItemType) console_item_get_type(index);
 
@@ -598,59 +587,6 @@ void query_action_delete(ConsoleWidget *console) {
     }
 
     console_query_tree_save(console);
-}
-
-void connect_query_actions(ConsoleWidget *console, ConsoleActions *actions) {
-    QObject::connect(
-        actions->get(ConsoleAction_QueryCreateFolder), &QAction::triggered,
-        [=]() {
-            query_action_create_folder(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_QueryCreateItem), &QAction::triggered,
-        [=]() {
-            query_action_create_item(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_QueryEditFolder), &QAction::triggered,
-        [=]() {
-            query_action_edit_folder(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_QueryEditItem), &QAction::triggered,
-        [=]() {
-            query_action_edit_item(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_QueryCutItemOrFolder), &QAction::triggered,
-        [=]() {
-            query_action_cut(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_QueryCopyItemOrFolder), &QAction::triggered,
-        [=]() {
-            query_action_copy(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_QueryPasteItemOrFolder), &QAction::triggered,
-        [=]() {
-            query_action_paste(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_QueryDeleteItemOrFolder), &QAction::triggered,
-        [=]() {
-            query_action_delete(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_QueryExport), &QAction::triggered,
-        [=]() {
-            query_action_export(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_QueryImport), &QAction::triggered,
-        [=]() {
-            query_action_import(console);
-        });
 }
 
 ConsoleQueryItem::ConsoleQueryItem(ConsoleWidget *console_arg)

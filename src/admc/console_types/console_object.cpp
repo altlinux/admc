@@ -543,7 +543,7 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
     }
 }
 
-void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu, ConsoleWidget *console) {
+void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
     // Container
     menu->addAction(actions->get(ConsoleAction_Find));
 
@@ -572,12 +572,6 @@ void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu, Co
     menu->addAction(actions->get(ConsoleAction_Move));
 
     menu->addSeparator();
-
-    if (console != nullptr) {
-        menu->addAction(console->get_refresh_action());
-    
-        menu->addSeparator();
-    }
 
     menu->addAction(actions->get(ConsoleAction_Properties));
 }
@@ -1084,84 +1078,6 @@ void object_action_properties(ConsoleWidget *console) {
             dialog, &ObjectMultiPropertiesDialog::applied,
             on_object_properties_applied);
     }
-}
-
-void connect_object_actions(ConsoleWidget *console, ConsoleActions *actions) {
-    QObject::connect(
-        actions->get(ConsoleAction_Delete), &QAction::triggered,
-        [=]() {
-            object_action_delete(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_NewUser), &QAction::triggered,
-        [=]() {
-            object_action_new(console, CLASS_USER);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_NewComputer), &QAction::triggered,
-        [=]() {
-            object_action_new(console, CLASS_COMPUTER);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_NewOU), &QAction::triggered,
-        [=]() {
-            object_action_new(console, CLASS_OU);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_NewGroup), &QAction::triggered,
-        [=]() {
-            object_action_new(console, CLASS_GROUP);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_Rename), &QAction::triggered,
-        [=]() {
-            object_action_rename(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_Move), &QAction::triggered,
-        [=]() {
-            object_action_move(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_AddToGroup), &QAction::triggered,
-        [=]() {
-            object_action_add_to_group(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_Enable), &QAction::triggered,
-        [=]() {
-            object_action_set_disabled(console, false);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_Disable), &QAction::triggered,
-        [=]() {
-            object_action_set_disabled(console, true);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_ResetPassword), &QAction::triggered,
-        [=]() {
-            object_action_reset_password(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_ResetComputerAccount), &QAction::triggered,
-        [=]() {
-            object_action_reset_computer_account(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_Find), &QAction::triggered,
-        [=]() {
-            object_action_find(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_EditUpnSuffixes), &QAction::triggered,
-        [=]() {
-            object_action_edit_upn_suffixes(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_ChangeDC), &QAction::triggered,
-        [=]() {
-            object_action_change_dc(console);
-        });
 }
 
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index) {

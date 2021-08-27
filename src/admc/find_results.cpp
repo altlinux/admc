@@ -126,6 +126,7 @@ FindResults::~FindResults() {
 
 void FindResults::add_actions(QMenu *action_menu, QMenu *view_menu) {
     object_actions->add_to_menu(action_menu);
+    console_object_actions_add_to_menu(object_actions, action_menu);
 
     action_menu->addSeparator();
 

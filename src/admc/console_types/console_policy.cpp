@@ -79,16 +79,6 @@ void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     policy_tree_head->setIcon(QIcon::fromTheme("folder"));
 }
 
-void console_policy_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
-    menu->addAction(actions->get(ConsoleAction_PolicyAddLink));
-
-    menu->addSeparator();
-
-    menu->addAction(actions->get(ConsoleAction_PolicyEdit));
-    menu->addAction(actions->get(ConsoleAction_PolicyRename));
-    menu->addAction(actions->get(ConsoleAction_PolicyDelete));
-}
-
 void console_policy_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
     const ItemType type = (ItemType) console_item_get_type(index);
 
@@ -325,34 +315,6 @@ void policy_action_edit(ConsoleWidget *console) {
         });
 
     process->start(QIODevice::ReadOnly);
-}
-
-void connect_policy_actions(ConsoleWidget *console, ConsoleActions *actions, PolicyResultsWidget *policy_results_widget) {
-    QObject::connect(
-        actions->get(ConsoleAction_PolicyCreate), &QAction::triggered,
-        [=]() {
-            policy_action_create(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_PolicyAddLink), &QAction::triggered,
-        [=]() {
-            policy_action_add_link(console, policy_results_widget);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_PolicyRename), &QAction::triggered,
-        [=]() {
-            policy_action_rename(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_PolicyDelete), &QAction::triggered,
-        [=]() {
-            policy_action_delete(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_PolicyEdit), &QAction::triggered,
-        [=]() {
-            policy_action_edit(console);
-        });
 }
 
 ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg)
