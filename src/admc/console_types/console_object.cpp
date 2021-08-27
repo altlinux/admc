@@ -1176,13 +1176,93 @@ ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, Fil
     policy_results_widget = policy_results_widget_arg;
     filter_dialog = filter_dialog_arg;
 
+    auto new_user_action = new QAction(tr("User"));
+    auto new_computer_action = new QAction(tr("Computer"));
+    auto new_ou_action = new QAction(tr("OU"));
+    auto new_group_action = new QAction(tr("Group"));
+    find_action = new QAction(tr("Find..."));
+    move_action = new QAction(tr("Move..."));
     add_to_group_action = new QAction(tr("Add to group..."));
+    enable_action = new QAction(tr("Enable"));
+    disable_action = new QAction(tr("Disable"));
+    reset_password_action = new QAction(tr("Reset password"));
+    reset_account_action = new QAction(tr("Reset account"));
+    edit_upn_suffixes_action = new QAction(tr("Edit UPN suffixes"));
+    change_dc_action = new QAction(tr("Change domain controller"));
+
+    auto new_menu = new QMenu(tr("New"), console_arg);
+    new_action = new_menu->menuAction();
+
+    new_menu->addAction(new_user_action);
+    new_menu->addAction(new_computer_action);
+    new_menu->addAction(new_ou_action);
+    new_menu->addAction(new_group_action);
 
     // TODO: probably should just be members
-    QObject::connect(
+    connect(
+        new_user_action, &QAction::triggered,
+        [=]() {
+            object_action_new(console, CLASS_USER);
+        });
+    connect(
+        new_computer_action, &QAction::triggered,
+        [=]() {
+            object_action_new(console, CLASS_COMPUTER);
+        });
+    connect(
+        new_computer_action, &QAction::triggered,
+        [=]() {
+            object_action_new(console, CLASS_OU);
+        });
+    connect(
+        new_group_action, &QAction::triggered,
+        [=]() {
+            object_action_new(console, CLASS_GROUP);
+        });
+    connect(
+        move_action, &QAction::triggered,
+        [=]() {
+            object_action_move(console);
+        });
+    connect(
         add_to_group_action, &QAction::triggered,
         [=]() {
             object_action_add_to_group(console);
+        });
+    connect(
+        enable_action, &QAction::triggered,
+        [=]() {
+            object_action_set_disabled(console, false);
+        });
+    connect(
+        disable_action, &QAction::triggered,
+        [=]() {
+            object_action_set_disabled(console, true);
+        });
+    connect(
+        reset_password_action, &QAction::triggered,
+        [=]() {
+            object_action_reset_password(console);
+        });
+    connect(
+        reset_account_action, &QAction::triggered,
+        [=]() {
+            object_action_reset_computer_account(console);
+        });
+    connect(
+        find_action, &QAction::triggered,
+        [=]() {
+            object_action_find(console);
+        });
+    connect(
+        edit_upn_suffixes_action, &QAction::triggered,
+        [=]() {
+            object_action_edit_upn_suffixes(console);
+        });
+    connect(
+        change_dc_action, &QAction::triggered,
+        [=]() {
+            object_action_change_dc(console);
         });
 }
 
@@ -1216,7 +1296,16 @@ bool console_object_search_id_match(QStandardItem *item, SearchThread *thread) {
 
 QList<QAction *> ConsoleObject::get_all_custom_actions() const {
     const QList<QAction *> out = {
+        find_action,
+        move_action,
         add_to_group_action,
+        enable_action,
+        disable_action,
+        reset_password_action,
+        reset_account_action,
+        edit_upn_suffixes_action,
+        change_dc_action,
+        new_action,
     };
 
     return out;
@@ -1238,9 +1327,54 @@ QSet<QAction *> ConsoleObject::get_custom_actions(const QModelIndex &index, cons
     const bool is_domain = (object_class == CLASS_DOMAIN);
     const bool is_computer = (object_class == CLASS_COMPUTER);
 
+    const bool account_disabled = index.data(ObjectRole_AccountDisabled).toBool();
+
+    if (single_selection) {
+        // Single selection only
+        if (is_container) {
+            out.insert(new_action);
+            out.insert(find_action);
+        }
+
+        if (is_user) {
+            out.insert(reset_password_action);
+        }
+
+        if (is_user || is_computer) {
+            if (account_disabled) {
+                out.insert(enable_action);
+            } else {
+                out.insert(disable_action);
+            }
+        }
+
+        if (is_computer) {
+            out.insert(reset_account_action);
+        }
+
+        if (is_domain) {
+            out.insert(edit_upn_suffixes_action);
+            out.insert(change_dc_action);
+        }
+
+    } else {
+        // Multi selection only
+        if (is_user) {
+            out.insert(enable_action);
+            out.insert(disable_action);
+        }
+
+        if (is_computer) {
+            out.insert(reset_account_action);
+        }
+    }
+
+    // Single OR multi selection
     if (is_user || is_group) {
         out.insert(add_to_group_action);
     }
+
+    out.insert(move_action);
 
     return out;
 }
@@ -1257,7 +1391,9 @@ QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &inde
     if (can_refresh && single_selection) {
         out.insert(StandardAction_Refresh);
     }
-    
+
+    out.insert(StandardAction_Delete);
+
     return out;
 }
 
@@ -1274,4 +1410,8 @@ void ConsoleObject::refresh(const QList<QModelIndex> &index_list) {
 
     console->delete_children(index);
     fetch(index);
+}
+
+void ConsoleObject::delete_action(const QList<QModelIndex> &index_list) {
+    object_action_delete(console);
 }

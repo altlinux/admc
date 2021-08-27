@@ -105,14 +105,23 @@ public:
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
 
     void properties(const QList<QModelIndex> &index_list) override;
-
     void refresh(const QList<QModelIndex> &index_list) override;
+    void delete_action(const QList<QModelIndex> &index_list) override;
 
 private:
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
 
+    QAction *find_action;
+    QAction *move_action;
     QAction *add_to_group_action;
+    QAction *enable_action;
+    QAction *disable_action;
+    QAction *reset_password_action;
+    QAction *reset_account_action;
+    QAction *edit_upn_suffixes_action;
+    QAction *change_dc_action;
+    QAction *new_action;
 };
 
 #endif /* CONSOLE_OBJECT_H */
