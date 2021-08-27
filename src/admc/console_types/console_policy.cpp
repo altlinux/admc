@@ -177,11 +177,6 @@ void ConsolePolicyRoot::fetch(const QModelIndex &index) {
     }
 }
 
-void policy_action_create(ConsoleWidget *console) {
-    auto dialog = new CreatePolicyDialog(console);
-    dialog->open();
-}
-
 void policy_action_add_link(ConsoleWidget *console, PolicyResultsWidget * policy_results_widget) {
     const QList<QModelIndex> selected = console->get_selected_items();
     if (selected.size() == 0) {
@@ -371,13 +366,13 @@ void ConsolePolicy::refresh(const QList<QModelIndex> &index_list) {
 
 ConsolePolicyRoot::ConsolePolicyRoot(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
+    auto create_policy_dialog = new CreatePolicyDialog(console);
+
     create_policy_action = new QAction(tr("Create policy"), this);
 
     connect(
         create_policy_action, &QAction::triggered,
-        [=]() {
-            policy_action_create(console);
-        });
+        create_policy_dialog, &QDialog::open);
 }
 
 QList<QAction *> ConsolePolicyRoot::get_all_custom_actions() const {
