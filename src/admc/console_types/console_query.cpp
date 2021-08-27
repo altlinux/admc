@@ -50,7 +50,6 @@ QPersistentModelIndex copied_index;
 
 QHash<QString, QVariant> console_query_item_save(const QModelIndex &index);
 void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index);
-bool console_query_folder_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
 
 QList<QString> console_query_folder_header_labels() {
     return {
@@ -323,12 +322,6 @@ bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString 
     return name_is_good;
 }
 
-bool console_query_folder_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    const bool dropped_are_query_item_or_folder = (dropped_type_list - QSet<int>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
-
-    return dropped_are_query_item_or_folder;
-}
-
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch) {
     // Check for name conflict
     for (const QPersistentModelIndex &index : index_list) {
@@ -465,12 +458,6 @@ void query_action_cut(ConsoleWidget *console) {
 void query_action_copy(ConsoleWidget *console) {
     copied_index = console->get_selected_item();
     copied_index_is_cut = false;
-}
-
-void query_action_paste(ConsoleWidget *console) {
-    const QModelIndex parent_index = console->get_selected_item();
-    const bool delete_old_branch = copied_index_is_cut;
-    console_query_move(console, {copied_index}, parent_index, delete_old_branch);
 }
 
 QHash<QString, QVariant> console_query_item_save(const QModelIndex &index) {
@@ -653,7 +640,9 @@ ConsoleQueryFolder::ConsoleQueryFolder(ConsoleWidget *console_arg)
 }
 
 bool ConsoleQueryFolder::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    return console_query_folder_can_drop(dropped_list, dropped_type_list, target, target_type);
+    const bool dropped_are_query_item_or_folder = (dropped_type_list - QSet<int>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
+
+    return dropped_are_query_item_or_folder;
 }
 
 void ConsoleQueryFolder::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -712,5 +701,7 @@ void ConsoleQueryFolder::copy(const QList<QModelIndex> &index_list) {
 }
 
 void ConsoleQueryFolder::paste(const QList<QModelIndex> &index_list) {
-    query_action_paste(console);
+    const QModelIndex parent_index = console->get_selected_item();
+    const bool delete_old_branch = copied_index_is_cut;
+    console_query_move(console, {copied_index}, parent_index, delete_old_branch);
 }
