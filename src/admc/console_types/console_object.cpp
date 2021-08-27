@@ -1296,8 +1296,8 @@ bool console_object_search_id_match(QStandardItem *item, SearchThread *thread) {
 
 QList<QAction *> ConsoleObject::get_all_custom_actions() const {
     const QList<QAction *> out = {
+        new_action,
         find_action,
-        move_action,
         add_to_group_action,
         enable_action,
         disable_action,
@@ -1305,7 +1305,7 @@ QList<QAction *> ConsoleObject::get_all_custom_actions() const {
         reset_account_action,
         edit_upn_suffixes_action,
         change_dc_action,
-        new_action,
+        move_action,
     };
 
     return out;
@@ -1379,6 +1379,18 @@ QSet<QAction *> ConsoleObject::get_custom_actions(const QModelIndex &index, cons
     return out;
 }
 
+QSet<QAction *> ConsoleObject::get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<QAction *> out;
+
+    const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
+
+    if (cannot_move) {
+        out.insert(move_action);
+    }
+
+    return out;
+}
+
 QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<StandardAction> out;
 
@@ -1393,6 +1405,23 @@ QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &inde
     }
 
     out.insert(StandardAction_Delete);
+
+    return out;
+}
+
+QSet<StandardAction> ConsoleObject::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<StandardAction> out;
+
+    const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();
+    const bool cannot_delete = index.data(ObjectRole_CannotDelete).toBool();
+
+    if (cannot_rename) {
+        out.insert(StandardAction_Rename);
+    }
+
+    if (cannot_delete) {
+        out.insert(StandardAction_Delete);
+    }
 
     return out;
 }
