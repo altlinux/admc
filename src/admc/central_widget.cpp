@@ -44,7 +44,7 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-CentralWidget::CentralWidget(AdInterface &ad)
+CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
 : QWidget() {
     console_actions = new ConsoleActions(this);
 
@@ -56,7 +56,7 @@ CentralWidget::CentralWidget(AdInterface &ad)
     show_noncontainers_action = settings_make_action(SETTING_show_non_containers_in_console_tree, tr("&Show non-container objects in Console tree"), this);
     advanced_features_action = settings_make_action(SETTING_advanced_features, tr("Advanced features"), this);
 
-    console = new ConsoleWidget();
+    console = new ConsoleWidget(action_menu);
 
     filter_dialog = new FilterDialog(this);
 
@@ -182,10 +182,10 @@ void CentralWidget::refresh_object_tree() {
     hide_busy_indicator();
 }
 
-void CentralWidget::add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
+void CentralWidget::add_actions(QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     preferences_menu->addAction(advanced_features_action);
 
-    console->add_actions(action_menu, view_menu, preferences_menu, toolbar);
+    console->add_actions(view_menu, preferences_menu, toolbar);
 
     view_menu->addSeparator();
 

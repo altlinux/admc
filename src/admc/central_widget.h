@@ -62,10 +62,10 @@ class CentralWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    CentralWidget(AdInterface &ad);
+    CentralWidget(AdInterface &ad, QMenu *action_menu);
     ~CentralWidget();
 
-    void add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
+    void add_actions(QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
 
 signals:
     void context_menu(const QPoint pos);

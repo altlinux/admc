@@ -80,7 +80,7 @@ class ConsoleWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    ConsoleWidget(QWidget *parent = nullptr);
+    ConsoleWidget(QMenu *action_menu_arg, QWidget *parent = nullptr);
 
     // Register results to be used later for scope items.
     // Must be done BEFORE adding items. Results can be just
@@ -145,7 +145,7 @@ public:
     QStandardItem *get_item(const QModelIndex &index) const;
     QList<QStandardItem *> get_row(const QModelIndex &index) const;
 
-    void add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
+    void add_actions(QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
 
     QVariant save_state() const;
     // NOTE: all results should be registered before this is

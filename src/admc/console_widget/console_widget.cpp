@@ -64,9 +64,11 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
     q = q_arg;
 }
 
-ConsoleWidget::ConsoleWidget(QWidget *parent)
+ConsoleWidget::ConsoleWidget(QMenu *action_menu_arg, QWidget *parent)
 : QWidget(parent) {
     d = new ConsoleWidgetPrivate(this);
+
+    d->action_menu = action_menu_arg;
 
     d->scope_view = new QTreeView();
     d->scope_view->setHeaderHidden(true);
@@ -165,6 +167,24 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     auto default_results_widget = new QWidget();
     d->default_results = ResultsDescription(default_results_widget, nullptr, QList<QString>(), QList<int>());
     d->results_stacked_widget->addWidget(default_results_widget);
+
+    // Update actions right before action menu opens
+    connect(
+        d->action_menu, &QMenu::aboutToShow,
+        d, &ConsoleWidgetPrivate::on_action_menu_show);
+
+    // Open action menu as context menu for central widget
+    connect(
+        d, &ConsoleWidgetPrivate::context_menu,
+        [=](const QPoint pos) {
+            const QModelIndex index = d->focused_view->indexAt(pos);
+
+            if (index.isValid()) {
+                const QPoint global_pos = d->focused_view->mapToGlobal(pos);
+
+                d->action_menu->exec(global_pos);
+            }
+        });
 
     connect(
         d->scope_view, &QTreeView::expanded,
@@ -1025,27 +1045,7 @@ void ConsoleWidgetPrivate::update_view_actions() {
     customize_columns_action->setVisible(results_view_exists);
 }
 
-void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
-    d->action_menu = action_menu;
-
-    // Update actions right before menu opens
-    connect(
-        action_menu, &QMenu::aboutToShow,
-        d, &ConsoleWidgetPrivate::on_action_menu_show);
-
-    // Open action menu as context menu for central widget
-    connect(
-        d, &ConsoleWidgetPrivate::context_menu,
-        [=](const QPoint pos) {
-            const QModelIndex index = d->focused_view->indexAt(pos);
-
-            if (index.isValid()) {
-                const QPoint global_pos = d->focused_view->mapToGlobal(pos);
-
-                action_menu->exec(global_pos);
-            }
-        });
-
+void ConsoleWidget::add_actions(QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
     // View
     view_menu->addAction(d->set_results_to_icons_action);
     view_menu->addAction(d->set_results_to_list_action);
