@@ -57,6 +57,7 @@ const QList<StandardAction> standard_action_list = {
 };
 
 QString results_state_name(const int type);
+QSet<int> get_type_set(const QList<QModelIndex> &index_list);
 
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 : QObject(q_arg) {
@@ -575,17 +576,7 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
     // Custom actions
     //
 
-    // TODO: duplicated, probably extract as a f-n
-    const QSet<int> type_set = [&]() {
-        QSet<int> out;
-
-        for (const QModelIndex &index : selected_list) {
-            const int type = index.data(ConsoleRole_Type).toInt();
-            out.insert(type);
-        } 
-
-        return out;
-    }();
+    const QSet<int> type_set = get_type_set(selected_list);
 
     // First, add all possible custom actions
     const QList<QAction *> custom_action_list = [&]() {
@@ -1135,16 +1126,7 @@ void ConsoleWidgetPrivate::update_description() {
 void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) {
     const QList<QModelIndex> selected_list = q->get_selected_items();
 
-    const QSet<int> type_set = [&]() {
-        QSet<int> out;
-
-        for (const QModelIndex &index : selected_list) {
-            const int type = index.data(ConsoleRole_Type).toInt();
-            out.insert(type);
-        } 
-
-        return out;
-    }();
+    const QSet<int> type_set = get_type_set(selected_list);
 
     // Call impl's action f-n for all present types
     for (const int type : type_set) {
@@ -1222,4 +1204,15 @@ bool console_item_get_was_fetched(const QModelIndex &index) {
 
 QString results_state_name(const int type) {
     return QString("RESULTS_STATE_%1").arg(type);
+}
+
+QSet<int> get_type_set(const QList<QModelIndex> &index_list) {
+    QSet<int> out;
+
+    for (const QModelIndex &index : index_list) {
+        const int type = index.data(ConsoleRole_Type).toInt();
+        out.insert(type);
+    } 
+
+    return out;
 }
