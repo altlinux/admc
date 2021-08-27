@@ -21,6 +21,7 @@
 #include "console_widget/console_impl.h"
 
 #include "console_widget/console_widget.h"
+#include <QSet>
 
 ConsoleImpl::ConsoleImpl(ConsoleWidget *console_arg)
 : QObject(console_arg) {
@@ -44,5 +45,13 @@ QString ConsoleImpl::get_description(const QModelIndex &index) const {
 }
 
 void ConsoleImpl::activate(const QModelIndex &index) {
+
+}
+
+QSet<StandardAction> ConsoleImpl::get_visible_standard_actions(const QModelIndex &index) const {
+    return {};
+}
+
+void ConsoleImpl::properties(const QList<QModelIndex> &index_list) {
 
 }

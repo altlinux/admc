@@ -1204,3 +1204,11 @@ bool console_object_search_id_match(QStandardItem *item, SearchThread *thread) {
 
     return match;
 }
+
+QSet<StandardAction> ConsoleObject::get_visible_standard_actions(const QModelIndex &index) const {
+    return QSet<StandardAction>({StandardAction_Properties});
+}
+
+void ConsoleObject::properties(const QList<QModelIndex> &index_list) {
+    object_action_properties(console);
+}

@@ -98,6 +98,10 @@ public:
     QString get_description(const QModelIndex &index) const override;
     void activate(const QModelIndex &index) override;
 
+    QSet<StandardAction> get_visible_standard_actions(const QModelIndex &index) const override;
+
+    void properties(const QList<QModelIndex> &index_list) override;
+
 private:
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;

@@ -70,6 +70,19 @@ enum ScopeNodeType {
     ScopeNodeType_Dynamic,
 };
 
+enum StandardAction {
+    StandardAction_Copy,
+    StandardAction_Cut,
+    StandardAction_Rename,
+    StandardAction_Delete,
+    StandardAction_Paste,
+    StandardAction_Print,
+    StandardAction_Refresh,
+    StandardAction_Properties,
+    
+    StandardAction_COUNT,
+};
+
 class ConsoleWidget final : public QWidget {
     Q_OBJECT
 

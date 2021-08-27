@@ -30,6 +30,8 @@
 
 #include <QObject>
 
+#include "console_widget/console_widget.h"
+
 class ConsoleWidget;
 
 class ConsoleImpl : public QObject {
@@ -60,6 +62,18 @@ public:
     virtual QString get_description(const QModelIndex &index) const;
 
     virtual void activate(const QModelIndex &index);
+
+    // TODO: comment
+    virtual QSet<StandardAction> get_visible_standard_actions(const QModelIndex &index) const;
+
+    // NOTE: It is possible to select indexes of mixed type.
+    // For this reason, action f-ns will be called with
+    // index lists that only contain indexes of the same
+    // type as this impl. Use this list, NOT the
+    // list from console's get_selected_items().
+
+    // TODO: comment
+    virtual void properties(const QList<QModelIndex> &index_list);
 
 protected:
     ConsoleWidget *console;

@@ -27,6 +27,7 @@
 
 #include "console_widget/results_view.h"
 #include "console_widget/results_description.h"
+#include "console_widget/console_widget.h"
 
 #include <QCoreApplication>
 #include <QSet>
@@ -104,12 +105,15 @@ public:
     QList<QPersistentModelIndex> targets_past;
     QList<QPersistentModelIndex> targets_future;
 
+    QMenu *action_menu;
+    QHash<StandardAction, QAction *> standard_action_map;
+
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 
     void open_action_menu_as_context_menu(const QPoint pos);
     void on_scope_expanded(const QModelIndex &index);
     void on_results_activated(const QModelIndex &index);
-    void update_actions();
+    void on_action_menu_show();
     void on_context_menu(const QPoint pos);
     void update_navigation_actions();
     void update_view_actions();
@@ -136,6 +140,7 @@ public:
     ConsoleImpl *get_impl(const QModelIndex &index) const;
     ResultsDescription get_results(const QModelIndex &index) const;
     void update_description();
+    void on_properties();
 
 signals:
     void context_menu(const QPoint pos);

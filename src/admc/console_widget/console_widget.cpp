@@ -111,6 +111,15 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->navigate_back_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_Minus));
     d->navigate_forward_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_Plus));
 
+    d->standard_action_map[StandardAction_Copy] = new QAction(tr("Copy"), this);
+    d->standard_action_map[StandardAction_Cut] = new QAction(tr("Cut"), this);
+    d->standard_action_map[StandardAction_Rename] = new QAction(tr("Rename"), this);
+    d->standard_action_map[StandardAction_Delete] = new QAction(tr("Delete"), this);
+    d->standard_action_map[StandardAction_Paste] = new QAction(tr("Paste"), this);
+    d->standard_action_map[StandardAction_Print] = new QAction(tr("Print"), this);
+    d->standard_action_map[StandardAction_Refresh] = new QAction(tr("Refresh"), this);
+    d->standard_action_map[StandardAction_Properties] = new QAction(tr("Properties"), this);
+
     // NOTE: need to add a dummy view until a real view is
     // added when a scope item is selected. If this is not
     // done and stacked widget is left empty, it's sizing is
@@ -203,6 +212,10 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     connect(
         d->toggle_description_bar_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::on_toggle_description_bar);
+
+    connect(
+        d->standard_action_map[StandardAction_Properties], &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_properties);
 
     connect(
         d->scope_view, &QWidget::customContextMenuRequested,
@@ -551,12 +564,59 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
 
 // Show/hide actions based on what's selected and emit the
 // signal
-void ConsoleWidgetPrivate::update_actions() {
+void ConsoleWidgetPrivate::on_action_menu_show() {
+    action_menu->clear();
+
     const QList<QModelIndex> selected_list = q->get_selected_items();
 
     if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
         return;
     }
+
+    // Add all actions first
+    action_menu->addAction(standard_action_map[StandardAction_Copy]);
+    action_menu->addAction(standard_action_map[StandardAction_Cut]);
+    action_menu->addAction(standard_action_map[StandardAction_Rename]);
+    action_menu->addAction(standard_action_map[StandardAction_Delete]);
+    action_menu->addAction(standard_action_map[StandardAction_Paste]);
+    action_menu->addAction(standard_action_map[StandardAction_Print]);
+    action_menu->addSeparator();
+    action_menu->addAction(standard_action_map[StandardAction_Refresh]);
+    action_menu->addSeparator();
+    action_menu->addAction(standard_action_map[StandardAction_Properties]);
+
+    const QSet<StandardAction> visible_standard_actions = [&]() {
+        QSet<StandardAction> out;
+
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
+
+            ConsoleImpl *impl = get_impl(index);
+            QSet<StandardAction> for_this_index = impl->get_visible_standard_actions(index);
+
+            if (i == 0) {
+                // NOTE: for first index, add the whole set
+                // instead of intersecting, otherwise total set
+                // would just stay empty
+                out = for_this_index;
+            } else {
+                out.intersect(for_this_index);
+            }
+        }
+
+        return out;
+    }();
+
+    // Show or hide standard actions
+    for (int action_i = 0; action_i < StandardAction_COUNT; action_i++) {
+        const StandardAction action_enum = (StandardAction) action_i;
+        const bool visible = visible_standard_actions.contains(action_enum);
+
+        standard_action_map[action_enum]->setVisible(visible);
+    }
+
+    // TODO: delete code below
+    return;
 
     refresh_action->setVisible(false);
 
@@ -881,10 +941,12 @@ void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *pre
     // Action
     d->refresh_action->setVisible(false);
 
+    d->action_menu = action_menu;
+
     // Update actions right before menu opens
     connect(
         action_menu, &QMenu::aboutToShow,
-        d, &ConsoleWidgetPrivate::update_actions);
+        d, &ConsoleWidgetPrivate::on_action_menu_show);
 
     // Open action menu as context menu for central widget
     connect(
@@ -974,6 +1036,41 @@ void ConsoleWidgetPrivate::update_description() {
 
     description_bar_left->setText(scope_name);
     description_bar_right->setText(description);
+}
+
+void ConsoleWidgetPrivate::on_properties() {
+    const QList<QModelIndex> selected_list = q->get_selected_items();
+
+    const QSet<int> type_set = [&]() {
+        QSet<int> out;
+
+        for (const QModelIndex &index : selected_list) {
+            const int type = index.data(ConsoleRole_Type).toInt();
+            out.insert(type);
+        } 
+
+        return out;
+    }();
+
+    // Call impl's action f-n for all present types
+    for (const int type : type_set) {
+        // Filter selected list so that it only contains indexes of this type
+        const QList<QModelIndex> selected_of_type = [&]() {
+            QList<QModelIndex> out;
+
+            for (const QModelIndex &index : selected_list) {
+                const int index_type = index.data(ConsoleRole_Type).toInt();
+                if (index_type == type) {
+                    out.append(index);
+                }
+            }
+
+            return out;
+        }();
+
+        ConsoleImpl *impl = impl_map[type];
+        impl->properties(selected_of_type);
+    }
 }
 
 int console_item_get_type(const QModelIndex &index) {
