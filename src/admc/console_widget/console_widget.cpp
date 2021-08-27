@@ -1087,12 +1087,46 @@ void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) 
 
         ConsoleImpl *impl = impl_map[type];
         switch (action_enum) {
-            case StandardAction_Properties : {
-                impl->properties(selected_of_type);
-    
+            case StandardAction_Copy: {
+                impl->copy(selected_of_type);
+
                 break;
-            };
-            default: break;
+            }
+            case StandardAction_Cut: {
+                impl->cut(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Rename: {
+                impl->rename(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Delete: {
+                impl->delete_action(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Paste: {
+                impl->paste(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Print: {
+                impl->print(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Refresh: {
+                impl->refresh(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Properties: {
+                impl->properties(selected_of_type);
+
+                break;
+            }
         }
     }
 }

@@ -52,6 +52,34 @@ QSet<StandardAction> ConsoleImpl::get_visible_standard_actions(const QModelIndex
     return {};
 }
 
+void ConsoleImpl::copy(const QList<QModelIndex> &index_list) {
+
+}
+
+void ConsoleImpl::cut(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::rename(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::delete_action(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::paste(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::print(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::refresh(const QList<QModelIndex> &index_list) {
+
+}
+    
 void ConsoleImpl::properties(const QList<QModelIndex> &index_list) {
 
 }

@@ -73,6 +73,27 @@ public:
     // list from console's get_selected_items().
 
     // TODO: comment
+    virtual void copy(const QList<QModelIndex> &index_list);
+
+    // TODO: comment
+    virtual void cut(const QList<QModelIndex> &index_list);
+    
+    // TODO: comment
+    virtual void rename(const QList<QModelIndex> &index_list);
+    
+    // TODO: comment
+    virtual void delete_action(const QList<QModelIndex> &index_list);
+    
+    // TODO: comment
+    virtual void paste(const QList<QModelIndex> &index_list);
+    
+    // TODO: comment
+    virtual void print(const QList<QModelIndex> &index_list);
+    
+    // TODO: comment
+    virtual void refresh(const QList<QModelIndex> &index_list);
+    
+    // TODO: comment
     virtual void properties(const QList<QModelIndex> &index_list);
 
 protected:
