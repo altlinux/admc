@@ -326,11 +326,31 @@ void ConsoleWidget::register_results(const int type, ResultsView *view, const QL
 
 // Base register() f-n
 void ConsoleWidget::register_results(const int type, QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
+    // NOTE: reusing widget or view is not allowed because
+    // it causes buggy behavior due to duplicate connections
+    const bool already_registered_widget = d->registered_results_widget_list.contains(widget);
+    if (already_registered_widget) {
+        qDebug() << "register_results() for type" << type << " uses widget that has already been registered. This is not allowed, so aborting";
+
+        return;
+    }
+
+    const bool already_registered_view = d->registered_results_view_list.contains(view);
+    if (already_registered_view) {
+        qDebug() << "register_results() for type" << type << " uses view that has already been registered. This is not allowed, so aborting";
+
+        return;
+    }
+
+    d->registered_results_widget_list.append(widget);
+
     d->results_descriptions[type] = ResultsDescription(widget, view, column_labels, default_columns);
 
     d->results_stacked_widget->addWidget(widget);
 
     if (view != nullptr) {
+        d->registered_results_view_list.append(view);
+
         view->set_model(d->model);
         view->set_parent(get_current_scope_item());
 

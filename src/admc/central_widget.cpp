@@ -65,7 +65,9 @@ CentralWidget::CentralWidget(AdInterface &ad)
     //
     auto object_results = new ResultsView(this);
     console->register_results(ItemType_Object, object_results, console_object_header_labels(), console_object_default_columns());
-    console->register_results(ItemType_QueryItem, object_results, console_object_header_labels(), console_object_default_columns());
+    
+    auto query_item_results = new ResultsView(this);
+    console->register_results(ItemType_QueryItem, query_item_results, console_object_header_labels(), console_object_default_columns());
 
     auto policy_container_results = new ResultsView(this);
     policy_container_results->detail_view()->header()->setDefaultSectionSize(200);

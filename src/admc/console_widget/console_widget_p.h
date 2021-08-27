@@ -77,6 +77,8 @@ public:
     ResultsDescription default_results;
     QSplitter *splitter;
     QHash<int, ConsoleImpl *> impl_map;
+    QList<QWidget *> registered_results_widget_list;
+    QList<ResultsView *> registered_results_view_list;
 
     QAction *properties_action;
     QAction *refresh_action;
