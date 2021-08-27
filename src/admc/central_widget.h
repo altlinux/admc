@@ -52,7 +52,6 @@ enum ItemType {
     ItemType_Object,
     ItemType_PolicyRoot,
     ItemType_Policy,
-    ItemType_QueryRoot,
     ItemType_QueryFolder,
     ItemType_QueryItem,
 

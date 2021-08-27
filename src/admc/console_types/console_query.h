@@ -89,14 +89,4 @@ public:
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
 };
 
-class ConsoleQueryRoot final : public ConsoleImpl {
-    Q_OBJECT
-
-public:
-    using ConsoleImpl::ConsoleImpl;
-
-    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
-    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
-};
-
 #endif /* CONSOLE_QUERY_H */

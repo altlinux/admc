@@ -77,7 +77,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     auto query_folder_results = new ResultsView(this);
     query_folder_results->detail_view()->header()->setDefaultSectionSize(200);
     console->register_results(ItemType_QueryFolder, query_folder_results, console_query_folder_header_labels(), console_query_folder_default_columns());
-    console->register_results(ItemType_QueryRoot, query_folder_results, console_query_folder_header_labels(), console_query_folder_default_columns());
 
     //
     // Register console types
@@ -96,9 +95,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
 
     auto query_folder_impl = new ConsoleQueryFolder(console);
     console->register_impl(ItemType_QueryFolder, query_folder_impl);
-
-    auto query_root_impl = new ConsoleQueryRoot(console);
-    console->register_impl(ItemType_QueryRoot, query_root_impl);
 
     // NOTE: requires all results to be initialized
     console_object_tree_init(console, ad);
