@@ -94,6 +94,9 @@ private:
     PolicyResultsWidget *policy_results_widget;
     QAction *add_link_action;
     QAction *edit_action;
+
+    void on_add_link();
+    void on_edit();
 };
 
 #endif /* CONSOLE_POLICY_H */

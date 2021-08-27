@@ -177,7 +177,7 @@ void ConsolePolicyRoot::fetch(const QModelIndex &index) {
     }
 }
 
-void policy_action_add_link(ConsoleWidget *console, PolicyResultsWidget * policy_results_widget) {
+void ConsolePolicy::on_add_link() {
     const QList<QModelIndex> selected = console->get_selected_items();
     if (selected.size() == 0) {
         return;
@@ -252,7 +252,7 @@ void policy_action_delete(ConsoleWidget *console) {
     g_status()->display_ad_messages(ad, console);
 }
 
-void policy_action_edit(ConsoleWidget *console) {
+void ConsolePolicy::on_edit() {
     const QString dn = get_selected_dn(console, PolicyRole_DN);
 
     const QString filesys_path = [&]() {
@@ -278,7 +278,7 @@ void policy_action_edit(ConsoleWidget *console) {
 
     QObject::connect(
         process, &QProcess::errorOccurred,
-        [console](QProcess::ProcessError error) {
+        [this](QProcess::ProcessError error) {
             const bool failed_to_start = (error == QProcess::FailedToStart);
 
             if (failed_to_start) {
@@ -301,14 +301,10 @@ ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, Con
 
     connect(
         add_link_action, &QAction::triggered,
-        [=]() {
-            policy_action_add_link(console, policy_results_widget);
-        });
+        this, &ConsolePolicy::on_add_link);
     connect(
         edit_action, &QAction::triggered,
-        [=]() {
-            policy_action_edit(console);
-        });
+        this, &ConsolePolicy::on_edit);
 }
 
 void ConsolePolicy::selected_as_scope(const QModelIndex &index) {
