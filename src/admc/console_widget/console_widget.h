@@ -79,8 +79,6 @@ enum StandardAction {
     StandardAction_Print,
     StandardAction_Refresh,
     StandardAction_Properties,
-    
-    StandardAction_COUNT,
 };
 
 class ConsoleWidget final : public QWidget {

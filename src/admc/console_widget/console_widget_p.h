@@ -140,7 +140,7 @@ public:
     ConsoleImpl *get_impl(const QModelIndex &index) const;
     ResultsDescription get_results(const QModelIndex &index) const;
     void update_description();
-    void on_properties();
+    void on_standard_action(const StandardAction action_enum);
 
 signals:
     void context_menu(const QPoint pos);

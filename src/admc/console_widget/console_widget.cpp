@@ -45,6 +45,17 @@
 const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
 const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
 
+const QList<StandardAction> standard_action_list = {
+    StandardAction_Copy,
+    StandardAction_Cut,
+    StandardAction_Rename,
+    StandardAction_Delete,
+    StandardAction_Paste,
+    StandardAction_Print,
+    StandardAction_Refresh,
+    StandardAction_Properties,
+};
+
 QString results_state_name(const int type);
 
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
@@ -213,9 +224,15 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->toggle_description_bar_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::on_toggle_description_bar);
 
-    connect(
-        d->standard_action_map[StandardAction_Properties], &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_properties);
+    for (const StandardAction &action_enum : standard_action_list) {
+        QAction *action = d->standard_action_map[action_enum];
+
+        connect(
+            action, &QAction::triggered,
+            [this, action_enum]() {
+                d->on_standard_action(action_enum);
+            });
+    }
 
     connect(
         d->scope_view, &QWidget::customContextMenuRequested,
@@ -608,11 +625,11 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
     }();
 
     // Show or hide standard actions
-    for (int action_i = 0; action_i < StandardAction_COUNT; action_i++) {
-        const StandardAction action_enum = (StandardAction) action_i;
+    for (const StandardAction &action_enum : standard_action_list) {
         const bool visible = visible_standard_actions.contains(action_enum);
 
-        standard_action_map[action_enum]->setVisible(visible);
+        QAction *action = standard_action_map[action_enum];
+        action->setVisible(visible);
     }
 
     // TODO: delete code below
@@ -1038,7 +1055,7 @@ void ConsoleWidgetPrivate::update_description() {
     description_bar_right->setText(description);
 }
 
-void ConsoleWidgetPrivate::on_properties() {
+void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) {
     const QList<QModelIndex> selected_list = q->get_selected_items();
 
     const QSet<int> type_set = [&]() {
@@ -1069,7 +1086,14 @@ void ConsoleWidgetPrivate::on_properties() {
         }();
 
         ConsoleImpl *impl = impl_map[type];
-        impl->properties(selected_of_type);
+        switch (action_enum) {
+            case StandardAction_Properties : {
+                impl->properties(selected_of_type);
+    
+                break;
+            };
+            default: break;
+        }
     }
 }
 
