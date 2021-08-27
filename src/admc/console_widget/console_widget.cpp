@@ -564,7 +564,8 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
     if (is_scope) {
         q->set_current_scope(main_index);
     } else {
-        emit q->results_item_activated(index);
+        ConsoleImpl *impl = get_impl(main_index);
+        impl->activate(main_index);
     }
 }
 
