@@ -86,10 +86,23 @@ class ConsoleQueryFolder final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    using ConsoleImpl::ConsoleImpl;
+    ConsoleQueryFolder(ConsoleWidget *console_arg);
 
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
+
+    QList<QAction *> get_all_custom_actions() const override;
+    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+
+    void delete_action(const QList<QModelIndex> &index_list) override;
+    void cut(const QList<QModelIndex> &index_list) override;
+    void copy(const QList<QModelIndex> &index_list) override;
+    void paste(const QList<QModelIndex> &index_list) override;
+
+private:
+    QAction *new_action;
+    QAction *edit_action;
 };
 
 #endif /* CONSOLE_QUERY_H */

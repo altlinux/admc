@@ -676,10 +676,93 @@ void ConsoleQueryItem::refresh(const QList<QModelIndex> &index_list) {
     fetch(index);
 }
 
+ConsoleQueryFolder::ConsoleQueryFolder(ConsoleWidget *console_arg)
+: ConsoleImpl(console_arg) {
+    auto new_query_folder_action = new QAction(tr("Query folder"));
+    auto new_query_item_action = new QAction(tr("Query item"));
+
+    auto new_menu = new QMenu(tr("New"), console_arg);
+    new_action = new_menu->menuAction();
+
+    new_menu->addAction(new_query_folder_action);
+    new_menu->addAction(new_query_item_action);
+
+    edit_action = new QAction(tr("Edit"));
+
+    connect(
+        new_query_folder_action, &QAction::triggered,
+        [=]() {
+            query_action_create_folder(console);
+        });
+    connect(
+        new_query_item_action, &QAction::triggered,
+        [=]() {
+            query_action_create_item(console);
+        });
+    connect(
+        edit_action, &QAction::triggered,
+        [=]() {
+            query_action_edit_folder(console);
+        });
+}
+
 bool ConsoleQueryFolder::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     return console_query_folder_can_drop(dropped_list, dropped_type_list, target, target_type);
 }
 
 void ConsoleQueryFolder::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     console_query_move(console, dropped_list, target);
+}
+
+QList<QAction *> ConsoleQueryFolder::get_all_custom_actions() const {
+    QList<QAction *> out;
+
+    out.append(new_action);
+    out.append(edit_action);
+
+    return out;
+}
+
+QSet<QAction *> ConsoleQueryFolder::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<QAction *> out;
+
+    if (single_selection) {
+        out.insert(new_action);
+        out.insert(edit_action);
+    }
+
+    return out;
+}
+
+QSet<StandardAction> ConsoleQueryFolder::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<StandardAction> out;
+
+    out.insert(StandardAction_Delete);
+
+    // TODO: currently implementation only supports single
+    // selection cut/copy but probably should be able to do
+    // multi?
+    if (single_selection) {
+        out.insert(StandardAction_Cut);
+        out.insert(StandardAction_Copy);
+        out.insert(StandardAction_Paste);
+    }
+    
+    return out;
+}
+
+void ConsoleQueryFolder::delete_action(const QList<QModelIndex> &index_list) {
+    query_action_delete(console);
+}
+
+void ConsoleQueryFolder::cut(const QList<QModelIndex> &index_list) {
+    query_action_cut(console);
+}
+
+void ConsoleQueryFolder::copy(const QList<QModelIndex> &index_list) {
+    query_action_copy(console);
+}
+
+void ConsoleQueryFolder::paste(const QList<QModelIndex> &index_list) {
+    query_action_paste(console);
 }
