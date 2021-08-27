@@ -358,6 +358,49 @@ void connect_policy_actions(ConsoleWidget *console, ConsoleActions *actions, Pol
 ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     policy_results_widget = policy_results_widget_arg;
+
+    add_link_action = new QAction(tr("Add link..."));
+    edit_action = new QAction(tr("Edit..."));
+
+    connect(
+        add_link_action, &QAction::triggered,
+        [=]() {
+            policy_action_add_link(console, policy_results_widget);
+        });
+    connect(
+        edit_action, &QAction::triggered,
+        [=]() {
+            policy_action_edit(console);
+        });
+}
+
+QList<QAction *> ConsolePolicy::get_all_custom_actions() const {
+    return {
+        add_link_action,
+        edit_action,
+    };
+}
+
+QSet<QAction *> ConsolePolicy::get_custom_actions(const QModelIndex &index) const {
+    return {
+        add_link_action,
+        edit_action,
+    };
+}
+
+QSet<StandardAction> ConsolePolicy::get_standard_actions(const QModelIndex &index) const {
+    return QSet<StandardAction>({
+        StandardAction_Rename,
+        StandardAction_Delete,
+    });
+}
+
+void ConsolePolicy::rename(const QList<QModelIndex> &index_list) {
+    policy_action_rename(console);
+}
+
+void ConsolePolicy::delete_action(const QList<QModelIndex> &index_list) {
+    policy_action_delete(console);
 }
 
 QSet<StandardAction> ConsolePolicyRoot::get_standard_actions(const QModelIndex &index) const {

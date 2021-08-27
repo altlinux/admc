@@ -78,8 +78,17 @@ public:
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
 
+    QList<QAction *> get_all_custom_actions() const override;
+    QSet<QAction *> get_custom_actions(const QModelIndex &index) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index) const override;
+
+    virtual void rename(const QList<QModelIndex> &index_list);
+    virtual void delete_action(const QList<QModelIndex> &index_list);
+
 private:
     PolicyResultsWidget *policy_results_widget;
+    QAction *add_link_action;
+    QAction *edit_action;
 };
 
 #endif /* CONSOLE_POLICY_H */
