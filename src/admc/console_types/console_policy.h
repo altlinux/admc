@@ -61,12 +61,17 @@ class ConsolePolicyRoot final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    using ConsoleImpl::ConsoleImpl;
-
-    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+    ConsolePolicyRoot(ConsoleWidget *console_arg);
 
     void fetch(const QModelIndex &index) override;
     void refresh(const QList<QModelIndex> &index_list) override;
+
+    QList<QAction *> get_all_custom_actions() const override;
+    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+
+private:
+    QAction *create_policy_action;
 };
 
 class ConsolePolicy final : public ConsoleImpl {

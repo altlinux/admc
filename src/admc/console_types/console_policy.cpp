@@ -412,6 +412,33 @@ void ConsolePolicy::delete_action(const QList<QModelIndex> &index_list) {
     policy_action_delete(console);
 }
 
+ConsolePolicyRoot::ConsolePolicyRoot(ConsoleWidget *console_arg)
+: ConsoleImpl(console_arg) {
+    create_policy_action = new QAction(tr("Create policy"));
+
+    connect(
+        create_policy_action, &QAction::triggered,
+        [=]() {
+            policy_action_create(console);
+        });
+}
+
+QList<QAction *> ConsolePolicyRoot::get_all_custom_actions() const {
+    QList<QAction *> out;
+
+    out.append(create_policy_action);
+
+    return out;
+}
+
+QSet<QAction *> ConsolePolicyRoot::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<QAction *> out;
+
+    out.insert(create_policy_action);
+
+    return out;
+}
+
 QSet<StandardAction> ConsolePolicyRoot::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<StandardAction> out;
 
