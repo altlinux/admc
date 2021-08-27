@@ -21,7 +21,6 @@
 #include "central_widget.h"
 
 #include "adldap.h"
-#include "console_actions.h"
 #include "console_types/console_object.h"
 #include "console_types/console_policy.h"
 #include "console_types/console_query.h"
@@ -46,8 +45,6 @@
 
 CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
 : QWidget() {
-    console_actions = new ConsoleActions(this);
-
     open_filter_action = new QAction(tr("&Filter objects..."), this);
 
     // NOTE: these actions are not connected here because
@@ -58,7 +55,7 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
 
     console = new ConsoleWidget(action_menu);
 
-    filter_dialog = new FilterDialog(this);
+    auto filter_dialog = new FilterDialog(this);
 
     //
     // Register console results

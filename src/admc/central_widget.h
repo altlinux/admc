@@ -32,7 +32,6 @@ class QAbstractItemView;
 class QStandardItemModel;
 class QModelIndex;
 class QString;
-class FilterDialog;
 class QMenu;
 class QPoint;
 class QStandardItem;
@@ -41,7 +40,6 @@ class QLabel;
 class QSortFilterProxyModel;
 class AdInterface;
 class ConsoleWidget;
-class ConsoleActions;
 template <typename T>
 class QList;
 class QToolBar;
@@ -76,9 +74,6 @@ private slots:
 
 private:
     ConsoleWidget *console;
-    FilterDialog *filter_dialog;
-
-    ConsoleActions *console_actions;
 
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
