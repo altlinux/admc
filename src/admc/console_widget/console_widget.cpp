@@ -579,6 +579,8 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
         return;
     }
 
+    const bool single_selection = (selected_list.size() == 1);
+
     //
     // Custom actions
     //
@@ -627,7 +629,7 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
             const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
-            QSet<QAction *> for_this_index = impl->get_custom_actions(index);
+            QSet<QAction *> for_this_index = impl->get_custom_actions(index, single_selection);
 
             if (i == 0) {
                 // NOTE: for first index, add the whole set
@@ -671,7 +673,7 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
             const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
-            QSet<StandardAction> for_this_index = impl->get_standard_actions(index);
+            QSet<StandardAction> for_this_index = impl->get_standard_actions(index, single_selection);
 
             if (i == 0) {
                 // NOTE: for first index, add the whole set

@@ -1222,7 +1222,7 @@ QList<QAction *> ConsoleObject::get_all_custom_actions() const {
     return out;
 }
 
-QSet<QAction *> ConsoleObject::get_custom_actions(const QModelIndex &index) const {
+QSet<QAction *> ConsoleObject::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<QAction *> out;
 
     const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
@@ -1245,7 +1245,7 @@ QSet<QAction *> ConsoleObject::get_custom_actions(const QModelIndex &index) cons
     return out;
 }
 
-QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &index) const {
+QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Properties);
@@ -1253,8 +1253,8 @@ QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &inde
     // NOTE: only add refresh action if item was fetched,
     // this filters out all the objects like users that
     // should never get refresh action
-    const bool refresh = console_item_get_was_fetched(index);
-    if (refresh) {
+    const bool can_refresh = console_item_get_was_fetched(index);
+    if (can_refresh && single_selection) {
         out.insert(StandardAction_Refresh);
     }
     

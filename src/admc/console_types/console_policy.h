@@ -63,7 +63,7 @@ class ConsolePolicyRoot final : public ConsoleImpl {
 public:
     using ConsoleImpl::ConsoleImpl;
 
-    QSet<StandardAction> get_standard_actions(const QModelIndex &index) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
 
     void fetch(const QModelIndex &index) override;
     void refresh(const QList<QModelIndex> &index_list) override;
@@ -79,8 +79,8 @@ public:
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
 
     QList<QAction *> get_all_custom_actions() const override;
-    QSet<QAction *> get_custom_actions(const QModelIndex &index) const override;
-    QSet<StandardAction> get_standard_actions(const QModelIndex &index) const override;
+    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
 
     virtual void rename(const QList<QModelIndex> &index_list);
     virtual void delete_action(const QList<QModelIndex> &index_list);

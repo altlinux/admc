@@ -659,7 +659,7 @@ QString ConsoleQueryItem::get_description(const QModelIndex &index) const {
     return object_count_text;
 }
 
-QSet<StandardAction> ConsoleQueryItem::get_standard_actions(const QModelIndex &index) const {
+QSet<StandardAction> ConsoleQueryItem::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     return QSet<StandardAction>({
         StandardAction_Refresh,
     });

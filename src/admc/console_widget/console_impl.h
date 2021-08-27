@@ -70,11 +70,11 @@ public:
     // Return all custom actions that are available for this
     // item. This should be a subset of all possible
     // actions.
-    virtual QSet<QAction *> get_custom_actions(const QModelIndex &index) const;
+    virtual QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const;
 
     // Return a set of standard actions that should be
     // displayed for this item
-    virtual QSet<StandardAction> get_standard_actions(const QModelIndex &index) const;
+    virtual QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const;
 
     // NOTE: It is possible to select indexes of mixed type.
     // For this reason, action f-ns will be called with

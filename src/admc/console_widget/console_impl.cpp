@@ -52,11 +52,11 @@ QList<QAction *> ConsoleImpl::get_all_custom_actions() const {
     return {};
 }
 
-QSet<QAction *> ConsoleImpl::get_custom_actions(const QModelIndex &index) const {
+QSet<QAction *> ConsoleImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
     return {};
 }
 
-QSet<StandardAction> ConsoleImpl::get_standard_actions(const QModelIndex &index) const {
+QSet<StandardAction> ConsoleImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     return {};
 }
 

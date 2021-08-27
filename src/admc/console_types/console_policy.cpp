@@ -381,18 +381,27 @@ QList<QAction *> ConsolePolicy::get_all_custom_actions() const {
     };
 }
 
-QSet<QAction *> ConsolePolicy::get_custom_actions(const QModelIndex &index) const {
-    return {
-        add_link_action,
-        edit_action,
-    };
+QSet<QAction *> ConsolePolicy::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<QAction *> out;
+
+    if (single_selection) {
+        out.insert(add_link_action);
+        out.insert(edit_action);
+    }
+
+    return out;
 }
 
-QSet<StandardAction> ConsolePolicy::get_standard_actions(const QModelIndex &index) const {
-    return QSet<StandardAction>({
-        StandardAction_Rename,
-        StandardAction_Delete,
-    });
+QSet<StandardAction> ConsolePolicy::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<StandardAction> out;
+
+    out.insert(StandardAction_Delete);
+
+    if (single_selection) {
+        out.insert(StandardAction_Rename);
+    }
+
+    return out;
 }
 
 void ConsolePolicy::rename(const QList<QModelIndex> &index_list) {
@@ -403,10 +412,12 @@ void ConsolePolicy::delete_action(const QList<QModelIndex> &index_list) {
     policy_action_delete(console);
 }
 
-QSet<StandardAction> ConsolePolicyRoot::get_standard_actions(const QModelIndex &index) const {
-    return QSet<StandardAction>({
-        StandardAction_Refresh,
-    });
+QSet<StandardAction> ConsolePolicyRoot::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<StandardAction> out;
+
+    out.insert(StandardAction_Refresh);
+
+    return out;
 }
 
 void ConsolePolicyRoot::refresh(const QList<QModelIndex> &index_list) {
