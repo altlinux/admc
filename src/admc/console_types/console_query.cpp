@@ -389,7 +389,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
     console_query_tree_save(console);
 }
 
-void query_action_export(ConsoleWidget *console) {
+void ConsoleQueryItem::on_export() {
     const QModelIndex index = console->get_selected_item();
 
     const QString file_path = [&]() {
@@ -416,7 +416,7 @@ void query_action_export(ConsoleWidget *console) {
     file.write(json_bytes);
 }
 
-void query_action_import(ConsoleWidget *console) {
+void ConsoleQueryFolder::on_import() {
     const QModelIndex parent_index = console->get_selected_item();
 
     const QString file_path = [&]() {
@@ -515,22 +515,22 @@ QStandardItem *console_query_head() {
     return query_tree_head;
 }
 
-void query_action_create_item(ConsoleWidget *console) {
+void ConsoleQueryFolder::on_new_query_item() {
     auto dialog = new CreateQueryItemDialog(console);
     dialog->open();
 }
 
-void query_action_create_folder(ConsoleWidget *console) {
+void ConsoleQueryFolder::on_new_query_folder() {
     auto dialog = new CreateQueryFolderDialog(console);
     dialog->open();
 }
 
-void query_action_edit_item(ConsoleWidget *console) {
+void ConsoleQueryItem::on_edit() {
     auto dialog = new EditQueryItemDialog(console);
     dialog->open();
 }
 
-void query_action_edit_folder(ConsoleWidget *console) {
+void ConsoleQueryFolder::on_edit() {
     auto dialog = new EditQueryFolderDialog(console);
     dialog->open();
 }
@@ -547,13 +547,15 @@ void query_action_delete(ConsoleWidget *console) {
 
 ConsoleQueryItem::ConsoleQueryItem(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    export_action = new QAction(tr("&Export query..."), this);
+    edit_action = new QAction(tr("Edit..."), this);
+    export_action = new QAction(tr("Export query..."), this);
 
     connect(
+        edit_action, &QAction::triggered,
+        this, &ConsoleQueryItem::on_edit);
+    connect(
         export_action, &QAction::triggered,
-        [=]() {
-            query_action_export(console);
-        });
+        this, &ConsoleQueryItem::on_export);
 }
 
 QString ConsoleQueryItem::get_description(const QModelIndex &index) const {
@@ -565,6 +567,7 @@ QString ConsoleQueryItem::get_description(const QModelIndex &index) const {
 QList<QAction *> ConsoleQueryItem::get_all_custom_actions() const {
     QList<QAction *> out;
 
+    out.append(edit_action);
     out.append(export_action);
 
     return out;
@@ -574,6 +577,7 @@ QSet<QAction *> ConsoleQueryItem::get_custom_actions(const QModelIndex &index, c
     QSet<QAction *> out;
 
     if (single_selection) {
+        out.insert(edit_action);
         out.insert(export_action);
     }
 
@@ -636,24 +640,16 @@ ConsoleQueryFolder::ConsoleQueryFolder(ConsoleWidget *console_arg)
 
     connect(
         new_query_folder_action, &QAction::triggered,
-        [=]() {
-            query_action_create_folder(console);
-        });
+        this, &ConsoleQueryFolder::on_new_query_folder);
     connect(
         new_query_item_action, &QAction::triggered,
-        [=]() {
-            query_action_create_item(console);
-        });
+        this, &ConsoleQueryFolder::on_new_query_item);
     connect(
         edit_action, &QAction::triggered,
-        [=]() {
-            query_action_edit_folder(console);
-        });
+        this, &ConsoleQueryFolder::on_edit);
     connect(
         import_action, &QAction::triggered,
-        [=]() {
-            query_action_import(console);
-        });
+        this, &ConsoleQueryFolder::on_import);
 }
 
 bool ConsoleQueryFolder::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {

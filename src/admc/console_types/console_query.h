@@ -85,7 +85,12 @@ public:
     void copy(const QList<QModelIndex> &index_list) override;
 
 private:
+    QAction *edit_action;
     QAction *export_action;
+
+    void on_edit();
+    void on_export();
+
 };
 
 class ConsoleQueryFolder final : public ConsoleImpl {
@@ -110,6 +115,11 @@ private:
     QAction *new_action;
     QAction *edit_action;
     QAction *import_action;
+
+    void on_new_query_folder();
+    void on_new_query_item();
+    void on_edit();
+    void on_import();
 };
 
 #endif /* CONSOLE_QUERY_H */
