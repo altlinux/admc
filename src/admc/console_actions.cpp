@@ -21,8 +21,6 @@
 #include "console_actions.h"
 
 #include "console_types/console_object.h"
-#include "console_types/console_policy.h"
-#include "console_types/console_query.h"
 
 #include <QMenu>
 #include <QModelIndex>
@@ -52,23 +50,6 @@ ConsoleActions::ConsoleActions(QObject *parent)
                 case ConsoleAction_ChangeDC: return tr("Change domain controller...");
                 case ConsoleAction_Properties: return tr("Properties");
 
-                case ConsoleAction_PolicyCreate: return tr("&Policy");
-                case ConsoleAction_PolicyAddLink: return tr("&Add link...");
-                case ConsoleAction_PolicyRename: return tr("&Rename...");
-                case ConsoleAction_PolicyDelete: return tr("&Delete");
-                case ConsoleAction_PolicyEdit: return tr("&Edit");
-
-                case ConsoleAction_QueryCreateFolder: return tr("&Folder");
-                case ConsoleAction_QueryCreateItem: return tr("&Query");
-                case ConsoleAction_QueryEditFolder: return tr("&Edit");
-                case ConsoleAction_QueryEditItem: return tr("&Edit");
-                case ConsoleAction_QueryDeleteItemOrFolder: return tr("&Delete");
-                case ConsoleAction_QueryCutItemOrFolder: return tr("Cut...");
-                case ConsoleAction_QueryCopyItemOrFolder: return tr("&Copy...");
-                case ConsoleAction_QueryPasteItemOrFolder: return tr("&Paste");
-                case ConsoleAction_QueryExport: return tr("&Export query...");
-                case ConsoleAction_QueryImport: return tr("&Import query...");
-
                 case ConsoleAction_LAST: break;
             }
             return QString();
@@ -84,11 +65,6 @@ ConsoleActions::ConsoleActions(QObject *parent)
         ConsoleAction_NewComputer,
         ConsoleAction_NewOU,
         ConsoleAction_NewGroup,
-
-        ConsoleAction_PolicyCreate,
-
-        ConsoleAction_QueryCreateFolder,
-        ConsoleAction_QueryCreateItem,
     };
     for (const ConsoleAction action_enum : new_actions) {
         QAction *action = get(action_enum);
@@ -122,8 +98,6 @@ void ConsoleActions::update_actions_visibility(const QList<QModelIndex> &indexes
         QSet<ConsoleAction> this_visible_actions;
 
         console_object_actions_get_state(index, single_selection, &this_visible_actions, &disabled_actions);
-        console_query_actions_get_state(index, single_selection, &this_visible_actions, &disabled_actions);
-        console_policy_actions_get_state(index, single_selection, &this_visible_actions, &disabled_actions);
 
         if (i == 0) {
             // NOTE: for first index, add the whole set

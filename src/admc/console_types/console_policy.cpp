@@ -79,26 +79,6 @@ void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     policy_tree_head->setIcon(QIcon::fromTheme("folder"));
 }
 
-void console_policy_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
-    const ItemType type = (ItemType) console_item_get_type(index);
-
-    if (type == ItemType_PolicyRoot) {
-        visible_actions->insert(ConsoleAction_PolicyCreate);
-    }
-
-    if (type == ItemType_Policy) {
-        if (single_selection) {
-            visible_actions->insert(ConsoleAction_PolicyAddLink);
-            // TODO: enable when gpui is ready
-            // visible_actions->insert(ConsoleAction_PolicyEdit);
-            visible_actions->insert(ConsoleAction_PolicyRename);
-            visible_actions->insert(ConsoleAction_PolicyDelete);
-        } else {
-            visible_actions->insert(ConsoleAction_PolicyDelete);
-        }
-    }
-}
-
 bool ConsolePolicy::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     const bool dropped_are_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
     if (!dropped_are_objects) {

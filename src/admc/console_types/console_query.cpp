@@ -323,50 +323,6 @@ bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString 
     return name_is_good;
 }
 
-void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
-    const ItemType type = (ItemType) console_item_get_type(index);
-
-    QSet<ConsoleAction> my_visible_actions;
-
-    const bool is_root = !index.parent().isValid();
-
-    if (single_selection) {
-        if (type == ItemType_QueryFolder) {
-            my_visible_actions.insert(ConsoleAction_QueryCreateFolder);
-            my_visible_actions.insert(ConsoleAction_QueryCreateItem);
-            my_visible_actions.insert(ConsoleAction_QueryImport);
-        }
-
-        if (type == ItemType_QueryItem) {
-            my_visible_actions.insert(ConsoleAction_QueryCutItemOrFolder);
-            my_visible_actions.insert(ConsoleAction_QueryCopyItemOrFolder);
-        }
-
-        if (type == ItemType_QueryFolder) {
-            if (copied_index.isValid()) {
-                my_visible_actions.insert(ConsoleAction_QueryPasteItemOrFolder);
-            }
-
-            if (!is_root) {
-                my_visible_actions.insert(ConsoleAction_QueryEditFolder);
-            }
-            
-            my_visible_actions.insert(ConsoleAction_QueryImport);
-        }
-
-        if (type == ItemType_QueryItem) {
-            my_visible_actions.insert(ConsoleAction_QueryEditItem);
-            my_visible_actions.insert(ConsoleAction_QueryExport);
-        }
-    }
-
-    if (type == ItemType_QueryItem || (!is_root && type == ItemType_QueryFolder)) {
-        my_visible_actions.insert(ConsoleAction_QueryDeleteItemOrFolder);
-    }
-
-    visible_actions->unite(my_visible_actions);
-}
-
 bool console_query_folder_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     const bool dropped_are_query_item_or_folder = (dropped_type_list - QSet<int>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
 

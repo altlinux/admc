@@ -51,23 +51,6 @@ enum ConsoleAction {
     ConsoleAction_ChangeDC,
     ConsoleAction_Properties,
 
-    ConsoleAction_PolicyCreate,
-    ConsoleAction_PolicyAddLink,
-    ConsoleAction_PolicyRename,
-    ConsoleAction_PolicyDelete,
-    ConsoleAction_PolicyEdit,
-
-    ConsoleAction_QueryCreateFolder,
-    ConsoleAction_QueryCreateItem,
-    ConsoleAction_QueryEditFolder,
-    ConsoleAction_QueryEditItem,
-    ConsoleAction_QueryDeleteItemOrFolder,
-    ConsoleAction_QueryCutItemOrFolder,
-    ConsoleAction_QueryCopyItemOrFolder,
-    ConsoleAction_QueryPasteItemOrFolder,
-    ConsoleAction_QueryExport,
-    ConsoleAction_QueryImport,
-
     ConsoleAction_LAST,
 };
 
