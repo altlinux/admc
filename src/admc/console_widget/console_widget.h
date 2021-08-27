@@ -158,11 +158,6 @@ signals:
     // Emitted when current scope item changes.
     void current_scope_item_changed(const QModelIndex &index);
 
-    // Emitted when a results item is double-clicked or
-    // pressed ENTER on. Connect this signal to an
-    // appropriate default action.
-    void results_item_activated(const QModelIndex);
-
 private:
     ConsoleWidgetPrivate *d;
 
