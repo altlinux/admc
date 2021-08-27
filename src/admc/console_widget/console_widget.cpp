@@ -644,10 +644,40 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
         return out;
     }();
 
+    const QSet<QAction *> disabled_custom_action_set = [&]() {
+        QSet<QAction *> out;
+
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
+
+            ConsoleImpl *impl = get_impl(index);
+            QSet<QAction *> for_this_index = impl->get_disabled_custom_actions(index, single_selection);
+
+            if (i == 0) {
+                // NOTE: for first index, add the whole set
+                // instead of intersecting, otherwise total set
+                // would just stay empty
+                out = for_this_index;
+            } else {
+                out.intersect(for_this_index);
+            }
+        }
+
+        return out;
+    }();
+
+    // Set visibility state for custom actions
     for (QAction *action : custom_action_list) {
         const bool visible = visible_custom_action_set.contains(action);
 
         action->setVisible(visible);
+    }
+
+    // Set enabled state for custom actions
+    for (QAction *action : custom_action_list) {
+        const bool disabled = disabled_custom_action_set.contains(action);
+
+        action->setDisabled(disabled);
     }
 
     //
@@ -688,12 +718,42 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
         return out;
     }();
 
-    // Show or hide standard actions
+    const QSet<StandardAction> disabled_standard_actions = [&]() {
+        QSet<StandardAction> out;
+
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
+
+            ConsoleImpl *impl = get_impl(index);
+            QSet<StandardAction> for_this_index = impl->get_disabled_standard_actions(index, single_selection);
+
+            if (i == 0) {
+                // NOTE: for first index, add the whole set
+                // instead of intersecting, otherwise total set
+                // would just stay empty
+                out = for_this_index;
+            } else {
+                out.intersect(for_this_index);
+            }
+        }
+
+        return out;
+    }();
+
+    // Set visibility state for standard actions
     for (const StandardAction &action_enum : standard_action_list) {
         const bool visible = visible_standard_actions.contains(action_enum);
 
         QAction *action = standard_action_map[action_enum];
         action->setVisible(visible);
+    }
+
+    // Set enabled state for standard actions
+    for (const StandardAction &action_enum : standard_action_list) {
+        const bool disabled = disabled_standard_actions.contains(action_enum);
+
+        QAction *action = standard_action_map[action_enum];
+        action->setDisabled(disabled);
     }
 
     // TODO: delete code below

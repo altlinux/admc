@@ -56,7 +56,15 @@ QSet<QAction *> ConsoleImpl::get_custom_actions(const QModelIndex &index, const 
     return {};
 }
 
+QSet<QAction *> ConsoleImpl::get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    return {};
+}
+
 QSet<StandardAction> ConsoleImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    return {};
+}
+
+QSet<StandardAction> ConsoleImpl::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
     return {};
 }
 
