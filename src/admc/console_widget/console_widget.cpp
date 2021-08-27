@@ -691,7 +691,6 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
     action_menu->addAction(standard_action_map[StandardAction_Delete]);
     action_menu->addAction(standard_action_map[StandardAction_Paste]);
     action_menu->addAction(standard_action_map[StandardAction_Print]);
-    action_menu->addSeparator();
     action_menu->addAction(standard_action_map[StandardAction_Refresh]);
     action_menu->addSeparator();
     action_menu->addAction(standard_action_map[StandardAction_Properties]);

@@ -61,6 +61,9 @@ public:
     // Return whatever text should be displayed.
     virtual QString get_description(const QModelIndex &index) const;
 
+    // Called when an item of this type is activated, by
+    // being double clicked or pressed enter on. Implement
+    // appropriate response if needed.
     virtual void activate(const QModelIndex &index);
 
     // Return all custom actions that are available for this
@@ -90,28 +93,16 @@ public:
     // type as this impl. Use this list, NOT the
     // list from console's get_selected_items().
 
-    // TODO: comment
+    // Implementations of standard actions. Note that you
+    // don't have to implement all of this, only the ones
+    // that you return from get_standard_actions()
     virtual void copy(const QList<QModelIndex> &index_list);
-
-    // TODO: comment
     virtual void cut(const QList<QModelIndex> &index_list);
-    
-    // TODO: comment
     virtual void rename(const QList<QModelIndex> &index_list);
-    
-    // TODO: comment
     virtual void delete_action(const QList<QModelIndex> &index_list);
-    
-    // TODO: comment
     virtual void paste(const QList<QModelIndex> &index_list);
-    
-    // TODO: comment
     virtual void print(const QList<QModelIndex> &index_list);
-    
-    // TODO: comment
     virtual void refresh(const QList<QModelIndex> &index_list);
-    
-    // TODO: comment
     virtual void properties(const QList<QModelIndex> &index_list);
 
 protected:
