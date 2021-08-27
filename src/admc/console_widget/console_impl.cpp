@@ -48,6 +48,14 @@ void ConsoleImpl::activate(const QModelIndex &index) {
 
 }
 
+QList<QAction *> ConsoleImpl::get_all_custom_actions() const {
+    return {};
+}
+
+QSet<QAction *> ConsoleImpl::get_custom_actions(const QModelIndex &index) const {
+    return {};
+}
+
 QSet<StandardAction> ConsoleImpl::get_visible_standard_actions(const QModelIndex &index) const {
     return {};
 }

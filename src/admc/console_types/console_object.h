@@ -98,6 +98,10 @@ public:
     QString get_description(const QModelIndex &index) const override;
     void activate(const QModelIndex &index) override;
 
+    QList<QAction *> get_all_custom_actions() const override;
+
+    QSet<QAction *> get_custom_actions(const QModelIndex &index) const override;
+
     QSet<StandardAction> get_visible_standard_actions(const QModelIndex &index) const override;
 
     void properties(const QList<QModelIndex> &index_list) override;
@@ -107,6 +111,8 @@ public:
 private:
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
+
+    QAction *add_to_group_action;
 };
 
 #endif /* CONSOLE_OBJECT_H */

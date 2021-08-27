@@ -63,7 +63,17 @@ public:
 
     virtual void activate(const QModelIndex &index);
 
-    // TODO: comment
+    // Return all custom actions that are available for this
+    // type, in the order that they should be displayed.
+    virtual QList<QAction *> get_all_custom_actions() const;
+
+    // Return all custom actions that are available for this
+    // item. This should be a subset of all possible
+    // actions.
+    virtual QSet<QAction *> get_custom_actions(const QModelIndex &index) const;
+
+    // TODO: comment, also probably remove "visible" part
+    // from name
     virtual QSet<StandardAction> get_visible_standard_actions(const QModelIndex &index) const;
 
     // NOTE: It is possible to select indexes of mixed type.

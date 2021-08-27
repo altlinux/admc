@@ -579,6 +579,79 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
         return;
     }
 
+    //
+    // Custom actions
+    //
+
+    // TODO: duplicated, probably extract as a f-n
+    const QSet<int> type_set = [&]() {
+        QSet<int> out;
+
+        for (const QModelIndex &index : selected_list) {
+            const int type = index.data(ConsoleRole_Type).toInt();
+            out.insert(type);
+        } 
+
+        return out;
+    }();
+
+    // First, add all possible custom actions
+    const QList<QAction *> custom_action_list = [&]() {
+        QList<QAction *> out;
+
+        for (const int type : type_set) {
+            ConsoleImpl *impl = impl_map[type];
+            QList<QAction *> for_this_type = impl->get_all_custom_actions();
+
+            for (QAction *action : for_this_type) {
+                if (!out.contains(action)) {
+                    out.append(action);
+                }
+            }
+        }
+
+        return out;
+    }();
+
+    for (QAction *action : custom_action_list) {
+        action_menu->addAction(action);
+    }
+
+    action_menu->addSeparator();
+
+    // Then show/hide custom actions
+    const QSet<QAction *> visible_custom_action_set = [&]() {
+        QSet<QAction *> out;
+
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
+
+            ConsoleImpl *impl = get_impl(index);
+            QSet<QAction *> for_this_index = impl->get_custom_actions(index);
+
+            if (i == 0) {
+                // NOTE: for first index, add the whole set
+                // instead of intersecting, otherwise total set
+                // would just stay empty
+                out = for_this_index;
+            } else {
+                out.intersect(for_this_index);
+            }
+        }
+
+        return out;
+    }();
+
+    for (QAction *action : custom_action_list) {
+        const bool visible = visible_custom_action_set.contains(action);
+
+        action->setVisible(visible);
+    }
+
+    //
+    // Standard actions
+    //
+
     // Add all actions first
     action_menu->addAction(standard_action_map[StandardAction_Copy]);
     action_menu->addAction(standard_action_map[StandardAction_Cut]);

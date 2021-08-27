@@ -1175,6 +1175,15 @@ ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, Fil
 : ConsoleImpl(console_arg) {
     policy_results_widget = policy_results_widget_arg;
     filter_dialog = filter_dialog_arg;
+
+    add_to_group_action = new QAction(tr("Add to group..."));
+
+    // TODO: probably should just be members
+    QObject::connect(
+        add_to_group_action, &QAction::triggered,
+        [=]() {
+            object_action_add_to_group(console);
+        });
 }
 
 QString ConsoleObject::get_description(const QModelIndex &index) const {
@@ -1205,11 +1214,51 @@ bool console_object_search_id_match(QStandardItem *item, SearchThread *thread) {
     return match;
 }
 
+QList<QAction *> ConsoleObject::get_all_custom_actions() const {
+    const QList<QAction *> out = {
+        add_to_group_action,
+    };
+
+    return out;
+}
+
+QSet<QAction *> ConsoleObject::get_custom_actions(const QModelIndex &index) const {
+    QSet<QAction *> out;
+
+    const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
+
+    const bool is_container = [=]() {
+        const QList<QString> container_classes = g_adconfig->get_filter_containers();
+
+        return container_classes.contains(object_class);
+    }();
+
+    const bool is_user = (object_class == CLASS_USER);
+    const bool is_group = (object_class == CLASS_GROUP);
+    const bool is_domain = (object_class == CLASS_DOMAIN);
+    const bool is_computer = (object_class == CLASS_COMPUTER);
+
+    if (is_user || is_group) {
+        out.insert(add_to_group_action);
+    }
+
+    return out;
+}
+
 QSet<StandardAction> ConsoleObject::get_visible_standard_actions(const QModelIndex &index) const {
-    return QSet<StandardAction>({
-        StandardAction_Properties,
-        StandardAction_Refresh,
-    });
+    QSet<StandardAction> out;
+
+    out.insert(StandardAction_Properties);
+
+    // NOTE: only add refresh action if item was fetched,
+    // this filters out all the objects like users that
+    // should never get refresh action
+    const bool refresh = console_item_get_was_fetched(index);
+    if (refresh) {
+        out.insert(StandardAction_Refresh);
+    }
+    
+    return out;
 }
 
 void ConsoleObject::properties(const QList<QModelIndex> &index_list) {
