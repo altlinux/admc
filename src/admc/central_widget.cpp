@@ -67,14 +67,12 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
     console->register_results(ItemType_QueryItem, query_item_results, console_object_header_labels(), console_object_default_columns());
 
     auto policy_container_results = new ResultsView(this);
-    policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
     console->register_results(ItemType_PolicyRoot, policy_container_results, console_policy_header_labels(), console_policy_default_columns());
 
     auto policy_results_widget = new PolicyResultsWidget();
     console->register_results(ItemType_Policy, policy_results_widget);
 
     auto query_folder_results = new ResultsView(this);
-    query_folder_results->detail_view()->header()->setDefaultSectionSize(200);
     console->register_results(ItemType_QueryFolder, query_folder_results, console_query_folder_header_labels(), console_query_folder_default_columns());
 
     //
