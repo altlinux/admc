@@ -89,6 +89,7 @@ public:
 
     virtual void rename(const QList<QModelIndex> &index_list);
     virtual void delete_action(const QList<QModelIndex> &index_list);
+    virtual void refresh(const QList<QModelIndex> &index_list);
 
 private:
     PolicyResultsWidget *policy_results_widget;

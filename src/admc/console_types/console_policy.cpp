@@ -399,6 +399,7 @@ QSet<StandardAction> ConsolePolicy::get_standard_actions(const QModelIndex &inde
 
     if (single_selection) {
         out.insert(StandardAction_Rename);
+        out.insert(StandardAction_Refresh);
     }
 
     return out;
@@ -410,6 +411,16 @@ void ConsolePolicy::rename(const QList<QModelIndex> &index_list) {
 
 void ConsolePolicy::delete_action(const QList<QModelIndex> &index_list) {
     policy_action_delete(console);
+}
+
+void ConsolePolicy::refresh(const QList<QModelIndex> &index_list) {
+    if (index_list.size() != 1) {
+        return;
+    }
+
+    const QModelIndex index = index_list[0];
+
+    policy_results_widget->update(index);
 }
 
 ConsolePolicyRoot::ConsolePolicyRoot(ConsoleWidget *console_arg)
