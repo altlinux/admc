@@ -211,11 +211,6 @@ void ConsolePolicy::on_add_link() {
     dialog->open();
 }
 
-void policy_action_rename(ConsoleWidget *console) {
-    auto dialog = new RenamePolicyDialog(console);
-    dialog->open();
-}
-
 void policy_action_delete(ConsoleWidget *console) {
     const bool confirmed = confirmation_dialog(QCoreApplication::translate("console_policy", "Are you sure you want to delete this policy and all of it's links?"), console);
     if (!confirmed) {
@@ -296,6 +291,8 @@ ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, Con
 : ConsoleImpl(console_arg) {
     policy_results_widget = policy_results_widget_arg;
 
+    rename_dialog = new RenamePolicyDialog(console_arg);
+
     add_link_action = new QAction(tr("Add link..."), this);
     edit_action = new QAction(tr("Edit..."), this);
 
@@ -343,7 +340,7 @@ QSet<StandardAction> ConsolePolicy::get_standard_actions(const QModelIndex &inde
 }
 
 void ConsolePolicy::rename(const QList<QModelIndex> &index_list) {
-    policy_action_rename(console);
+    rename_dialog->open();
 }
 
 void ConsolePolicy::delete_action(const QList<QModelIndex> &index_list) {

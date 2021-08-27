@@ -92,6 +92,7 @@ public:
 
 private:
     PolicyResultsWidget *policy_results_widget;
+    QDialog *rename_dialog;
     QAction *add_link_action;
     QAction *edit_action;
 
