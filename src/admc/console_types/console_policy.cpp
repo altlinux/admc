@@ -360,7 +360,7 @@ ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, Con
     policy_results_widget = policy_results_widget_arg;
 }
 
-QSet<StandardAction> ConsolePolicyRoot::get_visible_standard_actions(const QModelIndex &index) const {
+QSet<StandardAction> ConsolePolicyRoot::get_standard_actions(const QModelIndex &index) const {
     return QSet<StandardAction>({
         StandardAction_Refresh,
     });

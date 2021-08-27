@@ -56,7 +56,7 @@ QSet<QAction *> ConsoleImpl::get_custom_actions(const QModelIndex &index) const 
     return {};
 }
 
-QSet<StandardAction> ConsoleImpl::get_visible_standard_actions(const QModelIndex &index) const {
+QSet<StandardAction> ConsoleImpl::get_standard_actions(const QModelIndex &index) const {
     return {};
 }
 

@@ -1245,7 +1245,7 @@ QSet<QAction *> ConsoleObject::get_custom_actions(const QModelIndex &index) cons
     return out;
 }
 
-QSet<StandardAction> ConsoleObject::get_visible_standard_actions(const QModelIndex &index) const {
+QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &index) const {
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Properties);

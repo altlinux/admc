@@ -671,7 +671,7 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
             const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
-            QSet<StandardAction> for_this_index = impl->get_visible_standard_actions(index);
+            QSet<StandardAction> for_this_index = impl->get_standard_actions(index);
 
             if (i == 0) {
                 // NOTE: for first index, add the whole set

@@ -102,7 +102,7 @@ public:
 
     QSet<QAction *> get_custom_actions(const QModelIndex &index) const override;
 
-    QSet<StandardAction> get_visible_standard_actions(const QModelIndex &index) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index) const override;
 
     void properties(const QList<QModelIndex> &index_list) override;
 

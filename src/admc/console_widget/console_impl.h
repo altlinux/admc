@@ -72,9 +72,9 @@ public:
     // actions.
     virtual QSet<QAction *> get_custom_actions(const QModelIndex &index) const;
 
-    // TODO: comment, also probably remove "visible" part
-    // from name
-    virtual QSet<StandardAction> get_visible_standard_actions(const QModelIndex &index) const;
+    // Return a set of standard actions that should be
+    // displayed for this item
+    virtual QSet<StandardAction> get_standard_actions(const QModelIndex &index) const;
 
     // NOTE: It is possible to select indexes of mixed type.
     // For this reason, action f-ns will be called with
