@@ -653,16 +653,55 @@ void connect_query_actions(ConsoleWidget *console, ConsoleActions *actions) {
         });
 }
 
+ConsoleQueryItem::ConsoleQueryItem(ConsoleWidget *console_arg)
+: ConsoleImpl(console_arg) {
+    export_action = new QAction(tr("&Export query..."));
+
+    connect(
+        export_action, &QAction::triggered,
+        [=]() {
+            query_action_export(console);
+        });
+}
+
 QString ConsoleQueryItem::get_description(const QModelIndex &index) const {
     const QString object_count_text = console_object_count_string(console, index);
 
     return object_count_text;
 }
 
+QList<QAction *> ConsoleQueryItem::get_all_custom_actions() const {
+    QList<QAction *> out;
+
+    out.append(export_action);
+
+    return out;
+}
+
+QSet<QAction *> ConsoleQueryItem::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<QAction *> out;
+
+    if (single_selection) {
+        out.insert(export_action);
+    }
+
+    return out;
+}
+
 QSet<StandardAction> ConsoleQueryItem::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
-    return QSet<StandardAction>({
-        StandardAction_Refresh,
-    });
+    QSet<StandardAction> out;
+
+    out.insert(StandardAction_Delete);
+
+    // TODO: currently implementation only supports single
+    // selection cut/copy but probably should be able to do
+    // multi?
+    if (single_selection) {
+        out.insert(StandardAction_Cut);
+        out.insert(StandardAction_Copy);
+    }
+    
+    return out;
 }
 
 void ConsoleQueryItem::refresh(const QList<QModelIndex> &index_list) {
@@ -674,6 +713,18 @@ void ConsoleQueryItem::refresh(const QList<QModelIndex> &index_list) {
 
     console->delete_children(index);
     fetch(index);
+}
+
+void ConsoleQueryItem::delete_action(const QList<QModelIndex> &index_list) {
+    query_action_delete(console);
+}
+
+void ConsoleQueryItem::cut(const QList<QModelIndex> &index_list) {
+    query_action_cut(console);
+}
+
+void ConsoleQueryItem::copy(const QList<QModelIndex> &index_list) {
+    query_action_copy(console);
 }
 
 ConsoleQueryFolder::ConsoleQueryFolder(ConsoleWidget *console_arg)
@@ -688,6 +739,8 @@ ConsoleQueryFolder::ConsoleQueryFolder(ConsoleWidget *console_arg)
     new_menu->addAction(new_query_item_action);
 
     edit_action = new QAction(tr("Edit"));
+
+    import_action = new QAction(tr("&Import query..."));
 
     connect(
         new_query_folder_action, &QAction::triggered,
@@ -704,6 +757,11 @@ ConsoleQueryFolder::ConsoleQueryFolder(ConsoleWidget *console_arg)
         [=]() {
             query_action_edit_folder(console);
         });
+    connect(
+        import_action, &QAction::triggered,
+        [=]() {
+            query_action_import(console);
+        });
 }
 
 bool ConsoleQueryFolder::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -719,6 +777,7 @@ QList<QAction *> ConsoleQueryFolder::get_all_custom_actions() const {
 
     out.append(new_action);
     out.append(edit_action);
+    out.append(import_action);
 
     return out;
 }
@@ -729,6 +788,7 @@ QSet<QAction *> ConsoleQueryFolder::get_custom_actions(const QModelIndex &index,
     if (single_selection) {
         out.insert(new_action);
         out.insert(edit_action);
+        out.insert(import_action);
     }
 
     return out;

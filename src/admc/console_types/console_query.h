@@ -73,13 +73,22 @@ class ConsoleQueryItem final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    using ConsoleImpl::ConsoleImpl;
-
-    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+    ConsoleQueryItem(ConsoleWidget *console_arg);
 
     void fetch(const QModelIndex &index) override;
-    void refresh(const QList<QModelIndex> &index_list) override;
     QString get_description(const QModelIndex &index) const override;
+
+    QList<QAction *> get_all_custom_actions() const override;
+    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+
+    void refresh(const QList<QModelIndex> &index_list) override;
+    void delete_action(const QList<QModelIndex> &index_list) override;
+    void cut(const QList<QModelIndex> &index_list) override;
+    void copy(const QList<QModelIndex> &index_list) override;
+
+private:
+    QAction *export_action;
 };
 
 class ConsoleQueryFolder final : public ConsoleImpl {
@@ -103,6 +112,7 @@ public:
 private:
     QAction *new_action;
     QAction *edit_action;
+    QAction *import_action;
 };
 
 #endif /* CONSOLE_QUERY_H */
