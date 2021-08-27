@@ -75,7 +75,10 @@ class ConsoleQueryItem final : public ConsoleImpl {
 public:
     using ConsoleImpl::ConsoleImpl;
 
-    void fetch(const QModelIndex &index);
+    QSet<StandardAction> get_visible_standard_actions(const QModelIndex &index) const override;
+
+    void fetch(const QModelIndex &index) override;
+    void refresh(const QList<QModelIndex> &index_list) override;
     QString get_description(const QModelIndex &index) const override;
 };
 

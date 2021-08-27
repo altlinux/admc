@@ -45,12 +45,9 @@ class ConsoleImpl;
 enum ConsoleRole {
     // Determines whether scope item was fetched
     ConsoleRole_WasFetched = Qt::UserRole + 1,
-
+    
     ConsoleRole_IsScope = Qt::UserRole + 3,
-
-    // Determines whether scope is dynamic.
-    ConsoleRole_ScopeIsDynamic = Qt::UserRole + 4,
-
+    
     ConsoleRole_Type = Qt::UserRole + 5,
 
     // NOTE: don't go above ConsoleRole_Type and
@@ -120,7 +117,6 @@ public:
     void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
     void on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last);
     void on_focus_changed(QWidget *old, QWidget *now);
-    void refresh();
     void refresh_current_scope();
     void customize_columns();
     void navigate_up();

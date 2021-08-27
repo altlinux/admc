@@ -122,7 +122,7 @@ void console_query_folder_load(const QList<QStandardItem *> &row, const QString 
 }
 
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent) {
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryFolder, ScopeNodeType_Static, parent);
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryFolder, parent);
     console_query_folder_load(row, name, description);
 
     return row[0]->index();
@@ -142,7 +142,7 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
 }
 
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, ScopeNodeType_Dynamic, parent);
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, parent);
 
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 }
@@ -164,7 +164,7 @@ void ConsoleQueryItem::fetch(const QModelIndex &index) {
 }
 
 void console_query_tree_init(ConsoleWidget *console) {
-    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_QueryFolder, ScopeNodeType_Static, QModelIndex());
+    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_QueryFolder, QModelIndex());
     query_tree_head = head_row[0];
     query_tree_head->setText(QCoreApplication::translate("query", "Saved Queries"));
     query_tree_head->setIcon(QIcon::fromTheme("folder"));
@@ -657,6 +657,23 @@ QString ConsoleQueryItem::get_description(const QModelIndex &index) const {
     const QString object_count_text = console_object_count_string(console, index);
 
     return object_count_text;
+}
+
+QSet<StandardAction> ConsoleQueryItem::get_visible_standard_actions(const QModelIndex &index) const {
+    return QSet<StandardAction>({
+        StandardAction_Refresh,
+    });
+}
+
+void ConsoleQueryItem::refresh(const QList<QModelIndex> &index_list) {
+    if (index_list.size() != 1) {
+        return;
+    }
+
+    const QModelIndex index = index_list[0];
+
+    console->delete_children(index);
+    fetch(index);
 }
 
 bool ConsoleQueryFolder::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {

@@ -285,7 +285,7 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
 
         const QList<QStandardItem *> row = [&]() {
             if (should_be_in_scope) {
-                return console->add_scope_item(ItemType_Object, ScopeNodeType_Dynamic, parent);
+                return console->add_scope_item(ItemType_Object, parent);
             } else {
                 return console->add_results_item(ItemType_Object, parent);
             }
@@ -447,7 +447,7 @@ void ConsoleObject::fetch(const QModelIndex &index) {
 
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     // Create tree head
-    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_Object, ScopeNodeType_Dynamic, QModelIndex());
+    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_Object, QModelIndex());
     object_tree_head = head_row[0];
 
     const QString top_dn = g_adconfig->domain_head();
@@ -1206,9 +1206,23 @@ bool console_object_search_id_match(QStandardItem *item, SearchThread *thread) {
 }
 
 QSet<StandardAction> ConsoleObject::get_visible_standard_actions(const QModelIndex &index) const {
-    return QSet<StandardAction>({StandardAction_Properties});
+    return QSet<StandardAction>({
+        StandardAction_Properties,
+        StandardAction_Refresh,
+    });
 }
 
 void ConsoleObject::properties(const QList<QModelIndex> &index_list) {
     object_action_properties(console);
+}
+
+void ConsoleObject::refresh(const QList<QModelIndex> &index_list) {
+    if (index_list.size() != 1) {
+        return;
+    }
+
+    const QModelIndex index = index_list[0];
+
+    console->delete_children(index);
+    fetch(index);
 }

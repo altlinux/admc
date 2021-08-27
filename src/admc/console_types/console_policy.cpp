@@ -66,13 +66,13 @@ QList<QString> console_policy_search_attributes() {
 }
 
 void console_policy_create(ConsoleWidget *console, const AdObject &object) {
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, ScopeNodeType_Static, policy_tree_head->index());
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, policy_tree_head->index());
 
     console_policy_load(row, object);
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
-    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, ScopeNodeType_Dynamic, QModelIndex());
+    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, QModelIndex());
     policy_tree_head = head_row[0];
     policy_tree_head->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
@@ -195,7 +195,7 @@ void ConsolePolicyRoot::fetch(const QModelIndex &index) {
     if (ad_failed(ad)) {
         return;
     }
-    
+
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
@@ -358,4 +358,21 @@ void connect_policy_actions(ConsoleWidget *console, ConsoleActions *actions, Pol
 ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     policy_results_widget = policy_results_widget_arg;
+}
+
+QSet<StandardAction> ConsolePolicyRoot::get_visible_standard_actions(const QModelIndex &index) const {
+    return QSet<StandardAction>({
+        StandardAction_Refresh,
+    });
+}
+
+void ConsolePolicyRoot::refresh(const QList<QModelIndex> &index_list) {
+    if (index_list.size() != 1) {
+        return;
+    }
+
+    const QModelIndex index = index_list[0];
+
+    console->delete_children(index);
+    fetch(index);
 }

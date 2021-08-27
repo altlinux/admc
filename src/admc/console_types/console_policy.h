@@ -63,7 +63,10 @@ class ConsolePolicyRoot final : public ConsoleImpl {
 public:
     using ConsoleImpl::ConsoleImpl;
 
+    QSet<StandardAction> get_visible_standard_actions(const QModelIndex &index) const override;
+
     void fetch(const QModelIndex &index) override;
+    void refresh(const QList<QModelIndex> &index_list) override;
 };
 
 class ConsolePolicy final : public ConsoleImpl {

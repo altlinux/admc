@@ -65,11 +65,6 @@ enum ConsoleRolePublic {
     ConsoleRole_LAST = Qt::UserRole + 20,
 };
 
-enum ScopeNodeType {
-    ScopeNodeType_Static,
-    ScopeNodeType_Dynamic,
-};
-
 enum StandardAction {
     StandardAction_Copy,
     StandardAction_Cut,
@@ -110,17 +105,7 @@ public:
     // adds an item that is shown both in scope and results.
     // add_results_item() adds an item that is shown only in
     // results.
-    //
-    // Arguments:
-    //
-    // "scope_type" - scope items can be static or dynamic.
-    // Static scope items should be loaded once and never
-    // change after that. Dynamic scope items will trigger a
-    // fetch() call on their assigned ConsoleImpl. Note that
-    // dynamic scope items can be fetched again via the
-    // refresh_scope() f-n or "Refresh" action of the item
-    // menu.
-    QList<QStandardItem *> add_scope_item(const int type, const ScopeNodeType scope_type, const QModelIndex &parent);
+    QList<QStandardItem *> add_scope_item(const int type, const QModelIndex &parent);
     QList<QStandardItem *> add_results_item(const int type, const QModelIndex &parent);
 
     // Deletes an item and all of it's columns
@@ -168,6 +153,8 @@ public:
     void restore_state(const QVariant &state);
 
     QAction *get_refresh_action() const;
+
+    void delete_children(const QModelIndex &parent);
 
 signals:
     // Emitted when current scope item changes.

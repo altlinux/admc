@@ -200,9 +200,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->navigate_forward_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::navigate_forward);
     connect(
-        d->refresh_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::refresh);
-    connect(
         d->refresh_current_scope_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::refresh_current_scope);
     connect(
@@ -254,21 +251,10 @@ void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
     }
 }
 
-QList<QStandardItem *> ConsoleWidget::add_scope_item(const int type, const ScopeNodeType scope_type, const QModelIndex &parent) {
+QList<QStandardItem *> ConsoleWidget::add_scope_item(const int type, const QModelIndex &parent) {
     const QList<QStandardItem *> row = add_results_item(type, parent);
 
-    const bool is_dynamic = (scope_type == ScopeNodeType_Dynamic);
-
-    row[0]->setData(is_dynamic, ConsoleRole_ScopeIsDynamic);
-
-    // NOTE: if item is not dynamic, then it's "fetched"
-    // from creation
-    if (is_dynamic) {
-        row[0]->setData(false, ConsoleRole_WasFetched);
-    } else {
-        row[0]->setData(true, ConsoleRole_WasFetched);
-    }
-
+    row[0]->setData(false, ConsoleRole_WasFetched);
     row[0]->setData(true, ConsoleRole_IsScope);
 
     return row;
@@ -339,9 +325,8 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
         return;
     }
 
-    d->model->removeRows(0, d->model->rowCount(index), index);
-    d->model->setData(index, false, ConsoleRole_WasFetched);
-    d->fetch_scope(index);
+    ConsoleImpl *impl = d->get_impl(index);
+    impl->refresh({index});
 }
 
 // No view, only widget
@@ -563,6 +548,10 @@ QAction *ConsoleWidget::get_refresh_action() const {
     return d->refresh_action;
 }
 
+void ConsoleWidget::delete_children(const QModelIndex &parent) {
+    d->model->removeRows(0, d->model->rowCount(parent), parent);
+}
+
 void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
     const QModelIndex index = scope_proxy_model->mapToSource(index_proxy);
     fetch_scope(index);
@@ -640,13 +629,13 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
     refresh_action->setEnabled(true);
 
     if (selected_list.size() == 1) {
-        const QModelIndex selected = selected_list[0];
+        // const QModelIndex selected = selected_list[0];
 
-        const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
-        const bool is_scope = selected.data(ConsoleRole_IsScope).toBool();
-        if (is_scope && is_dynamic) {
-            refresh_action->setVisible(true);
-        }
+        // const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
+        // const bool is_scope = selected.data(ConsoleRole_IsScope).toBool();
+        // if (is_scope && is_dynamic) {
+        //     refresh_action->setVisible(true);
+        // }
     }
 
     emit q->actions_changed();
@@ -768,24 +757,10 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
     }
 }
 
-void ConsoleWidgetPrivate::refresh() {
-    const QList<QModelIndex> selected = q->get_selected_items();
-
-    if (selected.size() == 1) {
-        const QModelIndex index = selected[0];
-
-        q->refresh_scope(index);
-    }
-}
-
 void ConsoleWidgetPrivate::refresh_current_scope() {
     const QModelIndex current_scope = q->get_current_scope_item();
 
-    const bool is_dynamic = current_scope.data(ConsoleRole_ScopeIsDynamic).toBool();
-
-    if (is_dynamic) {
-        q->refresh_scope(current_scope);
-    }
+    q->refresh_scope(current_scope);
 }
 
 void ConsoleWidgetPrivate::customize_columns() {
@@ -1015,7 +990,7 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 
     if (!was_fetched) {
         model->setData(index, true, ConsoleRole_WasFetched);
-
+        
         ConsoleImpl *impl = get_impl(index);
         impl->fetch(index);
     }

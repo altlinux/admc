@@ -102,6 +102,8 @@ public:
 
     void properties(const QList<QModelIndex> &index_list) override;
 
+    void refresh(const QList<QModelIndex> &index_list) override;
+
 private:
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
