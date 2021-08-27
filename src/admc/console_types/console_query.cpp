@@ -547,7 +547,7 @@ void query_action_delete(ConsoleWidget *console) {
 
 ConsoleQueryItem::ConsoleQueryItem(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    export_action = new QAction(tr("&Export query..."));
+    export_action = new QAction(tr("&Export query..."), this);
 
     connect(
         export_action, &QAction::triggered,
@@ -621,8 +621,8 @@ void ConsoleQueryItem::copy(const QList<QModelIndex> &index_list) {
 
 ConsoleQueryFolder::ConsoleQueryFolder(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    auto new_query_folder_action = new QAction(tr("Query folder"));
-    auto new_query_item_action = new QAction(tr("Query item"));
+    auto new_query_folder_action = new QAction(tr("Query folder"), this);
+    auto new_query_item_action = new QAction(tr("Query item"), this);
 
     auto new_menu = new QMenu(tr("New"), console_arg);
     new_action = new_menu->menuAction();
@@ -630,9 +630,9 @@ ConsoleQueryFolder::ConsoleQueryFolder(ConsoleWidget *console_arg)
     new_menu->addAction(new_query_folder_action);
     new_menu->addAction(new_query_item_action);
 
-    edit_action = new QAction(tr("Edit"));
+    edit_action = new QAction(tr("Edit"), this);
 
-    import_action = new QAction(tr("&Import query..."));
+    import_action = new QAction(tr("&Import query..."), this);
 
     connect(
         new_query_folder_action, &QAction::triggered,

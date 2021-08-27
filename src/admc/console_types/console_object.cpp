@@ -1092,19 +1092,19 @@ ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, Fil
     policy_results_widget = policy_results_widget_arg;
     filter_dialog = filter_dialog_arg;
 
-    auto new_user_action = new QAction(tr("User"));
-    auto new_computer_action = new QAction(tr("Computer"));
-    auto new_ou_action = new QAction(tr("OU"));
-    auto new_group_action = new QAction(tr("Group"));
-    find_action = new QAction(tr("Find..."));
-    move_action = new QAction(tr("Move..."));
-    add_to_group_action = new QAction(tr("Add to group..."));
-    enable_action = new QAction(tr("Enable"));
-    disable_action = new QAction(tr("Disable"));
-    reset_password_action = new QAction(tr("Reset password"));
-    reset_account_action = new QAction(tr("Reset account"));
-    edit_upn_suffixes_action = new QAction(tr("Edit UPN suffixes"));
-    change_dc_action = new QAction(tr("Change domain controller"));
+    auto new_user_action = new QAction(tr("User"), this);
+    auto new_computer_action = new QAction(tr("Computer"), this);
+    auto new_ou_action = new QAction(tr("OU"), this);
+    auto new_group_action = new QAction(tr("Group"), this);
+    find_action = new QAction(tr("Find..."), this);
+    move_action = new QAction(tr("Move..."), this);
+    add_to_group_action = new QAction(tr("Add to group..."), this);
+    enable_action = new QAction(tr("Enable"), this);
+    disable_action = new QAction(tr("Disable"), this);
+    reset_password_action = new QAction(tr("Reset password"), this);
+    reset_account_action = new QAction(tr("Reset account"), this);
+    edit_upn_suffixes_action = new QAction(tr("Edit UPN suffixes"), this);
+    change_dc_action = new QAction(tr("Change domain controller"), this);
 
     auto new_menu = new QMenu(tr("New"), console_arg);
     new_action = new_menu->menuAction();

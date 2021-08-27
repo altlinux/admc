@@ -301,8 +301,8 @@ ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, Con
 : ConsoleImpl(console_arg) {
     policy_results_widget = policy_results_widget_arg;
 
-    add_link_action = new QAction(tr("Add link..."));
-    edit_action = new QAction(tr("Edit..."));
+    add_link_action = new QAction(tr("Add link..."), this);
+    edit_action = new QAction(tr("Edit..."), this);
 
     connect(
         add_link_action, &QAction::triggered,
@@ -371,7 +371,7 @@ void ConsolePolicy::refresh(const QList<QModelIndex> &index_list) {
 
 ConsolePolicyRoot::ConsolePolicyRoot(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    create_policy_action = new QAction(tr("Create policy"));
+    create_policy_action = new QAction(tr("Create policy"), this);
 
     connect(
         create_policy_action, &QAction::triggered,
