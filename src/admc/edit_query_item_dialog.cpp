@@ -72,7 +72,7 @@ void EditQueryItemDialog::accept() {
 
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
-    if (!console_query_or_folder_name_is_good(console, name, index.parent(), this, index)) {
+    if (!console_query_or_folder_name_is_good(name, index.parent(), this, index)) {
         return;
     }
 

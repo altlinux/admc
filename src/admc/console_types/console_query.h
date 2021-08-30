@@ -61,7 +61,7 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent);
 void console_query_tree_init(ConsoleWidget *console);
 void console_query_tree_save(ConsoleWidget *console);
-bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
+bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
 QString console_query_folder_path(const QModelIndex &index);
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch = true);
 QStandardItem *console_query_head();

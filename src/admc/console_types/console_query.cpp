@@ -277,7 +277,7 @@ void console_query_tree_save(ConsoleWidget *console) {
     settings_set_variant(SETTING_query_items, item_variant);
 }
 
-bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index) {
+bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index) {
     if (name.isEmpty()) {
         const QString error_text = QString(QCoreApplication::translate("query.cpp", "Name may not be empty"));
         message_box_warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
@@ -327,7 +327,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
     // Check for name conflict
     for (const QPersistentModelIndex &index : index_list) {
         const QString name = index.data(Qt::DisplayRole).toString();
-        if (!console_query_or_folder_name_is_good(console, name, new_parent_index, console, index)) {
+        if (!console_query_or_folder_name_is_good(name, new_parent_index, console, index)) {
             return;
         }
     }
@@ -451,13 +451,13 @@ void ConsoleQueryFolder::on_import() {
     console_query_tree_save(console);
 }
 
-void query_action_cut(ConsoleWidget *console, const ItemType type) {
-    copied_index = console->get_selected_item(type);
+void query_action_cut(const QList<QModelIndex> &index_list) {
+    copied_index = index_list[0];
     copied_index_is_cut = true;
 }
 
-void query_action_copy(ConsoleWidget *console, const ItemType type) {
-    copied_index = console->get_selected_item(type);
+void query_action_copy(const QList<QModelIndex> &index_list) {
+    copied_index = index_list[0];
     copied_index_is_cut = false;
 }
 
@@ -492,7 +492,7 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
     const QString filter = data["filter"].toString();
     const QByteArray filter_state = QByteArray::fromHex(data["filter_state"].toString().toLocal8Bit());
 
-    if (!console_query_or_folder_name_is_good(console, name, parent_index, console, QModelIndex())) {
+    if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
         return;
     }
 
@@ -523,10 +523,10 @@ void ConsoleQueryFolder::on_edit() {
     dialog->open();
 }
 
-void query_action_delete(ConsoleWidget *console, const int type) {
-    const QList<QPersistentModelIndex> selected_indexes = persistent_index_list(console->get_selected_items(type));
+void query_action_delete(ConsoleWidget *console, const QList<QModelIndex> &index_list) {
+    const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
-    for (const QPersistentModelIndex &index : selected_indexes) {
+    for (const QPersistentModelIndex &index : persistent_list) {
         console->delete_item(index);
     }
 
@@ -600,15 +600,15 @@ void ConsoleQueryItem::refresh(const QList<QModelIndex> &index_list) {
 }
 
 void ConsoleQueryItem::delete_action(const QList<QModelIndex> &index_list) {
-    query_action_delete(console, ItemType_QueryItem);
+    query_action_delete(console, index_list);
 }
 
 void ConsoleQueryItem::cut(const QList<QModelIndex> &index_list) {
-    query_action_cut(console, ItemType_QueryItem);
+    query_action_cut(index_list);
 }
 
 void ConsoleQueryItem::copy(const QList<QModelIndex> &index_list) {
-    query_action_copy(console, ItemType_QueryItem);
+    query_action_copy(index_list);
 }
 
 ConsoleQueryFolder::ConsoleQueryFolder(ConsoleWidget *console_arg)
@@ -690,19 +690,20 @@ QSet<StandardAction> ConsoleQueryFolder::get_standard_actions(const QModelIndex 
 }
 
 void ConsoleQueryFolder::delete_action(const QList<QModelIndex> &index_list) {
-    query_action_delete(console, ItemType_QueryFolder);
+    query_action_delete(console, index_list);
 }
 
 void ConsoleQueryFolder::cut(const QList<QModelIndex> &index_list) {
-    query_action_cut(console, ItemType_QueryFolder);
+    query_action_cut(index_list);
 }
 
 void ConsoleQueryFolder::copy(const QList<QModelIndex> &index_list) {
-    query_action_copy(console, ItemType_QueryFolder);
+    query_action_copy(index_list);
 }
 
 void ConsoleQueryFolder::paste(const QList<QModelIndex> &index_list) {
-    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
+    const QModelIndex parent_index = index_list[0];
+
     const bool delete_old_branch = copied_index_is_cut;
     console_query_move(console, {copied_index}, parent_index, delete_old_branch);
 }
