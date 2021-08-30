@@ -75,7 +75,6 @@ void console_object_actions_get_state(const QModelIndex &index, const bool singl
 QList<QString> object_operation_delete(const QList<QString> &targets, QWidget *parent);
 QList<QString> object_operation_set_disabled(const QList<QString> &targets, const bool disabled, QWidget *parent);
 void object_operation_add_to_group(const QList<QString> &targets, QWidget *parent);
-void object_operation_reset_computer_account(const QList<QString> &target_list);
 
 bool console_object_is_ou(const QModelIndex &index);
 void console_object_load_domain_head_text(QStandardItem *item);
@@ -124,7 +123,22 @@ private:
     QAction *change_dc_action;
     QAction *new_action;
 
-    void move(const QList<QModelIndex> &index_list);
+    void on_new_user();
+    void on_new_computer();
+    void on_new_ou();
+    void on_new_group();
+    void on_move();
+    void on_enable();
+    void on_disable();
+    void on_add_to_group();
+    void on_find();
+    void on_reset_password();
+    void on_edit_upn_suffixes();
+    void on_reset_account();
+    void on_change_dc();
+
+    void new_object(const QString &object_class);
+    void set_disabled(const bool disabled);
 };
 
 #endif /* CONSOLE_OBJECT_H */

@@ -762,11 +762,13 @@ void object_operation_add_to_group(const QList<QString> &targets, QWidget *paren
     dialog->open();
 }
 
-void object_operation_reset_computer_account(const QList<QString> &target_list) {
+void ConsoleObject::on_reset_account() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
     }
+
+    const QList<QString> target_list = get_selected_dn_list_object(console);
 
     for (const QString &target : target_list) {
         ad.computer_reset_account(target);
@@ -851,16 +853,14 @@ QStandardItem *console_object_head() {
     return object_tree_head;
 }
 
-void object_action_delete(ConsoleWidget *console) {
-    const QList<QString> selected_list = get_selected_dn_list_object(console);
-
+void ConsoleObject::delete_action(const QList<QModelIndex> &index_list) {
+    const QList<QString> selected_list = index_list_to_dn_list(index_list);
     const QList<QString> deleted_list = object_operation_delete(selected_list, console);
 
     console_object_delete(console, deleted_list);
 }
 
-// TODO: declare all action f-ns
-void object_action_new(ConsoleWidget *console, const QString &object_class) {
+void ConsoleObject::new_object(const QString &object_class) {
     const QString parent_dn = get_selected_dn_object(console);
 
     auto dialog = new CreateObjectDialog(parent_dn, object_class, console);
@@ -895,6 +895,22 @@ void object_action_new(ConsoleWidget *console, const QString &object_class) {
         });
 }
 
+void ConsoleObject::on_new_user() {
+    new_object(CLASS_USER);
+}
+
+void ConsoleObject::on_new_computer() {
+    new_object(CLASS_COMPUTER);
+}
+
+void ConsoleObject::on_new_ou() {
+    new_object(CLASS_OU);
+}
+
+void ConsoleObject::on_new_group() {
+    new_object(CLASS_GROUP);
+}
+
 void ConsoleObject::rename(const QList<QModelIndex> &index_list) {
     const QString dn = get_selected_dn_object(console);
 
@@ -916,7 +932,7 @@ void ConsoleObject::rename(const QList<QModelIndex> &index_list) {
         });
 }
 
-void object_action_move(ConsoleWidget *console) {
+void ConsoleObject::on_move() {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
 
     auto dialog = new MoveObjectDialog(dn_list, console);
@@ -936,12 +952,12 @@ void object_action_move(ConsoleWidget *console) {
         });
 }
 
-void object_action_add_to_group(ConsoleWidget *console) {
+void ConsoleObject::on_add_to_group() {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
     object_operation_add_to_group(dn_list, console);
 }
 
-void object_action_set_disabled(ConsoleWidget *console, const bool disabled) {
+void ConsoleObject::set_disabled(const bool disabled) {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
 
     show_busy_indicator();
@@ -961,12 +977,18 @@ void object_action_set_disabled(ConsoleWidget *console, const bool disabled) {
         }
     }
 
-    // actions->update_actions_visibility(console);
-
     hide_busy_indicator();
 }
 
-void object_action_find(ConsoleWidget *console) {
+void ConsoleObject::on_enable() {
+    set_disabled(false);
+}
+
+void ConsoleObject::on_disable() {
+    set_disabled(true);
+}
+
+void ConsoleObject::on_find() {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
 
     if (dn_list.size() != 1) {
@@ -979,18 +1001,13 @@ void object_action_find(ConsoleWidget *console) {
     find_dialog->open();
 }
 
-void object_action_reset_password(ConsoleWidget *console) {
+void ConsoleObject::on_reset_password() {
     const QString dn = get_selected_dn_object(console);
     const auto password_dialog = new PasswordDialog(dn, console);
     password_dialog->open();
 }
 
-void object_action_reset_computer_account(ConsoleWidget *console) {
-    const QList<QString> dn_list = get_selected_dn_list_object(console);
-    object_operation_reset_computer_account(dn_list);
-}
-
-void object_action_edit_upn_suffixes(ConsoleWidget *console) {
+void ConsoleObject::on_edit_upn_suffixes() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -1010,8 +1027,8 @@ void object_action_edit_upn_suffixes(ConsoleWidget *console) {
 
     // When editor is accepted, update values of upn
     // suffixes
-    QObject::connect(editor, &QDialog::accepted,
-        [console, editor, partitions_dn]() {
+    connect(editor, &QDialog::accepted,
+        [this, editor, partitions_dn]() {
             AdInterface ad2;
             if (ad_failed(ad2)) {
                 return;
@@ -1024,7 +1041,7 @@ void object_action_edit_upn_suffixes(ConsoleWidget *console) {
         });
 }
 
-void object_action_change_dc(ConsoleWidget *console) {
+void ConsoleObject::on_change_dc() {
     auto change_dc_dialog = new ChangeDCDialog(console_object_head(), console);
     change_dc_dialog->open();
 }
@@ -1059,7 +1076,7 @@ void ConsoleObject::properties(const QList<QModelIndex> &index_list) {
 
         PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn);
 
-        QObject::connect(
+        connect(
             dialog, &PropertiesDialog::applied,
             on_object_properties_applied);
     } else if (dn_list.size() > 1) {
@@ -1078,7 +1095,7 @@ void ConsoleObject::properties(const QList<QModelIndex> &index_list) {
         auto dialog = new ObjectMultiPropertiesDialog(dn_list, class_list);
         dialog->open();
 
-        QObject::connect(
+        connect(
             dialog, &ObjectMultiPropertiesDialog::applied,
             on_object_properties_applied);
     }
@@ -1121,69 +1138,43 @@ ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, Fil
     // TODO: probably should just be members
     connect(
         new_user_action, &QAction::triggered,
-        [=]() {
-            object_action_new(console, CLASS_USER);
-        });
+        this, &ConsoleObject::on_new_user);
     connect(
         new_computer_action, &QAction::triggered,
-        [=]() {
-            object_action_new(console, CLASS_COMPUTER);
-        });
+        this, &ConsoleObject::on_new_computer);
     connect(
-        new_computer_action, &QAction::triggered,
-        [=]() {
-            object_action_new(console, CLASS_OU);
-        });
+        new_ou_action, &QAction::triggered,
+        this, &ConsoleObject::on_new_ou);
     connect(
         new_group_action, &QAction::triggered,
-        [=]() {
-            object_action_new(console, CLASS_GROUP);
-        });
+        this, &ConsoleObject::on_new_group);
     connect(
         move_action, &QAction::triggered,
-        [=]() {
-            object_action_move(console);
-        });
+        this, &ConsoleObject::on_move);
     connect(
         add_to_group_action, &QAction::triggered,
-        [=]() {
-            object_action_add_to_group(console);
-        });
+        this, &ConsoleObject::on_add_to_group);
     connect(
         enable_action, &QAction::triggered,
-        [=]() {
-            object_action_set_disabled(console, false);
-        });
+        this, &ConsoleObject::on_enable);
     connect(
         disable_action, &QAction::triggered,
-        [=]() {
-            object_action_set_disabled(console, true);
-        });
+        this, &ConsoleObject::on_disable);
     connect(
         reset_password_action, &QAction::triggered,
-        [=]() {
-            object_action_reset_password(console);
-        });
+        this, &ConsoleObject::on_reset_password);
     connect(
         reset_account_action, &QAction::triggered,
-        [=]() {
-            object_action_reset_computer_account(console);
-        });
+        this, &ConsoleObject::on_reset_account);
     connect(
         find_action, &QAction::triggered,
-        [=]() {
-            object_action_find(console);
-        });
+        this, &ConsoleObject::on_find);
     connect(
         edit_upn_suffixes_action, &QAction::triggered,
-        [=]() {
-            object_action_edit_upn_suffixes(console);
-        });
+        this, &ConsoleObject::on_edit_upn_suffixes);
     connect(
         change_dc_action, &QAction::triggered,
-        [=]() {
-            object_action_change_dc(console);
-        });
+        this, &ConsoleObject::on_change_dc);
 }
 
 QString ConsoleObject::get_description(const QModelIndex &index) const {
@@ -1359,10 +1350,6 @@ void ConsoleObject::refresh(const QList<QModelIndex> &index_list) {
 
     console->delete_children(index);
     fetch(index);
-}
-
-void ConsoleObject::delete_action(const QList<QModelIndex> &index_list) {
-    object_action_delete(console);
 }
 
 QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list) {
