@@ -20,303 +20,104 @@
 
 #include "find_results.h"
 
-#include "adldap.h"
-#include "console_actions.h"
-#include "console_types/console_object.h"
-#include "console_widget/customize_columns_dialog.h"
+#include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
-#include "create_object_dialog.h"
-#include "globals.h"
-#include "move_object_dialog.h"
-#include "password_dialog.h"
-#include "properties_dialog.h"
-#include "rename_object_dialog.h"
-#include "select_container_dialog.h"
-#include "select_object_dialog.h"
+#include "console_types/console_object.h"
 #include "settings.h"
-#include "status.h"
 #include "utils.h"
+#include "item_type.h"
+#include "filter_dialog.h"
+#include "policy_results_widget.h"
 
-#include <QAbstractItemView>
-#include <QLabel>
+#include "console_types/console_query.h"
+
 #include <QMenu>
-#include <QSortFilterProxyModel>
-#include <QStandardItemModel>
 #include <QVBoxLayout>
-#include <QTreeView>
+#include <QStandardItem>
 
 FindResults::FindResults()
 : QWidget() {
-    object_actions = new ConsoleActions(this);
+    console = new ConsoleWidget(this);
 
-    properties_action = new QAction(tr("&Properties"), this);
+    // NOTE: using query item type for the invisible parent
+    auto object_results = new ResultsView(this);
+    console->register_results(ItemType_QueryItem, object_results, console_object_header_labels(), console_object_default_columns());
 
-    model = new QStandardItemModel(this);
+    // TODO: deal with filter_dialog and
+    // policy_results_widget args. They are not used here
+    // but necessary for the ctor
+    auto filter_dialog = new FilterDialog(this);
+    auto policy_results_widget = new PolicyResultsWidget(this);
+    auto object_impl = new ConsoleObject(policy_results_widget, filter_dialog, console);
+    console->register_impl(ItemType_Object, object_impl);
 
-    const QList<QString> header_labels = console_object_header_labels();
-    model->setHorizontalHeaderLabels(header_labels);
+    // NOTE: registering impl so that it supplies text to
+    // the description bar
+    auto query_item_impl = new ConsoleQueryItem(console);
+    console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    view = new ResultsView(this);
-    view->set_model(model);
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, QModelIndex());
+    QStandardItem *main_item = row[0];
+    main_item->setText(tr("Find results"));
 
-    object_count_label = new QLabel();
+    head_index = main_item->index();
+
+    console->set_scope_view_visible(false);
 
     const auto layout = new QVBoxLayout();
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
+    layout->addWidget(console);
 
-    layout->addWidget(object_count_label);
-    layout->addWidget(view);
-
-    customize_columns_action = new QAction(tr("&Customize columns..."), this);
-
-    const QVariant view_state = settings_get_variant(SETTING_find_results_state);
-    view->restore_state(view_state, console_object_default_columns());
-
-    connect(
-        customize_columns_action, &QAction::triggered,
-        this, &FindResults::customize_columns);
-    connect(
-        view, &ResultsView::activated,
-        this, &FindResults::properties);
-
-    connect(
-        properties_action, &QAction::triggered,
-        this, &FindResults::properties);
-    connect(
-        object_actions->get(ConsoleAction_NewUser), &QAction::triggered,
-        this, &FindResults::create_user);
-    connect(
-        object_actions->get(ConsoleAction_NewComputer), &QAction::triggered,
-        this, &FindResults::create_computer);
-    connect(
-        object_actions->get(ConsoleAction_NewOU), &QAction::triggered,
-        this, &FindResults::create_ou);
-    connect(
-        object_actions->get(ConsoleAction_NewGroup), &QAction::triggered,
-        this, &FindResults::create_group);
-    connect(
-        object_actions->get(ConsoleAction_Delete), &QAction::triggered,
-        this, &FindResults::delete_objects);
-    connect(
-        object_actions->get(ConsoleAction_Rename), &QAction::triggered,
-        this, &FindResults::rename);
-    connect(
-        object_actions->get(ConsoleAction_Move), &QAction::triggered,
-        this, &FindResults::move);
-    connect(
-        object_actions->get(ConsoleAction_AddToGroup), &QAction::triggered,
-        this, &FindResults::add_to_group);
-    connect(
-        object_actions->get(ConsoleAction_Enable), &QAction::triggered,
-        this, &FindResults::enable);
-    connect(
-        object_actions->get(ConsoleAction_Disable), &QAction::triggered,
-        this, &FindResults::disable);
-    connect(
-        object_actions->get(ConsoleAction_ResetPassword), &QAction::triggered,
-        this, &FindResults::reset_password);
+    const QVariant console_widget_state = settings_get_variant(SETTING_find_results_state);
+    console->restore_state(console_widget_state);
+    
+    console->set_current_scope(main_item->index());
 }
 
 FindResults::~FindResults() {
-    const QVariant view_state = view->save_state();
-    settings_set_variant(SETTING_find_results_state, view_state);
+    const QVariant state = console->save_state();
+    settings_set_variant(SETTING_find_results_state, state);
 }
 
 void FindResults::add_actions(QMenu *action_menu, QMenu *view_menu) {
-    object_actions->add_to_menu(action_menu);
-    console_object_actions_add_to_menu(object_actions, action_menu);
+    console->connect_to_action_menu(action_menu);
 
-    action_menu->addSeparator();
-
-    action_menu->addAction(properties_action);
-
-    connect(
-        action_menu, &QMenu::aboutToShow,
-        this, &FindResults::update_actions_visibility);
-
-    connect(
-        view, &ResultsView::context_menu,
-        [=](const QPoint pos) {
-            const QModelIndex index = view->current_view()->indexAt(pos);
-
-            if (index.isValid()) {
-                const QPoint global_pos = view->current_view()->mapToGlobal(pos);
-
-                action_menu->exec(global_pos);
-            }
-        });
-
-    view_menu->addAction(customize_columns_action);
+    console->add_view_actions(view_menu);
 }
 
 void FindResults::clear() {
-    object_count_label->clear();
-    model->removeRows(0, model->rowCount());
+    console->delete_children(head_index);
 }
 
 void FindResults::load(const QHash<QString, AdObject> &results) {
     for (const AdObject &object : results) {
-        const QList<QStandardItem *> row = make_item_row(g_adconfig->get_columns().count());
+        const QList<QStandardItem *> row = console->add_results_item(ItemType_Object, head_index);
 
         console_object_load(row, object);
-
-        model->appendRow(row);
     }
-
-    const QString label_text = tr("%n object(s)", "", model->rowCount());
-    object_count_label->setText(label_text);
 }
 
+// TODO: get from console
 QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
-    const QList<QModelIndex> selected_indexes = view->get_selected_indexes();
+    // const QList<QModelIndex> selected_indexes = view->get_selected_indexes();
 
     QList<QList<QStandardItem *>> out;
 
-    for (const QModelIndex row_index : selected_indexes) {
-        const int row = row_index.row();
+    // for (const QModelIndex row_index : selected_indexes) {
+    //     const int row = row_index.row();
 
-        QList<QStandardItem *> row_copy;
+    //     QList<QStandardItem *> row_copy;
 
-        for (int col = 0; col < model->columnCount(); col++) {
-            QStandardItem *item = model->item(row, col);
-            QStandardItem *item_copy = item->clone();
-            row_copy.append(item_copy);
-        }
+    //     for (int col = 0; col < model->columnCount(); col++) {
+    //         QStandardItem *item = model->item(row, col);
+    //         QStandardItem *item_copy = item->clone();
+    //         row_copy.append(item_copy);
+    //     }
 
-        out.append(row_copy);
-    }
-
-    return out;
-}
-
-void FindResults::delete_objects() {
-    const QList<QString> targets = get_selected_dns();
-
-    object_operation_delete(targets, this);
-}
-
-void FindResults::properties() {
-    const QList<QString> targets = get_selected_dns();
-    if (targets.size() != 1) {
-        return;
-    }
-
-    const QString dn = targets[0];
-
-    PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn);
-    dialog->open();
-}
-
-void FindResults::rename() {
-    const QString target = get_selected_dn();
-    auto dialog = new RenameObjectDialog(target, this);
-    dialog->open();
-}
-
-void FindResults::create_helper(const QString &object_class) {
-    const QString parent_dn = get_selected_dn();
-    auto dialog = new CreateObjectDialog(parent_dn, object_class, this);
-    dialog->open();
-}
-
-void FindResults::move() {
-    const QList<QString> targets = get_selected_dns();
-    auto dialog = new MoveObjectDialog(targets, this);
-    dialog->open();
-}
-
-void FindResults::add_to_group() {
-    const QList<QString> targets = get_selected_dns();
-    object_operation_add_to_group(targets, this);
-}
-
-void FindResults::enable() {
-    enable_disable_helper(false);
-}
-
-void FindResults::disable() {
-    enable_disable_helper(true);
-}
-
-void FindResults::reset_password() {
-    const QString target = get_selected_dn();
-    const auto dialog = new PasswordDialog(target, this);
-    dialog->open();
-}
-
-void FindResults::create_user() {
-    create_helper(CLASS_USER);
-}
-
-void FindResults::create_computer() {
-    create_helper(CLASS_COMPUTER);
-}
-
-void FindResults::create_ou() {
-    create_helper(CLASS_OU);
-}
-
-void FindResults::create_group() {
-    create_helper(CLASS_GROUP);
-}
-
-void FindResults::customize_columns() {
-    auto dialog = new CustomizeColumnsDialog(view->detail_view(), console_object_default_columns(), this);
-    dialog->open();
-}
-
-void FindResults::enable_disable_helper(const bool disabled) {
-    const QList<QString> targets = get_selected_dns();
-    const QList<QString> changed_objects = object_operation_set_disabled(targets, disabled, this);
-
-    const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
-
-    for (const QString &dn : changed_objects) {
-        const QPersistentModelIndex index = selected[dn];
-
-        model->setData(index, disabled, ObjectRole_AccountDisabled);
-    }
-
-    update_actions_visibility();
-}
-
-// First, hide all actions, then show whichever actions are
-// appropriate for current console selection
-void FindResults::update_actions_visibility() {
-    const QList<QModelIndex> selected_indexes = view->get_selected_indexes();
-    object_actions->update_actions_visibility(selected_indexes);
-
-    // Always hide find action because opening a find dialog
-    // from another find dialog is weird
-    object_actions->get(ConsoleAction_Find)->setVisible(false);
-}
-
-QHash<QString, QPersistentModelIndex> FindResults::get_selected_dns_and_indexes() {
-    QHash<QString, QPersistentModelIndex> out;
-
-    const QList<QModelIndex> selected_indexes = view->get_selected_indexes();
-    for (const QModelIndex &index : selected_indexes) {
-        const QString dn = index.data(ObjectRole_DN).toString();
-        out[dn] = QPersistentModelIndex(index);
-    }
+    //     out.append(row_copy);
+    // }
 
     return out;
-}
-
-QList<QString> FindResults::get_selected_dns() {
-    const QHash<QString, QPersistentModelIndex> selected = get_selected_dns_and_indexes();
-
-    return selected.keys();
-}
-
-QString FindResults::get_selected_dn() {
-    const QList<QString> dn_list = get_selected_dns();
-
-    if (!dn_list.isEmpty()) {
-        return dn_list[0];
-    } else {
-        return QString();
-    }
 }

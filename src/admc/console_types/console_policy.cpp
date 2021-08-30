@@ -22,7 +22,6 @@
 
 #include "adldap.h"
 #include "central_widget.h"
-#include "console_actions.h"
 #include "console_types/console_object.h"
 #include "globals.h"
 #include "gplink.h"

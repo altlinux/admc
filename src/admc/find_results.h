@@ -28,13 +28,12 @@
 
 #include <QWidget>
 
-class QLabel;
-class QStandardItemModel;
+#include <QPersistentModelIndex>
+
 class QStandardItem;
 class QMenu;
 class AdObject;
-class ResultsView;
-class ConsoleActions;
+class ConsoleWidget;
 
 class FindResults final : public QWidget {
     Q_OBJECT
@@ -53,38 +52,9 @@ public:
 
     void add_actions(QMenu *action_menu, QMenu *view_menu);
 
-private slots:
-    void properties();
-    void delete_objects();
-    void rename();
-    void move();
-    void add_to_group();
-    void enable();
-    void disable();
-    void reset_password();
-    void create_user();
-    void create_computer();
-    void create_ou();
-    void create_group();
-
-    void customize_columns();
-
 private:
-    ResultsView *view;
-    QStandardItemModel *model;
-    QLabel *object_count_label;
-    QAction *customize_columns_action;
-    bool context_menu_enabled;
-
-    ConsoleActions *object_actions;
-    QAction *properties_action;
-
-    void enable_disable_helper(const bool disabled);
-    void update_actions_visibility();
-    void create_helper(const QString &object_class);
-    QHash<QString, QPersistentModelIndex> get_selected_dns_and_indexes();
-    QList<QString> get_selected_dns();
-    QString get_selected_dn();
+    ConsoleWidget *console;
+    QPersistentModelIndex head_index;
 };
 
 #endif /* FIND_RESULTS_H */

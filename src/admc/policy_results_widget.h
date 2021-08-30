@@ -36,7 +36,7 @@ class PolicyResultsWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    PolicyResultsWidget();
+    PolicyResultsWidget(QWidget *parent);
     ~PolicyResultsWidget();
 
     // Loads links for this policy. Nothing is done if given

@@ -23,7 +23,6 @@
 
 #include "adldap.h"
 #include "central_widget.h"
-#include "console_actions.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/console_impl.h"
 #include "console_types/my_console_role.h"
@@ -64,8 +63,6 @@ void console_object_create(ConsoleWidget *console, const QList<AdObject> &object
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
 QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
-void console_object_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
-void console_object_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
 
 // NOTE: this f-ns don't do anything with console. Just
 // convenience code for reuse

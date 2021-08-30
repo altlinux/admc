@@ -80,7 +80,7 @@ class ConsoleWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    ConsoleWidget(QMenu *action_menu_arg, QWidget *parent = nullptr);
+    ConsoleWidget(QWidget *parent);
 
     // Register results to be used later for scope items.
     // Must be done BEFORE adding items. Results can be just
@@ -141,7 +141,9 @@ public:
     QStandardItem *get_item(const QModelIndex &index) const;
     QList<QStandardItem *> get_row(const QModelIndex &index) const;
 
-    void add_actions(QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
+    void add_view_actions(QMenu *menu);
+    void add_preferences_actions(QMenu *menu);
+    void add_toolbar_actions(QToolBar *toolbar);
 
     QVariant save_state() const;
 
@@ -150,6 +152,10 @@ public:
     void restore_state(const QVariant &state);
 
     void delete_children(const QModelIndex &parent);
+
+    void set_scope_view_visible(const bool visible);
+
+    void connect_to_action_menu(QMenu *action_menu);
 
 private:
     ConsoleWidgetPrivate *d;

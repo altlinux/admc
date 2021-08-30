@@ -63,11 +63,9 @@ ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
     q = q_arg;
 }
 
-ConsoleWidget::ConsoleWidget(QMenu *action_menu_arg, QWidget *parent)
+ConsoleWidget::ConsoleWidget(QWidget *parent)
 : QWidget(parent) {
     d = new ConsoleWidgetPrivate(this);
-
-    d->action_menu = action_menu_arg;
 
     d->scope_view = new QTreeView();
     d->scope_view->setHeaderHidden(true);
@@ -167,24 +165,6 @@ ConsoleWidget::ConsoleWidget(QMenu *action_menu_arg, QWidget *parent)
     d->default_results = ResultsDescription(default_results_widget, nullptr, QList<QString>(), QList<int>());
     d->results_stacked_widget->addWidget(default_results_widget);
 
-    // Update actions right before action menu opens
-    connect(
-        d->action_menu, &QMenu::aboutToShow,
-        d, &ConsoleWidgetPrivate::on_action_menu_show);
-
-    // Open action menu as context menu for central widget
-    connect(
-        d, &ConsoleWidgetPrivate::context_menu,
-        [=](const QPoint pos) {
-            const QModelIndex index = d->focused_view->indexAt(pos);
-
-            if (index.isValid()) {
-                const QPoint global_pos = d->focused_view->mapToGlobal(pos);
-
-                d->action_menu->exec(global_pos);
-            }
-        });
-
     connect(
         d->scope_view, &QTreeView::expanded,
         d, &ConsoleWidgetPrivate::on_scope_expanded);
@@ -254,6 +234,28 @@ ConsoleWidget::ConsoleWidget(QMenu *action_menu_arg, QWidget *parent)
 
     d->update_navigation_actions();
     d->update_view_actions();
+}
+
+void ConsoleWidget::connect_to_action_menu(QMenu *action_menu_arg) {
+    d->action_menu = action_menu_arg;
+
+    // Update actions right before action menu opens
+    connect(
+        d->action_menu, &QMenu::aboutToShow,
+        d, &ConsoleWidgetPrivate::on_action_menu_show);
+
+    // Open action menu as context menu for central widget
+    connect(
+        d, &ConsoleWidgetPrivate::context_menu,
+        [=](const QPoint pos) {
+            const QModelIndex index = d->focused_view->indexAt(pos);
+
+            if (index.isValid()) {
+                const QPoint global_pos = d->focused_view->mapToGlobal(pos);
+
+                d->action_menu->exec(global_pos);
+            }
+        });
 }
 
 void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
@@ -578,6 +580,10 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
 
 void ConsoleWidget::delete_children(const QModelIndex &parent) {
     d->model->removeRows(0, d->model->rowCount(parent), parent);
+}
+
+void ConsoleWidget::set_scope_view_visible(const bool visible) {
+    d->scope_view->setVisible(visible);
 }
 
 void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
@@ -1064,20 +1070,22 @@ void ConsoleWidgetPrivate::update_view_actions() {
     customize_columns_action->setVisible(results_view_exists);
 }
 
-void ConsoleWidget::add_actions(QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
-    // View
-    view_menu->addAction(d->set_results_to_icons_action);
-    view_menu->addAction(d->set_results_to_list_action);
-    view_menu->addAction(d->set_results_to_detail_action);
+void ConsoleWidget::add_view_actions(QMenu *menu) {
+    menu->addAction(d->set_results_to_icons_action);
+    menu->addAction(d->set_results_to_list_action);
+    menu->addAction(d->set_results_to_detail_action);
 
-    view_menu->addSeparator();
+    menu->addSeparator();
 
-    view_menu->addAction(d->customize_columns_action);
-    
-    preferences_menu->addAction(d->toggle_console_tree_action);
-    preferences_menu->addAction(d->toggle_description_bar_action);
+    menu->addAction(d->customize_columns_action);
+}
 
-    // Toolbar
+void ConsoleWidget::add_preferences_actions(QMenu *menu) {
+    menu->addAction(d->toggle_console_tree_action);
+    menu->addAction(d->toggle_description_bar_action);
+}
+
+void ConsoleWidget::add_toolbar_actions(QToolBar *toolbar) {
     toolbar->addAction(d->navigate_back_action);
     toolbar->addAction(d->navigate_forward_action);
     toolbar->addAction(d->navigate_up_action);

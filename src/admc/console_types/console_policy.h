@@ -22,7 +22,6 @@
 #define CONSOLE_POLICY_H
 
 #include "central_widget.h"
-#include "console_actions.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/console_impl.h"
 
