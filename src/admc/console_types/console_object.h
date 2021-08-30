@@ -104,6 +104,7 @@ public:
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const override;
 
+    void rename(const QList<QModelIndex> &index_list) override;
     void properties(const QList<QModelIndex> &index_list) override;
     void refresh(const QList<QModelIndex> &index_list) override;
     void delete_action(const QList<QModelIndex> &index_list) override;

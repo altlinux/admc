@@ -891,7 +891,7 @@ void object_action_new(ConsoleWidget *console, const QString &object_class) {
         });
 }
 
-void object_action_rename(ConsoleWidget *console) {
+void ConsoleObject::rename(const QList<QModelIndex> &index_list) {
     const QString dn = get_selected_dn(console, ObjectRole_DN);
 
     auto dialog = new RenameObjectDialog(dn, console);
@@ -1318,6 +1318,10 @@ QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &inde
     const bool can_refresh = console_item_get_was_fetched(index);
     if (can_refresh && single_selection) {
         out.insert(StandardAction_Refresh);
+    }
+
+    if (single_selection) {
+        out.insert(StandardAction_Rename);
     }
 
     out.insert(StandardAction_Delete);
