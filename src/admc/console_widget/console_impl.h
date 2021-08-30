@@ -24,8 +24,8 @@
 /**
  * Base class for implementing item logic specific to
  * different item types. You should implement this class for
- * each type of item that you use. Imlemented functions will
- * be called by console.
+ * each type of item that you use. Implemented functions
+ * will be called by console.
  */
 
 #include <QObject>
@@ -40,9 +40,12 @@ class ConsoleImpl : public QObject {
 public:
     ConsoleImpl(ConsoleWidget *console_arg);
 
-    // Called when an item of this type is fetched. Only
-    // called on items that are dynamic. You should load
-    // children in the implementation.
+    // Called when a scope item of this type. Fetching
+    // happens when using the user selects or expands an
+    // item for the first time. Typically this is where you
+    // would load children of an item, if they need to be
+    // loaded dynamically. If children of your item type are
+    // static, you don't need to implement this.
     virtual void fetch(const QModelIndex &index);
 
     // Called when items are dragged on top of an item of
@@ -71,7 +74,8 @@ public:
     virtual void selected_as_scope(const QModelIndex &index);
 
     // Return all custom actions that are available for this
-    // type, in the order that they should be displayed.
+    // type. This will be used to determine the order of
+    // actions in the menu.
     virtual QList<QAction *> get_all_custom_actions() const;
 
     // Return a set of custom actions that should be
@@ -98,8 +102,8 @@ public:
     // list from console's get_selected_items().
 
     // Implementations of standard actions. Note that you
-    // don't have to implement all of this, only the ones
-    // that you return from get_standard_actions()
+    // don't have to implement all of these, only the ones
+    // that you return from get_standard_actions().
     virtual void copy(const QList<QModelIndex> &index_list);
     virtual void cut(const QList<QModelIndex> &index_list);
     virtual void rename(const QList<QModelIndex> &index_list);
