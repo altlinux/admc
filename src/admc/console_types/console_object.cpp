@@ -61,12 +61,11 @@ QStandardItem *object_tree_head = nullptr;
 DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
 bool console_object_create_check(ConsoleWidget *console, const QModelIndex &parent);
-void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
-void console_object_drop_policies(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
 bool console_object_search_id_match(QStandardItem *item, SearchThread *thread);
 QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list);
 QList<QString> get_selected_dn_list_object(ConsoleWidget *console);
 QString get_selected_dn_object(ConsoleWidget *console);
+void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_head);
 
 void console_object_load(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
@@ -171,21 +170,13 @@ void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, c
     }
 }
 
-// NOTE: for regular delete we also delete objects in query
-// tree. For delete as part of move, objects in query tree
-// are kept as is and become outdated
-void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const bool delete_in_query_tree) {
+void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_head) {
     for (const QString &dn : dn_list) {
-        const QList<QPersistentModelIndex> index_list = persistent_index_list(console->search_items(object_tree_head->index(), ObjectRole_DN, dn, ItemType_Object));
-        for (const QPersistentModelIndex &index : index_list) {
-            console->delete_item(index);
-        }
+        const QList<QModelIndex> index_list = console->search_items(tree_head, ObjectRole_DN, dn, ItemType_Object);
+        const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
-        if (delete_in_query_tree) {
-            const QList<QPersistentModelIndex> index_list_from_queries = persistent_index_list(console->search_items(console_query_head()->index(), ObjectRole_DN, dn, ItemType_Object));
-            for (const QPersistentModelIndex &index : index_list_from_queries) {
-                console->delete_item(index);
-            }
+        for (const QPersistentModelIndex &index : persistent_list) {
+            console->delete_item(index);
         }
     }
 }
@@ -209,7 +200,7 @@ void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<
     console_object_create(console, object_list, parent);
 }
 
-void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn) {
+void ConsoleObject::move_and_rename(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn, const QList<QString> &new_dn_list) {
     // NOTE: delete old item AFTER adding new item because:
     // If old item is deleted first, then it's possible for
     // new parent to get selected (if they are next to each
@@ -228,10 +219,16 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
     }();
 
     console_object_create(console, ad, new_dn_list, new_parent_index);
-    console_object_delete(console, old_dn_list, false);
+
+    // NOTE: not deleting in query tree because this is a
+    // move, objects still exist!
+    console_object_delete(console, old_dn_list, object_tree_head->index());
 }
 
-void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
+// NOTE: this is a helper f-n for move_and_rename() that
+// generates the new_dn_list for you, assuming that you just
+// want to move objects to new parent without renaming
+void ConsoleObject::move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
     const QList<QString> new_dn_list = [&]() {
         QList<QString> out;
 
@@ -243,7 +240,7 @@ void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QS
         return out;
     }();
 
-    console_object_move(console, ad, old_dn_list, new_dn_list, new_parent_dn);
+    move_and_rename(ad, old_dn_list, new_parent_dn, new_dn_list);
 }
 
 // Check parent index before adding objects to console
@@ -495,9 +492,9 @@ void ConsoleObject::drop(const QList<QPersistentModelIndex> &dropped_list, const
     const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
     if (dropped_are_all_objects) {
-        console_object_drop_objects(console, dropped_list, target);
+        drop_objects(dropped_list, target);
     } else if (dropped_are_policies) {
-        console_object_drop_policies(console, dropped_list, target, policy_results_widget);
+        drop_policies(dropped_list, target);
     }
 }
 
@@ -782,7 +779,7 @@ bool console_object_is_ou(const QModelIndex &index) {
     return is_ou;
 }
 
-void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
+void ConsoleObject::drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
     const QString target_dn = target.data(ObjectRole_DN).toString();
 
     AdInterface ad;
@@ -802,7 +799,7 @@ void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistent
                     target_dn);
 
                 if (move_success) {
-                    console_object_move(console, ad, QList<QString>({dropped_dn}), target_dn);
+                    move(ad, QList<QString>({dropped_dn}), target_dn);
                 }
 
                 break;
@@ -823,7 +820,7 @@ void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistent
     g_status()->display_ad_messages(ad, console);
 }
 
-void console_object_drop_policies(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget) {
+void ConsoleObject::drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
     const QList<QString> policy_list = [&]() {
         QList<QString> out;
 
@@ -857,7 +854,9 @@ void ConsoleObject::delete_action(const QList<QModelIndex> &index_list) {
     const QList<QString> selected_list = index_list_to_dn_list(index_list);
     const QList<QString> deleted_list = object_operation_delete(selected_list, console);
 
-    console_object_delete(console, deleted_list);
+    // NOTE: also delete in query tree
+    console_object_delete(console, deleted_list, object_tree_head->index());
+    console_object_delete(console, deleted_list, console_query_head()->index());
 }
 
 void ConsoleObject::new_object(const QString &object_class) {
@@ -928,7 +927,7 @@ void ConsoleObject::rename(const QList<QModelIndex> &index_list) {
             const QString old_dn = dn;
             const QString new_dn = dialog->get_new_dn();
             const QString parent_dn = dn_get_parent(old_dn);
-            console_object_move(console, ad, {old_dn}, {new_dn}, parent_dn);
+            move_and_rename(ad, {old_dn}, parent_dn, {new_dn});
         });
 }
 
@@ -948,7 +947,7 @@ void ConsoleObject::on_move() {
 
             const QList<QString> old_dn_list = dialog->get_moved_objects();
             const QString new_parent_dn = dialog->get_selected();
-            console_object_move(console, ad, old_dn_list, new_parent_dn);
+            move(ad, old_dn_list, new_parent_dn);
         });
 }
 

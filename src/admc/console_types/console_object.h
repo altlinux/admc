@@ -60,9 +60,6 @@ void console_object_item_data_load(QStandardItem *item, const AdObject &object);
 QList<QString> console_object_header_labels();
 QList<int> console_object_default_columns();
 QList<QString> console_object_search_attributes();
-void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const bool delete_in_query_tree = true);
-void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QList<QString> &new_dn_list, const QString &new_parent_dn);
-void console_object_move(ConsoleWidget *console, AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
 void console_object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
@@ -139,6 +136,11 @@ private:
 
     void new_object(const QString &object_class);
     void set_disabled(const bool disabled);
+    void drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
+    void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
+    void move_and_rename(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn, const QList<QString> &new_dn_list);
+    void move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
+
 };
 
 #endif /* CONSOLE_OBJECT_H */
