@@ -179,27 +179,13 @@ void ConsolePolicyRoot::fetch(const QModelIndex &index) {
 }
 
 void ConsolePolicy::on_add_link() {
-    const QList<QModelIndex> selected = console->get_selected_items(ItemType_Policy);
-    if (selected.size() == 0) {
-        return;
-    }
-
     auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, console);
     dialog->setWindowTitle(QCoreApplication::translate("console_policy", "Add Link"));
 
     QObject::connect(
         dialog, &SelectObjectDialog::accepted,
         [=]() {
-            const QList<QString> gpos = [selected]() {
-                QList<QString> out;
-
-                for (const QModelIndex &index : selected) {
-                    const QString gpo = index.data(PolicyRole_DN).toString();
-                    out.append(gpo);
-                }
-
-                return out;
-            }();
+            const QList<QString> gpos = get_selected_dn_list(console, ItemType_Policy, PolicyRole_DN);
 
             const QList<QString> ou_list = dialog->get_selected();
 
@@ -213,7 +199,7 @@ void ConsolePolicy::on_add_link() {
 }
 
 void ConsolePolicy::on_edit() {
-    const QString dn = get_selected_dn(console, PolicyRole_DN);
+    const QString dn = get_selected_dn(console, ItemType_Policy, PolicyRole_DN);
 
     const QString filesys_path = [&]() {
         AdInterface ad;
