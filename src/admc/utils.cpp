@@ -25,6 +25,7 @@
 #include "globals.h"
 #include "settings.h"
 #include "status.h"
+#include "item_type.h"
 
 #include <QAbstractItemModel>
 #include <QAbstractItemView>
@@ -289,7 +290,8 @@ void message_box_warning(QWidget *parent, const QString &title, const QString &t
 QList<QString> get_selected_dn_list(ConsoleWidget *console, const int dn_role) {
     QList<QString> out;
 
-    const QList<QModelIndex> indexes = console->get_selected_items();
+    // TODO: make sure this is only for object!
+    const QList<QModelIndex> indexes = console->get_selected_items(ItemType_Object);
     for (const QModelIndex &index : indexes) {
         const QString dn = index.data(dn_role).toString();
         out.append(dn);

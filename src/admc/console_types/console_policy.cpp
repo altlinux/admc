@@ -34,6 +34,7 @@
 #include "select_object_dialog.h"
 #include "create_policy_dialog.h"
 #include "central_widget.h"
+#include "item_type.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -178,7 +179,7 @@ void ConsolePolicyRoot::fetch(const QModelIndex &index) {
 }
 
 void ConsolePolicy::on_add_link() {
-    const QList<QModelIndex> selected = console->get_selected_items();
+    const QList<QModelIndex> selected = console->get_selected_items(ItemType_Policy);
     if (selected.size() == 0) {
         return;
     }

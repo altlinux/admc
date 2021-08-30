@@ -43,6 +43,7 @@
 #include "editors/multi_editor.h"
 #include "filter_dialog.h"
 #include "central_widget.h"
+#include "item_type.h"
 
 #include <QDebug>
 #include <QMenu>

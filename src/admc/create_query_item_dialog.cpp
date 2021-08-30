@@ -23,6 +23,7 @@
 #include "console_types/console_query.h"
 #include "edit_query_item_widget.h"
 #include "utils.h"
+#include "item_type.h"
 
 #include <QDialogButtonBox>
 #include <QLineEdit>
@@ -65,7 +66,7 @@ void CreateQueryItemDialog::accept() {
     bool scope_is_children;
     edit_query_widget->save(name, description, filter, base, scope_is_children, filter_state);
 
-    const QModelIndex parent_index = console->get_selected_item();
+    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryItem);
 
     if (!console_query_or_folder_name_is_good(console, name, parent_index, this, QModelIndex())) {
         return;

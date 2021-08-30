@@ -44,17 +44,6 @@ template <typename T>
 class QList;
 class QToolBar;
 
-enum ItemType {
-    ItemType_Unassigned,
-    ItemType_Object,
-    ItemType_PolicyRoot,
-    ItemType_Policy,
-    ItemType_QueryFolder,
-    ItemType_QueryItem,
-
-    ItemType_LAST,
-};
-
 class CentralWidget final : public QWidget {
     Q_OBJECT
 

@@ -136,6 +136,8 @@ public:
     ResultsDescription get_results(const QModelIndex &index) const;
     void update_description();
     void on_standard_action(const StandardAction action_enum);
+    QList<QModelIndex> get_all_selected_items() const;
+    QSet<int> get_selected_types() const;
 
 signals:
     void context_menu(const QPoint pos);

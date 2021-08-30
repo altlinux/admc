@@ -34,6 +34,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "item_type.h"
 
 #include <QDebug>
 #include <QHeaderView>

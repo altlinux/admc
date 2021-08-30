@@ -121,13 +121,13 @@ public:
     // is always at least one selected item. If results is
     // currently focused but has no selection, selected
     // items from scope are returned instead.
-    QList<QModelIndex> get_selected_items() const;
+    QList<QModelIndex> get_selected_items(const int type) const;
 
     // Get a single selected item. Use if you are sure that
     // there's only one (dialog that uses one target item
     // for example). Returns first item in list if there are
     // multiple items selected.
-    QModelIndex get_selected_item() const;
+    QModelIndex get_selected_item(const int type) const;
 
     // NOTE: Search is inclusive, examining the given parent
     // and all of it's descendants. Pass QModelIndex()

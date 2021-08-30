@@ -57,7 +57,6 @@ const QList<StandardAction> standard_action_list = {
 };
 
 QString results_state_name(const int type);
-QSet<int> get_type_set(const QList<QModelIndex> &index_list);
 
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
 : QObject(q_arg) {
@@ -392,18 +391,33 @@ void ConsoleWidget::register_results(const int type, QWidget *widget, ResultsVie
     }
 }
 
-QList<QModelIndex> ConsoleWidget::get_selected_items() const {
-    ResultsView *results_view = d->get_current_results().view();
+QList<QModelIndex> ConsoleWidget::get_selected_items(const int type) const {
+    QList<QModelIndex> out;
 
-    const bool focused_scope = (d->focused_view == d->scope_view);
-    const bool focused_results = (results_view != nullptr && d->focused_view == results_view->current_view());
+    const QList<QModelIndex> all_selected = d->get_all_selected_items();
+
+    for (const QModelIndex &index : all_selected) {
+        const int this_type = console_item_get_type(index);
+        if (this_type == type) {
+            out.append(index);
+        }
+    }
+
+    return out;
+}
+
+QList<QModelIndex> ConsoleWidgetPrivate::get_all_selected_items() const {
+    ResultsView *results_view = get_current_results().view();
+
+    const bool focused_scope = (focused_view == scope_view);
+    const bool focused_results = (results_view != nullptr && focused_view == results_view->current_view());
 
     const QList<QModelIndex> scope_selected = [&]() {
         QList<QModelIndex> out;
 
-        const QList<QModelIndex> selected_proxy = d->scope_view->selectionModel()->selectedRows();
+        const QList<QModelIndex> selected_proxy = scope_view->selectionModel()->selectedRows();
         for (const QModelIndex &index : selected_proxy) {
-            const QModelIndex source_index = d->scope_proxy_model->mapToSource(index);
+            const QModelIndex source_index = scope_proxy_model->mapToSource(index);
             out.append(source_index);
         }
 
@@ -425,10 +439,14 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
     }
 }
 
-QModelIndex ConsoleWidget::get_selected_item() const {
-    const QList<QModelIndex> selected_list = get_selected_items();
+QModelIndex ConsoleWidget::get_selected_item(const int type) const {
+    const QList<QModelIndex> selected_list = get_selected_items(type);
 
-    return selected_list[0];
+    if (!selected_list.isEmpty()) {
+        return selected_list[0];
+    } else {
+        return QModelIndex();
+    }
 }
 
 QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int role, const QVariant &value, const int type) const {
@@ -584,7 +602,7 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
 void ConsoleWidgetPrivate::on_action_menu_show() {
     action_menu->clear();
 
-    const QList<QModelIndex> selected_list = q->get_selected_items();
+    const QList<QModelIndex> selected_list = get_all_selected_items();
 
     if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
         return;
@@ -596,7 +614,7 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
     // Custom actions
     //
 
-    const QSet<int> type_set = get_type_set(selected_list);
+    const QSet<int> type_set = get_selected_types();
 
     // First, add all possible custom actions
     const QList<QAction *> custom_action_list = [&]() {
@@ -1125,25 +1143,12 @@ void ConsoleWidgetPrivate::update_description() {
 }
 
 void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) {
-    const QList<QModelIndex> selected_list = q->get_selected_items();
-
-    const QSet<int> type_set = get_type_set(selected_list);
+    const QSet<int> type_set = get_selected_types();
 
     // Call impl's action f-n for all present types
     for (const int type : type_set) {
         // Filter selected list so that it only contains indexes of this type
-        const QList<QModelIndex> selected_of_type = [&]() {
-            QList<QModelIndex> out;
-
-            for (const QModelIndex &index : selected_list) {
-                const int index_type = index.data(ConsoleRole_Type).toInt();
-                if (index_type == type) {
-                    out.append(index);
-                }
-            }
-
-            return out;
-        }();
+        const QList<QModelIndex> selected_of_type = q->get_selected_items(type);
 
         ConsoleImpl *impl = impl_map[type];
         switch (action_enum) {
@@ -1207,8 +1212,10 @@ QString results_state_name(const int type) {
     return QString("RESULTS_STATE_%1").arg(type);
 }
 
-QSet<int> get_type_set(const QList<QModelIndex> &index_list) {
+QSet<int> ConsoleWidgetPrivate::get_selected_types() const {
     QSet<int> out;
+
+    const QList<QModelIndex> index_list = get_all_selected_items();
 
     for (const QModelIndex &index : index_list) {
         const int type = index.data(ConsoleRole_Type).toInt();

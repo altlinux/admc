@@ -26,6 +26,7 @@
 #include "rename_object_dialog.h"
 #include "status.h"
 #include "utils.h"
+#include "item_type.h"
 
 #include <QDialogButtonBox>
 #include <QFormLayout>
@@ -84,7 +85,7 @@ void RenamePolicyDialog::accept() {
         return;
     }
 
-    const QModelIndex index = console->get_selected_item();
+    const QModelIndex index = console->get_selected_item(ItemType_Policy);
     const QString old_name = index.data(Qt::DisplayRole).toString();
 
     const QString new_name = name_edit->text();
@@ -118,7 +119,7 @@ void RenamePolicyDialog::reset() {
     }
 
     const QString name = [&]() {
-        const QModelIndex index = console->get_selected_item();
+        const QModelIndex index = console->get_selected_item(ItemType_Policy);
         const QString dn = index.data(PolicyRole_DN).toString();
         const AdObject object = ad.search_object(dn);
 

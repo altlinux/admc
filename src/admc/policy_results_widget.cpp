@@ -30,6 +30,7 @@
 #include "status.h"
 #include "utils.h"
 #include "settings.h"
+#include "item_type.h"
 
 #include <QAction>
 #include <QHeaderView>
