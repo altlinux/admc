@@ -123,6 +123,8 @@ private:
     QAction *edit_upn_suffixes_action;
     QAction *change_dc_action;
     QAction *new_action;
+
+    void move(const QList<QModelIndex> &index_list);
 };
 
 #endif /* CONSOLE_OBJECT_H */

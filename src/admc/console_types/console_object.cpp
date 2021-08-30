@@ -63,6 +63,7 @@ bool console_object_create_check(ConsoleWidget *console, const QModelIndex &pare
 void console_object_drop_objects(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
 void console_object_drop_policies(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
 bool console_object_search_id_match(QStandardItem *item, SearchThread *thread);
+QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list);
 
 void console_object_load(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
@@ -1025,20 +1026,23 @@ void object_action_change_dc(ConsoleWidget *console) {
     change_dc_dialog->open();
 }
 
-void object_action_properties(ConsoleWidget *console) {
+void ConsoleObject::properties(const QList<QModelIndex> &index_list) {
+    const QList<QString> dn_list = index_list_to_dn_list(index_list);
+
     auto on_object_properties_applied = [=]() {
         AdInterface ad;
         if (ad_failed(ad)) {
             return;
         }
 
-        const QList<QString> dn_list = get_selected_dn_list(console, ObjectRole_DN);
-
         for (const QString &dn : dn_list) {
             const AdObject object = ad.search_object(dn);
 
-            const QList<QModelIndex> index_list = console->search_items(QModelIndex(), ObjectRole_DN, dn, ItemType_Object);
-            for (const QModelIndex &index : index_list) {
+            // NOTE: search for indexes instead of using the
+            // list given to f-n because we want to update
+            // objects in both object and query tree
+            const QList<QModelIndex> indexes_for_this_object = console->search_items(QModelIndex(), ObjectRole_DN, dn, ItemType_Object);
+            for (const QModelIndex &index : indexes_for_this_object) {
                 const QList<QStandardItem *> row = console->get_row(index);
                 console_object_load(row, object);
             }
@@ -1046,8 +1050,6 @@ void object_action_properties(ConsoleWidget *console) {
 
         g_status()->display_ad_messages(ad, console);
     };
-
-    const QList<QString> dn_list = get_selected_dn_list(console, ObjectRole_DN);
 
     if (dn_list.size() == 1) {
         const QString dn = dn_list[0];
@@ -1061,7 +1063,6 @@ void object_action_properties(ConsoleWidget *console) {
         const QList<QString> class_list = [&]() {
             QSet<QString> out;
 
-            const QList<QPersistentModelIndex> index_list = persistent_index_list(console->get_selected_items());
             for (const QPersistentModelIndex &index : index_list) {
                 const QList<QString> this_class_list = index.data(ObjectRole_ObjectClasses).toStringList();
                 const QString main_class = this_class_list.last();
@@ -1198,7 +1199,7 @@ QString ConsoleObject::get_description(const QModelIndex &index) const {
 }
 
 void ConsoleObject::activate(const QModelIndex &index) {
-    object_action_properties(console);
+    properties({index});
 }
 
 bool console_object_search_id_match(QStandardItem *item, SearchThread *thread) {
@@ -1346,10 +1347,6 @@ QSet<StandardAction> ConsoleObject::get_disabled_standard_actions(const QModelIn
     return out;
 }
 
-void ConsoleObject::properties(const QList<QModelIndex> &index_list) {
-    object_action_properties(console);
-}
-
 void ConsoleObject::refresh(const QList<QModelIndex> &index_list) {
     if (index_list.size() != 1) {
         return;
@@ -1363,4 +1360,15 @@ void ConsoleObject::refresh(const QList<QModelIndex> &index_list) {
 
 void ConsoleObject::delete_action(const QList<QModelIndex> &index_list) {
     object_action_delete(console);
+}
+
+QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list) {
+    QList<QString> out;
+
+    for (const QModelIndex &index : index_list) {
+        const QString dn = index.data(ObjectRole_DN).toString();
+        out.append(dn);
+    }
+
+    return out;
 }
