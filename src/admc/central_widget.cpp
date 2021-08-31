@@ -127,9 +127,9 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
         this, &CentralWidget::refresh_object_tree);
 
     // Set current scope to object head to load it
-    const QModelIndex object_tree_head = console_object_head(console);
-    if (object_tree_head.isValid()) {
-        console->set_current_scope(object_tree_head);
+    const QModelIndex object_tree_root = get_object_tree_root(console);
+    if (object_tree_root.isValid()) {
+        console->set_current_scope(object_tree_root);
     }
 }
 
@@ -163,14 +163,14 @@ void CentralWidget::on_advanced_features() {
 }
 
 void CentralWidget::refresh_object_tree() {
-    const QModelIndex object_tree_head_index = console_object_head(console);
-    if (!object_tree_head_index.isValid()) {
+    const QModelIndex object_tree_root = get_object_tree_root(console);
+    if (!object_tree_root.isValid()) {
         return;
     }
 
     show_busy_indicator();
 
-    console->refresh_scope(object_tree_head_index);
+    console->refresh_scope(object_tree_root);
 
     hide_busy_indicator();
 }

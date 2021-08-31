@@ -71,11 +71,11 @@ QList<QString> object_operation_set_disabled(const QList<QString> &targets, cons
 void object_operation_add_to_group(const QList<QString> &targets, QWidget *parent);
 
 bool console_object_is_ou(const QModelIndex &index);
-void console_object_load_domain_head_text(QStandardItem *item);
+void console_object_load_root_text(QStandardItem *item);
 
 // NOTE: this may return an invalid index if there's no tree
 // of objects setup
-QModelIndex console_object_head(ConsoleWidget *console);
+QModelIndex get_object_tree_root(ConsoleWidget *console);
 
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
 
