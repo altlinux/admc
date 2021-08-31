@@ -251,22 +251,22 @@
 <context>
     <name>CentralWidget</name>
     <message>
-        <location filename="central_widget.cpp" line="49"/>
+        <location filename="central_widget.cpp" line="51"/>
         <source>&amp;Filter objects...</source>
         <translation>&amp;Фильтр объектов...</translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="53"/>
+        <location filename="central_widget.cpp" line="55"/>
         <source>Dev mode</source>
         <translation>Dev mode</translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="54"/>
+        <location filename="central_widget.cpp" line="56"/>
         <source>&amp;Show non-container objects in Console tree</source>
         <translation>&amp;Показать неконтейнерные объекты в дереве консоли</translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="55"/>
+        <location filename="central_widget.cpp" line="57"/>
         <source>Advanced features</source>
         <translation>Дополнительные возможности</translation>
     </message>
@@ -336,149 +336,9 @@
 <context>
     <name>ConsoleActions</name>
     <message>
-        <location filename="console_types/console_object.cpp" line="551"/>
+        <location filename="console_impls/object_impl.cpp" line="552"/>
         <source>Are you sure you want to delete this object?</source>
         <translation>Вы уверены, что хотите удалить этот объект?</translation>
-    </message>
-</context>
-<context>
-    <name>ConsoleObject</name>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1029"/>
-        <source>User</source>
-        <translation>Пользователь</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1030"/>
-        <source>Computer</source>
-        <translation>Компьютер</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1031"/>
-        <source>OU</source>
-        <translation>Подразделение</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1032"/>
-        <source>Group</source>
-        <translation>Группа</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1033"/>
-        <source>Find...</source>
-        <translation>Найти...</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1034"/>
-        <source>Move...</source>
-        <translation>Переместить...</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1035"/>
-        <source>Add to group...</source>
-        <translation>Добавить в группу...</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1036"/>
-        <source>Enable</source>
-        <translation>Включить</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1037"/>
-        <source>Disable</source>
-        <translation>Выключить</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1038"/>
-        <source>Reset password</source>
-        <translation>Сбросить пароль</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1039"/>
-        <source>Reset account</source>
-        <translation>Сбросить аккаунт</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1040"/>
-        <source>Edit UPN suffixes</source>
-        <translation>Редактировать UPN суффиксы</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1041"/>
-        <source>Change domain controller</source>
-        <translation>Изменить контроллер домена</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1043"/>
-        <source>New</source>
-        <translation>Создать</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="1102"/>
-        <source> [Filtering enabled]</source>
-        <translation> [Фильтр включён]</translation>
-    </message>
-</context>
-<context>
-    <name>ConsolePolicy</name>
-    <message>
-        <location filename="console_types/console_policy.cpp" line="260"/>
-        <source>Add link...</source>
-        <translation>Добавить ссылку...</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_policy.cpp" line="261"/>
-        <source>Edit...</source>
-        <translation>Редактировать...</translation>
-    </message>
-</context>
-<context>
-    <name>ConsolePolicyRoot</name>
-    <message>
-        <location filename="console_types/console_policy.cpp" line="360"/>
-        <source>Create policy</source>
-        <translation>Создать политику</translation>
-    </message>
-</context>
-<context>
-    <name>ConsoleQueryFolder</name>
-    <message>
-        <location filename="console_types/console_query.cpp" line="626"/>
-        <source>Query folder</source>
-        <translation>Папка поисков</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_query.cpp" line="627"/>
-        <source>Query item</source>
-        <translation>Поиск</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_query.cpp" line="629"/>
-        <source>New</source>
-        <translation>Создать</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_query.cpp" line="635"/>
-        <source>Edit</source>
-        <translation>Редактировать</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_query.cpp" line="637"/>
-        <source>&amp;Import query...</source>
-        <translation>&amp;Импортировать поиск...</translation>
-    </message>
-</context>
-<context>
-    <name>ConsoleQueryItem</name>
-    <message>
-        <location filename="console_types/console_query.cpp" line="548"/>
-        <source>Edit...</source>
-        <translation>Редактировать...</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_query.cpp" line="549"/>
-        <source>Export query...</source>
-        <translation>Экспортировать поиск...</translation>
     </message>
 </context>
 <context>
@@ -506,7 +366,7 @@
     <message>
         <location filename="console_widget/console_widget.cpp" line="104"/>
         <source>&amp;Customize columns...</source>
-        <translation>Настроить колонки...</translation>
+        <translation>&amp;Настроить колонки...</translation>
     </message>
     <message>
         <location filename="console_widget/console_widget.cpp" line="109"/>
@@ -648,28 +508,28 @@
 <context>
     <name>CreateQueryFolderDialog</name>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="43"/>
+        <location filename="create_query_folder_dialog.cpp" line="44"/>
         <source>Create Query Folder</source>
         <oldsource>Create query folder</oldsource>
         <translation>Создать папку поисков</translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="51"/>
+        <location filename="create_query_folder_dialog.cpp" line="52"/>
         <source>Create</source>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="55"/>
+        <location filename="create_query_folder_dialog.cpp" line="56"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="56"/>
+        <location filename="create_query_folder_dialog.cpp" line="57"/>
         <source>Description:</source>
         <translation>Описание:</translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="72"/>
+        <location filename="create_query_folder_dialog.cpp" line="73"/>
         <source>New folder</source>
         <translation>Новая папка</translation>
     </message>
@@ -677,7 +537,7 @@
 <context>
     <name>CreateQueryItemDialog</name>
     <message>
-        <location filename="create_query_item_dialog.cpp" line="39"/>
+        <location filename="create_query_item_dialog.cpp" line="40"/>
         <source>Create Query</source>
         <translation>Создать поиск</translation>
     </message>
@@ -715,18 +575,18 @@
 <context>
     <name>EditQueryFolderDialog</name>
     <message>
-        <location filename="edit_query_folder_dialog.cpp" line="42"/>
+        <location filename="edit_query_folder_dialog.cpp" line="43"/>
         <source>Edit Query Folder</source>
         <oldsource>Edit query folder</oldsource>
         <translation>Редактировать папку поиска</translation>
     </message>
     <message>
-        <location filename="edit_query_folder_dialog.cpp" line="53"/>
+        <location filename="edit_query_folder_dialog.cpp" line="54"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="edit_query_folder_dialog.cpp" line="54"/>
+        <location filename="edit_query_folder_dialog.cpp" line="55"/>
         <source>Description:</source>
         <translation>Описание:</translation>
     </message>
@@ -734,7 +594,7 @@
 <context>
     <name>EditQueryItemDialog</name>
     <message>
-        <location filename="edit_query_item_dialog.cpp" line="39"/>
+        <location filename="edit_query_item_dialog.cpp" line="40"/>
         <source>Edit Query</source>
         <translation>Редактировать поиск</translation>
     </message>
@@ -1433,6 +1293,84 @@
     </message>
 </context>
 <context>
+    <name>ObjectImpl</name>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1030"/>
+        <source>User</source>
+        <translation>Пользователь</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1031"/>
+        <source>Computer</source>
+        <translation>Компьютер</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1032"/>
+        <source>OU</source>
+        <translation>Подразделение</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1033"/>
+        <source>Group</source>
+        <translation>Группа</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1034"/>
+        <source>Find...</source>
+        <translation>Найти...</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1035"/>
+        <source>Move...</source>
+        <translation>Переместить...</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1036"/>
+        <source>Add to group...</source>
+        <translation>Добавить в группу...</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1037"/>
+        <source>Enable</source>
+        <translation>Включить</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1038"/>
+        <source>Disable</source>
+        <translation>Выключить</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1039"/>
+        <source>Reset password</source>
+        <translation>Сбросить пароль</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1040"/>
+        <source>Reset account</source>
+        <translation>Сбросить аккаунт</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1041"/>
+        <source>Edit UPN suffixes</source>
+        <translation>Редактировать UPN суффиксы</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1042"/>
+        <source>Change domain controller</source>
+        <translation>Изменить контроллер домена</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1044"/>
+        <source>New</source>
+        <translation>Создать</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1103"/>
+        <source> [Filtering enabled]</source>
+        <translation> [Фильтр включён]</translation>
+    </message>
+</context>
+<context>
     <name>ObjectMultiPropertiesDialog</name>
     <message>
         <location filename="object_multi_properties_dialog.cpp" line="53"/>
@@ -1574,6 +1512,19 @@
     </message>
 </context>
 <context>
+    <name>PolicyImpl</name>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="205"/>
+        <source>Add link...</source>
+        <translation>Добавить ссылку...</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="206"/>
+        <source>Edit...</source>
+        <translation>Редактировать...</translation>
+    </message>
+</context>
+<context>
     <name>PolicyResultsWidget</name>
     <message>
         <location filename="policy_results_widget.cpp" line="74"/>
@@ -1609,6 +1560,14 @@
         <location filename="policy_results_widget.cpp" line="155"/>
         <source>Permissions for this policy&apos;s GPT don&apos;t match the permissions for it&apos;s GPC object. Would you like to update GPT permissions?</source>
         <translation>Права для GPT этой политики не совпадают с правами для этого объекта GPC. Обновить права GPT?</translation>
+    </message>
+</context>
+<context>
+    <name>PolicyRootImpl</name>
+    <message>
+        <location filename="console_impls/policy_root_impl.cpp" line="105"/>
+        <source>Create policy</source>
+        <translation>Создать политику</translation>
     </message>
 </context>
 <context>
@@ -1753,9 +1712,50 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="console_types/console_object.cpp" line="607"/>
+        <location filename="console_impls/object_impl.cpp" line="608"/>
         <source>Add to Group</source>
         <translation>Добавить в группу</translation>
+    </message>
+</context>
+<context>
+    <name>QueryFolderImpl</name>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="52"/>
+        <source>Query folder</source>
+        <translation>Папка поисков</translation>
+    </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="53"/>
+        <source>Query item</source>
+        <translation>Поиск</translation>
+    </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="55"/>
+        <source>New</source>
+        <translation>Создать</translation>
+    </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="61"/>
+        <source>Edit</source>
+        <translation>Редактировать</translation>
+    </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="63"/>
+        <source>&amp;Import query...</source>
+        <translation>&amp;Импортировать поиск...</translation>
+    </message>
+</context>
+<context>
+    <name>QueryItemImplItem</name>
+    <message>
+        <location filename="console_impls/query_item_impl.cpp" line="151"/>
+        <source>Edit...</source>
+        <translation>Редактировать...</translation>
+    </message>
+    <message>
+        <location filename="console_impls/query_item_impl.cpp" line="152"/>
+        <source>Export query...</source>
+        <translation>Экспортировать поиск...</translation>
     </message>
 </context>
 <context>
@@ -2159,7 +2159,7 @@
 <context>
     <name>SelectPolicyDialog</name>
     <message>
-        <location filename="select_policy_dialog.cpp" line="37"/>
+        <location filename="select_policy_dialog.cpp" line="38"/>
         <source>Select Policy</source>
         <translation>Выбрать политику</translation>
     </message>
@@ -2246,7 +2246,7 @@
 <context>
     <name>console_object</name>
     <message numerus="yes">
-        <location filename="console_types/console_object.cpp" line="1016"/>
+        <location filename="console_impls/object_impl.cpp" line="1017"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
@@ -2258,39 +2258,20 @@
 <context>
     <name>console_policy</name>
     <message>
-        <location filename="console_types/console_policy.cpp" line="196"/>
+        <location filename="console_impls/policy_impl.cpp" line="141"/>
         <source>Add Link</source>
         <translation>Добавить линк</translation>
     </message>
     <message>
-        <location filename="console_types/console_policy.cpp" line="311"/>
+        <location filename="console_impls/policy_impl.cpp" line="256"/>
         <source>Are you sure you want to delete this policy and all of it&apos;s links?</source>
         <translation>Вы действительно хотите удалить эту политику и все линки на нее?</translation>
     </message>
 </context>
 <context>
-    <name>console_query.cpp</name>
-    <message>
-        <location filename="console_types/console_query.cpp" line="396"/>
-        <source>Export Query</source>
-        <translation>Экспортировать поиск</translation>
-    </message>
-    <message>
-        <location filename="console_types/console_query.cpp" line="398"/>
-        <location filename="console_types/console_query.cpp" line="423"/>
-        <source>JSON (*.json)</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_types/console_query.cpp" line="421"/>
-        <source>Import Query</source>
-        <translation>Импортировать поиск</translation>
-    </message>
-</context>
-<context>
     <name>policy</name>
     <message>
-        <location filename="console_types/console_policy.cpp" line="91"/>
+        <location filename="console_impls/policy_root_impl.cpp" line="79"/>
         <source>Group Policy Objects</source>
         <translation>Объекты групповых политик</translation>
     </message>
@@ -2298,7 +2279,7 @@
 <context>
     <name>policy_model</name>
     <message>
-        <location filename="console_types/console_policy.cpp" line="55"/>
+        <location filename="console_impls/policy_root_impl.cpp" line="47"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
@@ -2306,7 +2287,7 @@
 <context>
     <name>query</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="167"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="207"/>
         <source>Saved Queries</source>
         <translation>Сохраненные поиски</translation>
     </message>
@@ -2314,30 +2295,30 @@
 <context>
     <name>query.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="286"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="423"/>
         <source>Name may not be empty</source>
         <translation>Имя не может быть пустым</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="287"/>
-        <location filename="console_types/console_query.cpp" line="319"/>
-        <location filename="console_types/console_query.cpp" line="322"/>
-        <location filename="console_types/console_query.cpp" line="443"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="184"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="424"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="456"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="459"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="318"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="455"/>
         <source>There&apos;s already an item with this name.</source>
         <translation>Указанное имя уже существует.</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="321"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="458"/>
         <source>Names cannot contain &quot;/&quot;.</source>
         <translation>Имена не могут содержать &quot;/&quot;.</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="442"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="183"/>
         <source>Query file is corrupted.</source>
         <translation>Файл поиска поврежден.</translation>
     </message>
@@ -2345,14 +2326,33 @@
 <context>
     <name>query_folder.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="54"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="336"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="55"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="337"/>
         <source>Description</source>
         <translation>Описание</translation>
+    </message>
+</context>
+<context>
+    <name>query_item_impl.cpp</name>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="162"/>
+        <source>Import Query</source>
+        <translation>Импортировать поиск</translation>
+    </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="164"/>
+        <location filename="console_impls/query_item_impl.cpp" line="87"/>
+        <source>JSON (*.json)</source>
+        <translation>JSON (*.json)</translation>
+    </message>
+    <message>
+        <location filename="console_impls/query_item_impl.cpp" line="85"/>
+        <source>Export Query</source>
+        <translation>Экспортировать поиск</translation>
     </message>
 </context>
 </TS>
