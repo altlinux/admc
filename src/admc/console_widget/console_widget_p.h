@@ -72,6 +72,7 @@ public:
     QSplitter *splitter;
     QHash<int, ConsoleImpl *> impl_map;
     QWidget *default_results_widget;
+    ConsoleImpl *default_impl;
 
     QAction *properties_action;
     QAction *refresh_current_scope_action;

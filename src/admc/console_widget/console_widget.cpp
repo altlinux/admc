@@ -163,6 +163,10 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->default_results_widget = new QWidget();
     d->results_stacked_widget->addWidget(d->default_results_widget);
 
+    // NOTE: default impl uses base class which will do
+    // nothing
+    d->default_impl = new ConsoleImpl(this);
+
     connect(
         d->scope_view, &QTreeView::expanded,
         d, &ConsoleWidgetPrivate::on_scope_expanded);
@@ -1088,11 +1092,8 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 }
 
 ConsoleImpl *ConsoleWidgetPrivate::get_impl(const QModelIndex &index) const {
-    // NOTE: default type uses base class which will do nothing
-    static ConsoleImpl *default_type = new ConsoleImpl(q);
-
     const int type = index.data(ConsoleRole_Type).toInt();
-    ConsoleImpl *impl = impl_map.value(type, default_type);
+    ConsoleImpl *impl = impl_map.value(type, default_impl);
 
     return impl;
 }
