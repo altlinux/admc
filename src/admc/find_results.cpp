@@ -42,6 +42,7 @@ FindResults::FindResults()
     // NOTE: using query item type for the invisible parent
     auto object_results = new ResultsView(this);
     console->register_results(ItemType_QueryItem, object_results, console_object_header_labels(), console_object_default_columns());
+    object_results->set_drag_drop_enabled(false);
 
     // TODO: deal with filter_dialog and
     // policy_results_widget args. They are not used here

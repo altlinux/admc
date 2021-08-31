@@ -56,7 +56,6 @@ ResultsView::ResultsView(QWidget *parent)
         view->setEditTriggers(QAbstractItemView::NoEditTriggers);
         view->setContextMenuPolicy(Qt::CustomContextMenu);
         view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-        view->setDragDropMode(QAbstractItemView::DragDrop);
         view->setDragDropOverwriteMode(true);
 
         // NOTE: a proxy is model is inserted between
@@ -66,6 +65,8 @@ ResultsView::ResultsView(QWidget *parent)
         // models becomes extremely slow.
         view->setModel(proxy_model);
     }
+
+    set_drag_drop_enabled(true);
 
     stacked_widget = new QStackedWidget();
 
@@ -182,5 +183,19 @@ void ResultsView::restore_state(const QVariant &state_variant, const QList<int> 
             const bool hidden = !default_columns.contains(i);
             header->setSectionHidden(i, hidden);
         }
+    }
+}
+
+void ResultsView::set_drag_drop_enabled(const bool enabled) {
+    const QAbstractItemView::DragDropMode mode = [&]() {
+        if (enabled) {
+            return QAbstractItemView::DragDrop;
+        } else {
+            return QAbstractItemView::NoDragDrop;
+        }
+    }();
+
+    for (auto view : views.values()) {
+        view->setDragDropMode(mode);
     }
 }
