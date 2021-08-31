@@ -39,17 +39,11 @@ FindResults::FindResults()
 : QWidget() {
     console = new ConsoleWidget(this);
 
-    // NOTE: using query item type for the invisible parent
-    auto object_results = new ResultsView(this);
-    console->register_results(ItemType_QueryItem, object_results, console_object_header_labels(), console_object_default_columns());
-    object_results->set_drag_drop_enabled(false);
-
     // TODO: deal with filter_dialog and
     // policy_results_widget args. They are not used here
     // but necessary for the ctor
     auto filter_dialog = new FilterDialog(this);
-    auto policy_results_widget = new PolicyResultsWidget(this);
-    auto object_impl = new ObjectImpl(policy_results_widget, filter_dialog, console);
+    auto object_impl = new ObjectImpl(filter_dialog, console);
     console->register_impl(ItemType_Object, object_impl);
 
     object_impl->set_find_action_enabled(false);
@@ -57,8 +51,10 @@ FindResults::FindResults()
 
     // NOTE: registering impl so that it supplies text to
     // the description bar
-    auto query_item_impl = new QueryItemImplItem(console);
+    auto query_item_impl = new QueryItemImpl(console);
     console->register_impl(ItemType_QueryItem, query_item_impl);
+
+    query_item_impl->view()->set_drag_drop_enabled(false);
 
     const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, QModelIndex());
     QStandardItem *main_item = row[0];

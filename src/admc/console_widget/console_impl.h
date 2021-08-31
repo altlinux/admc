@@ -33,6 +33,7 @@
 #include "console_widget/console_widget.h"
 
 class ConsoleWidget;
+class ResultsView;
 
 class ConsoleImpl : public QObject {
     Q_OBJECT
@@ -113,8 +114,34 @@ public:
     virtual void refresh(const QList<QModelIndex> &index_list);
     virtual void properties(const QList<QModelIndex> &index_list);
 
+    // Override to provide custom header labels and default
+    // columns. You need to do this if you are defining a
+    // results view.
+    virtual QList<QString> column_labels() const;
+    virtual QList<int> default_columns() const;
+
+    QVariant save_state() const;
+    void restore_state(const QVariant &state);
+
+    QWidget *widget() const;
+    ResultsView *view() const;
+
 protected:
     ConsoleWidget *console;
+
+    // Here are the options for results widget and view:
+    // 1. Widget only - provide your own custom widget using
+    //    set_results_widget().
+    // 2. View only - provide a view using
+    //    set_results_view().
+    // 3. View and widget - provide both using setters.
+    // Default behavior is a blank widget.
+    void set_results_view(ResultsView *view);
+    void set_results_widget(QWidget *widget);
+
+private:
+    ResultsView *results_view;
+    QWidget *results_widget;
 };
 
 #endif /* CONSOLE_IMPL_H */

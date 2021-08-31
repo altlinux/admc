@@ -23,7 +23,6 @@
 
 #include "console_widget/console_drag_model.h"
 #include "console_widget/customize_columns_dialog.h"
-#include "console_widget/results_description.h"
 #include "console_widget/results_view.h"
 #include "console_widget/scope_proxy_model.h"
 #include "console_widget/console_impl.h"
@@ -161,9 +160,8 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     setLayout(layout);
     layout->addWidget(d->splitter);
 
-    auto default_results_widget = new QWidget();
-    d->default_results = ResultsDescription(default_results_widget, nullptr, QList<QString>(), QList<int>());
-    d->results_stacked_widget->addWidget(default_results_widget);
+    d->default_results_widget = new QWidget();
+    d->results_stacked_widget->addWidget(d->default_results_widget);
 
     connect(
         d->scope_view, &QTreeView::expanded,
@@ -259,10 +257,30 @@ void ConsoleWidget::connect_to_action_menu(QMenu *action_menu_arg) {
 }
 
 void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
-    if (!d->impl_map.contains(type)) {
-        d->impl_map[type] = impl;
-    } else {
+    if (d->impl_map.contains(type)) {
         qDebug() << "Duplicate register_impl() call for type" << type;
+    }
+
+    d->impl_map[type] = impl;
+
+    QWidget *results_widget = impl->widget();
+
+    if (results_widget != nullptr) {
+        d->results_stacked_widget->addWidget(results_widget);
+    }
+
+    ResultsView *results_view = impl->view();
+
+    if (results_view != nullptr) {
+        results_view->set_model(d->model);
+        results_view->set_parent(get_current_scope_item());
+
+        connect(
+            results_view, &ResultsView::activated,
+            d, &ConsoleWidgetPrivate::on_results_activated);
+        connect(
+            results_view, &ResultsView::context_menu,
+            d, &ConsoleWidgetPrivate::context_menu);
     }
 }
 
@@ -293,9 +311,9 @@ QList<QStandardItem *> ConsoleWidget::add_results_item(const int type, const QMo
             if (parent_item == d->model->invisibleRootItem()) {
                 return 1;
             } else {
-                const ResultsDescription parent_results = d->get_results(parent);
+                ConsoleImpl *parent_impl = d->get_impl(parent);
 
-                return parent_results.column_count();
+                return parent_impl->column_labels().size();
             }
         }();
 
@@ -344,55 +362,6 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
     impl->refresh({index});
 }
 
-// No view, only widget
-void ConsoleWidget::register_results(const int type, QWidget *widget) {
-    register_results(type, widget, nullptr, QList<QString>(), QList<int>());
-}
-
-// In this case, view *is* the widget
-void ConsoleWidget::register_results(const int type, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
-    register_results(type, view, view, column_labels, default_columns);
-}
-
-// Base register() f-n
-void ConsoleWidget::register_results(const int type, QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns) {
-    // NOTE: reusing widget or view is not allowed because
-    // it causes buggy behavior due to duplicate connections
-    const bool already_registered_widget = d->registered_results_widget_list.contains(widget);
-    if (already_registered_widget) {
-        qDebug() << "register_results() for type" << type << " uses widget that has already been registered. This is not allowed, so aborting";
-
-        return;
-    }
-
-    const bool already_registered_view = d->registered_results_view_list.contains(view);
-    if (already_registered_view) {
-        qDebug() << "register_results() for type" << type << " uses view that has already been registered. This is not allowed, so aborting";
-
-        return;
-    }
-
-    d->registered_results_widget_list.append(widget);
-
-    d->results_descriptions[type] = ResultsDescription(widget, view, column_labels, default_columns);
-
-    d->results_stacked_widget->addWidget(widget);
-
-    if (view != nullptr) {
-        d->registered_results_view_list.append(view);
-
-        view->set_model(d->model);
-        view->set_parent(get_current_scope_item());
-
-        connect(
-            view, &ResultsView::activated,
-            d, &ConsoleWidgetPrivate::on_results_activated);
-        connect(
-            view, &ResultsView::context_menu,
-            d, &ConsoleWidgetPrivate::context_menu);
-    }
-}
-
 QList<QModelIndex> ConsoleWidget::get_selected_items(const int type) const {
     QList<QModelIndex> out;
 
@@ -409,7 +378,8 @@ QList<QModelIndex> ConsoleWidget::get_selected_items(const int type) const {
 }
 
 QList<QModelIndex> ConsoleWidgetPrivate::get_all_selected_items() const {
-    ResultsView *results_view = get_current_results().view();
+    ConsoleImpl *current_impl = get_current_scope_impl();
+    ResultsView *results_view = current_impl->view();
 
     const bool focused_scope = (focused_view == scope_view);
     const bool focused_results = (results_view != nullptr && focused_view == results_view->current_view());
@@ -539,10 +509,10 @@ QVariant ConsoleWidget::save_state() const {
     state[CONSOLE_TREE_STATE] = d->toggle_console_tree_action->isChecked();
     state[DESCRIPTION_BAR_STATE] = d->toggle_description_bar_action->isChecked();
 
-    for (const int type : d->results_descriptions.keys()) {
-        const ResultsDescription results = d->results_descriptions[type];
+    for (const int type : d->impl_map.keys()) {
+        const ConsoleImpl *impl = d->impl_map[type];
         const QString results_name = results_state_name(type);
-        const QVariant results_state = results.save_state();
+        const QVariant results_state = impl->save_state();
 
         state[results_name] = results_state;
     }
@@ -562,19 +532,19 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
     d->toggle_description_bar_action->setChecked(state[DESCRIPTION_BAR_STATE].toBool());
     d->on_toggle_description_bar();
 
-    for (const int type : d->results_descriptions.keys()) {
-        ResultsDescription results = d->results_descriptions[type];
+    for (const int type : d->impl_map.keys()) {
+        ConsoleImpl *impl = d->impl_map[type];
 
         // NOTE: need to call this before restoring results
         // state because otherwise results view header can
         // have incorrect sections which breaks state
         // restoration
-        d->model->setHorizontalHeaderLabels(results.column_labels());
+        d->model->setHorizontalHeaderLabels(impl->column_labels());
 
         const QString results_name = results_state_name(type);
         const QVariant results_state = state.value(results_name, QVariant());
 
-        results.restore_state(results_state);
+        impl->restore_state(results_state);
     }
 }
 
@@ -799,13 +769,13 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
     // When a new current is selected, a new future begins
     targets_future.clear();
 
-    const ResultsDescription results = get_current_results();
+    ConsoleImpl *impl = get_current_scope_impl();
 
     // Switch to new parent for results view's model if view
     // exists
-    const bool results_view_exists = (results.view() != nullptr);
+    const bool results_view_exists = (impl->view() != nullptr);
     if (results_view_exists) {
-        model->setHorizontalHeaderLabels(results.column_labels());
+        model->setHorizontalHeaderLabels(impl->column_labels());
 
         // NOTE: setting horizontal labes may make columns
         // visible again in scope view, so re-hide them
@@ -821,7 +791,7 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
             q->add_results_item(0, current);
         }
 
-        results.view()->set_parent(current);
+        impl->view()->set_parent(current);
 
         if (need_dummy) {
             model->removeRow(0, current);
@@ -829,7 +799,12 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
     }
 
     // Switch to this item's results widget
-    results_stacked_widget->setCurrentWidget(results.widget());
+    QWidget *results_widget = impl->widget();
+    if (results_widget != nullptr) {
+        results_stacked_widget->setCurrentWidget(results_widget);
+    } else {
+        results_stacked_widget->setCurrentWidget(default_results_widget);
+    }
 
     update_navigation_actions();
     update_view_actions();
@@ -837,9 +812,6 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
     fetch_scope(current);
 
     update_description();
-
-    ConsoleImpl *impl = get_impl(current);
-    impl->selected_as_scope(current);
 }
 
 void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last) {
@@ -883,10 +855,11 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
     QAbstractItemView *new_focused_view = qobject_cast<QAbstractItemView *>(now);
 
     if (new_focused_view != nullptr) {
-        const ResultsDescription current_results = get_current_results();
+        ConsoleImpl *current_impl = get_current_scope_impl();
         QAbstractItemView *results_view = [=]() -> QAbstractItemView * {
-            if (current_results.view() != nullptr) {
-                return current_results.view()->current_view();
+            ResultsView *view = current_impl->view();
+            if (view != nullptr) {
+                return view->current_view();
             } else {
                 return nullptr;
             }
@@ -905,10 +878,11 @@ void ConsoleWidgetPrivate::refresh_current_scope() {
 }
 
 void ConsoleWidgetPrivate::customize_columns() {
-    const ResultsDescription current_results = get_current_results();
-    ResultsView *results_view = current_results.view();
+    ConsoleImpl *current_impl = get_current_scope_impl();
+    ResultsView *results_view = current_impl->view();
+
     if (results_view != nullptr) {
-        auto dialog = new CustomizeColumnsDialog(results_view->detail_view(), current_results.default_columns(), q);
+        auto dialog = new CustomizeColumnsDialog(results_view->detail_view(), current_impl->default_columns(), q);
         dialog->open();
     }
 }
@@ -1029,10 +1003,10 @@ void ConsoleWidgetPrivate::set_results_to_detail() {
 }
 
 void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
-    const ResultsDescription results = get_current_results();
+    ConsoleImpl *impl = get_current_scope_impl();
 
-    if (results.view() != nullptr) {
-        results.view()->set_view_type(type);
+    if (impl->view() != nullptr) {
+        impl->view()->set_view_type(type);
     }
 }
 
@@ -1061,8 +1035,8 @@ void ConsoleWidgetPrivate::update_navigation_actions() {
 }
 
 void ConsoleWidgetPrivate::update_view_actions() {
-    const ResultsDescription results = get_current_results();
-    const bool results_view_exists = (results.view() != nullptr);
+    ConsoleImpl *impl = get_current_scope_impl();
+    const bool results_view_exists = (impl->view() != nullptr);
 
     set_results_to_icons_action->setVisible(results_view_exists);
     set_results_to_list_action->setVisible(results_view_exists);
@@ -1093,16 +1067,13 @@ void ConsoleWidget::add_toolbar_actions(QToolBar *toolbar) {
     toolbar->addAction(d->refresh_current_scope_action);
 }
 
-const ResultsDescription ConsoleWidgetPrivate::get_current_results() const {
+// TODO: rename to get_current_scope_impl()
+ConsoleImpl *ConsoleWidgetPrivate::get_current_scope_impl() const {
     const QModelIndex current_scope = q->get_current_scope_item();
 
-    if (current_scope.isValid()) {
-        const ResultsDescription results = get_results(current_scope);
+    ConsoleImpl *impl = get_impl(current_scope);
 
-        return results;
-    } else {
-        return ResultsDescription();
-    }
+    return impl;
 }
 
 void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
@@ -1124,18 +1095,6 @@ ConsoleImpl *ConsoleWidgetPrivate::get_impl(const QModelIndex &index) const {
     ConsoleImpl *impl = impl_map.value(type, default_type);
 
     return impl;
-}
-
-ResultsDescription ConsoleWidgetPrivate::get_results(const QModelIndex &index) const {
-    const int type = index.data(ConsoleRole_Type).toInt();
-
-    if (results_descriptions.contains(type)) {
-        return results_descriptions[type];
-    } else {
-        qDebug() << "No results were registered for type" << type;
-
-        return default_results;
-    }
 }
 
 void ConsoleWidgetPrivate::update_description() {

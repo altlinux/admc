@@ -30,25 +30,18 @@
  * selected. Results can contain children of the scope item.
  * Results may also display a custom widget. Note that this
  * class only deals with general "items" and doesn't define
- * how items are loaded, displayed or interacted with. The
- * way items are displayed in the results is defined using
- * register_results() function, where you can pass a
- * customized ResultsView and/or a custom widget. The way
- * items are loaded and interacted with is defined by
- * subclassing ConsoleImpl and registering implementations
- * using register_impl() function. Implementation and result
- * types are assigned to item types which should be defined
- * outside of this class.
+ * how items are loaded, displayed or interacted with. That
+ * is defined by subclassing ConsoleImpl and registering
+ * implementations using register_impl() function.
+ * Implementations are assigned to item types which should
+ * be defined outside of this class.
  */
 
 #include <QWidget>
 
 class ConsoleWidgetPrivate;
-class ResultsView;
 class QStandardItem;
 class QMenu;
-class QAbstractItemView;
-class QStandardItemModel;
 class QToolBar;
 class ConsoleImpl;
 class ConsoleDragModel;
@@ -83,14 +76,6 @@ class ConsoleWidget final : public QWidget {
 
 public:
     ConsoleWidget(QWidget *parent);
-
-    // Register results to be used later for scope items.
-    // Must be done BEFORE adding items. Results can be just
-    // a widget, a tree view or a widget that contains a
-    // tree view.
-    void register_results(const int type, QWidget *widget);
-    void register_results(const int type, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
-    void register_results(const int type, QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
     // NOTE: you must register all impl's before adding
     // items

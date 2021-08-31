@@ -32,6 +32,7 @@
 #include "edit_query_folder_dialog.h"
 #include "central_widget.h"
 #include "item_type.h"
+#include "console_widget/results_view.h"
 
 #include <QFileDialog>
 #include <QJsonDocument>
@@ -49,6 +50,8 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
 
 QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
+    set_results_view(new ResultsView(console_arg));
+    
     auto new_query_folder_action = new QAction(tr("Query folder"), this);
     auto new_query_item_action = new QAction(tr("Query item"), this);
 
@@ -331,14 +334,14 @@ QModelIndex get_query_tree_root(ConsoleWidget *console) {
     }
 }
 
-QList<QString> console_query_folder_header_labels() {
+QList<QString> QueryFolderImpl::column_labels() const {
     return {
         QCoreApplication::translate("query_folder.cpp", "Name"),
         QCoreApplication::translate("query_folder.cpp", "Description"),
     };
 }
 
-QList<int> console_query_folder_default_columns() {
+QList<int> QueryFolderImpl::default_columns() const {
     return {QueryColumn_Name, QueryColumn_Description};
 }
 

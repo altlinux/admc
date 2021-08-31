@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "central_widget.h"
 #include "console_impls/policy_impl.h"
+#include "console_impls/policy_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "globals.h"
@@ -44,6 +45,7 @@
 #include "filter_dialog.h"
 #include "central_widget.h"
 #include "item_type.h"
+#include "console_widget/results_view.h"
 
 #include <QDebug>
 #include <QMenu>
@@ -125,7 +127,7 @@ void console_object_item_data_load(QStandardItem *item, const AdObject &object) 
     item->setData(account_disabled, ObjectRole_AccountDisabled);
 }
 
-QList<QString> console_object_header_labels() {
+QList<QString> object_impl_column_labels() {
     QList<QString> out;
 
     for (const QString &attribute : g_adconfig->get_columns()) {
@@ -137,11 +139,12 @@ QList<QString> console_object_header_labels() {
     return out;
 }
 
-QList<int> console_object_default_columns() {
+QList<int> object_impl_default_columns() {
     // By default show first 3 columns: name, class and
     // description
     return {0, 1, 2};
 }
+
 
 QList<QString> console_object_search_attributes() {
     QList<QString> attributes;
@@ -709,7 +712,9 @@ void ObjectImpl::drop_policies(const QList<QPersistentModelIndex> &dropped_list,
     const QString target_dn = target.data(ObjectRole_DN).toString();
     const QList<QString> ou_list = {target_dn};
 
-    console_policy_add_link(console, policy_list, ou_list, policy_results_widget);
+    if (policy_impl != nullptr) {
+        policy_impl->add_link(policy_list, ou_list);
+    }
 }
 
 void console_object_load_root_text(QStandardItem *item) {
@@ -1019,9 +1024,11 @@ QString console_object_count_string(ConsoleWidget *console, const QModelIndex &i
     return out;
 }
 
-ObjectImpl::ObjectImpl(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg)
+ObjectImpl::ObjectImpl(FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    policy_results_widget = policy_results_widget_arg;
+    policy_impl = nullptr;
+
+    set_results_view(new ResultsView(console_arg));
     filter_dialog = filter_dialog_arg;
 
     find_action_enabled = true;
@@ -1089,6 +1096,10 @@ ObjectImpl::ObjectImpl(PolicyResultsWidget *policy_results_widget_arg, FilterDia
     connect(
         change_dc_action, &QAction::triggered,
         this, &ObjectImpl::on_change_dc);
+}
+
+void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
+    policy_impl = policy_impl_arg;
 }
 
 QString ObjectImpl::get_description(const QModelIndex &index) const {
@@ -1275,6 +1286,14 @@ void ObjectImpl::set_find_action_enabled(const bool enabled) {
 
 void ObjectImpl::set_refresh_action_enabled(const bool enabled) {
     refresh_action_enabled = enabled;
+}
+
+QList<QString> ObjectImpl::column_labels() const {
+    return object_impl_column_labels();
+}
+
+QList<int> ObjectImpl::default_columns() const {
+    return object_impl_default_columns();
 }
 
 QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list) {

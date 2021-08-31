@@ -47,11 +47,11 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
 void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index);
 QHash<QString, QVariant> console_query_item_save(const QModelIndex &index);
 
-class QueryItemImplItem final : public ConsoleImpl {
+class QueryItemImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    QueryItemImplItem(ConsoleWidget *console_arg);
+    QueryItemImpl(ConsoleWidget *console_arg);
 
     void fetch(const QModelIndex &index) override;
     QString get_description(const QModelIndex &index) const override;
@@ -65,6 +65,9 @@ public:
     void cut(const QList<QModelIndex> &index_list) override;
     void copy(const QList<QModelIndex> &index_list) override;
 
+    QList<QString> column_labels() const override;
+    QList<int> default_columns() const override;
+    
 private:
     QAction *edit_action;
     QAction *export_action;

@@ -94,14 +94,14 @@ void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QS
         return out;
     }();
 
-    console_policy_add_link(console, policy_list, ou_list, policy_results_widget);
+    add_link(policy_list, ou_list);
 
     // NOTE: don't need to sync changes in policy results
     // widget because when drag and dropping you will select
     // the policy which will update results automatically
 }
 
-void console_policy_add_link(ConsoleWidget *console, const QList<QString> &policy_list, const QList<QString> &ou_list, PolicyResultsWidget *policy_results_widget) {
+void PolicyImpl::add_link(const QList<QString> &policy_list, const QList<QString> &ou_list) {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -147,7 +147,7 @@ void PolicyImpl::on_add_link() {
 
             const QList<QString> ou_list = dialog->get_selected();
 
-            console_policy_add_link(console, gpos, ou_list, policy_results_widget);
+            add_link(gpos, ou_list);
 
             const QModelIndex current_scope = console->get_current_scope_item();
             policy_results_widget->update(current_scope);
@@ -196,9 +196,10 @@ void PolicyImpl::on_edit() {
     process->start(QIODevice::ReadOnly);
 }
 
-PolicyImpl::PolicyImpl(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg)
+PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    policy_results_widget = policy_results_widget_arg;
+    policy_results_widget = new PolicyResultsWidget(console_arg);
+    set_results_widget(policy_results_widget);
 
     rename_dialog = new RenamePolicyDialog(console_arg);
 

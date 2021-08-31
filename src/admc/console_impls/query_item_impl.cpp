@@ -30,6 +30,7 @@
 #include "create_query_item_dialog.h"
 #include "edit_query_item_dialog.h"
 #include "item_type.h"
+#include "console_widget/results_view.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -60,7 +61,7 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 }
 
-void QueryItemImplItem::fetch(const QModelIndex &index) {
+void QueryItemImpl::fetch(const QModelIndex &index) {
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QString base = index.data(QueryItemRole_Base).toString();
     const QList<QString> search_attributes = console_object_search_attributes();
@@ -76,7 +77,7 @@ void QueryItemImplItem::fetch(const QModelIndex &index) {
     console_object_search(console, index, base, scope, filter, search_attributes);
 }
 
-void QueryItemImplItem::on_export() {
+void QueryItemImpl::on_export() {
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
     const QString file_path = [&]() {
@@ -141,31 +142,33 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
     console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
 }
 
-void QueryItemImplItem::on_edit() {
+void QueryItemImpl::on_edit() {
     auto dialog = new EditQueryItemDialog(console);
     dialog->open();
 }
 
-QueryItemImplItem::QueryItemImplItem(ConsoleWidget *console_arg)
+QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
+    set_results_view(new ResultsView(console_arg));
+
     edit_action = new QAction(tr("Edit..."), this);
     export_action = new QAction(tr("Export query..."), this);
 
     connect(
         edit_action, &QAction::triggered,
-        this, &QueryItemImplItem::on_edit);
+        this, &QueryItemImpl::on_edit);
     connect(
         export_action, &QAction::triggered,
-        this, &QueryItemImplItem::on_export);
+        this, &QueryItemImpl::on_export);
 }
 
-QString QueryItemImplItem::get_description(const QModelIndex &index) const {
+QString QueryItemImpl::get_description(const QModelIndex &index) const {
     const QString object_count_text = console_object_count_string(console, index);
 
     return object_count_text;
 }
 
-QList<QAction *> QueryItemImplItem::get_all_custom_actions() const {
+QList<QAction *> QueryItemImpl::get_all_custom_actions() const {
     QList<QAction *> out;
 
     out.append(edit_action);
@@ -174,7 +177,7 @@ QList<QAction *> QueryItemImplItem::get_all_custom_actions() const {
     return out;
 }
 
-QSet<QAction *> QueryItemImplItem::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> QueryItemImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<QAction *> out;
 
     if (single_selection) {
@@ -185,7 +188,7 @@ QSet<QAction *> QueryItemImplItem::get_custom_actions(const QModelIndex &index, 
     return out;
 }
 
-QSet<StandardAction> QueryItemImplItem::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> QueryItemImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Delete);
@@ -201,7 +204,7 @@ QSet<StandardAction> QueryItemImplItem::get_standard_actions(const QModelIndex &
     return out;
 }
 
-void QueryItemImplItem::refresh(const QList<QModelIndex> &index_list) {
+void QueryItemImpl::refresh(const QList<QModelIndex> &index_list) {
     if (index_list.size() != 1) {
         return;
     }
@@ -212,14 +215,22 @@ void QueryItemImplItem::refresh(const QList<QModelIndex> &index_list) {
     fetch(index);
 }
 
-void QueryItemImplItem::delete_action(const QList<QModelIndex> &index_list) {
+void QueryItemImpl::delete_action(const QList<QModelIndex> &index_list) {
     query_action_delete(console, index_list);
 }
 
-void QueryItemImplItem::cut(const QList<QModelIndex> &index_list) {
+void QueryItemImpl::cut(const QList<QModelIndex> &index_list) {
     query_action_cut(index_list);
 }
 
-void QueryItemImplItem::copy(const QList<QModelIndex> &index_list) {
+void QueryItemImpl::copy(const QList<QModelIndex> &index_list) {
     query_action_copy(index_list);
+}
+
+QList<QString> QueryItemImpl::column_labels() const {
+    return object_impl_column_labels();
+}
+
+QList<int> QueryItemImpl::default_columns() const {
+    return object_impl_default_columns();
 }

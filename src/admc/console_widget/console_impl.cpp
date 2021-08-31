@@ -21,7 +21,10 @@
 #include "console_widget/console_impl.h"
 
 #include "console_widget/console_widget.h"
+#include "console_widget/results_view.h"
+
 #include <QSet>
+#include <QVariant>
 
 ConsoleImpl::ConsoleImpl(ConsoleWidget *console_arg)
 : QObject(console_arg) {
@@ -102,4 +105,48 @@ void ConsoleImpl::refresh(const QList<QModelIndex> &index_list) {
     
 void ConsoleImpl::properties(const QList<QModelIndex> &index_list) {
 
+}
+
+QList<QString> ConsoleImpl::column_labels() const {
+    return QList<QString>();
+}
+
+QList<int> ConsoleImpl::default_columns() const {
+    return QList<int>();
+}
+
+QVariant ConsoleImpl::save_state() const {
+    if (view() != nullptr) {
+        return view()->save_state();
+    } else {
+        return QVariant();
+    }
+}
+
+void ConsoleImpl::restore_state(const QVariant &state) {
+    if (view() != nullptr) {
+        view()->restore_state(state, default_columns());
+    }
+}
+
+QWidget *ConsoleImpl::widget() const {
+    if (results_widget != nullptr) {
+        return results_view;
+    } else if (results_view != nullptr) {
+        return results_view;
+    } else {
+        return nullptr;
+    }
+}
+
+ResultsView *ConsoleImpl::view() const {
+    return results_view;
+}
+
+void ConsoleImpl::set_results_view(ResultsView *results_view_arg) {
+    results_view = results_view_arg;
+}
+
+void ConsoleImpl::set_results_widget(QWidget *results_widget_arg) {
+    results_widget = results_widget_arg;
 }

@@ -22,7 +22,6 @@
 
 #include "adldap.h"
 #include "console_impls/policy_impl.h"
-#include "console_impls/policy_root_impl.h"
 #include "globals.h"
 #include "status.h"
 #include "utils.h"
@@ -60,7 +59,7 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
     auto model = new QStandardItemModel(this);
     view->setModel(model);
 
-    model->setHorizontalHeaderLabels(console_policy_header_labels());
+    model->setHorizontalHeaderLabels({tr("Name")});
 
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;

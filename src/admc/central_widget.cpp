@@ -62,40 +62,24 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
     auto filter_dialog = new FilterDialog(this);
 
     //
-    // Register console results
+    // Register console impls
     //
-    auto object_results = new ResultsView(this);
-    console->register_results(ItemType_Object, object_results, console_object_header_labels(), console_object_default_columns());
-    
-    auto query_item_results = new ResultsView(this);
-    console->register_results(ItemType_QueryItem, query_item_results, console_object_header_labels(), console_object_default_columns());
-
-    auto policy_container_results = new ResultsView(this);
-    console->register_results(ItemType_PolicyRoot, policy_container_results, console_policy_header_labels(), console_policy_default_columns());
-
-    auto policy_results_widget = new PolicyResultsWidget(this);
-    console->register_results(ItemType_Policy, policy_results_widget);
-
-    auto query_folder_results = new ResultsView(this);
-    console->register_results(ItemType_QueryFolder, query_folder_results, console_query_folder_header_labels(), console_query_folder_default_columns());
-
-    //
-    // Register console types
-    //
-    auto object_impl = new ObjectImpl(policy_results_widget, filter_dialog, console);
+    auto object_impl = new ObjectImpl(filter_dialog, console);
     console->register_impl(ItemType_Object, object_impl);
 
     auto policy_root_impl = new PolicyRootImpl(console);
     console->register_impl(ItemType_PolicyRoot, policy_root_impl);
 
-    auto policy_impl = new PolicyImpl(policy_results_widget, console);
+    auto policy_impl = new PolicyImpl(console);
     console->register_impl(ItemType_Policy, policy_impl);
 
-    auto query_item_impl = new QueryItemImplItem(console);
+    auto query_item_impl = new QueryItemImpl(console);
     console->register_impl(ItemType_QueryItem, query_item_impl);
 
     auto query_folder_impl = new QueryFolderImpl(console);
     console->register_impl(ItemType_QueryFolder, query_folder_impl);
+
+    object_impl->set_policy_impl(policy_impl);
 
     // NOTE: requires all results to be initialized
     console_object_tree_init(console, ad);

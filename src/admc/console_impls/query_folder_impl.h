@@ -41,6 +41,9 @@ public:
     void copy(const QList<QModelIndex> &index_list) override;
     void paste(const QList<QModelIndex> &index_list) override;
 
+    QList<QString> column_labels() const override;
+    QList<int> default_columns() const override;
+    
 private:
     QAction *new_action;
     QAction *edit_action;

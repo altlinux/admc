@@ -26,7 +26,6 @@
  */
 
 #include "console_widget/results_view.h"
-#include "console_widget/results_description.h"
 #include "console_widget/console_widget.h"
 
 #include <QCoreApplication>
@@ -70,12 +69,9 @@ public:
     QLabel *description_bar_right;
     QAbstractItemView *focused_view;
     QStackedWidget *results_stacked_widget;
-    QHash<int, ResultsDescription> results_descriptions;
-    ResultsDescription default_results;
     QSplitter *splitter;
     QHash<int, ConsoleImpl *> impl_map;
-    QList<QWidget *> registered_results_widget_list;
-    QList<ResultsView *> registered_results_view_list;
+    QWidget *default_results_widget;
 
     QAction *properties_action;
     QAction *refresh_current_scope_action;
@@ -130,9 +126,8 @@ public:
     void on_toggle_console_tree();
     void on_toggle_description_bar();
     void fetch_scope(const QModelIndex &index);
-    const ResultsDescription get_current_results() const;
+    ConsoleImpl *get_current_scope_impl() const;
     ConsoleImpl *get_impl(const QModelIndex &index) const;
-    ResultsDescription get_results(const QModelIndex &index) const;
     void update_description();
     void on_standard_action(const StandardAction action_enum);
     QList<QModelIndex> get_all_selected_items() const;

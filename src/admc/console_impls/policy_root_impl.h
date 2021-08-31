@@ -34,8 +34,6 @@ class CreatePolicyDialog;
 template <typename T>
 class QList;
 
-QList<QString> console_policy_header_labels();
-QList<int> console_policy_default_columns();
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad);
 
 class PolicyRootImpl final : public ConsoleImpl {
@@ -50,6 +48,9 @@ public:
     QList<QAction *> get_all_custom_actions() const override;
     QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+    
+    QList<QString> column_labels() const override;
+    QList<int> default_columns() const override;
 
 private:
     QAction *create_policy_action;

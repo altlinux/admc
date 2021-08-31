@@ -32,10 +32,10 @@ class AdObject;
 class AdInterface;
 class ConsoleActions;
 class QMenu;
-class PolicyResultsWidget;
 template <typename T>
 class QList;
 class FilterDialog;
+class PolicyImpl;
 
 /**
  * Some f-ns used for models that store objects.
@@ -56,8 +56,8 @@ enum ObjectRole {
 
 void console_object_load(const QList<QStandardItem *> row, const AdObject &object);
 void console_object_item_data_load(QStandardItem *item, const AdObject &object);
-QList<QString> console_object_header_labels();
-QList<int> console_object_default_columns();
+QList<QString> object_impl_column_labels();
+QList<int> object_impl_default_columns();
 QList<QString> console_object_search_attributes();
 void console_object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
@@ -83,7 +83,9 @@ class ObjectImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    ObjectImpl(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg);
+    ObjectImpl(FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg);
+
+    void set_policy_impl(PolicyImpl *policy_root_impl_arg);
 
     void fetch(const QModelIndex &index);
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
@@ -107,9 +109,12 @@ public:
     void set_find_action_enabled(const bool enabled);
     void set_refresh_action_enabled(const bool enabled);
 
+    QList<QString> column_labels() const override;
+    QList<int> default_columns() const override;
+
 private:
     FilterDialog *filter_dialog;
-    PolicyResultsWidget *policy_results_widget;
+    PolicyImpl *policy_impl;
 
     QAction *find_action;
     QAction *move_action;

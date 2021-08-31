@@ -42,13 +42,12 @@ enum PolicyRole {
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object);
 QList<QString> console_policy_search_attributes();
-void console_policy_add_link(ConsoleWidget *console, const QList<QString> &policy_list, const QList<QString> &ou_list, PolicyResultsWidget *policy_results_widget);
 
 class PolicyImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    PolicyImpl(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg);
+    PolicyImpl(ConsoleWidget *console_arg);
 
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
@@ -59,9 +58,11 @@ public:
     QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
 
-    virtual void rename(const QList<QModelIndex> &index_list);
-    virtual void delete_action(const QList<QModelIndex> &index_list);
-    virtual void refresh(const QList<QModelIndex> &index_list);
+    void rename(const QList<QModelIndex> &index_list);
+    void delete_action(const QList<QModelIndex> &index_list);
+    void refresh(const QList<QModelIndex> &index_list);
+
+    void add_link(const QList<QString> &policy_list, const QList<QString> &ou_list);
 
 private:
     PolicyResultsWidget *policy_results_widget;

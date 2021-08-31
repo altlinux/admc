@@ -35,6 +35,7 @@
 #include "create_policy_dialog.h"
 #include "central_widget.h"
 #include "item_type.h"
+#include "console_widget/results_view.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -43,11 +44,11 @@
 #include <QStandardItem>
 #include <QProcess>
 
-QList<QString> console_policy_header_labels() {
+QList<QString> PolicyRootImpl::column_labels() const {
     return {QCoreApplication::translate("policy_model", "Name")};
 }
 
-QList<int> console_policy_default_columns() {
+QList<int> PolicyRootImpl::default_columns() const {
     return {0};
 }
 
@@ -100,6 +101,8 @@ void PolicyRootImpl::fetch(const QModelIndex &index) {
 
 PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
+    set_results_view(new ResultsView(console_arg));
+
     create_policy_dialog = new CreatePolicyDialog(console);
 
     create_policy_action = new QAction(tr("Create policy"), this);
