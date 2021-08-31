@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_types/console_object.h"
+#include "console_types/object_impl.h"
 
 #include "adldap.h"
 #include "central_widget.h"
@@ -197,7 +197,7 @@ void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<
     console_object_create(console, object_list, parent);
 }
 
-void ConsoleObject::move_and_rename(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn, const QList<QString> &new_dn_list) {
+void ObjectImpl::move_and_rename(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn, const QList<QString> &new_dn_list) {
     const QModelIndex root = get_object_tree_root(console);
     if (!root.isValid()) {
         return;
@@ -230,7 +230,7 @@ void ConsoleObject::move_and_rename(AdInterface &ad, const QList<QString> &old_d
 // NOTE: this is a helper f-n for move_and_rename() that
 // generates the new_dn_list for you, assuming that you just
 // want to move objects to new parent without renaming
-void ConsoleObject::move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
+void ObjectImpl::move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
     const QList<QString> new_dn_list = [&]() {
         QList<QString> out;
 
@@ -405,7 +405,7 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 
 // Load children of this item in scope tree
 // and load results linked to this scope item
-void ConsoleObject::fetch(const QModelIndex &index) {
+void ObjectImpl::fetch(const QModelIndex &index) {
     const QString base = index.data(ObjectRole_DN).toString();
 
     const SearchScope scope = SearchScope_Children;
@@ -458,7 +458,7 @@ void console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     console_object_load_root_text(root);
 }
 
-bool ConsoleObject::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     const bool dropped_are_all_objects = (dropped_type_list.size() == 1 && dropped_type_list.contains(ItemType_Object));
     const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
@@ -486,7 +486,7 @@ bool ConsoleObject::can_drop(const QList<QPersistentModelIndex> &dropped_list, c
     }
 }
 
-void ConsoleObject::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     const bool dropped_are_all_objects = (dropped_type_list.size() == 1 && dropped_type_list.contains(ItemType_Object));
     const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
@@ -632,7 +632,7 @@ void object_operation_add_to_group(const QList<QString> &targets, QWidget *paren
     dialog->open();
 }
 
-void ConsoleObject::on_reset_account() {
+void ObjectImpl::on_reset_account() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -652,7 +652,7 @@ bool console_object_is_ou(const QModelIndex &index) {
     return is_ou;
 }
 
-void ConsoleObject::drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
+void ObjectImpl::drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
     const QString target_dn = target.data(ObjectRole_DN).toString();
 
     AdInterface ad;
@@ -693,7 +693,7 @@ void ConsoleObject::drop_objects(const QList<QPersistentModelIndex> &dropped_lis
     g_status()->display_ad_messages(ad, console);
 }
 
-void ConsoleObject::drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
+void ObjectImpl::drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
     const QList<QString> policy_list = [&]() {
         QList<QString> out;
 
@@ -742,7 +742,7 @@ QModelIndex get_object_tree_root(ConsoleWidget *console) {
     }
 }
 
-void ConsoleObject::delete_action(const QList<QModelIndex> &index_list) {
+void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
     const QList<QString> selected_list = index_list_to_dn_list(index_list);
     const QList<QString> deleted_list = object_operation_delete(selected_list, console);
 
@@ -758,7 +758,7 @@ void ConsoleObject::delete_action(const QList<QModelIndex> &index_list) {
     }
 }
 
-void ConsoleObject::new_object(const QString &object_class) {
+void ObjectImpl::new_object(const QString &object_class) {
     const QString parent_dn = get_selected_dn_object(console);
 
     auto dialog = new CreateObjectDialog(parent_dn, object_class, console);
@@ -798,23 +798,23 @@ void ConsoleObject::new_object(const QString &object_class) {
         });
 }
 
-void ConsoleObject::on_new_user() {
+void ObjectImpl::on_new_user() {
     new_object(CLASS_USER);
 }
 
-void ConsoleObject::on_new_computer() {
+void ObjectImpl::on_new_computer() {
     new_object(CLASS_COMPUTER);
 }
 
-void ConsoleObject::on_new_ou() {
+void ObjectImpl::on_new_ou() {
     new_object(CLASS_OU);
 }
 
-void ConsoleObject::on_new_group() {
+void ObjectImpl::on_new_group() {
     new_object(CLASS_GROUP);
 }
 
-void ConsoleObject::rename(const QList<QModelIndex> &index_list) {
+void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
     const QString dn = get_selected_dn_object(console);
 
     auto dialog = new RenameObjectDialog(dn, console);
@@ -835,7 +835,7 @@ void ConsoleObject::rename(const QList<QModelIndex> &index_list) {
         });
 }
 
-void ConsoleObject::on_move() {
+void ObjectImpl::on_move() {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
 
     auto dialog = new MoveObjectDialog(dn_list, console);
@@ -855,12 +855,12 @@ void ConsoleObject::on_move() {
         });
 }
 
-void ConsoleObject::on_add_to_group() {
+void ObjectImpl::on_add_to_group() {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
     object_operation_add_to_group(dn_list, console);
 }
 
-void ConsoleObject::set_disabled(const bool disabled) {
+void ObjectImpl::set_disabled(const bool disabled) {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
 
     show_busy_indicator();
@@ -883,15 +883,15 @@ void ConsoleObject::set_disabled(const bool disabled) {
     hide_busy_indicator();
 }
 
-void ConsoleObject::on_enable() {
+void ObjectImpl::on_enable() {
     set_disabled(false);
 }
 
-void ConsoleObject::on_disable() {
+void ObjectImpl::on_disable() {
     set_disabled(true);
 }
 
-void ConsoleObject::on_find() {
+void ObjectImpl::on_find() {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
 
     if (dn_list.size() != 1) {
@@ -904,13 +904,13 @@ void ConsoleObject::on_find() {
     find_dialog->open();
 }
 
-void ConsoleObject::on_reset_password() {
+void ObjectImpl::on_reset_password() {
     const QString dn = get_selected_dn_object(console);
     const auto password_dialog = new PasswordDialog(dn, console);
     password_dialog->open();
 }
 
-void ConsoleObject::on_edit_upn_suffixes() {
+void ObjectImpl::on_edit_upn_suffixes() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -944,7 +944,7 @@ void ConsoleObject::on_edit_upn_suffixes() {
         });
 }
 
-void ConsoleObject::on_change_dc() {
+void ObjectImpl::on_change_dc() {
     const QModelIndex root = get_object_tree_root(console);
     if (!root.isValid()) {
         return;
@@ -956,7 +956,7 @@ void ConsoleObject::on_change_dc() {
     change_dc_dialog->open();
 }
 
-void ConsoleObject::properties(const QList<QModelIndex> &index_list) {
+void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
     const QList<QString> dn_list = index_list_to_dn_list(index_list);
 
     auto on_object_properties_applied = [=]() {
@@ -1018,7 +1018,7 @@ QString console_object_count_string(ConsoleWidget *console, const QModelIndex &i
     return out;
 }
 
-ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg)
+ObjectImpl::ObjectImpl(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     policy_results_widget = policy_results_widget_arg;
     filter_dialog = filter_dialog_arg;
@@ -1051,46 +1051,46 @@ ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, Fil
     // TODO: probably should just be members
     connect(
         new_user_action, &QAction::triggered,
-        this, &ConsoleObject::on_new_user);
+        this, &ObjectImpl::on_new_user);
     connect(
         new_computer_action, &QAction::triggered,
-        this, &ConsoleObject::on_new_computer);
+        this, &ObjectImpl::on_new_computer);
     connect(
         new_ou_action, &QAction::triggered,
-        this, &ConsoleObject::on_new_ou);
+        this, &ObjectImpl::on_new_ou);
     connect(
         new_group_action, &QAction::triggered,
-        this, &ConsoleObject::on_new_group);
+        this, &ObjectImpl::on_new_group);
     connect(
         move_action, &QAction::triggered,
-        this, &ConsoleObject::on_move);
+        this, &ObjectImpl::on_move);
     connect(
         add_to_group_action, &QAction::triggered,
-        this, &ConsoleObject::on_add_to_group);
+        this, &ObjectImpl::on_add_to_group);
     connect(
         enable_action, &QAction::triggered,
-        this, &ConsoleObject::on_enable);
+        this, &ObjectImpl::on_enable);
     connect(
         disable_action, &QAction::triggered,
-        this, &ConsoleObject::on_disable);
+        this, &ObjectImpl::on_disable);
     connect(
         reset_password_action, &QAction::triggered,
-        this, &ConsoleObject::on_reset_password);
+        this, &ObjectImpl::on_reset_password);
     connect(
         reset_account_action, &QAction::triggered,
-        this, &ConsoleObject::on_reset_account);
+        this, &ObjectImpl::on_reset_account);
     connect(
         find_action, &QAction::triggered,
-        this, &ConsoleObject::on_find);
+        this, &ObjectImpl::on_find);
     connect(
         edit_upn_suffixes_action, &QAction::triggered,
-        this, &ConsoleObject::on_edit_upn_suffixes);
+        this, &ObjectImpl::on_edit_upn_suffixes);
     connect(
         change_dc_action, &QAction::triggered,
-        this, &ConsoleObject::on_change_dc);
+        this, &ObjectImpl::on_change_dc);
 }
 
-QString ConsoleObject::get_description(const QModelIndex &index) const {
+QString ObjectImpl::get_description(const QModelIndex &index) const {
     QString out;
 
     const QString object_count_text = console_object_count_string(console, index);
@@ -1105,7 +1105,7 @@ QString ConsoleObject::get_description(const QModelIndex &index) const {
     return out;
 }
 
-void ConsoleObject::activate(const QModelIndex &index) {
+void ObjectImpl::activate(const QModelIndex &index) {
     properties({index});
 }
 
@@ -1118,7 +1118,7 @@ bool console_object_search_id_match(QStandardItem *item, SearchThread *thread) {
     return match;
 }
 
-QList<QAction *> ConsoleObject::get_all_custom_actions() const {
+QList<QAction *> ObjectImpl::get_all_custom_actions() const {
     QList<QAction *> out = {
         new_action,
         find_action,
@@ -1135,7 +1135,7 @@ QList<QAction *> ConsoleObject::get_all_custom_actions() const {
     return out;
 }
 
-QSet<QAction *> ConsoleObject::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<QAction *> out;
 
     const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
@@ -1206,7 +1206,7 @@ QSet<QAction *> ConsoleObject::get_custom_actions(const QModelIndex &index, cons
     return out;
 }
 
-QSet<QAction *> ConsoleObject::get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> ObjectImpl::get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<QAction *> out;
 
     const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
@@ -1218,7 +1218,7 @@ QSet<QAction *> ConsoleObject::get_disabled_custom_actions(const QModelIndex &in
     return out;
 }
 
-QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> ObjectImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Properties);
@@ -1240,7 +1240,7 @@ QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &inde
     return out;
 }
 
-QSet<StandardAction> ConsoleObject::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<StandardAction> out;
 
     const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();
@@ -1257,7 +1257,7 @@ QSet<StandardAction> ConsoleObject::get_disabled_standard_actions(const QModelIn
     return out;
 }
 
-void ConsoleObject::refresh(const QList<QModelIndex> &index_list) {
+void ObjectImpl::refresh(const QList<QModelIndex> &index_list) {
     if (index_list.size() != 1) {
         return;
     }
@@ -1268,11 +1268,11 @@ void ConsoleObject::refresh(const QList<QModelIndex> &index_list) {
     fetch(index);
 }
 
-void ConsoleObject::set_find_action_enabled(const bool enabled) {
+void ObjectImpl::set_find_action_enabled(const bool enabled) {
     find_action_enabled = enabled;
 }
 
-void ConsoleObject::set_refresh_action_enabled(const bool enabled) {
+void ObjectImpl::set_refresh_action_enabled(const bool enabled) {
     refresh_action_enabled = enabled;
 }
 

@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONSOLE_OBJECT_H
-#define CONSOLE_OBJECT_H
+#ifndef OBJECT_IMPL_H
+#define OBJECT_IMPL_H
 
 #include "adldap.h"
 #include "central_widget.h"
@@ -79,11 +79,11 @@ QModelIndex get_object_tree_root(ConsoleWidget *console);
 
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
 
-class ConsoleObject final : public ConsoleImpl {
+class ObjectImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg);
+    ObjectImpl(PolicyResultsWidget *policy_results_widget_arg, FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg);
 
     void fetch(const QModelIndex &index);
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
@@ -147,4 +147,4 @@ private:
     void move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
 };
 
-#endif /* CONSOLE_OBJECT_H */
+#endif /* OBJECT_IMPL_H */

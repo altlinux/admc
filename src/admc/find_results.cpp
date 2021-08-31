@@ -22,7 +22,7 @@
 
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
-#include "console_types/console_object.h"
+#include "console_types/object_impl.h"
 #include "settings.h"
 #include "utils.h"
 #include "item_type.h"
@@ -49,7 +49,7 @@ FindResults::FindResults()
     // but necessary for the ctor
     auto filter_dialog = new FilterDialog(this);
     auto policy_results_widget = new PolicyResultsWidget(this);
-    auto object_impl = new ConsoleObject(policy_results_widget, filter_dialog, console);
+    auto object_impl = new ObjectImpl(policy_results_widget, filter_dialog, console);
     console->register_impl(ItemType_Object, object_impl);
 
     object_impl->set_find_action_enabled(false);

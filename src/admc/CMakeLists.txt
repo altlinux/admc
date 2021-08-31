@@ -51,7 +51,7 @@ set(ADMC_SOURCES
     filter_classes_widget.cpp
     edit_query_item_widget.cpp
     
-    console_types/console_object.cpp
+    console_types/object_impl.cpp
     console_types/console_policy.cpp
     console_types/console_query.cpp
 

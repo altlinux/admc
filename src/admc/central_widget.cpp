@@ -21,7 +21,7 @@
 #include "central_widget.h"
 
 #include "adldap.h"
-#include "console_types/console_object.h"
+#include "console_types/object_impl.h"
 #include "console_types/console_policy.h"
 #include "console_types/console_query.h"
 #include "console_widget/console_widget.h"
@@ -80,7 +80,7 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
     //
     // Register console types
     //
-    auto object_impl = new ConsoleObject(policy_results_widget, filter_dialog, console);
+    auto object_impl = new ObjectImpl(policy_results_widget, filter_dialog, console);
     console->register_impl(ItemType_Object, object_impl);
 
     auto policy_root_impl = new ConsolePolicyRoot(console);

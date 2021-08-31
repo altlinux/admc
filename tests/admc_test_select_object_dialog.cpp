@@ -21,7 +21,7 @@
 #include "admc_test_select_object_dialog.h"
 
 #include "admc_test_select_base_widget.h"
-#include "console_types/console_object.h"
+#include "console_types/object_impl.h"
 #include "filter_widget/select_base_widget.h"
 #include "select_object_dialog.h"
 

@@ -22,7 +22,7 @@
 
 #include "adldap.h"
 #include "central_widget.h"
-#include "console_types/console_object.h"
+#include "console_types/object_impl.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
