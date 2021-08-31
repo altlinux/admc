@@ -797,7 +797,27 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
     } else {
         const QString context = QString(tr("Failed to create object %1.")).arg(dn);
 
-        d->error_message(context, d->default_error());
+        const QString error = [this, dn]() {
+            const bool wrong_ou_parent = [&]() {
+                const int ldap_result = d->get_ldap_result();
+                
+                const bool is_ou = dn.startsWith("OU=");
+                const QString parent = dn_get_parent(dn);
+                const bool bad_parent = parent.startsWith("CN=");
+
+                const bool out = (ldap_result == LDAP_NAMING_VIOLATION && is_ou && bad_parent);
+
+                return out;
+            }();
+
+            if (wrong_ou_parent) {
+                return tr("Can't create OU under this object type.");
+            } else {
+                return d->default_error();
+            }
+        }();
+
+        d->error_message(context, error);
 
         return false;
     }
