@@ -54,6 +54,8 @@ class ConsoleImpl;
 class ConsoleDragModel;
 
 enum ConsoleRolePublic {
+    ConsoleRole_Type = Qt::UserRole + 19,
+
     // NOTE: when implementing custom roles, make sure they do
     // not conflict with console roles, like this:
     //

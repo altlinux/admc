@@ -42,8 +42,6 @@
 #include <QStandardItem>
 #include <QProcess>
 
-QStandardItem *policy_tree_head = nullptr;
-
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
     QStandardItem *main_item = row[0];
     main_item->setIcon(QIcon::fromTheme("folder-templates"));
@@ -65,15 +63,31 @@ QList<QString> console_policy_search_attributes() {
     return {ATTRIBUTE_DISPLAY_NAME};
 }
 
-void console_policy_create(ConsoleWidget *console, const AdObject &object) {
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, policy_tree_head->index());
+void ConsolePolicyRoot::create_policy_in_console(const AdObject &object) {
+    const QModelIndex policy_root_index = [&]() {
+        const QList<QModelIndex> search_results = console->search_items(QModelIndex(), ConsoleRole_Type, ItemType_PolicyRoot, ItemType_PolicyRoot);
+
+        if (!search_results.isEmpty()) {
+            return search_results[0];
+        } else {
+            return QModelIndex();
+        }
+    }();
+
+    if (!policy_root_index.isValid()) {
+        qDebug() << "Policy tree head index is invalid";
+
+        return;
+    }
+
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, policy_root_index);
 
     console_policy_load(row, object);
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, QModelIndex());
-    policy_tree_head = head_row[0];
+    auto policy_tree_head = head_row[0];
     policy_tree_head->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
     policy_tree_head->setIcon(QIcon::fromTheme("folder"));
@@ -173,7 +187,7 @@ void ConsolePolicyRoot::fetch(const QModelIndex &index) {
     const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
     for (const AdObject &object : results.values()) {
-        console_policy_create(console, object);
+        create_policy_in_console(object);
     }
 }
 
@@ -341,13 +355,16 @@ void ConsolePolicy::refresh(const QList<QModelIndex> &index_list) {
 
 ConsolePolicyRoot::ConsolePolicyRoot(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    auto create_policy_dialog = new CreatePolicyDialog(console);
+    create_policy_dialog = new CreatePolicyDialog(console);
 
     create_policy_action = new QAction(tr("Create policy"), this);
 
     connect(
         create_policy_action, &QAction::triggered,
         create_policy_dialog, &QDialog::open);
+    connect(
+        create_policy_dialog, &CreatePolicyDialog::created_policy,
+        this, &ConsolePolicyRoot::on_dialog_created_policy);
 }
 
 QList<QAction *> ConsolePolicyRoot::get_all_custom_actions() const {
@@ -383,4 +400,23 @@ void ConsolePolicyRoot::refresh(const QList<QModelIndex> &index_list) {
 
     console->delete_children(index);
     fetch(index);
+}
+
+// NOTE: not adding policy object to the domain
+// tree, but i think it's ok?
+void ConsolePolicyRoot::on_dialog_created_policy(const QString &dn) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QString base = dn;
+    const SearchScope scope = SearchScope_Object;
+    const QString filter = QString();
+    const QList<QString> attributes = console_policy_search_attributes();
+    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+    const AdObject object = results[dn];
+
+    create_policy_in_console(object);
 }

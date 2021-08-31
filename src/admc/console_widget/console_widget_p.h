@@ -48,12 +48,11 @@ enum ConsoleRole {
     
     ConsoleRole_IsScope = Qt::UserRole + 3,
     
-    ConsoleRole_Type = Qt::UserRole + 5,
-
     // NOTE: don't go above ConsoleRole_Type and
     // ConsoleRole_LAST (defined in public header)
 
     // NOTE: these roles are "public" defined in public header
+    // ConsoleRole_Type = Qt::UserRole + 19,
     // ConsoleRole_LAST = Qt::UserRole + 20
 };
 

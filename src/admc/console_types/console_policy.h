@@ -30,6 +30,7 @@ class AdObject;
 class AdInterface;
 class ConsoleActions;
 class PolicyResultsWidget;
+class CreatePolicyDialog;
 template <typename T>
 class QList;
 
@@ -47,7 +48,6 @@ void console_policy_load(const QList<QStandardItem *> &row, const AdObject &obje
 QList<QString> console_policy_header_labels();
 QList<int> console_policy_default_columns();
 QList<QString> console_policy_search_attributes();
-void console_policy_create(ConsoleWidget *console, const AdObject &object);
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad);
 void console_policy_add_link(ConsoleWidget *console, const QList<QString> &policy_list, const QList<QString> &ou_list, PolicyResultsWidget *policy_results_widget);
 
@@ -66,6 +66,10 @@ public:
 
 private:
     QAction *create_policy_action;
+    CreatePolicyDialog *create_policy_dialog;
+
+    void on_dialog_created_policy(const QString &dn);
+    void create_policy_in_console(const AdObject &object);
 };
 
 class ConsolePolicy final : public ConsoleImpl {

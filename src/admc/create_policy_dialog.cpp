@@ -32,10 +32,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-CreatePolicyDialog::CreatePolicyDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
-    console = console_arg;
-
+CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
+: QDialog(parent) {
     setMinimumWidth(400);
 
     setWindowTitle(tr("Create GPO"));
@@ -106,20 +104,8 @@ void CreatePolicyDialog::accept() {
     g_status()->display_ad_messages(ad, this);
 
     if (success) {
-        // Create policy in console
-        const QString base = created_dn;
-        const SearchScope scope = SearchScope_Object;
-        const QString filter = QString();
-        const QList<QString> attributes = console_policy_search_attributes();
-        const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
-
-        const AdObject object = results[created_dn];
-
-        console_policy_create(console, object);
-
-        // NOTE: not adding policy object to the domain
-        // tree, but i think it's ok?
-
         QDialog::accept();
+
+        emit created_policy(created_dn);
     }
 }
