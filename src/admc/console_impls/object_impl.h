@@ -34,7 +34,6 @@ class ConsoleActions;
 class QMenu;
 template <typename T>
 class QList;
-class FilterDialog;
 class PolicyImpl;
 
 /**
@@ -83,10 +82,13 @@ class ObjectImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    ObjectImpl(FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg);
+    ObjectImpl(ConsoleWidget *console_arg);
 
     void set_policy_impl(PolicyImpl *policy_root_impl_arg);
-
+    
+    void enable_filtering(const QString &filter);
+    void disable_filtering();
+    
     void fetch(const QModelIndex &index);
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
@@ -113,8 +115,10 @@ public:
     QList<int> default_columns() const override;
 
 private:
-    FilterDialog *filter_dialog;
     PolicyImpl *policy_impl;
+
+    QString current_filter;
+    bool filtering_is_ON;
 
     QAction *find_action;
     QAction *move_action;

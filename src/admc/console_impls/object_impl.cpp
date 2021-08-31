@@ -42,7 +42,6 @@
 #include "object_multi_properties_dialog.h"
 #include "password_dialog.h"
 #include "editors/multi_editor.h"
-#include "filter_dialog.h"
 #include "central_widget.h"
 #include "item_type.h"
 #include "console_widget/results_view.h"
@@ -420,13 +419,13 @@ void ObjectImpl::fetch(const QModelIndex &index) {
     const QString filter = [=]() {
         QString out;
 
-        out = is_container_filter();
-
         // NOTE: OR user filter with containers filter so
         // that container objects are always shown, even if
         // they are filtered out by user filter
-        const QString current_filter = filter_dialog->get_filter();
-        out = filter_OR({current_filter, out});
+        if (filtering_is_ON) {
+            out = filter_OR({is_container_filter(), out});
+            out = filter_OR({current_filter, out});
+        }
 
         advanced_features_filter(out);
         dev_mode_filter(out);
@@ -1024,12 +1023,14 @@ QString console_object_count_string(ConsoleWidget *console, const QModelIndex &i
     return out;
 }
 
-ObjectImpl::ObjectImpl(FilterDialog *filter_dialog_arg, ConsoleWidget *console_arg)
+ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     policy_impl = nullptr;
 
+    current_filter = QString();
+    filtering_is_ON = false;
+
     set_results_view(new ResultsView(console_arg));
-    filter_dialog = filter_dialog_arg;
 
     find_action_enabled = true;
     refresh_action_enabled = true;
@@ -1102,6 +1103,15 @@ void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
     policy_impl = policy_impl_arg;
 }
 
+void ObjectImpl::enable_filtering(const QString &filter) {
+    current_filter = filter;
+    filtering_is_ON = true;
+}
+
+void ObjectImpl::disable_filtering() {
+    filtering_is_ON = false;
+}
+
 QString ObjectImpl::get_description(const QModelIndex &index) const {
     QString out;
 
@@ -1109,8 +1119,7 @@ QString ObjectImpl::get_description(const QModelIndex &index) const {
 
     out += object_count_text;
 
-    const bool filtering_ON = filter_dialog->filtering_ON();
-    if (filtering_ON) {
+    if (filtering_is_ON) {
         out += tr(" [Filtering enabled]");
     }
 

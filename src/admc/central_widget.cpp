@@ -59,12 +59,12 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
     console = new ConsoleWidget(this);
     console->connect_to_action_menu(action_menu);
 
-    auto filter_dialog = new FilterDialog(this);
+    filter_dialog = new FilterDialog(this);
 
     //
     // Register console impls
     //
-    auto object_impl = new ObjectImpl(filter_dialog, console);
+    object_impl = new ObjectImpl(console);
     console->register_impl(ItemType_Object, object_impl);
 
     auto policy_root_impl = new PolicyRootImpl(console);
@@ -110,7 +110,7 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
         filter_dialog, &QDialog::open);
     connect(
         filter_dialog, &QDialog::accepted,
-        this, &CentralWidget::refresh_object_tree);
+        this, &CentralWidget::on_filter_dialog_accepted);
 
     // Set current scope to object head to load it
     const QModelIndex object_tree_root = get_object_tree_root(console);
@@ -148,6 +148,17 @@ void CentralWidget::on_advanced_features() {
     refresh_object_tree();
 }
 
+void CentralWidget::on_filter_dialog_accepted() {
+    if (filter_dialog->filtering_ON()) {
+        const QString filter = filter_dialog->get_filter();
+        object_impl->enable_filtering(filter);
+    } else {
+        object_impl->disable_filtering();
+    }
+    
+    refresh_object_tree();
+}
+
 void CentralWidget::refresh_object_tree() {
     const QModelIndex object_tree_root = get_object_tree_root(console);
     if (!object_tree_root.isValid()) {
@@ -168,6 +179,7 @@ void CentralWidget::add_actions(QMenu *view_menu, QMenu *preferences_menu, QTool
 
     // View
     console->add_view_actions(view_menu);
+    view_menu->addAction(open_filter_action);
 
 #ifdef QT_DEBUG
     view_menu->addAction(dev_mode_action);

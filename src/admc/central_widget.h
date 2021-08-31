@@ -43,6 +43,8 @@ class ConsoleWidget;
 template <typename T>
 class QList;
 class QToolBar;
+class ObjectImpl;
+class FilterDialog;
 
 class CentralWidget final : public QWidget {
     Q_OBJECT
@@ -60,9 +62,12 @@ private slots:
     void on_show_non_containers();
     void on_dev_mode();
     void on_advanced_features();
+    void on_filter_dialog_accepted();
 
 private:
     ConsoleWidget *console;
+    ObjectImpl *object_impl;
+    FilterDialog *filter_dialog;
 
     QAction *open_filter_action;
     QAction *show_noncontainers_action;

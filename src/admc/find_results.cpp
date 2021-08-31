@@ -26,7 +26,6 @@
 #include "settings.h"
 #include "utils.h"
 #include "item_type.h"
-#include "filter_dialog.h"
 #include "policy_results_widget.h"
 
 #include "console_impls/query_item_impl.h"
@@ -42,8 +41,7 @@ FindResults::FindResults()
     // TODO: deal with filter_dialog and
     // policy_results_widget args. They are not used here
     // but necessary for the ctor
-    auto filter_dialog = new FilterDialog(this);
-    auto object_impl = new ObjectImpl(filter_dialog, console);
+    auto object_impl = new ObjectImpl(console);
     console->register_impl(ItemType_Object, object_impl);
 
     object_impl->set_find_action_enabled(false);
