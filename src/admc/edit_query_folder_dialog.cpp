@@ -21,7 +21,7 @@
 #include "edit_query_folder_dialog.h"
 
 #include "ad_filter.h"
-#include "console_types/console_query.h"
+#include "console_types/query_item_impl.h"
 #include "console_types/query_folder_impl.h"
 #include "console_widget/console_widget.h"
 #include "globals.h"

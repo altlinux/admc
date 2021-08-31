@@ -29,7 +29,7 @@
 #include "filter_dialog.h"
 #include "policy_results_widget.h"
 
-#include "console_types/console_query.h"
+#include "console_types/query_item_impl.h"
 
 #include <QMenu>
 #include <QVBoxLayout>
@@ -57,7 +57,7 @@ FindResults::FindResults()
 
     // NOTE: registering impl so that it supplies text to
     // the description bar
-    auto query_item_impl = new ConsoleQueryItem(console);
+    auto query_item_impl = new QueryItemImplItem(console);
     console->register_impl(ItemType_QueryItem, query_item_impl);
 
     const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, QModelIndex());

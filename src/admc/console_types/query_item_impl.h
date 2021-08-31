@@ -47,11 +47,11 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
 void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index);
 QHash<QString, QVariant> console_query_item_save(const QModelIndex &index);
 
-class ConsoleQueryItem final : public ConsoleImpl {
+class QueryItemImplItem final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    ConsoleQueryItem(ConsoleWidget *console_arg);
+    QueryItemImplItem(ConsoleWidget *console_arg);
 
     void fetch(const QModelIndex &index) override;
     QString get_description(const QModelIndex &index) const override;

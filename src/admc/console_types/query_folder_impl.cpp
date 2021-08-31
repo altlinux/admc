@@ -23,7 +23,7 @@
 #include "adldap.h"
 #include "central_widget.h"
 #include "console_types/object_impl.h"
-#include "console_types/console_query.h"
+#include "console_types/query_item_impl.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
@@ -159,9 +159,9 @@ void QueryFolderImpl::on_import() {
     const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
 
     const QString file_path = [&]() {
-        const QString caption = QCoreApplication::translate("console_query.cpp", "Import Query");
+        const QString caption = QCoreApplication::translate("query_item_impl.cpp", "Import Query");
         const QString dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-        const QString file_filter = QCoreApplication::translate("console_query.cpp", "JSON (*.json)");
+        const QString file_filter = QCoreApplication::translate("query_item_impl.cpp", "JSON (*.json)");
 
         const QString out = QFileDialog::getOpenFileName(console, caption, dir, file_filter);
 

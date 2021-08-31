@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_types/console_query.h"
+#include "console_types/query_item_impl.h"
 
 #include "adldap.h"
 #include "central_widget.h"
@@ -60,7 +60,7 @@ void console_query_item_create(ConsoleWidget *console, const QString &name, cons
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 }
 
-void ConsoleQueryItem::fetch(const QModelIndex &index) {
+void QueryItemImplItem::fetch(const QModelIndex &index) {
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QString base = index.data(QueryItemRole_Base).toString();
     const QList<QString> search_attributes = console_object_search_attributes();
@@ -76,15 +76,15 @@ void ConsoleQueryItem::fetch(const QModelIndex &index) {
     console_object_search(console, index, base, scope, filter, search_attributes);
 }
 
-void ConsoleQueryItem::on_export() {
+void QueryItemImplItem::on_export() {
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
     const QString file_path = [&]() {
         const QString query_name = index.data(Qt::DisplayRole).toString();
 
-        const QString caption = QCoreApplication::translate("console_query.cpp", "Export Query");
+        const QString caption = QCoreApplication::translate("query_item_impl.cpp", "Export Query");
         const QString suggested_file = QString("%1/%2.json").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), query_name);
-        const QString filter = QCoreApplication::translate("console_query.cpp", "JSON (*.json)");
+        const QString filter = QCoreApplication::translate("query_item_impl.cpp", "JSON (*.json)");
 
         const QString out = QFileDialog::getSaveFileName(console, caption, suggested_file, filter);
 
@@ -141,31 +141,31 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
     console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
 }
 
-void ConsoleQueryItem::on_edit() {
+void QueryItemImplItem::on_edit() {
     auto dialog = new EditQueryItemDialog(console);
     dialog->open();
 }
 
-ConsoleQueryItem::ConsoleQueryItem(ConsoleWidget *console_arg)
+QueryItemImplItem::QueryItemImplItem(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     edit_action = new QAction(tr("Edit..."), this);
     export_action = new QAction(tr("Export query..."), this);
 
     connect(
         edit_action, &QAction::triggered,
-        this, &ConsoleQueryItem::on_edit);
+        this, &QueryItemImplItem::on_edit);
     connect(
         export_action, &QAction::triggered,
-        this, &ConsoleQueryItem::on_export);
+        this, &QueryItemImplItem::on_export);
 }
 
-QString ConsoleQueryItem::get_description(const QModelIndex &index) const {
+QString QueryItemImplItem::get_description(const QModelIndex &index) const {
     const QString object_count_text = console_object_count_string(console, index);
 
     return object_count_text;
 }
 
-QList<QAction *> ConsoleQueryItem::get_all_custom_actions() const {
+QList<QAction *> QueryItemImplItem::get_all_custom_actions() const {
     QList<QAction *> out;
 
     out.append(edit_action);
@@ -174,7 +174,7 @@ QList<QAction *> ConsoleQueryItem::get_all_custom_actions() const {
     return out;
 }
 
-QSet<QAction *> ConsoleQueryItem::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> QueryItemImplItem::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<QAction *> out;
 
     if (single_selection) {
@@ -185,7 +185,7 @@ QSet<QAction *> ConsoleQueryItem::get_custom_actions(const QModelIndex &index, c
     return out;
 }
 
-QSet<StandardAction> ConsoleQueryItem::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> QueryItemImplItem::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Delete);
@@ -201,7 +201,7 @@ QSet<StandardAction> ConsoleQueryItem::get_standard_actions(const QModelIndex &i
     return out;
 }
 
-void ConsoleQueryItem::refresh(const QList<QModelIndex> &index_list) {
+void QueryItemImplItem::refresh(const QList<QModelIndex> &index_list) {
     if (index_list.size() != 1) {
         return;
     }
@@ -212,14 +212,14 @@ void ConsoleQueryItem::refresh(const QList<QModelIndex> &index_list) {
     fetch(index);
 }
 
-void ConsoleQueryItem::delete_action(const QList<QModelIndex> &index_list) {
+void QueryItemImplItem::delete_action(const QList<QModelIndex> &index_list) {
     query_action_delete(console, index_list);
 }
 
-void ConsoleQueryItem::cut(const QList<QModelIndex> &index_list) {
+void QueryItemImplItem::cut(const QList<QModelIndex> &index_list) {
     query_action_cut(index_list);
 }
 
-void ConsoleQueryItem::copy(const QList<QModelIndex> &index_list) {
+void QueryItemImplItem::copy(const QList<QModelIndex> &index_list) {
     query_action_copy(index_list);
 }

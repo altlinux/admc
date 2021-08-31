@@ -24,7 +24,7 @@
 #include "console_types/object_impl.h"
 #include "console_types/policy_impl.h"
 #include "console_types/policy_root_impl.h"
-#include "console_types/console_query.h"
+#include "console_types/query_item_impl.h"
 #include "console_types/query_folder_impl.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
@@ -91,7 +91,7 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
     auto policy_impl = new PolicyImpl(policy_results_widget, console);
     console->register_impl(ItemType_Policy, policy_impl);
 
-    auto query_item_impl = new ConsoleQueryItem(console);
+    auto query_item_impl = new QueryItemImplItem(console);
     console->register_impl(ItemType_QueryItem, query_item_impl);
 
     auto query_folder_impl = new QueryFolderImpl(console);
