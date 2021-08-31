@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "console_types/object_impl.h"
 #include "console_types/console_policy.h"
+#include "console_types/policy_root_impl.h"
 #include "console_types/console_query.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
@@ -83,7 +84,7 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
     auto object_impl = new ObjectImpl(policy_results_widget, filter_dialog, console);
     console->register_impl(ItemType_Object, object_impl);
 
-    auto policy_root_impl = new ConsolePolicyRoot(console);
+    auto policy_root_impl = new PolicyRootImpl(console);
     console->register_impl(ItemType_PolicyRoot, policy_root_impl);
 
     auto policy_impl = new ConsolePolicy(policy_results_widget, console);

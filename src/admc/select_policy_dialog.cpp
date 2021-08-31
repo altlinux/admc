@@ -22,6 +22,7 @@
 
 #include "adldap.h"
 #include "console_types/console_policy.h"
+#include "console_types/policy_root_impl.h"
 #include "globals.h"
 #include "status.h"
 #include "utils.h"
