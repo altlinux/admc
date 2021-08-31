@@ -62,7 +62,7 @@ QList<QString> console_object_search_attributes();
 void console_object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
-QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
+void console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
 
 // NOTE: this f-ns don't do anything with console. Just
 // convenience code for reuse
@@ -73,7 +73,9 @@ void object_operation_add_to_group(const QList<QString> &targets, QWidget *paren
 bool console_object_is_ou(const QModelIndex &index);
 void console_object_load_domain_head_text(QStandardItem *item);
 
-QStandardItem *console_object_head();
+// NOTE: this may return an invalid index if there's no tree
+// of objects setup
+QModelIndex console_object_head(ConsoleWidget *console);
 
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
 
@@ -143,7 +145,6 @@ private:
     void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
     void move_and_rename(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn, const QList<QString> &new_dn_list);
     void move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
-
 };
 
 #endif /* CONSOLE_OBJECT_H */

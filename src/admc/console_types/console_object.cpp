@@ -55,8 +55,6 @@ enum DropType {
     DropType_None
 };
 
-QStandardItem *object_tree_head = nullptr;
-
 DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 void disable_drag_if_object_cant_be_moved(const QList<QStandardItem *> &items, const AdObject &object);
 bool console_object_create_check(ConsoleWidget *console, const QModelIndex &parent);
@@ -200,6 +198,11 @@ void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<
 }
 
 void ConsoleObject::move_and_rename(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn, const QList<QString> &new_dn_list) {
+    const QModelIndex object_tree_head_index = console_object_head(console);
+    if (!object_tree_head_index.isValid()) {
+        return;
+    }
+
     // NOTE: delete old item AFTER adding new item because:
     // If old item is deleted first, then it's possible for
     // new parent to get selected (if they are next to each
@@ -208,7 +211,7 @@ void ConsoleObject::move_and_rename(AdInterface &ad, const QList<QString> &old_d
     // loads new object. End result is that new object is
     // duplicated.
     const QModelIndex new_parent_index = [=]() {
-        const QList<QModelIndex> results = console->search_items(object_tree_head->index(), ObjectRole_DN, new_parent_dn, ItemType_Object);
+        const QList<QModelIndex> results = console->search_items(object_tree_head_index, ObjectRole_DN, new_parent_dn, ItemType_Object);
 
         if (results.size() == 1) {
             return results[0];
@@ -221,7 +224,7 @@ void ConsoleObject::move_and_rename(AdInterface &ad, const QList<QString> &old_d
 
     // NOTE: not deleting in query tree because this is a
     // move, objects still exist!
-    console_object_delete(console, old_dn_list, object_tree_head->index());
+    console_object_delete(console, old_dn_list, object_tree_head_index);
 }
 
 // NOTE: this is a helper f-n for move_and_rename() that
@@ -445,17 +448,15 @@ void ConsoleObject::fetch(const QModelIndex &index) {
     console_object_search(console, index, base, scope, filter, attributes);
 }
 
-QStandardItem *console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
+void console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     // Create tree head
     const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_Object, QModelIndex());
-    object_tree_head = head_row[0];
+    auto object_tree_head = head_row[0];
 
     const QString top_dn = g_adconfig->domain_head();
     const AdObject top_object = ad.search_object(top_dn);
     console_object_item_data_load(object_tree_head, top_object);
     console_object_load_domain_head_text(object_tree_head);
-
-    return object_tree_head;
 }
 
 bool ConsoleObject::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -719,16 +720,39 @@ void console_object_load_domain_head_text(QStandardItem *item) {
     item->setText(domain_text);
 }
 
-QStandardItem *console_object_head() {
-    return object_tree_head;
+QModelIndex console_object_head(ConsoleWidget *console) {
+    const QString head_dn = g_adconfig->domain_head();
+    const QList<QModelIndex> search_results = console->search_items(QModelIndex(), ObjectRole_DN, head_dn, ItemType_Object);
+
+    if (!search_results.isEmpty()) {
+        // NOTE: domain object may also appear in queries,
+        // so have to find the real head by finding the
+        // index with no parent
+        for (const QModelIndex &index : search_results) {
+            const QModelIndex parent = index.parent();
+            const bool no_parent = !parent.isValid();
+
+            if (no_parent) {
+                return index;
+            }
+        }
+
+        return QModelIndex();
+    } else {
+        return QModelIndex();
+    }
 }
 
 void ConsoleObject::delete_action(const QList<QModelIndex> &index_list) {
     const QList<QString> selected_list = index_list_to_dn_list(index_list);
     const QList<QString> deleted_list = object_operation_delete(selected_list, console);
 
+    const QModelIndex object_tree_head_index = console_object_head(console);
+    if (object_tree_head_index.isValid()) {
+        console_object_delete(console, deleted_list, object_tree_head_index);
+    }
+
     // NOTE: also delete in query tree
-    console_object_delete(console, deleted_list, object_tree_head->index());
     console_object_delete(console, deleted_list, console_query_head()->index());
 }
 
@@ -745,6 +769,11 @@ void ConsoleObject::new_object(const QString &object_class) {
     QObject::connect(
         dialog, &CreateObjectDialog::accepted,
         [=]() {
+            const QModelIndex object_tree_head_index = console_object_head(console);
+            if (!object_tree_head_index.isValid()) {
+                return;
+            }
+
             AdInterface ad;
             if (ad_failed(ad)) {
                 return;
@@ -752,7 +781,7 @@ void ConsoleObject::new_object(const QString &object_class) {
 
             show_busy_indicator();
 
-            const QList<QModelIndex> search_parent = console->search_items(console_object_head()->index(), ObjectRole_DN, parent_dn, ItemType_Object);
+            const QList<QModelIndex> search_parent = console->search_items(object_tree_head_index, ObjectRole_DN, parent_dn, ItemType_Object);
 
             if (search_parent.isEmpty()) {
                 hide_busy_indicator();
@@ -914,7 +943,14 @@ void ConsoleObject::on_edit_upn_suffixes() {
 }
 
 void ConsoleObject::on_change_dc() {
-    auto change_dc_dialog = new ChangeDCDialog(console_object_head(), console);
+    const QModelIndex object_tree_head = console_object_head(console);
+    if (!object_tree_head.isValid()) {
+        return;
+    }
+
+    QStandardItem *head_item = console->get_item(object_tree_head);
+
+    auto change_dc_dialog = new ChangeDCDialog(head_item, console);
     change_dc_dialog->open();
 }
 
