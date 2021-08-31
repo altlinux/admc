@@ -58,6 +58,7 @@ void ADMCTestSecurityTab::load_data() {
         QSet<AcePermission> out = all_permissions;
         out -= AcePermission_FullControl;
         out -= AcePermission_DeleteChild;
+        out -= AcePermission_DeleteSubtree;
 
         return out;
     }();
