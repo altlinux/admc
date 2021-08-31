@@ -746,13 +746,16 @@ void ConsoleObject::delete_action(const QList<QModelIndex> &index_list) {
     const QList<QString> selected_list = index_list_to_dn_list(index_list);
     const QList<QString> deleted_list = object_operation_delete(selected_list, console);
 
-    const QModelIndex root = get_object_tree_root(console);
-    if (root.isValid()) {
-        console_object_delete(console, deleted_list, root);
+    const QModelIndex object_root = get_object_tree_root(console);
+    if (object_root.isValid()) {
+        console_object_delete(console, deleted_list, object_root);
     }
 
     // NOTE: also delete in query tree
-    console_object_delete(console, deleted_list, console_query_head()->index());
+    const QModelIndex query_root = console_query_head(console);
+    if (query_root.isValid()) {
+        console_object_delete(console, deleted_list, query_root);
+    }
 }
 
 void ConsoleObject::new_object(const QString &object_class) {

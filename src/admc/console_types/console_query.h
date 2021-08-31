@@ -41,6 +41,7 @@ enum QueryItemRole {
     QueryItemRole_FilterState,
     QueryItemRole_Base,
     QueryItemRole_ScopeIsChildren,
+    QueryItemRole_IsRoot,
 
     QueryItemRole_LAST,
 };
@@ -63,7 +64,7 @@ void console_query_tree_save(ConsoleWidget *console);
 bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
 QString console_query_folder_path(const QModelIndex &index);
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch = true);
-QStandardItem *console_query_head();
+QModelIndex console_query_head(ConsoleWidget *console);
 
 class ConsoleQueryItem final : public ConsoleImpl {
     Q_OBJECT

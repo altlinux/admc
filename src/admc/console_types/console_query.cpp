@@ -43,8 +43,6 @@
 
 #define QUERY_ROOT "QUERY_ROOT"
 
-QStandardItem *query_tree_head = nullptr;
-
 bool copied_index_is_cut = false;
 QPersistentModelIndex copied_index;
 
@@ -115,6 +113,7 @@ void console_query_folder_load(const QList<QStandardItem *> &row, const QString 
     QStandardItem *main_item = row[0];
     main_item->setData(description, QueryItemRole_Description);
     main_item->setIcon(QIcon::fromTheme("folder"));
+    main_item->setData(false, QueryItemRole_IsRoot);
 
     row[QueryColumn_Name]->setText(name);
     row[QueryColumn_Description]->setText(description);
@@ -164,10 +163,11 @@ void ConsoleQueryItem::fetch(const QModelIndex &index) {
 
 void console_query_tree_init(ConsoleWidget *console) {
     const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_QueryFolder, QModelIndex());
-    query_tree_head = head_row[0];
+    auto query_tree_head = head_row[0];
     query_tree_head->setText(QCoreApplication::translate("query", "Saved Queries"));
     query_tree_head->setIcon(QIcon::fromTheme("folder"));
     query_tree_head->setDragEnabled(false);
+    query_tree_head->setData(true, QueryItemRole_IsRoot);
 
     // Add rest of tree
     const QHash<QString, QVariant> folder_list = settings_get_variant(SETTING_query_folders).toHash();
@@ -209,13 +209,18 @@ void console_query_tree_init(ConsoleWidget *console) {
 // Saves current state of queries tree to settings. Should
 // be called after every modication to queries tree
 void console_query_tree_save(ConsoleWidget *console) {
+    const QModelIndex query_tree_head = console_query_head(console);
+    if (!query_tree_head.isValid()) {
+        return;
+    }
+
     QHash<QString, QVariant> folder_list;
     QHash<QString, QVariant> item_list;
 
     QStack<QModelIndex> stack;
-    stack.append(query_tree_head->index());
+    stack.append(query_tree_head);
 
-    const QAbstractItemModel *model = query_tree_head->model();
+    const QAbstractItemModel *model = query_tree_head.model();
 
     while (!stack.isEmpty()) {
         const QModelIndex index = stack.pop();
@@ -498,8 +503,14 @@ void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVaria
     console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
 }
 
-QStandardItem *console_query_head() {
-    return query_tree_head;
+QModelIndex console_query_head(ConsoleWidget *console) {
+    const QList<QModelIndex> search_results = console->search_items(QModelIndex(), QueryItemRole_IsRoot, true, ItemType_QueryFolder);
+
+    if (!search_results.isEmpty()) {
+        return search_results[0];
+    } else {
+        return QModelIndex();
+    }
 }
 
 void ConsoleQueryFolder::on_new_query_item() {
