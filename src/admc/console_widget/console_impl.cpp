@@ -21,6 +21,7 @@
 #include "console_widget/console_impl.h"
 
 #include "console_widget/console_widget.h"
+#include <QSet>
 
 ConsoleImpl::ConsoleImpl(ConsoleWidget *console_arg)
 : QObject(console_arg) {
@@ -44,5 +45,61 @@ QString ConsoleImpl::get_description(const QModelIndex &index) const {
 }
 
 void ConsoleImpl::activate(const QModelIndex &index) {
+
+}
+
+void ConsoleImpl::selected_as_scope(const QModelIndex &index) {
+
+}
+
+QList<QAction *> ConsoleImpl::get_all_custom_actions() const {
+    return {};
+}
+
+QSet<QAction *> ConsoleImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    return {};
+}
+
+QSet<QAction *> ConsoleImpl::get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    return {};
+}
+
+QSet<StandardAction> ConsoleImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    return {};
+}
+
+QSet<StandardAction> ConsoleImpl::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    return {};
+}
+
+void ConsoleImpl::copy(const QList<QModelIndex> &index_list) {
+
+}
+
+void ConsoleImpl::cut(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::rename(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::delete_action(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::paste(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::print(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::refresh(const QList<QModelIndex> &index_list) {
+
+}
+    
+void ConsoleImpl::properties(const QList<QModelIndex> &index_list) {
 
 }

@@ -21,7 +21,6 @@
 #include "central_widget.h"
 
 #include "adldap.h"
-#include "console_actions.h"
 #include "console_types/console_object.h"
 #include "console_types/console_policy.h"
 #include "console_types/console_query.h"
@@ -35,6 +34,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "item_type.h"
 
 #include <QDebug>
 #include <QHeaderView>
@@ -44,10 +44,8 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-CentralWidget::CentralWidget(AdInterface &ad)
+CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
 : QWidget() {
-    console_actions = new ConsoleActions(this);
-
     open_filter_action = new QAction(tr("&Filter objects..."), this);
 
     // NOTE: these actions are not connected here because
@@ -56,9 +54,10 @@ CentralWidget::CentralWidget(AdInterface &ad)
     show_noncontainers_action = settings_make_action(SETTING_show_non_containers_in_console_tree, tr("&Show non-container objects in Console tree"), this);
     advanced_features_action = settings_make_action(SETTING_advanced_features, tr("Advanced features"), this);
 
-    console = new ConsoleWidget();
+    console = new ConsoleWidget(this);
+    console->connect_to_action_menu(action_menu);
 
-    filter_dialog = new FilterDialog(this);
+    auto filter_dialog = new FilterDialog(this);
 
     //
     // Register console results
@@ -70,14 +69,12 @@ CentralWidget::CentralWidget(AdInterface &ad)
     console->register_results(ItemType_QueryItem, query_item_results, console_object_header_labels(), console_object_default_columns());
 
     auto policy_container_results = new ResultsView(this);
-    policy_container_results->detail_view()->header()->setDefaultSectionSize(200);
     console->register_results(ItemType_PolicyRoot, policy_container_results, console_policy_header_labels(), console_policy_default_columns());
 
-    policy_results_widget = new PolicyResultsWidget();
+    auto policy_results_widget = new PolicyResultsWidget(this);
     console->register_results(ItemType_Policy, policy_results_widget);
 
     auto query_folder_results = new ResultsView(this);
-    query_folder_results->detail_view()->header()->setDefaultSectionSize(200);
     console->register_results(ItemType_QueryFolder, query_folder_results, console_query_folder_header_labels(), console_query_folder_default_columns());
 
     //
@@ -112,10 +109,6 @@ CentralWidget::CentralWidget(AdInterface &ad)
     const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
     console->restore_state(console_widget_state);
 
-    connect_object_actions(console, console_actions);
-    connect_policy_actions(console, console_actions, policy_results_widget);
-    connect_query_actions(console, console_actions);
-
     connect(
         show_noncontainers_action, &QAction::toggled,
         this, &CentralWidget::on_show_non_containers);
@@ -133,34 +126,16 @@ CentralWidget::CentralWidget(AdInterface &ad)
         filter_dialog, &QDialog::accepted,
         this, &CentralWidget::refresh_object_tree);
 
-    connect(
-        console, &ConsoleWidget::current_scope_item_changed,
-        this, &CentralWidget::on_current_scope_changed);
-    connect(
-        console, &ConsoleWidget::actions_changed,
-        this, &CentralWidget::on_actions_changed);
-
     // Set current scope to object head to load it
-    console->set_current_scope(console_object_head()->index());
+    const QModelIndex object_tree_root = get_object_tree_root(console);
+    if (object_tree_root.isValid()) {
+        console->set_current_scope(object_tree_root);
+    }
 }
 
 CentralWidget::~CentralWidget() {
     const QVariant state = console->save_state();
     settings_set_variant(SETTING_console_widget_state, state);
-}
-
-void CentralWidget::on_actions_changed() {
-    const QList<QModelIndex> selected_list = console->get_selected_items();
-
-    console_actions->update_actions_visibility(selected_list);
-}
-
-void CentralWidget::on_current_scope_changed() {
-    const QModelIndex current_scope = console->get_current_scope_item();
-    const ItemType type = (ItemType) console_item_get_type(current_scope);
-    if (type == ItemType_Policy) {
-        policy_results_widget->update(current_scope);
-    }
 }
 
 // NOTE: f-ns below need to manually change a setting and
@@ -188,33 +163,30 @@ void CentralWidget::on_advanced_features() {
 }
 
 void CentralWidget::refresh_object_tree() {
+    const QModelIndex object_tree_root = get_object_tree_root(console);
+    if (!object_tree_root.isValid()) {
+        return;
+    }
+
     show_busy_indicator();
 
-    console->refresh_scope(console_object_head()->index());
+    console->refresh_scope(object_tree_root);
 
     hide_busy_indicator();
 }
 
-void CentralWidget::add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
-    console_actions->add_to_menu(action_menu);
-
-    console_object_actions_add_to_menu(console_actions, action_menu, console);
-    console_policy_actions_add_to_menu(console_actions, action_menu);
-    console_query_actions_add_to_menu(console_actions, action_menu);
-
-    action_menu->addSeparator();
-
+void CentralWidget::add_actions(QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
+    // Preferences
     preferences_menu->addAction(advanced_features_action);
+    console->add_preferences_actions(preferences_menu);
 
-    console->add_actions(action_menu, view_menu, preferences_menu, toolbar);
-
-    view_menu->addSeparator();
-
-    view_menu->addAction(open_filter_action);
-
-    view_menu->addAction(show_noncontainers_action);
+    // View
+    console->add_view_actions(view_menu);
 
 #ifdef QT_DEBUG
     view_menu->addAction(dev_mode_action);
 #endif
+
+    // Toolbar
+    console->add_toolbar_actions(toolbar);
 }

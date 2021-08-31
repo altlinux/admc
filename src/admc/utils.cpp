@@ -286,10 +286,11 @@ void message_box_warning(QWidget *parent, const QString &title, const QString &t
     message_box_generic(QMessageBox::Warning, title, text, parent);
 }
 
-QList<QString> get_selected_dn_list(ConsoleWidget *console, const int dn_role) {
+QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role) {
     QList<QString> out;
 
-    const QList<QModelIndex> indexes = console->get_selected_items();
+    // TODO: make sure this is only for object!
+    const QList<QModelIndex> indexes = console->get_selected_items(type);
     for (const QModelIndex &index : indexes) {
         const QString dn = index.data(dn_role).toString();
         out.append(dn);
@@ -298,8 +299,8 @@ QList<QString> get_selected_dn_list(ConsoleWidget *console, const int dn_role) {
     return out;
 }
 
-QString get_selected_dn(ConsoleWidget *console, const int dn_role) {
-    const QList<QString> dn_list = get_selected_dn_list(console, dn_role);
+QString get_selected_dn(ConsoleWidget *console, const int type, const int dn_role) {
+    const QList<QString> dn_list = get_selected_dn_list(console, type, dn_role);
 
     if (!dn_list.isEmpty()) {
         return dn_list[0];

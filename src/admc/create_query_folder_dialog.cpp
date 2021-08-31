@@ -26,6 +26,7 @@
 #include "filter_widget/select_base_widget.h"
 #include "globals.h"
 #include "status.h"
+#include "item_type.h"
 
 #include <QDialogButtonBox>
 #include <QFormLayout>
@@ -75,11 +76,11 @@ void CreateQueryFolderDialog::open() {
 }
 
 void CreateQueryFolderDialog::accept() {
-    const QModelIndex parent_index = console->get_selected_item();
+    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
     const QString name = name_edit->text();
     const QString description = description_edit->text();
 
-    if (!console_query_or_folder_name_is_good(console, name, parent_index, this, QModelIndex())) {
+    if (!console_query_or_folder_name_is_good(name, parent_index, this, QModelIndex())) {
         return;
     }
 

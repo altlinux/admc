@@ -249,10 +249,10 @@ void MainWindow::connect_to_server() {
 
         g_status()->display_ad_messages(ad, this);
 
-        auto central_widget = new CentralWidget(ad);
+        auto central_widget = new CentralWidget(ad, action_menu);
         setCentralWidget(central_widget);
 
-        central_widget->add_actions(action_menu, view_menu, preferences_menu, toolbar);
+        central_widget->add_actions(view_menu, preferences_menu, toolbar);
         
         toolbar->addAction(manual_action);
 

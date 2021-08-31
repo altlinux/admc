@@ -27,6 +27,7 @@
 
 #include "console_widget/results_view.h"
 #include "console_widget/results_description.h"
+#include "console_widget/console_widget.h"
 
 #include <QCoreApplication>
 #include <QSet>
@@ -44,18 +45,14 @@ class ConsoleImpl;
 enum ConsoleRole {
     // Determines whether scope item was fetched
     ConsoleRole_WasFetched = Qt::UserRole + 1,
-
+    
     ConsoleRole_IsScope = Qt::UserRole + 3,
-
-    // Determines whether scope is dynamic.
-    ConsoleRole_ScopeIsDynamic = Qt::UserRole + 4,
-
-    ConsoleRole_Type = Qt::UserRole + 5,
-
+    
     // NOTE: don't go above ConsoleRole_Type and
     // ConsoleRole_LAST (defined in public header)
 
     // NOTE: these roles are "public" defined in public header
+    // ConsoleRole_Type = Qt::UserRole + 19,
     // ConsoleRole_LAST = Qt::UserRole + 20
 };
 
@@ -81,7 +78,6 @@ public:
     QList<ResultsView *> registered_results_view_list;
 
     QAction *properties_action;
-    QAction *refresh_action;
     QAction *refresh_current_scope_action;
 
     QAction *navigate_up_action;
@@ -104,19 +100,21 @@ public:
     QList<QPersistentModelIndex> targets_past;
     QList<QPersistentModelIndex> targets_future;
 
+    QMenu *action_menu;
+    QHash<StandardAction, QAction *> standard_action_map;
+
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 
     void open_action_menu_as_context_menu(const QPoint pos);
     void on_scope_expanded(const QModelIndex &index);
     void on_results_activated(const QModelIndex &index);
-    void update_actions();
+    void on_action_menu_show();
     void on_context_menu(const QPoint pos);
     void update_navigation_actions();
     void update_view_actions();
     void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
     void on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last);
     void on_focus_changed(QWidget *old, QWidget *now);
-    void refresh();
     void refresh_current_scope();
     void customize_columns();
     void navigate_up();
@@ -136,6 +134,9 @@ public:
     ConsoleImpl *get_impl(const QModelIndex &index) const;
     ResultsDescription get_results(const QModelIndex &index) const;
     void update_description();
+    void on_standard_action(const StandardAction action_enum);
+    QList<QModelIndex> get_all_selected_items() const;
+    QSet<int> get_selected_types() const;
 
 signals:
     void context_menu(const QPoint pos);

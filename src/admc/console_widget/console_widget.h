@@ -23,22 +23,22 @@
 
 /**
  * The central widget of the app through which the user can
- * browse and manipulate objects. Note that this is just a
- * framework for the actual console and it doesn't contain
- * any logic relating to any problem domains. This widget
- * should be wrapped by a parent widget and the parent
- * widget should be the one to provide domain logic by
- * loading data into console widget and determining how it
- * should be displayed. Contains two panes: "scope" and
- * "results". Scope pane contains a tree of items. Each
- * scope item has it's own "results" which are displayed in
- * the results pane when the scope item is selected. Results
- * can contain children of the scope item. Results may also
- * display a custom widget. The way results are displayed
- * can be customized by registering certain types of results
- * views and assigning them to scope items. The user widget
- * of the console widget is responsible for loading items,
- * creating results views and other things.
+ * browse and manipulate objects. Contains two panes:
+ * "scope" and "results". Scope pane contains a tree of
+ * items. Each scope item has it's own "results" which are
+ * displayed in the results pane when the scope item is
+ * selected. Results can contain children of the scope item.
+ * Results may also display a custom widget. Note that this
+ * class only deals with general "items" and doesn't define
+ * how items are loaded, displayed or interacted with. The
+ * way items are displayed in the results is defined using
+ * register_results() function, where you can pass a
+ * customized ResultsView and/or a custom widget. The way
+ * items are loaded and interacted with is defined by
+ * subclassing ConsoleImpl and registering implementations
+ * using register_impl() function. Implementation and result
+ * types are assigned to item types which should be defined
+ * outside of this class.
  */
 
 #include <QWidget>
@@ -54,6 +54,8 @@ class ConsoleImpl;
 class ConsoleDragModel;
 
 enum ConsoleRolePublic {
+    ConsoleRole_Type = Qt::UserRole + 19,
+
     // NOTE: when implementing custom roles, make sure they do
     // not conflict with console roles, like this:
     //
@@ -65,32 +67,35 @@ enum ConsoleRolePublic {
     ConsoleRole_LAST = Qt::UserRole + 20,
 };
 
-enum ScopeNodeType {
-    ScopeNodeType_Static,
-    ScopeNodeType_Dynamic,
+enum StandardAction {
+    StandardAction_Copy,
+    StandardAction_Cut,
+    StandardAction_Rename,
+    StandardAction_Delete,
+    StandardAction_Paste,
+    StandardAction_Print,
+    StandardAction_Refresh,
+    StandardAction_Properties,
 };
 
 class ConsoleWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    ConsoleWidget(QWidget *parent = nullptr);
+    ConsoleWidget(QWidget *parent);
 
     // Register results to be used later for scope items.
     // Must be done BEFORE adding items. Results can be just
     // a widget, a tree view or a widget that contains a
-    // tree view. Returns the unique id assigned to this
-    // results view, which should be used when creating
-    // scope items. Note that if results is just a widget,
-    // then you can't add or get results rows. Note that
-    // call order is important for correct state restoration
-    // so register your results in the same order every
-    // time.
+    // tree view. Note that call order is important for
+    // correct state restoration so register your results in
+    // the same order every time.
     void register_results(const int type, QWidget *widget);
     void register_results(const int type, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
     void register_results(const int type, QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
 
-    // NOTE: you must register types before adding items
+    // NOTE: you must register all impl's before adding
+    // items
     void register_impl(const int type, ConsoleImpl *impl);
 
     // These f-ns are for adding items to console. Items
@@ -99,17 +104,7 @@ public:
     // adds an item that is shown both in scope and results.
     // add_results_item() adds an item that is shown only in
     // results.
-    //
-    // Arguments:
-    //
-    // "scope_type" - scope items can be static or dynamic.
-    // Static scope items should be loaded once and never
-    // change after that. Dynamic scope items will trigger a
-    // fetch() call on their assigned ConsoleImpl. Note that
-    // dynamic scope items can be fetched again via the
-    // refresh_scope() f-n or "Refresh" action of the item
-    // menu.
-    QList<QStandardItem *> add_scope_item(const int type, const ScopeNodeType scope_type, const QModelIndex &parent);
+    QList<QStandardItem *> add_scope_item(const int type, const QModelIndex &parent);
     QList<QStandardItem *> add_results_item(const int type, const QModelIndex &parent);
 
     // Deletes an item and all of it's columns
@@ -118,24 +113,23 @@ public:
     // Sets current scope item in the scope tree
     void set_current_scope(const QModelIndex &index);
 
-    // Clears children of this scope item, then fetches them
-    // again.
+    // Calls refresh() of the console impl for this item
+    // type
     void refresh_scope(const QModelIndex &index);
 
     // Gets selected item(s) from currently focused view,
     // which could be scope or results. Only the main (first
-    // column) item is returned for each selected row.
-
-    // NOTE: there is always at least one selected item. If
-    // results is currently focused but has no selection,
-    // selected items from scope are returned instead.
-    QList<QModelIndex> get_selected_items() const;
+    // column) item is returned for each selected row. There
+    // is always at least one selected item. If results is
+    // currently focused but has no selection, selected
+    // items from scope are returned instead.
+    QList<QModelIndex> get_selected_items(const int type) const;
 
     // Get a single selected item. Use if you are sure that
     // there's only one (dialog that uses one target item
     // for example). Returns first item in list if there are
     // multiple items selected.
-    QModelIndex get_selected_item() const;
+    QModelIndex get_selected_item(const int type) const;
 
     // NOTE: Search is inclusive, examining the given parent
     // and all of it's descendants. Pass QModelIndex()
@@ -149,27 +143,21 @@ public:
     QStandardItem *get_item(const QModelIndex &index) const;
     QList<QStandardItem *> get_row(const QModelIndex &index) const;
 
-    void add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
+    void add_view_actions(QMenu *menu);
+    void add_preferences_actions(QMenu *menu);
+    void add_toolbar_actions(QToolBar *toolbar);
 
     QVariant save_state() const;
+
     // NOTE: all results should be registered before this is
     // called so that their state can be restored
     void restore_state(const QVariant &state);
 
-    QAction *get_refresh_action() const;
+    void delete_children(const QModelIndex &parent);
 
-signals:
-    // Emitted when current scope item changes.
-    void current_scope_item_changed(const QModelIndex &index);
+    void set_scope_view_visible(const bool visible);
 
-    // Emitted when a results item is double-clicked or
-    // pressed ENTER on. Connect this signal to an
-    // appropriate default action.
-    void results_item_activated(const QModelIndex);
-
-    // Emitted when actions need to updated due to selection
-    // changing.
-    void actions_changed();
+    void connect_to_action_menu(QMenu *action_menu);
 
 private:
     ConsoleWidgetPrivate *d;

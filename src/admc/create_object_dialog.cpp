@@ -245,6 +245,8 @@ void CreateObjectDialog::accept() {
 
     const QString dn = get_created_dn();
 
+    qInfo() << dn;
+
     // Verify edits
     const bool verify_success = edits_verify(ad, all_edits, dn, true);
 

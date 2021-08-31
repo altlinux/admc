@@ -32,7 +32,6 @@ class QAbstractItemView;
 class QStandardItemModel;
 class QModelIndex;
 class QString;
-class FilterDialog;
 class QMenu;
 class QPoint;
 class QStandardItem;
@@ -41,50 +40,29 @@ class QLabel;
 class QSortFilterProxyModel;
 class AdInterface;
 class ConsoleWidget;
-class ConsoleActions;
-class PolicyResultsWidget;
 template <typename T>
 class QList;
 class QToolBar;
-
-enum ItemType {
-    ItemType_Unassigned,
-    ItemType_Object,
-    ItemType_PolicyRoot,
-    ItemType_Policy,
-    ItemType_QueryFolder,
-    ItemType_QueryItem,
-
-    ItemType_LAST,
-};
 
 class CentralWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    CentralWidget(AdInterface &ad);
+    CentralWidget(AdInterface &ad, QMenu *action_menu);
     ~CentralWidget();
 
-    void add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
+    void add_actions(QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar);
 
 signals:
     void context_menu(const QPoint pos);
 
 private slots:
-    void on_current_scope_changed();
-
     void on_show_non_containers();
     void on_dev_mode();
     void on_advanced_features();
 
-    void on_actions_changed();
-
 private:
     ConsoleWidget *console;
-    FilterDialog *filter_dialog;
-    PolicyResultsWidget *policy_results_widget;
-
-    ConsoleActions *console_actions;
 
     QAction *open_filter_action;
     QAction *show_noncontainers_action;
@@ -92,7 +70,6 @@ private:
     QAction *advanced_features_action;
 
     void enable_disable_helper(const bool disabled);
-    void update_actions_visibility();
     void refresh_object_tree();
 };
 

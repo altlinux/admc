@@ -62,7 +62,7 @@ void ADMCTestPolicyResultsWidget::cleanupTestCase() {
 void ADMCTestPolicyResultsWidget::init() {
     ADMCTest::init();
 
-    widget = new PolicyResultsWidget();
+    widget = new PolicyResultsWidget(parent_widget);
     add_widget(widget);
 
     ResultsView *results_view = widget->get_view();

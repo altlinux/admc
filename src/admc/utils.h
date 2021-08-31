@@ -98,7 +98,7 @@ void message_box_information(QWidget *parent, const QString &title, const QStrin
 void message_box_question(QWidget *parent, const QString &title, const QString &text);
 void message_box_warning(QWidget *parent, const QString &title, const QString &text);
 
-QList<QString> get_selected_dn_list(ConsoleWidget *console, const int dn_role);
-QString get_selected_dn(ConsoleWidget *console, const int dn_role);
+QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role);
+QString get_selected_dn(ConsoleWidget *console, const int type, const int dn_role);
 
 #endif /* UTILS_H */

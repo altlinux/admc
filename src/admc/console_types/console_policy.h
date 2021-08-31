@@ -22,7 +22,6 @@
 #define CONSOLE_POLICY_H
 
 #include "central_widget.h"
-#include "console_actions.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/console_impl.h"
 
@@ -31,6 +30,7 @@ class AdObject;
 class AdInterface;
 class ConsoleActions;
 class PolicyResultsWidget;
+class CreatePolicyDialog;
 template <typename T>
 class QList;
 
@@ -48,22 +48,28 @@ void console_policy_load(const QList<QStandardItem *> &row, const AdObject &obje
 QList<QString> console_policy_header_labels();
 QList<int> console_policy_default_columns();
 QList<QString> console_policy_search_attributes();
-void console_policy_create(ConsoleWidget *console, const AdObject &object);
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad);
-void console_policy_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
-void console_policy_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
-void console_policy_can_drop(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, const QSet<ItemType> &dropped_types, bool *ok);
-void console_policy_drop(ConsoleWidget *console, const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target, PolicyResultsWidget *policy_results_widget);
 void console_policy_add_link(ConsoleWidget *console, const QList<QString> &policy_list, const QList<QString> &ou_list, PolicyResultsWidget *policy_results_widget);
-void connect_policy_actions(ConsoleWidget *console, ConsoleActions *actions, PolicyResultsWidget *policy_results_widget);
 
 class ConsolePolicyRoot final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    using ConsoleImpl::ConsoleImpl;
+    ConsolePolicyRoot(ConsoleWidget *console_arg);
 
     void fetch(const QModelIndex &index) override;
+    void refresh(const QList<QModelIndex> &index_list) override;
+
+    QList<QAction *> get_all_custom_actions() const override;
+    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+
+private:
+    QAction *create_policy_action;
+    CreatePolicyDialog *create_policy_dialog;
+
+    void on_dialog_created_policy(const QString &dn);
+    void create_policy_in_console(const AdObject &object);
 };
 
 class ConsolePolicy final : public ConsoleImpl {
@@ -75,8 +81,24 @@ public:
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
 
+    void selected_as_scope(const QModelIndex &index) override;
+
+    QList<QAction *> get_all_custom_actions() const override;
+    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+
+    virtual void rename(const QList<QModelIndex> &index_list);
+    virtual void delete_action(const QList<QModelIndex> &index_list);
+    virtual void refresh(const QList<QModelIndex> &index_list);
+
 private:
     PolicyResultsWidget *policy_results_widget;
+    QDialog *rename_dialog;
+    QAction *add_link_action;
+    QAction *edit_action;
+
+    void on_add_link();
+    void on_edit();
 };
 
 #endif /* CONSOLE_POLICY_H */

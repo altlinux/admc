@@ -25,6 +25,7 @@
 #include "console_widget/console_widget.h"
 #include "globals.h"
 #include "status.h"
+#include "item_type.h"
 
 #include <QDialogButtonBox>
 #include <QFormLayout>
@@ -66,7 +67,7 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
 }
 
 void EditQueryFolderDialog::open() {
-    const QModelIndex index = console->get_selected_item();
+    const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
     const QString current_name = index.data(Qt::DisplayRole).toString();
     const QString current_description = index.data(QueryItemRole_Description).toString();
 
@@ -77,11 +78,11 @@ void EditQueryFolderDialog::open() {
 }
 
 void EditQueryFolderDialog::accept() {
-    const QModelIndex index = console->get_selected_item();
+    const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
     const QString name = name_edit->text();
     const QString description = description_edit->text();
 
-    if (!console_query_or_folder_name_is_good(console, name, index.parent(), this, index)) {
+    if (!console_query_or_folder_name_is_good(name, index.parent(), this, index)) {
         return;
     }
 

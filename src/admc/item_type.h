@@ -18,43 +18,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_RESULTS_H
-#define FIND_RESULTS_H
+#ifndef ITEM_TYPE_H
+#define ITEM_TYPE_H
 
-/**
- * Used by find dialog to display find results as a list of
- * objects.
- */
+enum ItemType {
+    ItemType_Unassigned,
+    ItemType_Object,
+    ItemType_PolicyRoot,
+    ItemType_Policy,
+    ItemType_QueryFolder,
+    ItemType_QueryItem,
 
-#include <QWidget>
-
-#include <QPersistentModelIndex>
-
-class QStandardItem;
-class QMenu;
-class AdObject;
-class ConsoleWidget;
-
-class FindResults final : public QWidget {
-    Q_OBJECT
-
-public:
-    FindResults();
-    ~FindResults();
-
-    void clear();
-
-    // Append results to list and re-sort
-    void load(const QHash<QString, AdObject> &results);
-
-    // NOTE: returned items need to be re-parented or deleted!
-    QList<QList<QStandardItem *>> get_selected_rows() const;
-
-    void add_actions(QMenu *action_menu, QMenu *view_menu);
-
-private:
-    ConsoleWidget *console;
-    QPersistentModelIndex head_index;
+    ItemType_LAST,
 };
 
-#endif /* FIND_RESULTS_H */
+#endif /* ITEM_TYPE_H */

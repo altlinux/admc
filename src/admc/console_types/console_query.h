@@ -22,7 +22,6 @@
 #define CONSOLE_QUERY_H
 
 #include "central_widget.h"
-#include "console_actions.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/console_impl.h"
 #include "console_types/my_console_role.h"
@@ -42,6 +41,7 @@ enum QueryItemRole {
     QueryItemRole_FilterState,
     QueryItemRole_Base,
     QueryItemRole_ScopeIsChildren,
+    QueryItemRole_IsRoot,
 
     QueryItemRole_LAST,
 };
@@ -61,32 +61,65 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent);
 void console_query_tree_init(ConsoleWidget *console);
 void console_query_tree_save(ConsoleWidget *console);
-bool console_query_or_folder_name_is_good(ConsoleWidget *console, const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
-void console_query_actions_add_to_menu(ConsoleActions *actions, QMenu *menu);
-void console_query_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions);
+bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
 QString console_query_folder_path(const QModelIndex &index);
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch = true);
-QStandardItem *console_query_head();
-void connect_query_actions(ConsoleWidget *console, ConsoleActions *actions);
+QModelIndex get_query_tree_root(ConsoleWidget *console);
 
 class ConsoleQueryItem final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    using ConsoleImpl::ConsoleImpl;
+    ConsoleQueryItem(ConsoleWidget *console_arg);
 
-    void fetch(const QModelIndex &index);
+    void fetch(const QModelIndex &index) override;
     QString get_description(const QModelIndex &index) const override;
+
+    QList<QAction *> get_all_custom_actions() const override;
+    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+
+    void refresh(const QList<QModelIndex> &index_list) override;
+    void delete_action(const QList<QModelIndex> &index_list) override;
+    void cut(const QList<QModelIndex> &index_list) override;
+    void copy(const QList<QModelIndex> &index_list) override;
+
+private:
+    QAction *edit_action;
+    QAction *export_action;
+
+    void on_edit();
+    void on_export();
+
 };
 
 class ConsoleQueryFolder final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    using ConsoleImpl::ConsoleImpl;
+    ConsoleQueryFolder(ConsoleWidget *console_arg);
 
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
+
+    QList<QAction *> get_all_custom_actions() const override;
+    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+
+    void delete_action(const QList<QModelIndex> &index_list) override;
+    void cut(const QList<QModelIndex> &index_list) override;
+    void copy(const QList<QModelIndex> &index_list) override;
+    void paste(const QList<QModelIndex> &index_list) override;
+
+private:
+    QAction *new_action;
+    QAction *edit_action;
+    QAction *import_action;
+
+    void on_new_query_folder();
+    void on_new_query_item();
+    void on_edit();
+    void on_import();
 };
 
 #endif /* CONSOLE_QUERY_H */

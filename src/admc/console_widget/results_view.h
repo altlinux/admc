@@ -67,6 +67,8 @@ public:
     // and others are hidden
     void restore_state(const QVariant &state, const QList<int> &default_columns);
 
+    void set_drag_drop_enabled(const bool enabled);
+
 signals:
     void activated(const QModelIndex &index);
     void context_menu(const QPoint pos);

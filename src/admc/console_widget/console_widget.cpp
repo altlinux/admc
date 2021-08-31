@@ -45,6 +45,17 @@
 const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
 const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
 
+const QList<StandardAction> standard_action_list = {
+    StandardAction_Copy,
+    StandardAction_Cut,
+    StandardAction_Rename,
+    StandardAction_Delete,
+    StandardAction_Paste,
+    StandardAction_Print,
+    StandardAction_Refresh,
+    StandardAction_Properties,
+};
+
 QString results_state_name(const int type);
 
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
@@ -89,13 +100,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->navigate_up_action = new QAction(QIcon::fromTheme("go-up"), tr("&Up one level"), this);
     d->navigate_back_action = new QAction(QIcon::fromTheme("go-previous"), tr("&Back"), this);
     d->navigate_forward_action = new QAction(QIcon::fromTheme("go-next"), tr("&Forward"), this);
-    // NOTE: this refresh action is for the action menu.
-    // Refreshes selected object, if it can be refreshed.
-    // Hidden if can't refresh.
-    d->refresh_action = new QAction(tr("&Refresh"), this);
-    // NOTE: this refresh action is for the toolbar.
-    // Refreshes current scope item, if it can be refreshed.
-    // Always visible.
     d->refresh_current_scope_action = new QAction(QIcon::fromTheme("view-refresh"), tr("&Refresh"), this);
     d->customize_columns_action = new QAction(tr("&Customize columns..."), this);
     d->set_results_to_icons_action = new QAction(tr("&Icons"), this);
@@ -110,6 +114,15 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->navigate_up_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_0));
     d->navigate_back_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_Minus));
     d->navigate_forward_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_Plus));
+
+    d->standard_action_map[StandardAction_Copy] = new QAction(tr("Copy"), this);
+    d->standard_action_map[StandardAction_Cut] = new QAction(tr("Cut"), this);
+    d->standard_action_map[StandardAction_Rename] = new QAction(tr("Rename"), this);
+    d->standard_action_map[StandardAction_Delete] = new QAction(tr("Delete"), this);
+    d->standard_action_map[StandardAction_Paste] = new QAction(tr("Paste"), this);
+    d->standard_action_map[StandardAction_Print] = new QAction(tr("Print"), this);
+    d->standard_action_map[StandardAction_Refresh] = new QAction(tr("Refresh"), this);
+    d->standard_action_map[StandardAction_Properties] = new QAction(tr("Properties"), this);
 
     // NOTE: need to add a dummy view until a real view is
     // added when a scope item is selected. If this is not
@@ -180,9 +193,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->navigate_forward_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::navigate_forward);
     connect(
-        d->refresh_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::refresh);
-    connect(
         d->refresh_current_scope_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::refresh_current_scope);
     connect(
@@ -204,6 +214,16 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->toggle_description_bar_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::on_toggle_description_bar);
 
+    for (const StandardAction &action_enum : standard_action_list) {
+        QAction *action = d->standard_action_map[action_enum];
+
+        connect(
+            action, &QAction::triggered,
+            [this, action_enum]() {
+                d->on_standard_action(action_enum);
+            });
+    }
+
     connect(
         d->scope_view, &QWidget::customContextMenuRequested,
         d, &ConsoleWidgetPrivate::context_menu);
@@ -216,6 +236,28 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->update_view_actions();
 }
 
+void ConsoleWidget::connect_to_action_menu(QMenu *action_menu_arg) {
+    d->action_menu = action_menu_arg;
+
+    // Update actions right before action menu opens
+    connect(
+        d->action_menu, &QMenu::aboutToShow,
+        d, &ConsoleWidgetPrivate::on_action_menu_show);
+
+    // Open action menu as context menu for central widget
+    connect(
+        d, &ConsoleWidgetPrivate::context_menu,
+        [=](const QPoint pos) {
+            const QModelIndex index = d->focused_view->indexAt(pos);
+
+            if (index.isValid()) {
+                const QPoint global_pos = d->focused_view->mapToGlobal(pos);
+
+                d->action_menu->exec(global_pos);
+            }
+        });
+}
+
 void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
     if (!d->impl_map.contains(type)) {
         d->impl_map[type] = impl;
@@ -224,21 +266,10 @@ void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
     }
 }
 
-QList<QStandardItem *> ConsoleWidget::add_scope_item(const int type, const ScopeNodeType scope_type, const QModelIndex &parent) {
+QList<QStandardItem *> ConsoleWidget::add_scope_item(const int type, const QModelIndex &parent) {
     const QList<QStandardItem *> row = add_results_item(type, parent);
 
-    const bool is_dynamic = (scope_type == ScopeNodeType_Dynamic);
-
-    row[0]->setData(is_dynamic, ConsoleRole_ScopeIsDynamic);
-
-    // NOTE: if item is not dynamic, then it's "fetched"
-    // from creation
-    if (is_dynamic) {
-        row[0]->setData(false, ConsoleRole_WasFetched);
-    } else {
-        row[0]->setData(true, ConsoleRole_WasFetched);
-    }
-
+    row[0]->setData(false, ConsoleRole_WasFetched);
     row[0]->setData(true, ConsoleRole_IsScope);
 
     return row;
@@ -309,9 +340,8 @@ void ConsoleWidget::refresh_scope(const QModelIndex &index) {
         return;
     }
 
-    d->model->removeRows(0, d->model->rowCount(index), index);
-    d->model->setData(index, false, ConsoleRole_WasFetched);
-    d->fetch_scope(index);
+    ConsoleImpl *impl = d->get_impl(index);
+    impl->refresh({index});
 }
 
 // No view, only widget
@@ -363,18 +393,33 @@ void ConsoleWidget::register_results(const int type, QWidget *widget, ResultsVie
     }
 }
 
-QList<QModelIndex> ConsoleWidget::get_selected_items() const {
-    ResultsView *results_view = d->get_current_results().view();
+QList<QModelIndex> ConsoleWidget::get_selected_items(const int type) const {
+    QList<QModelIndex> out;
 
-    const bool focused_scope = (d->focused_view == d->scope_view);
-    const bool focused_results = (results_view != nullptr && d->focused_view == results_view->current_view());
+    const QList<QModelIndex> all_selected = d->get_all_selected_items();
+
+    for (const QModelIndex &index : all_selected) {
+        const int this_type = console_item_get_type(index);
+        if (this_type == type) {
+            out.append(index);
+        }
+    }
+
+    return out;
+}
+
+QList<QModelIndex> ConsoleWidgetPrivate::get_all_selected_items() const {
+    ResultsView *results_view = get_current_results().view();
+
+    const bool focused_scope = (focused_view == scope_view);
+    const bool focused_results = (results_view != nullptr && focused_view == results_view->current_view());
 
     const QList<QModelIndex> scope_selected = [&]() {
         QList<QModelIndex> out;
 
-        const QList<QModelIndex> selected_proxy = d->scope_view->selectionModel()->selectedRows();
+        const QList<QModelIndex> selected_proxy = scope_view->selectionModel()->selectedRows();
         for (const QModelIndex &index : selected_proxy) {
-            const QModelIndex source_index = d->scope_proxy_model->mapToSource(index);
+            const QModelIndex source_index = scope_proxy_model->mapToSource(index);
             out.append(source_index);
         }
 
@@ -396,10 +441,14 @@ QList<QModelIndex> ConsoleWidget::get_selected_items() const {
     }
 }
 
-QModelIndex ConsoleWidget::get_selected_item() const {
-    const QList<QModelIndex> selected_list = get_selected_items();
+QModelIndex ConsoleWidget::get_selected_item(const int type) const {
+    const QList<QModelIndex> selected_list = get_selected_items(type);
 
-    return selected_list[0];
+    if (!selected_list.isEmpty()) {
+        return selected_list[0];
+    } else {
+        return QModelIndex();
+    }
 }
 
 QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int role, const QVariant &value, const int type) const {
@@ -529,8 +578,12 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
     }
 }
 
-QAction *ConsoleWidget::get_refresh_action() const {
-    return d->refresh_action;
+void ConsoleWidget::delete_children(const QModelIndex &parent) {
+    d->model->removeRows(0, d->model->rowCount(parent), parent);
+}
+
+void ConsoleWidget::set_scope_view_visible(const bool visible) {
+    d->scope_view->setVisible(visible);
 }
 
 void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
@@ -545,34 +598,187 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
     if (is_scope) {
         q->set_current_scope(main_index);
     } else {
-        emit q->results_item_activated(index);
+        ConsoleImpl *impl = get_impl(main_index);
+        impl->activate(main_index);
     }
 }
 
 // Show/hide actions based on what's selected and emit the
 // signal
-void ConsoleWidgetPrivate::update_actions() {
-    const QList<QModelIndex> selected_list = q->get_selected_items();
+void ConsoleWidgetPrivate::on_action_menu_show() {
+    action_menu->clear();
+
+    const QList<QModelIndex> selected_list = get_all_selected_items();
 
     if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
         return;
     }
 
-    refresh_action->setVisible(false);
+    const bool single_selection = (selected_list.size() == 1);
 
-    refresh_action->setEnabled(true);
+    //
+    // Custom actions
+    //
 
-    if (selected_list.size() == 1) {
-        const QModelIndex selected = selected_list[0];
+    const QSet<int> type_set = get_selected_types();
 
-        const bool is_dynamic = selected.data(ConsoleRole_ScopeIsDynamic).toBool();
-        const bool is_scope = selected.data(ConsoleRole_IsScope).toBool();
-        if (is_scope && is_dynamic) {
-            refresh_action->setVisible(true);
+    // First, add all possible custom actions
+    const QList<QAction *> custom_action_list = [&]() {
+        QList<QAction *> out;
+
+        for (const int type : type_set) {
+            ConsoleImpl *impl = impl_map[type];
+            QList<QAction *> for_this_type = impl->get_all_custom_actions();
+
+            for (QAction *action : for_this_type) {
+                if (!out.contains(action)) {
+                    out.append(action);
+                }
+            }
         }
+
+        return out;
+    }();
+
+    for (QAction *action : custom_action_list) {
+        action_menu->addAction(action);
     }
 
-    emit q->actions_changed();
+    action_menu->addSeparator();
+
+    // Then show/hide custom actions
+    const QSet<QAction *> visible_custom_action_set = [&]() {
+        QSet<QAction *> out;
+
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
+
+            ConsoleImpl *impl = get_impl(index);
+            QSet<QAction *> for_this_index = impl->get_custom_actions(index, single_selection);
+
+            if (i == 0) {
+                // NOTE: for first index, add the whole set
+                // instead of intersecting, otherwise total set
+                // would just stay empty
+                out = for_this_index;
+            } else {
+                out.intersect(for_this_index);
+            }
+        }
+
+        return out;
+    }();
+
+    const QSet<QAction *> disabled_custom_action_set = [&]() {
+        QSet<QAction *> out;
+
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
+
+            ConsoleImpl *impl = get_impl(index);
+            QSet<QAction *> for_this_index = impl->get_disabled_custom_actions(index, single_selection);
+
+            if (i == 0) {
+                // NOTE: for first index, add the whole set
+                // instead of intersecting, otherwise total set
+                // would just stay empty
+                out = for_this_index;
+            } else {
+                out.intersect(for_this_index);
+            }
+        }
+
+        return out;
+    }();
+
+    // Set visibility state for custom actions
+    for (QAction *action : custom_action_list) {
+        const bool visible = visible_custom_action_set.contains(action);
+
+        action->setVisible(visible);
+    }
+
+    // Set enabled state for custom actions
+    for (QAction *action : custom_action_list) {
+        const bool disabled = disabled_custom_action_set.contains(action);
+
+        action->setDisabled(disabled);
+    }
+
+    //
+    // Standard actions
+    //
+
+    // Add all actions first
+    action_menu->addAction(standard_action_map[StandardAction_Copy]);
+    action_menu->addAction(standard_action_map[StandardAction_Cut]);
+    action_menu->addAction(standard_action_map[StandardAction_Rename]);
+    action_menu->addAction(standard_action_map[StandardAction_Delete]);
+    action_menu->addAction(standard_action_map[StandardAction_Paste]);
+    action_menu->addAction(standard_action_map[StandardAction_Print]);
+    action_menu->addAction(standard_action_map[StandardAction_Refresh]);
+    action_menu->addSeparator();
+    action_menu->addAction(standard_action_map[StandardAction_Properties]);
+
+    const QSet<StandardAction> visible_standard_actions = [&]() {
+        QSet<StandardAction> out;
+
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
+
+            ConsoleImpl *impl = get_impl(index);
+            QSet<StandardAction> for_this_index = impl->get_standard_actions(index, single_selection);
+
+            if (i == 0) {
+                // NOTE: for first index, add the whole set
+                // instead of intersecting, otherwise total set
+                // would just stay empty
+                out = for_this_index;
+            } else {
+                out.intersect(for_this_index);
+            }
+        }
+
+        return out;
+    }();
+
+    const QSet<StandardAction> disabled_standard_actions = [&]() {
+        QSet<StandardAction> out;
+
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
+
+            ConsoleImpl *impl = get_impl(index);
+            QSet<StandardAction> for_this_index = impl->get_disabled_standard_actions(index, single_selection);
+
+            if (i == 0) {
+                // NOTE: for first index, add the whole set
+                // instead of intersecting, otherwise total set
+                // would just stay empty
+                out = for_this_index;
+            } else {
+                out.intersect(for_this_index);
+            }
+        }
+
+        return out;
+    }();
+
+    // Set visibility state for standard actions
+    for (const StandardAction &action_enum : standard_action_list) {
+        const bool visible = visible_standard_actions.contains(action_enum);
+
+        QAction *action = standard_action_map[action_enum];
+        action->setVisible(visible);
+    }
+
+    // Set enabled state for standard actions
+    for (const StandardAction &action_enum : standard_action_list) {
+        const bool disabled = disabled_standard_actions.contains(action_enum);
+
+        QAction *action = standard_action_map[action_enum];
+        action->setDisabled(disabled);
+    }
 }
 
 void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &current_proxy, const QModelIndex &previous_proxy) {
@@ -632,7 +838,8 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
 
     update_description();
 
-    emit q->current_scope_item_changed(current);
+    ConsoleImpl *impl = get_impl(current);
+    impl->selected_as_scope(current);
 }
 
 void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last) {
@@ -691,24 +898,10 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
     }
 }
 
-void ConsoleWidgetPrivate::refresh() {
-    const QList<QModelIndex> selected = q->get_selected_items();
-
-    if (selected.size() == 1) {
-        const QModelIndex index = selected[0];
-
-        q->refresh_scope(index);
-    }
-}
-
 void ConsoleWidgetPrivate::refresh_current_scope() {
     const QModelIndex current_scope = q->get_current_scope_item();
 
-    const bool is_dynamic = current_scope.data(ConsoleRole_ScopeIsDynamic).toBool();
-
-    if (is_dynamic) {
-        q->refresh_scope(current_scope);
-    }
+    q->refresh_scope(current_scope);
 }
 
 void ConsoleWidgetPrivate::customize_columns() {
@@ -877,41 +1070,22 @@ void ConsoleWidgetPrivate::update_view_actions() {
     customize_columns_action->setVisible(results_view_exists);
 }
 
-void ConsoleWidget::add_actions(QMenu *action_menu, QMenu *view_menu, QMenu *preferences_menu, QToolBar *toolbar) {
-    // Action
-    d->refresh_action->setVisible(false);
+void ConsoleWidget::add_view_actions(QMenu *menu) {
+    menu->addAction(d->set_results_to_icons_action);
+    menu->addAction(d->set_results_to_list_action);
+    menu->addAction(d->set_results_to_detail_action);
 
-    // Update actions right before menu opens
-    connect(
-        action_menu, &QMenu::aboutToShow,
-        d, &ConsoleWidgetPrivate::update_actions);
+    menu->addSeparator();
 
-    // Open action menu as context menu for central widget
-    connect(
-        d, &ConsoleWidgetPrivate::context_menu,
-        [=](const QPoint pos) {
-            const QModelIndex index = d->focused_view->indexAt(pos);
+    menu->addAction(d->customize_columns_action);
+}
 
-            if (index.isValid()) {
-                const QPoint global_pos = d->focused_view->mapToGlobal(pos);
+void ConsoleWidget::add_preferences_actions(QMenu *menu) {
+    menu->addAction(d->toggle_console_tree_action);
+    menu->addAction(d->toggle_description_bar_action);
+}
 
-                action_menu->exec(global_pos);
-            }
-        });
-
-    // View
-    view_menu->addAction(d->set_results_to_icons_action);
-    view_menu->addAction(d->set_results_to_list_action);
-    view_menu->addAction(d->set_results_to_detail_action);
-
-    view_menu->addSeparator();
-
-    view_menu->addAction(d->customize_columns_action);
-    
-    preferences_menu->addAction(d->toggle_console_tree_action);
-    preferences_menu->addAction(d->toggle_description_bar_action);
-
-    // Toolbar
+void ConsoleWidget::add_toolbar_actions(QToolBar *toolbar) {
     toolbar->addAction(d->navigate_back_action);
     toolbar->addAction(d->navigate_forward_action);
     toolbar->addAction(d->navigate_up_action);
@@ -936,7 +1110,7 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 
     if (!was_fetched) {
         model->setData(index, true, ConsoleRole_WasFetched);
-
+        
         ConsoleImpl *impl = get_impl(index);
         impl->fetch(index);
     }
@@ -976,6 +1150,60 @@ void ConsoleWidgetPrivate::update_description() {
     description_bar_right->setText(description);
 }
 
+void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) {
+    const QSet<int> type_set = get_selected_types();
+
+    // Call impl's action f-n for all present types
+    for (const int type : type_set) {
+        // Filter selected list so that it only contains indexes of this type
+        const QList<QModelIndex> selected_of_type = q->get_selected_items(type);
+
+        ConsoleImpl *impl = impl_map[type];
+        switch (action_enum) {
+            case StandardAction_Copy: {
+                impl->copy(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Cut: {
+                impl->cut(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Rename: {
+                impl->rename(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Delete: {
+                impl->delete_action(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Paste: {
+                impl->paste(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Print: {
+                impl->print(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Refresh: {
+                impl->refresh(selected_of_type);
+
+                break;
+            }
+            case StandardAction_Properties: {
+                impl->properties(selected_of_type);
+
+                break;
+            }
+        }
+    }
+}
+
 int console_item_get_type(const QModelIndex &index) {
     const int type = index.data(ConsoleRole_Type).toInt();
 
@@ -990,4 +1218,17 @@ bool console_item_get_was_fetched(const QModelIndex &index) {
 
 QString results_state_name(const int type) {
     return QString("RESULTS_STATE_%1").arg(type);
+}
+
+QSet<int> ConsoleWidgetPrivate::get_selected_types() const {
+    QSet<int> out;
+
+    const QList<QModelIndex> index_list = get_all_selected_items();
+
+    for (const QModelIndex &index : index_list) {
+        const int type = index.data(ConsoleRole_Type).toInt();
+        out.insert(type);
+    } 
+
+    return out;
 }

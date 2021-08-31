@@ -111,7 +111,7 @@ void ChangeDCDialog::accept() {
     
     AdInterface::set_dc(selected_dc);
 
-    console_object_load_domain_head_text(domain_head_item);
+    console_object_load_root_text(domain_head_item);
 
     if (save_dc_checkbox->isChecked()) {
         settings_set_variant(SETTING_dc, selected_dc);

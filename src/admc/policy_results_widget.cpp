@@ -30,6 +30,7 @@
 #include "status.h"
 #include "utils.h"
 #include "settings.h"
+#include "item_type.h"
 
 #include <QAction>
 #include <QHeaderView>
@@ -69,7 +70,7 @@ const QHash<PolicyResultsColumn, GplinkOption> column_to_option = {
 // TODO: need to sync this with changes done through group
 // policy tab (just call load after properties is closed?)
 
-PolicyResultsWidget::PolicyResultsWidget() {
+PolicyResultsWidget::PolicyResultsWidget(QWidget *parent) {
     auto delete_link_action = new QAction(tr("Delete link"), this);
 
     context_menu = new QMenu(this);

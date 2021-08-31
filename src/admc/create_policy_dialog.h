@@ -28,20 +28,21 @@
 #include <QDialog>
 
 class QLineEdit;
-class ConsoleWidget;
 
 class CreatePolicyDialog : public QDialog {
     Q_OBJECT
 
 public:
-    CreatePolicyDialog(ConsoleWidget *console_arg);
+    CreatePolicyDialog(QWidget *parent);
+
+signals:
+    void created_policy(const QString &dn);
 
 public slots:
     void open() override;
     void accept() override;
 
 private:
-    ConsoleWidget *console;
     QLineEdit *name_edit;
 };
 

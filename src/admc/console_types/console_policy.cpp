@@ -22,7 +22,6 @@
 
 #include "adldap.h"
 #include "central_widget.h"
-#include "console_actions.h"
 #include "console_types/console_object.h"
 #include "globals.h"
 #include "gplink.h"
@@ -34,6 +33,7 @@
 #include "select_object_dialog.h"
 #include "create_policy_dialog.h"
 #include "central_widget.h"
+#include "item_type.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -41,8 +41,6 @@
 #include <QMenu>
 #include <QStandardItem>
 #include <QProcess>
-
-QStandardItem *policy_tree_head = nullptr;
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
     QStandardItem *main_item = row[0];
@@ -65,48 +63,34 @@ QList<QString> console_policy_search_attributes() {
     return {ATTRIBUTE_DISPLAY_NAME};
 }
 
-void console_policy_create(ConsoleWidget *console, const AdObject &object) {
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, ScopeNodeType_Static, policy_tree_head->index());
+void ConsolePolicyRoot::create_policy_in_console(const AdObject &object) {
+    const QModelIndex policy_root_index = [&]() {
+        const QList<QModelIndex> search_results = console->search_items(QModelIndex(), ConsoleRole_Type, ItemType_PolicyRoot, ItemType_PolicyRoot);
+
+        if (!search_results.isEmpty()) {
+            return search_results[0];
+        } else {
+            return QModelIndex();
+        }
+    }();
+
+    if (!policy_root_index.isValid()) {
+        qDebug() << "Policy tree head index is invalid";
+
+        return;
+    }
+
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, policy_root_index);
 
     console_policy_load(row, object);
 }
 
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
-    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, ScopeNodeType_Dynamic, QModelIndex());
-    policy_tree_head = head_row[0];
+    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, QModelIndex());
+    auto policy_tree_head = head_row[0];
     policy_tree_head->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
     policy_tree_head->setIcon(QIcon::fromTheme("folder"));
-}
-
-void console_policy_actions_add_to_menu(ConsoleActions *actions, QMenu *menu) {
-    menu->addAction(actions->get(ConsoleAction_PolicyAddLink));
-
-    menu->addSeparator();
-
-    menu->addAction(actions->get(ConsoleAction_PolicyEdit));
-    menu->addAction(actions->get(ConsoleAction_PolicyRename));
-    menu->addAction(actions->get(ConsoleAction_PolicyDelete));
-}
-
-void console_policy_actions_get_state(const QModelIndex &index, const bool single_selection, QSet<ConsoleAction> *visible_actions, QSet<ConsoleAction> *disabled_actions) {
-    const ItemType type = (ItemType) console_item_get_type(index);
-
-    if (type == ItemType_PolicyRoot) {
-        visible_actions->insert(ConsoleAction_PolicyCreate);
-    }
-
-    if (type == ItemType_Policy) {
-        if (single_selection) {
-            visible_actions->insert(ConsoleAction_PolicyAddLink);
-            // TODO: enable when gpui is ready
-            // visible_actions->insert(ConsoleAction_PolicyEdit);
-            visible_actions->insert(ConsoleAction_PolicyRename);
-            visible_actions->insert(ConsoleAction_PolicyDelete);
-        } else {
-            visible_actions->insert(ConsoleAction_PolicyDelete);
-        }
-    }
 }
 
 bool ConsolePolicy::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -195,7 +179,7 @@ void ConsolePolicyRoot::fetch(const QModelIndex &index) {
     if (ad_failed(ad)) {
         return;
     }
-    
+
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
@@ -203,37 +187,18 @@ void ConsolePolicyRoot::fetch(const QModelIndex &index) {
     const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
     for (const AdObject &object : results.values()) {
-        console_policy_create(console, object);
+        create_policy_in_console(object);
     }
 }
 
-void policy_action_create(ConsoleWidget *console) {
-    auto dialog = new CreatePolicyDialog(console);
-    dialog->open();
-}
-
-void policy_action_add_link(ConsoleWidget *console, PolicyResultsWidget * policy_results_widget) {
-    const QList<QModelIndex> selected = console->get_selected_items();
-    if (selected.size() == 0) {
-        return;
-    }
-
+void ConsolePolicy::on_add_link() {
     auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, console);
     dialog->setWindowTitle(QCoreApplication::translate("console_policy", "Add Link"));
 
     QObject::connect(
         dialog, &SelectObjectDialog::accepted,
         [=]() {
-            const QList<QString> gpos = [selected]() {
-                QList<QString> out;
-
-                for (const QModelIndex &index : selected) {
-                    const QString gpo = index.data(PolicyRole_DN).toString();
-                    out.append(gpo);
-                }
-
-                return out;
-            }();
+            const QList<QString> gpos = get_selected_dn_list(console, ItemType_Policy, PolicyRole_DN);
 
             const QList<QString> ou_list = dialog->get_selected();
 
@@ -246,49 +211,8 @@ void policy_action_add_link(ConsoleWidget *console, PolicyResultsWidget * policy
     dialog->open();
 }
 
-void policy_action_rename(ConsoleWidget *console) {
-    auto dialog = new RenamePolicyDialog(console);
-    dialog->open();
-}
-
-void policy_action_delete(ConsoleWidget *console) {
-    const bool confirmed = confirmation_dialog(QCoreApplication::translate("console_policy", "Are you sure you want to delete this policy and all of it's links?"), console);
-    if (!confirmed) {
-        return;
-    }
-
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    const QList<QPersistentModelIndex> index_list = persistent_index_list(console->get_selected_items());
-
-    for (const QPersistentModelIndex &index : index_list) {
-        const QString dn = index.data(PolicyRole_DN).toString();
-        const bool success = ad.gpo_delete(dn);
-
-        // NOTE: object may get deleted successfuly but
-        // deleting GPT fails which makes gpo_delete() fail
-        // as a whole, but we still want to remove gpo from
-        // the console in that case
-        const AdObject gpo_object = ad.search_object(dn);
-        const bool object_deleted = gpo_object.is_empty();
-
-        if (success || object_deleted) {
-            console->delete_item(index);
-        }
-    }
-
-    hide_busy_indicator();
-
-    g_status()->display_ad_messages(ad, console);
-}
-
-void policy_action_edit(ConsoleWidget *console) {
-    const QString dn = get_selected_dn(console, PolicyRole_DN);
+void ConsolePolicy::on_edit() {
+    const QString dn = get_selected_dn(console, ItemType_Policy, PolicyRole_DN);
 
     const QString filesys_path = [&]() {
         AdInterface ad;
@@ -313,7 +237,7 @@ void policy_action_edit(ConsoleWidget *console) {
 
     QObject::connect(
         process, &QProcess::errorOccurred,
-        [console](QProcess::ProcessError error) {
+        [this](QProcess::ProcessError error) {
             const bool failed_to_start = (error == QProcess::FailedToStart);
 
             if (failed_to_start) {
@@ -327,35 +251,172 @@ void policy_action_edit(ConsoleWidget *console) {
     process->start(QIODevice::ReadOnly);
 }
 
-void connect_policy_actions(ConsoleWidget *console, ConsoleActions *actions, PolicyResultsWidget *policy_results_widget) {
-    QObject::connect(
-        actions->get(ConsoleAction_PolicyCreate), &QAction::triggered,
-        [=]() {
-            policy_action_create(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_PolicyAddLink), &QAction::triggered,
-        [=]() {
-            policy_action_add_link(console, policy_results_widget);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_PolicyRename), &QAction::triggered,
-        [=]() {
-            policy_action_rename(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_PolicyDelete), &QAction::triggered,
-        [=]() {
-            policy_action_delete(console);
-        });
-    QObject::connect(
-        actions->get(ConsoleAction_PolicyEdit), &QAction::triggered,
-        [=]() {
-            policy_action_edit(console);
-        });
-}
-
 ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     policy_results_widget = policy_results_widget_arg;
+
+    rename_dialog = new RenamePolicyDialog(console_arg);
+
+    add_link_action = new QAction(tr("Add link..."), this);
+    edit_action = new QAction(tr("Edit..."), this);
+
+    connect(
+        add_link_action, &QAction::triggered,
+        this, &ConsolePolicy::on_add_link);
+    connect(
+        edit_action, &QAction::triggered,
+        this, &ConsolePolicy::on_edit);
+}
+
+void ConsolePolicy::selected_as_scope(const QModelIndex &index) {
+    policy_results_widget->update(index);
+}
+
+QList<QAction *> ConsolePolicy::get_all_custom_actions() const {
+    return {
+        add_link_action,
+        edit_action,
+    };
+}
+
+QSet<QAction *> ConsolePolicy::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<QAction *> out;
+
+    if (single_selection) {
+        out.insert(add_link_action);
+        out.insert(edit_action);
+    }
+
+    return out;
+}
+
+QSet<StandardAction> ConsolePolicy::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<StandardAction> out;
+
+    out.insert(StandardAction_Delete);
+
+    if (single_selection) {
+        out.insert(StandardAction_Rename);
+        out.insert(StandardAction_Refresh);
+    }
+
+    return out;
+}
+
+void ConsolePolicy::rename(const QList<QModelIndex> &index_list) {
+    rename_dialog->open();
+}
+
+void ConsolePolicy::delete_action(const QList<QModelIndex> &index_list) {
+    const bool confirmed = confirmation_dialog(QCoreApplication::translate("console_policy", "Are you sure you want to delete this policy and all of it's links?"), console);
+    if (!confirmed) {
+        return;
+    }
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
+
+    for (const QPersistentModelIndex &index : persistent_list) {
+        const QString dn = index.data(PolicyRole_DN).toString();
+        const bool success = ad.gpo_delete(dn);
+
+        // NOTE: object may get deleted successfuly but
+        // deleting GPT fails which makes gpo_delete() fail
+        // as a whole, but we still want to remove gpo from
+        // the console in that case
+        const AdObject gpo_object = ad.search_object(dn);
+        const bool object_deleted = gpo_object.is_empty();
+
+        if (success || object_deleted) {
+            console->delete_item(index);
+        }
+    }
+
+    hide_busy_indicator();
+
+    g_status()->display_ad_messages(ad, console);
+}
+
+void ConsolePolicy::refresh(const QList<QModelIndex> &index_list) {
+    if (index_list.size() != 1) {
+        return;
+    }
+
+    const QModelIndex index = index_list[0];
+
+    policy_results_widget->update(index);
+}
+
+ConsolePolicyRoot::ConsolePolicyRoot(ConsoleWidget *console_arg)
+: ConsoleImpl(console_arg) {
+    create_policy_dialog = new CreatePolicyDialog(console);
+
+    create_policy_action = new QAction(tr("Create policy"), this);
+
+    connect(
+        create_policy_action, &QAction::triggered,
+        create_policy_dialog, &QDialog::open);
+    connect(
+        create_policy_dialog, &CreatePolicyDialog::created_policy,
+        this, &ConsolePolicyRoot::on_dialog_created_policy);
+}
+
+QList<QAction *> ConsolePolicyRoot::get_all_custom_actions() const {
+    QList<QAction *> out;
+
+    out.append(create_policy_action);
+
+    return out;
+}
+
+QSet<QAction *> ConsolePolicyRoot::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<QAction *> out;
+
+    out.insert(create_policy_action);
+
+    return out;
+}
+
+QSet<StandardAction> ConsolePolicyRoot::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<StandardAction> out;
+
+    out.insert(StandardAction_Refresh);
+
+    return out;
+}
+
+void ConsolePolicyRoot::refresh(const QList<QModelIndex> &index_list) {
+    if (index_list.size() != 1) {
+        return;
+    }
+
+    const QModelIndex index = index_list[0];
+
+    console->delete_children(index);
+    fetch(index);
+}
+
+// NOTE: not adding policy object to the domain
+// tree, but i think it's ok?
+void ConsolePolicyRoot::on_dialog_created_policy(const QString &dn) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QString base = dn;
+    const SearchScope scope = SearchScope_Object;
+    const QString filter = QString();
+    const QList<QString> attributes = console_policy_search_attributes();
+    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+    const AdObject object = results[dn];
+
+    create_policy_in_console(object);
 }
