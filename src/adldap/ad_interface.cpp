@@ -110,9 +110,11 @@ AdInterface::AdInterface(AdConfig *adconfig) {
 
     d->ld = NULL;
 
+    const QString connect_error_context = tr("Failed to connect.");
+
     d->domain = get_default_domain_from_krb5();
     if (d->domain.isEmpty()) {
-        d->error_message(tr("Failed to connect."), tr("Failed to get a domain."));
+        d->error_message(connect_error_context, tr("Failed to get a domain."));
         return;
     }
 
@@ -121,7 +123,6 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     //
     // Connect via LDAP
     //
-    const QString connect_error_context = tr("Failed to connect.");
 
     d->dc = [&]() {
         const QList<QString> dc_list = get_domain_hosts(d->domain, QString());
