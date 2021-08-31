@@ -87,9 +87,7 @@ public:
     // Register results to be used later for scope items.
     // Must be done BEFORE adding items. Results can be just
     // a widget, a tree view or a widget that contains a
-    // tree view. Note that call order is important for
-    // correct state restoration so register your results in
-    // the same order every time.
+    // tree view.
     void register_results(const int type, QWidget *widget);
     void register_results(const int type, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
     void register_results(const int type, QWidget *widget, ResultsView *view, const QList<QString> &column_labels, const QList<int> &default_columns);
