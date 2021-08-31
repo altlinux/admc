@@ -985,6 +985,9 @@ ConsoleObject::ConsoleObject(PolicyResultsWidget *policy_results_widget_arg, Fil
     policy_results_widget = policy_results_widget_arg;
     filter_dialog = filter_dialog_arg;
 
+    find_action_enabled = true;
+    refresh_action_enabled = true;
+
     auto new_user_action = new QAction(tr("User"), this);
     auto new_computer_action = new QAction(tr("Computer"), this);
     auto new_ou_action = new QAction(tr("OU"), this);
@@ -1078,7 +1081,7 @@ bool console_object_search_id_match(QStandardItem *item, SearchThread *thread) {
 }
 
 QList<QAction *> ConsoleObject::get_all_custom_actions() const {
-    const QList<QAction *> out = {
+    QList<QAction *> out = {
         new_action,
         find_action,
         add_to_group_action,
@@ -1116,7 +1119,10 @@ QSet<QAction *> ConsoleObject::get_custom_actions(const QModelIndex &index, cons
         // Single selection only
         if (is_container) {
             out.insert(new_action);
-            out.insert(find_action);
+         
+            if (find_action_enabled) {
+               out.insert(find_action);
+            }
         }
 
         if (is_user) {
@@ -1183,7 +1189,7 @@ QSet<StandardAction> ConsoleObject::get_standard_actions(const QModelIndex &inde
     // this filters out all the objects like users that
     // should never get refresh action
     const bool can_refresh = console_item_get_was_fetched(index);
-    if (can_refresh && single_selection) {
+    if (can_refresh && single_selection && refresh_action_enabled) {
         out.insert(StandardAction_Refresh);
     }
 
@@ -1222,6 +1228,14 @@ void ConsoleObject::refresh(const QList<QModelIndex> &index_list) {
 
     console->delete_children(index);
     fetch(index);
+}
+
+void ConsoleObject::set_find_action_enabled(const bool enabled) {
+    find_action_enabled = enabled;
+}
+
+void ConsoleObject::set_refresh_action_enabled(const bool enabled) {
+    refresh_action_enabled = enabled;
 }
 
 QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list) {

@@ -102,6 +102,9 @@ public:
     void refresh(const QList<QModelIndex> &index_list) override;
     void delete_action(const QList<QModelIndex> &index_list) override;
 
+    void set_find_action_enabled(const bool enabled);
+    void set_refresh_action_enabled(const bool enabled);
+
 private:
     FilterDialog *filter_dialog;
     PolicyResultsWidget *policy_results_widget;
@@ -116,6 +119,9 @@ private:
     QAction *edit_upn_suffixes_action;
     QAction *change_dc_action;
     QAction *new_action;
+
+    bool find_action_enabled;
+    bool refresh_action_enabled;
 
     void on_new_user();
     void on_new_computer();

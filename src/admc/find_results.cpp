@@ -52,6 +52,9 @@ FindResults::FindResults()
     auto object_impl = new ConsoleObject(policy_results_widget, filter_dialog, console);
     console->register_impl(ItemType_Object, object_impl);
 
+    object_impl->set_find_action_enabled(false);
+    object_impl->set_refresh_action_enabled(false);
+
     // NOTE: registering impl so that it supplies text to
     // the description bar
     auto query_item_impl = new ConsoleQueryItem(console);
