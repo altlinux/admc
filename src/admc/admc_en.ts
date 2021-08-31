@@ -250,33 +250,23 @@
 <context>
     <name>CentralWidget</name>
     <message>
-        <location filename="central_widget.cpp" line="51"/>
-        <source>&amp;Filter objects</source>
+        <location filename="central_widget.cpp" line="49"/>
+        <source>&amp;Filter objects...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="55"/>
+        <location filename="central_widget.cpp" line="53"/>
         <source>Dev mode</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="56"/>
+        <location filename="central_widget.cpp" line="54"/>
         <source>&amp;Show non-container objects in Console tree</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="central_widget.cpp" line="57"/>
+        <location filename="central_widget.cpp" line="55"/>
         <source>Advanced features</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="central_widget.cpp" line="59"/>
-        <source>Console Tree</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="central_widget.cpp" line="60"/>
-        <source>Description Bar</source>
         <translation></translation>
     </message>
 </context>
@@ -345,154 +335,7 @@
 <context>
     <name>ConsoleActions</name>
     <message>
-        <location filename="console_actions.cpp" line="38"/>
-        <source>&amp;User</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="39"/>
-        <source>&amp;Computer</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="40"/>
-        <source>&amp;Organization</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="41"/>
-        <source>&amp;Group</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="42"/>
-        <source>&amp;Find...</source>
-        <oldsource>&amp;Find</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="43"/>
-        <source>&amp;Add to group...</source>
-        <oldsource>&amp;Add to group</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="44"/>
-        <source>&amp;Enable account</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="45"/>
-        <source>D&amp;isable account</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="46"/>
-        <source>Reset &amp;Password...</source>
-        <oldsource>Reset &amp;Password</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="47"/>
-        <source>Reset account</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="48"/>
-        <location filename="console_actions.cpp" line="56"/>
-        <source>&amp;Rename...</source>
-        <oldsource>&amp;Rename</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="49"/>
-        <location filename="console_actions.cpp" line="57"/>
-        <location filename="console_actions.cpp" line="64"/>
-        <source>&amp;Delete</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="50"/>
-        <source>&amp;Move...</source>
-        <oldsource>&amp;Move</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="51"/>
-        <source>Edit &amp;Upn Suffixes...</source>
-        <oldsource>Edit &amp;Upn Suffixes</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="52"/>
-        <source>Change domain controller...</source>
-        <oldsource>Change domain controller</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="54"/>
-        <source>&amp;Policy</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="55"/>
-        <source>&amp;Add link...</source>
-        <oldsource>&amp;Add link</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="60"/>
-        <source>&amp;Folder</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="61"/>
-        <source>&amp;Query</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="58"/>
-        <location filename="console_actions.cpp" line="62"/>
-        <location filename="console_actions.cpp" line="63"/>
-        <source>&amp;Edit</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="65"/>
-        <source>Cut...</source>
-        <oldsource>Cut</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="66"/>
-        <source>&amp;Copy...</source>
-        <oldsource>&amp;Copy</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="67"/>
-        <source>&amp;Paste</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="68"/>
-        <source>&amp;Export query...</source>
-        <oldsource>&amp;Export query</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="69"/>
-        <source>&amp;Import query...</source>
-        <oldsource>&amp;Import query</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_actions.cpp" line="79"/>
-        <source>&amp;New</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_types/console_object.cpp" line="630"/>
+        <location filename="console_types/console_object.cpp" line="551"/>
         <source>Are you sure you want to delete this object?</source>
         <translation></translation>
     </message>
@@ -500,56 +343,232 @@
 <context>
     <name>ConsoleObject</name>
     <message>
-        <location filename="console_types/console_object.cpp" line="1141"/>
+        <location filename="console_types/console_object.cpp" line="1029"/>
+        <source>User</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1030"/>
+        <source>Computer</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1031"/>
+        <source>OU</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1032"/>
+        <source>Group</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1033"/>
+        <source>Find...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1034"/>
+        <source>Move...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1035"/>
+        <source>Add to group...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1036"/>
+        <source>Enable</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1037"/>
+        <source>Disable</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1038"/>
+        <source>Reset password</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1039"/>
+        <source>Reset account</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1040"/>
+        <source>Edit UPN suffixes</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1041"/>
+        <source>Change domain controller</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1043"/>
+        <source>New</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_object.cpp" line="1102"/>
         <source> [Filtering enabled]</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>ConsolePolicy</name>
+    <message>
+        <location filename="console_types/console_policy.cpp" line="260"/>
+        <source>Add link...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_policy.cpp" line="261"/>
+        <source>Edit...</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>ConsolePolicyRoot</name>
+    <message>
+        <location filename="console_types/console_policy.cpp" line="360"/>
+        <source>Create policy</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>ConsoleQueryFolder</name>
+    <message>
+        <location filename="console_types/console_query.cpp" line="626"/>
+        <source>Query folder</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_query.cpp" line="627"/>
+        <source>Query item</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_query.cpp" line="629"/>
+        <source>New</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_query.cpp" line="635"/>
+        <source>Edit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_query.cpp" line="637"/>
+        <source>&amp;Import query...</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>ConsoleQueryItem</name>
+    <message>
+        <location filename="console_types/console_query.cpp" line="548"/>
+        <source>Edit...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_types/console_query.cpp" line="549"/>
+        <source>Export query...</source>
         <translation></translation>
     </message>
 </context>
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="87"/>
-        <source>&amp;Properties</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_widget/console_widget.cpp" line="88"/>
+        <location filename="console_widget/console_widget.cpp" line="100"/>
         <source>&amp;Up one level</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="89"/>
+        <location filename="console_widget/console_widget.cpp" line="101"/>
         <source>&amp;Back</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="90"/>
+        <location filename="console_widget/console_widget.cpp" line="102"/>
         <source>&amp;Forward</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="94"/>
-        <location filename="console_widget/console_widget.cpp" line="98"/>
+        <location filename="console_widget/console_widget.cpp" line="103"/>
         <source>&amp;Refresh</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="99"/>
-        <source>&amp;Customize columns</source>
+        <location filename="console_widget/console_widget.cpp" line="104"/>
+        <source>&amp;Customize columns...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="100"/>
+        <location filename="console_widget/console_widget.cpp" line="109"/>
+        <source>Console Tree</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_widget/console_widget.cpp" line="111"/>
+        <source>Description Bar</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_widget/console_widget.cpp" line="118"/>
+        <source>Copy</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_widget/console_widget.cpp" line="119"/>
+        <source>Cut</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_widget/console_widget.cpp" line="120"/>
+        <source>Rename</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_widget/console_widget.cpp" line="121"/>
+        <source>Delete</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_widget/console_widget.cpp" line="122"/>
+        <source>Paste</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_widget/console_widget.cpp" line="123"/>
+        <source>Print</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_widget/console_widget.cpp" line="124"/>
+        <source>Refresh</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_widget/console_widget.cpp" line="125"/>
+        <source>Properties</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_widget/console_widget.cpp" line="105"/>
         <source>&amp;Icons</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="101"/>
+        <location filename="console_widget/console_widget.cpp" line="106"/>
         <source>&amp;List</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="102"/>
+        <location filename="console_widget/console_widget.cpp" line="107"/>
         <source>&amp;Detail</source>
         <translation></translation>
     </message>
@@ -587,12 +606,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="256"/>
+        <location filename="create_object_dialog.cpp" line="258"/>
         <source>Failed to create object %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_dialog.cpp" line="279"/>
+        <location filename="create_object_dialog.cpp" line="281"/>
         <source>Object %1 was created</source>
         <translation></translation>
     </message>
@@ -600,27 +619,27 @@
 <context>
     <name>CreatePolicyDialog</name>
     <message>
-        <location filename="create_policy_dialog.cpp" line="43"/>
+        <location filename="create_policy_dialog.cpp" line="39"/>
         <source>Create GPO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="48"/>
+        <location filename="create_policy_dialog.cpp" line="44"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="51"/>
+        <location filename="create_policy_dialog.cpp" line="47"/>
         <source>Create</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="98"/>
+        <location filename="create_policy_dialog.cpp" line="94"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="98"/>
+        <location filename="create_policy_dialog.cpp" line="94"/>
         <source>Group Policy Object with this name already exists.</source>
         <translation></translation>
     </message>
@@ -628,28 +647,28 @@
 <context>
     <name>CreateQueryFolderDialog</name>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="42"/>
+        <location filename="create_query_folder_dialog.cpp" line="43"/>
         <source>Create Query Folder</source>
         <oldsource>Create query folder</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="50"/>
+        <location filename="create_query_folder_dialog.cpp" line="51"/>
         <source>Create</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="54"/>
+        <location filename="create_query_folder_dialog.cpp" line="55"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="55"/>
+        <location filename="create_query_folder_dialog.cpp" line="56"/>
         <source>Description:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="71"/>
+        <location filename="create_query_folder_dialog.cpp" line="72"/>
         <source>New folder</source>
         <translation></translation>
     </message>
@@ -657,7 +676,7 @@
 <context>
     <name>CreateQueryItemDialog</name>
     <message>
-        <location filename="create_query_item_dialog.cpp" line="38"/>
+        <location filename="create_query_item_dialog.cpp" line="39"/>
         <source>Create Query</source>
         <translation></translation>
     </message>
@@ -695,18 +714,18 @@
 <context>
     <name>EditQueryFolderDialog</name>
     <message>
-        <location filename="edit_query_folder_dialog.cpp" line="41"/>
+        <location filename="edit_query_folder_dialog.cpp" line="42"/>
         <source>Edit Query Folder</source>
         <oldsource>Edit query folder</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_folder_dialog.cpp" line="52"/>
+        <location filename="edit_query_folder_dialog.cpp" line="53"/>
         <source>Name:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edit_query_folder_dialog.cpp" line="53"/>
+        <location filename="edit_query_folder_dialog.cpp" line="54"/>
         <source>Description:</source>
         <translation></translation>
     </message>
@@ -714,7 +733,7 @@
 <context>
     <name>EditQueryItemDialog</name>
     <message>
-        <location filename="edit_query_item_dialog.cpp" line="38"/>
+        <location filename="edit_query_item_dialog.cpp" line="39"/>
         <source>Edit Query</source>
         <translation></translation>
     </message>
@@ -934,22 +953,9 @@
 <context>
     <name>FindResults</name>
     <message>
-        <location filename="find_results.cpp" line="52"/>
-        <source>&amp;Properties</source>
+        <location filename="find_results.cpp" line="65"/>
+        <source>Find results</source>
         <translation></translation>
-    </message>
-    <message>
-        <location filename="find_results.cpp" line="72"/>
-        <source>&amp;Customize columns</source>
-        <translation></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="find_results.cpp" line="167"/>
-        <source>%n object(s)</source>
-        <translation>
-            <numerusform>%n object</numerusform>
-            <numerusform>%n objects</numerusform>
-        </translation>
     </message>
 </context>
 <context>
@@ -1245,36 +1251,31 @@
     </message>
     <message>
         <location filename="main_window.cpp" line="167"/>
-        <source>&amp;Navigation</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="main_window.cpp" line="168"/>
         <source>&amp;View</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="169"/>
+        <location filename="main_window.cpp" line="168"/>
         <source>&amp;Preferences</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="170"/>
+        <location filename="main_window.cpp" line="169"/>
         <source>&amp;Language</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="171"/>
+        <location filename="main_window.cpp" line="170"/>
         <source>&amp;Help</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="226"/>
+        <location filename="main_window.cpp" line="225"/>
         <source>Info</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="226"/>
+        <location filename="main_window.cpp" line="225"/>
         <source>Restart the app to switch to the selected language.</source>
         <translation></translation>
     </message>
@@ -1574,37 +1575,37 @@
 <context>
     <name>PolicyResultsWidget</name>
     <message>
-        <location filename="policy_results_widget.cpp" line="73"/>
+        <location filename="policy_results_widget.cpp" line="74"/>
         <source>Delete link</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="83"/>
+        <location filename="policy_results_widget.cpp" line="84"/>
         <source>Location</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="84"/>
+        <location filename="policy_results_widget.cpp" line="85"/>
         <source>Enforced</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="85"/>
+        <location filename="policy_results_widget.cpp" line="86"/>
         <source>Disabled</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="86"/>
+        <location filename="policy_results_widget.cpp" line="87"/>
         <source>Path</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="153"/>
+        <location filename="policy_results_widget.cpp" line="154"/>
         <source>Incorrect permissions detected</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="154"/>
+        <location filename="policy_results_widget.cpp" line="155"/>
         <source>Permissions for this policy&apos;s GPT don&apos;t match the permissions for it&apos;s GPC object. Would you like to update GPT permissions?</source>
         <translation></translation>
     </message>
@@ -1751,7 +1752,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_object.cpp" line="686"/>
+        <location filename="console_types/console_object.cpp" line="607"/>
         <source>Add to Group</source>
         <translation></translation>
     </message>
@@ -1788,12 +1789,12 @@
 <context>
     <name>RenamePolicyDialog</name>
     <message>
-        <location filename="rename_policy_dialog.cpp" line="43"/>
+        <location filename="rename_policy_dialog.cpp" line="42"/>
         <source>Rename Policy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_policy_dialog.cpp" line="55"/>
+        <location filename="rename_policy_dialog.cpp" line="54"/>
         <source>Name:</source>
         <translation></translation>
     </message>
@@ -2244,7 +2245,7 @@
 <context>
     <name>console_object</name>
     <message numerus="yes">
-        <location filename="console_types/console_object.cpp" line="1121"/>
+        <location filename="console_types/console_object.cpp" line="1016"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
@@ -2255,12 +2256,12 @@
 <context>
     <name>console_policy</name>
     <message>
-        <location filename="console_types/console_policy.cpp" line="225"/>
+        <location filename="console_types/console_policy.cpp" line="196"/>
         <source>Add Link</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_policy.cpp" line="258"/>
+        <location filename="console_types/console_policy.cpp" line="311"/>
         <source>Are you sure you want to delete this policy and all of it&apos;s links?</source>
         <translation></translation>
     </message>
@@ -2268,18 +2269,18 @@
 <context>
     <name>console_query.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="451"/>
+        <location filename="console_types/console_query.cpp" line="396"/>
         <source>Export Query</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="453"/>
-        <location filename="console_types/console_query.cpp" line="478"/>
+        <location filename="console_types/console_query.cpp" line="398"/>
+        <location filename="console_types/console_query.cpp" line="423"/>
         <source>JSON (*.json)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="476"/>
+        <location filename="console_types/console_query.cpp" line="421"/>
         <source>Import Query</source>
         <translation></translation>
     </message>
@@ -2287,7 +2288,7 @@
 <context>
     <name>policy</name>
     <message>
-        <location filename="console_types/console_policy.cpp" line="79"/>
+        <location filename="console_types/console_policy.cpp" line="91"/>
         <source>Group Policy Objects</source>
         <translation></translation>
     </message>
@@ -2295,7 +2296,7 @@
 <context>
     <name>policy_model</name>
     <message>
-        <location filename="console_types/console_policy.cpp" line="60"/>
+        <location filename="console_types/console_policy.cpp" line="55"/>
         <source>Name</source>
         <translation></translation>
     </message>
@@ -2303,7 +2304,7 @@
 <context>
     <name>query</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="170"/>
+        <location filename="console_types/console_query.cpp" line="167"/>
         <source>Saved Queries</source>
         <translation></translation>
     </message>
@@ -2311,30 +2312,30 @@
 <context>
     <name>query.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="281"/>
+        <location filename="console_types/console_query.cpp" line="286"/>
         <source>Name may not be empty</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="282"/>
-        <location filename="console_types/console_query.cpp" line="314"/>
-        <location filename="console_types/console_query.cpp" line="317"/>
-        <location filename="console_types/console_query.cpp" line="498"/>
+        <location filename="console_types/console_query.cpp" line="287"/>
+        <location filename="console_types/console_query.cpp" line="319"/>
+        <location filename="console_types/console_query.cpp" line="322"/>
+        <location filename="console_types/console_query.cpp" line="443"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="313"/>
+        <location filename="console_types/console_query.cpp" line="318"/>
         <source>There&apos;s already an item with this name.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="316"/>
+        <location filename="console_types/console_query.cpp" line="321"/>
         <source>Names cannot contain &quot;/&quot;.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="497"/>
+        <location filename="console_types/console_query.cpp" line="442"/>
         <source>Query file is corrupted.</source>
         <translation></translation>
     </message>
@@ -2342,12 +2343,12 @@
 <context>
     <name>query_folder.cpp</name>
     <message>
-        <location filename="console_types/console_query.cpp" line="57"/>
+        <location filename="console_types/console_query.cpp" line="54"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_types/console_query.cpp" line="58"/>
+        <location filename="console_types/console_query.cpp" line="55"/>
         <source>Description</source>
         <translation></translation>
     </message>
