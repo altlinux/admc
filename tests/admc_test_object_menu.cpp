@@ -21,7 +21,7 @@
 #include "admc_test_object_menu.h"
 
 #include "adldap.h"
-#include "console_types/object_impl.h"
+#include "console_impls/object_impl.h"
 #include "create_object_dialog.h"
 #include "filter_widget/filter_widget_advanced_tab.h"
 #include "filter_widget/filter_widget_simple_tab.h"

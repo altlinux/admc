@@ -22,7 +22,7 @@
 #define CONSOLE_QUERY_H
 
 #include "console_widget/console_impl.h"
-#include "console_types/my_console_role.h"
+#include "console_impls/my_console_role.h"
 
 enum QueryItemRole {
     QueryItemRole_Description = MyConsoleRole_LAST + 1,

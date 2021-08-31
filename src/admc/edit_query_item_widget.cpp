@@ -22,7 +22,7 @@
 #include "edit_query_item_widget_p.h"
 
 #include "ad_filter.h"
-#include "console_types/query_item_impl.h"
+#include "console_impls/query_item_impl.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/select_base_widget.h"
 

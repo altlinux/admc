@@ -21,11 +21,11 @@
 #include "select_object_dialog.h"
 
 #include "adldap.h"
-#include "console_types/object_impl.h"
+#include "console_impls/object_impl.h"
 #include "globals.h"
 #include "utils.h"
 #include "settings.h"
-#include "console_types/object_impl.h"
+#include "console_impls/object_impl.h"
 #include "filter_widget/select_classes_widget.h"
 #include "filter_widget/select_base_widget.h"
 #include "select_object_advanced_dialog.h"

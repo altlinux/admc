@@ -21,7 +21,7 @@
 #include "properties_dialog.h"
 
 #include "adldap.h"
-#include "console_types/object_impl.h"
+#include "console_impls/object_impl.h"
 #include "globals.h"
 #include "settings.h"
 #include "status.h"

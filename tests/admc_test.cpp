@@ -21,7 +21,7 @@
 #include "admc_test.h"
 
 #include "adldap.h"
-#include "console_types/object_impl.h"
+#include "console_impls/object_impl.h"
 #include "filter_widget/filter_widget_simple_tab.h"
 #include "filter_widget/select_base_widget.h"
 #include "globals.h"

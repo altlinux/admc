@@ -21,8 +21,8 @@
 #include "select_policy_dialog.h"
 
 #include "adldap.h"
-#include "console_types/policy_impl.h"
-#include "console_types/policy_root_impl.h"
+#include "console_impls/policy_impl.h"
+#include "console_impls/policy_root_impl.h"
 #include "globals.h"
 #include "status.h"
 #include "utils.h"

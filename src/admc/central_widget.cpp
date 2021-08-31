@@ -21,11 +21,11 @@
 #include "central_widget.h"
 
 #include "adldap.h"
-#include "console_types/object_impl.h"
-#include "console_types/policy_impl.h"
-#include "console_types/policy_root_impl.h"
-#include "console_types/query_item_impl.h"
-#include "console_types/query_folder_impl.h"
+#include "console_impls/object_impl.h"
+#include "console_impls/policy_impl.h"
+#include "console_impls/policy_root_impl.h"
+#include "console_impls/query_item_impl.h"
+#include "console_impls/query_folder_impl.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 

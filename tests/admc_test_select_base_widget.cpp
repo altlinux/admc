@@ -20,7 +20,7 @@
 
 #include "admc_test_select_base_widget.h"
 
-#include "console_types/object_impl.h"
+#include "console_impls/object_impl.h"
 #include "filter_widget/select_base_widget.h"
 #include "globals.h"
 #include "select_container_dialog.h"

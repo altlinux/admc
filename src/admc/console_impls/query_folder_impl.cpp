@@ -18,12 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_types/query_folder_impl.h"
+#include "console_impls/query_folder_impl.h"
 
 #include "adldap.h"
 #include "central_widget.h"
-#include "console_types/object_impl.h"
-#include "console_types/query_item_impl.h"
+#include "console_impls/object_impl.h"
+#include "console_impls/query_item_impl.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"

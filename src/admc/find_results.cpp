@@ -22,14 +22,14 @@
 
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
-#include "console_types/object_impl.h"
+#include "console_impls/object_impl.h"
 #include "settings.h"
 #include "utils.h"
 #include "item_type.h"
 #include "filter_dialog.h"
 #include "policy_results_widget.h"
 
-#include "console_types/query_item_impl.h"
+#include "console_impls/query_item_impl.h"
 
 #include <QMenu>
 #include <QVBoxLayout>

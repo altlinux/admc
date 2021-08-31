@@ -25,7 +25,7 @@
 #include "central_widget.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/console_impl.h"
-#include "console_types/my_console_role.h"
+#include "console_impls/my_console_role.h"
 
 class QStandardItem;
 class AdObject;

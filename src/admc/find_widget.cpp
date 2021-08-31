@@ -21,7 +21,7 @@
 #include "find_widget.h"
 
 #include "adldap.h"
-#include "console_types/object_impl.h"
+#include "console_impls/object_impl.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/select_base_widget.h"
 #include "find_results.h"

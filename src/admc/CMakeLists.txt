@@ -51,11 +51,11 @@ set(ADMC_SOURCES
     filter_classes_widget.cpp
     edit_query_item_widget.cpp
     
-    console_types/object_impl.cpp
-    console_types/policy_impl.cpp
-    console_types/query_item_impl.cpp
-    console_types/query_folder_impl.cpp
-    console_types/policy_root_impl.cpp
+    console_impls/object_impl.cpp
+    console_impls/policy_impl.cpp
+    console_impls/query_item_impl.cpp
+    console_impls/query_folder_impl.cpp
+    console_impls/policy_root_impl.cpp
 
     move_object_dialog.cpp
     rename_object_dialog.cpp

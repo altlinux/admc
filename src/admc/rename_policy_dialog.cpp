@@ -21,7 +21,7 @@
 #include "rename_policy_dialog.h"
 
 #include "adldap.h"
-#include "console_types/policy_impl.h"
+#include "console_impls/policy_impl.h"
 #include "globals.h"
 #include "rename_object_dialog.h"
 #include "status.h"
