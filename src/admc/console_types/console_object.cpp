@@ -752,7 +752,7 @@ void ConsoleObject::delete_action(const QList<QModelIndex> &index_list) {
     }
 
     // NOTE: also delete in query tree
-    const QModelIndex query_root = console_query_head(console);
+    const QModelIndex query_root = get_query_tree_root(console);
     if (query_root.isValid()) {
         console_object_delete(console, deleted_list, query_root);
     }
