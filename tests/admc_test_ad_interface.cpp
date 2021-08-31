@@ -35,7 +35,8 @@ void ADMCTestAdInterface::cleanup() {
 
     if (!search_results.isEmpty()) {
         const QString dn = search_results.keys()[0];
-        ad.gpo_delete(dn);
+        bool deleted_object;
+        ad.gpo_delete(dn, &deleted_object);
     }
 
     ADMCTest::cleanup();
@@ -78,7 +79,8 @@ void ADMCTestAdInterface::create_and_gpo_delete() {
     QCOMPARE(linked_before, true);
 
     // Delete again;
-    const bool delete_created_success = ad.gpo_delete(gpo_dn);
+    bool deleted_object;
+    const bool delete_created_success = ad.gpo_delete(gpo_dn, &deleted_object);
     QVERIFY(delete_created_success);
 
     const bool linked_after = ou_is_linked_to_gpo();
@@ -118,7 +120,8 @@ void ADMCTestAdInterface::gpo_check_perms() {
     QVERIFY(gpo_check_perms_ok_2);
     QCOMPARE(perms_after, false);
 
-    const bool delete_success = ad.gpo_delete(gpc_dn);
+    bool deleted_object;
+    const bool delete_success = ad.gpo_delete(gpc_dn, &deleted_object);
     QVERIFY(delete_success);
 }
 

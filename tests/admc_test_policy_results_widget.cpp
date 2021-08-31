@@ -55,7 +55,8 @@ void ADMCTestPolicyResultsWidget::cleanupTestCase() {
     const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, attributes);
 
     for (const QString &dn : search_results.keys()) {
-        ad.gpo_delete(dn);
+        bool deleted_object;
+        ad.gpo_delete(dn, &deleted_object);
     }
 }
 
