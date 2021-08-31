@@ -54,6 +54,7 @@ set(ADMC_SOURCES
     console_types/object_impl.cpp
     console_types/policy_impl.cpp
     console_types/console_query.cpp
+    console_types/query_folder_impl.cpp
     console_types/policy_root_impl.cpp
 
     move_object_dialog.cpp

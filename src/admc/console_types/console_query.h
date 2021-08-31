@@ -21,19 +21,8 @@
 #ifndef CONSOLE_QUERY_H
 #define CONSOLE_QUERY_H
 
-#include "central_widget.h"
-#include "console_widget/console_widget.h"
 #include "console_widget/console_impl.h"
 #include "console_types/my_console_role.h"
-
-class QStandardItem;
-class QModelIndex;
-class QStandardItem;
-class QString;
-class ConsoleWidget;
-class ConsoleActions;
-template <typename T>
-class QList;
 
 enum QueryItemRole {
     QueryItemRole_Description = MyConsoleRole_LAST + 1,
@@ -53,18 +42,10 @@ enum QueryColumn {
     QueryColumn_COUNT,
 };
 
-QList<QString> console_query_folder_header_labels();
-QList<int> console_query_folder_default_columns();
-void console_query_folder_load(const QList<QStandardItem *> &row, const QString &name, const QString &description);
-QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent);
 void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children);
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent);
-void console_query_tree_init(ConsoleWidget *console);
-void console_query_tree_save(ConsoleWidget *console);
-bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
-QString console_query_folder_path(const QModelIndex &index);
-void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch = true);
-QModelIndex get_query_tree_root(ConsoleWidget *console);
+void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index);
+QHash<QString, QVariant> console_query_item_save(const QModelIndex &index);
 
 class ConsoleQueryItem final : public ConsoleImpl {
     Q_OBJECT
@@ -91,35 +72,6 @@ private:
     void on_edit();
     void on_export();
 
-};
-
-class ConsoleQueryFolder final : public ConsoleImpl {
-    Q_OBJECT
-
-public:
-    ConsoleQueryFolder(ConsoleWidget *console_arg);
-
-    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
-    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
-
-    QList<QAction *> get_all_custom_actions() const override;
-    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
-    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
-
-    void delete_action(const QList<QModelIndex> &index_list) override;
-    void cut(const QList<QModelIndex> &index_list) override;
-    void copy(const QList<QModelIndex> &index_list) override;
-    void paste(const QList<QModelIndex> &index_list) override;
-
-private:
-    QAction *new_action;
-    QAction *edit_action;
-    QAction *import_action;
-
-    void on_new_query_folder();
-    void on_new_query_item();
-    void on_edit();
-    void on_import();
 };
 
 #endif /* CONSOLE_QUERY_H */

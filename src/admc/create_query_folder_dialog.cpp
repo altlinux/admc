@@ -22,6 +22,7 @@
 
 #include "ad_filter.h"
 #include "console_types/console_query.h"
+#include "console_types/query_folder_impl.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/select_base_widget.h"
 #include "globals.h"

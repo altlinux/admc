@@ -21,6 +21,7 @@
 #include "create_query_item_dialog.h"
 
 #include "console_types/console_query.h"
+#include "console_types/query_folder_impl.h"
 #include "edit_query_item_widget.h"
 #include "utils.h"
 #include "item_type.h"

@@ -25,6 +25,7 @@
 #include "console_types/policy_impl.h"
 #include "console_types/policy_root_impl.h"
 #include "console_types/console_query.h"
+#include "console_types/query_folder_impl.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 
@@ -93,7 +94,7 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
     auto query_item_impl = new ConsoleQueryItem(console);
     console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    auto query_folder_impl = new ConsoleQueryFolder(console);
+    auto query_folder_impl = new QueryFolderImpl(console);
     console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
     // NOTE: requires all results to be initialized

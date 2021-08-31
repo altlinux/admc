@@ -24,6 +24,7 @@
 #include "central_widget.h"
 #include "console_types/policy_impl.h"
 #include "console_types/console_query.h"
+#include "console_types/query_folder_impl.h"
 #include "globals.h"
 #include "search_thread.h"
 #include "select_object_dialog.h"
