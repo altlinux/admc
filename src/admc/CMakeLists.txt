@@ -52,7 +52,7 @@ set(ADMC_SOURCES
     edit_query_item_widget.cpp
     
     console_types/object_impl.cpp
-    console_types/console_policy.cpp
+    console_types/policy_impl.cpp
     console_types/console_query.cpp
     console_types/policy_root_impl.cpp
 

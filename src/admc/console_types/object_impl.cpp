@@ -22,7 +22,7 @@
 
 #include "adldap.h"
 #include "central_widget.h"
-#include "console_types/console_policy.h"
+#include "console_types/policy_impl.h"
 #include "console_types/console_query.h"
 #include "globals.h"
 #include "search_thread.h"

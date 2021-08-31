@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_types/console_policy.h"
+#include "console_types/policy_impl.h"
 
 #include "adldap.h"
 #include "central_widget.h"
@@ -55,7 +55,7 @@ QList<QString> console_policy_search_attributes() {
     return {ATTRIBUTE_DISPLAY_NAME};
 }
 
-bool ConsolePolicy::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     const bool dropped_are_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
     if (!dropped_are_objects) {
         return false;
@@ -74,7 +74,7 @@ bool ConsolePolicy::can_drop(const QList<QPersistentModelIndex> &dropped_list, c
     return dropped_contain_ou;
 }
 
-void ConsolePolicy::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     const QString policy_dn = target.data(PolicyRole_DN).toString();
     const QList<QString> policy_list = {policy_dn};
 
@@ -136,7 +136,7 @@ void console_policy_add_link(ConsoleWidget *console, const QList<QString> &polic
     g_status()->display_ad_messages(ad, console);
 }
 
-void ConsolePolicy::on_add_link() {
+void PolicyImpl::on_add_link() {
     auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, console);
     dialog->setWindowTitle(QCoreApplication::translate("console_policy", "Add Link"));
 
@@ -156,7 +156,7 @@ void ConsolePolicy::on_add_link() {
     dialog->open();
 }
 
-void ConsolePolicy::on_edit() {
+void PolicyImpl::on_edit() {
     const QString dn = get_selected_dn(console, ItemType_Policy, PolicyRole_DN);
 
     const QString filesys_path = [&]() {
@@ -196,7 +196,7 @@ void ConsolePolicy::on_edit() {
     process->start(QIODevice::ReadOnly);
 }
 
-ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg)
+PolicyImpl::PolicyImpl(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     policy_results_widget = policy_results_widget_arg;
 
@@ -207,24 +207,24 @@ ConsolePolicy::ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, Con
 
     connect(
         add_link_action, &QAction::triggered,
-        this, &ConsolePolicy::on_add_link);
+        this, &PolicyImpl::on_add_link);
     connect(
         edit_action, &QAction::triggered,
-        this, &ConsolePolicy::on_edit);
+        this, &PolicyImpl::on_edit);
 }
 
-void ConsolePolicy::selected_as_scope(const QModelIndex &index) {
+void PolicyImpl::selected_as_scope(const QModelIndex &index) {
     policy_results_widget->update(index);
 }
 
-QList<QAction *> ConsolePolicy::get_all_custom_actions() const {
+QList<QAction *> PolicyImpl::get_all_custom_actions() const {
     return {
         add_link_action,
         edit_action,
     };
 }
 
-QSet<QAction *> ConsolePolicy::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> PolicyImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<QAction *> out;
 
     if (single_selection) {
@@ -235,7 +235,7 @@ QSet<QAction *> ConsolePolicy::get_custom_actions(const QModelIndex &index, cons
     return out;
 }
 
-QSet<StandardAction> ConsolePolicy::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Delete);
@@ -248,11 +248,11 @@ QSet<StandardAction> ConsolePolicy::get_standard_actions(const QModelIndex &inde
     return out;
 }
 
-void ConsolePolicy::rename(const QList<QModelIndex> &index_list) {
+void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
     rename_dialog->open();
 }
 
-void ConsolePolicy::delete_action(const QList<QModelIndex> &index_list) {
+void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
     const bool confirmed = confirmation_dialog(QCoreApplication::translate("console_policy", "Are you sure you want to delete this policy and all of it's links?"), console);
     if (!confirmed) {
         return;
@@ -287,7 +287,7 @@ void ConsolePolicy::delete_action(const QList<QModelIndex> &index_list) {
     g_status()->display_ad_messages(ad, console);
 }
 
-void ConsolePolicy::refresh(const QList<QModelIndex> &index_list) {
+void PolicyImpl::refresh(const QList<QModelIndex> &index_list) {
     if (index_list.size() != 1) {
         return;
     }

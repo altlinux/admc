@@ -23,7 +23,7 @@
 #include "adldap.h"
 #include "central_widget.h"
 #include "console_types/object_impl.h"
-#include "console_types/console_policy.h"
+#include "console_types/policy_impl.h"
 #include "globals.h"
 #include "gplink.h"
 #include "policy_results_widget.h"

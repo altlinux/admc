@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONSOLE_POLICY_H
-#define CONSOLE_POLICY_H
+#ifndef POLICY_IMPL_H
+#define POLICY_IMPL_H
 
 #include "central_widget.h"
 #include "console_widget/console_widget.h"
@@ -34,10 +34,6 @@ class CreatePolicyDialog;
 template <typename T>
 class QList;
 
-/**
- * Some f-ns used for models that store objects.
- */
-
 enum PolicyRole {
     PolicyRole_DN = ConsoleRole_LAST + 1,
 
@@ -48,11 +44,11 @@ void console_policy_load(const QList<QStandardItem *> &row, const AdObject &obje
 QList<QString> console_policy_search_attributes();
 void console_policy_add_link(ConsoleWidget *console, const QList<QString> &policy_list, const QList<QString> &ou_list, PolicyResultsWidget *policy_results_widget);
 
-class ConsolePolicy final : public ConsoleImpl {
+class PolicyImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    ConsolePolicy(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg);
+    PolicyImpl(PolicyResultsWidget *policy_results_widget_arg, ConsoleWidget *console_arg);
 
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
@@ -77,4 +73,4 @@ private:
     void on_edit();
 };
 
-#endif /* CONSOLE_POLICY_H */
+#endif /* POLICY_IMPL_H */
