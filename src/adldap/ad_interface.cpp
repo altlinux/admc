@@ -1484,7 +1484,7 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
     return seen_stack;
 }
 
-bool AdInterface::gpo_delete(const QString &dn) {
+bool AdInterface::gpo_delete(const QString &dn, bool *deleted_object) {
     // NOTE: try to execute both steps, even if first one
     // (deleting gpc) fails
 

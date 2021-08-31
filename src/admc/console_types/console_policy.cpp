@@ -324,16 +324,15 @@ void ConsolePolicy::delete_action(const QList<QModelIndex> &index_list) {
 
     for (const QPersistentModelIndex &index : persistent_list) {
         const QString dn = index.data(PolicyRole_DN).toString();
-        const bool success = ad.gpo_delete(dn);
+
+        bool deleted_object = false;
+        ad.gpo_delete(dn, &deleted_object);
 
         // NOTE: object may get deleted successfuly but
         // deleting GPT fails which makes gpo_delete() fail
         // as a whole, but we still want to remove gpo from
         // the console in that case
-        const AdObject gpo_object = ad.search_object(dn);
-        const bool object_deleted = gpo_object.is_empty();
-
-        if (success || object_deleted) {
+        if (deleted_object) {
             console->delete_item(index);
         }
     }

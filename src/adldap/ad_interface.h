@@ -166,7 +166,7 @@ public:
 
     // "dn_out" is set to the dn of created gpo
     bool gpo_add(const QString &name, QString &dn_out);
-    bool gpo_delete(const QString &dn);
+    bool gpo_delete(const QString &dn, bool *deleted_object);
     bool gpo_check_perms(const QString &gpo, bool *ok);
     bool gpo_sync_perms(const QString &gpo);
 
