@@ -198,35 +198,6 @@ void ADMCTestObjectMenu::object_menu_move() {
     QVERIFY(true);
 }
 
-void ADMCTestObjectMenu::object_menu_able_account_data() {
-    QTest::addColumn<bool>("final_state");
-    QTest::addColumn<QDate>("date");
-    QTest::addColumn<QString>("value");
-
-    QTest::newRow("enable") << true << QDate(2011, 11, 11) << "129655295400000000";
-    QTest::newRow("disable") << false << QDate() << AD_LARGE_INTEGER_DATETIME_NEVER_2;
-    ;
-}
-
-void ADMCTestObjectMenu::object_menu_able_account() {
-    QFETCH(bool, final_state);
-
-    const QString dn = test_object_dn(TEST_USER, CLASS_USER);
-
-    ad.object_add(dn, CLASS_USER);
-
-    // Setup initial disabled state
-    ad.user_set_account_option(dn, AccountOption_Disabled, !final_state);
-
-    // Modify state using object menu
-    object_operation_set_disabled({dn}, final_state, parent_widget);
-
-    // Check that final disabled state has changed
-    const AdObject update_object = ad.search_object(dn);
-    const bool current_state = update_object.get_account_option(AccountOption_Disabled, ad.adconfig());
-    QCOMPARE(current_state, final_state);
-}
-
 void ADMCTestObjectMenu::object_menu_find_simple() {
     const QString parent = test_arena_dn();
 

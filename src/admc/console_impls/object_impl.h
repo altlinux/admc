@@ -52,31 +52,6 @@ enum ObjectRole {
     ObjectRole_LAST,
 };
 
-void console_object_load(const QList<QStandardItem *> row, const AdObject &object);
-void console_object_item_data_load(QStandardItem *item, const AdObject &object);
-QList<QString> object_impl_column_labels();
-QList<int> object_impl_default_columns();
-QList<QString> console_object_search_attributes();
-void console_object_create(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
-void console_object_create(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
-void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
-void console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
-
-// NOTE: this f-ns don't do anything with console. Just
-// convenience code for reuse
-QList<QString> object_operation_delete(const QList<QString> &targets, QWidget *parent);
-QList<QString> object_operation_set_disabled(const QList<QString> &targets, const bool disabled, QWidget *parent);
-void object_operation_add_to_group(const QList<QString> &targets, QWidget *parent);
-
-bool console_object_is_ou(const QModelIndex &index);
-void console_object_load_root_text(QStandardItem *item);
-
-// NOTE: this may return an invalid index if there's no tree
-// of objects setup
-QModelIndex get_object_tree_root(ConsoleWidget *console);
-
-QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
-
 class ObjectImpl final : public ConsoleImpl {
     Q_OBJECT
 
@@ -95,7 +70,6 @@ public:
     void activate(const QModelIndex &index) override;
 
     QList<QAction *> get_all_custom_actions() const override;
-
     QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<QAction *> get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const override;
 
@@ -112,6 +86,21 @@ public:
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
+
+private slots:
+    void on_new_user();
+    void on_new_computer();
+    void on_new_ou();
+    void on_new_group();
+    void on_move();
+    void on_enable();
+    void on_disable();
+    void on_add_to_group();
+    void on_find();
+    void on_reset_password();
+    void on_edit_upn_suffixes();
+    void on_reset_account();
+    void on_change_dc();
 
 private:
     PolicyImpl *policy_impl;
@@ -133,20 +122,6 @@ private:
     bool find_action_enabled;
     bool refresh_action_enabled;
 
-    void on_new_user();
-    void on_new_computer();
-    void on_new_ou();
-    void on_new_group();
-    void on_move();
-    void on_enable();
-    void on_disable();
-    void on_add_to_group();
-    void on_find();
-    void on_reset_password();
-    void on_edit_upn_suffixes();
-    void on_reset_account();
-    void on_change_dc();
-
     void new_object(const QString &object_class);
     void set_disabled(const bool disabled);
     void drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
@@ -154,5 +129,20 @@ private:
     void move_and_rename(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn, const QList<QString> &new_dn_list);
     void move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
 };
+
+void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
+void object_impl_add_objects_to_console_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
+void console_object_load(const QList<QStandardItem *> row, const AdObject &object);
+void console_object_item_data_load(QStandardItem *item, const AdObject &object);
+QList<QString> object_impl_column_labels();
+QList<int> object_impl_default_columns();
+QList<QString> console_object_search_attributes();
+void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
+void console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
+bool console_object_is_ou(const QModelIndex &index);
+// NOTE: this may return an invalid index if there's no tree
+// of objects setup
+QModelIndex get_object_tree_root(ConsoleWidget *console);
+QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
 
 #endif /* OBJECT_IMPL_H */

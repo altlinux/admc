@@ -35,9 +35,6 @@ private slots:
     void object_menu_move();
     void object_menu_rename();
 
-    void object_menu_able_account_data();
-    void object_menu_able_account();
-
     void object_menu_find_simple();
     void object_menu_find_advanced();
 

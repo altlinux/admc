@@ -22,7 +22,6 @@
 
 #include "adldap.h"
 #include "change_dc_dialog.h"
-#include "console_impls/object_impl.h"
 #include "settings.h"
 #include "utils.h"
 
@@ -33,13 +32,10 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 
-ChangeDCDialog::ChangeDCDialog(QStandardItem *domain_head_item_arg, QWidget *parent)
+ChangeDCDialog::ChangeDCDialog(QWidget *parent)
 : QDialog(parent) {
-    setAttribute(Qt::WA_DeleteOnClose);
     setMinimumSize(500, 200);
     setWindowTitle(tr("Change Domain Controller"));
-
-    domain_head_item = domain_head_item_arg;
 
     select_button = new QRadioButton(tr("Select:"));
     auto custom_button = new QRadioButton(tr("Custom:"));
@@ -109,8 +105,6 @@ void ChangeDCDialog::accept() {
     }
     
     AdInterface::set_dc(selected_dc);
-
-    console_object_load_root_text(domain_head_item);
 
     if (save_dc_checkbox->isChecked()) {
         settings_set_variant(SETTING_dc, selected_dc);
