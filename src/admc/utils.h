@@ -52,8 +52,6 @@ class QHash;
 
 QList<QStandardItem *> make_item_row(const int count);
 
-void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos);
-
 // Convenience f-n so that you can pass a mapping of
 // column => label
 // Columns not in the map get empty labels

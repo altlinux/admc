@@ -59,11 +59,6 @@ QList<QStandardItem *> make_item_row(const int count) {
     return row;
 }
 
-void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos) {
-    const QPoint global_pos = view->mapToGlobal(pos);
-    menu->exec(global_pos);
-}
-
 void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap<int, QString> &labels_map) {
     for (int col = 0; col < model->columnCount(); col++) {
         const QString label = [=]() {

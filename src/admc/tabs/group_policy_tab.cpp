@@ -159,19 +159,21 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
         return;
     }
 
-    QMenu menu(this);
-    menu.addAction(tr("Remove link"), [this, gpo]() {
+    auto menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+
+    menu->addAction(tr("Remove link"), [this, gpo]() {
         const QList<QString> removed = {gpo};
         remove_link(removed);
     });
-    menu.addAction(tr("Move up"), [this, gpo]() {
+    menu->addAction(tr("Move up"), [this, gpo]() {
         move_link_up(gpo);
     });
-    menu.addAction(tr("Move down"), [this, gpo]() {
+    menu->addAction(tr("Move down"), [this, gpo]() {
         move_link_down(gpo);
     });
 
-    exec_menu_from_view(&menu, view, pos);
+    menu->popup(pos);
 }
 
 void GroupPolicyTab::on_add_button() {
