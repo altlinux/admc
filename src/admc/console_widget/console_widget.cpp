@@ -775,6 +775,8 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
 
     ConsoleImpl *impl = get_current_scope_impl();
 
+    impl->selected_as_scope(current);
+
     // Switch to new parent for results view's model if view
     // exists
     const bool results_view_exists = (impl->view() != nullptr);
