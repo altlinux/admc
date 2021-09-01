@@ -1050,27 +1050,44 @@ void ConsoleWidgetPrivate::update_view_actions() {
     customize_columns_action->setVisible(results_view_exists);
 }
 
-void ConsoleWidget::add_view_actions(QMenu *menu) {
-    menu->addAction(d->set_results_to_icons_action);
-    menu->addAction(d->set_results_to_list_action);
-    menu->addAction(d->set_results_to_detail_action);
-
-    menu->addSeparator();
-
-    menu->addAction(d->customize_columns_action);
+QAction *ConsoleWidget::refresh_current_scope_action() const {
+    return d->refresh_current_scope_action;
 }
 
-void ConsoleWidget::add_preferences_actions(QMenu *menu) {
-    menu->addAction(d->toggle_console_tree_action);
-    menu->addAction(d->toggle_description_bar_action);
+QAction *ConsoleWidget::navigate_up_action() const {
+    return d->navigate_up_action;
 }
 
-void ConsoleWidget::add_toolbar_actions(QToolBar *toolbar) {
-    toolbar->addAction(d->navigate_back_action);
-    toolbar->addAction(d->navigate_forward_action);
-    toolbar->addAction(d->navigate_up_action);
-    toolbar->addSeparator();
-    toolbar->addAction(d->refresh_current_scope_action);
+QAction *ConsoleWidget::navigate_back_action() const {
+    return d->navigate_back_action;
+}
+
+QAction *ConsoleWidget::navigate_forward_action() const {
+    return d->navigate_forward_action;
+}
+
+QAction *ConsoleWidget::set_results_to_icons_action() const {
+    return d->set_results_to_icons_action;
+}
+
+QAction *ConsoleWidget::set_results_to_list_action() const {
+    return d->set_results_to_list_action;
+}
+
+QAction *ConsoleWidget::set_results_to_detail_action() const {
+    return d->set_results_to_detail_action;
+}
+
+QAction *ConsoleWidget::customize_columns_action() const {
+    return d->customize_columns_action;
+}
+
+QAction *ConsoleWidget::toggle_console_tree_action() const {
+    return d->toggle_console_tree_action;
+}
+
+QAction *ConsoleWidget::toggle_description_bar_action() const {
+    return d->toggle_description_bar_action;
 }
 
 // TODO: rename to get_current_scope_impl()

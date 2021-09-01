@@ -185,7 +185,11 @@ MainWindow::MainWindow()
     console->connect_to_action_menu(action_menu);
 
     // View
-    console->add_view_actions(view_menu);
+    view_menu->addAction(console->set_results_to_icons_action());
+    view_menu->addAction(console->set_results_to_list_action());
+    view_menu->addAction(console->set_results_to_detail_action());
+    view_menu->addSeparator();
+    view_menu->addAction(console->customize_columns_action());
     view_menu->addAction(open_filter_action);
 
     // Preferences
@@ -201,7 +205,8 @@ MainWindow::MainWindow()
     preferences_menu->addSeparator();
     preferences_menu->addAction(message_log_dock->toggleViewAction());
     preferences_menu->addAction(toolbar->toggleViewAction());
-    console->add_preferences_actions(preferences_menu);
+    preferences_menu->addAction(console->toggle_console_tree_action());
+    preferences_menu->addAction(console->toggle_description_bar_action());
 
     for (const auto language : language_list) {
         QAction *language_action = language_actions[language];
@@ -213,7 +218,11 @@ MainWindow::MainWindow()
     help_menu->addAction(about_action);
 
     // Toolbar
-    console->add_toolbar_actions(toolbar);
+    toolbar->addAction(console->navigate_back_action());
+    toolbar->addAction(console->navigate_forward_action());
+    toolbar->addAction(console->navigate_up_action());
+    toolbar->addSeparator();
+    toolbar->addAction(console->refresh_current_scope_action());
     toolbar->addAction(manual_action);
 
     //

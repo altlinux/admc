@@ -74,13 +74,10 @@ public:
     QWidget *default_results_widget;
     ConsoleImpl *default_impl;
 
-    QAction *properties_action;
     QAction *refresh_current_scope_action;
-
     QAction *navigate_up_action;
     QAction *navigate_back_action;
     QAction *navigate_forward_action;
-
     QAction *set_results_to_icons_action;
     QAction *set_results_to_list_action;
     QAction *set_results_to_detail_action;

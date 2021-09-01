@@ -42,7 +42,6 @@
 class ConsoleWidgetPrivate;
 class QStandardItem;
 class QMenu;
-class QToolBar;
 class ConsoleImpl;
 class ConsoleDragModel;
 
@@ -126,10 +125,6 @@ public:
     QStandardItem *get_item(const QModelIndex &index) const;
     QList<QStandardItem *> get_row(const QModelIndex &index) const;
 
-    void add_view_actions(QMenu *menu);
-    void add_preferences_actions(QMenu *menu);
-    void add_toolbar_actions(QToolBar *toolbar);
-
     QVariant save_state() const;
 
     // NOTE: all results should be registered before this is
@@ -141,6 +136,17 @@ public:
     void set_scope_view_visible(const bool visible);
 
     void connect_to_action_menu(QMenu *action_menu);
+
+    QAction *refresh_current_scope_action() const;
+    QAction *navigate_up_action() const;
+    QAction *navigate_back_action() const;
+    QAction *navigate_forward_action() const;
+    QAction *set_results_to_icons_action() const;
+    QAction *set_results_to_list_action() const;
+    QAction *set_results_to_detail_action() const;
+    QAction *customize_columns_action() const;
+    QAction *toggle_console_tree_action() const;
+    QAction *toggle_description_bar_action() const;
 
 private:
     ConsoleWidgetPrivate *d;

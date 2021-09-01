@@ -82,7 +82,7 @@ FindResults::~FindResults() {
 void FindResults::add_actions(QMenu *action_menu, QMenu *view_menu) {
     console->connect_to_action_menu(action_menu);
 
-    console->add_view_actions(view_menu);
+    view_menu->addAction(console->customize_columns_action());
 }
 
 void FindResults::clear() {
