@@ -39,9 +39,6 @@ enum PolicyRole {
     PolicyRole_LAST = ConsoleRole_LAST + 2,
 };
 
-void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object);
-QList<QString> console_policy_search_attributes();
-
 class PolicyImpl final : public ConsoleImpl {
     Q_OBJECT
 
@@ -63,14 +60,18 @@ public:
 
     void add_link(const QList<QString> &policy_list, const QList<QString> &ou_list);
 
+private slots:
+    void on_add_link();
+    void on_edit();
+
 private:
     PolicyResultsWidget *policy_results_widget;
     QDialog *rename_dialog;
     QAction *add_link_action;
     QAction *edit_action;
-
-    void on_add_link();
-    void on_edit();
 };
+
+void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object);
+QList<QString> console_policy_search_attributes();
 
 #endif /* POLICY_IMPL_H */

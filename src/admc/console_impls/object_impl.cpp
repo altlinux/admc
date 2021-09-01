@@ -481,7 +481,7 @@ void ObjectImpl::refresh(const QList<QModelIndex> &index_list) {
 }
 
 void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
-    const bool confirmed = confirmation_dialog(QCoreApplication::translate("ConsoleActions", "Are you sure you want to delete this object?"), console);
+    const bool confirmed = confirmation_dialog(tr("Are you sure you want to delete this object?"), console);
     if (!confirmed) {
         return;
     }
@@ -1204,7 +1204,7 @@ QModelIndex get_object_tree_root(ConsoleWidget *console) {
 
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index) {
     const int count = console->get_child_count(index);
-    const QString out = QCoreApplication::translate("console_object", "%n object(s)", "", count);
+    const QString out = QCoreApplication::translate("object_impl", "%n object(s)", "", count);
 
     return out;
 }
