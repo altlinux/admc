@@ -33,8 +33,6 @@ class CreatePolicyDialog;
 template <typename T>
 class QList;
 
-void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad);
-
 class PolicyRootImpl final : public ConsoleImpl {
     Q_OBJECT
 
@@ -51,12 +49,16 @@ public:
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
 
+private slots:
+    void on_dialog_created_policy(const QString &dn);
+
 private:
     QAction *create_policy_action;
     CreatePolicyDialog *create_policy_dialog;
 
-    void on_dialog_created_policy(const QString &dn);
     void create_policy_in_console(const AdObject &object);
 };
+
+void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad);
 
 #endif /* POLICY_ROOT_IMPL_H */

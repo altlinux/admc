@@ -42,12 +42,99 @@
 #include <QStandardItem>
 #include <QProcess>
 
+PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
+: ConsoleImpl(console_arg) {
+    set_results_view(new ResultsView(console_arg));
+
+    create_policy_dialog = new CreatePolicyDialog(console);
+
+    create_policy_action = new QAction(tr("Create policy"), this);
+
+    connect(
+        create_policy_action, &QAction::triggered,
+        create_policy_dialog, &QDialog::open);
+    connect(
+        create_policy_dialog, &CreatePolicyDialog::created_policy,
+        this, &PolicyRootImpl::on_dialog_created_policy);
+}
+
+void PolicyRootImpl::fetch(const QModelIndex &index) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QString base = g_adconfig->domain_head();
+    const SearchScope scope = SearchScope_All;
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+    const QList<QString> attributes = console_policy_search_attributes();
+    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+    for (const AdObject &object : results.values()) {
+        create_policy_in_console(object);
+    }
+}
+
+void PolicyRootImpl::refresh(const QList<QModelIndex> &index_list) {
+    if (index_list.size() != 1) {
+        return;
+    }
+
+    const QModelIndex index = index_list[0];
+
+    console->delete_children(index);
+    fetch(index);
+}
+
+QList<QAction *> PolicyRootImpl::get_all_custom_actions() const {
+    QList<QAction *> out;
+
+    out.append(create_policy_action);
+
+    return out;
+}
+
+QSet<QAction *> PolicyRootImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<QAction *> out;
+
+    out.insert(create_policy_action);
+
+    return out;
+}
+
+QSet<StandardAction> PolicyRootImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<StandardAction> out;
+
+    out.insert(StandardAction_Refresh);
+
+    return out;
+}
+
 QList<QString> PolicyRootImpl::column_labels() const {
-    return {QCoreApplication::translate("policy_model", "Name")};
+    return {tr("Name")};
 }
 
 QList<int> PolicyRootImpl::default_columns() const {
     return {0};
+}
+
+// NOTE: not adding policy object to the domain
+// tree, but i think it's ok?
+void PolicyRootImpl::on_dialog_created_policy(const QString &dn) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QString base = dn;
+    const SearchScope scope = SearchScope_Object;
+    const QString filter = QString();
+    const QList<QString> attributes = console_policy_search_attributes();
+    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+    const AdObject object = results[dn];
+
+    create_policy_in_console(object);
 }
 
 void PolicyRootImpl::create_policy_in_console(const AdObject &object) {
@@ -75,94 +162,7 @@ void PolicyRootImpl::create_policy_in_console(const AdObject &object) {
 void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
     const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, QModelIndex());
     auto policy_tree_head = head_row[0];
-    policy_tree_head->setText(QCoreApplication::translate("policy", "Group Policy Objects"));
+    policy_tree_head->setText(QCoreApplication::translate("policy_root_impl", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
     policy_tree_head->setIcon(QIcon::fromTheme("folder"));
-}
-
-void PolicyRootImpl::fetch(const QModelIndex &index) {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    const QString base = g_adconfig->domain_head();
-    const SearchScope scope = SearchScope_All;
-    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QList<QString> attributes = console_policy_search_attributes();
-    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
-
-    for (const AdObject &object : results.values()) {
-        create_policy_in_console(object);
-    }
-}
-
-PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
-: ConsoleImpl(console_arg) {
-    set_results_view(new ResultsView(console_arg));
-
-    create_policy_dialog = new CreatePolicyDialog(console);
-
-    create_policy_action = new QAction(tr("Create policy"), this);
-
-    connect(
-        create_policy_action, &QAction::triggered,
-        create_policy_dialog, &QDialog::open);
-    connect(
-        create_policy_dialog, &CreatePolicyDialog::created_policy,
-        this, &PolicyRootImpl::on_dialog_created_policy);
-}
-
-QList<QAction *> PolicyRootImpl::get_all_custom_actions() const {
-    QList<QAction *> out;
-
-    out.append(create_policy_action);
-
-    return out;
-}
-
-QSet<QAction *> PolicyRootImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
-    QSet<QAction *> out;
-
-    out.insert(create_policy_action);
-
-    return out;
-}
-
-QSet<StandardAction> PolicyRootImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
-    QSet<StandardAction> out;
-
-    out.insert(StandardAction_Refresh);
-
-    return out;
-}
-
-void PolicyRootImpl::refresh(const QList<QModelIndex> &index_list) {
-    if (index_list.size() != 1) {
-        return;
-    }
-
-    const QModelIndex index = index_list[0];
-
-    console->delete_children(index);
-    fetch(index);
-}
-
-// NOTE: not adding policy object to the domain
-// tree, but i think it's ok?
-void PolicyRootImpl::on_dialog_created_policy(const QString &dn) {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    const QString base = dn;
-    const SearchScope scope = SearchScope_Object;
-    const QString filter = QString();
-    const QList<QString> attributes = console_policy_search_attributes();
-    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
-
-    const AdObject object = results[dn];
-
-    create_policy_in_console(object);
 }
