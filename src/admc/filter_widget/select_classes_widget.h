@@ -32,12 +32,13 @@
 
 class QLineEdit;
 class SelectClassesDialog;
+class AdConfig;
 
 class SelectClassesWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    SelectClassesWidget(const QList<QString> class_list);
+    SelectClassesWidget(AdConfig *config, const QList<QString> class_list);
 
     QString get_filter() const;
 

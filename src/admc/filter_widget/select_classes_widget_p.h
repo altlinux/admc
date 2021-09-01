@@ -25,6 +25,7 @@
 #include <QVariant>
 
 class FilterClassesWidget;
+class AdConfig;
 
 class SelectClassesDialog final : public QDialog {
     Q_OBJECT
@@ -32,7 +33,7 @@ class SelectClassesDialog final : public QDialog {
 public:
     FilterClassesWidget *filter_classes_widget;
 
-    SelectClassesDialog(const QList<QString> class_list, QWidget *parent);
+    SelectClassesDialog(AdConfig *adconfig, const QList<QString> class_list, QWidget *parent);
     void open() override;
     void reject() override;
     void reset();

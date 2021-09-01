@@ -21,7 +21,6 @@
 #include "filter_classes_widget.h"
 
 #include "adldap.h"
-#include "globals.h"
 
 #include <QCheckBox>
 #include <QDialogButtonBox>
@@ -30,12 +29,12 @@
 #include <QVBoxLayout>
 #include <QVariant>
 
-FilterClassesWidget::FilterClassesWidget(const QList<QString> &class_list_arg)
+FilterClassesWidget::FilterClassesWidget(AdConfig *adconfig, const QList<QString> &class_list_arg)
 : QWidget() {
     class_list = class_list_arg;
 
     for (const QString &object_class : class_list) {
-        const QString class_string = g_adconfig->get_class_display_name(object_class);
+        const QString class_string = adconfig->get_class_display_name(object_class);
         auto checkbox = new QCheckBox(class_string);
         checkbox->setChecked(false);
 
@@ -115,6 +114,20 @@ QList<QString> FilterClassesWidget::get_selected_classes() const {
 
         if (check->isChecked()) {
             out.append(object_class);
+        }
+    }
+
+    return out;
+}
+
+QList<QString> FilterClassesWidget::get_selected_classes_display() const {
+    QList<QString> out;
+
+    for (const QString &object_class : checkbox_map.keys()) {
+        const QCheckBox *check = checkbox_map[object_class];
+
+        if (check->isChecked()) {
+            out.append(check->text());
         }
     }
 

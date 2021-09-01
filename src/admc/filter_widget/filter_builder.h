@@ -31,12 +31,13 @@
 
 class QComboBox;
 class QLineEdit;
+class AdConfig;
 
 class FilterBuilder final : public QWidget {
     Q_OBJECT
 
 public:
-    FilterBuilder();
+    FilterBuilder(AdConfig *adconfig);
 
     QString get_filter() const;
     QString get_filter_display() const;
@@ -48,6 +49,7 @@ private slots:
     void update_value_edit();
 
 private:
+    AdConfig *adconfig;
     QComboBox *attribute_class_combo;
     QComboBox *attribute_combo;
     QComboBox *condition_combo;

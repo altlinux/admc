@@ -28,12 +28,13 @@
 #include <QWidget>
 
 class QComboBox;
+class AdConfig;
 
 class SelectBaseWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    SelectBaseWidget(const QString &default_base = QString());
+    SelectBaseWidget(AdConfig *adconfig, const QString &default_base = QString());
 
     QString get_base() const;
 

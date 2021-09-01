@@ -30,11 +30,11 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-FilterWidgetNormalTab::FilterWidgetNormalTab(const QList<QString> classes)
+FilterWidgetNormalTab::FilterWidgetNormalTab(AdConfig *adconfig, const QList<QString> classes)
 : FilterWidgetTab() {
-    select_classes = new SelectClassesWidget(classes);
+    select_classes = new SelectClassesWidget(adconfig, classes);
 
-    filter_builder = new FilterBuilder();
+    filter_builder = new FilterBuilder(adconfig);
 
     auto add_filter_button = new QPushButton(tr("Add"));
     add_filter_button->setAutoDefault(false);

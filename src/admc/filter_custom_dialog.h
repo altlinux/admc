@@ -30,12 +30,13 @@
 #include <QDialog>
 
 class FilterWidget;
+class AdConfig;
 
 class FilterCustomDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    FilterCustomDialog(QWidget *parent);
+    FilterCustomDialog(AdConfig *adconfig, QWidget *parent);
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);

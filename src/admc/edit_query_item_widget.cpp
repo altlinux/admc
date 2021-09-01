@@ -22,6 +22,7 @@
 #include "edit_query_item_widget_p.h"
 
 #include "ad_filter.h"
+#include "globals.h"
 #include "console_impls/query_item_impl.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/select_base_widget.h"
@@ -42,7 +43,7 @@ EditQueryItemWidget::EditQueryItemWidget()
 
     dialog = new EditQueryItemFilterDialog(this);
 
-    select_base_widget = new SelectBaseWidget();
+    select_base_widget = new SelectBaseWidget(g_adconfig);
     select_base_widget->setObjectName("select_base_widget");
 
     name_edit = new QLineEdit();
@@ -139,7 +140,7 @@ EditQueryItemFilterDialog::EditQueryItemFilterDialog(QWidget *parent)
 : QDialog(parent) {
     setWindowTitle(tr("Edit Filter"));
 
-    filter_widget = new FilterWidget(filter_classes);
+    filter_widget = new FilterWidget(g_adconfig, filter_classes);
 
     auto button_box = new QDialogButtonBox();
     button_box->addButton(QDialogButtonBox::Ok);

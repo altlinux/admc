@@ -29,12 +29,13 @@
 
 class QLineEdit;
 class SelectClassesWidget;
+class AdConfig;
 
 class FilterWidgetSimpleTab final : public FilterWidgetTab {
     Q_OBJECT
 
 public:
-    FilterWidgetSimpleTab(const QList<QString> classes);
+    FilterWidgetSimpleTab(AdConfig *adconfig, const QList<QString> classes);
 
     QString get_filter() const;
 

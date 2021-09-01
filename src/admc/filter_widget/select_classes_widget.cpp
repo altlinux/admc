@@ -23,16 +23,15 @@
 
 #include "adldap.h"
 #include "filter_classes_widget.h"
-#include "globals.h"
 
 #include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
 
-SelectClassesWidget::SelectClassesWidget(const QList<QString> class_list)
+SelectClassesWidget::SelectClassesWidget(AdConfig *adconfig, const QList<QString> class_list)
 : QWidget() {
-    dialog = new SelectClassesDialog(class_list, this);
+    dialog = new SelectClassesDialog(adconfig, class_list, this);
     
     classes_display = new QLineEdit();
     classes_display->setReadOnly(true);
@@ -64,17 +63,11 @@ QString SelectClassesWidget::get_filter() const {
 // "User, Organizational Unit, ..."
 void SelectClassesWidget::update_classes_display() {
     const QString classes_display_text = [this]() {
-        const QList<QString> selected_classes = dialog->filter_classes_widget->get_selected_classes();
+        QList<QString> selected_classes = dialog->filter_classes_widget->get_selected_classes_display();
 
-        QList<QString> classes_display_strings;
-        for (const QString &object_class : selected_classes) {
-            const QString class_display = g_adconfig->get_class_display_name(object_class);
-            classes_display_strings.append(class_display);
-        }
+        std::sort(selected_classes.begin(), selected_classes.end());
 
-        std::sort(classes_display_strings.begin(), classes_display_strings.end());
-
-        const QString joined = classes_display_strings.join(", ");
+        const QString joined = selected_classes.join(", ");
 
         return joined;
     }();
@@ -92,11 +85,11 @@ void SelectClassesWidget::restore_state(const QVariant &state) {
     update_classes_display();
 }
 
-SelectClassesDialog::SelectClassesDialog(const QList<QString> class_list, QWidget *parent)
+SelectClassesDialog::SelectClassesDialog(AdConfig *adconfig, const QList<QString> class_list, QWidget *parent)
 : QDialog(parent) {
     setWindowTitle(tr("Select Classes"));
 
-    filter_classes_widget = new FilterClassesWidget(class_list);
+    filter_classes_widget = new FilterClassesWidget(adconfig, class_list);
 
     auto button_box = new QDialogButtonBox();
     button_box->addButton(QDialogButtonBox::Ok);

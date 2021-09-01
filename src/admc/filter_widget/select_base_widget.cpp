@@ -21,7 +21,6 @@
 #include "filter_widget/select_base_widget.h"
 
 #include "adldap.h"
-#include "globals.h"
 #include "select_container_dialog.h"
 
 #include <QComboBox>
@@ -30,9 +29,9 @@
 
 // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
-SelectBaseWidget::SelectBaseWidget(const QString &default_base)
+SelectBaseWidget::SelectBaseWidget(AdConfig *adconfig, const QString &default_base)
 : QWidget() {
-    const QString domain_head = g_adconfig->domain_head();
+    const QString domain_head = adconfig->domain_head();
 
     combo = new QComboBox();
     combo->setMinimumWidth(200);

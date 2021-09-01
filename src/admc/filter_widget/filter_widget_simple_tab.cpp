@@ -26,9 +26,9 @@
 #include <QFormLayout>
 #include <QLineEdit>
 
-FilterWidgetSimpleTab::FilterWidgetSimpleTab(const QList<QString> classes)
+FilterWidgetSimpleTab::FilterWidgetSimpleTab(AdConfig *adconfig, const QList<QString> classes)
 : FilterWidgetTab() {
-    select_classes = new SelectClassesWidget(classes);
+    select_classes = new SelectClassesWidget(adconfig, classes);
 
     name_edit = new QLineEdit(this);
     name_edit->setObjectName("name_edit");

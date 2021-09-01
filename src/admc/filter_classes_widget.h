@@ -30,15 +30,17 @@
 #include <QWidget>
 
 class QCheckBox;
+class AdConfig;
 
 class FilterClassesWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    FilterClassesWidget(const QList<QString> &class_list);
+    FilterClassesWidget(AdConfig *adconfig, const QList<QString> &class_list_arg);
 
     QString get_filter() const;
     QList<QString> get_selected_classes() const;
+    QList<QString> get_selected_classes_display() const;
     QVariant save_state() const;
     void restore_state(const QVariant &state);
 

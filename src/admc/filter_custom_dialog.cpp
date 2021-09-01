@@ -21,7 +21,6 @@
 #include "filter_custom_dialog.h"
 
 #include "adldap.h"
-#include "globals.h"
 
 #include "filter_widget/filter_widget.h"
 
@@ -34,16 +33,16 @@
 // implement would be to save old state on open, then reload
 // it when cancel is pressed.
 
-FilterCustomDialog::FilterCustomDialog(QWidget *parent)
+FilterCustomDialog::FilterCustomDialog(AdConfig *adconfig, QWidget *parent)
 : QDialog(parent) {
     setWindowTitle(tr("Edit Custom Filter"));
 
     // NOTE: Can't filter out container objects, because
     // otherwise the whole tree can't be displayed, so only
     // allow filtering by non-container classes
-    const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();
+    const QList<QString> noncontainer_classes = adconfig->get_noncontainer_classes();
 
-    filter_widget = new FilterWidget(noncontainer_classes);
+    filter_widget = new FilterWidget(adconfig, noncontainer_classes);
 
     auto button_box = new QDialogButtonBox();
     button_box->addButton(QDialogButtonBox::Ok);

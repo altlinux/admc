@@ -35,12 +35,13 @@
 class QListWidget;
 class SelectClassesWidget;
 class FilterBuilder;
+class AdConfig;
 
 class FilterWidgetNormalTab final : public FilterWidgetTab {
     Q_OBJECT
 
 public:
-    FilterWidgetNormalTab(const QList<QString> classes);
+    FilterWidgetNormalTab(AdConfig *config, const QList<QString> classes);
 
     QString get_filter() const;
 

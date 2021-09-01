@@ -23,7 +23,6 @@
 #include "adldap.h"
 #include "change_dc_dialog.h"
 #include "console_impls/object_impl.h"
-#include "globals.h"
 #include "settings.h"
 #include "utils.h"
 

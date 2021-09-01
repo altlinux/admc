@@ -30,7 +30,6 @@
 #include "console_widget/results_view.h"
 
 #include "filter_dialog.h"
-#include "globals.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
 #include "settings.h"
@@ -59,7 +58,7 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
     console = new ConsoleWidget(this);
     console->connect_to_action_menu(action_menu);
 
-    filter_dialog = new FilterDialog(this);
+    filter_dialog = new FilterDialog(ad.adconfig(), this);
 
     //
     // Register console impls

@@ -37,9 +37,9 @@
 
 FindWidget::FindWidget(const QList<QString> classes, const QString &default_base)
 : QWidget() {
-    select_base_widget = new SelectBaseWidget(default_base);
+    select_base_widget = new SelectBaseWidget(g_adconfig, default_base);
 
-    filter_widget = new FilterWidget(classes);
+    filter_widget = new FilterWidget(g_adconfig, classes);
 
     find_button = new QPushButton(tr("Find"));
     find_button->setDefault(true);

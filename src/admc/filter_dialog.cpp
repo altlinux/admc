@@ -23,7 +23,6 @@
 #include "adldap.h"
 #include "filter_classes_widget.h"
 #include "filter_custom_dialog.h"
-#include "globals.h"
 #include "settings.h"
 
 #include <QDialogButtonBox>
@@ -41,14 +40,14 @@
 // implement would be to save old state on open, then reload
 // it when cancel is pressed.
 
-FilterDialog::FilterDialog(QWidget *parent)
+FilterDialog::FilterDialog(AdConfig *adconfig, QWidget *parent)
 : QDialog(parent) {
     setWindowTitle(tr("Edit Console Filter"));
     resize(400, 400);
 
-    const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();
+    const QList<QString> noncontainer_classes = adconfig->get_noncontainer_classes();
 
-    custom_dialog = new FilterCustomDialog(this);
+    custom_dialog = new FilterCustomDialog(adconfig, this);
 
     all_button = new QRadioButton(tr("Show all"));
     classes_button = new QRadioButton(tr("Show only these types"));
@@ -58,7 +57,7 @@ FilterDialog::FilterDialog(QWidget *parent)
 
     custom_dialog_button = new QPushButton(tr("Custom"));
 
-    filter_classes_widget = new FilterClassesWidget(noncontainer_classes);
+    filter_classes_widget = new FilterClassesWidget(adconfig, noncontainer_classes);
 
     auto button_box = new QDialogButtonBox();
     button_box->addButton(QDialogButtonBox::Ok);

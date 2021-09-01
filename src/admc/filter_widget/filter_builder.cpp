@@ -21,7 +21,6 @@
 #include "filter_widget/filter_builder.h"
 
 #include "adldap.h"
-#include "globals.h"
 
 #include <QComboBox>
 #include <QCoreApplication>
@@ -32,11 +31,13 @@
 
 QString condition_to_display_string(const Condition condition);
 
-FilterBuilder::FilterBuilder()
+FilterBuilder::FilterBuilder(AdConfig *adconfig_arg)
 : QWidget() {
+    adconfig = adconfig_arg;
+
     attribute_class_combo = new QComboBox();
     for (const QString &object_class : filter_classes) {
-        const QString display = g_adconfig->get_class_display_name(object_class);
+        const QString display = adconfig->get_class_display_name(object_class);
         attribute_class_combo->addItem(display, object_class);
     }
 
@@ -123,13 +124,13 @@ void FilterBuilder::update_attributes_combo() {
         return item_data.toString();
     }();
 
-    const QList<QString> attributes = g_adconfig->get_find_attributes(object_class);
+    const QList<QString> attributes = adconfig->get_find_attributes(object_class);
 
-    const QList<QString> display_attributes = [attributes, object_class]() {
+    const QList<QString> display_attributes = [&]() {
         QList<QString> out;
 
         for (const QString &attribute : attributes) {
-            const QString display_name = g_adconfig->get_attribute_display_name(attribute, object_class);
+            const QString display_name = adconfig->get_attribute_display_name(attribute, object_class);
             out.append(display_name);
         }
 
@@ -139,10 +140,10 @@ void FilterBuilder::update_attributes_combo() {
     }();
 
     // NOTE: need backwards mapping from display name to attribute for insertion
-    const QHash<QString, QString> display_to_attribute = [attributes, object_class]() {
+    const QHash<QString, QString> display_to_attribute = [&]() {
         QHash<QString, QString> out;
         for (const QString &attribute : attributes) {
-            const QString display_name = g_adconfig->get_attribute_display_name(attribute, object_class);
+            const QString display_name = adconfig->get_attribute_display_name(attribute, object_class);
 
             out[display_name] = attribute;
         }
@@ -164,7 +165,7 @@ void FilterBuilder::update_conditions_combo() {
             const QVariant item_data = attribute_combo->itemData(index);
             const QString attribute = item_data.toString();
 
-            return g_adconfig->get_attribute_type(attribute);
+            return adconfig->get_attribute_type(attribute);
         }();
 
         // NOTE: extra conditions don't work on DSDN type

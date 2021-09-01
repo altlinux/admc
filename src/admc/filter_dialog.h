@@ -33,12 +33,13 @@ class FilterCustomDialog;
 class QRadioButton;
 class QPushButton;
 class FilterClassesWidget;
+class AdConfig;
 
 class FilterDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    FilterDialog(QWidget *parent);
+    FilterDialog(AdConfig *adconfig, QWidget *parent);
     ~FilterDialog();
 
     QString get_filter() const;

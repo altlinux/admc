@@ -34,12 +34,13 @@ class FilterWidgetTab;
 class FilterWidgetSimpleTab;
 class FilterWidgetNormalTab;
 class FilterWidgetAdvancedTab;
+class AdConfig;
 
 class FilterWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    FilterWidget(const QList<QString> classes);
+    FilterWidget(AdConfig *adconfig, const QList<QString> classes);
 
     QString get_filter() const;
 

@@ -33,7 +33,7 @@
 void ADMCTestSelectBaseWidget::init() {
     ADMCTest::init();
 
-    select_base_widget = new SelectBaseWidget();
+    select_base_widget = new SelectBaseWidget(ad.adconfig());
     add_widget(select_base_widget);
 
     combo = select_base_widget->findChild<QComboBox *>();

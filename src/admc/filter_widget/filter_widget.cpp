@@ -27,7 +27,7 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 
-FilterWidget::FilterWidget(const QList<QString> classes)
+FilterWidget::FilterWidget(AdConfig *adconfig, const QList<QString> classes)
 : QWidget() {
     tab_widget = new QTabWidget();
 
@@ -35,8 +35,8 @@ FilterWidget::FilterWidget(const QList<QString> classes)
         tab_widget->addTab(tab, title);
     };
 
-    simple_tab = new FilterWidgetSimpleTab(classes);
-    normal_tab = new FilterWidgetNormalTab(classes);
+    simple_tab = new FilterWidgetSimpleTab(adconfig, classes);
+    normal_tab = new FilterWidgetNormalTab(adconfig, classes);
     advanced_tab = new FilterWidgetAdvancedTab();
     add_tab(simple_tab, tr("Simple"));
     add_tab(normal_tab, tr("Normal"));
