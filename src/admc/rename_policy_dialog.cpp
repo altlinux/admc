@@ -26,7 +26,7 @@
 #include "rename_object_dialog.h"
 #include "status.h"
 #include "utils.h"
-#include "item_type.h"
+#include "console_impls/item_type.h"
 
 #include <QDialogButtonBox>
 #include <QFormLayout>

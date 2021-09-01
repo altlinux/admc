@@ -29,7 +29,7 @@
 #include "create_query_folder_dialog.h"
 #include "create_query_item_dialog.h"
 #include "edit_query_folder_dialog.h"
-#include "item_type.h"
+#include "console_impls/item_type.h"
 #include "console_widget/results_view.h"
 
 #include <QFileDialog>

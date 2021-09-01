@@ -25,7 +25,7 @@
 #include "console_impls/object_impl.h"
 #include "settings.h"
 #include "utils.h"
-#include "item_type.h"
+#include "console_impls/item_type.h"
 #include "policy_results_widget.h"
 
 #include "console_impls/query_item_impl.h"

@@ -35,7 +35,7 @@
 #include "console_impls/query_folder_impl.h"
 #include "console_widget/console_widget.h"
 #include "filter_dialog.h"
-#include "item_type.h"
+#include "console_impls/item_type.h"
 
 #include <QAction>
 #include <QActionGroup>

@@ -41,7 +41,7 @@
 #include "object_multi_properties_dialog.h"
 #include "password_dialog.h"
 #include "editors/multi_editor.h"
-#include "item_type.h"
+#include "console_impls/item_type.h"
 #include "console_widget/results_view.h"
 
 #include <QDebug>

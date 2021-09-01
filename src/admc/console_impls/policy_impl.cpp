@@ -31,7 +31,7 @@
 #include "rename_policy_dialog.h"
 #include "select_object_dialog.h"
 #include "create_policy_dialog.h"
-#include "item_type.h"
+#include "console_impls/item_type.h"
 
 #include <QDebug>
 #include <QList>

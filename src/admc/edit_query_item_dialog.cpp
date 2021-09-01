@@ -24,7 +24,7 @@
 #include "console_impls/query_folder_impl.h"
 #include "edit_query_item_widget.h"
 #include "utils.h"
-#include "item_type.h"
+#include "console_impls/item_type.h"
 
 #include <QDialogButtonBox>
 #include <QLineEdit>

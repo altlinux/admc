@@ -27,7 +27,7 @@
 #include "filter_widget/select_base_widget.h"
 #include "globals.h"
 #include "status.h"
-#include "item_type.h"
+#include "console_impls/item_type.h"
 
 #include <QDialogButtonBox>
 #include <QFormLayout>
