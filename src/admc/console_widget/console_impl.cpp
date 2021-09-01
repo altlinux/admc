@@ -133,7 +133,7 @@ void ConsoleImpl::restore_state(const QVariant &state) {
 
 QWidget *ConsoleImpl::widget() const {
     if (results_widget != nullptr) {
-        return results_view;
+        return results_widget;
     } else if (results_view != nullptr) {
         return results_view;
     } else {
