@@ -79,6 +79,10 @@ FindResults::~FindResults() {
     settings_set_variant(SETTING_find_results_state, state);
 }
 
+ConsoleWidget *FindResults::get_console() const {
+    return console;
+}
+
 void FindResults::clear() {
     console->delete_children(head_index);
 }
@@ -91,25 +95,8 @@ void FindResults::load(const QHash<QString, AdObject> &results) {
     }
 }
 
-// TODO: get from console
-QList<QList<QStandardItem *>> FindResults::get_selected_rows() const {
-    // const QList<QModelIndex> selected_indexes = view->get_selected_indexes();
-
-    QList<QList<QStandardItem *>> out;
-
-    // for (const QModelIndex row_index : selected_indexes) {
-    //     const int row = row_index.row();
-
-    //     QList<QStandardItem *> row_copy;
-
-    //     for (int col = 0; col < model->columnCount(); col++) {
-    //         QStandardItem *item = model->item(row, col);
-    //         QStandardItem *item_copy = item->clone();
-    //         row_copy.append(item_copy);
-    //     }
-
-    //     out.append(row_copy);
-    // }
+QList<QString> FindResults::get_selected_dns() const {
+    const QList<QString> out = get_selected_dn_list(console, ItemType_Object, ObjectRole_DN);
 
     return out;
 }

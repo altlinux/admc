@@ -30,7 +30,6 @@
 
 #include <QPersistentModelIndex>
 
-class QStandardItem;
 class QMenu;
 class AdObject;
 class ConsoleWidget;
@@ -38,11 +37,11 @@ class ConsoleWidget;
 class FindResults final : public QWidget {
     Q_OBJECT
 
-public:
-    ConsoleWidget *console;
-    
+public:    
     FindResults();
     ~FindResults();
+
+    ConsoleWidget *get_console() const;
 
     void clear();
 
@@ -50,9 +49,10 @@ public:
     void load(const QHash<QString, AdObject> &results);
 
     // NOTE: returned items need to be re-parented or deleted!
-    QList<QList<QStandardItem *>> get_selected_rows() const;
+    QList<QString> get_selected_dns() const;
 
 private:
+    ConsoleWidget *console;
     QPersistentModelIndex head_index;
 };
 

@@ -274,14 +274,20 @@ void SelectObjectDialog::on_advanced_button() {
                 return;
             }
 
-            const QList<QList<QStandardItem *>> selected = dialog->get_selected_rows();
+            // NOTE: this is slightly inefficient because
+            // we're searching for objects again instead of
+            // using the existing data from find results
+            // (inside dialog). Using existing data will be
+            // more complex though, but if you need
+            // performance in the future, do it. Not that
+            // big of a deal at the moment because select
+            // object dialog is mostly used for small number
+            // of objects.
+            const QList<QString> selected = dialog->get_selected_dns();
 
             bool any_duplicates = false;
 
-            const QList<QList<QStandardItem *>> row_list = dialog->get_selected_rows();
-            for (const QList<QStandardItem *> &row : row_list) {
-                QStandardItem *item = row[0];
-                const QString dn = item->data(ObjectRole_DN).toString();
+            for (const QString &dn : selected) {
                 const AdObject object = ad.search_object(dn);
 
                 if (is_duplicate(object)) {

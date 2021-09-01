@@ -21,7 +21,6 @@
 #include "find_object_dialog.h"
 
 #include "ad_config.h"
-#include "find_results.h"
 #include "find_widget.h"
 #include "globals.h"
 #include "settings.h"
@@ -47,7 +46,7 @@ FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString d
     layout->setMenuBar(menubar);
     layout->addWidget(find_widget);
 
-    ConsoleWidget *console = find_widget->find_results->console;
+    ConsoleWidget *console = find_widget->get_console();
     console->add_actions(action_menu);
 
     view_menu->addAction(console->customize_columns_action());

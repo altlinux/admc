@@ -52,6 +52,6 @@ SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> clas
         this, &SelectObjectAdvancedDialog::reject);
 }
 
-QList<QList<QStandardItem *>> SelectObjectAdvancedDialog::get_selected_rows() const {
-    return find_widget->get_selected_rows();
+QList<QString> SelectObjectAdvancedDialog::get_selected_dns() const {
+    return find_widget->get_selected_dns();
 }

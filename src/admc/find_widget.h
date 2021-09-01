@@ -35,17 +35,18 @@ class QStandardItem;
 class QPushButton;
 class AdObject;
 class SelectBaseWidget;
+class ConsoleWidget;
 
 class FindWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    FindResults *find_results;
-
     FindWidget(const QList<QString> classes, const QString &default_base);
 
+    ConsoleWidget *get_console() const;
+
     // NOTE: returned items need to be re-parented or deleted!
-    QList<QList<QStandardItem *>> get_selected_rows() const;
+    QList<QString> get_selected_dns() const;
 
 private slots:
     void find();
@@ -54,6 +55,7 @@ private slots:
 
 private:
     FilterWidget *filter_widget;
+    FindResults *find_results;
     QPushButton *find_button;
     QPushButton *stop_button;
     SelectBaseWidget *select_base_widget;

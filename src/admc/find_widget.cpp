@@ -101,6 +101,10 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_base
         });
 }
 
+ConsoleWidget *FindWidget::get_console() const {
+    return find_results->get_console();
+}
+
 void FindWidget::find() {
     // Prepare search args
     const QString filter = filter_widget->get_filter();
@@ -143,6 +147,6 @@ void FindWidget::on_thread_finished() {
     hide_busy_indicator();
 }
 
-QList<QList<QStandardItem *>> FindWidget::get_selected_rows() const {
-    return find_results->get_selected_rows();
+QList<QString> FindWidget::get_selected_dns() const {
+    return find_results->get_selected_dns();
 }
