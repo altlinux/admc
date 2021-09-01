@@ -192,7 +192,7 @@ void QueryFolderImpl::on_import() {
         return out;
     }();
 
-    console_query_item_load(console, data, parent_index);
+    console_query_item_load_hash(console, data, parent_index);
 
     console_query_tree_save(console);
 }
@@ -232,7 +232,7 @@ void console_query_tree_init(ConsoleWidget *console) {
             if (item_list.contains(path)) {
                 // Query item
                 const QHash<QString, QVariant> data = item_list[path].toHash();
-                console_query_item_load(console, data, folder_index);
+                console_query_item_load_hash(console, data, folder_index);
             } else if (folder_list.contains(path)) {
                 // Query folder
                 const QHash<QString, QVariant> data = folder_list[path].toHash();
@@ -309,7 +309,7 @@ void console_query_tree_save(ConsoleWidget *console) {
                 folder_list[path] = data;
             }
         } else {
-            const QHash<QString, QVariant> data = console_query_item_save(index);
+            const QHash<QString, QVariant> data = console_query_item_save_hash(index);
 
             item_list[path] = data;
         }

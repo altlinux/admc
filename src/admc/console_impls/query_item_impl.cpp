@@ -41,23 +41,19 @@
 
 #define QUERY_ROOT "QUERY_ROOT"
 
-void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
-    QStandardItem *main_item = row[0];
-    main_item->setData(description, QueryItemRole_Description);
-    main_item->setData(filter, QueryItemRole_Filter);
-    main_item->setData(filter_state, QueryItemRole_FilterState);
-    main_item->setData(base, QueryItemRole_Base);
-    main_item->setData(scope_is_children, QueryItemRole_ScopeIsChildren);
-    main_item->setIcon(QIcon::fromTheme("emblem-system"));
+QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
+: ConsoleImpl(console_arg) {
+    set_results_view(new ResultsView(console_arg));
 
-    row[QueryColumn_Name]->setText(name);
-    row[QueryColumn_Description]->setText(description);
-}
+    edit_action = new QAction(tr("Edit..."), this);
+    export_action = new QAction(tr("Export query..."), this);
 
-void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, parent);
-
-    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+    connect(
+        edit_action, &QAction::triggered,
+        this, &QueryItemImpl::on_edit);
+    connect(
+        export_action, &QAction::triggered,
+        this, &QueryItemImpl::on_export);
 }
 
 void QueryItemImpl::fetch(const QModelIndex &index) {
@@ -74,91 +70,6 @@ void QueryItemImpl::fetch(const QModelIndex &index) {
     }();
 
     console_object_search(console, index, base, scope, filter, search_attributes);
-}
-
-void QueryItemImpl::on_export() {
-    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
-
-    const QString file_path = [&]() {
-        const QString query_name = index.data(Qt::DisplayRole).toString();
-
-        const QString caption = QCoreApplication::translate("query_item_impl.cpp", "Export Query");
-        const QString suggested_file = QString("%1/%2.json").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), query_name);
-        const QString filter = QCoreApplication::translate("query_item_impl.cpp", "JSON (*.json)");
-
-        const QString out = QFileDialog::getSaveFileName(console, caption, suggested_file, filter);
-
-        return out;
-    }();
-
-    if (file_path.isEmpty()) {
-        return;
-    }
-
-    const QHash<QString, QVariant> data = console_query_item_save(index);
-    const QByteArray json_bytes = QJsonDocument::fromVariant(data).toJson();
-
-    QFile file(file_path);
-    file.open(QIODevice::WriteOnly);
-    file.write(json_bytes);
-}
-
-QHash<QString, QVariant> console_query_item_save(const QModelIndex &index) {
-    const QString name = index.data(Qt::DisplayRole).toString();
-    const QString description = index.data(QueryItemRole_Description).toString();
-    const QString base = index.data(QueryItemRole_Base).toString();
-    const QString filter = index.data(QueryItemRole_Filter).toString();
-    const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
-    const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
-
-    QHash<QString, QVariant> data;
-    data["name"] = name;
-    data["description"] = description;
-    data["base"] = base;
-    data["filter"] = filter;
-    data["filter_state"] = filter_state.toHex();
-    data["scope_is_children"] = scope_is_children;
-
-    return data;
-}
-
-void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index) {
-    if (data.isEmpty()) {
-        return;
-    }
-
-    const QString name = data["name"].toString();
-    const QString description = data["description"].toString();
-    const QString base = data["base"].toString();
-    const bool scope_is_children = data["scope_is_children"].toBool();
-    const QString filter = data["filter"].toString();
-    const QByteArray filter_state = QByteArray::fromHex(data["filter_state"].toString().toLocal8Bit());
-
-    if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
-        return;
-    }
-
-    console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
-}
-
-void QueryItemImpl::on_edit() {
-    auto dialog = new EditQueryItemDialog(console);
-    dialog->open();
-}
-
-QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
-: ConsoleImpl(console_arg) {
-    set_results_view(new ResultsView(console_arg));
-
-    edit_action = new QAction(tr("Edit..."), this);
-    export_action = new QAction(tr("Export query..."), this);
-
-    connect(
-        edit_action, &QAction::triggered,
-        this, &QueryItemImpl::on_edit);
-    connect(
-        export_action, &QAction::triggered,
-        this, &QueryItemImpl::on_export);
 }
 
 QString QueryItemImpl::get_description(const QModelIndex &index) const {
@@ -232,4 +143,93 @@ QList<QString> QueryItemImpl::column_labels() const {
 
 QList<int> QueryItemImpl::default_columns() const {
     return object_impl_default_columns();
+}
+
+void QueryItemImpl::on_edit() {
+    auto dialog = new EditQueryItemDialog(console);
+    dialog->open();
+}
+
+void QueryItemImpl::on_export() {
+    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
+
+    const QString file_path = [&]() {
+        const QString query_name = index.data(Qt::DisplayRole).toString();
+
+        const QString caption = QCoreApplication::translate("query_item_impl.cpp", "Export Query");
+        const QString suggested_file = QString("%1/%2.json").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation), query_name);
+        const QString filter = QCoreApplication::translate("query_item_impl.cpp", "JSON (*.json)");
+
+        const QString out = QFileDialog::getSaveFileName(console, caption, suggested_file, filter);
+
+        return out;
+    }();
+
+    if (file_path.isEmpty()) {
+        return;
+    }
+
+    const QHash<QString, QVariant> data = console_query_item_save_hash(index);
+    const QByteArray json_bytes = QJsonDocument::fromVariant(data).toJson();
+
+    QFile file(file_path);
+    file.open(QIODevice::WriteOnly);
+    file.write(json_bytes);
+}
+
+void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
+    QStandardItem *main_item = row[0];
+    main_item->setData(description, QueryItemRole_Description);
+    main_item->setData(filter, QueryItemRole_Filter);
+    main_item->setData(filter_state, QueryItemRole_FilterState);
+    main_item->setData(base, QueryItemRole_Base);
+    main_item->setData(scope_is_children, QueryItemRole_ScopeIsChildren);
+    main_item->setIcon(QIcon::fromTheme("emblem-system"));
+
+    row[QueryColumn_Name]->setText(name);
+    row[QueryColumn_Description]->setText(description);
+}
+
+void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, parent);
+
+    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+}
+
+QHash<QString, QVariant> console_query_item_save_hash(const QModelIndex &index) {
+    const QString name = index.data(Qt::DisplayRole).toString();
+    const QString description = index.data(QueryItemRole_Description).toString();
+    const QString base = index.data(QueryItemRole_Base).toString();
+    const QString filter = index.data(QueryItemRole_Filter).toString();
+    const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
+    const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
+
+    QHash<QString, QVariant> data;
+    data["name"] = name;
+    data["description"] = description;
+    data["base"] = base;
+    data["filter"] = filter;
+    data["filter_state"] = filter_state.toHex();
+    data["scope_is_children"] = scope_is_children;
+
+    return data;
+}
+
+void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index) {
+    if (data.isEmpty()) {
+        return;
+    }
+
+    const QString name = data["name"].toString();
+    const QString description = data["description"].toString();
+    const QString base = data["base"].toString();
+    const bool scope_is_children = data["scope_is_children"].toBool();
+    const QString filter = data["filter"].toString();
+    const QByteArray filter_state = QByteArray::fromHex(data["filter_state"].toString().toLocal8Bit());
+
+    if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
+        return;
+    }
+
+    console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
 }

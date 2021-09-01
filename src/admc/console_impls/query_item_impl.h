@@ -42,11 +42,6 @@ enum QueryColumn {
     QueryColumn_COUNT,
 };
 
-void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children);
-void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent);
-void console_query_item_load(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index);
-QHash<QString, QVariant> console_query_item_save(const QModelIndex &index);
-
 class QueryItemImpl final : public ConsoleImpl {
     Q_OBJECT
 
@@ -68,13 +63,19 @@ public:
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
     
+private slots:
+    void on_edit();
+    void on_export();
+
 private:
     QAction *edit_action;
     QAction *export_action;
 
-    void on_edit();
-    void on_export();
-
 };
+
+void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children);
+void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent);
+QHash<QString, QVariant> console_query_item_save_hash(const QModelIndex &index);
+void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index);
 
 #endif /* CONSOLE_QUERY_H */
