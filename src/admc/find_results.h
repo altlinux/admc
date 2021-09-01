@@ -39,6 +39,8 @@ class FindResults final : public QWidget {
     Q_OBJECT
 
 public:
+    ConsoleWidget *console;
+    
     FindResults();
     ~FindResults();
 
@@ -50,10 +52,7 @@ public:
     // NOTE: returned items need to be re-parented or deleted!
     QList<QList<QStandardItem *>> get_selected_rows() const;
 
-    void add_actions(QMenu *action_menu, QMenu *view_menu);
-
 private:
-    ConsoleWidget *console;
     QPersistentModelIndex head_index;
 };
 

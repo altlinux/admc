@@ -135,7 +135,15 @@ public:
 
     void set_scope_view_visible(const bool visible);
 
-    void connect_to_action_menu(QMenu *action_menu);
+    // Adds actions to a menu. Actions come from console
+    // itself as well as impl's. All impl's must be
+    // registered before this is called.
+    void add_actions(QMenu *menu);
+
+    // Updates visibility and disability state of actions
+    // based on current selection. Call before showing the
+    // menu that contains console actions.
+    void update_actions();
 
     QAction *refresh_current_scope_action() const;
     QAction *navigate_up_action() const;

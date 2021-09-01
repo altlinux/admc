@@ -228,7 +228,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     connect(
         d->scope_view, &QWidget::customContextMenuRequested,
-        d, &ConsoleWidgetPrivate::context_menu);
+        d, &ConsoleWidgetPrivate::on_context_menu);
 
     connect(
         qApp, &QApplication::focusChanged,
@@ -238,26 +238,18 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->update_view_actions();
 }
 
-void ConsoleWidget::connect_to_action_menu(QMenu *action_menu_arg) {
-    d->action_menu = action_menu_arg;
+void ConsoleWidgetPrivate::on_context_menu(const QPoint &pos) {
+    const QModelIndex index = focused_view->indexAt(pos);
 
-    // Update actions right before action menu opens
-    connect(
-        d->action_menu, &QMenu::aboutToShow,
-        d, &ConsoleWidgetPrivate::on_action_menu_show);
+    if (index.isValid()) {
+        const QPoint global_pos = focused_view->mapToGlobal(pos);
 
-    // Open action menu as context menu for central widget
-    connect(
-        d, &ConsoleWidgetPrivate::context_menu,
-        [=](const QPoint pos) {
-            const QModelIndex index = d->focused_view->indexAt(pos);
-
-            if (index.isValid()) {
-                const QPoint global_pos = d->focused_view->mapToGlobal(pos);
-
-                d->action_menu->exec(global_pos);
-            }
-        });
+        auto menu = new QMenu(q);
+        menu->setAttribute(Qt::WA_DeleteOnClose);
+        q->add_actions(menu);
+        q->update_actions();
+        menu->popup(global_pos);
+    }
 }
 
 void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
@@ -284,7 +276,7 @@ void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
             d, &ConsoleWidgetPrivate::on_results_activated);
         connect(
             results_view, &ResultsView::context_menu,
-            d, &ConsoleWidgetPrivate::context_menu);
+            d, &ConsoleWidgetPrivate::on_context_menu);
     }
 }
 
@@ -579,10 +571,30 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
 
 // Show/hide actions based on what's selected and emit the
 // signal
-void ConsoleWidgetPrivate::on_action_menu_show() {
-    action_menu->clear();
+void ConsoleWidget::add_actions(QMenu *menu) {
+    // Add custom actions
+    const QList<QAction *> custom_action_list = d->get_custom_action_list();
 
-    const QList<QModelIndex> selected_list = get_all_selected_items();
+    for (QAction *action : custom_action_list) {
+        menu->addAction(action);
+    }
+
+    menu->addSeparator();
+
+    // Add standard actions
+    menu->addAction(d->standard_action_map[StandardAction_Copy]);
+    menu->addAction(d->standard_action_map[StandardAction_Cut]);
+    menu->addAction(d->standard_action_map[StandardAction_Rename]);
+    menu->addAction(d->standard_action_map[StandardAction_Delete]);
+    menu->addAction(d->standard_action_map[StandardAction_Paste]);
+    menu->addAction(d->standard_action_map[StandardAction_Print]);
+    menu->addAction(d->standard_action_map[StandardAction_Refresh]);
+    menu->addSeparator();
+    menu->addAction(d->standard_action_map[StandardAction_Properties]);
+}
+
+void ConsoleWidget::update_actions() {
+    const QList<QModelIndex> selected_list = d->get_all_selected_items();
 
     if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
         return;
@@ -591,43 +603,16 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
     const bool single_selection = (selected_list.size() == 1);
 
     //
-    // Custom actions
+    // Collect information about action state from impl's
     //
 
-    const QSet<int> type_set = get_selected_types();
-
-    // First, add all possible custom actions
-    const QList<QAction *> custom_action_list = [&]() {
-        QList<QAction *> out;
-
-        for (const int type : type_set) {
-            ConsoleImpl *impl = impl_map[type];
-            QList<QAction *> for_this_type = impl->get_all_custom_actions();
-
-            for (QAction *action : for_this_type) {
-                if (!out.contains(action)) {
-                    out.append(action);
-                }
-            }
-        }
-
-        return out;
-    }();
-
-    for (QAction *action : custom_action_list) {
-        action_menu->addAction(action);
-    }
-
-    action_menu->addSeparator();
-
-    // Then show/hide custom actions
     const QSet<QAction *> visible_custom_action_set = [&]() {
         QSet<QAction *> out;
 
         for (int i = 0; i < selected_list.size(); i++) {
             const QModelIndex index = selected_list[i];
 
-            ConsoleImpl *impl = get_impl(index);
+            ConsoleImpl *impl = d->get_impl(index);
             QSet<QAction *> for_this_index = impl->get_custom_actions(index, single_selection);
 
             if (i == 0) {
@@ -649,7 +634,7 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
         for (int i = 0; i < selected_list.size(); i++) {
             const QModelIndex index = selected_list[i];
 
-            ConsoleImpl *impl = get_impl(index);
+            ConsoleImpl *impl = d->get_impl(index);
             QSet<QAction *> for_this_index = impl->get_disabled_custom_actions(index, single_selection);
 
             if (i == 0) {
@@ -665,42 +650,13 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
         return out;
     }();
 
-    // Set visibility state for custom actions
-    for (QAction *action : custom_action_list) {
-        const bool visible = visible_custom_action_set.contains(action);
-
-        action->setVisible(visible);
-    }
-
-    // Set enabled state for custom actions
-    for (QAction *action : custom_action_list) {
-        const bool disabled = disabled_custom_action_set.contains(action);
-
-        action->setDisabled(disabled);
-    }
-
-    //
-    // Standard actions
-    //
-
-    // Add all actions first
-    action_menu->addAction(standard_action_map[StandardAction_Copy]);
-    action_menu->addAction(standard_action_map[StandardAction_Cut]);
-    action_menu->addAction(standard_action_map[StandardAction_Rename]);
-    action_menu->addAction(standard_action_map[StandardAction_Delete]);
-    action_menu->addAction(standard_action_map[StandardAction_Paste]);
-    action_menu->addAction(standard_action_map[StandardAction_Print]);
-    action_menu->addAction(standard_action_map[StandardAction_Refresh]);
-    action_menu->addSeparator();
-    action_menu->addAction(standard_action_map[StandardAction_Properties]);
-
     const QSet<StandardAction> visible_standard_actions = [&]() {
         QSet<StandardAction> out;
 
         for (int i = 0; i < selected_list.size(); i++) {
             const QModelIndex index = selected_list[i];
 
-            ConsoleImpl *impl = get_impl(index);
+            ConsoleImpl *impl = d->get_impl(index);
             QSet<StandardAction> for_this_index = impl->get_standard_actions(index, single_selection);
 
             if (i == 0) {
@@ -722,7 +678,7 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
         for (int i = 0; i < selected_list.size(); i++) {
             const QModelIndex index = selected_list[i];
 
-            ConsoleImpl *impl = get_impl(index);
+            ConsoleImpl *impl = d->get_impl(index);
             QSet<StandardAction> for_this_index = impl->get_disabled_standard_actions(index, single_selection);
 
             if (i == 0) {
@@ -738,19 +694,39 @@ void ConsoleWidgetPrivate::on_action_menu_show() {
         return out;
     }();
 
-    // Set visibility state for standard actions
-    for (const StandardAction &action_enum : standard_action_list) {
-        const bool visible = visible_standard_actions.contains(action_enum);
+    //
+    // Apply action state
+    //
 
-        QAction *action = standard_action_map[action_enum];
+    const QList<QAction *> custom_action_list = d->get_custom_action_list();
+
+    // Show/hide custom actions
+    for (QAction *action : custom_action_list) {
+        const bool visible = visible_custom_action_set.contains(action);
+
         action->setVisible(visible);
     }
 
-    // Set enabled state for standard actions
+    // Enable/disable custom actions
+    for (QAction *action : custom_action_list) {
+        const bool disabled = disabled_custom_action_set.contains(action);
+
+        action->setDisabled(disabled);
+    }
+
+    // Show/hide standard actions
+    for (const StandardAction &action_enum : standard_action_list) {
+        const bool visible = visible_standard_actions.contains(action_enum);
+
+        QAction *action = d->standard_action_map[action_enum];
+        action->setVisible(visible);
+    }
+
+    // Enable/disable standard actions
     for (const StandardAction &action_enum : standard_action_list) {
         const bool disabled = disabled_standard_actions.contains(action_enum);
 
-        QAction *action = standard_action_map[action_enum];
+        QAction *action = d->standard_action_map[action_enum];
         action->setDisabled(disabled);
     }
 }
@@ -1208,6 +1184,24 @@ QSet<int> ConsoleWidgetPrivate::get_selected_types() const {
         const int type = index.data(ConsoleRole_Type).toInt();
         out.insert(type);
     } 
+
+    return out;
+}
+
+// Get all custom actions from impl's, in order
+QList<QAction *> ConsoleWidgetPrivate::get_custom_action_list() const {
+    QList<QAction *> out;
+
+    for (const int type : impl_map.keys()) {
+        ConsoleImpl *impl = impl_map[type];
+        QList<QAction *> for_this_type = impl->get_all_custom_actions();
+
+        for (QAction *action : for_this_type) {
+            if (!out.contains(action)) {
+                out.append(action);
+            }
+        }
+    }
 
     return out;
 }

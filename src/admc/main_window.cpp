@@ -182,7 +182,7 @@ MainWindow::MainWindow()
     file_menu->addAction(quit_action);
 
     // Action
-    console->connect_to_action_menu(action_menu);
+    console->add_actions(action_menu);
 
     // View
     view_menu->addAction(console->set_results_to_icons_action());
@@ -276,6 +276,10 @@ MainWindow::MainWindow()
         connection_options_dialog, &QDialog::accepted,
         this, &MainWindow::on_connect_options_dialog_accepted);
     on_connect_options_dialog_accepted();
+
+    connect(
+        action_menu, &QMenu::aboutToShow,
+        console, &ConsoleWidget::update_actions);
 
     const bool restored_geometry = settings_restore_geometry(SETTING_main_window_geometry, this);
     if (!restored_geometry) {

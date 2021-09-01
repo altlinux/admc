@@ -37,7 +37,6 @@ class ScopeProxyModel;
 class ConsoleDragModel;
 class QStandardItemModel;
 class ConsoleWidget;
-class QMenu;
 class QSplitter;
 class ConsoleImpl;
 
@@ -94,16 +93,13 @@ public:
     QList<QPersistentModelIndex> targets_past;
     QList<QPersistentModelIndex> targets_future;
 
-    QMenu *action_menu;
     QHash<StandardAction, QAction *> standard_action_map;
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 
-    void open_action_menu_as_context_menu(const QPoint pos);
     void on_scope_expanded(const QModelIndex &index);
     void on_results_activated(const QModelIndex &index);
-    void on_action_menu_show();
-    void on_context_menu(const QPoint pos);
+    void on_context_menu(const QPoint &pos);
     void update_navigation_actions();
     void update_view_actions();
     void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
@@ -130,9 +126,7 @@ public:
     void on_standard_action(const StandardAction action_enum);
     QList<QModelIndex> get_all_selected_items() const;
     QSet<int> get_selected_types() const;
-
-signals:
-    void context_menu(const QPoint pos);
+    QList<QAction *> get_custom_action_list() const;
 };
 
 #endif /* CONSOLE_WIDGET_P_H */
