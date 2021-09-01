@@ -21,7 +21,6 @@
 #include "console_impls/policy_impl.h"
 
 #include "adldap.h"
-#include "central_widget.h"
 #include "console_impls/object_impl.h"
 #include "globals.h"
 #include "gplink.h"
@@ -32,7 +31,6 @@
 #include "rename_policy_dialog.h"
 #include "select_object_dialog.h"
 #include "create_policy_dialog.h"
-#include "central_widget.h"
 #include "item_type.h"
 
 #include <QCoreApplication>

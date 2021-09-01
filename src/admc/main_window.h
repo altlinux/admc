@@ -23,11 +23,10 @@
 
 #include <QMainWindow>
 
+class ConsoleWidget;
+class ObjectImpl;
+class FilterDialog;
 class QAction;
-class QDockWidget;
-class QMenu;
-class ConnectionOptionsDialog;
-class QToolBar;
 
 class MainWindow final : public QMainWindow {
     Q_OBJECT
@@ -38,21 +37,27 @@ public:
 protected:
     void closeEvent(QCloseEvent *event);
 
-private:
-    QAction *connect_action;
-    QAction *manual_action;
-    ConnectionOptionsDialog *connection_options_dialog;
-    QDockWidget *message_log_dock;
-    QToolBar *toolbar;
-
-    QMenu *action_menu;
-    QMenu *view_menu;
-    QMenu *preferences_menu;
-
-    void setup_menubar();
-    void connect_to_server();
+private slots:
+    void on_show_non_containers();
+    void on_dev_mode();
+    void on_advanced_features();
+    void on_filter_dialog_accepted();
     void on_log_searches_changed();
-    void load_connection_options();
+    void on_connect_options_dialog_accepted();
+
+private:
+    ConsoleWidget *console;
+    ObjectImpl *object_impl;
+    FilterDialog *filter_dialog;
+    
+    QAction *connect_action;
+    QAction *open_filter_action;
+    QAction *dev_mode_action;
+    QAction *show_noncontainers_action;
+    QAction *advanced_features_action;
+
+    void connect_to_server();
+    void refresh_object_tree();
 };
 
 #endif /* MAIN_WINDOW_H */

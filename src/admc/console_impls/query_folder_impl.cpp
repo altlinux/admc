@@ -21,7 +21,6 @@
 #include "console_impls/query_folder_impl.h"
 
 #include "adldap.h"
-#include "central_widget.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "globals.h"
@@ -30,7 +29,6 @@
 #include "create_query_folder_dialog.h"
 #include "create_query_item_dialog.h"
 #include "edit_query_folder_dialog.h"
-#include "central_widget.h"
 #include "item_type.h"
 #include "console_widget/results_view.h"
 

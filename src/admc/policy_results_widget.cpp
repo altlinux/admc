@@ -21,7 +21,6 @@
 #include "policy_results_widget.h"
 
 #include "adldap.h"
-#include "central_widget.h"
 #include "console_impls/policy_impl.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"

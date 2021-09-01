@@ -22,13 +22,20 @@
 
 #include "about_dialog.h"
 #include "adldap.h"
-#include "central_widget.h"
 #include "globals.h"
 #include "manual_dialog.h"
 #include "connection_options_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "console_impls/object_impl.h"
+#include "console_impls/policy_impl.h"
+#include "console_impls/policy_root_impl.h"
+#include "console_impls/query_item_impl.h"
+#include "console_impls/query_folder_impl.h"
+#include "console_widget/console_widget.h"
+#include "filter_dialog.h"
+#include "item_type.h"
 
 #include <QAction>
 #include <QActionGroup>
@@ -38,74 +45,66 @@
 #include <QStatusBar>
 #include <QTextEdit>
 #include <QToolBar>
+#include <QModelIndex>
 
 #define MESSAGE_LOG_OBJECT_NAME "MESSAGE_LOG_OBJECT_NAME"
 
 MainWindow::MainWindow()
 : QMainWindow() {
-    toolbar = new QToolBar(this);
-    toolbar->setObjectName("main_window_toolbar");
-    toolbar->setWindowTitle(tr("Toolbar"));
-    addToolBar(toolbar);
-
     setStatusBar(g_status()->status_bar());
 
-    connection_options_dialog = new ConnectionOptionsDialog(this);
-
-    manual_action = new QAction(QIcon::fromTheme("help-contents"), tr("&Manual"), this);
-
-    message_log_dock = new QDockWidget();
+    auto message_log_dock = new QDockWidget();
     message_log_dock->setWindowTitle(tr("Message Log"));
     message_log_dock->setWidget(g_status()->message_log());
     message_log_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
     message_log_dock->setObjectName(MESSAGE_LOG_OBJECT_NAME);
     addDockWidget(Qt::TopDockWidgetArea, message_log_dock);
 
-    setCentralWidget(new QWidget(this));
+    //
+    // Console
+    //
+    console = new ConsoleWidget(this);
+    setCentralWidget(console);
 
-    setup_menubar();
+    object_impl = new ObjectImpl(console);
+    console->register_impl(ItemType_Object, object_impl);
 
-    const bool restored_geometry = settings_restore_geometry(SETTING_main_window_geometry, this);
-    if (!restored_geometry) {
-        resize(1024, 768);
-    }
+    auto policy_root_impl = new PolicyRootImpl(console);
+    console->register_impl(ItemType_PolicyRoot, policy_root_impl);
 
-    const QByteArray state = settings_get_variant(SETTING_main_window_state).toByteArray();
-    if (!state.isEmpty()) {
-        restoreState(state);
-    } else {
-        message_log_dock->hide();
-    }
+    auto policy_impl = new PolicyImpl(console);
+    console->register_impl(ItemType_Policy, policy_impl);
 
-    connect(
-        connection_options_dialog, &QDialog::accepted,
-        this, &MainWindow::load_connection_options);
-    load_connection_options();
+    auto query_item_impl = new QueryItemImpl(console);
+    console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    connect_to_server();
-}
+    auto query_folder_impl = new QueryFolderImpl(console);
+    console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
-void MainWindow::closeEvent(QCloseEvent *event) {
-    const QByteArray geometry = saveGeometry();
-    settings_set_variant(SETTING_main_window_geometry, geometry);
+    object_impl->set_policy_impl(policy_impl);
 
-    const QByteArray state = saveState();
-    settings_set_variant(SETTING_main_window_state, state);
-
-    QMainWindow::closeEvent(event);
-}
-
-void MainWindow::setup_menubar() {
+    //
+    // Menubar
+    //
     auto menubar = new QMenuBar();
     setMenuBar(menubar);
 
     // Create dialogs opened from menubar
     auto manual_dialog = new ManualDialog(this);
     auto about_dialog = new AboutDialog(this);
+    auto connection_options_dialog = new ConnectionOptionsDialog(this);
 
     //
     // Create actions
     //
+    open_filter_action = new QAction(tr("&Filter objects..."), this);
+
+    // NOTE: not using settings_make_and_connect_action()
+    // because they need to be connected to a custom slot
+    dev_mode_action = settings_make_action(SETTING_dev_mode, tr("Dev mode"), this);
+    show_noncontainers_action = settings_make_action(SETTING_show_non_containers_in_console_tree, tr("&Show non-container objects in Console tree"), this);
+    advanced_features_action = settings_make_action(SETTING_advanced_features, tr("Advanced features"), this);
+
     connect_action = new QAction(tr("&Connect"), this);
     auto connection_options_action = new QAction(tr("Connection options"), this);
     auto quit_action = new QAction(tr("&Quit"), this);
@@ -117,6 +116,8 @@ void MainWindow::setup_menubar() {
     auto last_before_first_name_action = settings_make_and_connect_action(SETTING_last_name_before_first_name, tr("&Put last name before first name when creating users"), this);
     auto log_searches_action = settings_make_and_connect_action(SETTING_log_searches, tr("Log searches"), this);
     auto timestamp_log_action = settings_make_and_connect_action(SETTING_timestamp_log, tr("Timestamps in message log"), this);
+
+    auto manual_action = new QAction(QIcon::fromTheme("help-contents"), tr("&Manual"), this);
 
     const QList<QLocale::Language> language_list = {
         QLocale::English,
@@ -159,23 +160,39 @@ void MainWindow::setup_menubar() {
     //
     // Create menus
     //
-    // NOTE: for menu's that are obtained from console, we
-    // don't add actions. Instead the console adds actions
-    // to them.
     auto file_menu = menubar->addMenu(tr("&File"));
-    action_menu = menubar->addMenu(tr("&Action"));
-    view_menu = menubar->addMenu(tr("&View"));
-    preferences_menu = menubar->addMenu(tr("&Preferences"));
+    auto action_menu = menubar->addMenu(tr("&Action"));
+    auto view_menu = menubar->addMenu(tr("&View"));
+    auto preferences_menu = menubar->addMenu(tr("&Preferences"));
     auto language_menu = new QMenu(tr("&Language"));
     auto help_menu = menubar->addMenu(tr("&Help"));
 
+    auto toolbar = new QToolBar(this);
+    addToolBar(toolbar);
+    toolbar->setObjectName("main_window_toolbar");
+    toolbar->setWindowTitle(tr("Toolbar"));
+
     //
-    // Fill menus
+    // Add actions
     //
+
+    // File
     file_menu->addAction(connect_action);
     file_menu->addAction(connection_options_action);
     file_menu->addAction(quit_action);
 
+    // Action
+    console->connect_to_action_menu(action_menu);
+
+    // View
+    console->add_view_actions(view_menu);
+    view_menu->addAction(open_filter_action);
+
+    // Preferences
+    #ifdef QT_DEBUG
+        preferences_menu->addAction(dev_mode_action);
+    #endif
+    preferences_menu->addAction(advanced_features_action);
     preferences_menu->addAction(confirm_actions_action);
     preferences_menu->addAction(last_before_first_name_action);
     preferences_menu->addAction(log_searches_action);
@@ -184,19 +201,24 @@ void MainWindow::setup_menubar() {
     preferences_menu->addSeparator();
     preferences_menu->addAction(message_log_dock->toggleViewAction());
     preferences_menu->addAction(toolbar->toggleViewAction());
+    console->add_preferences_actions(preferences_menu);
 
     for (const auto language : language_list) {
         QAction *language_action = language_actions[language];
         language_menu->addAction(language_action);
     }
 
+    // Help
     help_menu->addAction(manual_action);
     help_menu->addAction(about_action);
+
+    // Toolbar
+    console->add_toolbar_actions(toolbar);
+    toolbar->addAction(manual_action);
 
     //
     // Connect actions
     //
-
     connect(
         connect_action, &QAction::triggered,
         this, &MainWindow::connect_to_server);
@@ -212,6 +234,15 @@ void MainWindow::setup_menubar() {
     connect(
         about_action, &QAction::triggered,
         about_dialog, &QDialog::open);
+    connect(
+        show_noncontainers_action, &QAction::toggled,
+        this, &MainWindow::on_show_non_containers);
+    connect(
+        dev_mode_action, &QAction::toggled,
+        this, &MainWindow::on_dev_mode);
+    connect(
+        advanced_features_action, &QAction::toggled,
+        this, &MainWindow::on_advanced_features);
 
     for (const auto language : language_actions.keys()) {
         QAction *action = language_actions[language];
@@ -231,33 +262,76 @@ void MainWindow::setup_menubar() {
         log_searches_action, &QAction::toggled,
         this, &MainWindow::on_log_searches_changed);
     on_log_searches_changed();
+
+    connect(
+        connection_options_dialog, &QDialog::accepted,
+        this, &MainWindow::on_connect_options_dialog_accepted);
+    on_connect_options_dialog_accepted();
+
+    const bool restored_geometry = settings_restore_geometry(SETTING_main_window_geometry, this);
+    if (!restored_geometry) {
+        resize(1024, 768);
+    }
+
+    const QByteArray state = settings_get_variant(SETTING_main_window_state).toByteArray();
+    if (!state.isEmpty()) {
+        restoreState(state);
+    } else {
+        message_log_dock->hide();
+    }
+
+    const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
+    console->restore_state(console_widget_state);
+
+    connect_to_server();
 }
 
-void MainWindow::connect_to_server() {
-    const QString saved_dc = settings_get_variant(SETTING_dc).toString();
-    AdInterface::set_dc(saved_dc);
+void MainWindow::closeEvent(QCloseEvent *event) {
+    const QByteArray geometry = saveGeometry();
+    settings_set_variant(SETTING_main_window_geometry, geometry);
 
-    AdInterface ad;
-    if (ad_connected(ad)) {
-        // TODO: check for load failure
-        const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
-        g_adconfig->load(ad, locale);
+    const QByteArray state = saveState();
+    settings_set_variant(SETTING_main_window_state, state);
 
-        qDebug() << "domain =" << g_adconfig->domain();
+    const QVariant console_state = console->save_state();
+    settings_set_variant(SETTING_console_widget_state, console_state);
 
-        AdInterface::set_config(g_adconfig);
+    QMainWindow::closeEvent(event);
+}
 
-        g_status()->display_ad_messages(ad, this);
+// NOTE: f-ns below need to manually change a setting and
+// then refresh_object_tree() because setting needs to be
+// changed before tree is refreshed. If you do this in a
+// more convenient way by connecting as a slot, call order
+// will be undefined.
 
-        auto central_widget = new CentralWidget(ad, action_menu);
-        setCentralWidget(central_widget);
+void MainWindow::on_show_non_containers() {
+    settings_set_bool(SETTING_show_non_containers_in_console_tree, show_noncontainers_action->isChecked());
 
-        central_widget->add_actions(view_menu, preferences_menu, toolbar);
-        
-        toolbar->addAction(manual_action);
+    refresh_object_tree();
+}
 
-        connect_action->setEnabled(false);
+void MainWindow::on_dev_mode() {
+    settings_set_bool(SETTING_dev_mode, dev_mode_action->isChecked());
+
+    refresh_object_tree();
+}
+
+void MainWindow::on_advanced_features() {
+    settings_set_bool(SETTING_advanced_features, advanced_features_action->isChecked());
+
+    refresh_object_tree();
+}
+
+void MainWindow::on_filter_dialog_accepted() {
+    if (filter_dialog->filtering_ON()) {
+        const QString filter = filter_dialog->get_filter();
+        object_impl->enable_filtering(filter);
+    } else {
+        object_impl->disable_filtering();
     }
+    
+    refresh_object_tree();
 }
 
 void MainWindow::on_log_searches_changed() {
@@ -266,7 +340,7 @@ void MainWindow::on_log_searches_changed() {
     AdInterface::set_log_searches(log_searches_ON);
 }
 
-void MainWindow::load_connection_options() {
+void MainWindow::on_connect_options_dialog_accepted() {
     const QVariant sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon);
     if (sasl_nocanon.isValid()) {
         AdInterface::set_sasl_nocanon(sasl_nocanon.toBool());
@@ -291,4 +365,65 @@ void MainWindow::load_connection_options() {
     };
     const CertStrategy cert_strategy = cert_strategy_map.value(cert_strategy_string, CertStrategy_Never);
     AdInterface::set_cert_strategy(cert_strategy);
+}
+
+void MainWindow::connect_to_server() {
+    const QString saved_dc = settings_get_variant(SETTING_dc).toString();
+    AdInterface::set_dc(saved_dc);
+
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    // TODO: check for load failure
+    const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
+    g_adconfig->load(ad, locale);
+    AdInterface::set_config(g_adconfig);
+
+    qDebug() << "domain =" << g_adconfig->domain();
+
+    // Load console tree's
+    console_object_tree_init(console, ad);
+    console_policy_tree_init(console, ad);
+    console_query_tree_init(console);
+
+    // Set current scope to object head to load it
+    const QModelIndex object_tree_root = get_object_tree_root(console);
+    if (object_tree_root.isValid()) {
+        console->set_current_scope(object_tree_root);
+    }
+
+    // Display any errors that happened when loading the
+    // console
+    g_status()->display_ad_messages(ad, this);
+
+    // NOTE: have to create filter dialog here because it
+    // requires an AD connection
+    filter_dialog = new FilterDialog(ad.adconfig(), this);
+
+    connect(
+        open_filter_action, &QAction::triggered,
+        filter_dialog, &QDialog::open);
+    connect(
+        filter_dialog, &QDialog::accepted,
+        this, &MainWindow::on_filter_dialog_accepted);
+    on_filter_dialog_accepted();
+    
+    // Disable connect action once connected because
+    // it's not needed at that point
+    connect_action->setEnabled(false);
+}
+
+void MainWindow::refresh_object_tree() {
+    const QModelIndex object_tree_root = get_object_tree_root(console);
+    if (!object_tree_root.isValid()) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    console->refresh_scope(object_tree_root);
+
+    hide_busy_indicator();
 }

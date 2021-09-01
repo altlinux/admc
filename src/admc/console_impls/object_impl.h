@@ -22,7 +22,6 @@
 #define OBJECT_IMPL_H
 
 #include "adldap.h"
-#include "central_widget.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/console_impl.h"
 #include "console_impls/my_console_role.h"

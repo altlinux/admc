@@ -41,7 +41,6 @@ set(ADMC_SOURCES
     filter_custom_dialog.cpp
     find_widget.cpp
     tab_widget.cpp
-    central_widget.cpp
     search_thread.cpp
     help_browser.cpp
     globals.cpp

@@ -21,7 +21,6 @@
 #include "console_impls/object_impl.h"
 
 #include "adldap.h"
-#include "central_widget.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/query_item_impl.h"
@@ -42,7 +41,6 @@
 #include "object_multi_properties_dialog.h"
 #include "password_dialog.h"
 #include "editors/multi_editor.h"
-#include "central_widget.h"
 #include "item_type.h"
 #include "console_widget/results_view.h"
 

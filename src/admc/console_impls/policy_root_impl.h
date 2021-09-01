@@ -21,7 +21,6 @@
 #ifndef POLICY_ROOT_IMPL_H
 #define POLICY_ROOT_IMPL_H
 
-#include "central_widget.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/console_impl.h"
 
