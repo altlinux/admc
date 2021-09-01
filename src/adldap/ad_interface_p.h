@@ -37,7 +37,6 @@ class AdInterfacePrivate {
 public:
     AdInterfacePrivate();
 
-    AdConfig *adconfig;
     LDAP *ld;
     bool is_connected;
     QString domain;
@@ -60,7 +59,7 @@ public:
     QList<QString> gpo_get_gpt_contents(const QString &gpt_root_path, bool *ok);
 
 private:
-    static AdConfig *s_adconfig;
+    static AdConfig *adconfig;
     static bool s_log_searches;
     static QString s_dc;
     static void *s_sasl_nocanon;

@@ -93,7 +93,7 @@ public:
      * raw attribute values. Note that AdInterface is not
      * responsible for deleting AdConfig instance.
      */
-    AdInterface(AdConfig *adconfig = nullptr);
+    AdInterface();
     ~AdInterface();
 
     /**
@@ -102,8 +102,7 @@ public:
      * that if you pass another adconfig to ctor that will
      * override the permanent adconfig.
      */
-    static void set_permanent_adconfig(AdConfig *adconfig);
-    void set_adconfig(AdConfig *adconfig);
+    static void set_config(AdConfig *config);
 
     static void set_log_searches(const bool enabled);
 

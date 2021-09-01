@@ -245,7 +245,7 @@ void MainWindow::connect_to_server() {
 
         qDebug() << "domain =" << g_adconfig->domain();
 
-        AdInterface::set_permanent_adconfig(g_adconfig);
+        AdInterface::set_config(g_adconfig);
 
         g_status()->display_ad_messages(ad, this);
 

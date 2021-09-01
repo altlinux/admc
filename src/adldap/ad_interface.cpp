@@ -82,7 +82,7 @@ QList<QString> query_server_for_hosts(const char *dname);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format);
 
-AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
+AdConfig *AdInterfacePrivate::adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
 QString AdInterfacePrivate::s_dc = QString();
 void *AdInterfacePrivate::s_sasl_nocanon = LDAP_OPT_ON;
@@ -93,20 +93,12 @@ SMBCCTX *AdInterfacePrivate::smbc = NULL;
 void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup, int maxLenWorkgroup, char *pUsername, int maxLenUsername, char *pPassword, int maxLenPassword) {
 }
 
-AdInterface::AdInterface(AdConfig *adconfig) {
+AdInterface::AdInterface() {
     d = new AdInterfacePrivate();
 
     // TODO: this is very bug-prone, error returns should
     // set this to false or return false
     d->is_connected = false;
-
-    if (adconfig != nullptr) {
-        d->adconfig = adconfig;
-    } else if (AdInterfacePrivate::s_adconfig != nullptr) {
-        d->adconfig = AdInterfacePrivate::s_adconfig;
-    } else {
-        d->adconfig = nullptr;
-    }
 
     d->ld = NULL;
 
@@ -281,12 +273,8 @@ AdInterface::~AdInterface() {
     delete d;
 }
 
-void AdInterface::set_permanent_adconfig(AdConfig *adconfig) {
-    AdInterfacePrivate::s_adconfig = adconfig;
-}
-
-void AdInterface::set_adconfig(AdConfig *adconfig) {
-    d->adconfig = adconfig;
+void AdInterface::set_config(AdConfig *config_arg) {
+    AdInterfacePrivate::adconfig = config_arg;
 }
 
 void AdInterface::set_log_searches(const bool enabled) {
