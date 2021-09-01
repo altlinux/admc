@@ -201,6 +201,7 @@ MainWindow::MainWindow()
     preferences_menu->addAction(last_before_first_name_action);
     preferences_menu->addAction(log_searches_action);
     preferences_menu->addAction(timestamp_log_action);
+    preferences_menu->addAction(show_noncontainers_action);
     preferences_menu->addMenu(language_menu);
     preferences_menu->addSeparator();
     preferences_menu->addAction(message_log_dock->toggleViewAction());
