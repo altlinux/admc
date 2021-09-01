@@ -29,6 +29,8 @@
 ConsoleImpl::ConsoleImpl(ConsoleWidget *console_arg)
 : QObject(console_arg) {
     console = console_arg;
+    results_widget = nullptr;
+    results_view = nullptr;
 }
 
 void ConsoleImpl::fetch(const QModelIndex &index) {
