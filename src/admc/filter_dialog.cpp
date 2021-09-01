@@ -23,7 +23,6 @@
 #include "adldap.h"
 #include "filter_classes_widget.h"
 #include "filter_custom_dialog.h"
-#include "filter_widget/filter_widget.h"
 #include "globals.h"
 #include "settings.h"
 
@@ -34,7 +33,7 @@
 #include <QRadioButton>
 #include <QVBoxLayout>
 
-#define FILTER_WIDGET_STATE "FILTER_WIDGET_STATE"
+#define FILTER_CUSTOM_DIALOG_STATE "FILTER_CUSTOM_DIALOG_STATE"
 #define FILTER_CLASSES_STATE "FILTER_CLASSES_STATE"
 
 // TODO: implement canceling. Need to be able to load/unload
@@ -48,8 +47,6 @@ FilterDialog::FilterDialog(QWidget *parent)
     resize(400, 400);
 
     const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();
-
-    filter_widget = new FilterWidget(noncontainer_classes);
 
     custom_dialog = new FilterCustomDialog(this);
 
@@ -91,7 +88,7 @@ FilterDialog::FilterDialog(QWidget *parent)
 
     const QHash<QString, QVariant> state = settings_get_variant(SETTING_filter_dialog_state).toHash();
     
-    filter_widget->restore_state(state[FILTER_WIDGET_STATE]);
+    custom_dialog->restore_state(state[FILTER_CUSTOM_DIALOG_STATE]);
     filter_classes_widget->restore_state(state[FILTER_CLASSES_STATE]);
 
     for (const QString &state_name : button_state_name_map.keys()) {
@@ -126,7 +123,7 @@ bool FilterDialog::filtering_ON() const {
 FilterDialog::~FilterDialog() {
     QHash<QString, QVariant> state;
 
-    state[FILTER_WIDGET_STATE] = filter_widget->save_state();
+    state[FILTER_CUSTOM_DIALOG_STATE] = custom_dialog->save_state();
     state[FILTER_CLASSES_STATE] = filter_classes_widget->save_state();
 
     for (const QString &state_name : button_state_name_map.keys()) {
@@ -144,7 +141,7 @@ QString FilterDialog::get_filter() const {
     } else if (classes_button->isChecked()) {
         return filter_classes_widget->get_filter();
     } else if (custom_button->isChecked()) {
-        return custom_dialog->filter_widget->get_filter();
+        return custom_dialog->get_filter();
     }
 
     return QString();

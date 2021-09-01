@@ -27,6 +27,7 @@
 
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
+#include <QVariant>
 
 // TODO: implement canceling. Need to be able to load/unload
 // filter widget state though. For example, one way to
@@ -55,4 +56,16 @@ FilterCustomDialog::FilterCustomDialog(QWidget *parent)
     connect(
         button_box, &QDialogButtonBox::accepted,
         this, &QDialog::accept);
+}
+
+QVariant FilterCustomDialog::save_state() const {
+    return filter_widget->save_state();
+}
+
+void FilterCustomDialog::restore_state(const QVariant &state) {
+    filter_widget->restore_state(state);
+}
+
+QString FilterCustomDialog::get_filter() const {
+    return filter_widget->get_filter();
 }

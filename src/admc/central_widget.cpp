@@ -111,6 +111,7 @@ CentralWidget::CentralWidget(AdInterface &ad, QMenu *action_menu)
     connect(
         filter_dialog, &QDialog::accepted,
         this, &CentralWidget::on_filter_dialog_accepted);
+    on_filter_dialog_accepted();
 
     // Set current scope to object head to load it
     const QModelIndex object_tree_root = get_object_tree_root(console);

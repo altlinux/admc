@@ -29,7 +29,6 @@
 
 #include <QDialog>
 
-class FilterWidget;
 class FilterCustomDialog;
 class QRadioButton;
 class QPushButton;
@@ -52,7 +51,6 @@ private:
     QRadioButton *classes_button;
     QPushButton *custom_dialog_button;
     FilterClassesWidget *filter_classes_widget;
-    FilterWidget *filter_widget;
     QHash<QString, QRadioButton *> button_state_name_map;
     
     void on_custom_button();

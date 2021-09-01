@@ -35,9 +35,16 @@ class FilterCustomDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    FilterWidget *filter_widget;
-
     FilterCustomDialog(QWidget *parent);
+
+    QVariant save_state() const;
+    void restore_state(const QVariant &state);
+
+    QString get_filter() const;
+
+private:
+    FilterWidget *filter_widget;
+    
 };
 
 #endif /* FILTER_CUSTOM_DIALOG_H */
