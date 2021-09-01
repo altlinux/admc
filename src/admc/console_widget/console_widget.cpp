@@ -72,8 +72,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->scope_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     d->scope_view->setContextMenuPolicy(Qt::CustomContextMenu);
     d->scope_view->setDragDropMode(QAbstractItemView::DragDrop);
-    d->scope_view->sortByColumn(0, Qt::AscendingOrder);
-    d->scope_view->setSortingEnabled(true);
     // NOTE: this makes it so that you can't drag drop between rows (even though name/description don't say anything about that)
     d->scope_view->setDragDropOverwriteMode(true);
 
@@ -285,6 +283,8 @@ QList<QStandardItem *> ConsoleWidget::add_scope_item(const int type, const QMode
 
     row[0]->setData(false, ConsoleRole_WasFetched);
     row[0]->setData(true, ConsoleRole_IsScope);
+
+    d->scope_proxy_model->sort(0, Qt::AscendingOrder);
 
     return row;
 }
