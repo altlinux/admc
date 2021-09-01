@@ -115,10 +115,6 @@ QSet<StandardAction> QueryItemImpl::get_standard_actions(const QModelIndex &inde
 }
 
 void QueryItemImpl::refresh(const QList<QModelIndex> &index_list) {
-    if (index_list.size() != 1) {
-        return;
-    }
-
     const QModelIndex index = index_list[0];
 
     console->delete_children(index);

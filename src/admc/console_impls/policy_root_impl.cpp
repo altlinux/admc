@@ -76,10 +76,6 @@ void PolicyRootImpl::fetch(const QModelIndex &index) {
 }
 
 void PolicyRootImpl::refresh(const QList<QModelIndex> &index_list) {
-    if (index_list.size() != 1) {
-        return;
-    }
-
     const QModelIndex index = index_list[0];
 
     console->delete_children(index);

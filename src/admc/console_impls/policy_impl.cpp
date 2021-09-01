@@ -178,10 +178,6 @@ void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
 }
 
 void PolicyImpl::refresh(const QList<QModelIndex> &index_list) {
-    if (index_list.size() != 1) {
-        return;
-    }
-
     const QModelIndex index = index_list[0];
 
     policy_results_widget->update(index);

@@ -198,23 +198,23 @@ void ObjectImpl::fetch(const QModelIndex &index) {
 }
 
 bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    const bool dropped_are_all_objects = (dropped_type_list.size() == 1 && dropped_type_list.contains(ItemType_Object));
+    const bool dropped_are_all_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
     const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
     if (dropped_are_all_objects) {
-        // NOTE: always allow dropping when dragging multiple
-        // objects. This way, whatever objects can drop will be
-        // dropped and if others fail to drop it's not a big
-        // deal.
-        if (dropped_list.size() != 1) {
-            return true;
-        } else {
+        if (dropped_list.size() == 1) {
             const QPersistentModelIndex dropped = dropped_list[0];
 
             const DropType drop_type = console_object_get_drop_type(dropped, target);
             const bool can_drop = (drop_type != DropType_None);
 
             return can_drop;
+        } else {
+            // NOTE: always allow dropping when dragging
+            // multiple objects. This way, whatever objects
+            // can drop will be dropped and if others fail
+            // to drop it's not a big deal.
+            return true;
         }
     } else if (dropped_are_policies) {
         const bool target_is_ou = console_object_is_ou(target);
@@ -226,7 +226,7 @@ bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
 }
 
 void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    const bool dropped_are_all_objects = (dropped_type_list.size() == 1 && dropped_type_list.contains(ItemType_Object));
+    const bool dropped_are_all_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
     const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
     if (dropped_are_all_objects) {
@@ -619,10 +619,6 @@ void ObjectImpl::on_add_to_group() {
 
 void ObjectImpl::on_find() {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
-
-    if (dn_list.size() != 1) {
-        return;
-    }
 
     const QString dn = dn_list[0];
 
