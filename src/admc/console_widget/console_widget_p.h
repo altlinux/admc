@@ -97,36 +97,38 @@ public:
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 
-    void on_scope_expanded(const QModelIndex &index);
-    void on_results_activated(const QModelIndex &index);
-    void on_context_menu(const QPoint &pos);
     void update_navigation_actions();
     void update_view_actions();
-    void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
-    void on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last);
-    void on_focus_changed(QWidget *old, QWidget *now);
-    void refresh_current_scope();
-    void customize_columns();
-    void navigate_up();
-    void navigate_back();
-    void navigate_forward();
     void start_drag(const QList<QPersistentModelIndex> &dropped_list_arg);
     bool can_drop(const QModelIndex &target);
     void drop(const QModelIndex &target);
-    void set_results_to_icons();
-    void set_results_to_list();
-    void set_results_to_detail();
     void set_results_to_type(const ResultsViewType type);
-    void on_toggle_console_tree();
-    void on_toggle_description_bar();
     void fetch_scope(const QModelIndex &index);
     ConsoleImpl *get_current_scope_impl() const;
     ConsoleImpl *get_impl(const QModelIndex &index) const;
     void update_description();
-    void on_standard_action(const StandardAction action_enum);
     QList<QModelIndex> get_all_selected_items() const;
     QSet<int> get_selected_types() const;
     QList<QAction *> get_custom_action_list() const;
+
+public slots:
+    void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
+    void on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last);
+    void on_focus_changed(QWidget *old, QWidget *now);
+    void on_refresh_current_scope();
+    void on_customize_columns();
+    void on_navigate_up();
+    void on_navigate_back();
+    void on_navigate_forward();
+    void on_set_results_to_icons();
+    void on_set_results_to_list();
+    void on_set_results_to_detail();
+    void on_toggle_console_tree();
+    void on_toggle_description_bar();
+    void on_standard_action(const StandardAction action_enum);
+    void on_context_menu(const QPoint &pos);
+    void on_scope_expanded(const QModelIndex &index);
+    void on_results_activated(const QModelIndex &index);
 };
 
 #endif /* CONSOLE_WIDGET_P_H */

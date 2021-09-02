@@ -127,7 +127,7 @@ public:
 
     QVariant save_state() const;
 
-    // NOTE: all results should be registered before this is
+    // NOTE: all impls should be registered before this is
     // called so that their state can be restored
     void restore_state(const QVariant &state);
 

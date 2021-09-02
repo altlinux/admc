@@ -57,11 +57,6 @@ const QList<StandardAction> standard_action_list = {
 
 QString results_state_name(const int type);
 
-ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
-: QObject(q_arg) {
-    q = q_arg;
-}
-
 ConsoleWidget::ConsoleWidget(QWidget *parent)
 : QWidget(parent) {
     d = new ConsoleWidgetPrivate(this);
@@ -185,28 +180,28 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     connect(
         d->navigate_up_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::navigate_up);
+        d, &ConsoleWidgetPrivate::on_navigate_up);
     connect(
         d->navigate_back_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::navigate_back);
+        d, &ConsoleWidgetPrivate::on_navigate_back);
     connect(
         d->navigate_forward_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::navigate_forward);
+        d, &ConsoleWidgetPrivate::on_navigate_forward);
     connect(
         d->refresh_current_scope_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::refresh_current_scope);
+        d, &ConsoleWidgetPrivate::on_refresh_current_scope);
     connect(
         d->customize_columns_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::customize_columns);
+        d, &ConsoleWidgetPrivate::on_customize_columns);
     connect(
         d->set_results_to_icons_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::set_results_to_icons);
+        d, &ConsoleWidgetPrivate::on_set_results_to_icons);
     connect(
         d->set_results_to_list_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::set_results_to_list);
+        d, &ConsoleWidgetPrivate::on_set_results_to_list);
     connect(
         d->set_results_to_detail_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::set_results_to_detail);
+        d, &ConsoleWidgetPrivate::on_set_results_to_detail);
     connect(
         d->toggle_console_tree_action, &QAction::triggered,
         d, &ConsoleWidgetPrivate::on_toggle_console_tree);
@@ -234,20 +229,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     d->update_navigation_actions();
     d->update_view_actions();
-}
-
-void ConsoleWidgetPrivate::on_context_menu(const QPoint &pos) {
-    const QModelIndex index = focused_view->indexAt(pos);
-
-    if (index.isValid()) {
-        const QPoint global_pos = focused_view->mapToGlobal(pos);
-
-        auto menu = new QMenu(q);
-        menu->setAttribute(Qt::WA_DeleteOnClose);
-        q->add_actions(menu);
-        q->update_actions();
-        menu->popup(global_pos);
-    }
 }
 
 void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
@@ -371,40 +352,6 @@ QList<QModelIndex> ConsoleWidget::get_selected_items(const int type) const {
     }
 
     return out;
-}
-
-QList<QModelIndex> ConsoleWidgetPrivate::get_all_selected_items() const {
-    ConsoleImpl *current_impl = get_current_scope_impl();
-    ResultsView *results_view = current_impl->view();
-
-    const bool focused_scope = (focused_view == scope_view);
-    const bool focused_results = (results_view != nullptr && focused_view == results_view->current_view());
-
-    const QList<QModelIndex> scope_selected = [&]() {
-        QList<QModelIndex> out;
-
-        const QList<QModelIndex> selected_proxy = scope_view->selectionModel()->selectedRows();
-        for (const QModelIndex &index : selected_proxy) {
-            const QModelIndex source_index = scope_proxy_model->mapToSource(index);
-            out.append(source_index);
-        }
-
-        return out;
-    }();
-
-    if (focused_scope) {
-        return scope_selected;
-    } else if (focused_results) {
-        const QList<QModelIndex> results_selected = results_view->get_selected_indexes();
-
-        if (!results_selected.isEmpty()) {
-            return results_selected;
-        } else {
-            return scope_selected;
-        }
-    } else {
-        return QList<QModelIndex>();
-    }
 }
 
 QModelIndex ConsoleWidget::get_selected_item(const int type) const {
@@ -544,29 +491,12 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
     }
 }
 
-void ConsoleWidget::delete_children(const QModelIndex &parent) {
-    d->model->removeRows(0, d->model->rowCount(parent), parent);
-}
-
 void ConsoleWidget::set_scope_view_visible(const bool visible) {
     d->scope_view->setVisible(visible);
 }
 
-void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
-    const QModelIndex index = scope_proxy_model->mapToSource(index_proxy);
-    fetch_scope(index);
-}
-
-void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
-    const QModelIndex main_index = index.siblingAtColumn(0);
-    const bool is_scope = main_index.data(ConsoleRole_IsScope).toBool();
-
-    if (is_scope) {
-        q->set_current_scope(main_index);
-    } else {
-        ConsoleImpl *impl = get_impl(main_index);
-        impl->activate(main_index);
-    }
+void ConsoleWidget::delete_children(const QModelIndex &parent) {
+    d->model->removeRows(0, d->model->rowCount(parent), parent);
 }
 
 // Show/hide actions based on what's selected and emit the
@@ -731,6 +661,217 @@ void ConsoleWidget::update_actions() {
     }
 }
 
+QAction *ConsoleWidget::refresh_current_scope_action() const {
+    return d->refresh_current_scope_action;
+}
+
+QAction *ConsoleWidget::navigate_up_action() const {
+    return d->navigate_up_action;
+}
+
+QAction *ConsoleWidget::navigate_back_action() const {
+    return d->navigate_back_action;
+}
+
+QAction *ConsoleWidget::navigate_forward_action() const {
+    return d->navigate_forward_action;
+}
+
+QAction *ConsoleWidget::set_results_to_icons_action() const {
+    return d->set_results_to_icons_action;
+}
+
+QAction *ConsoleWidget::set_results_to_list_action() const {
+    return d->set_results_to_list_action;
+}
+
+QAction *ConsoleWidget::set_results_to_detail_action() const {
+    return d->set_results_to_detail_action;
+}
+
+QAction *ConsoleWidget::customize_columns_action() const {
+    return d->customize_columns_action;
+}
+
+QAction *ConsoleWidget::toggle_console_tree_action() const {
+    return d->toggle_console_tree_action;
+}
+
+QAction *ConsoleWidget::toggle_description_bar_action() const {
+    return d->toggle_description_bar_action;
+}
+
+ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
+: QObject(q_arg) {
+    q = q_arg;
+}
+
+// NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
+void ConsoleWidgetPrivate::update_navigation_actions() {
+    const bool can_navigate_up = [this]() {
+        const QModelIndex current = q->get_current_scope_item();
+        const QModelIndex current_parent = current.parent();
+
+        return (current.isValid() && current_parent.isValid());
+    }();
+
+    navigate_up_action->setEnabled(can_navigate_up);
+    navigate_back_action->setEnabled(!targets_past.isEmpty());
+    navigate_forward_action->setEnabled(!targets_future.isEmpty());
+}
+
+void ConsoleWidgetPrivate::update_view_actions() {
+    ConsoleImpl *impl = get_current_scope_impl();
+    const bool results_view_exists = (impl->view() != nullptr);
+
+    set_results_to_icons_action->setVisible(results_view_exists);
+    set_results_to_list_action->setVisible(results_view_exists);
+    set_results_to_detail_action->setVisible(results_view_exists);
+    customize_columns_action->setVisible(results_view_exists);
+}
+
+void ConsoleWidgetPrivate::start_drag(const QList<QPersistentModelIndex> &dropped_list_arg) {
+    dropped_list = dropped_list_arg;
+
+    dropped_type_list = [&]() {
+        QSet<int> out;
+
+        for (const QPersistentModelIndex &index : dropped_list) {
+            const int type = index.data(ConsoleRole_Type).toInt();
+            out.insert(type);
+        }
+
+        return out;
+    }();
+}
+
+bool ConsoleWidgetPrivate::can_drop(const QModelIndex &target) {
+    const int target_type = target.data(ConsoleRole_Type).toInt();
+
+    ConsoleImpl *impl = get_impl(target);
+    const bool ok = impl->can_drop(dropped_list, dropped_type_list, target, target_type);
+
+    return ok;
+}
+
+void ConsoleWidgetPrivate::drop(const QModelIndex &target) {
+    const int target_type = target.data(ConsoleRole_Type).toInt();
+    
+    ConsoleImpl *impl = get_impl(target);
+    impl->drop(dropped_list, dropped_type_list, target, target_type);
+}
+
+void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
+    ConsoleImpl *impl = get_current_scope_impl();
+
+    if (impl->view() != nullptr) {
+        impl->view()->set_view_type(type);
+    }
+}
+
+void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
+    const bool was_fetched = index.data(ConsoleRole_WasFetched).toBool();
+
+    if (!was_fetched) {
+        model->setData(index, true, ConsoleRole_WasFetched);
+        
+        ConsoleImpl *impl = get_impl(index);
+        impl->fetch(index);
+    }
+}
+
+ConsoleImpl *ConsoleWidgetPrivate::get_current_scope_impl() const {
+    const QModelIndex current_scope = q->get_current_scope_item();
+
+    ConsoleImpl *impl = get_impl(current_scope);
+
+    return impl;
+}
+
+ConsoleImpl *ConsoleWidgetPrivate::get_impl(const QModelIndex &index) const {
+    const int type = index.data(ConsoleRole_Type).toInt();
+    ConsoleImpl *impl = impl_map.value(type, default_impl);
+
+    return impl;
+}
+
+void ConsoleWidgetPrivate::update_description() {
+    const QModelIndex current_scope = q->get_current_scope_item();
+
+    const QString scope_name = current_scope.data().toString();
+
+    ConsoleImpl *impl = get_impl(current_scope);
+    const QString description = impl->get_description(current_scope);
+
+    description_bar_left->setText(scope_name);
+    description_bar_right->setText(description);
+}
+
+QList<QModelIndex> ConsoleWidgetPrivate::get_all_selected_items() const {
+    ConsoleImpl *current_impl = get_current_scope_impl();
+    ResultsView *results_view = current_impl->view();
+
+    const bool focused_scope = (focused_view == scope_view);
+    const bool focused_results = (results_view != nullptr && focused_view == results_view->current_view());
+
+    const QList<QModelIndex> scope_selected = [&]() {
+        QList<QModelIndex> out;
+
+        const QList<QModelIndex> selected_proxy = scope_view->selectionModel()->selectedRows();
+        for (const QModelIndex &index : selected_proxy) {
+            const QModelIndex source_index = scope_proxy_model->mapToSource(index);
+            out.append(source_index);
+        }
+
+        return out;
+    }();
+
+    if (focused_scope) {
+        return scope_selected;
+    } else if (focused_results) {
+        const QList<QModelIndex> results_selected = results_view->get_selected_indexes();
+
+        if (!results_selected.isEmpty()) {
+            return results_selected;
+        } else {
+            return scope_selected;
+        }
+    } else {
+        return QList<QModelIndex>();
+    }
+}
+
+QSet<int> ConsoleWidgetPrivate::get_selected_types() const {
+    QSet<int> out;
+
+    const QList<QModelIndex> index_list = get_all_selected_items();
+
+    for (const QModelIndex &index : index_list) {
+        const int type = index.data(ConsoleRole_Type).toInt();
+        out.insert(type);
+    } 
+
+    return out;
+}
+
+// Get all custom actions from impl's, in order
+QList<QAction *> ConsoleWidgetPrivate::get_custom_action_list() const {
+    QList<QAction *> out;
+
+    for (const int type : impl_map.keys()) {
+        ConsoleImpl *impl = impl_map[type];
+        QList<QAction *> for_this_type = impl->get_all_custom_actions();
+
+        for (QAction *action : for_this_type) {
+            if (!out.contains(action)) {
+                out.append(action);
+            }
+        }
+    }
+
+    return out;
+}
+
 void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &current_proxy, const QModelIndex &previous_proxy) {
     // NOTE: technically this slot should never be called
     // with invalid current index
@@ -853,13 +994,13 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
     }
 }
 
-void ConsoleWidgetPrivate::refresh_current_scope() {
+void ConsoleWidgetPrivate::on_refresh_current_scope() {
     const QModelIndex current_scope = q->get_current_scope_item();
 
     q->refresh_scope(current_scope);
 }
 
-void ConsoleWidgetPrivate::customize_columns() {
+void ConsoleWidgetPrivate::on_customize_columns() {
     ConsoleImpl *current_impl = get_current_scope_impl();
     ResultsView *results_view = current_impl->view();
 
@@ -870,7 +1011,7 @@ void ConsoleWidgetPrivate::customize_columns() {
 }
 
 // Set target to parent of current target
-void ConsoleWidgetPrivate::navigate_up() {
+void ConsoleWidgetPrivate::on_navigate_up() {
     const QPersistentModelIndex old_current = q->get_current_scope_item();
 
     if (!old_current.isValid()) {
@@ -889,7 +1030,7 @@ void ConsoleWidgetPrivate::navigate_up() {
 }
 
 // NOTE: for "back" and "forward" navigation, setCurrentIndex() triggers "current changed" slot which by default erases future history, so manually restore correct navigation state afterwards
-void ConsoleWidgetPrivate::navigate_back() {
+void ConsoleWidgetPrivate::on_navigate_back() {
     const QPersistentModelIndex old_current = q->get_current_scope_item();
 
     if (!old_current.isValid()) {
@@ -915,7 +1056,7 @@ void ConsoleWidgetPrivate::navigate_back() {
     update_navigation_actions();
 }
 
-void ConsoleWidgetPrivate::navigate_forward() {
+void ConsoleWidgetPrivate::on_navigate_forward() {
     const QPersistentModelIndex old_current = q->get_current_scope_item();
 
     if (!old_current.isValid()) {
@@ -941,55 +1082,16 @@ void ConsoleWidgetPrivate::navigate_forward() {
     update_navigation_actions();
 }
 
-void ConsoleWidgetPrivate::start_drag(const QList<QPersistentModelIndex> &dropped_list_arg) {
-    dropped_list = dropped_list_arg;
-
-    dropped_type_list = [&]() {
-        QSet<int> out;
-
-        for (const QPersistentModelIndex &index : dropped_list) {
-            const int type = index.data(ConsoleRole_Type).toInt();
-            out.insert(type);
-        }
-
-        return out;
-    }();
-}
-
-bool ConsoleWidgetPrivate::can_drop(const QModelIndex &target) {
-    const int target_type = target.data(ConsoleRole_Type).toInt();
-
-    ConsoleImpl *impl = get_impl(target);
-    const bool ok = impl->can_drop(dropped_list, dropped_type_list, target, target_type);
-
-    return ok;
-}
-
-void ConsoleWidgetPrivate::drop(const QModelIndex &target) {
-    const int target_type = target.data(ConsoleRole_Type).toInt();
-    
-    ConsoleImpl *impl = get_impl(target);
-    impl->drop(dropped_list, dropped_type_list, target, target_type);
-}
-
-void ConsoleWidgetPrivate::set_results_to_icons() {
+void ConsoleWidgetPrivate::on_set_results_to_icons() {
     set_results_to_type(ResultsViewType_Icons);
 }
 
-void ConsoleWidgetPrivate::set_results_to_list() {
+void ConsoleWidgetPrivate::on_set_results_to_list() {
     set_results_to_type(ResultsViewType_List);
 }
 
-void ConsoleWidgetPrivate::set_results_to_detail() {
+void ConsoleWidgetPrivate::on_set_results_to_detail() {
     set_results_to_type(ResultsViewType_Detail);
-}
-
-void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
-    ConsoleImpl *impl = get_current_scope_impl();
-
-    if (impl->view() != nullptr) {
-        impl->view()->set_view_type(type);
-    }
 }
 
 void ConsoleWidgetPrivate::on_toggle_console_tree() {
@@ -1000,109 +1102,6 @@ void ConsoleWidgetPrivate::on_toggle_console_tree() {
 void ConsoleWidgetPrivate::on_toggle_description_bar() {
     const bool visible = toggle_description_bar_action->isChecked();
     description_bar->setVisible(visible);
-}
-
-// NOTE: as long as this is called where appropriate (on every target change), it is not necessary to do any condition checks in navigation f-ns since the actions that call them will be disabled if they can't be done
-void ConsoleWidgetPrivate::update_navigation_actions() {
-    const bool can_navigate_up = [this]() {
-        const QModelIndex current = q->get_current_scope_item();
-        const QModelIndex current_parent = current.parent();
-
-        return (current.isValid() && current_parent.isValid());
-    }();
-
-    navigate_up_action->setEnabled(can_navigate_up);
-    navigate_back_action->setEnabled(!targets_past.isEmpty());
-    navigate_forward_action->setEnabled(!targets_future.isEmpty());
-}
-
-void ConsoleWidgetPrivate::update_view_actions() {
-    ConsoleImpl *impl = get_current_scope_impl();
-    const bool results_view_exists = (impl->view() != nullptr);
-
-    set_results_to_icons_action->setVisible(results_view_exists);
-    set_results_to_list_action->setVisible(results_view_exists);
-    set_results_to_detail_action->setVisible(results_view_exists);
-    customize_columns_action->setVisible(results_view_exists);
-}
-
-QAction *ConsoleWidget::refresh_current_scope_action() const {
-    return d->refresh_current_scope_action;
-}
-
-QAction *ConsoleWidget::navigate_up_action() const {
-    return d->navigate_up_action;
-}
-
-QAction *ConsoleWidget::navigate_back_action() const {
-    return d->navigate_back_action;
-}
-
-QAction *ConsoleWidget::navigate_forward_action() const {
-    return d->navigate_forward_action;
-}
-
-QAction *ConsoleWidget::set_results_to_icons_action() const {
-    return d->set_results_to_icons_action;
-}
-
-QAction *ConsoleWidget::set_results_to_list_action() const {
-    return d->set_results_to_list_action;
-}
-
-QAction *ConsoleWidget::set_results_to_detail_action() const {
-    return d->set_results_to_detail_action;
-}
-
-QAction *ConsoleWidget::customize_columns_action() const {
-    return d->customize_columns_action;
-}
-
-QAction *ConsoleWidget::toggle_console_tree_action() const {
-    return d->toggle_console_tree_action;
-}
-
-QAction *ConsoleWidget::toggle_description_bar_action() const {
-    return d->toggle_description_bar_action;
-}
-
-// TODO: rename to get_current_scope_impl()
-ConsoleImpl *ConsoleWidgetPrivate::get_current_scope_impl() const {
-    const QModelIndex current_scope = q->get_current_scope_item();
-
-    ConsoleImpl *impl = get_impl(current_scope);
-
-    return impl;
-}
-
-void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
-    const bool was_fetched = index.data(ConsoleRole_WasFetched).toBool();
-
-    if (!was_fetched) {
-        model->setData(index, true, ConsoleRole_WasFetched);
-        
-        ConsoleImpl *impl = get_impl(index);
-        impl->fetch(index);
-    }
-}
-
-ConsoleImpl *ConsoleWidgetPrivate::get_impl(const QModelIndex &index) const {
-    const int type = index.data(ConsoleRole_Type).toInt();
-    ConsoleImpl *impl = impl_map.value(type, default_impl);
-
-    return impl;
-}
-
-void ConsoleWidgetPrivate::update_description() {
-    const QModelIndex current_scope = q->get_current_scope_item();
-
-    const QString scope_name = current_scope.data().toString();
-
-    ConsoleImpl *impl = get_impl(current_scope);
-    const QString description = impl->get_description(current_scope);
-
-    description_bar_left->setText(scope_name);
-    description_bar_right->setText(description);
 }
 
 void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) {
@@ -1159,6 +1158,37 @@ void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) 
     }
 }
 
+void ConsoleWidgetPrivate::on_context_menu(const QPoint &pos) {
+    const QModelIndex index = focused_view->indexAt(pos);
+
+    if (index.isValid()) {
+        const QPoint global_pos = focused_view->mapToGlobal(pos);
+
+        auto menu = new QMenu(q);
+        menu->setAttribute(Qt::WA_DeleteOnClose);
+        q->add_actions(menu);
+        q->update_actions();
+        menu->popup(global_pos);
+    }
+}
+
+void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {
+    const QModelIndex index = scope_proxy_model->mapToSource(index_proxy);
+    fetch_scope(index);
+}
+
+void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
+    const QModelIndex main_index = index.siblingAtColumn(0);
+    const bool is_scope = main_index.data(ConsoleRole_IsScope).toBool();
+
+    if (is_scope) {
+        q->set_current_scope(main_index);
+    } else {
+        ConsoleImpl *impl = get_impl(main_index);
+        impl->activate(main_index);
+    }
+}
+
 int console_item_get_type(const QModelIndex &index) {
     const int type = index.data(ConsoleRole_Type).toInt();
 
@@ -1173,35 +1203,4 @@ bool console_item_get_was_fetched(const QModelIndex &index) {
 
 QString results_state_name(const int type) {
     return QString("RESULTS_STATE_%1").arg(type);
-}
-
-QSet<int> ConsoleWidgetPrivate::get_selected_types() const {
-    QSet<int> out;
-
-    const QList<QModelIndex> index_list = get_all_selected_items();
-
-    for (const QModelIndex &index : index_list) {
-        const int type = index.data(ConsoleRole_Type).toInt();
-        out.insert(type);
-    } 
-
-    return out;
-}
-
-// Get all custom actions from impl's, in order
-QList<QAction *> ConsoleWidgetPrivate::get_custom_action_list() const {
-    QList<QAction *> out;
-
-    for (const int type : impl_map.keys()) {
-        ConsoleImpl *impl = impl_map[type];
-        QList<QAction *> for_this_type = impl->get_all_custom_actions();
-
-        for (QAction *action : for_this_type) {
-            if (!out.contains(action)) {
-                out.append(action);
-            }
-        }
-    }
-
-    return out;
 }
