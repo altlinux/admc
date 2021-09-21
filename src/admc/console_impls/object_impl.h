@@ -34,6 +34,7 @@ class QMenu;
 template <typename T>
 class QList;
 class PolicyImpl;
+class ChangeDCDialog;
 
 /**
  * Some f-ns used for models that store objects.
@@ -100,10 +101,10 @@ private slots:
     void on_reset_password();
     void on_edit_upn_suffixes();
     void on_reset_account();
-    void on_change_dc();
 
 private:
     PolicyImpl *policy_impl;
+    ChangeDCDialog *change_dc_dialog;
 
     QString current_filter;
     bool filtering_is_ON;
@@ -144,5 +145,6 @@ bool console_object_is_ou(const QModelIndex &index);
 // of objects setup
 QModelIndex get_object_tree_root(ConsoleWidget *console);
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
+void console_object_load_root_text(QStandardItem *item);
 
 #endif /* OBJECT_IMPL_H */

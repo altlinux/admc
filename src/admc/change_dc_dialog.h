@@ -31,16 +31,24 @@ namespace Ui {
     class ChangeDCDialog;
 }
 
+class ConsoleWidget;
+
 class ChangeDCDialog : public QDialog {
     Q_OBJECT
 
 public:
-    ChangeDCDialog(QWidget *parent);
+    ChangeDCDialog(ConsoleWidget *console);
 
+    void open() override;
     void accept() override;
+    void reject() override;
 
 private:
     Ui::ChangeDCDialog *ui;
+    ConsoleWidget *console;
+    QHash<QWidget *, QVariant> original_state;
+    
+    QList<QWidget *> get_widget_list() const;
 };
 
 #endif /* CHANGE_DC_DIALOG_H */

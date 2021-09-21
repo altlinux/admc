@@ -60,11 +60,12 @@ QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list);
 QList<QString> get_selected_dn_list_object(ConsoleWidget *console);
 QString get_selected_dn_object(ConsoleWidget *console);
 void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root);
-void console_object_load_root_text(QStandardItem *item);
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     policy_impl = nullptr;
+
+    change_dc_dialog = new ChangeDCDialog(console);
 
     current_filter = QString();
     filtering_is_ON = false;
@@ -135,7 +136,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
         this, &ObjectImpl::on_edit_upn_suffixes);
     connect(
         change_dc_action, &QAction::triggered,
-        this, &ObjectImpl::on_change_dc);
+        change_dc_dialog, &QDialog::open);
 }
 
 void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
@@ -677,26 +678,6 @@ void ObjectImpl::on_reset_account() {
     for (const QString &target : target_list) {
         ad.computer_reset_account(target);
     }
-}
-
-void ObjectImpl::on_change_dc() {
-    const QModelIndex root = get_object_tree_root(console);
-    if (!root.isValid()) {
-        return;
-    }
-
-    QStandardItem *root_item = console->get_item(root);
-
-    auto change_dc_dialog = new ChangeDCDialog(console);
-    change_dc_dialog->setAttribute(Qt::WA_DeleteOnClose);
-
-    connect(
-        change_dc_dialog, &QDialog::accepted,
-        [&]() {
-            console_object_load_root_text(root_item);
-        });
-
-    change_dc_dialog->open();
 }
 
 void ObjectImpl::new_object(const QString &object_class) {

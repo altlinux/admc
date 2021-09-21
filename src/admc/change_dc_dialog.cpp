@@ -21,21 +21,53 @@
 #include "change_dc_dialog.h"
 #include "ui_change_dc_dialog.h"
 
+#include "console_impls/object_impl.h"
 #include "adldap.h"
 #include "settings.h"
 #include "utils.h"
 
-ChangeDCDialog::ChangeDCDialog(QWidget *parent)
-: QDialog(parent) {
+ChangeDCDialog::ChangeDCDialog(ConsoleWidget *console_arg)
+: QDialog(console_arg) {
     ui = new Ui::ChangeDCDialog();
     ui->setupUi(this);
 
-    const QString domain = get_default_domain_from_krb5();
-    const QList<QString> host_list = get_domain_hosts(domain, QString());
+    console = console_arg;
+}
 
-    for (const QString &host : host_list) {
-        ui->select_listwidget->addItem(host);
+void ChangeDCDialog::open() {
+    // Load hosts into list when dialog is opened for the
+    // first time
+    if (ui->select_listwidget->count() == 0) {
+        const QString domain = get_default_domain_from_krb5();
+        const QList<QString> host_list = get_domain_hosts(domain, QString());
+
+        for (const QString &host : host_list) {
+            ui->select_listwidget->addItem(host);
+        }
     }
+
+    // Save state to restore in case dialog is rejected
+    // later
+    const QList<QWidget *> widgetList = get_widget_list();
+    
+    for (QWidget *widget : widgetList) {
+        QRadioButton *radio_button = qobject_cast<QRadioButton*>(widget);
+        QLineEdit *lineedit = qobject_cast<QLineEdit*>(widget);
+        QListWidget *listwidget = qobject_cast<QListWidget*>(widget);
+        QCheckBox *checkbox = qobject_cast<QCheckBox*>(widget);
+
+        if (radio_button != nullptr) {
+            original_state[widget] = radio_button->isChecked();
+        } else if (checkbox != nullptr) {
+            original_state[widget] = checkbox->isChecked();
+        } else if (lineedit != nullptr) {
+            original_state[widget] = lineedit->text();
+        } else if (listwidget != nullptr) {
+            original_state[widget] = listwidget->currentRow();
+        }
+    }
+
+    QDialog::open();
 }
 
 void ChangeDCDialog::accept() {
@@ -65,5 +97,49 @@ void ChangeDCDialog::accept() {
         settings_set_variant(SETTING_dc, selected_dc);
     }
 
+    const QModelIndex root = get_object_tree_root(console);
+    if (root.isValid()) {
+        QStandardItem *root_item = console->get_item(root);
+        console_object_load_root_text(root_item);
+    }
+
     QDialog::accept();
+}
+
+void ChangeDCDialog::reject() {
+    // Restore state
+    const QList<QWidget *> widgetList = get_widget_list();
+    
+    for (QWidget *widget : widgetList) {
+        QRadioButton *radio_button = qobject_cast<QRadioButton*>(widget);
+        QLineEdit *lineedit = qobject_cast<QLineEdit*>(widget);
+        QListWidget *listwidget = qobject_cast<QListWidget*>(widget);
+        QCheckBox *checkbox = qobject_cast<QCheckBox*>(widget);
+
+        if (radio_button != nullptr) {
+            radio_button->setChecked(original_state[widget].toBool());
+        } else if (checkbox != nullptr) {
+            checkbox->setChecked(original_state[widget].toBool());
+        } else if (lineedit != nullptr) {
+            lineedit->setText(original_state[widget].toString());
+        } else if (listwidget != nullptr) {
+            listwidget->setCurrentRow(original_state[widget].toInt());
+        }
+    }
+
+    QDialog::reject();
+}
+
+// NOTE: add any new widgets you add to this list so that
+// their state is saved
+QList<QWidget *> ChangeDCDialog::get_widget_list() const {
+    const QList<QWidget *> out = {
+        ui->select_button,
+        ui->select_listwidget,
+        ui->custom_button,
+        ui->custom_edit,
+        ui->save_this_setting_check,
+    };
+
+    return out;
 }
