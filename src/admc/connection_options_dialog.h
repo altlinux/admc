@@ -27,9 +27,9 @@
 
 #include <QDialog>
 
-class QLineEdit;
-class QCheckBox;
-class QComboBox;
+namespace Ui {
+    class ConnectionOptionsDialog;
+}
 
 class ConnectionOptionsDialog : public QDialog {
     Q_OBJECT
@@ -41,12 +41,10 @@ public:
     void reject() override;
 
 private:
-    QCheckBox *sasl_nocanon_check;
-    QLineEdit *port_edit;
-    QComboBox *require_cert_combobox;
-
+    Ui::ConnectionOptionsDialog *ui;
+    
     void reset();
-    void return_defaults();
+    void restore_defaults();
 };
 
 #endif /* CONNECTION_OPTIONS_DIALOG_H */

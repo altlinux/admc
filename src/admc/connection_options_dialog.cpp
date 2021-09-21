@@ -19,31 +19,21 @@
  */
 
 #include "connection_options_dialog.h"
+#include "ui_connection_options_dialog.h"
 
 #include "adldap.h"
 #include "settings.h"
 #include "utils.h"
 
-#include <QCheckBox>
-#include <QDialogButtonBox>
-#include <QLineEdit>
-#include <QVBoxLayout>
-#include <QFormLayout>
-#include <QComboBox>
 #include <QPushButton>
 
 const QString CERT_STRATEGY_NEVER = "never";
 
 ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle(tr("Connection Options"));
+    ui = new Ui::ConnectionOptionsDialog();
+    ui->setupUi(this);
 
-    sasl_nocanon_check = new QCheckBox(tr("Canonize hostname"));
-
-    port_edit = new QLineEdit();
-    set_line_edit_to_numbers_only(port_edit);
-
-    require_cert_combobox = new QComboBox();
     const QList<QString> require_cert_list = {
         CERT_STRATEGY_NEVER,
         "hard",
@@ -52,47 +42,26 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
         "try",
     };
     for (const QString &string : require_cert_list) {
-        require_cert_combobox->addItem(string);
+        ui->cert_combo->addItem(string);
     }
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-    auto defaults_button = button_box->addButton(tr("Defaults"), QDialogButtonBox::ResetRole);
-
-    auto form_layout = new QFormLayout();
-    form_layout->addRow(tr("Port:"), port_edit);
-    form_layout->addRow(tr("Require cert strategy:"), require_cert_combobox);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(sasl_nocanon_check);
-    layout->addLayout(form_layout);
-    layout->addWidget(button_box);
 
     settings_setup_dialog_geometry(SETTING_connection_options_dialog_geometry, this);
 
     connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-    connect(
-        defaults_button, &QPushButton::clicked,
-        this, &ConnectionOptionsDialog::return_defaults);
+        ui->button_box->button(QDialogButtonBox::RestoreDefaults), &QPushButton::clicked,
+        this, &ConnectionOptionsDialog::restore_defaults);
 
     reset();
 }
 
 void ConnectionOptionsDialog::accept() {
-    const QString port = port_edit->text();
+    const int port = ui->port_spinbox->value();
     settings_set_variant(SETTING_port, port);
 
-    const bool sasl_nocanon = sasl_nocanon_check->isChecked();
+    const bool sasl_nocanon = ui->canonize_check->isChecked();
     settings_set_variant(SETTING_sasl_nocanon, sasl_nocanon);
 
-    const QString cert_strategy = require_cert_combobox->currentText();
+    const QString cert_strategy = ui->cert_combo->currentText();
     settings_set_variant(SETTING_cert_strategy, cert_strategy);
 
     QDialog::accept();
@@ -105,23 +74,23 @@ void ConnectionOptionsDialog::reject() {
 }
 
 void ConnectionOptionsDialog::reset() {
-    const QString port = settings_get_variant(SETTING_port).toString();
-    port_edit->setText(port);
+    const int port = settings_get_variant(SETTING_port).toInt();
+    ui->port_spinbox->setValue(port);
     
     const bool sasl_nocanon = settings_get_bool(SETTING_sasl_nocanon);
-    sasl_nocanon_check->setChecked(sasl_nocanon);
+    ui->canonize_check->setChecked(sasl_nocanon);
 
     // TODO: verify that this is indeed the default value
     const QString cert_strategy = settings_get_variant(SETTING_cert_strategy, CERT_STRATEGY_NEVER).toString();
-    const int cert_strategy_index = require_cert_combobox->findText(cert_strategy);
-    require_cert_combobox->setCurrentIndex(cert_strategy_index);
+    const int cert_strategy_index = ui->cert_combo->findText(cert_strategy);
+    ui->cert_combo->setCurrentIndex(cert_strategy_index);
 }
 
-void ConnectionOptionsDialog::return_defaults() {
-    port_edit->setText(QString());
+void ConnectionOptionsDialog::restore_defaults() {
+    ui->port_spinbox->setValue(0);
 
-    sasl_nocanon_check->setChecked(true);
+    ui->canonize_check->setChecked(true);
 
-    const int never_index = require_cert_combobox->findText(CERT_STRATEGY_NEVER);
-    require_cert_combobox->setCurrentIndex(never_index);
+    const int never_index = ui->cert_combo->findText(CERT_STRATEGY_NEVER);
+    ui->cert_combo->setCurrentIndex(never_index);
 }

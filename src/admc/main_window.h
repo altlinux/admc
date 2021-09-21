@@ -43,7 +43,7 @@ private slots:
     void on_advanced_features();
     void on_filter_dialog_accepted();
     void on_log_searches_changed();
-    void on_connect_options_dialog_accepted();
+    void load_connection_options();
 
 private:
     ConsoleWidget *console;

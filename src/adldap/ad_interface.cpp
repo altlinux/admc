@@ -86,7 +86,7 @@ AdConfig *AdInterfacePrivate::adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
 QString AdInterfacePrivate::s_dc = QString();
 void *AdInterfacePrivate::s_sasl_nocanon = LDAP_OPT_ON;
-QString AdInterfacePrivate::s_port = QString();
+int AdInterfacePrivate::s_port = 0;
 CertStrategy AdInterfacePrivate::s_cert_strat = CertStrategy_Never;
 SMBCCTX *AdInterfacePrivate::smbc = NULL;
 
@@ -147,7 +147,7 @@ AdInterface::AdInterface() {
         if (!d->dc.isEmpty()) {
             out = "ldap://" + d->dc;
 
-            if (!AdInterfacePrivate::s_port.isEmpty()) {
+            if (AdInterfacePrivate::s_port > 0) {
                 out = out + ":" + AdInterfacePrivate::s_port;
             }
         }
@@ -295,7 +295,7 @@ void AdInterface::set_sasl_nocanon(const bool is_on) {
     }();
 }
 
-void AdInterface::set_port(const QString &port) {
+void AdInterface::set_port(const int port) {
     AdInterfacePrivate::s_port = port;
 }
 

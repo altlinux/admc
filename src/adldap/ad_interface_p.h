@@ -63,7 +63,7 @@ private:
     static bool s_log_searches;
     static QString s_dc;
     static void *s_sasl_nocanon;
-    static QString s_port;
+    static int s_port;
     static CertStrategy s_cert_strat;
     static SMBCCTX *smbc;
 };

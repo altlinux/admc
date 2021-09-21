@@ -275,8 +275,8 @@ MainWindow::MainWindow()
 
     connect(
         connection_options_dialog, &QDialog::accepted,
-        this, &MainWindow::on_connect_options_dialog_accepted);
-    on_connect_options_dialog_accepted();
+        this, &MainWindow::load_connection_options);
+    load_connection_options();
 
     connect(
         action_menu, &QMenu::aboutToShow,
@@ -354,7 +354,7 @@ void MainWindow::on_log_searches_changed() {
     AdInterface::set_log_searches(log_searches_ON);
 }
 
-void MainWindow::on_connect_options_dialog_accepted() {
+void MainWindow::load_connection_options() {
     const QVariant sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon);
     if (sasl_nocanon.isValid()) {
         AdInterface::set_sasl_nocanon(sasl_nocanon.toBool());
@@ -364,9 +364,9 @@ void MainWindow::on_connect_options_dialog_accepted() {
 
     const QVariant port = settings_get_variant(SETTING_port);
     if (port.isValid()) {
-        AdInterface::set_port(port.toString());
+        AdInterface::set_port(port.toInt());
     } else {
-        AdInterface::set_port(QString());
+        AdInterface::set_port(0);
     }
 
     const QString cert_strategy_string = settings_get_variant(SETTING_cert_strategy).toString();
