@@ -28,6 +28,10 @@
 #include <QPushButton>
 
 const QString CERT_STRATEGY_NEVER = "never";
+const QString CERT_STRATEGY_HARD = "hard";
+const QString CERT_STRATEGY_DEMAND = "demand";
+const QString CERT_STRATEGY_ALLOW = "allow";
+const QString CERT_STRATEGY_TRY = "try";
 
 ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 : QDialog(parent) {
@@ -36,10 +40,10 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 
     const QList<QString> require_cert_list = {
         CERT_STRATEGY_NEVER,
-        "hard",
-        "demand",
-        "allow",
-        "try",
+        CERT_STRATEGY_HARD,
+        CERT_STRATEGY_DEMAND,
+        CERT_STRATEGY_ALLOW,
+        CERT_STRATEGY_TRY,
     };
     for (const QString &string : require_cert_list) {
         ui->cert_combo->addItem(string);

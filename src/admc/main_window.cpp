@@ -371,11 +371,11 @@ void MainWindow::load_connection_options() {
 
     const QString cert_strategy_string = settings_get_variant(SETTING_cert_strategy).toString();
     const QHash<QString, CertStrategy> cert_strategy_map = {
-        {"never", CertStrategy_Never},
-        {"hard", CertStrategy_Hard},
-        {"demand", CertStrategy_Demand},
-        {"allow", CertStrategy_Allow},
-        {"try", CertStrategy_Try},
+        {CERT_STRATEGY_NEVER, CertStrategy_Never},
+        {CERT_STRATEGY_HARD, CertStrategy_Hard},
+        {CERT_STRATEGY_DEMAND, CertStrategy_Demand},
+        {CERT_STRATEGY_ALLOW, CertStrategy_Allow},
+        {CERT_STRATEGY_TRY, CertStrategy_Try},
     };
     const CertStrategy cert_strategy = cert_strategy_map.value(cert_strategy_string, CertStrategy_Never);
     AdInterface::set_cert_strategy(cert_strategy);
