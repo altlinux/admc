@@ -27,10 +27,9 @@
 
 #include <QDialog>
 
-class QLineEdit;
-class QListWidget;
-class QCheckBox;
-class QRadioButton;
+namespace Ui {
+    class ChangeDCDialog;
+}
 
 class ChangeDCDialog : public QDialog {
     Q_OBJECT
@@ -41,10 +40,7 @@ public:
     void accept() override;
 
 private:
-    QListWidget *list_widget;
-    QCheckBox *save_dc_checkbox;
-    QLineEdit *custom_dc_edit;
-    QRadioButton *select_button;
+    Ui::ChangeDCDialog *ui;
 };
 
 #endif /* CHANGE_DC_DIALOG_H */

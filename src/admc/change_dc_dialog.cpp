@@ -19,74 +19,29 @@
  */
 
 #include "change_dc_dialog.h"
+#include "ui_change_dc_dialog.h"
 
 #include "adldap.h"
-#include "change_dc_dialog.h"
 #include "settings.h"
 #include "utils.h"
 
-#include <QCheckBox>
-#include <QDialogButtonBox>
-#include <QLineEdit>
-#include <QListWidget>
-#include <QRadioButton>
-#include <QVBoxLayout>
-
 ChangeDCDialog::ChangeDCDialog(QWidget *parent)
 : QDialog(parent) {
-    setMinimumSize(500, 200);
-    setWindowTitle(tr("Change Domain Controller"));
-
-    select_button = new QRadioButton(tr("Select:"));
-    auto custom_button = new QRadioButton(tr("Custom:"));
-
-    list_widget = new QListWidget();
+    ui = new Ui::ChangeDCDialog();
+    ui->setupUi(this);
 
     const QString domain = get_default_domain_from_krb5();
     const QList<QString> host_list = get_domain_hosts(domain, QString());
 
     for (const QString &host : host_list) {
-        list_widget->addItem(host);
+        ui->select_listwidget->addItem(host);
     }
-
-    custom_dc_edit = new QLineEdit();
-
-    save_dc_checkbox = new QCheckBox(tr("Save this setting"));
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(select_button);
-    layout->addWidget(list_widget);
-    layout->addWidget(custom_button);
-    layout->addWidget(custom_dc_edit);
-    layout->addWidget(save_dc_checkbox);
-    layout->addWidget(button_box);
-
-    select_button->setChecked(true);
-    custom_dc_edit->setEnabled(false);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-    connect(
-        select_button, &QAbstractButton::toggled,
-        list_widget, &QWidget::setEnabled);
-    connect(
-        custom_button, &QAbstractButton::toggled,
-        custom_dc_edit, &QWidget::setEnabled);
 }
 
 void ChangeDCDialog::accept() {
     const QString selected_dc = [&]() {
-        if (select_button->isChecked()) {
-            QListWidgetItem *current_item = list_widget->currentItem();
+        if (ui->select_button->isChecked()) {
+            QListWidgetItem *current_item = ui->select_listwidget->currentItem();
 
             if (current_item == nullptr) {
                 return QString();
@@ -94,7 +49,7 @@ void ChangeDCDialog::accept() {
                 return current_item->text();
             }
         } else {
-            return custom_dc_edit->text();
+            return ui->custom_edit->text();
         }
     }();
 
@@ -106,7 +61,7 @@ void ChangeDCDialog::accept() {
     
     AdInterface::set_dc(selected_dc);
 
-    if (save_dc_checkbox->isChecked()) {
+    if (ui->save_this_setting_check->isChecked()) {
         settings_set_variant(SETTING_dc, selected_dc);
     }
 
