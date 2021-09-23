@@ -63,9 +63,11 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 
     import_action = new QAction(tr("&Import query..."), this);
 
+    create_query_folder_dialog = new CreateQueryFolderDialog(console);
+
     connect(
         new_query_folder_action, &QAction::triggered,
-        this, &QueryFolderImpl::on_new_query_folder);
+        create_query_folder_dialog, &QDialog::open);
     connect(
         new_query_item_action, &QAction::triggered,
         this, &QueryFolderImpl::on_new_query_item);
@@ -148,11 +150,6 @@ void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
 
 void QueryFolderImpl::on_new_query_item() {
     auto dialog = new CreateQueryItemDialog(console);
-    dialog->open();
-}
-
-void QueryFolderImpl::on_new_query_folder() {
-    auto dialog = new CreateQueryFolderDialog(console);
     dialog->open();
 }
 

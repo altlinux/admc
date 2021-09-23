@@ -23,6 +23,8 @@
 
 #include "console_widget/console_impl.h"
 
+class CreateQueryFolderDialog;
+
 class QueryFolderImpl final : public ConsoleImpl {
     Q_OBJECT
 
@@ -48,8 +50,8 @@ private:
     QAction *new_action;
     QAction *edit_action;
     QAction *import_action;
+    CreateQueryFolderDialog *create_query_folder_dialog;
 
-    void on_new_query_folder();
     void on_new_query_item();
     void on_edit();
     void on_import();

@@ -37,8 +37,6 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
     ui = new Ui::CreateQueryFolderDialog();
     ui->setupUi(this);
 
-    setAttribute(Qt::WA_DeleteOnClose);
-    
     console = console_arg;
 }
 
