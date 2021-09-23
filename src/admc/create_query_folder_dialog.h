@@ -26,6 +26,10 @@
 class QLineEdit;
 class ConsoleWidget;
 
+namespace Ui {
+    class CreateQueryFolderDialog;
+}
+
 class CreateQueryFolderDialog : public QDialog {
     Q_OBJECT
 
@@ -35,8 +39,7 @@ public:
     void open() override;
 
 private:
-    QLineEdit *name_edit;
-    QLineEdit *description_edit;
+    Ui::CreateQueryFolderDialog *ui;
     ConsoleWidget *console;
 
     void accept() override;
