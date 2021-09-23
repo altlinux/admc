@@ -1565,21 +1565,49 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     }();
 
     const QString gpt_sd = [&]() {
-        char out_cstr[2000];
         const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
         const QString smb_path = filesys_path_to_smb_path(filesys_path);
-        const int getxattr_result = smbc_getxattr(cstr(smb_path), "system.nt_sec_desc.*", out_cstr, sizeof(out_cstr));
-        // NOTE: for some reason getxattr() returns positive
-        // non-zero return code on success, even though f-n
-        // description says it "returns 0 on success"
-        if (getxattr_result < 0) {
-            const QString text = QString(tr("Failed to get GPT security descriptor, %1.")).arg(strerror(errno));
-            d->error_message(error_context, text);
+        const char *smb_path_cstr = cstr(smb_path);
 
-            return QString();
+        // NOTE: the length of gpt sd string doesn't have a
+        // well defined bound, so we have to use an
+        // expanding buffer
+        size_t buffer_size = 1024 * sizeof(char);
+        char *buffer = (char *) malloc(buffer_size);
+
+        while (true) {
+            const int getxattr_result = smbc_getxattr(smb_path_cstr, "system.nt_sec_desc.*", buffer, buffer_size);
+
+            // NOTE: for some reason getxattr() returns positive
+            // non-zero return code on success, even though f-n
+            // description says it "returns 0 on success"
+            const bool success = (getxattr_result >= 0);
+
+            if (success) {
+                break;
+            } else {
+                const bool buffer_is_too_small = (errno == ERANGE);
+                
+                if (buffer_is_too_small) {
+                    // Error occured, but it is due to
+                    // insufficient buffer size, so try
+                    // again with bigger buffer
+                    buffer_size = 2 * buffer_size;
+                    buffer = (char *) realloc(buffer, buffer_size);
+                } else {
+                    const QString text = QString(tr("Failed to get GPT security descriptor, %1.")).arg(strerror(errno));
+                    d->error_message(error_context, text);
+
+                    free(buffer);
+
+                    return QString();
+                }
+            }
         }
 
-        const QString out = QString(out_cstr);
+        const QString out = QString(buffer);
+
+        free(buffer);
 
         return out;
     }();
