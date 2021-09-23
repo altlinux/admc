@@ -29,6 +29,10 @@
 
 class QLineEdit;
 
+namespace Ui {
+    class CreatePolicyDialog;
+}
+
 class CreatePolicyDialog : public QDialog {
     Q_OBJECT
 
@@ -43,7 +47,7 @@ public slots:
     void accept() override;
 
 private:
-    QLineEdit *name_edit;
+    Ui::CreatePolicyDialog *ui;
 };
 
 #endif /* CREATE_POLICY_DIALOG_H */

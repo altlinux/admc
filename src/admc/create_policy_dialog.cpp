@@ -19,6 +19,7 @@
  */
 
 #include "create_policy_dialog.h"
+#include "ui_create_policy_dialog.h"
 
 #include "adldap.h"
 #include "console_impls/policy_impl.h"
@@ -27,42 +28,15 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QLineEdit>
-#include <QPushButton>
-
 CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
 : QDialog(parent) {
-    setMinimumWidth(400);
-
-    setWindowTitle(tr("Create GPO"));
-
-    name_edit = new QLineEdit();
-
-    const auto edits_layout = new QFormLayout();
-    edits_layout->addRow(tr("Name"), name_edit);
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(tr("Create"), QDialogButtonBox::AcceptRole);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(edits_layout);
-    layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
+    ui = new Ui::CreatePolicyDialog();
+    ui->setupUi(this);
 }
 
 void CreatePolicyDialog::open() {
-    name_edit->setText("New Group Policy Object");
-    name_edit->selectAll();
+    ui->name_edit->setText("New Group Policy Object");
+    ui->name_edit->selectAll();
 
     QDialog::open();
 }
@@ -75,7 +49,7 @@ void CreatePolicyDialog::accept() {
 
     show_busy_indicator();
 
-    const QString name = name_edit->text();
+    const QString name = ui->name_edit->text();
 
     // NOTE: since this is *display name*, not just name,
     // have to manually check for conflict. Server wouldn't
