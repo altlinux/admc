@@ -19,18 +19,17 @@
  */
 
 #include "filter_classes_widget.h"
+#include "ui_filter_classes_widget.h"
 
 #include "adldap.h"
 
 #include <QCheckBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QScrollArea>
-#include <QVBoxLayout>
-#include <QVariant>
 
 FilterClassesWidget::FilterClassesWidget(AdConfig *adconfig, const QList<QString> &class_list_arg)
 : QWidget() {
+    ui = new Ui::FilterClassesWidget();
+    ui->setupUi(this);
+
     class_list = class_list_arg;
 
     for (const QString &object_class : class_list) {
@@ -41,14 +40,9 @@ FilterClassesWidget::FilterClassesWidget(AdConfig *adconfig, const QList<QString
         checkbox_map[object_class] = checkbox;
     }
 
-    auto classes_widget = new QWidget();
-
-    auto classes_layout = new QVBoxLayout();
-    classes_widget->setLayout(classes_layout);
-
     for (const QString &object_class : class_list) {
         QCheckBox *checkbox = checkbox_map[object_class];
-        classes_layout->addWidget(checkbox);
+        ui->classes_layout->addWidget(checkbox);
 
         // TODO: this is a hack to select all classes by
         // default when class list is specific (only users
@@ -61,27 +55,11 @@ FilterClassesWidget::FilterClassesWidget(AdConfig *adconfig, const QList<QString
         }
     }
 
-    auto select_all_button = new QPushButton(tr("Select all"));
-    auto clear_selection_button = new QPushButton(tr("Clear selection"));
-
-    auto scroll_area = new QScrollArea();
-    scroll_area->setWidget(classes_widget);
-
-    auto button_layout = new QHBoxLayout();
-    button_layout->addWidget(select_all_button);
-    button_layout->addWidget(clear_selection_button);
-    button_layout->addStretch();
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(button_layout);
-    layout->addWidget(scroll_area);
-
     connect(
-        select_all_button, &QPushButton::clicked,
+        ui->select_all_button, &QPushButton::clicked,
         this, &FilterClassesWidget::select_all);
     connect(
-        clear_selection_button, &QPushButton::clicked,
+        ui->clear_selection_button, &QPushButton::clicked,
         this, &FilterClassesWidget::clear_selection);
 }
 

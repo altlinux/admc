@@ -32,6 +32,10 @@
 class QCheckBox;
 class AdConfig;
 
+namespace Ui {
+    class FilterClassesWidget;
+}
+
 class FilterClassesWidget final : public QWidget {
     Q_OBJECT
 
@@ -45,6 +49,7 @@ public:
     void restore_state(const QVariant &state);
 
 private:
+    Ui::FilterClassesWidget *ui;
     QHash<QString, QCheckBox *> checkbox_map;
     QList<QString> class_list;
 
