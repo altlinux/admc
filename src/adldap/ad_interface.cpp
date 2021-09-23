@@ -1758,13 +1758,15 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
         error_message(QString(tr("Failed to get filestat for \"%1\".")).arg(path), strerror(errno));
 
         *ok = false;
+
+        return false;
     } else {
         *ok = true;
+
+        const bool is_dir = S_ISDIR(filestat.st_mode);
+        
+        return is_dir;
     }
-
-    const bool is_dir = S_ISDIR(filestat.st_mode);
-
-    return is_dir;
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
