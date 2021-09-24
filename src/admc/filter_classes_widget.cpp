@@ -25,13 +25,20 @@
 
 #include <QCheckBox>
 
-FilterClassesWidget::FilterClassesWidget(AdConfig *adconfig, const QList<QString> &class_list_arg)
-: QWidget() {
+FilterClassesWidget::FilterClassesWidget(QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::FilterClassesWidget();
     ui->setupUi(this);
 
-    class_list = class_list_arg;
+    connect(
+        ui->select_all_button, &QPushButton::clicked,
+        this, &FilterClassesWidget::select_all);
+    connect(
+        ui->clear_selection_button, &QPushButton::clicked,
+        this, &FilterClassesWidget::clear_selection);
+}
 
+void FilterClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list) {
     for (const QString &object_class : class_list) {
         const QString class_string = adconfig->get_class_display_name(object_class);
         auto checkbox = new QCheckBox(class_string);
@@ -54,13 +61,6 @@ FilterClassesWidget::FilterClassesWidget(AdConfig *adconfig, const QList<QString
             checkbox->setChecked(true);
         }
     }
-
-    connect(
-        ui->select_all_button, &QPushButton::clicked,
-        this, &FilterClassesWidget::select_all);
-    connect(
-        ui->clear_selection_button, &QPushButton::clicked,
-        this, &FilterClassesWidget::clear_selection);
 }
 
 QString FilterClassesWidget::get_filter() const {

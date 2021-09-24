@@ -27,18 +27,22 @@
 class FilterClassesWidget;
 class AdConfig;
 
+namespace Ui {
+    class SelectClassesDialog;
+}
+
 class SelectClassesDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    FilterClassesWidget *filter_classes_widget;
-
     SelectClassesDialog(AdConfig *adconfig, const QList<QString> class_list, QWidget *parent);
     void open() override;
     void reject() override;
     void reset();
+    FilterClassesWidget *filter_classes_widget() const;
 
 private:
+    Ui::SelectClassesDialog *ui;
     QVariant state_to_restore;
 };
 

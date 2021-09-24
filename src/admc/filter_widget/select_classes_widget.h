@@ -30,9 +30,12 @@
 
 #include <QWidget>
 
-class QLineEdit;
 class SelectClassesDialog;
 class AdConfig;
+
+namespace Ui {
+    class SelectClassesWidget;
+}
 
 class SelectClassesWidget final : public QWidget {
     Q_OBJECT
@@ -46,7 +49,7 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    QLineEdit *classes_display;
+    Ui::SelectClassesWidget *ui;
     SelectClassesDialog *dialog;
 
     void update_classes_display();

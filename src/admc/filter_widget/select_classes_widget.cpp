@@ -20,33 +20,21 @@
 
 #include "filter_widget/select_classes_widget.h"
 #include "filter_widget/select_classes_widget_p.h"
+#include "filter_widget/ui_select_classes_widget.h"
+#include "filter_widget/ui_select_classes_dialog.h"
 
 #include "adldap.h"
 #include "filter_classes_widget.h"
 
-#include <QDialogButtonBox>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QVBoxLayout>
-
 SelectClassesWidget::SelectClassesWidget(AdConfig *adconfig, const QList<QString> class_list)
 : QWidget() {
+    ui = new Ui::SelectClassesWidget();
+    ui->setupUi(this);
+
     dialog = new SelectClassesDialog(adconfig, class_list, this);
     
-    classes_display = new QLineEdit();
-    classes_display->setReadOnly(true);
-
-    auto select_classes_button = new QPushButton(tr("Select..."));
-    select_classes_button->setAutoDefault(false);
-
-    auto layout = new QHBoxLayout();
-    setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(classes_display);
-    layout->addWidget(select_classes_button);
-
     connect(
-        select_classes_button, &QAbstractButton::clicked,
+        ui->select_button, &QAbstractButton::clicked,
         dialog, &QDialog::open);
     connect(
         dialog, &QDialog::finished,
@@ -55,7 +43,7 @@ SelectClassesWidget::SelectClassesWidget(AdConfig *adconfig, const QList<QString
 }
 
 QString SelectClassesWidget::get_filter() const {
-    return dialog->filter_classes_widget->get_filter();
+    return dialog->filter_classes_widget()->get_filter();
 }
 
 // Display selected classes in line edit as a sorted list of
@@ -63,7 +51,7 @@ QString SelectClassesWidget::get_filter() const {
 // "User, Organizational Unit, ..."
 void SelectClassesWidget::update_classes_display() {
     const QString classes_display_text = [this]() {
-        QList<QString> selected_classes = dialog->filter_classes_widget->get_selected_classes_display();
+        QList<QString> selected_classes = dialog->filter_classes_widget()->get_selected_classes_display();
 
         std::sort(selected_classes.begin(), selected_classes.end());
 
@@ -72,50 +60,35 @@ void SelectClassesWidget::update_classes_display() {
         return joined;
     }();
 
-    classes_display->setText(classes_display_text);
-    classes_display->setCursorPosition(0);
+    ui->classes_display->setText(classes_display_text);
+    ui->classes_display->setCursorPosition(0);
 }
 
 QVariant SelectClassesWidget::save_state() const {
-    return dialog->filter_classes_widget->save_state();
+    return dialog->filter_classes_widget()->save_state();
 }
 
 void SelectClassesWidget::restore_state(const QVariant &state) {
-    dialog->filter_classes_widget->restore_state(state);
+    dialog->filter_classes_widget()->restore_state(state);
     update_classes_display();
 }
 
 SelectClassesDialog::SelectClassesDialog(AdConfig *adconfig, const QList<QString> class_list, QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle(tr("Select Classes"));
+    ui = new Ui::SelectClassesDialog();
+    ui->setupUi(this);
 
-    filter_classes_widget = new FilterClassesWidget(adconfig, class_list);
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-    auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(filter_classes_widget);
-    layout->addWidget(button_box);
+    ui->filter_classes_widget->add_classes(adconfig, class_list);
 
     connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-    connect(
-        reset_button, &QPushButton::clicked,
+        ui->button_box->button(QDialogButtonBox::Reset), &QPushButton::clicked,
         this, &SelectClassesDialog::reset);
 }
 
 void SelectClassesDialog::open() {
     // Save state to later restore if dialog is dialog is
     // rejected
-    state_to_restore = filter_classes_widget->save_state();
+    state_to_restore = ui->filter_classes_widget->save_state();
 
     QDialog::open();
 }
@@ -127,5 +100,9 @@ void SelectClassesDialog::reject() {
 }
 
 void SelectClassesDialog::reset() {
-    filter_classes_widget->restore_state(state_to_restore);
+    ui->filter_classes_widget->restore_state(state_to_restore);
+}
+
+FilterClassesWidget *SelectClassesDialog::filter_classes_widget() const {
+    return ui->filter_classes_widget;
 }
