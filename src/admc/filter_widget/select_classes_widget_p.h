@@ -35,7 +35,7 @@ class SelectClassesDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    SelectClassesDialog(AdConfig *adconfig, const QList<QString> class_list, QWidget *parent);
+    SelectClassesDialog(QWidget *parent);
     void open() override;
     void reject() override;
     void reset();

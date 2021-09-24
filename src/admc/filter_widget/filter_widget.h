@@ -29,12 +29,12 @@
 
 #include <QWidget>
 
-class QTabWidget;
 class FilterWidgetTab;
-class FilterWidgetSimpleTab;
-class FilterWidgetNormalTab;
-class FilterWidgetAdvancedTab;
 class AdConfig;
+
+namespace Ui {
+    class FilterWidget;
+}
 
 class FilterWidget final : public QWidget {
     Q_OBJECT
@@ -48,10 +48,7 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    QTabWidget *tab_widget;
-    FilterWidgetSimpleTab *simple_tab;
-    FilterWidgetNormalTab *normal_tab;
-    FilterWidgetAdvancedTab *advanced_tab;
+    Ui::FilterWidget *ui;
 };
 
 class FilterWidgetTab : public QWidget {

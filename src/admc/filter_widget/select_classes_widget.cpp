@@ -26,12 +26,12 @@
 #include "adldap.h"
 #include "filter_classes_widget.h"
 
-SelectClassesWidget::SelectClassesWidget(AdConfig *adconfig, const QList<QString> class_list)
-: QWidget() {
+SelectClassesWidget::SelectClassesWidget(QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::SelectClassesWidget();
     ui->setupUi(this);
 
-    dialog = new SelectClassesDialog(adconfig, class_list, this);
+    dialog = new SelectClassesDialog(this);
     
     connect(
         ui->select_button, &QAbstractButton::clicked,
@@ -40,6 +40,10 @@ SelectClassesWidget::SelectClassesWidget(AdConfig *adconfig, const QList<QString
         dialog, &QDialog::finished,
         this, &SelectClassesWidget::update_classes_display);
     update_classes_display();
+}
+
+void SelectClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list) {
+    dialog->filter_classes_widget()->add_classes(adconfig, class_list);
 }
 
 QString SelectClassesWidget::get_filter() const {
@@ -73,12 +77,10 @@ void SelectClassesWidget::restore_state(const QVariant &state) {
     update_classes_display();
 }
 
-SelectClassesDialog::SelectClassesDialog(AdConfig *adconfig, const QList<QString> class_list, QWidget *parent)
+SelectClassesDialog::SelectClassesDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::SelectClassesDialog();
     ui->setupUi(this);
-
-    ui->filter_classes_widget->add_classes(adconfig, class_list);
 
     connect(
         ui->button_box->button(QDialogButtonBox::Reset), &QPushButton::clicked,

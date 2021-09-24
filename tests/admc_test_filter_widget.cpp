@@ -21,7 +21,6 @@
 #include "admc_test_filter_widget.h"
 
 #include "filter_classes_widget.h"
-#include "filter_widget/filter_builder.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/select_classes_widget.h"
 
@@ -124,10 +123,7 @@ void ADMCTestFilterWidget::test_normal_tab() {
 
     select_classes_dialog->accept();
 
-    auto filter_builder = normal_tab->findChild<FilterBuilder *>();
-    QVERIFY(filter_builder != nullptr);
-
-    QLineEdit *value_edit = filter_builder->findChild<QLineEdit *>("value_edit");
+    QLineEdit *value_edit = normal_tab->findChild<QLineEdit *>("value_edit");
     QVERIFY(value_edit != nullptr);
     value_edit->setText("value");
 

@@ -31,11 +31,17 @@ class QLineEdit;
 class SelectClassesWidget;
 class AdConfig;
 
+namespace Ui {
+    class FilterWidgetSimpleTab;
+}
+
 class FilterWidgetSimpleTab final : public FilterWidgetTab {
     Q_OBJECT
 
 public:
-    FilterWidgetSimpleTab(AdConfig *adconfig, const QList<QString> classes);
+    FilterWidgetSimpleTab();
+
+    void add_classes(AdConfig *adconfig, const QList<QString> classes);
 
     QString get_filter() const;
 
@@ -43,6 +49,7 @@ public:
     void restore_state(const QVariant &state);
 
 private:
+    Ui::FilterWidgetSimpleTab *ui;
     SelectClassesWidget *select_classes;
     QLineEdit *name_edit;
 };

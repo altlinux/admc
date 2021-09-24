@@ -81,7 +81,6 @@ set(ADMC_SOURCES
     filter_widget/filter_widget_normal_tab.cpp
     filter_widget/filter_widget_advanced_tab.cpp
     filter_widget/select_classes_widget.cpp
-    filter_widget/filter_builder.cpp
     filter_widget/select_base_widget.cpp
     
     tabs/properties_tab.cpp

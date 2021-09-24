@@ -27,7 +27,9 @@
 
 #include "filter_widget/filter_widget.h"
 
-class QPlainTextEdit;
+namespace Ui {
+    class FilterWidgetAdvancedTab;
+}
 
 class FilterWidgetAdvancedTab final : public FilterWidgetTab {
     Q_OBJECT
@@ -41,7 +43,7 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    QPlainTextEdit *ldap_filter_edit;
+    Ui::FilterWidgetAdvancedTab *ui;
 };
 
 #endif /* FILTER_WIDGET_ADVANCED_TAB_H */

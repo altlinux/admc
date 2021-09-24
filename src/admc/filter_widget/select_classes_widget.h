@@ -41,7 +41,9 @@ class SelectClassesWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    SelectClassesWidget(AdConfig *config, const QList<QString> class_list);
+    SelectClassesWidget(QWidget *parent = nullptr);
+
+    void add_classes(AdConfig *adconfig, const QList<QString> &class_list);
 
     QString get_filter() const;
 
