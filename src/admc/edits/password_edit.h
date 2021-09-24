@@ -29,13 +29,19 @@ class PasswordEdit final : public AttributeEdit {
     Q_OBJECT
 public:
     PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
+    PasswordEdit(QList<AttributeEdit *> *edits_out, QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     bool verify(AdInterface &ad, const QString &dn) const override;
 
+    QLineEdit *get_edit() const;
+    QLineEdit *get_confirm_edit() const;
+
 private:
     QLineEdit *edit;
     QLineEdit *confirm_edit;
+
+    void init(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg);
 };
 
 #endif /* PASSWORD_EDIT_H */

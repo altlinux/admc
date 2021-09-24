@@ -45,11 +45,14 @@ class UnlockEdit final : public AttributeEdit {
     Q_OBJECT
 public:
     UnlockEdit(QList<AttributeEdit *> *edits_out, const UnlockEditStyle style, QObject *parent);
+    UnlockEdit(QList<AttributeEdit *> *edits_out, QCheckBox *check_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     QCheckBox *check;
     UnlockEditStyle style;
+
+    void init(const UnlockEditStyle style_arg, QCheckBox *check_arg);
 };
 
 #endif /* UNLOCK_EDIT_H */

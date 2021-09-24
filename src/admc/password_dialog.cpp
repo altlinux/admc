@@ -19,6 +19,7 @@
  */
 
 #include "password_dialog.h"
+#include "ui_password_dialog.h"
 
 #include "adldap.h"
 #include "edits/account_option_edit.h"
@@ -28,12 +29,11 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QPushButton>
-
 PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 : QDialog(parent) {
+    ui = new Ui::PasswordDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     target = target_arg;
@@ -46,37 +46,13 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 
     const AdObject object = ad.search_object(target);
 
-    setWindowTitle(tr("Change Password"));
+    new PasswordEdit(&edits, ui->password_main_edit, ui->password_confirm_edit, this);
 
-    new PasswordEdit(&edits, this);
+    new AccountOptionEdit(AccountOption_PasswordExpired, &edits, ui->expired_check, this);
 
-    auto pass_expired_check = new AccountOptionEdit(AccountOption_PasswordExpired, &edits, this);
-
-    new UnlockEdit(&edits, UnlockEditStyle_CheckOnLeft, this);
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    auto edits_layout = new QFormLayout();
-    edits_add_to_layout(edits, edits_layout);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(edits_layout);
-    layout->addWidget(button_box);
+    new UnlockEdit(&edits, ui->unlock_check, this);
 
     edits_load(edits, ad, object);
-
-    // Turn on "password expired" by default
-    pass_expired_check->set_checked(true);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
 
     g_status()->display_ad_messages(ad, this);
 }

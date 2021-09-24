@@ -19,8 +19,10 @@
  */
 
 #include "edits/unlock_edit.h"
+
 #include "adldap.h"
 #include "utils.h"
+
 #include <QCheckBox>
 #include <QFormLayout>
 
@@ -28,25 +30,14 @@ const QString label_text = QCoreApplication::translate("UnlockEdit", "Unlock acc
 
 UnlockEdit::UnlockEdit(QList<AttributeEdit *> *edits_out, const UnlockEditStyle style_arg, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    style = style_arg;
+    auto check_arg = new QCheckBox();
 
-    // NOTE: if check is on left, then put text in the
-    // checkbox
-    const QString check_text = [&]() {
-        switch (style) {
-            case UnlockEditStyle_CheckOnLeft: return label_text;
-            case UnlockEditStyle_CheckOnRight: return QString();
-        }
-        return QString();
-    }();
+    init(style_arg, check_arg);
+}
 
-    check = new QCheckBox(check_text);
-
-    connect(
-        check, &QCheckBox::stateChanged,
-        [this]() {
-            emit edited();
-        });
+UnlockEdit::UnlockEdit(QList<AttributeEdit *> *edits_out, QCheckBox *check_arg, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    init(UnlockEditStyle_CheckOnLeft, check_arg);
 }
 
 void UnlockEdit::load_internal(AdInterface &ad, const AdObject &object) {
@@ -67,9 +58,11 @@ void UnlockEdit::add_to_layout(QFormLayout *layout) {
         case UnlockEditStyle_CheckOnRight: {
             layout->addRow(QString("%1:").arg(label_text), check);
 
+
             break;
         }
     }
+
 }
 
 bool UnlockEdit::apply(AdInterface &ad, const QString &dn) const {
@@ -82,4 +75,28 @@ bool UnlockEdit::apply(AdInterface &ad, const QString &dn) const {
     } else {
         return true;
     }
+}
+
+void UnlockEdit::init(const UnlockEditStyle style_arg, QCheckBox *check_arg) {
+    style = style_arg;
+
+    check = check_arg;
+
+    // NOTE: if check is on left, then put text in the
+    // checkbox
+    const QString check_text = [&]() {
+        switch (style) {
+            case UnlockEditStyle_CheckOnLeft: return label_text;
+            case UnlockEditStyle_CheckOnRight: return QString();
+        }
+        return QString();
+    }();
+
+    check->setText(check_text);
+
+    connect(
+        check, &QCheckBox::stateChanged,
+        [this]() {
+            emit edited();
+        });
 }

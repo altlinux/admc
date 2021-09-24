@@ -56,15 +56,14 @@ QWidget *AccountOptionEdit::layout_many(const QList<AccountOption> &options, con
 
 AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    option = option_arg;
-    const QString label_text = account_option_string(option);
-    check = new QCheckBox(label_text);
+    auto check_arg = new QCheckBox();
 
-    QObject::connect(
-        check, &QCheckBox::stateChanged,
-        [this]() {
-            emit edited();
-        });
+    init(option_arg, check_arg);
+}
+
+AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QCheckBox *check_arg, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    init(option_arg, check_arg);
 }
 
 void AccountOptionEdit::load_internal(AdInterface &ad, const AdObject &object) {
@@ -93,6 +92,20 @@ void AccountOptionEdit::set_checked(const bool checked) {
 
 QCheckBox *AccountOptionEdit::get_check() const {
     return check;
+}
+
+void AccountOptionEdit::init(const AccountOption option_arg, QCheckBox *check_arg) {
+    option = option_arg;
+    check = check_arg;
+
+    const QString label_text = account_option_string(option);
+    check->setText(label_text);
+
+    QObject::connect(
+        check, &QCheckBox::stateChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 // PasswordExpired conflicts with (DontExpirePassword and

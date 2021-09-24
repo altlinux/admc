@@ -30,23 +30,15 @@
 
 PasswordEdit::PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    edit = new QLineEdit();
-    confirm_edit = new QLineEdit();
+    auto edit_arg = new QLineEdit();
+    auto confirm_edit_arg = new QLineEdit();
 
-    edit->setObjectName("password_main_edit");
-    confirm_edit->setObjectName("password_confirm_edit");
+    init(edit_arg, confirm_edit_arg);
+}
 
-    edit->setEchoMode(QLineEdit::Password);
-    confirm_edit->setEchoMode(QLineEdit::Password);
-
-    limit_edit(edit, ATTRIBUTE_PASSWORD);
-    limit_edit(confirm_edit, ATTRIBUTE_PASSWORD);
-
-    QObject::connect(
-        edit, &QLineEdit::textChanged,
-        [this]() {
-            emit edited();
-        });
+PasswordEdit::PasswordEdit(QList<AttributeEdit *> *edits_out, QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    init(edit_arg, confirm_edit_arg);
 }
 
 void PasswordEdit::load_internal(AdInterface &ad, const AdObject &object) {
@@ -92,4 +84,26 @@ bool PasswordEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool success = ad.user_set_pass(dn, new_value);
 
     return success;
+}
+
+QLineEdit *PasswordEdit::get_edit() const {
+    return edit;
+}
+
+QLineEdit *PasswordEdit::get_confirm_edit() const {
+    return confirm_edit;
+}
+
+void PasswordEdit::init(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg) {
+    edit = edit_arg;
+    confirm_edit = confirm_edit_arg;
+
+    limit_edit(edit, ATTRIBUTE_PASSWORD);
+    limit_edit(confirm_edit, ATTRIBUTE_PASSWORD);
+
+    QObject::connect(
+        edit, &QLineEdit::textChanged,
+        [this]() {
+            emit edited();
+        });
 }
