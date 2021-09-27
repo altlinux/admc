@@ -40,7 +40,9 @@ class FilterWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    FilterWidget(AdConfig *adconfig, const QList<QString> classes);
+    FilterWidget(QWidget *parent = nullptr);
+
+    void add_classes(AdConfig *adconfig, const QList<QString> classes);
 
     QString get_filter() const;
 

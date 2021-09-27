@@ -27,11 +27,13 @@
 
 #include <QDebug>
 
-FilterWidget::FilterWidget(AdConfig *adconfig, const QList<QString> classes)
-: QWidget() {
+FilterWidget::FilterWidget(QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::FilterWidget();
     ui->setupUi(this);
+}
 
+void FilterWidget::add_classes(AdConfig *adconfig, const QList<QString> classes) {
     ui->simple_tab->add_classes(adconfig, classes);
     ui->normal_tab->add_classes(adconfig, classes);
 }

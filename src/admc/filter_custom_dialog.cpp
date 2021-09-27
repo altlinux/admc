@@ -42,7 +42,8 @@ FilterCustomDialog::FilterCustomDialog(AdConfig *adconfig, QWidget *parent)
     // allow filtering by non-container classes
     const QList<QString> noncontainer_classes = adconfig->get_noncontainer_classes();
 
-    filter_widget = new FilterWidget(adconfig, noncontainer_classes);
+    filter_widget = new FilterWidget();
+    filter_widget->add_classes(adconfig, noncontainer_classes);
 
     auto button_box = new QDialogButtonBox();
     button_box->addButton(QDialogButtonBox::Ok);

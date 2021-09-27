@@ -39,7 +39,8 @@
 void ADMCTestFilterWidget::init() {
     ADMCTest::init();
 
-    filter_widget = new FilterWidget(ad.adconfig(), filter_classes);
+    filter_widget = new FilterWidget();
+    filter_widget->add_classes(ad.adconfig(), filter_classes);
     add_widget(filter_widget);
 
     tab_widget = filter_widget->findChild<QTabWidget *>();

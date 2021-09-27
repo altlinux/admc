@@ -29,12 +29,27 @@
 
 // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
-SelectBaseWidget::SelectBaseWidget(AdConfig *adconfig, const QString &default_base)
-: QWidget() {
-    const QString domain_head = adconfig->domain_head();
-
+SelectBaseWidget::SelectBaseWidget(QWidget *parent)
+: QWidget(parent) {
     combo = new QComboBox();
     combo->setMinimumWidth(200);
+
+    auto browse_button = new QPushButton(tr("Browse..."));
+    browse_button->setAutoDefault(false);
+    browse_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+    auto layout = new QHBoxLayout();
+    setLayout(layout);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(combo);
+    layout->addWidget(browse_button);
+
+    connect(
+        browse_button, &QAbstractButton::clicked,
+        this, &SelectBaseWidget::browse);
+}
+void SelectBaseWidget::init(AdConfig *adconfig, const QString &default_base) {
+    const QString domain_head = adconfig->domain_head();
 
     auto add_base_to_combo = [this](const QString dn) {
         const QString name = dn_get_name(dn);
@@ -48,22 +63,8 @@ SelectBaseWidget::SelectBaseWidget(AdConfig *adconfig, const QString &default_ba
         add_base_to_combo(default_base);
     }
 
-    auto browse_button = new QPushButton(tr("Browse..."));
-    browse_button->setAutoDefault(false);
-    browse_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-
     const int last_index = combo->count() - 1;
     combo->setCurrentIndex(last_index);
-
-    auto layout = new QHBoxLayout();
-    setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(combo);
-    layout->addWidget(browse_button);
-
-    connect(
-        browse_button, &QAbstractButton::clicked,
-        this, &SelectBaseWidget::browse);
 }
 
 QString SelectBaseWidget::get_base() const {

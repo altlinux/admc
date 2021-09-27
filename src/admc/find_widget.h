@@ -29,14 +29,13 @@
 
 #include <QWidget>
 
-class FilterWidget;
-class FindResults;
 class QStandardItem;
-class QPushButton;
 class AdObject;
-class SelectBaseWidget;
-class ConsoleWidget;
 class QMenu;
+
+namespace Ui {
+    class FindWidget;
+}
 
 class FindWidget final : public QWidget {
     Q_OBJECT
@@ -59,12 +58,7 @@ private slots:
     void handle_find_thread_results(const QHash<QString, AdObject> &results);
 
 private:
-    FilterWidget *filter_widget;
-    FindResults *find_results;
-    QPushButton *find_button;
-    QPushButton *stop_button;
-    SelectBaseWidget *select_base_widget;
-    ConsoleWidget *console;
+    Ui::FindWidget *ui;
     QStandardItem *head_item;
 };
 

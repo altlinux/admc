@@ -74,7 +74,8 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     select_classes = new SelectClassesWidget();
     select_classes->add_classes(g_adconfig, class_list);
 
-    select_base_widget = new SelectBaseWidget(g_adconfig);
+    select_base_widget = new SelectBaseWidget();
+    select_base_widget->init(g_adconfig);
     select_base_widget->setObjectName("select_base_widget");
 
     edit = new QLineEdit();

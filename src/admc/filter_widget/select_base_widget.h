@@ -34,7 +34,9 @@ class SelectBaseWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    SelectBaseWidget(AdConfig *adconfig, const QString &default_base = QString());
+    SelectBaseWidget(QWidget *parent = nullptr);
+
+    void init(AdConfig *adconfig, const QString &default_base = QString());
 
     QString get_base() const;
 
