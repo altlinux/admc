@@ -24,7 +24,6 @@
 #include "find_widget.h"
 #include "globals.h"
 #include "settings.h"
-#include "console_widget/console_widget.h"
 
 #include <QMenuBar>
 #include <QVBoxLayout>
@@ -46,14 +45,7 @@ FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString d
     layout->setMenuBar(menubar);
     layout->addWidget(find_widget);
 
-    ConsoleWidget *console = find_widget->get_console();
-    console->add_actions(action_menu);
-
-    view_menu->addAction(console->customize_columns_action());
+    find_widget->add_actions(action_menu, view_menu);
 
     settings_setup_dialog_geometry(SETTING_find_object_dialog_geometry, this);
-
-    connect(
-        action_menu, &QMenu::aboutToShow,
-        console, &ConsoleWidget::update_actions);
 }

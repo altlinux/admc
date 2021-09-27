@@ -36,6 +36,7 @@ class QPushButton;
 class AdObject;
 class SelectBaseWidget;
 class ConsoleWidget;
+class QMenu;
 
 class FindWidget final : public QWidget {
     Q_OBJECT
@@ -43,7 +44,11 @@ class FindWidget final : public QWidget {
 public:
     FindWidget(const QList<QString> classes, const QString &default_base);
 
-    ConsoleWidget *get_console() const;
+    ~FindWidget();
+
+    void add_actions(QMenu *action_menu, QMenu *view_menu);
+
+    void clear();
 
     // NOTE: returned items need to be re-parented or deleted!
     QList<QString> get_selected_dns() const;
@@ -59,6 +64,8 @@ private:
     QPushButton *find_button;
     QPushButton *stop_button;
     SelectBaseWidget *select_base_widget;
+    ConsoleWidget *console;
+    QStandardItem *head_item;
 };
 
 #endif /* FIND_WIDGET_H */
