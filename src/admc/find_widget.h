@@ -54,12 +54,13 @@ public:
 
 private slots:
     void find();
-    void on_thread_finished();
     void handle_find_thread_results(const QHash<QString, AdObject> &results);
 
 private:
     Ui::FindWidget *ui;
     QStandardItem *head_item;
+
+    void on_thread_finished();
 };
 
 #endif /* FIND_WIDGET_H */
