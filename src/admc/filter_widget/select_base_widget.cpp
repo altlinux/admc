@@ -19,41 +19,29 @@
  */
 
 #include "filter_widget/select_base_widget.h"
+#include "filter_widget/ui_select_base_widget.h"
 
 #include "adldap.h"
 #include "select_container_dialog.h"
-
-#include <QComboBox>
-#include <QHBoxLayout>
-#include <QPushButton>
 
 // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
 
 SelectBaseWidget::SelectBaseWidget(QWidget *parent)
 : QWidget(parent) {
-    combo = new QComboBox();
-    combo->setMinimumWidth(200);
-
-    auto browse_button = new QPushButton(tr("Browse..."));
-    browse_button->setAutoDefault(false);
-    browse_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-
-    auto layout = new QHBoxLayout();
-    setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(combo);
-    layout->addWidget(browse_button);
+    ui = new Ui::SelectBaseWidget();
+    ui->setupUi(this);
 
     connect(
-        browse_button, &QAbstractButton::clicked,
+        ui->browse_button, &QAbstractButton::clicked,
         this, &SelectBaseWidget::browse);
 }
+
 void SelectBaseWidget::init(AdConfig *adconfig, const QString &default_base) {
     const QString domain_head = adconfig->domain_head();
 
     auto add_base_to_combo = [this](const QString dn) {
         const QString name = dn_get_name(dn);
-        combo->addItem(name, dn);
+        ui->combo->addItem(name, dn);
     };
 
     if (default_base == domain_head || default_base.isEmpty()) {
@@ -63,13 +51,13 @@ void SelectBaseWidget::init(AdConfig *adconfig, const QString &default_base) {
         add_base_to_combo(default_base);
     }
 
-    const int last_index = combo->count() - 1;
-    combo->setCurrentIndex(last_index);
+    const int last_index = ui->combo->count() - 1;
+    ui->combo->setCurrentIndex(last_index);
 }
 
 QString SelectBaseWidget::get_base() const {
-    const int index = combo->currentIndex();
-    const QVariant item_data = combo->itemData(index);
+    const int index = ui->combo->currentIndex();
+    const QVariant item_data = ui->combo->itemData(index);
 
     return item_data.toString();
 }
@@ -83,24 +71,24 @@ void SelectBaseWidget::browse() {
             const QString selected = dialog->get_selected();
             const QString name = dn_get_name(selected);
 
-            combo->addItem(name, selected);
+            ui->combo->addItem(name, selected);
 
             // Select newly added search base in combobox
-            const int new_base_index = combo->count() - 1;
-            combo->setCurrentIndex(new_base_index);
+            const int new_base_index = ui->combo->count() - 1;
+            ui->combo->setCurrentIndex(new_base_index);
         });
 
     dialog->open();
 }
 
 QVariant SelectBaseWidget::save_state() const {
-    const QString base = combo->currentData().toString();
+    const QString base = ui->combo->currentData().toString();
     return QVariant(base);
 }
 
 void SelectBaseWidget::restore_state(const QVariant &state_variant) {
     const QString base = state_variant.toString();
     const QString base_name = dn_get_name(base);
-    combo->clear();
-    combo->addItem(base_name, base);
+    ui->combo->clear();
+    ui->combo->addItem(base_name, base);
 }

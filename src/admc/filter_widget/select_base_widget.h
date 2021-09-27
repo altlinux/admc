@@ -27,8 +27,11 @@
 
 #include <QWidget>
 
-class QComboBox;
 class AdConfig;
+
+namespace Ui {
+    class SelectBaseWidget;
+}
 
 class SelectBaseWidget final : public QWidget {
     Q_OBJECT
@@ -44,7 +47,7 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    QComboBox *combo;
+    Ui::SelectBaseWidget *ui;
 
     void browse();
 };
