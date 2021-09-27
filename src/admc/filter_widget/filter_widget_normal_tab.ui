@@ -88,6 +88,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QPushButton" name="add_button">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="text">
            <string>Add</string>
           </property>
@@ -133,6 +136,9 @@
        </property>
        <item>
         <widget class="QPushButton" name="remove_button">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Remove</string>
          </property>
@@ -140,6 +146,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="clear_button">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Clear</string>
          </property>

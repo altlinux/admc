@@ -69,8 +69,14 @@
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
          <widget class="QPushButton" name="find_button">
+          <property name="focusPolicy">
+           <enum>Qt::WheelFocus</enum>
+          </property>
           <property name="text">
            <string>Find</string>
+          </property>
+          <property name="autoDefault">
+           <bool>false</bool>
           </property>
           <property name="default">
            <bool>true</bool>
@@ -79,6 +85,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="stop_button">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="text">
            <string>Stop</string>
           </property>
