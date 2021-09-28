@@ -32,6 +32,10 @@ class QTreeView;
 class QStandardItemModel;
 class QSortFilterProxyModel;
 
+namespace Ui {
+    class SelectContainerDialog;
+}
+
 enum ContainerRole {
     ContainerRole_DN = Qt::UserRole + 1,
     ContainerRole_Fetched = Qt::UserRole + 2,
@@ -46,7 +50,7 @@ public:
     QString get_selected() const;
 
 private:
-    QTreeView *view;
+    Ui::SelectContainerDialog *ui;
     QStandardItemModel *model;
     QSortFilterProxyModel *proxy_model;
 
