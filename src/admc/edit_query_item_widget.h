@@ -38,7 +38,7 @@ class EditQueryItemWidget : public QWidget {
     Q_OBJECT
 
 public:
-    EditQueryItemWidget();
+    EditQueryItemWidget(QWidget *parent = nullptr);
 
     void load(const QModelIndex &index);
     void save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const;

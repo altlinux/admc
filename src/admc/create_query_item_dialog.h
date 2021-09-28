@@ -24,7 +24,10 @@
 #include <QDialog>
 
 class ConsoleWidget;
-class EditQueryItemWidget;
+
+namespace Ui {
+    class CreateQueryItemDialog;
+}
 
 class CreateQueryItemDialog : public QDialog {
     Q_OBJECT
@@ -35,8 +38,9 @@ public:
     void accept() override;
 
 private:
+    Ui::CreateQueryItemDialog *ui;
+    
     ConsoleWidget *console;
-    EditQueryItemWidget *edit_query_widget;
 };
 
 #endif /* CREATE_QUERY_ITEM_DIALOG_H */

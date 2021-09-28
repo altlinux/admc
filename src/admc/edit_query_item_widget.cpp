@@ -28,8 +28,8 @@
 
 #include <QModelIndex>
 
-EditQueryItemWidget::EditQueryItemWidget()
-: QWidget() {
+EditQueryItemWidget::EditQueryItemWidget(QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::EditQueryItemWidget();
     ui->setupUi(this);
 

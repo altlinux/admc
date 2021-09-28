@@ -19,6 +19,7 @@
  */
 
 #include "create_query_item_dialog.h"
+#include "ui_create_query_item_dialog.h"
 
 #include "console_impls/query_item_impl.h"
 #include "console_impls/query_folder_impl.h"
@@ -26,36 +27,16 @@
 #include "utils.h"
 #include "console_impls/item_type.h"
 
-#include <QDialogButtonBox>
-#include <QLineEdit>
-#include <QVBoxLayout>
 #include <QModelIndex>
 
 CreateQueryItemDialog::CreateQueryItemDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {
+    ui = new Ui::CreateQueryItemDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     console = console_arg;
-
-    setWindowTitle(tr("Create Query"));
-
-    edit_query_widget = new EditQueryItemWidget();
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(edit_query_widget);
-    layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
 }
 
 void CreateQueryItemDialog::accept() {
@@ -65,7 +46,7 @@ void CreateQueryItemDialog::accept() {
     QString base;
     QByteArray filter_state;
     bool scope_is_children;
-    edit_query_widget->save(name, description, filter, base, scope_is_children, filter_state);
+    ui->edit_query_widget->save(name, description, filter, base, scope_is_children, filter_state);
 
     const QModelIndex parent_index = console->get_selected_item(ItemType_QueryItem);
 
