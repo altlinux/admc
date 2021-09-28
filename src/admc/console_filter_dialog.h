@@ -28,12 +28,15 @@
  */
 
 #include <QDialog>
+#include <QVariant>
 
 class FilterDialog;
-class QRadioButton;
-class QPushButton;
-class FilterClassesWidget;
 class AdConfig;
+class QRadioButton;
+
+namespace Ui {
+    class ConsoleFilterDialog;
+};
 
 class ConsoleFilterDialog final : public QDialog {
     Q_OBJECT
@@ -42,17 +45,20 @@ public:
     ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent);
     ~ConsoleFilterDialog();
 
+    void open() override;
+    void reject() override;
+
+    QVariant save_state() const;
+    void restore_state(const QVariant &state);
+
     QString get_filter() const;
     bool filtering_ON() const;
 
 private:
+    Ui::ConsoleFilterDialog *ui;
     FilterDialog *custom_dialog;
-    QRadioButton *all_button;
-    QRadioButton *custom_button;
-    QRadioButton *classes_button;
-    QPushButton *custom_dialog_button;
-    FilterClassesWidget *filter_classes_widget;
     QHash<QString, QRadioButton *> button_state_name_map;
+    QVariant original_state;
     
     void on_custom_button();
     void on_classes_button();
