@@ -30,6 +30,11 @@ class SelectClassesWidget;
 class AdObject;
 class SelectBaseWidget;
 
+namespace Ui {
+    class SelectObjectDialog;
+    class SelectObjectMatchDialog;
+}
+
 enum SelectObjectDialogMultiSelection {
     SelectObjectDialogMultiSelection_Yes,
     SelectObjectDialogMultiSelection_No
@@ -48,11 +53,8 @@ public slots:
     void accept() override;
 
 private:
+    Ui::SelectObjectDialog *ui;
     QStandardItemModel *model;
-    QTreeView *view;
-    QLineEdit *edit;
-    SelectClassesWidget *select_classes;
-    SelectBaseWidget *select_base_widget;
     QList<QString> class_list;
     SelectObjectDialogMultiSelection multi_selection;
 
@@ -72,7 +74,7 @@ public:
     QList<QString> get_selected() const;
 
 private:
-    QTreeView *view;
+    Ui::SelectObjectMatchDialog *ui;
 };
 
 #endif /* SELECT_OBJECT_DIALOG_H */

@@ -19,40 +19,21 @@
  */
 
 #include "select_object_advanced_dialog.h"
+#include "ui_select_object_advanced_dialog.h"
 
 #include "adldap.h"
-#include "find_widget.h"
 #include "globals.h"
-
-#include <QDialogButtonBox>
-#include <QVBoxLayout>
 
 SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent)
 : QDialog(parent) {
+    ui = new Ui::SelectObjectAdvancedDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(tr("Select Objects"));
-
-    find_widget = new FindWidget(this);
-    find_widget->init(classes, g_adconfig->domain_head());
-
-    auto buttons = new QDialogButtonBox();
-    buttons->addButton(QDialogButtonBox::Ok);
-    buttons->addButton(QDialogButtonBox::Cancel);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(find_widget);
-    layout->addWidget(buttons);
-
-    connect(
-        buttons, &QDialogButtonBox::accepted,
-        this, &SelectObjectAdvancedDialog::accept);
-    connect(
-        buttons, &QDialogButtonBox::rejected,
-        this, &SelectObjectAdvancedDialog::reject);
+    ui->find_widget->init(classes, g_adconfig->domain_head());
 }
 
 QList<QString> SelectObjectAdvancedDialog::get_selected_dns() const {
-    return find_widget->get_selected_dns();
+    return ui->find_widget->get_selected_dns();
 }

@@ -27,7 +27,9 @@
 
 #include <QDialog>
 
-class FindWidget;
+namespace Ui {
+    class SelectObjectAdvancedDialog;
+}
 
 class SelectObjectAdvancedDialog final : public QDialog {
     Q_OBJECT
@@ -38,7 +40,7 @@ public:
     QList<QString> get_selected_dns() const;
 
 private:
-    FindWidget *find_widget;
+    Ui::SelectObjectAdvancedDialog *ui;
 };
 
 #endif /* SELECT_OBJECT_ADVANCED_DIALOG_H */

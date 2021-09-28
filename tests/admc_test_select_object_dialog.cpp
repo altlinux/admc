@@ -39,7 +39,7 @@ void ADMCTestSelectObjectDialog::init() {
     auto select_base_widget = dialog->findChild<SelectBaseWidget *>();
     select_base_widget_add(select_base_widget, test_arena_dn());
 
-    edit = dialog->findChild<QLineEdit *>("edit");
+    edit = dialog->findChild<QLineEdit *>("name_edit");
     QVERIFY(edit != nullptr);
 
     add_button = dialog->findChild<QPushButton *>("add_button");

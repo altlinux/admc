@@ -19,6 +19,8 @@
  */
 
 #include "select_object_dialog.h"
+#include "ui_select_object_dialog.h"
+#include "ui_select_object_match_dialog.h"
 
 #include "adldap.h"
 #include "console_impls/object_impl.h"
@@ -55,99 +57,40 @@ const QList<QString> header_labels = {
 
 SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent) {
+    ui = new Ui::SelectObjectDialog();
+    ui->setupUi(this);
+
     class_list = class_list_arg;
     multi_selection = multi_selection_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const QString title = [&]() {
-        if (multi_selection == SelectObjectDialogMultiSelection_Yes) {
-            return tr("Select Objects");
-        } else {
-            return tr("Select Object");
-        }
-    }();
-    setWindowTitle(title);
+    ui->select_classes->add_classes(g_adconfig, class_list);
 
-    resize(600, 400);
-
-    select_classes = new SelectClassesWidget();
-    select_classes->add_classes(g_adconfig, class_list);
-
-    select_base_widget = new SelectBaseWidget();
-    select_base_widget->init(g_adconfig);
-    select_base_widget->setObjectName("select_base_widget");
-
-    edit = new QLineEdit();
-    edit->setObjectName("edit");
-
-    auto add_button = new QPushButton(tr("Add"));
-    add_button->setDefault(true);
-    add_button->setObjectName("add_button");
-
-    auto name_edit_layout = new QHBoxLayout();
-    name_edit_layout->addWidget(edit);
-    name_edit_layout->addWidget(add_button);
+    ui->select_base_widget->init(g_adconfig);
 
     model = new QStandardItemModel(this);
-
     model->setHorizontalHeaderLabels(header_labels);
 
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setSortingEnabled(true);
-    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-
-    view->setModel(model);
-
-    auto remove_button = new QPushButton(tr("Remove"));
-
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    ok_button->setDefault(false);
-    button_box->addButton(QDialogButtonBox::Cancel);
-    auto advanced_button = button_box->addButton(tr("Advanced"), QDialogButtonBox::HelpRole);
-
-    auto parameters_layout = new QFormLayout();
-    parameters_layout->addRow(tr("Classes:"), select_classes);
-    parameters_layout->addRow(tr("Search in:"), select_base_widget);
-    parameters_layout->addRow(tr("Name:"), name_edit_layout);
-    parameters_layout->addRow(new QLabel(tr("Selected objects:")));
-
-    auto object_view_layout = new QHBoxLayout();
-    object_view_layout->addWidget(view);
-    object_view_layout->addWidget(remove_button);
-    object_view_layout->setAlignment(remove_button, Qt::AlignTop);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(parameters_layout);
-    layout->addLayout(object_view_layout);
-    layout->addWidget(button_box);
+    ui->view->setModel(model);
 
     settings_setup_dialog_geometry(SETTING_select_object_dialog_geometry, this);
 
-    settings_restore_header_state(SETTING_select_object_header_state, view->header());
+    settings_restore_header_state(SETTING_select_object_header_state, ui->view->header());
 
     connect(
-        add_button, &QPushButton::clicked,
+        ui->add_button, &QPushButton::clicked,
         this, &SelectObjectDialog::on_add_button);
     connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-    connect(
-        advanced_button, &QPushButton::clicked,
+        ui->advanced_button, &QPushButton::clicked,
         this, &SelectObjectDialog::on_advanced_button);
     connect(
-        remove_button, &QAbstractButton::clicked,
+        ui->remove_button, &QAbstractButton::clicked,
         this, &SelectObjectDialog::on_remove_button);
 }
 
 SelectObjectDialog::~SelectObjectDialog() {
-    settings_save_header_state(SETTING_select_object_header_state, view->header());   
+    settings_save_header_state(SETTING_select_object_header_state, ui->view->header());   
 }
 
 QList<QString> SelectObjectDialog::get_selected() const {
@@ -175,7 +118,7 @@ void SelectObjectDialog::accept() {
 }
 
 void SelectObjectDialog::on_add_button() {
-    if (edit->text().isEmpty()) {
+    if (ui->name_edit->text().isEmpty()) {
         return;
     }
 
@@ -184,10 +127,10 @@ void SelectObjectDialog::on_add_button() {
         return;
     }
 
-    const QString base = select_base_widget->get_base();
+    const QString base = ui->select_base_widget->get_base();
 
     const QString filter = [&]() {
-        const QString entered_name = edit->text();
+        const QString entered_name = ui->name_edit->text();
 
         const QString name_filter = filter_OR({
             filter_CONDITION(Condition_StartsWith, ATTRIBUTE_NAME, entered_name),
@@ -196,7 +139,7 @@ void SelectObjectDialog::on_add_button() {
             filter_CONDITION(Condition_StartsWith, ATTRIBUTE_USER_PRINCIPAL_NAME, entered_name),
         });
 
-        const QString classes_filter = select_classes->get_filter();
+        const QString classes_filter = ui->select_classes->get_filter();
 
         const QString out = filter_AND({
             name_filter,
@@ -217,7 +160,7 @@ void SelectObjectDialog::on_add_button() {
         } else {
             add_select_object_to_model(model, object);
 
-            edit->clear();
+            ui->name_edit->clear();
         }
     } else if (search_results.size() > 1) {
         // Open dialog where you can select one of the matches
@@ -245,7 +188,7 @@ void SelectObjectDialog::on_add_button() {
                     duplicate_message_box();
                 }
 
-                edit->clear();
+                ui->name_edit->clear();
             });
 
         dialog->open();
@@ -256,7 +199,7 @@ void SelectObjectDialog::on_add_button() {
 }
 
 void SelectObjectDialog::on_remove_button() {
-    const QList<QPersistentModelIndex> selected = persistent_index_list(view->selectionModel()->selectedRows());
+    const QList<QPersistentModelIndex> selected = persistent_index_list(ui->view->selectionModel()->selectedRows());
 
     for (const QPersistentModelIndex &index : selected) {
         model->removeRows(index.row(), 1);
@@ -319,10 +262,10 @@ void SelectObjectDialog::duplicate_message_box() {
 
 SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
 : QDialog(parent) {
-    setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle("Select Match");
+    ui = new Ui::SelectObjectMatchDialog();
+    ui->setupUi(this);
 
-    auto label = new QLabel(tr("There are multiple matches. Select one or more to add to the list."));
+    setAttribute(Qt::WA_DeleteOnClose);
 
     auto model = new QStandardItemModel(this);
 
@@ -332,37 +275,14 @@ SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> 
         add_select_object_to_model(model, object);
     }
 
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setSortingEnabled(true);
-    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    view->sortByColumn(0, Qt::AscendingOrder);
-
-    view->setModel(model);
-
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    ok_button->setObjectName("ok_button");
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(label);
-    layout->addWidget(view);
-    layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
+    ui->view->sortByColumn(0, Qt::AscendingOrder);
+    ui->view->setModel(model);
 }
 
 QList<QString> SelectObjectMatchDialog::get_selected() const {
     QList<QString> out;
 
-    const QList<QModelIndex> selected_indexes = view->selectionModel()->selectedRows();
+    const QList<QModelIndex> selected_indexes = ui->view->selectionModel()->selectedRows();
 
     for (const QModelIndex &index : selected_indexes) {
         const QString dn = index.data(ObjectRole_DN).toString();

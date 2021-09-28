@@ -234,7 +234,7 @@ void ADMCTest::select_object_dialog_select(const QString &dn) {
     QVERIFY(select_base_widget != nullptr);
     select_base_widget_add(select_base_widget, test_arena_dn());
 
-    auto edit = select_dialog->findChild<QLineEdit *>("edit");
+    auto edit = select_dialog->findChild<QLineEdit *>("name_edit");
     QVERIFY(edit != nullptr);
 
     auto add_button = select_dialog->findChild<QPushButton *>("add_button");
