@@ -26,6 +26,10 @@
 class ConsoleWidget;
 class EditQueryItemWidget;
 
+namespace Ui {
+    class EditQueryItemDialog;
+}
+
 class EditQueryItemDialog : public QDialog {
     Q_OBJECT
 
@@ -35,8 +39,8 @@ public:
     void accept() override;
 
 private:
+    Ui::EditQueryItemDialog *ui;
     ConsoleWidget *console;
-    EditQueryItemWidget *edit_query_widget;
 };
 
 #endif /* EDIT_QUERY_ITEM_DIALOG_H */

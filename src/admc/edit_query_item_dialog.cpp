@@ -19,6 +19,7 @@
  */
 
 #include "edit_query_item_dialog.h"
+#include "ui_edit_query_item_dialog.h"
 
 #include "console_impls/query_item_impl.h"
 #include "console_impls/query_folder_impl.h"
@@ -26,40 +27,20 @@
 #include "utils.h"
 #include "console_impls/item_type.h"
 
-#include <QDialogButtonBox>
-#include <QLineEdit>
-#include <QVBoxLayout>
 #include <QModelIndex>
 
 EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {
+    ui = new Ui::EditQueryItemDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     console = console_arg;
 
-    setWindowTitle(tr("Edit Query"));
-
-    edit_query_widget = new EditQueryItemWidget();
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(edit_query_widget);
-    layout->addWidget(button_box);
-
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
-    edit_query_widget->load(index);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
+    ui->edit_query_item_widget->load(index);
 }
 
 void EditQueryItemDialog::accept() {
@@ -69,7 +50,7 @@ void EditQueryItemDialog::accept() {
     QString base;
     QByteArray filter_state;
     bool scope_is_children;
-    edit_query_widget->save(name, description, filter, base, scope_is_children, filter_state);
+    ui->edit_query_item_widget->save(name, description, filter, base, scope_is_children, filter_state);
 
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
