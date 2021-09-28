@@ -25,6 +25,7 @@
 #include "console_impls/object_impl.h"
 #include "console_impls/item_type.h"
 #include "console_impls/query_item_impl.h"
+#include "console_impls/query_folder_impl.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
 #include "search_thread.h"
@@ -50,10 +51,17 @@ FindWidget::FindWidget(QWidget *parent)
     auto query_item_impl = new QueryItemImpl(ui->console);
     ui->console->register_impl(ItemType_QueryItem, query_item_impl);
 
+    auto query_folder_impl = new QueryFolderImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
+
     ResultsView *query_results = query_item_impl->view();
     query_results->set_drag_drop_enabled(false);
 
-    const QList<QStandardItem *> row = ui->console->add_scope_item(ItemType_QueryItem, QModelIndex());
+    const QList<QStandardItem *> root_row = ui->console->add_scope_item(ItemType_QueryFolder, QModelIndex());
+    QStandardItem *root_item = root_row[0];
+    root_item->setData(true, QueryItemRole_IsRoot);
+
+    const QList<QStandardItem *> row = ui->console->add_scope_item(ItemType_QueryItem, root_item->index());
     head_item = row[0];
     head_item->setText(tr("Find results"));
 
