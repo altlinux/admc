@@ -24,7 +24,7 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>100</width>
+       <width>300</width>
        <height>0</height>
       </size>
      </property>
@@ -125,12 +125,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ConsoleWidget</class>
-   <extends>QWidget</extends>
-   <header>console_widget/console_widget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>SelectBaseWidget</class>
    <extends>QWidget</extends>
    <header>filter_widget/select_base_widget.h</header>
@@ -140,6 +134,12 @@
    <class>FilterWidget</class>
    <extends>QWidget</extends>
    <header>filter_widget/filter_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ConsoleWidget</class>
+   <extends>QWidget</extends>
+   <header>console_widget/console_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
