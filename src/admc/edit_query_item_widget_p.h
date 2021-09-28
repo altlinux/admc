@@ -23,14 +23,16 @@
 
 #include <QDialog>
 
-class FilterWidget;
+namespace Ui {
+    class EditQueryItemFilterDialog;
+}
 
 class EditQueryItemFilterDialog : public QDialog {
     Q_OBJECT
 
 public:
-    FilterWidget *filter_widget;
-    
+    Ui::EditQueryItemFilterDialog *ui;
+
     EditQueryItemFilterDialog(QWidget *parent);
 };
 

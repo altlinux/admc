@@ -29,10 +29,10 @@
 #include <QWidget>
 
 class EditQueryItemFilterDialog;
-class QLineEdit;
-class QTextEdit;
-class SelectBaseWidget;
-class QCheckBox;
+
+namespace Ui {
+    class EditQueryItemWidget;
+}
 
 class EditQueryItemWidget : public QWidget {
     Q_OBJECT
@@ -44,12 +44,8 @@ public:
     void save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const;
 
 private:
+    Ui::EditQueryItemWidget *ui;
     EditQueryItemFilterDialog *dialog;
-    QLineEdit *name_edit;
-    QLineEdit *description_edit;
-    QTextEdit *filter_display;
-    SelectBaseWidget *select_base_widget;
-    QCheckBox *scope_checkbox;
 
     void update_filter_display();
 };
