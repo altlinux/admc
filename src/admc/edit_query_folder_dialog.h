@@ -23,8 +23,11 @@
 
 #include <QDialog>
 
-class QLineEdit;
 class ConsoleWidget;
+
+namespace Ui {
+    class EditQueryFolderDialog;
+}
 
 class EditQueryFolderDialog : public QDialog {
     Q_OBJECT
@@ -35,8 +38,7 @@ public:
     void open() override;
 
 private:
-    QLineEdit *name_edit;
-    QLineEdit *description_edit;
+    Ui::EditQueryFolderDialog *ui;
     ConsoleWidget *console;
 
     void accept() override;

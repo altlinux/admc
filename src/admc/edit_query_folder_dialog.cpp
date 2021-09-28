@@ -19,6 +19,7 @@
  */
 
 #include "edit_query_folder_dialog.h"
+#include "ui_edit_query_folder_dialog.h"
 
 #include "ad_filter.h"
 #include "console_impls/query_item_impl.h"
@@ -28,43 +29,16 @@
 #include "status.h"
 #include "console_impls/item_type.h"
 
-#include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QLineEdit>
-#include <QPushButton>
 #include <QModelIndex>
 
 EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {
+    ui = new Ui::EditQueryFolderDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
-    
+
     console = console_arg;
-
-    setWindowTitle(tr("Edit Query Folder"));
-
-    name_edit = new QLineEdit();
-    description_edit = new QLineEdit();
-
-    auto form_layout = new QFormLayout();
-
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    form_layout->addRow(tr("Name:"), name_edit);
-    form_layout->addRow(tr("Description:"), description_edit);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(form_layout);
-    layout->addWidget(ok_button);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
 }
 
 void EditQueryFolderDialog::open() {
@@ -72,16 +46,16 @@ void EditQueryFolderDialog::open() {
     const QString current_name = index.data(Qt::DisplayRole).toString();
     const QString current_description = index.data(QueryItemRole_Description).toString();
 
-    name_edit->setText(current_name);
-    description_edit->setText(current_description);
+    ui->name_edit->setText(current_name);
+    ui->description_edit->setText(current_description);
 
     QDialog::open();
 }
 
 void EditQueryFolderDialog::accept() {
     const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
-    const QString name = name_edit->text();
-    const QString description = description_edit->text();
+    const QString name = ui->name_edit->text();
+    const QString description = ui->description_edit->text();
 
     if (!console_query_or_folder_name_is_good(name, index.parent(), this, index)) {
         return;
