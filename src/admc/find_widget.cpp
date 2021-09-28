@@ -93,6 +93,7 @@ void FindWidget::add_actions(QMenu *action_menu, QMenu *view_menu) {
     ui->console->add_actions(action_menu);
 
     view_menu->addAction(ui->console->customize_columns_action());
+    view_menu->addAction(ui->console->toggle_description_bar_action());
 
     connect(
         action_menu, &QMenu::aboutToShow,
