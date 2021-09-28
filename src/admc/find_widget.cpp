@@ -100,6 +100,10 @@ void FindWidget::init(const QList<QString> classes, const QString &default_base)
 void FindWidget::add_actions(QMenu *action_menu, QMenu *view_menu) {
     ui->console->add_actions(action_menu);
 
+    view_menu->addAction(ui->console->set_results_to_icons_action());
+    view_menu->addAction(ui->console->set_results_to_list_action());
+    view_menu->addAction(ui->console->set_results_to_detail_action());
+    view_menu->addSeparator();
     view_menu->addAction(ui->console->customize_columns_action());
     view_menu->addAction(ui->console->toggle_description_bar_action());
 
