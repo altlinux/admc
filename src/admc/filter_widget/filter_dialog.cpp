@@ -38,6 +38,18 @@ FilterDialog::FilterDialog(QWidget *parent)
     ui->setupUi(this);
 }
 
+void FilterDialog::open() {
+    original_state = save_state();
+
+    QDialog::open();
+}
+
+void FilterDialog::reject() {
+    restore_state(original_state);
+
+    QDialog::reject();
+}
+
 void FilterDialog::add_classes(AdConfig *adconfig, const QList<QString> &class_list) {
     ui->filter_widget->add_classes(adconfig, class_list);
 }

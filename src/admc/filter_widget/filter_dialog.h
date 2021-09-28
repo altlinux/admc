@@ -27,6 +27,7 @@
  */
 
 #include <QDialog>
+#include <QVariant>
 
 class FilterWidget;
 class AdConfig;
@@ -41,6 +42,9 @@ class FilterDialog final : public QDialog {
 public:
     FilterDialog(QWidget *parent);
 
+    void open() override;
+    void reject() override;
+
     void add_classes(AdConfig *adconfig, const QList<QString> &class_list);
 
     QVariant save_state() const;
@@ -51,6 +55,7 @@ public:
 private:
     Ui::FilterDialog *ui;
     FilterWidget *filter_widget;
+    QVariant original_state;
 };
 
 #endif /* FILTER_DIALOG_H */
