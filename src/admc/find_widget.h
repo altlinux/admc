@@ -41,9 +41,10 @@ class FindWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    FindWidget(const QList<QString> classes, const QString &default_base);
-
+    FindWidget(QWidget *parent = nullptr);
     ~FindWidget();
+
+    void init(const QList<QString> classes, const QString &default_base);
 
     void add_actions(QMenu *action_menu, QMenu *view_menu);
 

@@ -34,8 +34,8 @@
 #include <QStandardItem>
 #include <QMenu>
 
-FindWidget::FindWidget(const QList<QString> classes, const QString &default_base)
-: QWidget() {
+FindWidget::FindWidget(QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::FindWidget();
     ui->setupUi(this);
 
@@ -65,9 +65,6 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_base
     const QModelIndex head_index = head_item->index();
     ui->console->set_current_scope(head_index);
 
-    ui->select_base_widget->init(g_adconfig, default_base);
-    ui->filter_widget->add_classes(g_adconfig, classes);
-
     connect(
         ui->find_button, &QPushButton::clicked,
         this, &FindWidget::find);
@@ -85,6 +82,11 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_base
 FindWidget::~FindWidget() {
     const QVariant state = ui->console->save_state();
     settings_set_variant(SETTING_find_results_state, state);
+}
+
+void FindWidget::init(const QList<QString> classes, const QString &default_base) {
+    ui->filter_widget->add_classes(g_adconfig, classes);
+    ui->select_base_widget->init(g_adconfig, default_base);
 }
 
 void FindWidget::add_actions(QMenu *action_menu, QMenu *view_menu) {

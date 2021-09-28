@@ -27,11 +27,18 @@
 
 #include <QDialog>
 
+namespace Ui {
+    class FindObjectDialog;
+}
+
 class FindObjectDialog final : public QDialog {
     Q_OBJECT
 
 public:
     FindObjectDialog(const QList<QString> classes, const QString default_base, QWidget *parent);
+
+private:
+    Ui::FindObjectDialog *ui;
 };
 
 #endif /* FIND_OBJECT_DIALOG_H */

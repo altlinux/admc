@@ -19,6 +19,7 @@
  */
 
 #include "find_object_dialog.h"
+#include "ui_find_object_dialog.h"
 
 #include "ad_config.h"
 #include "find_widget.h"
@@ -26,26 +27,21 @@
 #include "settings.h"
 
 #include <QMenuBar>
-#include <QVBoxLayout>
 
 FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString default_base, QWidget *parent)
 : QDialog(parent) {
+    ui = new Ui::FindObjectDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(tr("Find Objects"));
-
     auto menubar = new QMenuBar();
+    layout()->setMenuBar(menubar);
     auto action_menu = menubar->addMenu(tr("&Action"));
     auto view_menu = menubar->addMenu(tr("&View"));
 
-    auto find_widget = new FindWidget(classes, default_base);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->setMenuBar(menubar);
-    layout->addWidget(find_widget);
-
-    find_widget->add_actions(action_menu, view_menu);
+    ui->find_widget->init(classes, default_base);
+    ui->find_widget->add_actions(action_menu, view_menu);
 
     settings_setup_dialog_geometry(SETTING_find_object_dialog_geometry, this);
 }

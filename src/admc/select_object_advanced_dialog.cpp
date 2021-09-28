@@ -33,7 +33,8 @@ SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> clas
 
     setWindowTitle(tr("Select Objects"));
 
-    find_widget = new FindWidget(classes, g_adconfig->domain_head());
+    find_widget = new FindWidget(this);
+    find_widget->init(classes, g_adconfig->domain_head());
 
     auto buttons = new QDialogButtonBox();
     buttons->addButton(QDialogButtonBox::Ok);
