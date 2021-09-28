@@ -29,7 +29,7 @@
 
 #include <QDialog>
 
-class FilterCustomDialog;
+class FilterDialog;
 class QRadioButton;
 class QPushButton;
 class FilterClassesWidget;
@@ -46,7 +46,7 @@ public:
     bool filtering_ON() const;
 
 private:
-    FilterCustomDialog *custom_dialog;
+    FilterDialog *custom_dialog;
     QRadioButton *all_button;
     QRadioButton *custom_button;
     QRadioButton *classes_button;

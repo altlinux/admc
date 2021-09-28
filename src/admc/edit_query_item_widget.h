@@ -28,7 +28,7 @@
 
 #include <QWidget>
 
-class EditQueryItemFilterDialog;
+class FilterDialog;
 
 namespace Ui {
     class EditQueryItemWidget;
@@ -45,7 +45,7 @@ public:
 
 private:
     Ui::EditQueryItemWidget *ui;
-    EditQueryItemFilterDialog *dialog;
+    FilterDialog *filter_dialog;
 
     void update_filter_display();
 };

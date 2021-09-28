@@ -38,7 +38,6 @@ set(ADMC_SOURCES
     select_object_dialog.cpp
     password_dialog.cpp
     console_filter_dialog.cpp
-    filter_custom_dialog.cpp
     find_widget.cpp
     tab_widget.cpp
     search_thread.cpp
@@ -76,6 +75,7 @@ set(ADMC_SOURCES
     connection_options_dialog.cpp
 
     filter_widget/filter_widget.cpp
+    filter_widget/filter_dialog.cpp
     filter_widget/filter_widget_simple_tab.cpp
     filter_widget/filter_widget_normal_tab.cpp
     filter_widget/filter_widget_advanced_tab.cpp

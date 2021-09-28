@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EditQueryItemFilterDialog</class>
- <widget class="QDialog" name="EditQueryItemFilterDialog">
+ <class>FilterDialog</class>
+ <widget class="QDialog" name="FilterDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -42,7 +42,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>EditQueryItemFilterDialog</receiver>
+   <receiver>FilterDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -58,7 +58,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>EditQueryItemFilterDialog</receiver>
+   <receiver>FilterDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

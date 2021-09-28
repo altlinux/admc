@@ -22,7 +22,7 @@
 
 #include "adldap.h"
 #include "filter_classes_widget.h"
-#include "filter_custom_dialog.h"
+#include "filter_widget/filter_dialog.h"
 #include "settings.h"
 
 #include <QDialogButtonBox>
@@ -45,9 +45,12 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
     setWindowTitle(tr("Edit Console Filter"));
     resize(400, 400);
 
+    // NOTE: Using only non-container classes for filtering
+    // because container classes need to always be visible
     const QList<QString> noncontainer_classes = adconfig->get_noncontainer_classes();
 
-    custom_dialog = new FilterCustomDialog(adconfig, this);
+    custom_dialog = new FilterDialog(this);
+    custom_dialog->add_classes(adconfig, noncontainer_classes);
 
     all_button = new QRadioButton(tr("Show all"));
     classes_button = new QRadioButton(tr("Show only these types"));

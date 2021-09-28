@@ -21,9 +21,9 @@
 #include "admc_test_edit_query_item_widget.h"
 
 #include "edit_query_item_widget.h"
-#include "edit_query_item_widget_p.h"
 #include "console_impls/query_item_impl.h"
 #include "filter_widget/select_base_widget.h"
+#include "filter_widget/filter_dialog.h"
 #include "tab_widget.h"
 
 #include <QLineEdit>
@@ -80,7 +80,7 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
     // Set correct filter filter (a bit complicated!)
     edit_filter_button->click();
 
-    EditQueryItemFilterDialog *dialog = widget->findChild<EditQueryItemFilterDialog *>();
+    FilterDialog *dialog = widget->findChild<FilterDialog *>();
     QVERIFY(dialog != nullptr);
 
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));

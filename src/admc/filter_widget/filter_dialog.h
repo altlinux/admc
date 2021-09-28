@@ -18,22 +18,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EDIT_QUERY_ITEM_WIDGET_P_H
-#define EDIT_QUERY_ITEM_WIDGET_P_H
+#ifndef FILTER_DIALOG_H
+#define FILTER_DIALOG_H
+
+/**
+ * Dialog wrapper over filter widget. Contains the filter
+ * widget and ok/cancel buttons.
+ */
 
 #include <QDialog>
 
+class FilterWidget;
+class AdConfig;
+
 namespace Ui {
-    class EditQueryItemFilterDialog;
+    class FilterDialog;
 }
 
-class EditQueryItemFilterDialog : public QDialog {
+class FilterDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    Ui::EditQueryItemFilterDialog *ui;
+    FilterDialog(QWidget *parent);
 
-    EditQueryItemFilterDialog(QWidget *parent);
+    void add_classes(AdConfig *adconfig, const QList<QString> &class_list);
+
+    QVariant save_state() const;
+    void restore_state(const QVariant &state);
+
+    QString get_filter() const;
+
+private:
+    Ui::FilterDialog *ui;
+    FilterWidget *filter_widget;
 };
 
-#endif /* EDIT_QUERY_ITEM_WIDGET_P_H */
+#endif /* FILTER_DIALOG_H */

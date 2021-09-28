@@ -19,15 +19,12 @@
  */
 
 #include "edit_query_item_widget.h"
-#include "edit_query_item_widget_p.h"
 #include "ui_edit_query_item_widget.h"
-#include "ui_edit_query_item_filter_dialog.h"
 
 #include "ad_filter.h"
 #include "globals.h"
 #include "console_impls/query_item_impl.h"
-#include "filter_widget/filter_widget.h"
-#include "filter_widget/select_base_widget.h"
+#include "filter_widget/filter_dialog.h"
 
 #include <QModelIndex>
 
@@ -36,15 +33,16 @@ EditQueryItemWidget::EditQueryItemWidget()
     ui = new Ui::EditQueryItemWidget();
     ui->setupUi(this);
 
-    dialog = new EditQueryItemFilterDialog(this);
+    filter_dialog = new FilterDialog(this);
+    filter_dialog->add_classes(g_adconfig, filter_classes);
 
     ui->select_base_widget->init(g_adconfig);
 
     connect(
         ui->edit_filter_button, &QPushButton::clicked,
-        dialog, &QDialog::open);
+        filter_dialog, &QDialog::open);
     connect(
-        dialog, &QDialog::accepted,
+        filter_dialog, &QDialog::accepted,
         this, &EditQueryItemWidget::update_filter_display);
     update_filter_display();
 }
@@ -56,7 +54,7 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
     filter_state_stream >> state;
 
     ui->select_base_widget->restore_state(state["select_base_widget"]);
-    dialog->ui->filter_widget->restore_state(state["filter_widget"]);
+    filter_dialog->restore_state(state["filter_widget"]);
 
     update_filter_display();
 
@@ -73,7 +71,7 @@ void EditQueryItemWidget::load(const QModelIndex &index) {
 void EditQueryItemWidget::save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const {
     name = ui->name_edit->text();
     description = ui->description_edit->text();
-    filter = dialog->ui->filter_widget->get_filter();
+    filter = filter_dialog->get_filter();
     base = ui->select_base_widget->get_base();
     scope_is_children = !ui->scope_checkbox->isChecked();
 
@@ -81,7 +79,7 @@ void EditQueryItemWidget::save(QString &name, QString &description, QString &fil
         QHash<QString, QVariant> state;
 
         state["select_base_widget"] = ui->select_base_widget->save_state();
-        state["filter_widget"] = dialog->ui->filter_widget->save_state();
+        state["filter_widget"] = filter_dialog->save_state();
         state["filter"] = filter;
 
         QByteArray out;
@@ -93,14 +91,6 @@ void EditQueryItemWidget::save(QString &name, QString &description, QString &fil
 }
 
 void EditQueryItemWidget::update_filter_display() {
-    const QString filter = dialog->ui->filter_widget->get_filter();
+    const QString filter = filter_dialog->get_filter();
     ui->filter_display->setPlainText(filter);
-}
-
-EditQueryItemFilterDialog::EditQueryItemFilterDialog(QWidget *parent)
-: QDialog(parent) {
-    ui = new Ui::EditQueryItemFilterDialog();
-    ui->setupUi(this);
-
-    ui->filter_widget->add_classes(g_adconfig, filter_classes);
 }
