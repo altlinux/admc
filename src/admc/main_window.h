@@ -25,7 +25,7 @@
 
 class ConsoleWidget;
 class ObjectImpl;
-class FilterDialog;
+class ConsoleFilterDialog;
 class QAction;
 
 class MainWindow final : public QMainWindow {
@@ -48,7 +48,7 @@ private slots:
 private:
     ConsoleWidget *console;
     ObjectImpl *object_impl;
-    FilterDialog *filter_dialog;
+    ConsoleFilterDialog *filter_dialog;
     
     QAction *connect_action;
     QAction *open_filter_action;

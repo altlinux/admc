@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FILTER_DIALOG_H
-#define FILTER_DIALOG_H
+#ifndef CONSOLE_FILTER_DIALOG_H
+#define CONSOLE_FILTER_DIALOG_H
 
 /**
  * Dialog used to enter a filter that is applied to objects
@@ -35,12 +35,12 @@ class QPushButton;
 class FilterClassesWidget;
 class AdConfig;
 
-class FilterDialog final : public QDialog {
+class ConsoleFilterDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    FilterDialog(AdConfig *adconfig, QWidget *parent);
-    ~FilterDialog();
+    ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent);
+    ~ConsoleFilterDialog();
 
     QString get_filter() const;
     bool filtering_ON() const;
@@ -58,4 +58,4 @@ private:
     void on_classes_button();
 };
 
-#endif /* FILTER_DIALOG_H */
+#endif /* CONSOLE_FILTER_DIALOG_H */

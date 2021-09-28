@@ -37,7 +37,7 @@ set(ADMC_SOURCES
     status.cpp
     select_object_dialog.cpp
     password_dialog.cpp
-    filter_dialog.cpp
+    console_filter_dialog.cpp
     filter_custom_dialog.cpp
     find_widget.cpp
     tab_widget.cpp

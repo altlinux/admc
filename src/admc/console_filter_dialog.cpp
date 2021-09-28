@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_dialog.h"
+#include "console_filter_dialog.h"
 
 #include "adldap.h"
 #include "filter_classes_widget.h"
@@ -40,7 +40,7 @@
 // implement would be to save old state on open, then reload
 // it when cancel is pressed.
 
-FilterDialog::FilterDialog(AdConfig *adconfig, QWidget *parent)
+ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
 : QDialog(parent) {
     setWindowTitle(tr("Edit Console Filter"));
     resize(400, 400);
@@ -107,20 +107,20 @@ FilterDialog::FilterDialog(AdConfig *adconfig, QWidget *parent)
 
     connect(
         custom_button, &QAbstractButton::toggled,
-        this, &FilterDialog::on_custom_button);
+        this, &ConsoleFilterDialog::on_custom_button);
     on_custom_button();
 
     connect(
         classes_button, &QAbstractButton::toggled,
-        this, &FilterDialog::on_classes_button);
+        this, &ConsoleFilterDialog::on_classes_button);
     on_classes_button();
 }
 
-bool FilterDialog::filtering_ON() const {
+bool ConsoleFilterDialog::filtering_ON() const {
     return !all_button->isChecked();
 }
 
-FilterDialog::~FilterDialog() {
+ConsoleFilterDialog::~ConsoleFilterDialog() {
     QHash<QString, QVariant> state;
 
     state[FILTER_CUSTOM_DIALOG_STATE] = custom_dialog->save_state();
@@ -135,7 +135,7 @@ FilterDialog::~FilterDialog() {
     settings_set_variant(SETTING_filter_dialog_state, state);
 }
 
-QString FilterDialog::get_filter() const {
+QString ConsoleFilterDialog::get_filter() const {
     if (all_button->isChecked()) {
         return "(objectClass=*)";
     } else if (classes_button->isChecked()) {
@@ -147,13 +147,13 @@ QString FilterDialog::get_filter() const {
     return QString();
 }
 
-void FilterDialog::on_custom_button() {
+void ConsoleFilterDialog::on_custom_button() {
     const bool checked = custom_button->isChecked();
 
     custom_dialog_button->setEnabled(checked);
 }
 
-void FilterDialog::on_classes_button() {
+void ConsoleFilterDialog::on_classes_button() {
     const bool checked = classes_button->isChecked();
 
     filter_classes_widget->setEnabled(checked);

@@ -34,7 +34,7 @@
 #include "console_impls/query_item_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_widget/console_widget.h"
-#include "filter_dialog.h"
+#include "console_filter_dialog.h"
 #include "console_impls/item_type.h"
 
 #include <QAction>
@@ -414,7 +414,7 @@ void MainWindow::connect_to_server() {
 
     // NOTE: have to create filter dialog here because it
     // requires an AD connection
-    filter_dialog = new FilterDialog(ad.adconfig(), this);
+    filter_dialog = new ConsoleFilterDialog(ad.adconfig(), this);
 
     connect(
         open_filter_action, &QAction::triggered,
