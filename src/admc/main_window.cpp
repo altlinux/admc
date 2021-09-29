@@ -434,6 +434,14 @@ void MainWindow::connect_to_server() {
     // Disable connect action once connected because
     // it's not needed at that point
     connect_action->setEnabled(false);
+
+    // NOTE: need to restore console state again after
+    // successful connection because some state like column
+    // visibility requires models to be populated with
+    // items. Until connection to the domain, the object
+    // tree is empty.
+    const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
+    console->restore_state(console_widget_state);
 }
 
 void MainWindow::refresh_object_tree() {
