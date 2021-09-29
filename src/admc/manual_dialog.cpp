@@ -84,8 +84,8 @@ ManualDialog::ManualDialog(QWidget *parent)
     }
 
     auto tab_widget = new QTabWidget();
-    tab_widget->addTab(help_engine->contentWidget(), "Contents");
-    tab_widget->addTab(help_engine->indexWidget(), "Index");
+    tab_widget->addTab(help_engine->contentWidget(), tr("Contents"));
+    tab_widget->addTab(help_engine->indexWidget(), tr("Index"));
 
     auto help_browser = new HelpBrowser(help_engine);
 

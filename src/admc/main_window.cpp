@@ -24,6 +24,7 @@
 #include "adldap.h"
 #include "globals.h"
 #include "manual_dialog.h"
+#include "changelog_dialog.h"
 #include "connection_options_dialog.h"
 #include "settings.h"
 #include "status.h"
@@ -91,6 +92,7 @@ MainWindow::MainWindow()
 
     // Create dialogs opened from menubar
     auto manual_dialog = new ManualDialog(this);
+    auto changelog_dialog = new ChangelogDialog(this);
     auto about_dialog = new AboutDialog(this);
     auto connection_options_dialog = new ConnectionOptionsDialog(this);
 
@@ -118,6 +120,7 @@ MainWindow::MainWindow()
     auto timestamp_log_action = settings_make_and_connect_action(SETTING_timestamp_log, tr("Timestamps in message log"), this);
 
     auto manual_action = new QAction(QIcon::fromTheme("help-contents"), tr("&Manual"), this);
+    auto changelog_action = new QAction(tr("&Changelog"), this);
 
     const QList<QLocale::Language> language_list = {
         QLocale::English,
@@ -216,6 +219,7 @@ MainWindow::MainWindow()
 
     // Help
     help_menu->addAction(manual_action);
+    help_menu->addAction(changelog_action);
     help_menu->addAction(about_action);
 
     // Toolbar
@@ -241,6 +245,9 @@ MainWindow::MainWindow()
     connect(
         manual_action, &QAction::triggered,
         manual_dialog, &QDialog::show);
+    connect(
+        changelog_action, &QAction::triggered,
+        changelog_dialog, &QDialog::show);
     connect(
         about_action, &QAction::triggered,
         about_dialog, &QDialog::open);
