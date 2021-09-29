@@ -36,6 +36,7 @@ class SelectObjectAdvancedDialog final : public QDialog {
 
 public:
     SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent);
+    ~SelectObjectAdvancedDialog();
 
     QList<QString> get_selected_dns() const;
 

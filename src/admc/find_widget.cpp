@@ -66,9 +66,6 @@ FindWidget::FindWidget(QWidget *parent)
     head_item->setText(tr("Find results"));
 
     ui->console->set_scope_view_visible(false);
-
-    const QVariant console_widget_state = settings_get_variant(SETTING_find_results_state);
-    ui->console->restore_state(console_widget_state);
     
     const QModelIndex head_index = head_item->index();
     ui->console->set_current_scope(head_index);
@@ -87,14 +84,19 @@ FindWidget::FindWidget(QWidget *parent)
         });
 }
 
-FindWidget::~FindWidget() {
-    const QVariant state = ui->console->save_state();
-    settings_set_variant(SETTING_find_results_state, state);
-}
-
 void FindWidget::init(const QList<QString> classes, const QString &default_base) {
     ui->filter_widget->add_classes(g_adconfig, classes);
     ui->select_base_widget->init(g_adconfig, default_base);
+}
+
+QVariant FindWidget::save_state() const {
+    const QVariant state = ui->console->save_state();
+
+    return state;
+}
+
+void FindWidget::restore_state(const QVariant &state) {
+    ui->console->restore_state(state);
 }
 
 void FindWidget::setup_action_menu(QMenu *menu) {
