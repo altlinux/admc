@@ -189,6 +189,11 @@ MainWindow::MainWindow()
     view_menu->addAction(console->set_results_to_list_action());
     view_menu->addAction(console->set_results_to_detail_action());
     view_menu->addSeparator();
+    view_menu->addAction(message_log_dock->toggleViewAction());
+    view_menu->addAction(toolbar->toggleViewAction());
+    view_menu->addAction(console->toggle_console_tree_action());
+    view_menu->addAction(console->toggle_description_bar_action());
+    view_menu->addSeparator();
     view_menu->addAction(console->customize_columns_action());
     view_menu->addAction(open_filter_action);
 
@@ -203,11 +208,6 @@ MainWindow::MainWindow()
     preferences_menu->addAction(timestamp_log_action);
     preferences_menu->addAction(show_noncontainers_action);
     preferences_menu->addMenu(language_menu);
-    preferences_menu->addSeparator();
-    preferences_menu->addAction(message_log_dock->toggleViewAction());
-    preferences_menu->addAction(toolbar->toggleViewAction());
-    preferences_menu->addAction(console->toggle_console_tree_action());
-    preferences_menu->addAction(console->toggle_description_bar_action());
 
     for (const auto language : language_list) {
         QAction *language_action = language_actions[language];
