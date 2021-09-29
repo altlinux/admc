@@ -118,6 +118,11 @@ QSet<StandardAction> QueryItemImpl::get_standard_actions(const QModelIndex &inde
         out.insert(StandardAction_Cut);
         out.insert(StandardAction_Copy);
     }
+
+    const bool can_refresh = console_item_get_was_fetched(index);
+    if (can_refresh && single_selection) {
+        out.insert(StandardAction_Refresh);
+    }
     
     return out;
 }
