@@ -49,7 +49,6 @@ extern const QSet<AcePermission> all_permissions;
 extern const QSet<AcePermission> access_permissions;
 extern const QSet<AcePermission> read_prop_permissions;
 extern const QSet<AcePermission> write_prop_permissions;
-extern const QHash<AcePermission, QString> ace_permission_to_name_map;
 
 class SecurityTab final : public PropertiesTab {
     Q_OBJECT
@@ -57,6 +56,8 @@ class SecurityTab final : public PropertiesTab {
 public:
     SecurityTab();
     ~SecurityTab();
+
+    static QHash<AcePermission, QString> ace_permission_to_name_map();
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;

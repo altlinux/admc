@@ -43,41 +43,43 @@ enum TrusteeItemRole {
     TrusteeItemRole_Sid = Qt::UserRole,
 };
 
-const QHash<AcePermission, QString> ace_permission_to_name_map = {
-    {AcePermission_FullControl, QCoreApplication::translate("Security", "Full control")},
-    {AcePermission_Read, QCoreApplication::translate("Security", "Read")},
-    {AcePermission_Write, QCoreApplication::translate("Security", "Write")},
-    {AcePermission_Delete, QCoreApplication::translate("Security", "Delete")},
-    {AcePermission_DeleteSubtree, QCoreApplication::translate("Security", "Delete subtree")},
-    {AcePermission_CreateChild, QCoreApplication::translate("Security", "Create child")},
-    {AcePermission_DeleteChild, QCoreApplication::translate("Security", "Delete child")},
-    {AcePermission_AllowedToAuthenticate, QCoreApplication::translate("Security", "Allowed to authenticate")},
-    {AcePermission_ChangePassword, QCoreApplication::translate("Security", "Change password")},
-    {AcePermission_ReceiveAs, QCoreApplication::translate("Security", "Receive as")},
-    {AcePermission_ResetPassword, QCoreApplication::translate("Security", "Reset password")},
-    {AcePermission_SendAs, QCoreApplication::translate("Security", "Send as")},
-    {AcePermission_ReadAccountRestrictions, QCoreApplication::translate("Security", "Read Account restrictions")},
-    {AcePermission_WriteAccountRestrictions, QCoreApplication::translate("Security", "Write Account restrictions")},
-    {AcePermission_ReadGeneralInfo, QCoreApplication::translate("Security", "Read general info")},
-    {AcePermission_WriteGeneralInfo, QCoreApplication::translate("Security", "Write general info")},
-    {AcePermission_ReadGroupMembership, QCoreApplication::translate("Security", "Read group membership")},
-    {AcePermission_ReadLogonInfo, QCoreApplication::translate("Security", "Read logon info")},
-    {AcePermission_WriteLogonInfo, QCoreApplication::translate("Security", "Write logon info")},
-    {AcePermission_ReadPersonalInfo, QCoreApplication::translate("Security", "Read personal info")},
-    {AcePermission_WritePersonalInfo, QCoreApplication::translate("Security", "Write personal info")},
-    {AcePermission_ReadPhoneAndMailOptions, QCoreApplication::translate("Security", "Read phone and mail options")},
-    {AcePermission_WritePhoneAndMailOptions, QCoreApplication::translate("Security", "Write phone and mail options")},
-    {AcePermission_ReadPrivateInfo, QCoreApplication::translate("Security", "Read private info")},
-    {AcePermission_WritePrivateInfo, QCoreApplication::translate("Security", "Write private info")},
-    {AcePermission_ReadPublicInfo, QCoreApplication::translate("Security", "Read public info")},
-    {AcePermission_WritePublicInfo, QCoreApplication::translate("Security", "Write public info")},
-    {AcePermission_ReadRemoteAccessInfo, QCoreApplication::translate("Security", "Read remote access info")},
-    {AcePermission_WriteRemoteAccessInfo, QCoreApplication::translate("Security", "Write remote access info")},
-    {AcePermission_ReadTerminalServerLicenseServer, QCoreApplication::translate("Security", "Read terminal server license server")},
-    {AcePermission_WriteTerminalServerLicenseServer, QCoreApplication::translate("Security", "Write terminal server license server")},
-    {AcePermission_ReadWebInfo, QCoreApplication::translate("Security", "Read web info")},
-    {AcePermission_WriteWebInfo, QCoreApplication::translate("Security", "Write web info")},
-};
+QHash<AcePermission, QString> SecurityTab::ace_permission_to_name_map() {
+    return {
+        {AcePermission_FullControl, tr("Full control")},
+        {AcePermission_Read, tr("Read")},
+        {AcePermission_Write, tr("Write")},
+        {AcePermission_Delete, tr("Delete")},
+        {AcePermission_DeleteSubtree, tr("Delete subtree")},
+        {AcePermission_CreateChild, tr("Create child")},
+        {AcePermission_DeleteChild, tr("Delete child")},
+        {AcePermission_AllowedToAuthenticate, tr("Allowed to authenticate")},
+        {AcePermission_ChangePassword, tr("Change password")},
+        {AcePermission_ReceiveAs, tr("Receive as")},
+        {AcePermission_ResetPassword, tr("Reset password")},
+        {AcePermission_SendAs, tr("Send as")},
+        {AcePermission_ReadAccountRestrictions, tr("Read Account restrictions")},
+        {AcePermission_WriteAccountRestrictions, tr("Write Account restrictions")},
+        {AcePermission_ReadGeneralInfo, tr("Read general info")},
+        {AcePermission_WriteGeneralInfo, tr("Write general info")},
+        {AcePermission_ReadGroupMembership, tr("Read group membership")},
+        {AcePermission_ReadLogonInfo, tr("Read logon info")},
+        {AcePermission_WriteLogonInfo, tr("Write logon info")},
+        {AcePermission_ReadPersonalInfo, tr("Read personal info")},
+        {AcePermission_WritePersonalInfo, tr("Write personal info")},
+        {AcePermission_ReadPhoneAndMailOptions, tr("Read phone and mail options")},
+        {AcePermission_WritePhoneAndMailOptions, tr("Write phone and mail options")},
+        {AcePermission_ReadPrivateInfo, tr("Read private info")},
+        {AcePermission_WritePrivateInfo, tr("Write private info")},
+        {AcePermission_ReadPublicInfo, tr("Read public info")},
+        {AcePermission_WritePublicInfo, tr("Write public info")},
+        {AcePermission_ReadRemoteAccessInfo, tr("Read remote access info")},
+        {AcePermission_WriteRemoteAccessInfo, tr("Write remote access info")},
+        {AcePermission_ReadTerminalServerLicenseServer, tr("Read terminal server license server")},
+        {AcePermission_WriteTerminalServerLicenseServer, tr("Write terminal server license server")},
+        {AcePermission_ReadWebInfo, tr("Read web info")},
+        {AcePermission_WriteWebInfo, tr("Write web info")},
+    };
+}
 
 SecurityTab::SecurityTab() {
     ignore_item_changed_signal = false;
@@ -109,7 +111,7 @@ SecurityTab::SecurityTab() {
     for (const AcePermission &permission : all_permissions_list) {
         const QList<QStandardItem *> row = make_item_row(AceColumn_COUNT);
 
-        const QString mask_string = ace_permission_to_name_map[permission];
+        const QString mask_string = ace_permission_to_name_map()[permission];
         row[AceColumn_Name]->setText(mask_string);
 
         row[AceColumn_Allowed]->setCheckable(true);

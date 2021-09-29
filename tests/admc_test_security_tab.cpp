@@ -297,7 +297,7 @@ bool ADMCTestSecurityTab::state_is(const QSet<AcePermission> &permission_set, co
             const bool state_is_correct = (is_checked == should_be_checked);
 
             if (!state_is_correct) {
-                const QString permission_name = ace_permission_to_name_map[permission];
+                const QString permission_name = ace_permission_to_name_map()[permission];
                 const QString column_name = [&]() {
                     switch (column) {
                         case AceColumn_Allowed: return "Allowed";
