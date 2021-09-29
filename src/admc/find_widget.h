@@ -46,7 +46,8 @@ public:
 
     void init(const QList<QString> classes, const QString &default_base);
 
-    void add_actions(QMenu *action_menu, QMenu *view_menu);
+    void setup_action_menu(QMenu *menu);
+    void setup_view_menu(QMenu *menu);
 
     void clear();
 

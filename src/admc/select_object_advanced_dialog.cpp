@@ -24,6 +24,8 @@
 #include "adldap.h"
 #include "globals.h"
 
+#include <QMenuBar>
+
 SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::SelectObjectAdvancedDialog();
@@ -31,7 +33,12 @@ SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> clas
 
     setAttribute(Qt::WA_DeleteOnClose);
 
+    auto menubar = new QMenuBar();
+    layout()->setMenuBar(menubar);
+    auto view_menu = menubar->addMenu(tr("&View"));
+
     ui->find_widget->init(classes, g_adconfig->domain_head());
+    ui->find_widget->setup_view_menu(view_menu);
 }
 
 QList<QString> SelectObjectAdvancedDialog::get_selected_dns() const {

@@ -97,19 +97,21 @@ void FindWidget::init(const QList<QString> classes, const QString &default_base)
     ui->select_base_widget->init(g_adconfig, default_base);
 }
 
-void FindWidget::add_actions(QMenu *action_menu, QMenu *view_menu) {
-    ui->console->add_actions(action_menu);
-
-    view_menu->addAction(ui->console->set_results_to_icons_action());
-    view_menu->addAction(ui->console->set_results_to_list_action());
-    view_menu->addAction(ui->console->set_results_to_detail_action());
-    view_menu->addSeparator();
-    view_menu->addAction(ui->console->customize_columns_action());
-    view_menu->addAction(ui->console->toggle_description_bar_action());
+void FindWidget::setup_action_menu(QMenu *menu) {
+    ui->console->add_actions(menu);
 
     connect(
-        action_menu, &QMenu::aboutToShow,
+        menu, &QMenu::aboutToShow,
         ui->console, &ConsoleWidget::update_actions);
+}
+
+void FindWidget::setup_view_menu(QMenu *menu) {
+    menu->addAction(ui->console->set_results_to_icons_action());
+    menu->addAction(ui->console->set_results_to_list_action());
+    menu->addAction(ui->console->set_results_to_detail_action());
+    menu->addSeparator();
+    menu->addAction(ui->console->customize_columns_action());
+    menu->addAction(ui->console->toggle_description_bar_action());
 }
 
 void FindWidget::clear() {
