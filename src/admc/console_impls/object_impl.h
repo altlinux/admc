@@ -35,6 +35,7 @@ template <typename T>
 class QList;
 class PolicyImpl;
 class ChangeDCDialog;
+class ConsoleWidget;
 
 /**
  * Some f-ns used for models that store objects.
@@ -60,6 +61,13 @@ public:
     ObjectImpl(ConsoleWidget *console_arg);
 
     void set_policy_impl(PolicyImpl *policy_root_impl_arg);
+
+    // This is for cases where there are multiple consoles
+    // in the app and you need to propagate changes from one
+    // to another. For example, when objects are deleted in
+    // this console, they will also get removed from the
+    // buddy console.
+    void set_buddy_console(ConsoleWidget *buddy_console);
     
     void enable_filtering(const QString &filter);
     void disable_filtering();
@@ -103,6 +111,7 @@ private slots:
     void on_reset_account();
 
 private:
+    ConsoleWidget *buddy_console;
     PolicyImpl *policy_impl;
     ChangeDCDialog *change_dc_dialog;
 

@@ -27,6 +27,8 @@
 
 #include <QDialog>
 
+class ConsoleWidget;
+
 namespace Ui {
     class FindObjectDialog;
 }
@@ -37,6 +39,8 @@ class FindObjectDialog final : public QDialog {
 public:
     FindObjectDialog(const QList<QString> classes, const QString default_base, QWidget *parent);
     ~FindObjectDialog();
+
+    void set_buddy_console(ConsoleWidget *buddy_console);
 
 private:
     Ui::FindObjectDialog *ui;

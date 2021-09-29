@@ -32,6 +32,8 @@
 class QStandardItem;
 class AdObject;
 class QMenu;
+class ObjectImpl;
+class ConsoleWidget;
 
 namespace Ui {
     class FindWidget;
@@ -51,6 +53,8 @@ public:
     void setup_action_menu(QMenu *menu);
     void setup_view_menu(QMenu *menu);
 
+    void set_buddy_console(ConsoleWidget *buddy_console);
+
     void clear();
 
     // NOTE: returned items need to be re-parented or deleted!
@@ -62,6 +66,7 @@ private slots:
 
 private:
     Ui::FindWidget *ui;
+    ObjectImpl *object_impl;
     QStandardItem *head_item;
 
     void on_thread_finished();

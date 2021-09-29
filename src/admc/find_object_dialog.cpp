@@ -54,3 +54,7 @@ FindObjectDialog::~FindObjectDialog() {
     const QVariant state = ui->find_widget->save_state();
     settings_set_variant(SETTING_find_object_state, state);
 }
+
+void FindObjectDialog::set_buddy_console(ConsoleWidget *buddy_console) {
+    ui->find_widget->set_buddy_console(buddy_console);
+}

@@ -40,7 +40,7 @@ FindWidget::FindWidget(QWidget *parent)
     ui = new Ui::FindWidget();
     ui->setupUi(this);
 
-    auto object_impl = new ObjectImpl(ui->console);
+    object_impl = new ObjectImpl(ui->console);
     ui->console->register_impl(ItemType_Object, object_impl);
 
     object_impl->set_find_action_enabled(false);
@@ -87,6 +87,10 @@ FindWidget::FindWidget(QWidget *parent)
 void FindWidget::init(const QList<QString> classes, const QString &default_base) {
     ui->filter_widget->add_classes(g_adconfig, classes);
     ui->select_base_widget->init(g_adconfig, default_base);
+}
+
+void FindWidget::set_buddy_console(ConsoleWidget *buddy_console) {
+    object_impl->set_buddy_console(buddy_console);
 }
 
 QVariant FindWidget::save_state() const {

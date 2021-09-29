@@ -63,6 +63,7 @@ void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
+    buddy_console = nullptr;
     policy_impl = nullptr;
 
     change_dc_dialog = new ChangeDCDialog(console);
@@ -141,6 +142,10 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 
 void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
     policy_impl = policy_impl_arg;
+}
+
+void ObjectImpl::set_buddy_console(ConsoleWidget *buddy_console_arg) {
+    buddy_console = buddy_console_arg;
 }
 
 void ObjectImpl::enable_filtering(const QString &filter) {
@@ -294,9 +299,9 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
         // Single selection only
         if (is_container) {
             out.insert(new_action);
-         
+
             if (find_action_enabled) {
-               out.insert(find_action);
+                out.insert(find_action);
             }
         }
 
@@ -424,17 +429,25 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
             return;
         }
 
-        for (const QString &dn : dn_list) {
-            const AdObject object = ad.search_object(dn);
+        auto apply_changes = [&ad, &dn_list](ConsoleWidget *target_console) {
+            for (const QString &dn : dn_list) {
+                const AdObject object = ad.search_object(dn);
 
-            // NOTE: search for indexes instead of using the
-            // list given to f-n because we want to update
-            // objects in both object and query tree
-            const QList<QModelIndex> indexes_for_this_object = console->search_items(QModelIndex(), ObjectRole_DN, dn, ItemType_Object);
-            for (const QModelIndex &index : indexes_for_this_object) {
-                const QList<QStandardItem *> row = console->get_row(index);
-                console_object_load(row, object);
+                // NOTE: search for indexes instead of using the
+                // list given to f-n because we want to update
+                // objects in both object and query tree
+                const QList<QModelIndex> indexes_for_this_object = target_console->search_items(QModelIndex(), ObjectRole_DN, dn, ItemType_Object);
+                for (const QModelIndex &index : indexes_for_this_object) {
+                    const QList<QStandardItem *> row = target_console->get_row(index);
+                    console_object_load(row, object);
+                }
             }
+        };
+
+        apply_changes(console);
+
+        if (buddy_console != nullptr) {
+            apply_changes(buddy_console);
         }
 
         g_status()->display_ad_messages(ad, console);
@@ -510,15 +523,23 @@ void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
         return out;
     }();
 
-    const QModelIndex object_root = get_object_tree_root(console);
-    if (object_root.isValid()) {
-        console_object_delete(console, deleted_list, object_root);
-    }
+    auto apply_changes = [&ad, &deleted_list](ConsoleWidget *target_console) {
+        const QModelIndex object_root = get_object_tree_root(target_console);
+        if (object_root.isValid()) {
+            console_object_delete(target_console, deleted_list, object_root);
+        }
 
-    // NOTE: also delete in query tree
-    const QModelIndex query_root = get_query_tree_root(console);
-    if (query_root.isValid()) {
-        console_object_delete(console, deleted_list, query_root);
+        // NOTE: also delete in query tree
+        const QModelIndex query_root = get_query_tree_root(target_console);
+        if (query_root.isValid()) {
+            console_object_delete(target_console, deleted_list, query_root);
+        }
+    };
+
+    apply_changes(console);
+
+    if (buddy_console != nullptr) {
+        apply_changes(buddy_console);
     }
 
     hide_busy_indicator();
@@ -624,6 +645,7 @@ void ObjectImpl::on_find() {
     const QString dn = dn_list[0];
 
     auto find_dialog = new FindObjectDialog(filter_classes, dn, console);
+    find_dialog->set_buddy_console(console);
     find_dialog->open();
 }
 
@@ -693,11 +715,6 @@ void ObjectImpl::new_object(const QString &object_class) {
     connect(
         dialog, &CreateObjectDialog::accepted,
         [=]() {
-            const QModelIndex root = get_object_tree_root(console);
-            if (!root.isValid()) {
-                return;
-            }
-
             AdInterface ad;
             if (ad_failed(ad)) {
                 return;
@@ -705,16 +722,29 @@ void ObjectImpl::new_object(const QString &object_class) {
 
             show_busy_indicator();
 
-            const QList<QModelIndex> search_parent = console->search_items(root, ObjectRole_DN, parent_dn, ItemType_Object);
+            auto apply_changes = [&ad, &parent_dn, dialog](ConsoleWidget *target_console) {
+                const QModelIndex root = get_object_tree_root(target_console);
+                if (!root.isValid()) {
+                    return;
+                }
 
-            if (search_parent.isEmpty()) {
-                hide_busy_indicator();
-                return;
+                const QList<QModelIndex> search_parent = target_console->search_items(root, ObjectRole_DN, parent_dn, ItemType_Object);
+
+                if (search_parent.isEmpty()) {
+                    hide_busy_indicator();
+                    return;
+                }
+
+                const QModelIndex scope_parent_index = search_parent[0];
+                const QString created_dn = dialog->get_created_dn();
+                object_impl_add_objects_to_console_from_dns(target_console, ad, {created_dn}, scope_parent_index);
+            };
+
+            apply_changes(console);
+
+            if (buddy_console != nullptr) {
+                apply_changes(buddy_console);
             }
-
-            const QModelIndex scope_parent_index = search_parent[0];
-            const QString created_dn = dialog->get_created_dn();
-            object_impl_add_objects_to_console_from_dns(console, ad, {created_dn}, scope_parent_index);
 
             hide_busy_indicator();
         });
@@ -744,12 +774,20 @@ void ObjectImpl::set_disabled(const bool disabled) {
         return out;
     }();
 
-    for (const QString &dn : changed_objects) {
-        const QList<QModelIndex> index_list = console->search_items(QModelIndex(), ObjectRole_DN, dn, ItemType_Object);
-        for (const QModelIndex &index : index_list) {
-            QStandardItem *item = console->get_item(index);
-            item->setData(disabled, ObjectRole_AccountDisabled);
+    auto apply_changes = [&changed_objects, &disabled](ConsoleWidget *target_console) {
+        for (const QString &dn : changed_objects) {
+            const QList<QModelIndex> index_list = target_console->search_items(QModelIndex(), ObjectRole_DN, dn, ItemType_Object);
+            for (const QModelIndex &index : index_list) {
+                QStandardItem *item = target_console->get_item(index);
+                item->setData(disabled, ObjectRole_AccountDisabled);
+            }
         }
+    };
+
+    apply_changes(console);
+
+    if (buddy_console != nullptr) {
+        apply_changes(buddy_console);
     }
 
     hide_busy_indicator();
@@ -819,58 +857,66 @@ void ObjectImpl::drop_policies(const QList<QPersistentModelIndex> &dropped_list,
 }
 
 void ObjectImpl::move_and_rename(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn, const QList<QString> &new_dn_list) {
-    const QModelIndex object_root = get_object_tree_root(console);
-    if (object_root.isValid()) {
-        // NOTE: delete old item AFTER adding new item
-        // because: If old item is deleted first, then it's
-        // possible for new parent to get selected (if they
-        // are next to each other in scope tree). Then what
-        // happens is that due to new parent being selected,
-        // it gets fetched and loads new object. End result
-        // is that new object is duplicated.
-        const QModelIndex new_parent_index = [=]() {
-            const QList<QModelIndex> results = console->search_items(object_root, ObjectRole_DN, new_parent_dn, ItemType_Object);
+    auto apply_changes = [&ad, &old_dn_list, &new_parent_dn, &new_dn_list](ConsoleWidget *target_console) {
+        const QModelIndex object_root = get_object_tree_root(target_console);
+        if (object_root.isValid()) {
+            // NOTE: delete old item AFTER adding new item
+            // because: If old item is deleted first, then it's
+            // possible for new parent to get selected (if they
+            // are next to each other in scope tree). Then what
+            // happens is that due to new parent being selected,
+            // it gets fetched and loads new object. End result
+            // is that new object is duplicated.
+            const QModelIndex new_parent_index = [=]() {
+                const QList<QModelIndex> results = target_console->search_items(object_root, ObjectRole_DN, new_parent_dn, ItemType_Object);
 
-            if (results.size() == 1) {
-                return results[0];
-            } else {
-                return QModelIndex();
-            }
-        }();
-
-        object_impl_add_objects_to_console_from_dns(console, ad, new_dn_list, new_parent_index);
-
-        console_object_delete(console, old_dn_list, object_root);
-    }
-
-    // For query tree, we only mark queries that contain
-    // modified objects as potentially out of date. User can
-    // refresh queries to sync changes manually.
-    const QModelIndex query_root = get_query_tree_root(console);
-    if (query_root.isValid()) {
-        // Find all query items that contain modified
-        // object(s)
-        const QList<QModelIndex> parent_list = [&]() {
-            QList<QModelIndex> out;
-
-            for (const QString &dn : old_dn_list) {
-                const QList<QModelIndex> results = console->search_items(query_root, ObjectRole_DN, dn, ItemType_Object);
-
-                for (const QModelIndex &index : results) {
-                    out.append(index.parent());
+                if (results.size() == 1) {
+                    return results[0];
+                } else {
+                    return QModelIndex();
                 }
-            }
+            }();
 
-            return out;
-        }();
+            object_impl_add_objects_to_console_from_dns(target_console, ad, new_dn_list, new_parent_index);
 
-        for (const QModelIndex &parent : parent_list) {
-            // NOTE: icon and tooltip will be restored after
-            // refresh
-            QStandardItem *item = console->get_item(parent);
-            item->setIcon(QIcon::fromTheme("dialog-warning"));
-            item->setToolTip(tr("Query may be out of date"));
+            console_object_delete(target_console, old_dn_list, object_root);
         }
+
+        // For query tree, we only mark queries that contain
+        // modified objects as potentially out of date. User can
+        // refresh queries to sync changes manually.
+        const QModelIndex query_root = get_query_tree_root(target_console);
+        if (query_root.isValid()) {
+            // Find all query items that contain modified
+            // object(s)
+            const QList<QModelIndex> parent_list = [&]() {
+                QList<QModelIndex> out;
+
+                for (const QString &dn : old_dn_list) {
+                    const QList<QModelIndex> results = target_console->search_items(query_root, ObjectRole_DN, dn, ItemType_Object);
+
+                    for (const QModelIndex &index : results) {
+                        out.append(index.parent());
+                    }
+                }
+
+                return out;
+            }();
+
+            for (const QModelIndex &parent : parent_list) {
+                // NOTE: icon and tooltip will be restored after
+                // refresh
+                QStandardItem *item = target_console->get_item(parent);
+                item->setIcon(QIcon::fromTheme("dialog-warning"));
+                item->setToolTip(tr("Query may be out of date"));
+            }
+        }
+    };
+
+    apply_changes(console);
+
+    if (buddy_console != nullptr) {
+        apply_changes(buddy_console);
     }
 }
 
