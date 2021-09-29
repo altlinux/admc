@@ -48,6 +48,8 @@ public:
     UnlockEdit(QList<AttributeEdit *> *edits_out, QCheckBox *check_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
+    static QString label_text();
+
 private:
     QCheckBox *check;
     UnlockEditStyle style;
