@@ -1021,6 +1021,8 @@ QList<QString> console_object_search_attributes() {
     // delete/move/rename for objects that can't do those
     // actions
     attributes += ATTRIBUTE_SYSTEM_FLAGS;
+    
+    attributes += ATTRIBUTE_USER_ACCOUNT_CONTROL;
 
     return attributes;
 }
