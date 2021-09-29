@@ -19,6 +19,7 @@
  */
 
 #include "manual_dialog.h"
+#include "ui_manual_dialog.h"
 
 #include "help_browser.h"
 #include "settings.h"
@@ -37,8 +38,8 @@
 
 ManualDialog::ManualDialog(QWidget *parent)
 : QDialog(parent) {
-    setMinimumSize(800, 600);
-    setWindowTitle(tr("Manual"));
+    ui = new Ui::ManualDialog();
+    ui->setupUi(this);
 
     const QString help_collection_path = QStandardPaths::writableLocation(QStandardPaths::QStandardPaths::AppDataLocation) + "/admc.qhc";
 
@@ -83,19 +84,16 @@ ManualDialog::ManualDialog(QWidget *parent)
         qDebug() << "Help engine error : " << qPrintable(help_engine->error());
     }
 
-    auto tab_widget = new QTabWidget();
-    tab_widget->addTab(help_engine->contentWidget(), tr("Contents"));
-    tab_widget->addTab(help_engine->indexWidget(), tr("Index"));
+    auto replace_tab = [=](const int index, QWidget *widget) {
+        const QString label = ui->tab_widget->tabText(index);
+        ui->tab_widget->removeTab(index);
+        ui->tab_widget->insertTab(index, widget, label);
+    };
 
-    auto help_browser = new HelpBrowser(help_engine);
+    replace_tab(0, help_engine->contentWidget());
+    replace_tab(1, help_engine->indexWidget());
 
-    auto splitter = new QSplitter(Qt::Horizontal);
-    splitter->insertWidget(0, tab_widget);
-    splitter->insertWidget(1, help_browser);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(splitter);
+    ui->help_browser->init(help_engine);
 
     settings_setup_dialog_geometry(SETTING_manual_dialog_geometry, this);
 }

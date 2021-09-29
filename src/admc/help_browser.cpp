@@ -25,7 +25,12 @@
 #include <QHelpIndexWidget>
 #include <QHelpContentModel>
 
-HelpBrowser::HelpBrowser(QHelpEngine *help_engine_arg) {
+HelpBrowser::HelpBrowser(QWidget *parent)
+: QTextBrowser(parent) {
+    
+}
+
+void HelpBrowser::init(QHelpEngine *help_engine_arg) {
     help_engine = help_engine_arg;
 
     // NOTE: use currentChanged() from selection model
