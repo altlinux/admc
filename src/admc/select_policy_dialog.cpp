@@ -19,6 +19,7 @@
  */
 
 #include "select_policy_dialog.h"
+#include "ui_select_policy_dialog.h"
 
 #include "adldap.h"
 #include "console_impls/policy_impl.h"
@@ -26,43 +27,24 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QPushButton>
 #include <QStandardItemModel>
-#include <QTreeView>
-#include <QVBoxLayout>
+#include <QPushButton>
 
 SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle(tr("Select Policy"));
-    setMinimumWidth(400);
-    setMinimumHeight(500);
+    ui = new Ui::SelectPolicyDialog();
+    ui->setupUi(this);
 
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
-    connect(
-        ok_button, &QPushButton::clicked,
-        this, &QDialog::accept);
-    connect(
-        cancel_button, &QPushButton::clicked,
-        this, &SelectPolicyDialog::reject);
-
-    view = new QTreeView();
     model = new QStandardItemModel(this);
-    view->setModel(model);
+    ui->view->setModel(model);
 
-    model->setHorizontalHeaderLabels({tr("Name")});
+    ui->view->setHeaderHidden(true);
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addWidget(view);
-    top_layout->addWidget(button_box);
-
-    enable_widget_on_selection(ok_button, view);
+    QPushButton *ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    enable_widget_on_selection(ok_button, ui->view);
 }
 
-void  SelectPolicyDialog::open() {
+void SelectPolicyDialog::open() {
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
@@ -93,7 +75,7 @@ void  SelectPolicyDialog::open() {
 QList<QString> SelectPolicyDialog::get_selected_dns() const {
     QList<QString> dns;
 
-    const QList<QModelIndex> indexes = view->selectionModel()->selectedRows();
+    const QList<QModelIndex> indexes = ui->view->selectionModel()->selectedRows();
     for (const QModelIndex &index : indexes) {
         const QString dn = index.data(PolicyRole_DN).toString();
         dns.append(dn);

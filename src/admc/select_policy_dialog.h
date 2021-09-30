@@ -23,8 +23,11 @@
 
 #include <QDialog>
 
-class QTreeView;
 class QStandardItemModel;
+
+namespace Ui {
+    class SelectPolicyDialog;
+}
 
 class SelectPolicyDialog final : public QDialog {
     Q_OBJECT
@@ -37,7 +40,7 @@ public:
     QList<QString> get_selected_dns() const;
 
 private:
-    QTreeView *view;
+    Ui::SelectPolicyDialog *ui;
     QStandardItemModel *model;
 };
 
