@@ -50,27 +50,28 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));
     
-    auto new_query_folder_action = new QAction(tr("Query folder"), this);
-    auto new_query_item_action = new QAction(tr("Query item"), this);
+    auto create_query_folder_action = new QAction(tr("Query folder"), this);
+    auto create_query_item_action = new QAction(tr("Query item"), this);
 
     auto new_menu = new QMenu(tr("New"), console_arg);
     new_action = new_menu->menuAction();
 
-    new_menu->addAction(new_query_folder_action);
-    new_menu->addAction(new_query_item_action);
+    new_menu->addAction(create_query_folder_action);
+    new_menu->addAction(create_query_item_action);
 
     edit_action = new QAction(tr("Edit"), this);
 
     import_action = new QAction(tr("&Import query..."), this);
 
-    create_query_folder_dialog = new CreateQueryFolderDialog(console);
+    auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
+    auto create_query_item_dialog = new CreateQueryItemDialog(console);
 
     connect(
-        new_query_folder_action, &QAction::triggered,
+        create_query_folder_action, &QAction::triggered,
         create_query_folder_dialog, &QDialog::open);
     connect(
-        new_query_item_action, &QAction::triggered,
-        this, &QueryFolderImpl::on_new_query_item);
+        create_query_item_action, &QAction::triggered,
+        create_query_item_dialog, &QDialog::open);
     connect(
         edit_action, &QAction::triggered,
         this, &QueryFolderImpl::on_edit);
@@ -146,11 +147,6 @@ void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
 
     const bool delete_old_branch = copied_index_is_cut;
     console_query_move(console, {copied_index}, parent_index, delete_old_branch);
-}
-
-void QueryFolderImpl::on_new_query_item() {
-    auto dialog = new CreateQueryItemDialog(console);
-    dialog->open();
 }
 
 void QueryFolderImpl::on_import() {

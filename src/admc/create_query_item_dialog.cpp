@@ -34,9 +34,13 @@ CreateQueryItemDialog::CreateQueryItemDialog(ConsoleWidget *console_arg)
     ui = new Ui::CreateQueryItemDialog();
     ui->setupUi(this);
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
     console = console_arg;
+}
+
+void CreateQueryItemDialog::open() {
+    ui->edit_query_widget->load(QModelIndex());
+
+    QDialog::open();
 }
 
 void CreateQueryItemDialog::accept() {

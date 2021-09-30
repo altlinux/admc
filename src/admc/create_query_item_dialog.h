@@ -35,6 +35,7 @@ class CreateQueryItemDialog : public QDialog {
 public:
     CreateQueryItemDialog(ConsoleWidget *console_arg);
 
+    void open() override;
     void accept() override;
 
 private:
