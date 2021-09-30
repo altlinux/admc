@@ -27,6 +27,10 @@ class AttributeEdit;
 class QLineEdit;
 class QPushButton;
 
+namespace Ui {
+    class RenameObjectDialog;
+}
+
 class RenameObjectDialog final : public QDialog {
     Q_OBJECT
 
@@ -46,9 +50,9 @@ private slots:
     void reset();
 
 private:
+    Ui::RenameObjectDialog *ui;
     QString target;
     QList<AttributeEdit *> all_edits;
-    QLineEdit *name_edit;
     QPushButton *ok_button;
     QPushButton *reset_button;
 };

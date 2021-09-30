@@ -19,6 +19,7 @@
  */
 
 #include "rename_object_dialog.h"
+#include "ui_rename_object_dialog.h"
 
 #include "adldap.h"
 #include "edits/string_edit.h"
@@ -27,14 +28,13 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QLineEdit>
 #include <QPushButton>
-#include <QVBoxLayout>
 
 RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *parent)
 : QDialog(parent) {
+    ui = new Ui::RenameObjectDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     target = target_arg;
@@ -53,9 +53,6 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
     const auto title = tr("Rename Object - %1").arg(class_name);;
     setWindowTitle(title);
 
-    name_edit = new QLineEdit();
-    name_edit->setObjectName("name_edit");
-
     if (object.is_class(CLASS_USER)) {
         new StringEdit(ATTRIBUTE_FIRST_NAME, object_class, &all_edits, this);
         new StringEdit(ATTRIBUTE_LAST_NAME, object_class, &all_edits, this);
@@ -67,10 +64,8 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
         sama_edit->get_edit()->setObjectName("sama_edit");
     }
 
-    auto button_box = new QDialogButtonBox();
-    ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    button_box->addButton(QDialogButtonBox::Cancel);
+    ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    reset_button = ui->button_box->button(QDialogButtonBox::Reset);
 
     const QString name_edit_label = [&]() {
         if (object.is_class(CLASS_USER)) {
@@ -80,21 +75,8 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
         }
     }();
 
-    const auto edits_layout = new QFormLayout();
-    edits_layout->addRow(name_edit_label, name_edit);
-    edits_add_to_layout(all_edits, edits_layout);
+    edits_add_to_layout(all_edits, ui->form_layout);
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edits_layout);
-    top_layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
     connect(
         reset_button, &QPushButton::clicked,
         this, &RenameObjectDialog::reset);
@@ -104,7 +86,7 @@ RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *paren
             this, &RenameObjectDialog::on_edited);
     }
     connect(
-        name_edit, &QLineEdit::textChanged,
+        ui->name_edit, &QLineEdit::textChanged,
         this, &RenameObjectDialog::on_edited);
     on_edited();
 
@@ -124,7 +106,7 @@ void RenameObjectDialog::fail_msg(const QString &old_name) {
 }
 
 QString RenameObjectDialog::get_new_dn() const {
-    const QString new_name = name_edit->text();
+    const QString new_name = ui->name_edit->text();
     const QString new_dn = dn_rename(target, new_name);
 
     return new_dn;
@@ -146,7 +128,7 @@ void RenameObjectDialog::accept() {
 
     show_busy_indicator();
 
-    const QString new_name = name_edit->text();
+    const QString new_name = ui->name_edit->text();
     const bool rename_success = ad.object_rename(target, new_name);
 
     bool final_success = false;
@@ -184,7 +166,7 @@ void RenameObjectDialog::reset() {
     }
 
     const QString name = dn_get_name(target);
-    name_edit->setText(name);
+    ui->name_edit->setText(name);
 
     const AdObject object = ad.search_object(target);
     edits_load(all_edits, ad, object);
