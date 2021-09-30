@@ -93,6 +93,7 @@ DEFINE_SETTING(SETTING_query_folders);
 DEFINE_SETTING(SETTING_query_items);
 DEFINE_SETTING(SETTING_port);
 DEFINE_SETTING(SETTING_cert_strategy);
+DEFINE_SETTING(SETTING_last_opened_version);
 
 QVariant settings_get_variant(const QString setting, const QVariant &default_value = QVariant());
 void settings_set_variant(const QString setting, const QVariant &value);

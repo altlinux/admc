@@ -29,6 +29,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "config.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/policy_root_impl.h"
@@ -305,6 +306,16 @@ MainWindow::MainWindow()
     console->restore_state(console_widget_state);
 
     connect_to_server();
+
+    const bool first_time_opening_this_version = []() {
+        const QString last_version = settings_get_variant(SETTING_last_opened_version).toString();
+
+        return (last_version != ADMC_VERSION);
+    }();
+    if (first_time_opening_this_version) {
+        settings_set_variant(SETTING_last_opened_version, ADMC_VERSION);
+        changelog_dialog->show();
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
