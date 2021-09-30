@@ -305,7 +305,7 @@ void console_query_tree_save(ConsoleWidget *console) {
 
                 folder_list[path] = data;
             }
-        } else {
+        } else if (type == ItemType_QueryItem) {
             const QHash<QString, QVariant> data = console_query_item_save_hash(index);
 
             item_list[path] = data;
