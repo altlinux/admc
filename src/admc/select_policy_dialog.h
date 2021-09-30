@@ -24,6 +24,7 @@
 #include <QDialog>
 
 class QTreeView;
+class QStandardItemModel;
 
 class SelectPolicyDialog final : public QDialog {
     Q_OBJECT
@@ -31,10 +32,13 @@ class SelectPolicyDialog final : public QDialog {
 public:
     SelectPolicyDialog(QWidget *parent);
 
+    void open() override;
+
     QList<QString> get_selected_dns() const;
 
 private:
     QTreeView *view;
+    QStandardItemModel *model;
 };
 
 #endif /* SELECT_POLICY_DIALOG_H */

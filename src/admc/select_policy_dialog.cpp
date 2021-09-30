@@ -35,15 +35,8 @@
 SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 : QDialog(parent) {
     setWindowTitle(tr("Select Policy"));
-    setAttribute(Qt::WA_DeleteOnClose);
     setMinimumWidth(400);
     setMinimumHeight(500);
-
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        close();
-        return;
-    }
 
     auto button_box = new QDialogButtonBox();
     auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
@@ -56,10 +49,27 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
         this, &SelectPolicyDialog::reject);
 
     view = new QTreeView();
-    auto model = new QStandardItemModel(this);
+    model = new QStandardItemModel(this);
     view->setModel(model);
 
     model->setHorizontalHeaderLabels({tr("Name")});
+
+    const auto top_layout = new QVBoxLayout();
+    setLayout(top_layout);
+    top_layout->addWidget(view);
+    top_layout->addWidget(button_box);
+
+    enable_widget_on_selection(ok_button, view);
+}
+
+void  SelectPolicyDialog::open() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        close();
+        return;
+    }
+
+    model->removeRows(0, model->rowCount());
 
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;
@@ -77,12 +87,7 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
         console_policy_load(row, object);
     }
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addWidget(view);
-    top_layout->addWidget(button_box);
-
-    enable_widget_on_selection(ok_button, view);
+    QDialog::open();
 }
 
 QList<QString> SelectPolicyDialog::get_selected_dns() const {

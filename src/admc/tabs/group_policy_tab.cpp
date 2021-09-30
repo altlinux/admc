@@ -59,6 +59,8 @@ const QHash<GplinkColumn, GplinkOption> column_to_option = {
 QString gplink_option_to_display_string(const QString &option);
 
 GroupPolicyTab::GroupPolicyTab() {
+    add_dialog = new SelectPolicyDialog(this);
+
     view = new QTreeView(this);
     view->setEditTriggers(QAbstractItemView::NoEditTriggers);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -103,7 +105,7 @@ GroupPolicyTab::GroupPolicyTab() {
         this, &GroupPolicyTab::on_remove_button);
     connect(
         add_button, &QAbstractButton::clicked,
-        this, &GroupPolicyTab::on_add_button);
+        add_dialog, &QDialog::open);
     QObject::connect(
         view, &QWidget::customContextMenuRequested,
         this, &GroupPolicyTab::on_context_menu);
@@ -176,18 +178,10 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
     menu->popup(pos);
 }
 
-void GroupPolicyTab::on_add_button() {
-    auto dialog = new SelectPolicyDialog(this);
+void GroupPolicyTab::on_add_dialog() {
+    const QList<QString> selected = add_dialog->get_selected_dns();
 
-    connect(
-        dialog, &SelectPolicyDialog::accepted,
-        [this, dialog]() {
-            const QList<QString> selected = dialog->get_selected_dns();
-
-            add_link(selected);
-        });
-
-    dialog->open();
+    add_link(selected);
 }
 
 void GroupPolicyTab::on_remove_button() {

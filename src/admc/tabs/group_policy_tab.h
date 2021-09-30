@@ -30,6 +30,7 @@ class QString;
 class QStandardItemModel;
 class QStandardItem;
 class QPoint;
+class SelectPolicyDialog;
 
 /**
  * Tab for displaying, modifying group policy related
@@ -49,11 +50,12 @@ public:
 
 private slots:
     void on_context_menu(const QPoint pos);
-    void on_add_button();
+    void on_add_dialog();
     void on_remove_button();
     void on_item_changed(QStandardItem *item);
 
 private:
+    SelectPolicyDialog *add_dialog;
     QStandardItemModel *model;
     QTreeView *view;
     Gplink gplink;
