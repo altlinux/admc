@@ -33,7 +33,7 @@
 #include "utils.h"
 #include "create_object_dialog.h"
 #include "rename_object_dialog.h"
-#include "move_object_dialog.h"
+#include "select_container_dialog.h"
 #include "change_dc_dialog.h"
 #include "find_object_dialog.h"
 #include "select_object_dialog.h"
@@ -582,7 +582,7 @@ void ObjectImpl::on_new_group() {
 void ObjectImpl::on_move() {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
 
-    auto dialog = new MoveObjectDialog(dn_list, console);
+    auto dialog = new SelectContainerDialog(console);
     dialog->open();
 
     QObject::connect(
@@ -593,9 +593,31 @@ void ObjectImpl::on_move() {
                 return;
             }
 
-            const QList<QString> old_dn_list = dialog->get_moved_objects();
+            show_busy_indicator();
+
             const QString new_parent_dn = dialog->get_selected();
-            move(ad, old_dn_list, new_parent_dn);
+
+            // First move in AD
+            const QList<QString> moved_objects = [&]() {
+                QList<QString> out;
+
+                for (const QString &dn : dn_list) {
+                    const bool success = ad.object_move(dn, new_parent_dn);
+
+                    if (success) {
+                        out.append(dn);
+                    }
+                }
+
+                return out;
+            }();
+
+            g_status()->display_ad_messages(ad, nullptr);
+
+            // Then move in console
+            move(ad, moved_objects, new_parent_dn);
+
+            hide_busy_indicator();
         });
 }
 
