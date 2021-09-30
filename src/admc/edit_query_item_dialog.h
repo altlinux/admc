@@ -36,6 +36,7 @@ class EditQueryItemDialog : public QDialog {
 public:
     EditQueryItemDialog(ConsoleWidget *console_arg);
 
+    void open() override;
     void accept() override;
 
 private:

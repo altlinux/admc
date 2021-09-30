@@ -49,8 +49,6 @@ private:
     QAction *edit_action;
     QAction *import_action;
 
-    void on_new_query_item();
-    void on_edit();
     void on_import();
 };
 

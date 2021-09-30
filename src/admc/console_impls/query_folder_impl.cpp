@@ -65,6 +65,7 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 
     auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
     auto create_query_item_dialog = new CreateQueryItemDialog(console);
+    auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
 
     connect(
         create_query_folder_action, &QAction::triggered,
@@ -74,7 +75,7 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
         create_query_item_dialog, &QDialog::open);
     connect(
         edit_action, &QAction::triggered,
-        this, &QueryFolderImpl::on_edit);
+        edit_query_folder_dialog, &QDialog::open);
     connect(
         import_action, &QAction::triggered,
         this, &QueryFolderImpl::on_import);
@@ -188,11 +189,6 @@ void QueryFolderImpl::on_import() {
     console_query_item_load_hash(console, data, parent_index);
 
     console_query_tree_save(console);
-}
-
-void QueryFolderImpl::on_edit() {
-    auto dialog = new EditQueryFolderDialog(console);
-    dialog->open();
 }
 
 void console_query_tree_init(ConsoleWidget *console) {

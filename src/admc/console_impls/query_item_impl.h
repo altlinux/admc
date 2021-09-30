@@ -64,7 +64,6 @@ public:
     QList<int> default_columns() const override;
     
 private slots:
-    void on_edit();
     void on_export();
 
 private:

@@ -34,13 +34,15 @@ EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
     ui = new Ui::EditQueryItemDialog();
     ui->setupUi(this);
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
     console = console_arg;
+}
 
+void EditQueryItemDialog::open() {
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
     ui->edit_query_item_widget->load(index);
+
+    QDialog::open();
 }
 
 void EditQueryItemDialog::accept() {

@@ -36,8 +36,6 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
     ui = new Ui::EditQueryFolderDialog();
     ui->setupUi(this);
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
     console = console_arg;
 }
 

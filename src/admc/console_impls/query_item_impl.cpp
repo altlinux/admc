@@ -47,12 +47,14 @@ QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));
 
+    auto edit_query_item_dialog = new EditQueryItemDialog(console);
+
     edit_action = new QAction(tr("Edit..."), this);
     export_action = new QAction(tr("Export query..."), this);
 
     connect(
         edit_action, &QAction::triggered,
-        this, &QueryItemImpl::on_edit);
+        edit_query_item_dialog, &QDialog::open);
     connect(
         export_action, &QAction::triggered,
         this, &QueryItemImpl::on_export);
@@ -152,11 +154,6 @@ QList<QString> QueryItemImpl::column_labels() const {
 
 QList<int> QueryItemImpl::default_columns() const {
     return object_impl_default_columns();
-}
-
-void QueryItemImpl::on_edit() {
-    auto dialog = new EditQueryItemDialog(console);
-    dialog->open();
 }
 
 void QueryItemImpl::on_export() {
