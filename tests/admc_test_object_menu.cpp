@@ -27,7 +27,6 @@
 #include "filter_widget/filter_widget_simple_tab.h"
 #include "find_object_dialog.h"
 #include "find_widget.h"
-#include "move_object_dialog.h"
 #include "rename_object_dialog.h"
 #include "select_container_dialog.h"
 #include "select_object_advanced_dialog.h"
@@ -154,46 +153,6 @@ void ADMCTestObjectMenu::object_menu_new_group() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created group doesn't exist");
-
-    QVERIFY(true);
-}
-
-void ADMCTestObjectMenu::object_menu_move() {
-    const QString parent = test_arena_dn();
-
-    const QString user_name = TEST_USER;
-    const QString user_dn = test_object_dn(user_name, CLASS_USER);
-
-    const QString move_target_name = "move-target-ou";
-    const QString move_target_dn = test_object_dn(move_target_name, CLASS_OU);
-
-    const QString user_dn_after_move = dn_from_name_and_parent(user_name, move_target_dn, CLASS_USER);
-
-    // Create test user
-    const bool create_user_success = ad.object_add(user_dn, CLASS_USER);
-    QVERIFY2(create_user_success, "Failed to create user");
-    QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
-
-    // Create move target
-    const bool create_move_target_success = ad.object_add(move_target_dn, CLASS_OU);
-    QVERIFY2(create_move_target_success, "Failed to create move target");
-    QVERIFY2(object_exists(move_target_dn), "Created move target doesn't exist");
-
-    // Open move dialog
-    auto move_dialog = new MoveObjectDialog({user_dn}, parent_widget);
-    move_dialog->open();
-    QVERIFY(QTest::qWaitForWindowExposed(move_dialog, 1000));
-
-    QTreeView *move_dialog_view = move_dialog->findChild<QTreeView *>();
-    QVERIFY2((move_dialog_view != nullptr), "Failed to cast move_dialog_view");
-
-    // Select move target in the view
-    navigate_until_object(move_dialog_view, move_target_dn, ContainerRole_DN);
-
-    move_dialog->accept();
-
-    QVERIFY2(object_exists(user_dn_after_move), "Moved object doesn't exist");
-    QVERIFY2(object_exists(user_dn_after_move), "Moved object doesn't exist");
 
     QVERIFY(true);
 }

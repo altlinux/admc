@@ -32,7 +32,6 @@ private slots:
     void object_menu_new_computer();
     void object_menu_new_group();
 
-    void object_menu_move();
     void object_menu_rename();
 
     void object_menu_find_simple();
