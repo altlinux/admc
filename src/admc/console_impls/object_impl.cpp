@@ -416,7 +416,7 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
             const QString old_dn = dn;
             const QString new_dn = dialog->get_new_dn();
             const QString parent_dn = dn_get_parent(old_dn);
-            move_and_rename(ad, {old_dn}, parent_dn, {new_dn});
+            move_and_rename(ad, {{old_dn, new_dn}}, parent_dn);
         });
 }
 
@@ -856,17 +856,40 @@ void ObjectImpl::drop_policies(const QList<QPersistentModelIndex> &dropped_list,
     }
 }
 
-void ObjectImpl::move_and_rename(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn, const QList<QString> &new_dn_list) {
-    auto apply_changes = [&ad, &old_dn_list, &new_parent_dn, &new_dn_list](ConsoleWidget *target_console) {
+void ObjectImpl::move_and_rename(AdInterface &ad, const QHash<QString, QString> &old_to_new_dn_map, const QString &new_parent_dn) {
+    const QList<QString> old_dn_list = old_to_new_dn_map.keys();
+    const QList<QString> new_dn_list = old_to_new_dn_map.values();
+
+    // NOTE: search for objects once here to reuse them
+    // multiple times later
+    const QHash<QString, AdObject> object_map = [&]() {
+        QHash<QString, AdObject> out;
+
+        for (const QString &dn : new_dn_list) {
+            const AdObject object = ad.search_object(dn);
+            out[dn] = object;
+        }
+
+        return out;
+    }();
+
+    auto apply_changes = [&ad, &old_to_new_dn_map, &old_dn_list, &new_parent_dn, &object_map](ConsoleWidget *target_console) {
+        // For object tree, we add items representing
+        // updated objects and delete old items. In the case
+        // of move, this moves the items to their new
+        // parent. In the case of rename, this updates
+        // item's information about the object by recreating
+        // it.
+
+        // NOTE: delete old item AFTER adding new item
+        // because: If old item is deleted first, then it's
+        // possible for new parent to get selected (if they
+        // are next to each other in scope tree). Then what
+        // happens is that due to new parent being selected,
+        // it gets fetched and loads new object. End result
+        // is that new object is duplicated.
         const QModelIndex object_root = get_object_tree_root(target_console);
         if (object_root.isValid()) {
-            // NOTE: delete old item AFTER adding new item
-            // because: If old item is deleted first, then it's
-            // possible for new parent to get selected (if they
-            // are next to each other in scope tree). Then what
-            // happens is that due to new parent being selected,
-            // it gets fetched and loads new object. End result
-            // is that new object is duplicated.
             const QModelIndex new_parent_index = [=]() {
                 const QList<QModelIndex> results = target_console->search_items(object_root, ObjectRole_DN, new_parent_dn, ItemType_Object);
 
@@ -877,38 +900,59 @@ void ObjectImpl::move_and_rename(AdInterface &ad, const QList<QString> &old_dn_l
                 }
             }();
 
-            object_impl_add_objects_to_console_from_dns(target_console, ad, new_dn_list, new_parent_index);
+            object_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
 
             console_object_delete(target_console, old_dn_list, object_root);
         }
 
-        // For query tree, we only mark queries that contain
-        // modified objects as potentially out of date. User can
-        // refresh queries to sync changes manually.
+        // For query tree, we don't move items or recreate
+        // items but instead update items. Move doesn't make
+        // sense because query tree doesn't represent the
+        // object tree. Note that changing name or DN of
+        // objects may mean that the parent query may become
+        // invalid. For example, if query searches for all
+        // objects with names starting with "foo" and we
+        // rename an object in that query so that it doesn't
+        // start with "foo" anymore. Since it is too
+        // complicated to determine match criteria on the
+        // client, and refreshing the query is too wasteful,
+        // we instead mark queries with modified objects as
+        // "out of date". It is then up to the user to
+        // refresh the query if needed.
         const QModelIndex query_root = get_query_tree_root(target_console);
         if (query_root.isValid()) {
-            // Find all query items that contain modified
-            // object(s)
-            const QList<QModelIndex> parent_list = [&]() {
-                QList<QModelIndex> out;
+            // Find indexes of modified objects in query
+            // tree
+            const QHash<QString, QModelIndex> index_map = [&]() {
+                QHash<QString, QModelIndex> out;
 
-                for (const QString &dn : old_dn_list) {
-                    const QList<QModelIndex> results = target_console->search_items(query_root, ObjectRole_DN, dn, ItemType_Object);
+                for (const QString &old_dn : old_dn_list) {
+                    const QList<QModelIndex> results = target_console->search_items(query_root, ObjectRole_DN, old_dn, ItemType_Object);
 
                     for (const QModelIndex &index : results) {
-                        out.append(index.parent());
+                        out[old_dn] = index;
                     }
                 }
 
                 return out;
             }();
 
-            for (const QModelIndex &parent : parent_list) {
-                // NOTE: icon and tooltip will be restored after
+            for (const QString &old_dn : index_map.keys()) {
+                const QModelIndex index = index_map[old_dn];
+
+                // Mark parent query as "out of date". Icon
+                // and tooltip will be restored after
                 // refresh
-                QStandardItem *item = target_console->get_item(parent);
+                const QModelIndex query_index = index.parent();
+                QStandardItem *item = target_console->get_item(query_index);
                 item->setIcon(QIcon::fromTheme("dialog-warning"));
                 item->setToolTip(tr("Query may be out of date"));
+
+                // Update item row
+                const QList<QStandardItem *> row = target_console->get_row(index);
+                const QString new_dn = old_to_new_dn_map[old_dn];
+                const AdObject object = object_map[new_dn];
+                console_object_load(row, object);
             }
         }
     };
@@ -924,18 +968,18 @@ void ObjectImpl::move_and_rename(AdInterface &ad, const QList<QString> &old_dn_l
 // generates the new_dn_list for you, assuming that you just
 // want to move objects to new parent without renaming
 void ObjectImpl::move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
-    const QList<QString> new_dn_list = [&]() {
-        QList<QString> out;
+    const QHash<QString, QString> old_to_new_dn_map = [&]() {
+        QHash<QString, QString> out;
 
         for (const QString &old_dn : old_dn_list) {
             const QString new_dn = dn_move(old_dn, new_parent_dn);
-            out.append(new_dn);
+            out[old_dn] = new_dn;
         }
 
         return out;
     }();
 
-    move_and_rename(ad, old_dn_list, new_parent_dn, new_dn_list);
+    move_and_rename(ad, old_to_new_dn_map, new_parent_dn);
 }
 
 void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
