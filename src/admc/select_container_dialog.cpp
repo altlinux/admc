@@ -42,15 +42,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     ui = new Ui::SelectContainerDialog();
     ui->setupUi(this);
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        close();
-        return;
-    }
-
-    ui->view->sortByColumn(g_adconfig->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
+    ui->view->sortByColumn(0, Qt::AscendingOrder);
 
     model = new QStandardItemModel(this);
 
@@ -65,18 +57,10 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     for (int i = 0; i < header->count(); i++) {
         header->setSectionHidden(i, true);
     }
-    header->setSectionHidden(g_adconfig->get_column_index(ATTRIBUTE_NAME), false);
+    header->setSectionHidden(0, false);
 
     QPushButton *ok_button = ui->button_box->button(QDialogButtonBox::Ok);
     enable_widget_on_selection(ok_button, ui->view);
-
-    // Load head object
-    const QString head_dn = g_adconfig->domain_head();
-    const AdObject head_object = ad.search_object(head_dn);
-    auto item = make_container_node(head_object);
-    model->appendRow(item);
-
-    g_status()->display_ad_messages(ad, this);
 
     // NOTE: geometry is shared with the subclass
     // MoveObjectDialog but that is intended.
@@ -90,6 +74,27 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
                 fetch_node(index);
             }
         });
+}
+
+void SelectContainerDialog::open() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        close();
+
+        return;
+    }
+
+    model->removeRows(0, model->rowCount());
+
+    // Load head object
+    const QString head_dn = g_adconfig->domain_head();
+    const AdObject head_object = ad.search_object(head_dn);
+    auto item = make_container_node(head_object);
+    model->appendRow(item);
+
+    g_status()->display_ad_messages(ad, this);
+
+    QDialog::open();
 }
 
 QString SelectContainerDialog::get_selected() const {

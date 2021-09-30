@@ -28,6 +28,7 @@
 #include <QWidget>
 
 class AdConfig;
+class SelectContainerDialog;
 
 namespace Ui {
     class SelectBaseWidget;
@@ -48,8 +49,9 @@ public:
 
 private:
     Ui::SelectBaseWidget *ui;
+    SelectContainerDialog *browse_dialog;
 
-    void browse();
+    void on_browse_dialog();
 };
 
 #endif /* SELECT_BASE_WIDGET_H */

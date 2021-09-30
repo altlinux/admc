@@ -31,9 +31,11 @@ SelectBaseWidget::SelectBaseWidget(QWidget *parent)
     ui = new Ui::SelectBaseWidget();
     ui->setupUi(this);
 
+    browse_dialog = new SelectContainerDialog(this);
+
     connect(
         ui->browse_button, &QAbstractButton::clicked,
-        this, &SelectBaseWidget::browse);
+        browse_dialog, &QDialog::open);
 }
 
 void SelectBaseWidget::init(AdConfig *adconfig, const QString &default_base) {
@@ -62,23 +64,15 @@ QString SelectBaseWidget::get_base() const {
     return item_data.toString();
 }
 
-void SelectBaseWidget::browse() {
-    auto dialog = new SelectContainerDialog(this);
+void SelectBaseWidget::on_browse_dialog() {
+    const QString selected = browse_dialog->get_selected();
+    const QString name = dn_get_name(selected);
 
-    connect(
-        dialog, &SelectContainerDialog::accepted,
-        [this, dialog]() {
-            const QString selected = dialog->get_selected();
-            const QString name = dn_get_name(selected);
+    ui->combo->addItem(name, selected);
 
-            ui->combo->addItem(name, selected);
-
-            // Select newly added search base in combobox
-            const int new_base_index = ui->combo->count() - 1;
-            ui->combo->setCurrentIndex(new_base_index);
-        });
-
-    dialog->open();
+    // Select newly added search base in combobox
+    const int new_base_index = ui->combo->count() - 1;
+    ui->combo->setCurrentIndex(new_base_index);
 }
 
 QVariant SelectBaseWidget::save_state() const {

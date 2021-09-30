@@ -36,6 +36,7 @@ class QList;
 class PolicyImpl;
 class ChangeDCDialog;
 class ConsoleWidget;
+class SelectContainerDialog;
 
 /**
  * Some f-ns used for models that store objects.
@@ -101,7 +102,7 @@ private slots:
     void on_new_computer();
     void on_new_ou();
     void on_new_group();
-    void on_move();
+    void on_move_dialog();
     void on_enable();
     void on_disable();
     void on_add_to_group();
@@ -114,6 +115,7 @@ private:
     ConsoleWidget *buddy_console;
     PolicyImpl *policy_impl;
     ChangeDCDialog *change_dc_dialog;
+    SelectContainerDialog *move_dialog;
 
     QString current_filter;
     bool filtering_is_ON;

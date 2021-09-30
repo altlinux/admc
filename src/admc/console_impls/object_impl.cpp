@@ -67,6 +67,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     policy_impl = nullptr;
 
     change_dc_dialog = new ChangeDCDialog(console);
+    move_dialog = new SelectContainerDialog(console);
 
     current_filter = QString();
     filtering_is_ON = false;
@@ -113,7 +114,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
         this, &ObjectImpl::on_new_group);
     connect(
         move_action, &QAction::triggered,
-        this, &ObjectImpl::on_move);
+        move_dialog, &QDialog::open);
     connect(
         add_to_group_action, &QAction::triggered,
         this, &ObjectImpl::on_add_to_group);
@@ -579,46 +580,39 @@ void ObjectImpl::on_new_group() {
     new_object(CLASS_GROUP);
 }
 
-void ObjectImpl::on_move() {
+void ObjectImpl::on_move_dialog() {
     const QList<QString> dn_list = get_selected_dn_list_object(console);
 
-    auto dialog = new SelectContainerDialog(console);
-    dialog->open();
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
 
-    QObject::connect(
-        dialog, &QDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
+    show_busy_indicator();
+
+    const QString new_parent_dn = move_dialog->get_selected();
+
+    // First move in AD
+    const QList<QString> moved_objects = [&]() {
+        QList<QString> out;
+
+        for (const QString &dn : dn_list) {
+            const bool success = ad.object_move(dn, new_parent_dn);
+
+            if (success) {
+                out.append(dn);
             }
+        }
 
-            show_busy_indicator();
+        return out;
+    }();
 
-            const QString new_parent_dn = dialog->get_selected();
+    g_status()->display_ad_messages(ad, nullptr);
 
-            // First move in AD
-            const QList<QString> moved_objects = [&]() {
-                QList<QString> out;
+    // Then move in console
+    move(ad, moved_objects, new_parent_dn);
 
-                for (const QString &dn : dn_list) {
-                    const bool success = ad.object_move(dn, new_parent_dn);
-
-                    if (success) {
-                        out.append(dn);
-                    }
-                }
-
-                return out;
-            }();
-
-            g_status()->display_ad_messages(ad, nullptr);
-
-            // Then move in console
-            move(ad, moved_objects, new_parent_dn);
-
-            hide_busy_indicator();
-        });
+    hide_busy_indicator();
 }
 
 void ObjectImpl::on_enable() {

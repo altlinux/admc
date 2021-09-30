@@ -47,6 +47,8 @@ class SelectContainerDialog : public QDialog {
 public:
     SelectContainerDialog(QWidget *parent);
 
+    void open() override;
+
     QString get_selected() const;
 
 private:
