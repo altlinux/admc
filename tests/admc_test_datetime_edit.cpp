@@ -49,7 +49,7 @@ void ADMCTestDateTimeEdit::load() {
     const QDateTime correct_datetime = object.get_datetime(ATTRIBUTE_WHEN_CHANGED, g_adconfig);
     const QDateTime datetime = qedit->dateTime();
 
-    QVERIFY(datetime == correct_datetime);
+    QCOMPARE(datetime, correct_datetime);
 }
 
 QTEST_MAIN(ADMCTestDateTimeEdit)

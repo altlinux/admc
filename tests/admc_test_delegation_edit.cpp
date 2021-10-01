@@ -41,7 +41,7 @@ void ADMCTestDelegationEdit::init() {
 
     QFETCH_GLOBAL(QString, button_name);
     button = parent_widget->findChild<QRadioButton *>(button_name);
-    QVERIFY(button != nullptr);
+    QVERIFY(button);
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);

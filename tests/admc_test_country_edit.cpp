@@ -34,7 +34,7 @@ void ADMCTestCountryEdit::init() {
     add_attribute_edit(edit);
 
     combo = parent_widget->findChild<QComboBox *>();
-    QVERIFY(combo != nullptr);
+    QVERIFY(combo);
 
     // Create test user
     const QString name = TEST_USER;
@@ -74,7 +74,7 @@ void ADMCTestCountryEdit::load() {
     edit->load(ad, object);
 
     const int edit_value = combo->currentData().toInt();
-    QVERIFY(edit_value == test_value);
+    QCOMPARE(edit_value, test_value);
 }
 
 void ADMCTestCountryEdit::apply_unmodified() {
@@ -98,7 +98,7 @@ void ADMCTestCountryEdit::apply_modified() {
     const int current_value = object_after.get_int(ATTRIBUTE_COUNTRY_CODE);
     const QString country_abbreviation_after = object_after.get_string(ATTRIBUTE_COUNTRY_ABBREVIATION);
     const QString country_after = object_after.get_string(ATTRIBUTE_COUNTRY);
-    QVERIFY(current_value == new_value);
+    QCOMPARE(current_value, new_value);
 
     // NOTE: figuring out what abbreviation and country
     // strings are actually supposed to be requires parsing

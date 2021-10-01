@@ -47,7 +47,7 @@ void ADMCTestExpiryEdit::init() {
 
     QFETCH_GLOBAL(QString, check_name);
     check = parent_widget->findChild<QCheckBox *>(check_name);
-    QVERIFY(check != nullptr);
+    QVERIFY(check);
 
     // Create test user
     const QString name = TEST_USER;

@@ -38,10 +38,10 @@ void ADMCTestLogonHoursDialog::init() {
     utc_time_button = dialog->findChild<QRadioButton *>("utc_time_button");
 
     view = dialog->findChild<QTableView *>();
-    QVERIFY(view != nullptr);
+    QVERIFY(view);
 
     model = dialog->findChild<QStandardItemModel *>();
-    QVERIFY(model != nullptr);
+    QVERIFY(model);
 
     selection_model = view->selectionModel();
 }
@@ -84,11 +84,11 @@ const QList<QList<bool>> test_bools = []() {
 
 void ADMCTestLogonHoursDialog::conversion_funs() {
     const QList<QList<bool>> converted_bools = logon_hours_to_bools(test_bytes);
-    QVERIFY(converted_bools == test_bools);
+    QCOMPARE(converted_bools, test_bools);
 
     const QByteArray converted_bytes = logon_hours_to_bytes(test_bools);
 
-    QVERIFY(converted_bytes == test_bytes);
+    QCOMPARE(converted_bytes, test_bytes);
 }
 
 void ADMCTestLogonHoursDialog::load() {
@@ -105,7 +105,7 @@ void ADMCTestLogonHoursDialog::load() {
         model->index(2, 6),
     };
 
-    QVERIFY(selected_set == correct_selected_set);
+    QCOMPARE(selected_set, correct_selected_set);
 }
 
 // Dialog should handle loading undefined value, where
@@ -114,13 +114,13 @@ void ADMCTestLogonHoursDialog::load_undefined() {
     dialog->load(QByteArray());
 
     const QByteArray out = dialog->get();
-    QVERIFY(out == empty_bytes);
+    QCOMPARE(out, empty_bytes);
 }
 
 void ADMCTestLogonHoursDialog::get_unchanged() {
     dialog->load(test_bytes);
     const QByteArray returned_bytes = dialog->get();
-    QVERIFY(returned_bytes == test_bytes);
+    QCOMPARE(returned_bytes, test_bytes);
 }
 
 void ADMCTestLogonHoursDialog::handle_timezone() {
@@ -139,7 +139,7 @@ void ADMCTestLogonHoursDialog::handle_timezone() {
         model->index(Weekday_Tuesday, 0),
     };
     const QList<QModelIndex> utc_selected = selection_model->selectedIndexes();
-    QVERIFY(utc_selected == correct_utc_selected);
+    QCOMPARE(utc_selected, correct_utc_selected);
 
     // Then local time
     local_time_button->setChecked(true);
@@ -163,7 +163,7 @@ void ADMCTestLogonHoursDialog::handle_timezone() {
         return QList<QModelIndex>({model->index(row, col)});
     }();
     const QList<QModelIndex> local_selected = selection_model->selectedIndexes();
-    QVERIFY(local_selected == correct_local_selected);
+    QCOMPARE(local_selected, correct_local_selected);
 }
 
 QTEST_MAIN(ADMCTestLogonHoursDialog)

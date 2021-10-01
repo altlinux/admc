@@ -38,7 +38,7 @@ void ADMCTestSelectBaseWidget::init() {
     add_widget(select_base_widget);
 
     combo = select_base_widget->findChild<QComboBox *>();
-    QVERIFY(combo != nullptr);
+    QVERIFY(combo);
 
     // Create test OU's
     const QList<QString> ou_name_list = {
@@ -62,7 +62,7 @@ void ADMCTestSelectBaseWidget::default_to_domain_head() {
     const QString domain_head = g_adconfig->domain_head();
 
     const QString base = select_base_widget->get_base();
-    QVERIFY(base == domain_head);
+    QCOMPARE(base, domain_head);
 }
 
 // After selecting a search base, the widget should return
@@ -110,7 +110,7 @@ void ADMCTestSelectBaseWidget::save_state() {
     // Check that deserialization successfully restored
     // original state
     const QString base_deserialized = select_base_widget->get_base();
-    QVERIFY(base_original == base_deserialized);
+    QCOMPARE(base_original, base_deserialized);
 }
 
 QTEST_MAIN(ADMCTestSelectBaseWidget)

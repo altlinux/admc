@@ -38,7 +38,7 @@ void ADMCTestUnlockEdit::init() {
     add_attribute_edit(unlock_edit);
 
     checkbox = parent_widget->findChild<QCheckBox *>();
-    QVERIFY(checkbox != nullptr);
+    QVERIFY(checkbox);
 
     // Create test user
     const QString name = TEST_USER;

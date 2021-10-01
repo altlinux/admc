@@ -52,22 +52,22 @@ void ADMCTestAttributesTab::init() {
     add_widget(attributes_tab);
 
     filter_menu = attributes_tab->findChild<AttributesFilterMenu *>();
-    QVERIFY(filter_menu != nullptr);
+    QVERIFY(filter_menu);
 
     view = attributes_tab->findChild<QTreeView *>();
-    QVERIFY(view != nullptr);
+    QVERIFY(view);
 
     model = attributes_tab->findChild<QStandardItemModel *>();
-    QVERIFY(model != nullptr);
+    QVERIFY(model);
 
     proxy = attributes_tab->findChild<QSortFilterProxyModel *>();
-    QVERIFY(proxy != nullptr);
+    QVERIFY(proxy);
 
     filter_button = attributes_tab->findChild<QPushButton *>("filter_button");
-    QVERIFY(filter_button != nullptr);
+    QVERIFY(filter_button);
 
     edit_button = attributes_tab->findChild<QPushButton *>("edit_button");
-    QVERIFY(filter_button != nullptr);
+    QVERIFY(filter_button);
 
     // Create test user
     const QString name = TEST_USER;
@@ -166,19 +166,19 @@ void ADMCTestAttributesTab::apply() {
     edit_button->click();
 
     auto multi_editor = attributes_tab->findChild<MultiEditor *>();
-    QVERIFY(multi_editor != nullptr);
+    QVERIFY(multi_editor);
     QVERIFY(QTest::qWaitForWindowExposed(multi_editor, 1000));
 
     auto add_button = multi_editor->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button != nullptr);
+    QVERIFY(add_button);
     add_button->click();
 
     auto string_editor = multi_editor->findChild<StringEditor *>();
-    QVERIFY(string_editor != nullptr);
+    QVERIFY(string_editor);
     QVERIFY(QTest::qWaitForWindowExposed(string_editor, 1000));
 
     auto string_editor_edit = string_editor->findChild<QLineEdit *>();
-    QVERIFY(string_editor_edit != nullptr);
+    QVERIFY(string_editor_edit);
     string_editor_edit->setText(correct_value);
 
     string_editor->accept();
@@ -188,13 +188,13 @@ void ADMCTestAttributesTab::apply() {
 
     const AdObject object = ad.search_object(dn);
     const QString description_value = object.get_string(ATTRIBUTE_DESCRIPTION);
-    QVERIFY(description_value == correct_value);
+    QCOMPARE(description_value, correct_value);
 }
 
 void ADMCTestAttributesTab::set_filter(const QList<AttributeFilter> &filter_list, const bool state) {
     for (const AttributeFilter &filter : filter_list) {
         QAction *action = filter_menu->findChild<QAction *>(QString::number(filter));
-        QVERIFY(action != nullptr);
+        QVERIFY(action);
         action->setChecked(state);
     }
 }

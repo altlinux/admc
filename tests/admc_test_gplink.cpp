@@ -58,7 +58,7 @@ void ADMCTestGplink::equals() {
     Gplink gplink_1(test_gplink_string);
     Gplink gplink_2(test_gplink_string);
 
-    QVERIFY(gplink_1.equals(gplink_2));
+    QCOMPARE(gplink_1.to_string(), gplink_2.to_string());
 }
 
 void ADMCTestGplink::contains_data() {

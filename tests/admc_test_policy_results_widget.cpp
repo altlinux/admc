@@ -70,7 +70,7 @@ void ADMCTestPolicyResultsWidget::init() {
     view = results_view->detail_view();
 
     model = widget->findChild<QStandardItemModel *>();
-    QVERIFY(model != nullptr);
+    QVERIFY(model);
 }
 
 void ADMCTestPolicyResultsWidget::load_empty() {
@@ -99,7 +99,7 @@ void ADMCTestPolicyResultsWidget::load() {
     QList<QStandardItem *> item_list;
     for (int col = 0; col < 4; col++) {
         QStandardItem *item = model->item(0, col);
-        QVERIFY(item != nullptr);
+        QVERIFY(item);
         item_list.append(item);
     }
 

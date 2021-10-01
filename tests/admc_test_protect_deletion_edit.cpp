@@ -38,7 +38,7 @@ void ADMCTestProtectDeletionEdit::init() {
     add_attribute_edit(edit);
 
     checkbox = parent_widget->findChild<QCheckBox *>();
-    QVERIFY(checkbox != nullptr);
+    QVERIFY(checkbox);
 
     dn = test_object_dn(TEST_OU, CLASS_OU);
     const bool create_success = ad.object_add(dn, CLASS_OU);
@@ -85,7 +85,7 @@ void ADMCTestProtectDeletionEdit::apply() {
     QVERIFY(apply_2_success);
 
     const bool delete_2_success = ad.object_delete(dn);
-    QCOMPARE(delete_2_success, true);
+    QVERIFY(delete_2_success);
 }
 
 QTEST_MAIN(ADMCTestProtectDeletionEdit)

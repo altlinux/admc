@@ -38,7 +38,7 @@ void ADMCTestDateTimeEditor::init() {
 void ADMCTestDateTimeEditor::load() {
     edit->load({QByteArray("20210706131457.0Z")});
     const QDateTime correct_datetime = QDateTime(QDate(2021, 7, 6), QTime(13, 14, 57));
-    QVERIFY(datetime_edit->dateTime() == correct_datetime);
+    QCOMPARE(datetime_edit->dateTime(), correct_datetime);
 }
 
 // NOTE: datetime edit always returns empty list, see

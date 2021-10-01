@@ -34,7 +34,7 @@ void ADMCTestStringEdit::init() {
     add_attribute_edit(edit);
 
     line_edit = parent_widget->findChild<QLineEdit *>();
-    QVERIFY(line_edit != nullptr);
+    QVERIFY(line_edit);
 
     // Create test user
     const QString name = TEST_USER;
@@ -69,7 +69,7 @@ void ADMCTestStringEdit::load() {
 
     const QString edit_value = line_edit->text();
     ;
-    QVERIFY(edit_value == test_value);
+    QCOMPARE(edit_value, test_value);
 }
 
 void ADMCTestStringEdit::apply_unmodified() {
@@ -87,7 +87,7 @@ void ADMCTestStringEdit::apply_modified() {
     const AdObject object = ad.search_object(dn);
     const QString current_value = object.get_string(TEST_ATTRIBUTE);
 
-    QVERIFY(current_value == new_value);
+    QCOMPARE(current_value, new_value);
 }
 
 QTEST_MAIN(ADMCTestStringEdit)

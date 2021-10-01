@@ -34,7 +34,7 @@ void ADMCTestGpoptionsEdit::init() {
     add_attribute_edit(edit);
 
     check = parent_widget->findChild<QCheckBox *>();
-    QVERIFY(check != nullptr);
+    QVERIFY(check);
 
     const QString name = TEST_OU;
     dn = test_object_dn(name, CLASS_OU);

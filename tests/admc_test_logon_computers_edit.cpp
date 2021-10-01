@@ -35,21 +35,21 @@ void ADMCTestLogonComputersEdit::init() {
     add_attribute_edit(edit);
 
     dialog = parent_widget->findChild<LogonComputersDialog *>();
-    QVERIFY(dialog != nullptr);
+    QVERIFY(dialog);
 
     open_dialog_button = parent_widget->findChild<QPushButton *>("logon_computers_edit_button");
 
     list = dialog->findChild<QListWidget *>("list");
-    QVERIFY(list != nullptr);
+    QVERIFY(list);
 
     value_edit = dialog->findChild<QLineEdit *>("edit");
-    QVERIFY(value_edit != nullptr);
+    QVERIFY(value_edit);
 
     add_button = dialog->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button != nullptr);
+    QVERIFY(add_button);
 
     remove_button = dialog->findChild<QPushButton *>("remove_button");
-    QVERIFY(remove_button != nullptr);
+    QVERIFY(remove_button);
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
@@ -67,7 +67,7 @@ void ADMCTestLogonComputersEdit::load() {
     open_dialog_button->click();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
-    QVERIFY(list->count() == 2);
+    QCOMPARE(list->count(), 2);
     test_list_item(0, "test");
     test_list_item(1, "value");
 }
@@ -96,7 +96,7 @@ void ADMCTestLogonComputersEdit::add() {
 
     add_button->click();
 
-    QVERIFY(list->count() == 3);
+    QCOMPARE(list->count(), 3);
     test_list_item(0, "test");
     test_list_item(1, "value");
     test_list_item(2, "new");
@@ -110,14 +110,14 @@ void ADMCTestLogonComputersEdit::remove() {
 
     remove_button->click();
 
-    QVERIFY(list->count() == 1);
+    QCOMPARE(list->count(), 1);
     test_list_item(0, "value");
 }
 
 void ADMCTestLogonComputersEdit::test_list_item(const int row, const QString &text) {
     auto item = list->item(row);
-    QVERIFY(item != nullptr);
-    QVERIFY(item->text() == text);
+    QVERIFY(item);
+    QCOMPARE(item->text(), text);
 }
 
 void ADMCTestLogonComputersEdit::apply_unmodified() {
@@ -138,7 +138,7 @@ void ADMCTestLogonComputersEdit::apply() {
 
     const AdObject updated_object = ad.search_object(dn);
     const QString updated_value = updated_object.get_string(ATTRIBUTE_USER_WORKSTATIONS);
-    QVERIFY(updated_value == "test,value,new");
+    QCOMPARE(updated_value, "test,value,new");
 }
 
 QTEST_MAIN(ADMCTestLogonComputersEdit)

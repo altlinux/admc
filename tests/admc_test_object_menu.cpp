@@ -57,19 +57,19 @@ void ADMCTestObjectMenu::object_menu_new_user() {
 
     // Fill out edits
     auto name_edit = create_dialog->findChild<QLineEdit *>("name_edit");
-    QVERIFY(name_edit != nullptr);
+    QVERIFY(name_edit);
     name_edit->setText(name);
 
     auto sama_edit = create_dialog->findChild<QLineEdit *>("sama_edit");
-    QVERIFY(sama_edit != nullptr);
+    QVERIFY(sama_edit);
     sama_edit->setText(logon_name);
 
     auto password_main_edit = create_dialog->findChild<QLineEdit *>("password_main_edit");
-    QVERIFY(password_main_edit != nullptr);
+    QVERIFY(password_main_edit);
     password_main_edit->setText(password);
 
     auto password_confirm_edit = create_dialog->findChild<QLineEdit *>("password_confirm_edit");
-    QVERIFY(password_confirm_edit != nullptr);
+    QVERIFY(password_confirm_edit);
     password_confirm_edit->setText(password);
 
     create_dialog->accept();
@@ -91,7 +91,7 @@ void ADMCTestObjectMenu::object_menu_new_ou() {
 
     // Enter name
     auto name_edit = create_dialog->findChild<QLineEdit *>("name_edit");
-    QVERIFY(name_edit != nullptr);
+    QVERIFY(name_edit);
     name_edit->setText(name);
 
     create_dialog->accept();
@@ -114,12 +114,12 @@ void ADMCTestObjectMenu::object_menu_new_computer() {
 
     // Enter name
     auto name_edit = create_dialog->findChild<QLineEdit *>("name_edit");
-    QVERIFY(name_edit != nullptr);
+    QVERIFY(name_edit);
     name_edit->setText(name);
 
     // Enter logon name
     auto sama_edit = create_dialog->findChild<QLineEdit *>("sama_edit");
-    QVERIFY(sama_edit != nullptr);
+    QVERIFY(sama_edit);
     sama_edit->setText(name);
 
     create_dialog->accept();
@@ -142,12 +142,12 @@ void ADMCTestObjectMenu::object_menu_new_group() {
 
     // Enter name
     auto name_edit = create_dialog->findChild<QLineEdit *>("name_edit");
-    QVERIFY(name_edit != nullptr);
+    QVERIFY(name_edit);
     name_edit->setText(name);
 
     // Enter logon name
     auto sama_edit = create_dialog->findChild<QLineEdit *>("sama_edit");
-    QVERIFY(sama_edit != nullptr);
+    QVERIFY(sama_edit);
     sama_edit->setText(name);
 
     create_dialog->accept();
@@ -174,14 +174,14 @@ void ADMCTestObjectMenu::object_menu_find_simple() {
 
     // Enter name in search field
     auto simple_tab = find_dialog->findChild<FilterWidgetSimpleTab *>();
-    QVERIFY(simple_tab != nullptr);
+    QVERIFY(simple_tab);
     auto name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
-    QVERIFY(name_edit != nullptr);
+    QVERIFY(name_edit);
     name_edit->setText(user_name);
 
     // Press find button
     auto find_button = find_dialog->findChild<QPushButton *>("find_button");
-    QVERIFY(find_button != nullptr);
+    QVERIFY(find_button);
     find_button->click();
 
     // Confirm that results are not empty
@@ -208,9 +208,9 @@ void ADMCTestObjectMenu::object_menu_find_advanced() {
     QVERIFY(QTest::qWaitForWindowExposed(find_dialog, 1000));
 
     auto tab_widget = find_dialog->findChild<QTabWidget *>();
-    QVERIFY(tab_widget != nullptr);
+    QVERIFY(tab_widget);
     auto advanced_tab = find_dialog->findChild<FilterWidgetAdvancedTab *>();
-    QVERIFY(advanced_tab != nullptr);
+    QVERIFY(advanced_tab);
     tab_widget->setCurrentWidget(advanced_tab);
 
     auto filter_edit = advanced_tab->findChild<QPlainTextEdit *>();
@@ -218,7 +218,7 @@ void ADMCTestObjectMenu::object_menu_find_advanced() {
     filter_edit->setPlainText(filter);
 
     auto find_button = find_dialog->findChild<QPushButton *>("find_button");
-    QVERIFY(find_button != nullptr);
+    QVERIFY(find_button);
     find_button->click();
 
     auto find_results = find_dialog->findChild<QTreeView *>();
@@ -248,7 +248,7 @@ void ADMCTestObjectMenu::object_menu_rename() {
 
     // Enter new name
     auto name_edit = rename_dialog->findChild<QLineEdit *>("name_edit");
-    QVERIFY(name_edit != nullptr);
+    QVERIFY(name_edit);
     name_edit->setText(new_name);
 
     rename_dialog->accept();

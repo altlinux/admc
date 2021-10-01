@@ -40,16 +40,16 @@ void ADMCTestMemberOfTab::init() {
     add_widget(member_of_tab);
 
     view = member_of_tab->findChild<QTreeView *>();
-    QVERIFY(view != nullptr);
+    QVERIFY(view);
 
     model = member_of_tab->findChild<QStandardItemModel *>();
-    QVERIFY(model != nullptr);
+    QVERIFY(model);
 
     add_button = member_of_tab->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button != nullptr);
+    QVERIFY(add_button);
 
     remove_button = member_of_tab->findChild<QPushButton *>("remove_button");
-    QVERIFY(remove_button != nullptr);
+    QVERIFY(remove_button);
 
     // Create test user
     const QString user_name = TEST_USER;
@@ -71,7 +71,7 @@ void ADMCTestMemberOfTab::init() {
 // Loading a group without members should result in empty
 // model
 void ADMCTestMemberOfTab::load_empty() {
-    QVERIFY(model->rowCount() == 1);
+    QCOMPARE(model->rowCount(), 1);
 }
 
 // Loading a group with members should put members in the
@@ -83,10 +83,10 @@ void ADMCTestMemberOfTab::load() {
     const AdObject object = ad.search_object(user_dn);
     member_of_tab->load(ad, object);
 
-    QVERIFY(model->rowCount() == 2);
+    QCOMPARE(model->rowCount(), 2);
 
     auto item = model->item(1, 0);
-    QVERIFY(item->text() == dn_get_name(group_dn));
+    QCOMPARE(item->text(), dn_get_name(group_dn));
 }
 
 // Removing members should remove members from model and group
@@ -103,7 +103,7 @@ void ADMCTestMemberOfTab::remove() {
     const AdObject updated_object = ad.search_object(user_dn);
     const QList<QString> member_list = updated_object.get_strings(ATTRIBUTE_MEMBER_OF);
 
-    QVERIFY(model->rowCount() == 1);
+    QCOMPARE(model->rowCount(), 1);
     QVERIFY(member_list.isEmpty());
 }
 
@@ -113,8 +113,8 @@ void ADMCTestMemberOfTab::add() {
     select_object_dialog_select(group_dn);
 
     // Check ui state before applying
-    QVERIFY(model->rowCount() == 2);
-    QVERIFY(model->item(1, 0)->text() == dn_get_name(group_dn));
+    QCOMPARE(model->rowCount(), 2);
+    QCOMPARE(model->item(1, 0)->text(), dn_get_name(group_dn));
 
     // Apply and check object state
     member_of_tab->apply(ad, user_dn);
@@ -123,8 +123,8 @@ void ADMCTestMemberOfTab::add() {
     QVERIFY(member_of_list.contains(group_dn));
 
     // Check ui state after applying (just in case)
-    QVERIFY(model->rowCount() == 2);
-    QVERIFY(model->item(1, 0)->text() == dn_get_name(group_dn));
+    QCOMPARE(model->rowCount(), 2);
+    QCOMPARE(model->item(1, 0)->text(), dn_get_name(group_dn));
 }
 
 QTEST_MAIN(ADMCTestMemberOfTab)

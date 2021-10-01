@@ -41,22 +41,22 @@ void ADMCTestEditQueryItemWidget::init() {
     add_widget(widget);
 
     name_edit = widget->findChild<QLineEdit *>("name_edit");
-    QVERIFY(name_edit != nullptr);
+    QVERIFY(name_edit);
 
     description_edit = widget->findChild<QLineEdit *>("description_edit");
-    QVERIFY(description_edit != nullptr);
+    QVERIFY(description_edit);
 
     scope_checkbox = widget->findChild<QCheckBox *>();
-    QVERIFY(scope_checkbox != nullptr);
+    QVERIFY(scope_checkbox);
 
     SelectBaseWidget *select_base_widget = widget->findChild<SelectBaseWidget *>();
-    QVERIFY(select_base_widget != nullptr);
+    QVERIFY(select_base_widget);
     
     base_combo = select_base_widget->findChild<QComboBox *>();
-    QVERIFY(base_combo != nullptr);
+    QVERIFY(base_combo);
 
     edit_filter_button = widget->findChild<QPushButton *>("edit_filter_button");
-    QVERIFY(edit_filter_button != nullptr);
+    QVERIFY(edit_filter_button);
 
     filter_display = widget->findChild<QTextEdit *>("filter_display");
 }
@@ -81,15 +81,15 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
     edit_filter_button->click();
 
     FilterDialog *dialog = widget->findChild<FilterDialog *>();
-    QVERIFY(dialog != nullptr);
+    QVERIFY(dialog);
 
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
     QTabWidget *tab_widget = dialog->findChild<QTabWidget *>();
-    QVERIFY(tab_widget != nullptr);
+    QVERIFY(tab_widget);
 
     QWidget *simple_tab = tab_widget->widget(0);
-    QVERIFY(simple_tab != nullptr);
+    QVERIFY(simple_tab);
 
     QLineEdit *filter_name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
     filter_name_edit->setText("test");

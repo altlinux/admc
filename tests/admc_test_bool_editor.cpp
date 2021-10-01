@@ -43,7 +43,7 @@ void ADMCTestBoolEditor::init() {
 
     QFETCH_GLOBAL(QString, button_name);
     button = parent_widget->findChild<QRadioButton *>(button_name);
-    QVERIFY(button != nullptr);
+    QVERIFY(button);
 }
 
 void ADMCTestBoolEditor::load() {

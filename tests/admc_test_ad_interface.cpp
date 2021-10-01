@@ -189,7 +189,7 @@ void ADMCTestAdInterface::group_add_member() {
 
     const AdObject group_object = ad.search_object(group_dn);
     const QList<QString> member_list = group_object.get_strings(ATTRIBUTE_MEMBER);
-    QVERIFY(member_list == QList<QString>({user_dn}));
+    QCOMPARE(member_list, QList<QString>({user_dn}));
 }
 
 void ADMCTestAdInterface::group_remove_member() {
@@ -218,7 +218,7 @@ void ADMCTestAdInterface::group_set_scope() {
 
         const AdObject group_object = ad.search_object(group_dn);
         const GroupScope current_scope = group_object.get_group_scope();
-        QVERIFY(current_scope == scope);
+        QCOMPARE(current_scope, scope);
     }
 }
 
@@ -234,7 +234,7 @@ void ADMCTestAdInterface::group_set_type() {
 
         const AdObject group_object = ad.search_object(group_dn);
         const GroupType current_type = group_object.get_group_type();
-        QVERIFY(current_type == type);
+        QCOMPARE(current_type, type);
     }
 }
 

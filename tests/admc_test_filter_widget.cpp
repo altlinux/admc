@@ -44,30 +44,30 @@ void ADMCTestFilterWidget::init() {
     add_widget(filter_widget);
 
     tab_widget = filter_widget->findChild<QTabWidget *>();
-    QVERIFY(tab_widget != nullptr);
+    QVERIFY(tab_widget);
 
     simple_tab = tab_widget->widget(SIMPLE_TAB_INDEX);
-    QVERIFY(simple_tab != nullptr);
+    QVERIFY(simple_tab);
 
     normal_tab = tab_widget->widget(NORMAL_TAB_INDEX);
-    QVERIFY(normal_tab != nullptr);
+    QVERIFY(normal_tab);
 
     advanced_tab = tab_widget->widget(ADVANCED_TAB_INDEX);
-    QVERIFY(advanced_tab != nullptr);
+    QVERIFY(advanced_tab);
 }
 
 void ADMCTestFilterWidget::test_simple_tab() {
     tab_widget->setCurrentIndex(SIMPLE_TAB_INDEX);
 
     auto select_classes_widget = simple_tab->findChild<SelectClassesWidget *>();
-    QVERIFY(select_classes_widget != nullptr);
+    QVERIFY(select_classes_widget);
 
     auto select_button = select_classes_widget->findChild<QPushButton *>();
-    QVERIFY(select_button != nullptr);
+    QVERIFY(select_button);
     select_button->click();
 
     auto select_classes_dialog = select_classes_widget->findChild<QDialog *>();
-    QVERIFY(select_classes_dialog != nullptr);
+    QVERIFY(select_classes_dialog);
     QVERIFY(QTest::qWaitForWindowExposed(select_classes_dialog, 1000));
 
     const QList<QCheckBox *> checkbox_list = select_classes_dialog->findChildren<QCheckBox *>();
@@ -85,7 +85,7 @@ void ADMCTestFilterWidget::test_simple_tab() {
 
     const QString correct_filter = "(&(name=*test*)(objectClass=user))";
     const QString filter = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter);
+    QCOMPARE(correct_filter, filter);
 
     // Serialize
     const QVariant state = filter_widget->save_state();
@@ -97,21 +97,21 @@ void ADMCTestFilterWidget::test_simple_tab() {
     filter_widget->restore_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter_deserialized);
+    QCOMPARE(correct_filter, filter_deserialized);
 }
 
 void ADMCTestFilterWidget::test_normal_tab() {
     tab_widget->setCurrentIndex(NORMAL_TAB_INDEX);
 
     auto select_classes_widget = normal_tab->findChild<SelectClassesWidget *>();
-    QVERIFY(select_classes_widget != nullptr);
+    QVERIFY(select_classes_widget);
 
     auto select_button = select_classes_widget->findChild<QPushButton *>();
-    QVERIFY(select_button != nullptr);
+    QVERIFY(select_button);
     select_button->click();
 
     auto select_classes_dialog = select_classes_widget->findChild<QDialog *>();
-    QVERIFY(select_classes_dialog != nullptr);
+    QVERIFY(select_classes_dialog);
     QVERIFY(QTest::qWaitForWindowExposed(select_classes_dialog, 1000));
 
     const QList<QCheckBox *> checkbox_list = select_classes_dialog->findChildren<QCheckBox *>();
@@ -125,16 +125,16 @@ void ADMCTestFilterWidget::test_normal_tab() {
     select_classes_dialog->accept();
 
     QLineEdit *value_edit = normal_tab->findChild<QLineEdit *>("value_edit");
-    QVERIFY(value_edit != nullptr);
+    QVERIFY(value_edit);
     value_edit->setText("value");
 
     QPushButton *add_button = normal_tab->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button != nullptr);
+    QVERIFY(add_button);
     add_button->click();
 
     const QString correct_filter = "(&(objectClass=user)(assistant=value))";
     const QString filter = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter);
+    QCOMPARE(correct_filter, filter);
 
     // Serialize
     const QVariant state = filter_widget->save_state();
@@ -147,20 +147,20 @@ void ADMCTestFilterWidget::test_normal_tab() {
     filter_widget->restore_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter_deserialized);
+    QCOMPARE(correct_filter, filter_deserialized);
 }
 
 void ADMCTestFilterWidget::test_advanced_tab() {
     tab_widget->setCurrentIndex(ADVANCED_TAB_INDEX);
 
     auto edit = advanced_tab->findChild<QPlainTextEdit *>();
-    QVERIFY(edit != nullptr);
+    QVERIFY(edit);
 
     edit->setPlainText("test");
 
     const QString correct_filter = "test";
     const QString filter = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter);
+    QCOMPARE(correct_filter, filter);
 
     // Serialize
     const QVariant state = filter_widget->save_state();
@@ -172,7 +172,7 @@ void ADMCTestFilterWidget::test_advanced_tab() {
     filter_widget->restore_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter_deserialized);
+    QCOMPARE(correct_filter, filter_deserialized);
 }
 
 QTEST_MAIN(ADMCTestFilterWidget)

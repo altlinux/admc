@@ -42,14 +42,14 @@ void ADMCTestStringEditor::load_empty() {
 
 void ADMCTestStringEditor::load() {
     edit->load({QByteArray("hello")});
-    QVERIFY(line_edit->text() == "hello");
+    QCOMPARE(line_edit->text(), "hello");
 }
 
 void ADMCTestStringEditor::get_new_values() {
     const QList<QByteArray> correct_value_list = {QByteArray("hello")};
     edit->load(correct_value_list);
     const QList<QByteArray> value_list = edit->get_new_values();
-    QVERIFY(correct_value_list == value_list);
+    QCOMPARE(correct_value_list, value_list);
 }
 
 QTEST_MAIN(ADMCTestStringEditor)

@@ -55,7 +55,7 @@ void ADMCTestGroupTypeEdit::load() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    QVERIFY(combo->currentIndex() == 0);
+    QCOMPARE(combo->currentIndex(), 0);
 }
 
 void ADMCTestGroupTypeEdit::apply_unmodified() {
@@ -71,7 +71,7 @@ void ADMCTestGroupTypeEdit::apply() {
 
     const AdObject updated_object = ad.search_object(dn);
     const GroupType type = updated_object.get_group_type();
-    QVERIFY(type == GroupType_Distribution);
+    QCOMPARE(type, GroupType_Distribution);
 }
 
 QTEST_MAIN(ADMCTestGroupTypeEdit)

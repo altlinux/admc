@@ -63,7 +63,7 @@ void ADMCTestManagerEdit::load() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    QVERIFY(manager_display->text() == manager_dn);
+    QCOMPARE(manager_display->text(), manager_dn);
 }
 
 void ADMCTestManagerEdit::apply_unmodified() {
@@ -82,7 +82,7 @@ void ADMCTestManagerEdit::apply_after_change() {
 
     const AdObject updated_object = ad.search_object(dn);
     const QString updated_manager = updated_object.get_string(ATTRIBUTE_MANAGER);
-    QVERIFY(updated_manager == manager_dn);
+    QCOMPARE(updated_manager, manager_dn);
 }
 
 void ADMCTestManagerEdit::apply_after_clear() {
