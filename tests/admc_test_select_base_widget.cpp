@@ -72,7 +72,7 @@ void ADMCTestSelectBaseWidget::select_base() {
     select_base_widget_add(select_base_widget, select_dn);
 
     const QString base = select_base_widget->get_base();
-    QVERIFY(base == select_dn);
+    QCOMPARE(base, select_dn);
 }
 
 // Adding multiple search bases to combo box, then selecting
@@ -86,7 +86,7 @@ void ADMCTestSelectBaseWidget::select_base_multiple() {
     // Alpha is at index 1 in the combo (0 is domain)
     combo->setCurrentIndex(1);
     const QString base = select_base_widget->get_base();
-    QVERIFY(base == dn_list[0]);
+    QCOMPARE(base, dn_list[0]);
 }
 
 void ADMCTestSelectBaseWidget::save_state() {

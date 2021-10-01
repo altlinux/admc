@@ -36,6 +36,9 @@ SelectBaseWidget::SelectBaseWidget(QWidget *parent)
     connect(
         ui->browse_button, &QAbstractButton::clicked,
         browse_dialog, &QDialog::open);
+    connect(
+        browse_dialog, &QDialog::accepted,
+        this, &SelectBaseWidget::on_browse_dialog);
 }
 
 void SelectBaseWidget::init(AdConfig *adconfig, const QString &default_base) {

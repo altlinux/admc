@@ -286,9 +286,4 @@ void select_base_widget_add(SelectBaseWidget *widget, const QString &dn) {
 
     select_container_dialog->accept();
     QVERIFY(QTest::qWaitForWindowExposed(widget, 1000));
-
-    // NOTE: have to delete manually, dialog deletes itself
-    // on close a bit late which causes consecutive calls
-    // calls to get the dialog that should've been destroyed
-    delete select_container_dialog;
 }
