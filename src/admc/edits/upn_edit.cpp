@@ -27,11 +27,14 @@
 
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QComboBox>
 
 UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     prefix_edit = new QLineEdit();
-    upn_suffix_widget = new UpnSuffixWidget(ad);
+    
+    upn_suffix_combo = new QComboBox();
+    upn_suffix_combo_init(upn_suffix_combo, ad);
 
     limit_edit(prefix_edit, ATTRIBUTE_USER_PRINCIPAL_NAME);
 
@@ -41,12 +44,12 @@ UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *pa
             emit edited();
         });
     QObject::connect(
-        upn_suffix_widget, &UpnSuffixWidget::edited,
+        upn_suffix_combo, &QComboBox::currentTextChanged,
         this, &UpnEdit::edited);
 }
 
 void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    upn_suffix_widget->load(object);
+    upn_suffix_combo_load(upn_suffix_combo, object);
 
     const QString prefix = object.get_upn_prefix();
     prefix_edit->setText(prefix);
@@ -61,7 +64,7 @@ void UpnEdit::add_to_layout(QFormLayout *layout) {
 
     auto sublayout = new QHBoxLayout();
     sublayout->addWidget(prefix_edit);
-    sublayout->addWidget(upn_suffix_widget);
+    sublayout->addWidget(upn_suffix_combo);
 
     layout->addRow(label_text, sublayout);
 }
@@ -119,6 +122,6 @@ QString UpnEdit::get_input() const {
 
 QString UpnEdit::get_new_value() const {
     const QString prefix = prefix_edit->text();
-    const QString suffix = upn_suffix_widget->get_suffix();
+    const QString suffix = upn_suffix_combo->currentText();
     return QString("%1@%2").arg(prefix, suffix);
 }

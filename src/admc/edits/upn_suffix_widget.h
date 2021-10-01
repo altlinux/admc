@@ -21,27 +21,11 @@
 #ifndef UPN_SUFFIX_WIDGET_H
 #define UPN_SUFFIX_WIDGET_H
 
-#include <QWidget>
-
+class QComboBox;
 class AdInterface;
 class AdObject;
-class QComboBox;
 
-class UpnSuffixWidget final : public QWidget {
-    Q_OBJECT
-
-public:
-    UpnSuffixWidget(AdInterface &ad);
-
-    QString get_suffix() const;
-    void load(const AdObject &object);
-    void set_enabled(const bool enabled);
-
-signals:
-    void edited();
-
-private:
-    QComboBox *combo;
-};
+void upn_suffix_combo_init(QComboBox *combo, AdInterface &ad);
+void upn_suffix_combo_load(QComboBox *combo, const AdObject &object);
 
 #endif /* UPN_SUFFIX_WIDGET_H */

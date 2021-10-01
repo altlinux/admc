@@ -28,7 +28,7 @@
 
 #include "multi_edits/attribute_multi_edit.h"
 
-class UpnSuffixWidget;
+class QComboBox;
 
 class UpnMultiEdit final : public AttributeMultiEdit {
     Q_OBJECT
@@ -38,7 +38,7 @@ public:
     DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
 private:
-    UpnSuffixWidget *upn_suffix_widget;
+    QComboBox *upn_suffix_combo;
 };
 
 #endif /* UPN_MULTI_EDIT_H */

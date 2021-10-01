@@ -26,30 +26,32 @@
 
 #include <QFormLayout>
 #include <QCheckBox>
+#include <QComboBox>
 
 UpnMultiEdit::UpnMultiEdit(QList<AttributeMultiEdit *> &edits_out, AdInterface &ad, QObject *parent)
 : AttributeMultiEdit(edits_out, parent) {
-    upn_suffix_widget = new UpnSuffixWidget(ad);
+    upn_suffix_combo = new QComboBox();
+    upn_suffix_combo_init(upn_suffix_combo, ad);
 
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER) + ":";
     apply_check->setText(label_text);
 
-    connect(
-        upn_suffix_widget, &UpnSuffixWidget::edited,
+    QObject::connect(
+        upn_suffix_combo, &QComboBox::currentTextChanged,
         this, &UpnMultiEdit::edited);
 
     set_enabled(false);
 }
 
 void UpnMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(apply_check, upn_suffix_widget);
+    layout->addRow(apply_check, upn_suffix_combo);
 }
 
 bool UpnMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
     const QString new_value = [&]() {
         const AdObject current_object = ad.search_object(target);
         const QString current_prefix = current_object.get_upn_prefix();
-        const QString new_suffix = upn_suffix_widget->get_suffix();
+        const QString new_suffix = upn_suffix_combo->currentText();
 
         return QString("%1@%2").arg(current_prefix, new_suffix);
     }();
@@ -58,5 +60,5 @@ bool UpnMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
 }
 
 void UpnMultiEdit::set_enabled(const bool enabled) {
-    upn_suffix_widget->set_enabled(enabled);
+    upn_suffix_combo->setEnabled(enabled);
 }

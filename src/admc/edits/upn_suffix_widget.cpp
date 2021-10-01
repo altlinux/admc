@@ -24,12 +24,8 @@
 #include "globals.h"
 
 #include <QComboBox>
-#include <QVBoxLayout>
 
-UpnSuffixWidget::UpnSuffixWidget(AdInterface &ad)
-: QWidget() {
-    combo = new QComboBox();
-
+void upn_suffix_combo_init(QComboBox *combo, AdInterface &ad) {
     const QList<QString> suffixes = [&]() {
         QList<QString> out;
 
@@ -50,23 +46,9 @@ UpnSuffixWidget::UpnSuffixWidget(AdInterface &ad)
     for (const QString &suffix : suffixes) {
         combo->addItem(suffix);
     }
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(combo);
-
-    QObject::connect(
-        combo, &QComboBox::currentTextChanged,
-        this, &UpnSuffixWidget::edited);
 }
 
-QString UpnSuffixWidget::get_suffix() const {
-    return combo->currentText();
-}
-
-void UpnSuffixWidget::load(const AdObject &object) {
+void upn_suffix_combo_load(QComboBox *combo, const AdObject &object) {
     const QString suffix = object.get_upn_suffix();
 
     // Select current suffix in suffix combo. Add current
@@ -80,8 +62,4 @@ void UpnSuffixWidget::load(const AdObject &object) {
         const int added_index = combo->findText(suffix);
         combo->setCurrentIndex(added_index);
     }
-}
-
-void UpnSuffixWidget::set_enabled(const bool enabled) {
-    combo->setEnabled(enabled);
 }

@@ -25,7 +25,7 @@
 
 class QLineEdit;
 class AdInterface;
-class UpnSuffixWidget;
+class QComboBox;
 
 class UpnEdit final : public AttributeEdit {
     Q_OBJECT
@@ -39,7 +39,7 @@ public:
 
 private:
     QLineEdit *prefix_edit;
-    UpnSuffixWidget *upn_suffix_widget;
+    QComboBox *upn_suffix_combo;
 
     friend class StringOtherEdit;
 
