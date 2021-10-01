@@ -56,7 +56,8 @@ QWidget *AccountOptionEdit::layout_many(const QList<AccountOption> &options, con
 
 AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    auto check_arg = new QCheckBox();
+    const QString check_text = account_option_string(option);
+    auto check_arg = new QCheckBox(check_text);
 
     init(option_arg, check_arg);
 }
@@ -97,9 +98,6 @@ QCheckBox *AccountOptionEdit::get_check() const {
 void AccountOptionEdit::init(const AccountOption option_arg, QCheckBox *check_arg) {
     option = option_arg;
     check = check_arg;
-
-    const QString label_text = account_option_string(option);
-    check->setText(label_text);
 
     QObject::connect(
         check, &QCheckBox::stateChanged,
