@@ -27,7 +27,7 @@
 #include "filter_widget/filter_widget_simple_tab.h"
 #include "find_object_dialog.h"
 #include "find_widget.h"
-#include "rename_object_dialog.h"
+#include "rename_user_dialog.h"
 #include "select_container_dialog.h"
 #include "select_object_advanced_dialog.h"
 #include "select_object_dialog.h"
@@ -241,7 +241,8 @@ void ADMCTestObjectMenu::object_menu_rename() {
     QVERIFY(object_exists(old_dn));
 
     // Open rename dialog
-    auto rename_dialog = new RenameObjectDialog(old_dn, parent_widget);
+    auto rename_dialog = new RenameUserDialog(parent_widget);
+    rename_dialog->set_target(old_dn);
     rename_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(rename_dialog, 1000));
 

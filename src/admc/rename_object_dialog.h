@@ -21,40 +21,20 @@
 #ifndef RENAME_OBJECT_DIALOG_H
 #define RENAME_OBJECT_DIALOG_H
 
-#include <QDialog>
-
-class AttributeEdit;
-class QLineEdit;
-class QPushButton;
+#include "rename_dialog.h"
 
 namespace Ui {
     class RenameObjectDialog;
 }
 
-class RenameObjectDialog final : public QDialog {
+class RenameObjectDialog final : public RenameDialog {
     Q_OBJECT
 
 public:
-    RenameObjectDialog(const QString &target_arg, QWidget *parent);
-
-    static void success_msg(const QString &old_name);
-    static void fail_msg(const QString &old_name);
-
-    QString get_new_dn() const;
-
-public slots:
-    void accept();
-
-private slots:
-    void on_edited();
-    void reset();
+    RenameObjectDialog(QWidget *parent);
 
 private:
     Ui::RenameObjectDialog *ui;
-    QString target;
-    QList<AttributeEdit *> all_edits;
-    QPushButton *ok_button;
-    QPushButton *reset_button;
 };
 
 #endif /* RENAME_OBJECT_DIALOG_H */

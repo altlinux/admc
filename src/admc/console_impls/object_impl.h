@@ -37,6 +37,9 @@ class PolicyImpl;
 class ChangeDCDialog;
 class ConsoleWidget;
 class SelectContainerDialog;
+class RenameObjectDialog;
+class RenameUserDialog;
+class RenameGroupDialog;
 
 /**
  * Some f-ns used for models that store objects.
@@ -116,6 +119,9 @@ private:
     PolicyImpl *policy_impl;
     ChangeDCDialog *change_dc_dialog;
     SelectContainerDialog *move_dialog;
+    RenameObjectDialog *rename_object_dialog;
+    RenameUserDialog *rename_user_dialog;
+    RenameGroupDialog *rename_group_dialog;
 
     QString current_filter;
     bool filtering_is_ON;

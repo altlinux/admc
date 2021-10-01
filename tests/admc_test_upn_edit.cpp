@@ -31,7 +31,8 @@
 void ADMCTestUpnEdit::init() {
     ADMCTest::init();
 
-    upn_edit = new UpnEdit(&edits, ad, parent_widget);
+    upn_edit = new UpnEdit(&edits, parent_widget);
+    upn_edit->init_suffixes(ad);
     add_attribute_edit(upn_edit);
 
     prefix_edit = parent_widget->findChild<QLineEdit *>();

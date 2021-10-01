@@ -18,13 +18,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rename_object_dialog.h"
-#include "ui_rename_object_dialog.h"
+#ifndef RENAME_DIALOG_H
+#define RENAME_DIALOG_H
 
-RenameObjectDialog::RenameObjectDialog(QWidget *parent)
-: RenameDialog(parent) {
-    ui = new Ui::RenameObjectDialog();
-    ui->setupUi(this);
+#include <QDialog>
 
-    init(ui->name_edit, ui->button_box, {});
-}
+class QLineEdit;
+class QDialogButtonBox;
+class AttributeEdit;
+class AdInterface;
+
+class RenameDialog : public QDialog {
+    Q_OBJECT
+
+public:
+    using QDialog::QDialog;
+
+    static void success_msg(const QString &old_name);
+    static void fail_msg(const QString &old_name);
+
+    void init(QLineEdit *name_edit, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits);
+
+    void set_target(const QString &dn);
+    void reset();
+    QString get_new_dn() const;
+    void open() override;
+    void accept() override;
+
+private:
+    QString target;
+    QLineEdit *name_edit;
+    QList<AttributeEdit *> edits;
+};
+
+#endif /* RENAME_DIALOG_H */

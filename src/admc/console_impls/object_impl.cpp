@@ -32,7 +32,10 @@
 #include "status.h"
 #include "utils.h"
 #include "create_object_dialog.h"
+#include "rename_dialog.h"
 #include "rename_object_dialog.h"
+#include "rename_user_dialog.h"
+#include "rename_group_dialog.h"
 #include "select_container_dialog.h"
 #include "change_dc_dialog.h"
 #include "find_object_dialog.h"
@@ -68,6 +71,9 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 
     change_dc_dialog = new ChangeDCDialog(console);
     move_dialog = new SelectContainerDialog(console);
+    rename_object_dialog = new RenameObjectDialog(console);
+    rename_user_dialog = new RenameUserDialog(console);
+    rename_group_dialog = new RenameGroupDialog(console);
 
     current_filter = QString();
     filtering_is_ON = false;
@@ -401,13 +407,27 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex
 }
 
 void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
+    RenameDialog *dialog = [&]() -> RenameDialog * {
+        const QModelIndex index = index_list[0];
+        const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
+        const bool is_user = (object_class == CLASS_USER);
+        const bool is_group = (object_class == CLASS_GROUP);
+
+        if (is_user) {
+            return rename_user_dialog;
+        } else if (is_group) {
+            return rename_group_dialog;
+        } else {
+            return rename_object_dialog;
+        }
+    }();
+
     const QString dn = get_selected_dn_object(console);
 
-    auto dialog = new RenameObjectDialog(dn, console);
-    dialog->open();
+    dialog->set_target(dn);
 
     QObject::connect(
-        dialog, &RenameObjectDialog::accepted,
+        dialog, &QDialog::accepted,
         [=]() {
             AdInterface ad;
             if (ad_failed(ad)) {
@@ -419,6 +439,8 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
             const QString parent_dn = dn_get_parent(old_dn);
             move_and_rename(ad, {{old_dn, new_dn}}, parent_dn);
         });
+
+    dialog->open();
 }
 
 void ObjectImpl::properties(const QList<QModelIndex> &index_list) {

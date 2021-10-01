@@ -39,7 +39,8 @@
 // complicated to implement so this is a WONTFIX.
 
 AccountTab::AccountTab(AdInterface &ad) {
-    auto upn_edit = new UpnEdit(&edits, ad, this);
+    auto upn_edit = new UpnEdit(&edits, this);
+    upn_edit->init_suffixes(ad);
 
     auto unlock_edit = new UnlockEdit(&edits, UnlockEditStyle_CheckOnRight, this);
 

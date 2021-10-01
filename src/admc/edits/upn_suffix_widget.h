@@ -21,9 +21,9 @@
 #ifndef UPN_SUFFIX_WIDGET_H
 #define UPN_SUFFIX_WIDGET_H
 
-class QComboBox;
 class AdInterface;
 class AdObject;
+class QComboBox;
 
 void upn_suffix_combo_init(QComboBox *combo, AdInterface &ad);
 void upn_suffix_combo_load(QComboBox *combo, const AdObject &object);

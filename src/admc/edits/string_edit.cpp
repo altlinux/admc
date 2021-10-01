@@ -27,19 +27,45 @@
 #include <QFormLayout>
 #include <QLineEdit>
 
+void do_sama_edit_thing(QLineEdit *edit);
+
 void StringEdit::make_many(const QList<QString> attributes, const QString &objectClass, QList<AttributeEdit *> *edits_out, QObject *parent) {
     for (auto attribute : attributes) {
         new StringEdit(attribute, objectClass, edits_out, parent);
     }
 }
 
+StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    attribute = attribute_arg;
+    objectClass = objectClass_arg;
+    edit = edit_arg;
+    domain_edit = nullptr;
+    
+    init();
+}
+
+StringEdit::StringEdit(QLineEdit *sama_edit, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    attribute = ATTRIBUTE_SAMACCOUNT_NAME;
+    objectClass = CLASS_USER;
+    edit = sama_edit;
+    domain_edit = domain_edit_arg;
+
+    init();
+}
+
 StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     attribute = attribute_arg;
     objectClass = objectClass_arg;
-
     edit = new QLineEdit();
+    domain_edit = nullptr;
 
+    init();
+}
+
+void StringEdit::init() {
     if (g_adconfig->get_attribute_is_number(attribute)) {
         set_line_edit_to_numbers_only(edit);
     }
@@ -64,6 +90,8 @@ void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
         }
     }();
 
+    do_sama_edit_thing(domain_edit);
+
     edit->setText(value);
 }
 
@@ -75,18 +103,13 @@ void StringEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = g_adconfig->get_attribute_display_name(attribute, objectClass) + ":";
 
     if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
-        const QString domain = g_adconfig->domain();
-
-        const QString domain_name = domain.split(".")[0];
-        const QString extra_edit_text = "\\" + domain_name;
-        auto extra_edit = new QLineEdit();
-        extra_edit->setEnabled(false);
-        extra_edit->setText(extra_edit_text);
+        domain_edit = new QLineEdit();
+        domain_edit->setEnabled(false);
+        do_sama_edit_thing(domain_edit);
 
         auto sublayout = new QHBoxLayout();
         sublayout->addWidget(edit);
-        sublayout->addWidget(extra_edit);
-
+        sublayout->addWidget(domain_edit);
         layout->addRow(label_text, sublayout);
     } else {
         layout->addRow(label_text, edit);
@@ -118,4 +141,20 @@ bool StringEdit::is_empty() const {
 
 QLineEdit *StringEdit::get_edit() const {
     return edit;
+}
+
+void do_sama_edit_thing(QLineEdit *edit) {
+    if (edit == nullptr) {
+        return;
+    }
+
+    const QString domain_text = []() {
+        const QString domain = g_adconfig->domain();
+        const QString domain_name = domain.split(".")[0];
+        const QString out = "\\" + domain_name;
+
+        return out;
+    }();
+
+    edit->setText(domain_text);
 }

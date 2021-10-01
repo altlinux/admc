@@ -29,12 +29,27 @@
 #include <QLineEdit>
 #include <QComboBox>
 
-UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *parent)
+UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     prefix_edit = new QLineEdit();
-    
     upn_suffix_combo = new QComboBox();
 
+    init_internal();
+}
+
+UpnEdit::UpnEdit(QLineEdit *prefix_edit_arg, QComboBox *upn_suffix_combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    prefix_edit = prefix_edit_arg;
+    upn_suffix_combo = upn_suffix_combo_arg;
+
+    init_internal();
+}
+
+void UpnEdit::init_suffixes(AdInterface &ad) {
+    upn_suffix_combo_init(upn_suffix_combo, ad);
+}
+
+void UpnEdit::init_internal() {
     limit_edit(prefix_edit, ATTRIBUTE_USER_PRINCIPAL_NAME);
 
     QObject::connect(
@@ -47,13 +62,7 @@ UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *pa
         this, &UpnEdit::edited);
 }
 
-void UpnEdit::init(AdInterface &ad) {
-    upn_suffix_combo_init(upn_suffix_combo, ad);
-}
-
 void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    init(ad);
-
     upn_suffix_combo_load(upn_suffix_combo, object);
 
     const QString prefix = object.get_upn_prefix();

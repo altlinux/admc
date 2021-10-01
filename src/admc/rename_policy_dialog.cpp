@@ -92,10 +92,10 @@ void RenamePolicyDialog::accept() {
     const bool apply_success = ad.attribute_replace_string(target, ATTRIBUTE_DISPLAY_NAME, new_name);
 
     if (apply_success) {
-        RenameObjectDialog::success_msg(old_name);
+        RenameDialog::success_msg(old_name);
         QDialog::accept();
     } else {
-        RenameObjectDialog::fail_msg(old_name);
+        RenameDialog::fail_msg(old_name);
     }
 
     g_status()->display_ad_messages(ad, this);
