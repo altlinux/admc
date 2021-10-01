@@ -75,7 +75,10 @@ void ADMCTestSelectObjectDialog::one_match() {
     add_button->click();
 
     const QList<QString> selected = dialog->get_selected();
-    QVERIFY(selected == QList<QString>({dn}));
+    QCOMPARE(selected.size(), 1);
+    if (selected.size() == 1) {
+        QCOMPARE(selected[0], dn);
+    }
 }
 
 void ADMCTestSelectObjectDialog::multiple_matches() {

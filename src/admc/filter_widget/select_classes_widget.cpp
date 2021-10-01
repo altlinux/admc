@@ -39,11 +39,12 @@ SelectClassesWidget::SelectClassesWidget(QWidget *parent)
     connect(
         dialog, &QDialog::finished,
         this, &SelectClassesWidget::update_classes_display);
-    update_classes_display();
 }
 
 void SelectClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list) {
     dialog->filter_classes_widget()->add_classes(adconfig, class_list);
+
+    update_classes_display();
 }
 
 QString SelectClassesWidget::get_filter() const {
