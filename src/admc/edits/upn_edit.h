@@ -33,6 +33,8 @@ public:
     UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
+    void init(AdInterface &ad);
+
     QString get_input() const;
     bool verify(AdInterface &ad, const QString &dn) const override;
     QLineEdit *get_edit() const;

@@ -78,6 +78,7 @@ CreateObjectDialog::CreateObjectDialog(const QString &parent_dn_arg, const QStri
         auto last_name_edit = new StringEdit(ATTRIBUTE_LAST_NAME, object_class, &all_edits, this);
         auto initials_edit = new StringEdit(ATTRIBUTE_INITIALS, object_class, &all_edits, this);
         auto upn_edit = new UpnEdit(&all_edits, ad, this);
+        upn_edit->init(ad);
         auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
 
         first_name_edit->get_edit()->setObjectName("first_name_edit");

@@ -34,7 +34,6 @@ UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *pa
     prefix_edit = new QLineEdit();
     
     upn_suffix_combo = new QComboBox();
-    upn_suffix_combo_init(upn_suffix_combo, ad);
 
     limit_edit(prefix_edit, ATTRIBUTE_USER_PRINCIPAL_NAME);
 
@@ -48,7 +47,13 @@ UpnEdit::UpnEdit(QList<AttributeEdit *> *edits_out, AdInterface &ad, QObject *pa
         this, &UpnEdit::edited);
 }
 
+void UpnEdit::init(AdInterface &ad) {
+    upn_suffix_combo_init(upn_suffix_combo, ad);
+}
+
 void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    init(ad);
+
     upn_suffix_combo_load(upn_suffix_combo, object);
 
     const QString prefix = object.get_upn_prefix();
