@@ -38,18 +38,7 @@ StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, const 
     attribute = attribute_arg;
     objectClass = objectClass_arg;
     edit = edit_arg;
-    domain_edit = nullptr;
     
-    init();
-}
-
-StringEdit::StringEdit(QLineEdit *sama_edit, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    attribute = ATTRIBUTE_SAMACCOUNT_NAME;
-    objectClass = CLASS_USER;
-    edit = sama_edit;
-    domain_edit = domain_edit_arg;
-
     init();
 }
 
@@ -58,7 +47,6 @@ StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_
     attribute = attribute_arg;
     objectClass = objectClass_arg;
     edit = new QLineEdit();
-    domain_edit = nullptr;
 
     init();
 }
@@ -88,10 +76,6 @@ void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
         }
     }();
 
-    if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
-        load_domain();
-    }
-
     edit->setText(value);
 }
 
@@ -102,18 +86,7 @@ void StringEdit::set_read_only(const bool read_only) {
 void StringEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = g_adconfig->get_attribute_display_name(attribute, objectClass) + ":";
 
-    if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
-        domain_edit = new QLineEdit();
-        domain_edit->setEnabled(false);
-        load_domain();
-
-        auto sublayout = new QHBoxLayout();
-        sublayout->addWidget(edit);
-        sublayout->addWidget(domain_edit);
-        layout->addRow(label_text, sublayout);
-    } else {
-        layout->addRow(label_text, edit);
-    }
+    layout->addRow(label_text, edit);
 }
 
 bool StringEdit::apply(AdInterface &ad, const QString &dn) const {
@@ -121,16 +94,4 @@ bool StringEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool success = ad.attribute_replace_string(dn, attribute, new_value);
 
     return success;
-}
-
-void StringEdit::load_domain() {
-    const QString domain_text = []() {
-        const QString domain = g_adconfig->domain();
-        const QString domain_name = domain.split(".")[0];
-        const QString out = domain_name + "\\";
-
-        return out;
-    }();
-
-    domain_edit->setText(domain_text);
 }

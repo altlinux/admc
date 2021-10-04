@@ -18,29 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_GROUP_DIALOG_H
-#define CREATE_GROUP_DIALOG_H
+#ifndef SAMA_EDIT_H
+#define SAMA_EDIT_H
 
-#include "create_dialog.h"
+#include "edits/attribute_edit.h"
 
-class SamaEdit;
+class QLineEdit;
 
-namespace Ui {
-    class CreateGroupDialog;
-}
-
-class CreateGroupDialog final : public CreateDialog {
+class SamaEdit final : public AttributeEdit {
     Q_OBJECT
-
 public:
-    CreateGroupDialog(QWidget *parent);
+    SamaEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
+    SamaEdit(QLineEdit *sama_edit, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
-    void open() override;
+    void load_domain();
 
 private:
-    Ui::CreateGroupDialog *ui;
+    QLineEdit *edit;
+    QLineEdit *domain_edit;
 
-    SamaEdit *sama_edit;
+    void init();
 };
 
-#endif /* CREATE_GROUP_DIALOG_H */
+#endif /* SAMA_EDIT_H */

@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "utils.h"
-#include "edits/string_edit.h"
+#include "edits/sama_edit.h"
 #include "edits/upn_edit.h"
 
 CreateComputerDialog::CreateComputerDialog(QWidget *parent)
@@ -39,7 +39,7 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
 
     // TODO: "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
 
-    new StringEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
+    new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,

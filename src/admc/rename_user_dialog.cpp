@@ -24,6 +24,7 @@
 #include "adldap.h"
 #include "utils.h"
 #include "edits/string_edit.h"
+#include "edits/sama_edit.h"
 #include "edits/upn_edit.h"
 
 RenameUserDialog::RenameUserDialog(QWidget *parent)
@@ -36,7 +37,7 @@ RenameUserDialog::RenameUserDialog(QWidget *parent)
     new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, CLASS_USER, &edit_list, this);
     new StringEdit(ui->full_name_edit, ATTRIBUTE_DISPLAY_NAME, CLASS_USER, &edit_list, this);
     upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
-    new StringEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
+    new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
 
     init(ui->name_edit, ui->button_box, edit_list);
 }

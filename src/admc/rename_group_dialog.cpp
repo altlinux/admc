@@ -21,7 +21,7 @@
 #include "rename_group_dialog.h"
 #include "ui_rename_group_dialog.h"
 
-#include "edits/string_edit.h"
+#include "edits/sama_edit.h"
 
 RenameGroupDialog::RenameGroupDialog(QWidget *parent)
 : RenameDialog(parent) {
@@ -29,7 +29,7 @@ RenameGroupDialog::RenameGroupDialog(QWidget *parent)
     ui->setupUi(this);
 
     QList<AttributeEdit *> edit_list;
-    new StringEdit(ui->sama_edit, ui->domain_edit, &edit_list, this);
+    new SamaEdit(ui->sama_edit, ui->domain_edit, &edit_list, this);
 
     init(ui->name_edit, ui->button_box, edit_list);
 }

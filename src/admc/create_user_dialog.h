@@ -23,7 +23,7 @@
 
 #include "create_dialog.h"
 
-class StringEdit;
+class SamaEdit;
 class UpnEdit;
 
 namespace Ui {
@@ -40,7 +40,7 @@ public:
 
 private:
     Ui::CreateUserDialog *ui;
-    StringEdit *sama_edit;
+    SamaEdit *sama_edit;
     UpnEdit *upn_edit;
 };
 

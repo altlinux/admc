@@ -25,6 +25,7 @@
 #include "utils.h"
 #include "settings.h"
 #include "edits/string_edit.h"
+#include "edits/sama_edit.h"
 #include "edits/upn_edit.h"
 #include "edits/password_edit.h"
 #include "edits/account_option_edit.h"
@@ -38,7 +39,7 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
     new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, CLASS_USER, &edit_list, this);
     new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, CLASS_USER, &edit_list, this);
     new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, CLASS_USER, &edit_list, this);
-    sama_edit = new StringEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
+    sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
 
     new PasswordEdit(&edit_list, ui->password_main_edit, ui->password_confirm_edit, this);
 
