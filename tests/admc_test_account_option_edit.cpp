@@ -77,6 +77,17 @@ void ADMCTestAccountOptionEdit::test_emit_edited_signal() {
     QVERIFY(edited_signal_emitted);
 }
 
+void ADMCTestAccountOptionEdit::correct_label() {
+    for (int i = 0; i < AccountOption_COUNT; i++) {
+        const AccountOption option = (AccountOption) i;
+        QCheckBox *check = check_map[option];
+        const QString expected_text = account_option_string(option);
+        const QString actual_text = check->text();
+
+        QCOMPARE(actual_text, expected_text);
+    }
+}
+
 void ADMCTestAccountOptionEdit::load_data() {
     QTest::addColumn<AccountOption>("option");
     QTest::addColumn<bool>("value");
