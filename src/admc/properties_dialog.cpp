@@ -19,6 +19,7 @@
  */
 
 #include "properties_dialog.h"
+#include "ui_properties_dialog.h"
 
 #include "adldap.h"
 #include "console_impls/object_impl.h"
@@ -43,14 +44,13 @@
 #include "tabs/os_tab.h"
 #include "tabs/delegation_tab.h"
 #include "utils.h"
+#include "properties_warning_dialog.h"
 
 #include <QAbstractItemView>
 #include <QAction>
 #include <QDebug>
-#include <QDialogButtonBox>
 #include <QLabel>
 #include <QPushButton>
-#include <QVBoxLayout>
 
 PropertiesDialog *PropertiesDialog::open_for_target(const QString &target) {
     if (target.isEmpty()) {
@@ -101,27 +101,20 @@ void PropertiesDialog::open_when_view_item_activated(QAbstractItemView *view, co
 
 PropertiesDialog::PropertiesDialog(const QString &target_arg)
 : QDialog() {
+    ui = new Ui::PropertiesDialog();
+    ui->setupUi(this);
+
     target = target_arg;
     is_modified = false;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    apply_button = button_box->addButton(QDialogButtonBox::Apply);
-    reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
+    warning_dialog = new PropertiesWarningDialog(this);
 
-    // Make ok button "auto default", which means that
-    // pressing enter will press ok button
-    cancel_button->setAutoDefault(false);
-    reset_button->setAutoDefault(false);
-    apply_button->setAutoDefault(false);
-    ok_button->setAutoDefault(true);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->setSpacing(0);
+    auto ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    apply_button = ui->button_box->button(QDialogButtonBox::Apply);
+    reset_button = ui->button_box->button(QDialogButtonBox::Reset);
+    auto cancel_button = ui->button_box->button(QDialogButtonBox::Cancel);
 
     const QString title = [&]() {
         const QString target_name = dn_get_name(target_arg);
@@ -141,15 +134,10 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         object = ad.search_object(target);
     }
 
-    auto tab_widget = new TabWidget();
-
-    layout->addWidget(tab_widget);
-    layout->addWidget(button_box);
-
     // Create new tabs
-    const auto add_tab = [this, tab_widget](PropertiesTab *tab, const QString &tab_title) {
+    const auto add_tab = [this](PropertiesTab *tab, const QString &tab_title) {
         tabs.append(tab);
-        tab_widget->add_tab(tab, tab_title);
+        ui->tab_widget->add_tab(tab, tab_title);
     };
 
     add_tab(new GeneralTab(object), tr("General"));
@@ -227,8 +215,14 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         cancel_button, &QPushButton::clicked,
         this, &PropertiesDialog::reject);
     connect(
-        tab_widget, &TabWidget::current_changed,
+        ui->tab_widget, &TabWidget::current_changed,
         this, &PropertiesDialog::on_current_tab_changed);
+    connect(
+        warning_dialog, &QDialog::accepted,
+        this, &PropertiesDialog::on_warning_dialog_accepted);
+    connect(
+        warning_dialog, &QDialog::accepted,
+        this, &PropertiesDialog::on_warning_dialog_rejected);
 }
 
 void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab) {
@@ -238,58 +232,16 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
         return;
     }
 
-    // Open dialog which let's user choose whether to
-    // apply changes and move to new tab or stay on
-    // current tab
-    auto dialog = new QDialog(this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-
-    const QString explanation_text = [&]() {
+    const PropertiesWarningType warning_type = [&]() {
         if (new_tab == attributes_tab) {
-            return tr("You're switching to attributes tab, while another tab has unapplied changes. Choose to apply or discard those changes.");
+            return PropertiesWarningType_SwitchToAttributes;
         } else {
-            return tr("You're switching from attributes tab, while it has unapplied changes. Choose to apply or discard those changes.");
+            return PropertiesWarningType_SwitchFromAttributes;
         }
     }();
-    auto explanation_label = new QLabel(explanation_text);
 
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(tr("Apply current changes"), QDialogButtonBox::AcceptRole);
-    button_box->addButton(tr("Discard changes"), QDialogButtonBox::RejectRole);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        dialog, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        dialog, &QDialog::reject);
-
-    const auto layout = new QVBoxLayout();
-    dialog->setLayout(layout);
-    layout->addWidget(explanation_label);
-    layout->addWidget(button_box);
-
-    connect(
-        dialog, &QDialog::accepted,
-        [&]() {
-            AdInterface ad;
-
-            if (ad_connected(ad)) {
-                apply_internal(ad);
-
-                // NOTE: have to reset for attributes/other tab
-                // to load updates
-                reset_internal(ad);
-            }
-        });
-
-    connect(
-        dialog, &QDialog::rejected,
-        [&]() {
-            reset();
-        });
-
-    dialog->open();
+    warning_dialog->set_type(warning_type);
+    warning_dialog->open();
 }
 
 void PropertiesDialog::ok() {
@@ -368,4 +320,21 @@ void PropertiesDialog::on_edited() {
     apply_button->setEnabled(true);
     reset_button->setEnabled(true);
     is_modified = true;
+}
+
+void PropertiesDialog::on_warning_dialog_accepted() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    apply_internal(ad);
+
+    // NOTE: have to reset for attributes tab and other tabs
+    // to load updates
+    reset_internal(ad);
+}
+
+void PropertiesDialog::on_warning_dialog_rejected() {
+    reset();
 }

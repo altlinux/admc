@@ -35,6 +35,11 @@ class QAbstractItemView;
 class QPushButton;
 class AttributesTab;
 class AdInterface;
+class PropertiesWarningDialog;
+
+namespace Ui {
+    class PropertiesDialog;
+}
 
 class PropertiesDialog final : public QDialog {
     Q_OBJECT
@@ -53,20 +58,25 @@ private slots:
     bool apply();
     void reset();
     void on_edited();
-    void on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab);
 
 private:
+    Ui::PropertiesDialog *ui;
     QList<PropertiesTab *> tabs;
     QString target;
     QPushButton *apply_button;
     QPushButton *reset_button;
     AttributesTab *attributes_tab;
+    PropertiesWarningDialog *warning_dialog;
     bool is_modified;
 
     // NOTE: ctor is private, use open_for_target() instead
     PropertiesDialog(const QString &target_arg);
     bool apply_internal(AdInterface &ad);
     void reset_internal(AdInterface &ad);
+
+    void on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab);
+    void on_warning_dialog_accepted();
+    void on_warning_dialog_rejected();
 };
 
 #endif /* PROPERTIES_DIALOG_H */

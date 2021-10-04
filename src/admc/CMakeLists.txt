@@ -81,6 +81,7 @@ set(ADMC_SOURCES
     change_dc_dialog.cpp
     connection_options_dialog.cpp
     changelog_dialog.cpp
+    properties_warning_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_dialog.cpp

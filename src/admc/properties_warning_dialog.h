@@ -18,36 +18,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TAB_WIDGET_H
-#define TAB_WIDGET_H
+#ifndef PROPERTIES_WARNING_DIALOG_H
+#define PROPERTIES_WARNING_DIALOG_H
 
 /**
- * Shows tabs in a horizontal list to the left and current
- * tab to the right. Used as a replacement for QTabWidget
- * because it doesn't have multi-line tabs.
+ * Dialog which opens when switching to/from attributes tab
+ * while there are un-applied changes. Let's user choose
+ * whether to apply changes and move to new tab or stay on
+ * current tab.
  */
 
-#include <QWidget>
+#include "create_dialog.h"
+
+enum PropertiesWarningType {
+    PropertiesWarningType_SwitchToAttributes,
+    PropertiesWarningType_SwitchFromAttributes,
+};
 
 namespace Ui {
-    class TabWidget;
+    class PropertiesWarningDialog;
 }
 
-class TabWidget final : public QWidget {
+class PropertiesWarningDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    TabWidget(QWidget *parent = nullptr);
+    PropertiesWarningDialog(QWidget *parent);
 
-    void add_tab(QWidget *tab, const QString &title);
-
-signals:
-    void current_changed(QWidget *prev_tab, QWidget *new_tab);
+    void set_type(const PropertiesWarningType type);
 
 private:
-    Ui::TabWidget *ui;
-
-    void on_list_current_row_changed(int index);
+    Ui::PropertiesWarningDialog *ui;
 };
 
-#endif /* TAB_WIDGET_H */
+#endif /* PROPERTIES_WARNING_DIALOG_H */

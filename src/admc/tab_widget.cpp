@@ -21,8 +21,8 @@
 #include "tab_widget.h"
 #include "ui_tab_widget.h"
 
-TabWidget::TabWidget()
-: QWidget() {
+TabWidget::TabWidget(QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::TabWidget();
     ui->setupUi(this);
 
