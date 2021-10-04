@@ -29,9 +29,6 @@
 
 #include <QWidget>
 
-class QStackedWidget;
-class QListWidget;
-
 namespace Ui {
     class TabWidget;
 }
@@ -49,8 +46,6 @@ signals:
 
 private:
     Ui::TabWidget *ui;
-    QStackedWidget *stacked_widget;
-    QListWidget *list_widget;
 
     void on_list_current_row_changed(int index);
 };
