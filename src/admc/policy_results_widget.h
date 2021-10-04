@@ -32,6 +32,10 @@ class QStandardItem;
 class QMenu;
 class ResultsView;
 
+namespace Ui {
+    class PolicyResultsWidget;
+}
+
 class PolicyResultsWidget final : public QWidget {
     Q_OBJECT
 
@@ -48,7 +52,7 @@ public:
     ResultsView *get_view() const;
 
 private:
-    ResultsView *view;
+    Ui::PolicyResultsWidget *ui;
     QStandardItemModel *model;
     QString gpo;
     QMenu *context_menu;

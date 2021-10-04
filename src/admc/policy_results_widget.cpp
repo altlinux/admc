@@ -19,6 +19,7 @@
  */
 
 #include "policy_results_widget.h"
+#include "ui_policy_results_widget.h"
 
 #include "adldap.h"
 #include "console_impls/policy_impl.h"
@@ -70,12 +71,13 @@ const QHash<PolicyResultsColumn, GplinkOption> column_to_option = {
 // policy tab (just call load after properties is closed?)
 
 PolicyResultsWidget::PolicyResultsWidget(QWidget *parent) {
+    ui = new Ui::PolicyResultsWidget();
+    ui->setupUi(this);
+
     auto delete_link_action = new QAction(tr("Delete link"), this);
 
     context_menu = new QMenu(this);
     context_menu->addAction(delete_link_action);
-
-    view = new ResultsView(this);
 
     model = new QStandardItemModel(0, PolicyResultsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -86,21 +88,15 @@ PolicyResultsWidget::PolicyResultsWidget(QWidget *parent) {
         {PolicyResultsColumn_Path, tr("Path")},
     });
 
-    view->set_model(model);
+    ui->view->set_model(model);
 
-    view->detail_view()->header()->resizeSection(0, 300);
-    view->detail_view()->header()->resizeSection(1, 100);
-    view->detail_view()->header()->resizeSection(2, 100);
-    view->detail_view()->header()->resizeSection(3, 500);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(view);
+    ui->view->detail_view()->header()->resizeSection(0, 300);
+    ui->view->detail_view()->header()->resizeSection(1, 100);
+    ui->view->detail_view()->header()->resizeSection(2, 100);
+    ui->view->detail_view()->header()->resizeSection(3, 500);
 
     const QVariant state = settings_get_variant(SETTING_policy_results_state);
-    view->restore_state(state, {
+    ui->view->restore_state(state, {
         PolicyResultsColumn_Name,
         PolicyResultsColumn_Enforced,
         PolicyResultsColumn_Disabled,
@@ -111,7 +107,7 @@ PolicyResultsWidget::PolicyResultsWidget(QWidget *parent) {
         model, &QStandardItemModel::itemChanged,
         this, &PolicyResultsWidget::on_item_changed);
     connect(
-        view, &ResultsView::context_menu,
+        ui->view, &ResultsView::context_menu,
         this, &PolicyResultsWidget::open_context_menu);
     connect(
         delete_link_action, &QAction::triggered,
@@ -119,7 +115,7 @@ PolicyResultsWidget::PolicyResultsWidget(QWidget *parent) {
 }
 
 PolicyResultsWidget::~PolicyResultsWidget() {
-    const QVariant state = view->save_state();
+    const QVariant state = ui->view->save_state();
     settings_set_variant(SETTING_policy_results_state, state);
 }
 
@@ -230,7 +226,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 }
 
 ResultsView *PolicyResultsWidget::get_view() const {
-    return view;
+    return ui->view;
 }
 
 void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
@@ -283,12 +279,12 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
 }
 
 void PolicyResultsWidget::open_context_menu(const QPoint &pos) {
-    const QModelIndex index = view->current_view()->indexAt(pos);
+    const QModelIndex index = ui->view->current_view()->indexAt(pos);
     if (!index.isValid()) {
         return;
     }
 
-    const QPoint global_pos = view->current_view()->mapToGlobal(pos);
+    const QPoint global_pos = ui->view->current_view()->mapToGlobal(pos);
     context_menu->popup(global_pos);
 }
 
@@ -300,7 +296,7 @@ void PolicyResultsWidget::delete_link() {
 
     show_busy_indicator();
 
-    const QList<QModelIndex> selected = view->get_selected_indexes();
+    const QList<QModelIndex> selected = ui->view->get_selected_indexes();
 
     QList<QPersistentModelIndex> removed_indexes;
 
