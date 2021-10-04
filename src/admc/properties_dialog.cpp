@@ -111,7 +111,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     warning_dialog = new PropertiesWarningDialog(this);
 
-    auto ok_button = ui->button_box->button(QDialogButtonBox::Ok);
     apply_button = ui->button_box->button(QDialogButtonBox::Apply);
     reset_button = ui->button_box->button(QDialogButtonBox::Reset);
     auto cancel_button = ui->button_box->button(QDialogButtonBox::Cancel);
@@ -203,9 +202,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     settings_setup_dialog_geometry(SETTING_properties_dialog_geometry, this);
     
     connect(
-        ok_button, &QPushButton::clicked,
-        this, &PropertiesDialog::ok);
-    connect(
         apply_button, &QPushButton::clicked,
         this, &PropertiesDialog::apply);
     connect(
@@ -244,11 +240,11 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
     warning_dialog->open();
 }
 
-void PropertiesDialog::ok() {
+void PropertiesDialog::accept() {
     const bool success = apply();
 
     if (success) {
-        accept();
+        QDialog::accept();
     }
 }
 
