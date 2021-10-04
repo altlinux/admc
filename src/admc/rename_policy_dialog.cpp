@@ -19,56 +19,34 @@
  */
 
 #include "rename_policy_dialog.h"
+#include "ui_rename_policy_dialog.h"
 
 #include "adldap.h"
-#include "console_impls/policy_impl.h"
 #include "globals.h"
-#include "rename_object_dialog.h"
+#include "rename_dialog.h"
 #include "status.h"
 #include "utils.h"
+#include "console_impls/policy_impl.h"
 #include "console_impls/item_type.h"
 
-#include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QLineEdit>
-#include <QModelIndex>
 #include <QPushButton>
-#include <QVBoxLayout>
+#include <QModelIndex>
 
 RenamePolicyDialog::RenamePolicyDialog(ConsoleWidget *console_arg)
 : QDialog(console_arg) {
+    ui = new Ui::RenamePolicyDialog();
+    ui->setupUi(this);
+
     console = console_arg;
 
-    setWindowTitle(tr("Rename Policy"));
+    ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    reset_button = ui->button_box->button(QDialogButtonBox::Reset);
 
-    name_edit = new QLineEdit();
-
-    auto button_box = new QDialogButtonBox();
-    ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    const auto edits_layout = new QFormLayout();
-    // NOTE: label name edit as "Name" even though it edits
-    // display name attribute
-    edits_layout->addRow(tr("Name:"), name_edit);
-
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edits_layout);
-    top_layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
     connect(
         reset_button, &QPushButton::clicked,
         this, &RenamePolicyDialog::reset);
     connect(
-        name_edit, &QLineEdit::textChanged,
+        ui->name_edit, &QLineEdit::textChanged,
         this, &RenamePolicyDialog::on_edited);
     on_edited();
 }
@@ -88,7 +66,7 @@ void RenamePolicyDialog::accept() {
     const QModelIndex index = console->get_selected_item(ItemType_Policy);
     const QString old_name = index.data(Qt::DisplayRole).toString();
 
-    const QString new_name = name_edit->text();
+    const QString new_name = ui->name_edit->text();
     const bool apply_success = ad.attribute_replace_string(target, ATTRIBUTE_DISPLAY_NAME, new_name);
 
     if (apply_success) {
@@ -125,7 +103,7 @@ void RenamePolicyDialog::reset() {
 
         return object.get_string(ATTRIBUTE_DISPLAY_NAME);
     }();
-    name_edit->setText(name);
+    ui->name_edit->setText(name);
 
     reset_button->setEnabled(false);
     ok_button->setEnabled(false);

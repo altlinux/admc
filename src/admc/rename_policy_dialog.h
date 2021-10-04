@@ -29,9 +29,12 @@
 
 #include <QDialog>
 
-class QLineEdit;
 class QPushButton;
 class ConsoleWidget;
+
+namespace Ui {
+    class RenamePolicyDialog;
+}
 
 class RenamePolicyDialog final : public QDialog {
     Q_OBJECT
@@ -43,12 +46,12 @@ public:
     void accept() override;
 
 private:
+    Ui::RenamePolicyDialog *ui;
     QString target;
-    QLineEdit *name_edit;
+    ConsoleWidget *console;
     QPushButton *ok_button;
     QPushButton *reset_button;
-    ConsoleWidget *console;
-
+    
     void on_edited();
     void reset();
 };
