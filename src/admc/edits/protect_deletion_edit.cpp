@@ -35,11 +35,14 @@ ProtectDeletionEdit::ProtectDeletionEdit(QList<AttributeEdit *> *edits_out, QObj
 : AttributeEdit(edits_out, parent) {
     check = new QCheckBox(tr("Protect against deletion"));
 
-    connect(
-        check, &QCheckBox::stateChanged,
-        [this]() {
-            emit edited();
-        });
+    init();
+}
+
+ProtectDeletionEdit::ProtectDeletionEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    check = check_arg;
+
+    init();
 }
 
 void ProtectDeletionEdit::set_enabled(const bool enabled) {
@@ -65,4 +68,12 @@ bool ProtectDeletionEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool apply_success = ad_security_set_protected_against_deletion(ad, dn, g_adconfig, enabled);
 
     return apply_success;
+}
+
+void ProtectDeletionEdit::init() {
+    connect(
+        check, &QCheckBox::stateChanged,
+        [this]() {
+            emit edited();
+        });
 }

@@ -27,6 +27,8 @@
 
 #include <QDialog>
 
+#include "widget_state.h"
+
 namespace Ui {
     class ChangeDCDialog;
 }
@@ -46,9 +48,7 @@ public:
 private:
     Ui::ChangeDCDialog *ui;
     ConsoleWidget *console;
-    QHash<QWidget *, QVariant> original_state;
-    
-    QList<QWidget *> get_widget_list() const;
+    WidgetState state;
 };
 
 #endif /* CHANGE_DC_DIALOG_H */

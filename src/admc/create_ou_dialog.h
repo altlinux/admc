@@ -18,24 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GROUP_SCOPE_EDIT_H
-#define GROUP_SCOPE_EDIT_H
+#ifndef CREATE_OU_DIALOG_H
+#define CREATE_OU_DIALOG_H
 
-#include "edits/attribute_edit.h"
+#include "create_dialog.h"
 
-class QComboBox;
+namespace Ui {
+    class CreateOUDialog;
+}
 
-class GroupScopeEdit final : public AttributeEdit {
+class CreateOUDialog final : public CreateDialog {
     Q_OBJECT
+
 public:
-    GroupScopeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
-    GroupScopeEdit(QComboBox *combo, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    CreateOUDialog(QWidget *parent);
 
 private:
-    QComboBox *combo;
-
-    void init();
+    Ui::CreateOUDialog *ui;
 };
 
-#endif /* GROUP_SCOPE_EDIT_H */
+#endif /* CREATE_OU_DIALOG_H */

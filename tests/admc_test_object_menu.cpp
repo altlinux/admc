@@ -22,7 +22,10 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl.h"
-#include "create_object_dialog.h"
+#include "create_user_dialog.h"
+#include "create_group_dialog.h"
+#include "create_ou_dialog.h"
+#include "create_computer_dialog.h"
 #include "filter_widget/filter_widget_advanced_tab.h"
 #include "filter_widget/filter_widget_simple_tab.h"
 #include "find_object_dialog.h"
@@ -51,7 +54,8 @@ void ADMCTestObjectMenu::object_menu_new_user() {
     const QString dn = test_object_dn(name, CLASS_USER);
 
     // Create user
-    auto create_dialog = new CreateObjectDialog({parent}, CLASS_USER, parent_widget);
+    auto create_dialog = new CreateUserDialog(parent_widget);
+    create_dialog->set_parent_dn(parent);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -85,7 +89,8 @@ void ADMCTestObjectMenu::object_menu_new_ou() {
     const QString dn = test_object_dn(name, CLASS_OU);
 
     // Create ou
-    auto create_dialog = new CreateObjectDialog({parent}, CLASS_OU, parent_widget);
+    auto create_dialog = new CreateOUDialog(parent_widget);
+    create_dialog->set_parent_dn(parent);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -108,7 +113,8 @@ void ADMCTestObjectMenu::object_menu_new_computer() {
     const QString dn = test_object_dn(name, object_class);
 
     // Open create dialog
-    auto create_dialog = new CreateObjectDialog({parent}, CLASS_COMPUTER, parent_widget);
+    auto create_dialog = new CreateComputerDialog(parent_widget);
+    create_dialog->set_parent_dn(parent);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -136,7 +142,8 @@ void ADMCTestObjectMenu::object_menu_new_group() {
     const QString dn = test_object_dn(name, object_class);
 
     // Open create dialog
-    auto create_dialog = new CreateObjectDialog({parent}, CLASS_GROUP, parent_widget);
+    auto create_dialog = new CreateGroupDialog(parent_widget);
+    create_dialog->set_parent_dn(parent);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 

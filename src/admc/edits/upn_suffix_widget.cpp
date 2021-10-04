@@ -46,9 +46,12 @@ void upn_suffix_combo_init(QComboBox *combo, AdInterface &ad) {
     for (const QString &suffix : suffixes) {
         combo->addItem(suffix);
     }
+
+    combo->setCurrentIndex(0);
 }
 
-void upn_suffix_combo_load(QComboBox *combo, const AdObject &object) {
+void upn_suffix_combo_load(QComboBox *combo, const AdObject &object
+    ) {
     const QString suffix = object.get_upn_suffix();
 
     // Select current suffix in suffix combo. Add current

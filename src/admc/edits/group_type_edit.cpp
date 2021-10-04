@@ -29,18 +29,14 @@ GroupTypeEdit::GroupTypeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     combo = new QComboBox();
 
-    for (int i = 0; i < GroupType_COUNT; i++) {
-        const GroupType type = (GroupType) i;
-        const QString type_string = group_type_string(type);
+    init();
+}
 
-        combo->addItem(type_string, (int) type);
-    }
+GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    combo = combo_arg;
 
-    QObject::connect(
-        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        [this]() {
-            emit edited();
-        });
+    init();
 }
 
 void GroupTypeEdit::load_internal(AdInterface &ad, const AdObject &object) {
@@ -63,4 +59,19 @@ bool GroupTypeEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool success = ad.group_set_type(dn, new_value);
 
     return success;
+}
+
+void GroupTypeEdit::init() {
+    for (int i = 0; i < GroupType_COUNT; i++) {
+        const GroupType type = (GroupType) i;
+        const QString type_string = group_type_string(type);
+
+        combo->addItem(type_string, (int) type);
+    }
+
+    QObject::connect(
+        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        [this]() {
+            emit edited();
+        });
 }

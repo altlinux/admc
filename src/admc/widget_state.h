@@ -18,24 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GROUP_SCOPE_EDIT_H
-#define GROUP_SCOPE_EDIT_H
+#ifndef WIDGET_STATE_H
+#define WIDGET_STATE_H
 
-#include "edits/attribute_edit.h"
+/**
+ * Saves/restores state of all the widgets in the list.
+ */
 
-class QComboBox;
+class WidgetStatePrivate;
+template<typename>
+class QList;
+class QWidget;
 
-class GroupScopeEdit final : public AttributeEdit {
-    Q_OBJECT
+class WidgetState final {
 public:
-    GroupScopeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
-    GroupScopeEdit(QComboBox *combo, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    WidgetState();
+    ~WidgetState();
+
+    void set_widget_list(const QList<QWidget *> &widget_list);
+    void save();
+    void restore();
 
 private:
-    QComboBox *combo;
-
-    void init();
+    WidgetStatePrivate *d;
 };
 
-#endif /* GROUP_SCOPE_EDIT_H */
+#endif /* WIDGET_STATE_H */

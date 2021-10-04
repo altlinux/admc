@@ -119,19 +119,11 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
     return true;
 }
 
-QLineEdit *UpnEdit::get_edit() const {
-    return prefix_edit;
-}
-
 bool UpnEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = get_new_value();
     const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_USER_PRINCIPAL_NAME, new_value);
 
     return success;
-}
-
-QString UpnEdit::get_input() const {
-    return prefix_edit->text();
 }
 
 QString UpnEdit::get_new_value() const {

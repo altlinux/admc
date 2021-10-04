@@ -48,6 +48,7 @@ set(ADMC_SOURCES
     policy_results_widget.cpp
     filter_classes_widget.cpp
     edit_query_item_widget.cpp
+    widget_state.cpp
     
     console_impls/object_impl.cpp
     console_impls/policy_impl.cpp
@@ -60,7 +61,11 @@ set(ADMC_SOURCES
     rename_policy_dialog.cpp
     rename_user_dialog.cpp
     rename_group_dialog.cpp
-    create_object_dialog.cpp
+    create_dialog.cpp
+    create_user_dialog.cpp
+    create_group_dialog.cpp
+    create_computer_dialog.cpp
+    create_ou_dialog.cpp
     find_object_dialog.cpp
     select_object_advanced_dialog.cpp
     select_container_dialog.cpp

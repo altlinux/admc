@@ -31,7 +31,10 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "create_object_dialog.h"
+#include "create_user_dialog.h"
+#include "create_group_dialog.h"
+#include "create_ou_dialog.h"
+#include "create_computer_dialog.h"
 #include "rename_dialog.h"
 #include "rename_object_dialog.h"
 #include "rename_user_dialog.h"
@@ -74,6 +77,10 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     rename_object_dialog = new RenameObjectDialog(console);
     rename_user_dialog = new RenameUserDialog(console);
     rename_group_dialog = new RenameGroupDialog(console);
+    create_user_dialog = new CreateUserDialog(console);
+    create_group_dialog = new CreateGroupDialog(console);
+    create_ou_dialog = new CreateOUDialog(console);
+    create_computer_dialog = new CreateComputerDialog(console);
 
     current_filter = QString();
     filtering_is_ON = false;
@@ -587,19 +594,19 @@ QList<int> ObjectImpl::default_columns() const {
 }
 
 void ObjectImpl::on_new_user() {
-    new_object(CLASS_USER);
+    new_object(create_user_dialog);
 }
 
 void ObjectImpl::on_new_computer() {
-    new_object(CLASS_COMPUTER);
+    new_object(create_computer_dialog);
 }
 
 void ObjectImpl::on_new_ou() {
-    new_object(CLASS_OU);
+    new_object(create_ou_dialog);
 }
 
 void ObjectImpl::on_new_group() {
-    new_object(CLASS_GROUP);
+    new_object(create_group_dialog);
 }
 
 void ObjectImpl::on_move_dialog() {
@@ -740,10 +747,10 @@ void ObjectImpl::on_reset_account() {
     }
 }
 
-void ObjectImpl::new_object(const QString &object_class) {
+void ObjectImpl::new_object(CreateDialog *dialog) {
     const QString parent_dn = get_selected_dn_object(console);
 
-    auto dialog = new CreateObjectDialog(parent_dn, object_class, console);
+    dialog->set_parent_dn(parent_dn);
     dialog->open();
 
     // NOTE: can't just add new object to this by adding
@@ -751,7 +758,7 @@ void ObjectImpl::new_object(const QString &object_class) {
     // by using action menu of an object in a query tree.
     // Therefore need to search for parent in domain tree.
     connect(
-        dialog, &CreateObjectDialog::accepted,
+        dialog, &QDialog::accepted,
         [=]() {
             AdInterface ad;
             if (ad_failed(ad)) {

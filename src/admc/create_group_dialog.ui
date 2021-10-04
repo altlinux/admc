@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RenameGroupDialog</class>
- <widget class="QDialog" name="RenameGroupDialog">
+ <class>CreateGroupDialog</class>
+ <widget class="QDialog" name="CreateGroupDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
-    <height>129</height>
+    <width>489</width>
+    <height>203</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Rename Group</string>
+   <string>Create Group</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QFormLayout" name="form_layout">
+    <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="nameLabel">
        <property name="text">
@@ -27,7 +27,7 @@
       <widget class="QLineEdit" name="name_edit"/>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="logonNamePreWindows2000Label">
        <property name="text">
         <string>Logon name (pre-Windows 2000):</string>
        </property>
@@ -36,7 +36,7 @@
      <item row="1" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLineEdit" name="domain_edit">
+        <widget class="QLineEdit" name="sama_domain_edit">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -47,6 +47,26 @@
        </item>
       </layout>
      </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="groupScopeLabel">
+       <property name="text">
+        <string>Group scope:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="scope_combo"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="groupTypeLabel">
+       <property name="text">
+        <string>Group type:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="type_combo"/>
+     </item>
     </layout>
    </item>
    <item>
@@ -55,7 +75,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
@@ -66,7 +86,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>RenameGroupDialog</receiver>
+   <receiver>CreateGroupDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -82,7 +102,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>RenameGroupDialog</receiver>
+   <receiver>CreateGroupDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

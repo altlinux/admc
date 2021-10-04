@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RenameGroupDialog</class>
- <widget class="QDialog" name="RenameGroupDialog">
+ <class>CreateOUDialog</class>
+ <widget class="QDialog" name="CreateOUDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
-    <height>129</height>
+    <width>400</width>
+    <height>125</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Rename Group</string>
+   <string>Create OU</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QFormLayout" name="form_layout">
+    <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="nameLabel">
        <property name="text">
@@ -26,26 +26,15 @@
      <item row="0" column="1">
       <widget class="QLineEdit" name="name_edit"/>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label">
+     <item row="1" column="0" colspan="2">
+      <widget class="QCheckBox" name="deletion_check">
        <property name="text">
-        <string>Logon name (pre-Windows 2000):</string>
+        <string>Protect against deletion</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
-     </item>
-     <item row="1" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLineEdit" name="domain_edit">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="sama_edit"/>
-       </item>
-      </layout>
      </item>
     </layout>
    </item>
@@ -55,7 +44,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
@@ -66,7 +55,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>RenameGroupDialog</receiver>
+   <receiver>CreateOUDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -82,7 +71,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>RenameGroupDialog</receiver>
+   <receiver>CreateOUDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

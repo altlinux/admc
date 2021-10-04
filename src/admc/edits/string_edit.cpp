@@ -27,8 +27,6 @@
 #include <QFormLayout>
 #include <QLineEdit>
 
-void do_sama_edit_thing(QLineEdit *edit);
-
 void StringEdit::make_many(const QList<QString> attributes, const QString &objectClass, QList<AttributeEdit *> *edits_out, QObject *parent) {
     for (auto attribute : attributes) {
         new StringEdit(attribute, objectClass, edits_out, parent);
@@ -90,7 +88,9 @@ void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
         }
     }();
 
-    do_sama_edit_thing(domain_edit);
+    if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
+        load_domain();
+    }
 
     edit->setText(value);
 }
@@ -105,7 +105,7 @@ void StringEdit::add_to_layout(QFormLayout *layout) {
     if (attribute == ATTRIBUTE_SAMACCOUNT_NAME) {
         domain_edit = new QLineEdit();
         domain_edit->setEnabled(false);
-        do_sama_edit_thing(domain_edit);
+        load_domain();
 
         auto sublayout = new QHBoxLayout();
         sublayout->addWidget(edit);
@@ -123,38 +123,14 @@ bool StringEdit::apply(AdInterface &ad, const QString &dn) const {
     return success;
 }
 
-QString StringEdit::get_input() const {
-    return edit->text();
-}
-
-void StringEdit::set_input(const QString &value) {
-    edit->setText(value);
-
-    emit edited();
-}
-
-bool StringEdit::is_empty() const {
-    const QString text = edit->text();
-
-    return text.isEmpty();
-}
-
-QLineEdit *StringEdit::get_edit() const {
-    return edit;
-}
-
-void do_sama_edit_thing(QLineEdit *edit) {
-    if (edit == nullptr) {
-        return;
-    }
-
+void StringEdit::load_domain() {
     const QString domain_text = []() {
         const QString domain = g_adconfig->domain();
         const QString domain_name = domain.split(".")[0];
-        const QString out = "\\" + domain_name;
+        const QString out = domain_name + "\\";
 
         return out;
     }();
 
-    edit->setText(domain_text);
+    domain_edit->setText(domain_text);
 }

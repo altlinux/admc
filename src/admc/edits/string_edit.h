@@ -35,10 +35,7 @@ public:
     StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
-    QString get_input() const;
-    void set_input(const QString &value);
-    bool is_empty() const;
-    QLineEdit *get_edit() const;
+    void load_domain();
 
 private:
     QLineEdit *edit;
