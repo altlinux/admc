@@ -26,9 +26,9 @@
 
 #include <QFormLayout>
 
-ExpiryEdit::ExpiryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
+ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    edit_widget = new ExpiryWidget();
+    edit_widget = edit_widget_arg;
 
     connect(
         edit_widget, &ExpiryWidget::edited,

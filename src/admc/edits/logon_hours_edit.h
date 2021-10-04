@@ -29,7 +29,7 @@ class LogonHoursDialog;
 class LogonHoursEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    LogonHoursEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
+    LogonHoursEdit(QPushButton *button, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

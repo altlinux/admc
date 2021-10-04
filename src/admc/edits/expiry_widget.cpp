@@ -19,61 +19,42 @@
  */
 
 #include "edits/expiry_widget.h"
+#include "edits/ui_expiry_widget.h"
 
 #include "adldap.h"
 #include "globals.h"
 
 #include <QButtonGroup>
-#include <QCheckBox>
-#include <QDateEdit>
-#include <QDateTime>
-#include <QVBoxLayout>
 
 // TODO: do end of day by local time or UTC????
 
 const QTime END_OF_DAY(23, 59);
 
-ExpiryWidget::ExpiryWidget()
-: QFrame() {
-    setFrameStyle(QFrame::Raised);
-    setFrameShape(QFrame::Box);
+ExpiryWidget::ExpiryWidget(QWidget *parent)
+: QWidget(parent) {
+    ui = new Ui::ExpiryWidget();
+    ui->setupUi(this);
 
-    never_check = new QCheckBox(tr("Never"));
-    never_check->setObjectName("never_check");
-
-    end_of_check = new QCheckBox(tr("End of:"));
-    end_of_check->setObjectName("end_of_check");
-
-    never_check->setAutoExclusive(true);
-    end_of_check->setAutoExclusive(true);
-
-    edit = new QDateEdit();
-    edit->setObjectName("date_edit");
+    ui->never_check->setAutoExclusive(true);
+    ui->end_of_check->setAutoExclusive(true);
 
     auto button_group = new QButtonGroup(this);
-    button_group->addButton(never_check);
-    button_group->addButton(end_of_check);
+    button_group->addButton(ui->never_check);
+    button_group->addButton(ui->end_of_check);
 
     auto date_layout = new QHBoxLayout();
-    date_layout->addWidget(end_of_check);
-    date_layout->addWidget(edit);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(never_check);
-    layout->addLayout(date_layout);
+    date_layout->addWidget(ui->end_of_check);
+    date_layout->addWidget(ui->date_edit);
 
     connect(
-        never_check, &QCheckBox::stateChanged,
+        ui->never_check, &QCheckBox::stateChanged,
         this, &ExpiryWidget::on_never_check);
     connect(
-        end_of_check, &QCheckBox::stateChanged,
+        ui->end_of_check, &QCheckBox::stateChanged,
         this, &ExpiryWidget::on_end_of_check);
     connect(
-        edit, &QDateEdit::dateChanged,
-        [this]() {
-            emit edited();
-        });
+        ui->date_edit, &QDateEdit::dateChanged,
+        this, &ExpiryWidget::edited);
 }
 
 void ExpiryWidget::load(const AdObject &object) {
@@ -83,15 +64,15 @@ void ExpiryWidget::load(const AdObject &object) {
     }();
 
     if (never) {
-        never_check->setChecked(true);
+        ui->never_check->setChecked(true);
 
-        end_of_check->setChecked(false);
-        edit->setEnabled(false);
+        ui->end_of_check->setChecked(false);
+        ui->date_edit->setEnabled(false);
     } else {
-        never_check->setChecked(false);
+        ui->never_check->setChecked(false);
 
-        end_of_check->setChecked(true);
-        edit->setEnabled(true);
+        ui->end_of_check->setChecked(true);
+        ui->date_edit->setEnabled(true);
     }
 
     const QDate date = [=]() {
@@ -104,38 +85,38 @@ void ExpiryWidget::load(const AdObject &object) {
         }
     }();
 
-    edit->setDate(date);
+    ui->date_edit->setDate(date);
 }
 
 void ExpiryWidget::set_read_only(const bool read_only) {
-    never_check->setDisabled(read_only);
-    end_of_check->setDisabled(read_only);
-    edit->setReadOnly(read_only);
+    ui->never_check->setDisabled(read_only);
+    ui->end_of_check->setDisabled(read_only);
+    ui->date_edit->setReadOnly(read_only);
 }
 
 bool ExpiryWidget::apply(AdInterface &ad, const QString &dn) const {
-    const bool never = never_check->isChecked();
+    const bool never = ui->never_check->isChecked();
 
     if (never) {
         return ad.attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGE_INTEGER_DATETIME_NEVER_2);
     } else {
-        const QDateTime datetime = QDateTime(edit->date(), END_OF_DAY, Qt::UTC);
+        const QDateTime datetime = QDateTime(ui->date_edit->date(), END_OF_DAY, Qt::UTC);
 
         return ad.attribute_replace_datetime(dn, ATTRIBUTE_ACCOUNT_EXPIRES, datetime);
     }
 }
 
 void ExpiryWidget::on_never_check() {
-    if (never_check->isChecked()) {
-        edit->setEnabled(false);
+    if (ui->never_check->isChecked()) {
+        ui->date_edit->setEnabled(false);
 
         emit edited();
     }
 }
 
 void ExpiryWidget::on_end_of_check() {
-    if (end_of_check->isChecked()) {
-        edit->setEnabled(true);
+    if (ui->end_of_check->isChecked()) {
+        ui->date_edit->setEnabled(true);
 
         emit edited();
     }

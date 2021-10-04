@@ -25,11 +25,17 @@
 
 class AdInterface;
 
+namespace Ui {
+    class AccountTab;
+}
+
 class AccountTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
     AccountTab(AdInterface &ad);
+private:
+    Ui::AccountTab *ui;
 };
 
 #endif /* ACCOUNT_TAB_H */

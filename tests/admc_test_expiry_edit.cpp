@@ -21,6 +21,7 @@
 #include "admc_test_expiry_edit.h"
 
 #include "edits/expiry_edit.h"
+#include "edits/expiry_widget.h"
 #include "globals.h"
 
 #include <QFormLayout>
@@ -40,7 +41,9 @@ void ADMCTestExpiryEdit::initTestCase_data() {
 void ADMCTestExpiryEdit::init() {
     ADMCTest::init();
 
-    edit = new ExpiryEdit(&edits, parent_widget);
+    auto widget = new ExpiryWidget(parent_widget);
+
+    edit = new ExpiryEdit(widget, &edits, parent_widget);
     add_attribute_edit(edit);
 
     date_edit = parent_widget->findChild<QDateEdit *>("date_edit");

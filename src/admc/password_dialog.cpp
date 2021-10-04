@@ -48,9 +48,9 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 
     new PasswordEdit(&edits, ui->password_main_edit, ui->password_confirm_edit, this);
 
-    new AccountOptionEdit(AccountOption_PasswordExpired, &edits, ui->expired_check, this);
+    new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
 
-    new UnlockEdit(&edits, ui->unlock_check, this);
+    new UnlockEdit(ui->unlock_check, &edits, this);
 
     edits_load(edits, ad, object);
 

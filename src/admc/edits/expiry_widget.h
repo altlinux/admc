@@ -21,17 +21,19 @@
 #ifndef EXPIRY_WIDGET_H
 #define EXPIRY_WIDGET_H
 
-#include <QFrame>
+#include <QWidget>
 
-class QCheckBox;
-class QDateEdit;
 class AdInterface;
 class AdObject;
 
-class ExpiryWidget final : public QFrame {
+namespace Ui {
+    class ExpiryWidget;
+}
+
+class ExpiryWidget final : public QWidget {
     Q_OBJECT
 public:
-    ExpiryWidget();
+    ExpiryWidget(QWidget *parent = nullptr);
 
     void load(const AdObject &object);
     void set_read_only(const bool read_only);
@@ -40,16 +42,12 @@ public:
 signals:
     void edited();
 
-private slots:
-    void on_never_check();
-    void on_end_of_check();
-
 private:
-    QCheckBox *never_check;
-    QCheckBox *end_of_check;
-    QDateEdit *edit;
+    Ui::ExpiryWidget *ui;
 
     QString get_new_value() const;
+    void on_never_check();
+    void on_end_of_check();
 };
 
 #endif /* EXPIRY_WIDGET_H */

@@ -19,6 +19,7 @@
  */
 
 #include "tabs/account_tab.h"
+#include "tabs/ui_account_tab.h"
 
 #include "edits/account_option_edit.h"
 #include "edits/expiry_edit.h"
@@ -28,9 +29,6 @@
 #include "edits/logon_hours_edit.h"
 #include "edits/logon_computers_edit.h"
 
-#include <QFormLayout>
-#include <QMap>
-
 // TODO: logon computers
 
 // NOTE: the "can't change password" checkbox does not
@@ -39,41 +37,34 @@
 // complicated to implement so this is a WONTFIX.
 
 AccountTab::AccountTab(AdInterface &ad) {
-    auto upn_edit = new UpnEdit(&edits, this);
+    ui = new Ui::AccountTab();
+    ui->setupUi(this);
+
+    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edits, this);
     upn_edit->init_suffixes(ad);
 
-    auto unlock_edit = new UnlockEdit(&edits, UnlockEditStyle_CheckOnRight, this);
+    new UnlockEdit(ui->unlock_check, &edits, this);
+    new ExpiryEdit(ui->expiry_widget, &edits, this);
+    new LogonHoursEdit(ui->logon_hours_button, &edits, this);
+    new LogonComputersEdit(ui->logon_computers_button, &edits, this);
 
-    auto expiry_edit = new ExpiryEdit(&edits, this);
+    const QHash<AccountOption, QCheckBox *> check_map = {
+        {AccountOption_Disabled, ui->disabled_check},
+        {AccountOption_CantChangePassword, ui->cant_change_pass_check},
+        {AccountOption_PasswordExpired, ui->pass_expired_check},
+        {AccountOption_DontExpirePassword, ui->dont_expire_pass_check},
+        {AccountOption_UseDesKey, ui->des_key_check},
+        {AccountOption_SmartcardRequired, ui->smartcard_check},
+        {AccountOption_CantDelegate, ui->cant_delegate_check},
+        {AccountOption_DontRequirePreauth, ui->require_preauth_check},
+        {AccountOption_TrustedForDelegation, ui->trusted_check},
+    };
 
-    auto logon_hours_edit = new LogonHoursEdit(&edits, this);
-
-    auto logon_computers_edit = new LogonComputersEdit(&edits, this);
-
-    QList<AccountOption> options;
-    for (int i = 0; i < AccountOption_COUNT; i++) {
-        const AccountOption option = (AccountOption) i;
-        options.append(option);
+    for (const AccountOption &option : check_map.keys()) {
+        QCheckBox *check = check_map[option];
+        new AccountOptionEdit(check, option, &edits, this);
     }
-    QMap<AccountOption, AccountOptionEdit *> option_edits;
-    AccountOptionEdit::make_many(options, &option_edits, &edits, this);
-    QWidget *options_widget = AccountOptionEdit::layout_many(options, option_edits);
+    
 
     edits_connect_to_tab(edits, this);
-
-    auto edits_layout = new QFormLayout();
-
-    const QList<AttributeEdit *> top_edits = {
-        upn_edit,
-        unlock_edit,
-        expiry_edit,
-        logon_hours_edit,
-        logon_computers_edit,
-    };
-    edits_add_to_layout(top_edits, edits_layout);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(edits_layout);
-    layout->addWidget(options_widget);
 }

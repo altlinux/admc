@@ -54,7 +54,7 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
 
     for (const AccountOption &option : check_map.keys()) {
         QCheckBox *check = check_map[option];
-        new AccountOptionEdit(option, &edit_list, check, this);
+        new AccountOptionEdit(check, option, &edit_list, this);
     }
 
     account_option_setup_conflicts(check_map);

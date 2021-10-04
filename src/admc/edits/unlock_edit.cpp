@@ -33,7 +33,7 @@ UnlockEdit::UnlockEdit(QList<AttributeEdit *> *edits_out, const UnlockEditStyle 
     init(style_arg, check_arg);
 }
 
-UnlockEdit::UnlockEdit(QList<AttributeEdit *> *edits_out, QCheckBox *check_arg, QObject *parent)
+UnlockEdit::UnlockEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     init(UnlockEditStyle_CheckOnLeft, check_arg);
 }

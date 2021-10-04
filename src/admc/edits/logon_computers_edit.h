@@ -29,7 +29,7 @@ class LogonComputersDialog;
 class LogonComputersEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    LogonComputersEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
+    LogonComputersEdit(QPushButton *button, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

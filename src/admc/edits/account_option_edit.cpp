@@ -62,7 +62,7 @@ AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<Attri
     init(option_arg, check_arg);
 }
 
-AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QCheckBox *check_arg, QObject *parent)
+AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     init(option_arg, check_arg);
 }

@@ -37,9 +37,9 @@
 #include <QTimeZone>
 #include <QRadioButton>
 
-LogonHoursEdit::LogonHoursEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
+LogonHoursEdit::LogonHoursEdit(QPushButton *button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    button = new QPushButton(tr("Logon hours..."));
+    button = button_arg;
     dialog = new LogonHoursDialog(button);
 
     connect(

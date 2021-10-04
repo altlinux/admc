@@ -45,7 +45,7 @@ class UnlockEdit final : public AttributeEdit {
     Q_OBJECT
 public:
     UnlockEdit(QList<AttributeEdit *> *edits_out, const UnlockEditStyle style, QObject *parent);
-    UnlockEdit(QList<AttributeEdit *> *edits_out, QCheckBox *check_arg, QObject *parent);
+    UnlockEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     static QString label_text();
