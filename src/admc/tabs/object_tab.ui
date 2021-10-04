@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ObjectTab</class>
+ <widget class="QWidget" name="ObjectTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="distinguishedNameLabel">
+       <property name="text">
+        <string>Distinguished name:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="dn_edit"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="objectClassLabel">
+       <property name="text">
+        <string>Object class:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="class_edit"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="createdLabel">
+       <property name="text">
+        <string>Created:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QDateTimeEdit" name="created_edit"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="changedLabel">
+       <property name="text">
+        <string>Changed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDateTimeEdit" name="changed_edit"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="uSNCreatedLabel">
+       <property name="text">
+        <string>USN created:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="usn_created_edit"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="uSNChangedLabel">
+       <property name="text">
+        <string>USN changed:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="usn_changed_edit"/>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="protectAgainstDeletionLabel">
+       <property name="text">
+        <string>Protect against deletion:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QCheckBox" name="deletion_check"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

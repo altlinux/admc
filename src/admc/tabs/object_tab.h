@@ -23,12 +23,19 @@
 
 #include "tabs/properties_tab.h"
 
+namespace Ui {
+    class ObjectTab;
+}
+
 // Object attributes, same for all types
 class ObjectTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
     ObjectTab();
+
+private:
+    Ui::ObjectTab *ui;
 };
 
 #endif /* OBJECT_TAB_H */

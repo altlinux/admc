@@ -43,15 +43,15 @@ public:
     virtual bool verify(AdInterface &ad, const QString &target) const;
     virtual bool apply(AdInterface &ad, const QString &target);
 
-protected:
-    QList<AttributeEdit *> edits;
+    void on_edit_edited();
 
 signals:
     // Emitted to notify details dialog that tab was edited.
     void edited();
 
-public slots:
-    void on_edit_edited();
+protected:
+    QList<AttributeEdit *> edits;
+
 };
 
 #endif /* PROPERTIES_TAB_H */
