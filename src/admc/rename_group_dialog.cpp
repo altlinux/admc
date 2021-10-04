@@ -29,7 +29,13 @@ RenameGroupDialog::RenameGroupDialog(QWidget *parent)
     ui->setupUi(this);
 
     QList<AttributeEdit *> edit_list;
-    new SamaEdit(ui->sama_edit, ui->domain_edit, &edit_list, this);
+    sama_edit = new SamaEdit(ui->sama_edit, ui->domain_edit, &edit_list, this);
 
     init(ui->name_edit, ui->button_box, edit_list);
+}
+
+void RenameGroupDialog::open() {
+    sama_edit->load_domain();
+
+    RenameDialog::open();
 }

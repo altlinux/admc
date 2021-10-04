@@ -37,7 +37,7 @@ RenameUserDialog::RenameUserDialog(QWidget *parent)
     new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, CLASS_USER, &edit_list, this);
     new StringEdit(ui->full_name_edit, ATTRIBUTE_DISPLAY_NAME, CLASS_USER, &edit_list, this);
     upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
-    new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
+    sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
 
     init(ui->name_edit, ui->button_box, edit_list);
 }
@@ -49,6 +49,7 @@ void RenameUserDialog::open() {
     }
 
     upn_edit->init_suffixes(ad);
+    sama_edit->load_domain();
 
     RenameDialog::open();
 }

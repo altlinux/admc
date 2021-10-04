@@ -23,6 +23,8 @@
 
 #include "create_dialog.h"
 
+class SamaEdit;
+
 namespace Ui {
     class CreateComputerDialog;
 }
@@ -33,8 +35,11 @@ class CreateComputerDialog final : public CreateDialog {
 public:
     CreateComputerDialog(QWidget *parent);
 
+    void open() override;
+
 private:
     Ui::CreateComputerDialog *ui;
+    SamaEdit *sama_edit;
 };
 
 #endif /* CREATE_COMPUTER_DIALOG_H */

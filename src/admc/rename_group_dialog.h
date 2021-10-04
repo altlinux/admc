@@ -23,6 +23,8 @@
 
 #include "rename_dialog.h"
 
+class SamaEdit;
+
 namespace Ui {
     class RenameGroupDialog;
 }
@@ -33,8 +35,11 @@ class RenameGroupDialog final : public RenameDialog {
 public:
     RenameGroupDialog(QWidget *parent);
 
+    void open() override;
+
 private:
     Ui::RenameGroupDialog *ui;
+    SamaEdit *sama_edit;
 };
 
 #endif /* RENAME_GROUP_DIALOG_H */

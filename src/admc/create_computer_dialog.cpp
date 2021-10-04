@@ -39,7 +39,7 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
 
     // TODO: "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
 
-    new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
+    sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
@@ -62,4 +62,10 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
         });
 
     init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_COMPUTER);
+}
+
+void CreateComputerDialog::open() {
+    sama_edit->load_domain();
+
+    CreateDialog::open();
 }
