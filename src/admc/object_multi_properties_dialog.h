@@ -32,6 +32,10 @@
 
 class PropertiesMultiTab;
 
+namespace Ui {
+    class ObjectMultiPropertiesDialog;
+}
+
 class ObjectMultiPropertiesDialog final : public QDialog {
     Q_OBJECT
 
@@ -42,15 +46,13 @@ signals:
     void applied();
 
 private slots:
-    void ok();
+    void accept() override;
     void reset();
-    void on_tab_edited();
 
 private:
+    Ui::ObjectMultiPropertiesDialog *ui;
     QList<QString> target_list;
     QList<PropertiesMultiTab *> tab_list;
-    QPushButton *apply_button;
-    QPushButton *reset_button;
 
     bool apply();
 };

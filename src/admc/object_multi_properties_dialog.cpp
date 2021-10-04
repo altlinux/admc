@@ -19,6 +19,7 @@
  */
 
 #include "object_multi_properties_dialog.h"
+#include "ui_object_multi_properties_dialog.h"
 
 #include "adldap.h"
 #include "globals.h"
@@ -35,10 +36,12 @@
 #include <QAction>
 #include <QDialogButtonBox>
 #include <QPushButton>
-#include <QVBoxLayout>
 
 ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list)
 : QDialog() {
+    ui = new Ui::ObjectMultiPropertiesDialog();
+    ui->setupUi(this);
+
     target_list = target_list_arg;
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -50,24 +53,11 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
         return;
     }
 
-    setWindowTitle(tr("Properties for Multiple Objects"));
-
-    auto tab_widget = new TabWidget();
-
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    apply_button = button_box->addButton(QDialogButtonBox::Apply);
-    reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->setSpacing(0);
-    layout->addWidget(tab_widget);
-    layout->addWidget(button_box);
+    auto apply_button = ui->button_box->button(QDialogButtonBox::Apply);
+    auto reset_button = ui->button_box->button(QDialogButtonBox::Reset);
 
     auto add_tab = [&](PropertiesMultiTab *tab, const QString &title) {
-        tab_widget->add_tab(tab, title);
+        ui->tab_widget->add_tab(tab, title);
         tab_list.append(tab);
     };
 
@@ -82,33 +72,21 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
 
     settings_setup_dialog_geometry(SETTING_object_multi_dialog_geometry, this);
 
-    for (PropertiesMultiTab *tab : tab_list) {
-        connect(
-            tab, &PropertiesMultiTab::edited,
-            this, &ObjectMultiPropertiesDialog::on_tab_edited);
-    }
-
-    connect(
-        ok_button, &QPushButton::clicked,
-        this, &ObjectMultiPropertiesDialog::ok);
     connect(
         apply_button, &QPushButton::clicked,
         this, &ObjectMultiPropertiesDialog::apply);
     connect(
         reset_button, &QPushButton::clicked,
         this, &ObjectMultiPropertiesDialog::reset);
-    connect(
-        cancel_button, &QPushButton::clicked,
-        this, &ObjectMultiPropertiesDialog::reject);
 
     reset();
 }
 
-void ObjectMultiPropertiesDialog::ok() {
+void ObjectMultiPropertiesDialog::accept() {
     const bool success = apply();
 
     if (success) {
-        accept();
+        QDialog::accept();
     }
 }
 
@@ -142,7 +120,4 @@ void ObjectMultiPropertiesDialog::reset() {
     for (PropertiesMultiTab *tab : tab_list) {
         tab->reset();
     }
-}
-
-void ObjectMultiPropertiesDialog::on_tab_edited() {
 }
