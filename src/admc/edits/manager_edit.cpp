@@ -24,8 +24,6 @@
 #include "edits/manager_widget.h"
 #include "globals.h"
 
-#include <QFormLayout>
-
 ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     manager_attribute = manager_attribute_arg;
@@ -44,11 +42,6 @@ void ManagerEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void ManagerEdit::set_read_only(const bool read_only) {
     widget->setEnabled(!read_only);
-}
-
-void ManagerEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = g_adconfig->get_attribute_display_name(manager_attribute, CLASS_USER) + ":";
-    layout->addRow(label_text, widget);
 }
 
 bool ManagerEdit::apply(AdInterface &ad, const QString &dn) const {

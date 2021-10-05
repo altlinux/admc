@@ -248,10 +248,6 @@ void ADMCTest::select_object_dialog_select(const QString &dn) {
     delete select_dialog;
 }
 
-void ADMCTest::add_attribute_edit(AttributeEdit *edit) {
-    edit->add_to_layout(layout);
-}
-
 void ADMCTest::add_widget(QWidget *widget) {
     layout->addWidget(widget);
 }

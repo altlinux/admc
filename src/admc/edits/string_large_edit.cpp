@@ -23,7 +23,6 @@
 #include "adldap.h"
 #include "globals.h"
 
-#include <QFormLayout>
 #include <QPlainTextEdit>
 
 StringLargeEdit::StringLargeEdit(QPlainTextEdit *edit_arg, const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
@@ -63,11 +62,6 @@ void StringLargeEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void StringLargeEdit::set_read_only(const bool read_only) {
     edit->setDisabled(read_only);
-}
-
-void StringLargeEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = g_adconfig->get_attribute_display_name(attribute, objectClass) + ":";
-    layout->addRow(label_text, edit);
 }
 
 bool StringLargeEdit::apply(AdInterface &ad, const QString &dn) const {

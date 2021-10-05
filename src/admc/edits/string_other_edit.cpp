@@ -25,7 +25,6 @@
 #include "edits/string_edit.h"
 #include "globals.h"
 
-#include <QFormLayout>
 #include <QLineEdit>
 #include <QPushButton>
 
@@ -66,15 +65,6 @@ void StringOtherEdit::load_internal(AdInterface &ad, const AdObject &object) {
 void StringOtherEdit::set_read_only(const bool read_only) {
     main_edit->set_read_only(read_only);
     other_button->setDisabled(read_only);
-}
-
-void StringOtherEdit::add_to_layout(QFormLayout *layout) {
-    auto sublayout = new QHBoxLayout();
-    sublayout->addWidget(main_edit->edit);
-    sublayout->addWidget(other_button);
-
-    const QString label_text = g_adconfig->get_attribute_display_name(main_edit->attribute, main_edit->objectClass) + ":";
-    layout->addRow(label_text, sublayout);
 }
 
 bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {

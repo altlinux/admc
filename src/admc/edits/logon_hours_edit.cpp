@@ -25,7 +25,6 @@
 #include "edits/expiry_widget.h"
 #include "globals.h"
 
-#include <QFormLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QTableView>
@@ -59,14 +58,6 @@ void LogonHoursEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void LogonHoursEdit::set_read_only(const bool read_only) {
     button->setEnabled(read_only);
-}
-
-void LogonHoursEdit::add_to_layout(QFormLayout *layout) {
-    auto edit_layout = new QHBoxLayout();
-    edit_layout->addWidget(button);
-    edit_layout->addStretch();
-
-    layout->addRow(edit_layout);
 }
 
 bool LogonHoursEdit::apply(AdInterface &ad, const QString &dn) const {

@@ -24,7 +24,7 @@
 #include "adldap.h"
 
 #include <QDialogButtonBox>
-#include <QFormLayout>
+#include <QHBoxLayout>
 #include <QPushButton>
 #include <QLineEdit>
 #include <QListWidget>
@@ -55,14 +55,6 @@ void LogonComputersEdit::load_internal(AdInterface &ad, const AdObject &object) 
 
 void LogonComputersEdit::set_read_only(const bool read_only) {
     button->setEnabled(read_only);
-}
-
-void LogonComputersEdit::add_to_layout(QFormLayout *layout) {
-    auto edit_layout = new QHBoxLayout();
-    edit_layout->addWidget(button);
-    edit_layout->addStretch();
-
-    layout->addRow(edit_layout);
 }
 
 bool LogonComputersEdit::apply(AdInterface &ad, const QString &dn) const {

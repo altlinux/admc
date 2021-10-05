@@ -48,7 +48,6 @@ void ADMCTestStringOtherEdit::init() {
     other_button = new QPushButton(parent_widget);
 
     edit = new StringOtherEdit(line_edit, other_button, TEST_ATTRIBUTE_MAIN, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, &edits, parent_widget);
-    add_attribute_edit(edit);
 
     // Create test user
     const QString name = TEST_USER;

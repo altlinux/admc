@@ -34,7 +34,6 @@ void ADMCTestManagerEdit::init() {
     auto manager_widget = new ManagerWidget(parent_widget);
 
     edit = new ManagerEdit(manager_widget, ATTRIBUTE_MANAGER, &edits, parent_widget);
-    add_attribute_edit(edit);
 
     manager_display = parent_widget->findChild<QLineEdit *>("manager_display");
     change_button = parent_widget->findChild<QPushButton *>("change_button");

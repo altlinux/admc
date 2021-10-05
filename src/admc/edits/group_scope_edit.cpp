@@ -54,11 +54,6 @@ void GroupScopeEdit::set_read_only(const bool read_only) {
     combo->setDisabled(read_only);
 }
 
-void GroupScopeEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = tr("Group scope") + ":";
-    layout->addRow(label_text, combo);
-}
-
 bool GroupScopeEdit::apply(AdInterface &ad, const QString &dn) const {
     const GroupScope new_value = (GroupScope) combo->currentData().toInt();
     const bool success = ad.group_set_scope(dn, new_value);

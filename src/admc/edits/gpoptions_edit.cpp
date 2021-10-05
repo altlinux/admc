@@ -23,7 +23,6 @@
 #include "adldap.h"
 
 #include <QCheckBox>
-#include <QFormLayout>
 
 GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -45,10 +44,6 @@ void GpoptionsEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void GpoptionsEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
-}
-
-void GpoptionsEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(check);
 }
 
 bool GpoptionsEdit::apply(AdInterface &ad, const QString &dn) const {

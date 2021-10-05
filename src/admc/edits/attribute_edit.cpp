@@ -59,12 +59,6 @@ void AttributeEdit::reset_modified() {
     m_modified = false;
 }
 
-void edits_add_to_layout(QList<AttributeEdit *> edits, QFormLayout *layout) {
-    for (auto edit : edits) {
-        edit->add_to_layout(layout);
-    }
-}
-
 bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn, const bool ignore_modified) {
     for (auto edit : edits) {
         if (edit->modified() || ignore_modified) {

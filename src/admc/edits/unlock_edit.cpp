@@ -24,7 +24,6 @@
 #include "utils.h"
 
 #include <QCheckBox>
-#include <QFormLayout>
 
 UnlockEdit::UnlockEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -47,22 +46,6 @@ void UnlockEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void UnlockEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
-}
-
-void UnlockEdit::add_to_layout(QFormLayout *layout) {
-    // switch (style) {
-    //     case UnlockEditStyle_CheckOnLeft: {
-    //         layout->addRow(check);
-
-    //         break;
-    //     }
-    //     case UnlockEditStyle_CheckOnRight: {
-    //         layout->addRow(QString("%1:").arg(label_text()), check);
-
-
-    //         break;
-    //     }
-    // }
 }
 
 bool UnlockEdit::apply(AdInterface &ad, const QString &dn) const {

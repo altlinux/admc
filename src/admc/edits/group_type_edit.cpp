@@ -23,7 +23,6 @@
 #include "adldap.h"
 
 #include <QComboBox>
-#include <QFormLayout>
 
 GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -51,11 +50,6 @@ void GroupTypeEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void GroupTypeEdit::set_read_only(const bool read_only) {
     combo->setDisabled(read_only);
-}
-
-void GroupTypeEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = tr("Group type:");
-    layout->addRow(label_text, combo);
 }
 
 bool GroupTypeEdit::apply(AdInterface &ad, const QString &dn) const {

@@ -24,7 +24,6 @@
 #include "globals.h"
 #include "utils.h"
 
-#include <QFormLayout>
 #include <QLineEdit>
 #include <QTextCodec>
 
@@ -57,11 +56,6 @@ void PasswordEdit::load_internal(AdInterface &ad, const AdObject &object) {
 void PasswordEdit::set_read_only(const bool read_only) {
     edit->setDisabled(read_only);
     confirm_edit->setDisabled(read_only);
-}
-
-void PasswordEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(tr("Password:"), edit);
-    layout->addRow(tr("Confirm password:"), confirm_edit);
 }
 
 bool PasswordEdit::verify(AdInterface &ad, const QString &) const {

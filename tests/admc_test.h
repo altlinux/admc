@@ -102,9 +102,6 @@ protected:
     // dialog. Object must be inside test arena
     void select_object_dialog_select(const QString &dn);
 
-    // Adds an AttributeEdit to layout in parent widget
-    void add_attribute_edit(AttributeEdit *edit);
-
     // Adds a widget to layout in parent widget
     void add_widget(QWidget *widget);
 

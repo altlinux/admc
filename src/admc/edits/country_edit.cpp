@@ -25,7 +25,6 @@
 #include "globals.h"
 
 #include <QComboBox>
-#include <QFormLayout>
 
 CountryEdit::CountryEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -44,11 +43,6 @@ void CountryEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void CountryEdit::set_read_only(const bool read_only) {
     combo->setEnabled(!read_only);
-}
-
-void CountryEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
-    layout->addRow(label_text, combo);
 }
 
 bool CountryEdit::apply(AdInterface &ad, const QString &dn) const {

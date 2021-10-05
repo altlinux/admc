@@ -50,10 +50,6 @@ void AccountOptionEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
 }
 
-void AccountOptionEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(check);
-}
-
 bool AccountOptionEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool new_value = check->isChecked();
     const bool success = ad.user_set_account_option(dn, option, new_value);

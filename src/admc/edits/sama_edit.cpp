@@ -24,7 +24,6 @@
 #include "globals.h"
 #include "utils.h"
 
-#include <QFormLayout>
 #include <QLineEdit>
 
 SamaEdit::SamaEdit(QLineEdit *sama_edit, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
@@ -50,19 +49,6 @@ void SamaEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void SamaEdit::set_read_only(const bool read_only) {
     edit->setDisabled(read_only);
-}
-
-void SamaEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_SAMACCOUNT_NAME, CLASS_USER) + ":";
-
-    domain_edit = new QLineEdit();
-    domain_edit->setEnabled(false);
-    load_domain();
-
-    auto sublayout = new QHBoxLayout();
-    sublayout->addWidget(edit);
-    sublayout->addWidget(domain_edit);
-    layout->addRow(label_text, sublayout);
 }
 
 bool SamaEdit::apply(AdInterface &ad, const QString &dn) const {

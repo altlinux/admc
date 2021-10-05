@@ -36,7 +36,6 @@ void ADMCTestCountryEdit::init() {
     combo = new QComboBox(parent_widget);
 
     edit = new CountryEdit(combo, &edits, parent_widget);
-    add_attribute_edit(edit);
 
     // Create test user
     const QString name = TEST_USER;

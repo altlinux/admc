@@ -24,7 +24,6 @@
 #include "globals.h"
 
 #include <QRadioButton>
-#include <QFormLayout>
 
 DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -52,11 +51,6 @@ void DelegationEdit::load_internal(AdInterface &ad, const AdObject &object) {
 void DelegationEdit::set_read_only(const bool read_only) {
     on_button->setEnabled(read_only);
     off_button->setEnabled(read_only);
-}
-
-void DelegationEdit::add_to_layout(QFormLayout *layout) {
-    layout->addWidget(off_button);
-    layout->addWidget(on_button);
 }
 
 bool DelegationEdit::apply(AdInterface &ad, const QString &dn) const {

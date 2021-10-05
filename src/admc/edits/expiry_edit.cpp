@@ -24,8 +24,6 @@
 #include "edits/expiry_widget.h"
 #include "globals.h"
 
-#include <QFormLayout>
-
 ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     edit_widget = edit_widget_arg;
@@ -43,16 +41,6 @@ void ExpiryEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void ExpiryEdit::set_read_only(const bool read_only) {
     edit_widget->set_read_only(read_only);
-}
-
-void ExpiryEdit::add_to_layout(QFormLayout *layout) {
-    auto sublayout = new QHBoxLayout();
-    sublayout->addWidget(edit_widget);
-    sublayout->addStretch();
-
-    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
-
-    layout->addRow(label_text, sublayout);
 }
 
 bool ExpiryEdit::apply(AdInterface &ad, const QString &dn) const {

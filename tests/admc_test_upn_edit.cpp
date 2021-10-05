@@ -36,7 +36,6 @@ void ADMCTestUpnEdit::init() {
 
     upn_edit = new UpnEdit(prefix_edit, suffix_edit, &edits, parent_widget);
     upn_edit->init_suffixes(ad);
-    add_attribute_edit(upn_edit);
 
     // Create test user
     const QString name = TEST_USER;

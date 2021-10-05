@@ -25,7 +25,6 @@
 #include "globals.h"
 
 #include <QCheckBox>
-#include <QFormLayout>
 
 // Object is protected from deletion if it denies
 // permissions for "delete" and "delete subtree" for
@@ -54,10 +53,6 @@ void ProtectDeletionEdit::load_internal(AdInterface &ad, const AdObject &object)
 
 void ProtectDeletionEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
-}
-
-void ProtectDeletionEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(check);
 }
 
 bool ProtectDeletionEdit::apply(AdInterface &ad, const QString &dn) const {

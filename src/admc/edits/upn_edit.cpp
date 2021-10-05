@@ -25,7 +25,6 @@
 #include "globals.h"
 #include "utils.h"
 
-#include <QFormLayout>
 #include <QLineEdit>
 #include <QComboBox>
 
@@ -59,16 +58,6 @@ void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void UpnEdit::set_read_only(const bool read_only) {
     prefix_edit->setDisabled(read_only);
-}
-
-void UpnEdit::add_to_layout(QFormLayout *layout) {
-    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER) + ":";
-
-    auto sublayout = new QHBoxLayout();
-    sublayout->addWidget(prefix_edit);
-    sublayout->addWidget(upn_suffix_combo);
-
-    layout->addRow(label_text, sublayout);
 }
 
 bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {

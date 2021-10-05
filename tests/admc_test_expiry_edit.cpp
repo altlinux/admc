@@ -44,7 +44,6 @@ void ADMCTestExpiryEdit::init() {
     auto widget = new ExpiryWidget(parent_widget);
 
     edit = new ExpiryEdit(widget, &edits, parent_widget);
-    add_attribute_edit(edit);
 
     date_edit = parent_widget->findChild<QDateEdit *>("date_edit");
 
