@@ -42,10 +42,6 @@ ExpiryWidget::ExpiryWidget(QWidget *parent)
     button_group->addButton(ui->never_check);
     button_group->addButton(ui->end_of_check);
 
-    auto date_layout = new QHBoxLayout();
-    date_layout->addWidget(ui->end_of_check);
-    date_layout->addWidget(ui->date_edit);
-
     connect(
         ui->never_check, &QCheckBox::stateChanged,
         this, &ExpiryWidget::on_never_check);
