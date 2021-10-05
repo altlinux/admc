@@ -24,7 +24,10 @@
 #include "tabs/properties_tab.h"
 
 class QStandardItemModel;
-class QTreeView;
+
+namespace Ui {
+    class OrganizationTab;
+}
 
 class OrganizationTab final : public PropertiesTab {
     Q_OBJECT
@@ -36,8 +39,8 @@ public:
     void load(AdInterface &ad, const AdObject &object) override;
 
 private:
+    Ui::OrganizationTab *ui;
     QStandardItemModel *reports_model;
-    QTreeView *reports_view;
 };
 
 #endif /* ORGANIZATION_TAB_H */

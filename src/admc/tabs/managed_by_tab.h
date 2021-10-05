@@ -25,6 +25,10 @@
 
 class ManagerEdit;
 
+namespace Ui {
+    class ManagedByTab;
+}
+
 class ManagedByTab final : public PropertiesTab {
     Q_OBJECT
 
@@ -34,6 +38,7 @@ public:
     void load(AdInterface &ad, const AdObject &object) override;
 
 private:
+    Ui::ManagedByTab *ui;
     QList<AttributeEdit *> manager_edits;
     ManagerEdit *manager_edit;
 

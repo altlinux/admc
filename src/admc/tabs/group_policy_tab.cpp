@@ -19,6 +19,7 @@
  */
 
 #include "tabs/group_policy_tab.h"
+#include "tabs/ui_group_policy_tab.h"
 
 #include "adldap.h"
 #include "edits/gpoptions_edit.h"
@@ -59,13 +60,10 @@ const QHash<GplinkColumn, GplinkOption> column_to_option = {
 QString gplink_option_to_display_string(const QString &option);
 
 GroupPolicyTab::GroupPolicyTab() {
-    add_dialog = new SelectPolicyDialog(this);
+    ui = new Ui::GroupPolicyTab();
+    ui->setupUi(this);
 
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setContextMenuPolicy(Qt::CustomContextMenu);
-    view->setAllColumnsShowFocus(true);
-    view->setSortingEnabled(true);
+    add_dialog = new SelectPolicyDialog(this);
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -75,39 +73,23 @@ GroupPolicyTab::GroupPolicyTab() {
             {GplinkColumn_Enforced, tr("Enforced")},
         });
 
-    view->setModel(model);
+    ui->view->setModel(model);
 
-    const auto edits_layout = new QFormLayout();
-
-    new GpoptionsEdit(&edits, this);
-    edits_add_to_layout(edits, edits_layout);
+    new GpoptionsEdit(ui->gpo_options_check, &edits, this);
     edits_connect_to_tab(edits, this);
 
-    auto add_button = new QPushButton(tr("Add..."));
-    auto remove_button = new QPushButton(tr("Remove"));
-    auto button_layout = new QHBoxLayout();
-    button_layout->addWidget(add_button);
-    button_layout->addWidget(remove_button);
-    button_layout->addStretch();
+    settings_restore_header_state(SETTING_group_policy_tab_header_state, ui->view->header());
 
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(view);
-    layout->addLayout(button_layout);
-    layout->addLayout(edits_layout);
-
-    settings_restore_header_state(SETTING_group_policy_tab_header_state, view->header());
-
-    enable_widget_on_selection(remove_button, view);
+    enable_widget_on_selection(ui->remove_button, ui->view);
 
     connect(
-        remove_button, &QAbstractButton::clicked,
+        ui->remove_button, &QAbstractButton::clicked,
         this, &GroupPolicyTab::on_remove_button);
     connect(
-        add_button, &QAbstractButton::clicked,
+        ui->add_button, &QAbstractButton::clicked,
         add_dialog, &QDialog::open);
     QObject::connect(
-        view, &QWidget::customContextMenuRequested,
+        ui->view, &QWidget::customContextMenuRequested,
         this, &GroupPolicyTab::on_context_menu);
     connect(
         model, &QStandardItemModel::itemChanged,
@@ -115,7 +97,7 @@ GroupPolicyTab::GroupPolicyTab() {
 }
 
 GroupPolicyTab::~GroupPolicyTab() {
-    settings_save_header_state(SETTING_group_policy_tab_header_state, view->header());   
+    settings_save_header_state(SETTING_group_policy_tab_header_state, ui->view->header());   
 }
 
 void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {
@@ -155,7 +137,7 @@ bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {
-    const QModelIndex index = view->indexAt(pos);
+    const QModelIndex index = ui->view->indexAt(pos);
     const QString gpo = index.data(GplinkRole_DN).toString();
     if (gpo.isEmpty()) {
         return;
@@ -185,7 +167,7 @@ void GroupPolicyTab::on_add_dialog() {
 }
 
 void GroupPolicyTab::on_remove_button() {
-    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QItemSelectionModel *selection_model = ui->view->selectionModel();
     const QList<QModelIndex> selected_raw = selection_model->selectedRows();
 
     QList<QString> selected;

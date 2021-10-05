@@ -20,6 +20,7 @@
  */
 
 #include "tabs/membership_tab.h"
+#include "tabs/ui_membership_tab.h"
 
 #include "adldap.h"
 #include "globals.h"
@@ -29,11 +30,7 @@
 #include "settings.h"
 
 #include <QDebug>
-#include <QLabel>
-#include <QPushButton>
 #include <QStandardItemModel>
-#include <QTreeView>
-#include <QVBoxLayout>
 
 // Store members in a set
 // Generate model from current members list
@@ -60,14 +57,10 @@ MemberOfTab::MemberOfTab()
 }
 
 MembershipTab::MembershipTab(const MembershipTabType type_arg) {
-    type = type_arg;
+    ui = new Ui::MembershipTab();
+    ui->setupUi(this);
 
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setContextMenuPolicy(Qt::CustomContextMenu);
-    view->setAllColumnsShowFocus(true);
-    view->setSortingEnabled(true);
-    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    type = type_arg;
 
     model = new QStandardItemModel(0, MembersColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -76,64 +69,43 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
             {MembersColumn_Parent, tr("Folder")},
         });
 
-    view->setModel(model);
-
-    auto properties_button = new QPushButton(tr("Properties"));
-    auto add_button = new QPushButton(tr("Add..."));
-    add_button->setObjectName("add_button");
-    auto remove_button = new QPushButton(tr("Remove"));
-    remove_button->setObjectName("remove_button");
-    primary_button = new QPushButton(tr("Set primary group"));
-
-    primary_group_label = new QLabel();
+    ui->view->setModel(model);
 
     // Primary group widgets are visible only in Member of version
     if (type == MembershipTabType_Members) {
-        primary_button->hide();
-        primary_group_label->hide();
+        ui->primary_button->hide();
+        ui->primary_group_label->hide();
     }
 
-    auto button_layout = new QHBoxLayout();
-    button_layout->addWidget(properties_button);
-    button_layout->addWidget(add_button);
-    button_layout->addWidget(remove_button);
-    button_layout->addStretch();
+    settings_restore_header_state(SETTING_membership_tab_header_state, ui->view->header());
 
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(view);
-    layout->addWidget(primary_group_label);
-    layout->addLayout(button_layout);
+    enable_widget_on_selection(ui->remove_button, ui->view);
+    enable_widget_on_selection(ui->properties_button, ui->view);
 
-    settings_restore_header_state(SETTING_membership_tab_header_state, view->header());
-
-    enable_widget_on_selection(remove_button, view);
-    enable_widget_on_selection(properties_button, view);
-
-    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QItemSelectionModel *selection_model = ui->view->selectionModel();
     connect(
         selection_model, &QItemSelectionModel::selectionChanged,
         this, &MembershipTab::enable_primary_button_on_valid_selection);
     enable_primary_button_on_valid_selection();
 
     connect(
-        remove_button, &QAbstractButton::clicked,
+        ui->remove_button, &QAbstractButton::clicked,
         this, &MembershipTab::on_remove_button);
     connect(
-        add_button, &QAbstractButton::clicked,
+        ui->add_button, &QAbstractButton::clicked,
         this, &MembershipTab::on_add_button);
     connect(
-        properties_button, &QAbstractButton::clicked,
+        ui->properties_button, &QAbstractButton::clicked,
         this, &MembershipTab::on_properties_button);
     connect(
-        primary_button, &QAbstractButton::clicked,
+        ui->primary_button, &QAbstractButton::clicked,
         this, &MembershipTab::on_primary_button);
 
-    PropertiesDialog::open_when_view_item_activated(view, MembersRole_DN);
+    PropertiesDialog::open_when_view_item_activated(ui->view, MembersRole_DN);
 }
 
 MembershipTab::~MembershipTab() {
-    settings_save_header_state(SETTING_membership_tab_header_state, view->header());   
+    settings_save_header_state(SETTING_membership_tab_header_state, ui->view->header());   
 }
 
 void MembershipTab::load(AdInterface &ad, const AdObject &object) {
@@ -354,7 +326,7 @@ void MembershipTab::on_add_button() {
 }
 
 void MembershipTab::on_remove_button() {
-    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QItemSelectionModel *selection_model = ui->view->selectionModel();
     const QList<QModelIndex> selected = selection_model->selectedRows();
 
     QList<QString> removed_values;
@@ -391,7 +363,7 @@ void MembershipTab::on_remove_button() {
 
 void MembershipTab::on_primary_button() {
     // Make selected group primary
-    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QItemSelectionModel *selection_model = ui->view->selectionModel();
     const QList<QModelIndex> selecteds = selection_model->selectedRows();
     const QModelIndex selected = selecteds[0];
     const QString group_dn = selected.data(MembersRole_DN).toString();
@@ -409,18 +381,18 @@ void MembershipTab::on_primary_button() {
 }
 
 void MembershipTab::on_properties_button() {
-    const QModelIndex current = view->selectionModel()->currentIndex();
+    const QModelIndex current = ui->view->selectionModel()->currentIndex();
     const QString dn = current.data(MembersRole_DN).toString();
 
     PropertiesDialog::open_for_target(dn);
 }
 
 void MembershipTab::enable_primary_button_on_valid_selection() {
-    if (primary_button == nullptr) {
+    if (ui->primary_button == nullptr) {
         return;
     }
 
-    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QItemSelectionModel *selection_model = ui->view->selectionModel();
     const QList<QModelIndex> selecteds = selection_model->selectedRows();
 
     // Enable "set primary group" button if
@@ -439,9 +411,9 @@ void MembershipTab::enable_primary_button_on_valid_selection() {
         const QString dn = selected_dns.values()[0];
         const bool is_primary = current_primary_values.contains(dn);
 
-        primary_button->setEnabled(!is_primary);
+        ui->primary_button->setEnabled(!is_primary);
     } else {
-        primary_button->setEnabled(false);
+        ui->primary_button->setEnabled(false);
     }
 }
 
@@ -461,7 +433,7 @@ void MembershipTab::reload_model() {
             return out;
         }();
 
-        primary_group_label->setText(primary_group_label_text);
+        ui->primary_group_label->setText(primary_group_label_text);
     }
 
     model->removeRows(0, model->rowCount());

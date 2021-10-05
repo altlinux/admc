@@ -18,20 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/os_tab.h"
-#include "tabs/ui_os_tab.h"
+#ifndef GENERAL_COMPUTER_TAB_H
+#define GENERAL_COMPUTER_TAB_H
 
-#include "adldap.h"
-#include "edits/string_edit.h"
+#include "tabs/properties_tab.h"
 
-OSTab::OSTab() {
-    ui = new Ui::OSTab();
-    ui->setupUi(this);
-
-    new StringEdit(ui->os_edit, ATTRIBUTE_OS, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, CLASS_COMPUTER, &edits, this);
-
-    edits_set_read_only(edits, true);
-    edits_connect_to_tab(edits, this);
+namespace Ui {
+    class GeneralComputerTab;
 }
+
+class GeneralComputerTab final : public PropertiesTab {
+    Q_OBJECT
+
+public:
+    GeneralComputerTab(const AdObject &object);
+
+private:
+    Ui::GeneralComputerTab *ui;
+};
+
+#endif /* GENERAL_COMPUTER_TAB_H */

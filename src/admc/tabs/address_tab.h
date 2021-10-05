@@ -23,12 +23,19 @@
 
 #include "tabs/properties_tab.h"
 
+namespace Ui {
+    class AddressTab;
+}
+
 // Address related attributes
 class AddressTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
     AddressTab();
+
+private:
+    Ui::AddressTab *ui;
 };
 
 #endif /* ADDRESS_TAB_H */

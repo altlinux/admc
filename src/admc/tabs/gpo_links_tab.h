@@ -32,6 +32,10 @@ class QStandardItemModel;
  * of objects.
  */
 
+namespace Ui {
+    class GpoLinksTab;
+}
+
 class GpoLinksTab final : public PropertiesTab {
     Q_OBJECT
 
@@ -42,7 +46,7 @@ public:
     void load(AdInterface &ad, const AdObject &object) override;
 
 private:
-    QTreeView *view;
+    Ui::GpoLinksTab *ui;
     QStandardItemModel *model;
 };
 

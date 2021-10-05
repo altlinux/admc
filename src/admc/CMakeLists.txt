@@ -92,7 +92,11 @@ set(ADMC_SOURCES
     filter_widget/select_base_widget.cpp
     
     tabs/properties_tab.cpp
-    tabs/general_tab.cpp
+    tabs/general_user_tab.cpp
+    tabs/general_group_tab.cpp
+    tabs/general_ou_tab.cpp
+    tabs/general_computer_tab.cpp
+    tabs/general_other_tab.cpp
     tabs/object_tab.cpp
     tabs/attributes_tab.cpp
     tabs/account_tab.cpp

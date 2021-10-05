@@ -31,8 +31,11 @@
 class QStandardItemModel;
 class QStandardItem;
 class AttributesTabProxy;
-class QTreeView;
 class AttributesFilterDialog;
+
+namespace Ui {
+    class AttributesTab;
+}
 
 class AttributesTab final : public PropertiesTab {
     Q_OBJECT
@@ -48,8 +51,8 @@ private slots:
     void edit_attribute();
 
 private:
+    Ui::AttributesTab *ui;
     AttributesFilterDialog *filter_dialog;
-    QTreeView *view;
     QStandardItemModel *model;
     AttributesTabProxy *proxy;
     QHash<QString, QList<QByteArray>> original;

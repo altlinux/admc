@@ -30,7 +30,11 @@
 #include "tabs/account_tab.h"
 #include "tabs/address_tab.h"
 #include "tabs/attributes_tab.h"
-#include "tabs/general_tab.h"
+#include "tabs/general_user_tab.h"
+#include "tabs/general_group_tab.h"
+#include "tabs/general_ou_tab.h"
+#include "tabs/general_computer_tab.h"
+#include "tabs/general_other_tab.h"
 #include "tabs/gpo_links_tab.h"
 #include "tabs/group_policy_tab.h"
 #include "tabs/managed_by_tab.h"
@@ -139,7 +143,21 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         ui->tab_widget->add_tab(tab, tab_title);
     };
 
-    add_tab(new GeneralTab(object), tr("General"));
+    PropertiesTab *general_tab = [&]() -> PropertiesTab * {
+        if (object.is_class(CLASS_USER)) {
+            return new GeneralUserTab(object);
+        } else if (object.is_class(CLASS_GROUP)) {
+            return new GeneralGroupTab(object);
+        } else if (object.is_class(CLASS_OU)) {
+            return new GeneralOUTab(object);
+        } else if (object.is_class(CLASS_GROUP)) {
+            return new GeneralGroupTab(object);
+        } else {
+            return new GeneralOtherTab(object);
+        }
+    }();
+
+    add_tab(general_tab, tr("General"));
 
     const bool advanced_view_ON = settings_get_bool(SETTING_advanced_features);
     if (advanced_view_ON) {

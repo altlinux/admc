@@ -18,16 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERAL_TAB_H
-#define GENERAL_TAB_H
+#ifndef GENERAL_USER_TAB_H
+#define GENERAL_USER_TAB_H
 
 #include "tabs/properties_tab.h"
 
-class GeneralTab final : public PropertiesTab {
+namespace Ui {
+    class GeneralUserTab;
+}
+
+class GeneralUserTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    GeneralTab(const AdObject &object);
+    GeneralUserTab(const AdObject &object);
+
+private:
+    Ui::GeneralUserTab *ui;
 };
 
-#endif /* GENERAL_TAB_H */
+#endif /* GENERAL_USER_TAB_H */

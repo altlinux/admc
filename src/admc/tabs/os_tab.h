@@ -23,11 +23,18 @@
 
 #include "tabs/properties_tab.h"
 
+namespace Ui {
+    class OSTab;
+}
+
 class OSTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
     OSTab();
+
+private:
+    Ui::OSTab *ui;
 };
 
 #endif /* OS_TAB_H */

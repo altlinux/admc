@@ -18,20 +18,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/os_tab.h"
-#include "tabs/ui_os_tab.h"
+#ifndef GENERAL_OTHER_TAB_H
+#define GENERAL_OTHER_TAB_H
 
-#include "adldap.h"
-#include "edits/string_edit.h"
+#include "tabs/properties_tab.h"
 
-OSTab::OSTab() {
-    ui = new Ui::OSTab();
-    ui->setupUi(this);
+class QLabel;
+class AdObject;
 
-    new StringEdit(ui->os_edit, ATTRIBUTE_OS, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, CLASS_COMPUTER, &edits, this);
-
-    edits_set_read_only(edits, true);
-    edits_connect_to_tab(edits, this);
+namespace Ui {
+    class GeneralOtherTab;
 }
+
+class GeneralOtherTab final : public PropertiesTab {
+    Q_OBJECT
+
+public:
+    GeneralOtherTab(const AdObject &object);
+
+private:
+    Ui::GeneralOtherTab *ui;
+};
+
+void load_name_label(QLabel *name_label, const AdObject &object);
+
+#endif /* GENERAL_OTHER_TAB_H */

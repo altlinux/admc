@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GeneralOUTab</class>
+ <widget class="QWidget" name="GeneralOUTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="name_label">
+     <property name="text">
+      <string notr="true">PLACEHOLDER</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="descriptionLabel">
+       <property name="text">
+        <string>Description:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="description_edit"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="streetAddressLabel">
+       <property name="text">
+        <string>Street Address:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="street_edit"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="cityLabel">
+       <property name="text">
+        <string>City:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="city_edit"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="stateProvinceLabel">
+       <property name="text">
+        <string>State/Province:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="state_edit"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="postalLabel">
+       <property name="text">
+        <string>ZIP/Postal Code:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="postal_code_edit"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="countryLabel">
+       <property name="text">
+        <string>Country:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QComboBox" name="country_combo"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

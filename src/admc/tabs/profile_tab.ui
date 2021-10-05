@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ProfileTab</class>
+ <widget class="QWidget" name="ProfileTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="profilePathLabel">
+     <property name="text">
+      <string>Profile Path:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="profile_path_edit"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="scriptPathLabel">
+     <property name="text">
+      <string>Script Path:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="script_path_edit"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="homeDirectoryLabel">
+     <property name="text">
+      <string>Home Directory:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="home_dir_edit"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

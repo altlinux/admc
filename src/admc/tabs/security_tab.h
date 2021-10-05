@@ -26,10 +26,8 @@
 
 #include <QDialog>
 
-class QTreeView;
 class QStandardItemModel;
 class QStandardItem;
-class QLabel;
 class QListWidget;
 
 enum AceColumn {
@@ -50,6 +48,10 @@ extern const QSet<AcePermission> access_permissions;
 extern const QSet<AcePermission> read_prop_permissions;
 extern const QSet<AcePermission> write_prop_permissions;
 
+namespace Ui {
+    class SecurityTab;
+}
+
 class SecurityTab final : public PropertiesTab {
     Q_OBJECT
 
@@ -68,19 +70,17 @@ public:
 
 private slots:
     void load_trustee_acl();
-    void on_item_changed(QStandardItem *item);
 
 private:
-    QTreeView *trustee_view;
+    Ui::SecurityTab *ui;
     QStandardItemModel *trustee_model;
-    QTreeView *ace_view;
     QStandardItemModel *ace_model;
-    QLabel *trustee_label;
     QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
     QHash<QByteArray, QHash<AcePermission, PermissionState>> original_permission_state_map;
     QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
     bool ignore_item_changed_signal;
 
+    void on_item_changed(QStandardItem *item);
     void on_add_trustee_button();
     void on_add_well_known_trustee_button();
     void on_remove_trustee_button();

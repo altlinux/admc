@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ManagedByTab</class>
+ <widget class="QWidget" name="ManagedByTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="managedByLabel">
+     <property name="text">
+      <string>Managed by:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="ManagerWidget" name="manager_widget" native="true"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="officeLocationLabel">
+     <property name="text">
+      <string>Office Location:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="office_edit"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="streetAddressLabel">
+     <property name="text">
+      <string>Street Address:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="street_edit"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="cityLabel">
+     <property name="text">
+      <string>City:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="city_edit"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="stateProvinceLabel">
+     <property name="text">
+      <string>State/Province:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="state_edit"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="countryLabel">
+     <property name="text">
+      <string>Country:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QComboBox" name="country_combo"/>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="telephoneNumberLabel">
+     <property name="text">
+      <string>Telephone Number:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="faxNumberLabel">
+     <property name="text">
+      <string>Fax Number:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLineEdit" name="telephone_edit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="telephone_button">
+       <property name="text">
+        <string>Other...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="7" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLineEdit" name="fax_edit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="fax_button">
+       <property name="text">
+        <string>Other...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ManagerWidget</class>
+   <extends>QWidget</extends>
+   <header>edits/manager_widget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

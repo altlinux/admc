@@ -18,6 +18,7 @@
  */
 
 #include "tabs/security_tab.h"
+#include "tabs/ui_security_tab.h"
 
 #include "ad_security.h"
 #include "adldap.h"
@@ -82,22 +83,15 @@ QHash<AcePermission, QString> SecurityTab::ace_permission_to_name_map() {
 }
 
 SecurityTab::SecurityTab() {
+    ui = new Ui::SecurityTab();
+    ui->setupUi(this);
+
     ignore_item_changed_signal = false;
 
     trustee_model = new QStandardItemModel(0, 1, this);
 
-    trustee_view = new QTreeView(this);
-    trustee_view->setHeaderHidden(true);
-    trustee_view->setModel(trustee_model);
-    trustee_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    trustee_view->sortByColumn(0, Qt::AscendingOrder);
-    trustee_view->setSortingEnabled(true);
-    trustee_view->setSelectionMode(QAbstractItemView::SingleSelection);
-
-    auto trustee_button_box = new QDialogButtonBox();
-    auto add_trustee_button = trustee_button_box->addButton(tr("Add..."), QDialogButtonBox::ActionRole);
-    auto add_well_known_trustee_button = trustee_button_box->addButton(tr("Add well-known trustee..."), QDialogButtonBox::ActionRole);
-    auto remove_trustee_button = trustee_button_box->addButton(tr("Remove"), QDialogButtonBox::ActionRole);
+    ui->trustee_view->setModel(trustee_model);
+    ui->trustee_view->sortByColumn(0, Qt::AscendingOrder);
 
     ace_model = new QStandardItemModel(0, AceColumn_COUNT, this);
     set_horizontal_header_labels_from_map(ace_model,
@@ -143,41 +137,30 @@ SecurityTab::SecurityTab() {
         return out;
     }();
 
-    ace_view = new QTreeView(this);
-    ace_view->setModel(ace_model);
-    ace_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ace_view->setColumnWidth(AceColumn_Name, 400);
+    ui->ace_view->setModel(ace_model);
+    ui->ace_view->setColumnWidth(AceColumn_Name, 400);
 
-    trustee_label = new QLabel();
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(trustee_view);
-    layout->addWidget(trustee_button_box);
-    layout->addWidget(trustee_label);
-    layout->addWidget(ace_view);
-
-    settings_restore_header_state(SETTING_security_tab_header_state, ace_view->header());
+    settings_restore_header_state(SETTING_security_tab_header_state, ui->ace_view->header());
 
     connect(
-        trustee_view->selectionModel(), &QItemSelectionModel::currentChanged,
+        ui->trustee_view->selectionModel(), &QItemSelectionModel::currentChanged,
         this, &SecurityTab::load_trustee_acl);
     connect(
         ace_model, &QStandardItemModel::itemChanged,
         this, &SecurityTab::on_item_changed);
     connect(
-        add_trustee_button, &QAbstractButton::clicked,
+        ui->add_trustee_button, &QAbstractButton::clicked,
         this, &SecurityTab::on_add_trustee_button);
     connect(
-        add_well_known_trustee_button, &QAbstractButton::clicked,
+        ui->add_well_known_trustee_button, &QAbstractButton::clicked,
         this, &SecurityTab::on_add_well_known_trustee_button);
     connect(
-        remove_trustee_button, &QAbstractButton::clicked,
+        ui->remove_trustee_button, &QAbstractButton::clicked,
         this, &SecurityTab::on_remove_trustee_button);
 }
 
 SecurityTab::~SecurityTab() {
-    settings_save_header_state(SETTING_security_tab_header_state, ace_view->header());   
+    settings_save_header_state(SETTING_security_tab_header_state, ui->ace_view->header());   
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {
@@ -196,27 +179,17 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     // Select first index
     // NOTE: load_trustee_acl() is called because setCurrentIndex
     // emits "current change" signal
-    trustee_view->selectionModel()->setCurrentIndex(trustee_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    ui->trustee_view->selectionModel()->setCurrentIndex(trustee_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 
     PropertiesTab::load(ad, object);
 }
 
 void SecurityTab::load_trustee_acl() {
-    const QModelIndex current_index = trustee_view->currentIndex();
+    const QModelIndex current_index = ui->trustee_view->currentIndex();
     if (!current_index.isValid()) {
         return;
     }
     
-    const QString label_text = [&]() {
-        QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
-        const QString trustee_name = current_item->text();
-        const QString text = QString(tr("Permissions for %1")).arg(trustee_name);
-
-        return text;
-    }();
-
-    trustee_label->setText(label_text);
-
     apply_current_state_to_items();
 }
 
@@ -259,7 +232,7 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
     }();
 
     const QByteArray trustee = [&]() {
-        const QModelIndex current_index = trustee_view->currentIndex();
+        const QModelIndex current_index = ui->trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
 
@@ -284,7 +257,7 @@ bool SecurityTab::set_trustee(const QString &trustee_name) {
     }
 
     const QStandardItem *item = item_list[0];
-    trustee_view->setCurrentIndex(item->index());
+    ui->trustee_view->setCurrentIndex(item->index());
 
     return true;
 }
@@ -355,7 +328,7 @@ void SecurityTab::on_add_well_known_trustee_button() {
 }
 
 void SecurityTab::on_remove_trustee_button() {
-    QItemSelectionModel *selection_model = trustee_view->selectionModel();
+    QItemSelectionModel *selection_model = ui->trustee_view->selectionModel();
     const QList<QPersistentModelIndex> selected_list = persistent_index_list(selection_model->selectedRows());
 
     for (const QPersistentModelIndex &index : selected_list) {
@@ -377,7 +350,7 @@ void SecurityTab::apply_current_state_to_items() {
     ignore_item_changed_signal = true;
 
     const QByteArray trustee = [&]() {
-        const QModelIndex current_index = trustee_view->currentIndex();
+        const QModelIndex current_index = ui->trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
 

@@ -18,20 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/os_tab.h"
-#include "tabs/ui_os_tab.h"
+#include "tabs/general_other_tab.h"
+#include "tabs/ui_general_other_tab.h"
 
+#include "tabs/general_other_tab.h"
 #include "adldap.h"
 #include "edits/string_edit.h"
 
-OSTab::OSTab() {
-    ui = new Ui::OSTab();
+GeneralOtherTab::GeneralOtherTab(const AdObject &object) {
+    ui = new Ui::GeneralOtherTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->os_edit, ATTRIBUTE_OS, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, CLASS_COMPUTER, &edits, this);
+    load_name_label(ui->name_label, object);
 
-    edits_set_read_only(edits, true);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, CLASS_GROUP, &edits, this);
+
     edits_connect_to_tab(edits, this);
+}
+
+void load_name_label(QLabel *name_label, const AdObject &object) {
+    const QString name = object.get_string(ATTRIBUTE_NAME);
+    name_label->setText(name);
+
+    if (object.is_empty()) {
+        name_label->setText(QCoreApplication::translate("general_other_tab.cpp", "Failed to load object information. Check your connection."));
+    }
 }

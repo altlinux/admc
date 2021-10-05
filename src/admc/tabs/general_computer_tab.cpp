@@ -18,20 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/os_tab.h"
-#include "tabs/ui_os_tab.h"
+#include "tabs/general_computer_tab.h"
+#include "tabs/ui_general_computer_tab.h"
 
+#include "tabs/general_other_tab.h"
 #include "adldap.h"
 #include "edits/string_edit.h"
+#include "edits/sama_edit.h"
 
-OSTab::OSTab() {
-    ui = new Ui::OSTab();
+GeneralComputerTab::GeneralComputerTab(const AdObject &object) {
+    ui = new Ui::GeneralComputerTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->os_edit, ATTRIBUTE_OS, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, CLASS_COMPUTER, &edits, this);
+    load_name_label(ui->name_label, object);
 
-    edits_set_read_only(edits, true);
+    auto sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edits, this);
+    auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, CLASS_COMPUTER, &edits, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, CLASS_COMPUTER, &edits, this);
+    new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, CLASS_COMPUTER, &edits, this);
+
+    sama_edit->set_read_only(true);
+    dns_edit->set_read_only(true);
+
     edits_connect_to_tab(edits, this);
 }

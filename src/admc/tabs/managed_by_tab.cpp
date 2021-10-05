@@ -19,6 +19,7 @@
  */
 
 #include "tabs/managed_by_tab.h"
+#include "tabs/ui_managed_by_tab.h"
 
 #include "adldap.h"
 #include "edits/country_edit.h"
@@ -29,39 +30,31 @@
 #include "edits/string_other_edit.h"
 #include "utils.h"
 
-#include <QFormLayout>
-
 // NOTE: store manager's edits in separate list because they
 // don't apply to the target of properties.
 
 ManagedByTab::ManagedByTab() {
-    manager_edit = new ManagerEdit(ATTRIBUTE_MANAGED_BY, &edits, this);
+    ui = new Ui::ManagedByTab();
+    ui->setupUi(this);
 
-    const QList<QString> attributes = {
-        ATTRIBUTE_OFFICE,
-        ATTRIBUTE_STREET,
-        ATTRIBUTE_CITY,
-        ATTRIBUTE_STATE,
-    };
-    StringEdit::make_many(attributes, CLASS_USER, &manager_edits, this);
+    manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGED_BY, &edits, this);
 
-    new CountryEdit(&manager_edits, this);
+    new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, CLASS_USER, &manager_edits, this);
+    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, CLASS_USER, &manager_edits, this);
+    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, CLASS_USER, &manager_edits, this);
+    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, CLASS_USER, &manager_edits, this);
 
-    new StringOtherEdit(ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, &manager_edits, this);
-    new StringOtherEdit(ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, CLASS_USER, &manager_edits, this);
+    new CountryEdit(ui->country_combo, &manager_edits, this);
+
+    // TODO: this is currently only showing the disabled
+    // "other..." button. Need to be able to see other
+    // values in dialog (but not edit them)
+    new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, &manager_edits, this);
+    new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, CLASS_USER, &manager_edits, this);
 
     edits_set_read_only(manager_edits, true);
 
-    auto edits_layout = new QFormLayout();
-
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edits_layout);
-
-    edits_add_to_layout(edits, edits_layout);
     edits_connect_to_tab(edits, this);
-
-    edits_add_to_layout(manager_edits, edits_layout);
     edits_connect_to_tab(manager_edits, this);
 
     connect(

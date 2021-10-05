@@ -20,6 +20,7 @@
 
 #include "tabs/attributes_tab.h"
 #include "tabs/attributes_tab_p.h"
+#include "tabs/ui_attributes_tab.h"
 
 #include "adldap.h"
 #include "editors/attribute_editor.h"
@@ -27,15 +28,7 @@
 #include "settings.h"
 #include "utils.h"
 
-#include <QCheckBox>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QFrame>
-#include <QLabel>
-#include <QPushButton>
 #include <QStandardItemModel>
-#include <QTreeView>
-#include <QVBoxLayout>
 #include <QMenu>
 #include <QAction>
 #include <QHeaderView>
@@ -50,6 +43,9 @@ enum AttributesColumn {
 QString attribute_type_display_string(const AttributeType type);
 
 AttributesTab::AttributesTab() {
+    ui = new Ui::AttributesTab();
+    ui->setupUi(this);
+
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
     {
@@ -60,46 +56,26 @@ AttributesTab::AttributesTab() {
 
     auto filter_menu = new AttributesFilterMenu(this);
 
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setSelectionBehavior(QAbstractItemView::SelectRows);
-    view->setAllColumnsShowFocus(true);
-    view->setSortingEnabled(true);
-
     proxy = new AttributesTabProxy(filter_menu, this);
 
     proxy->setSourceModel(model);
-    view->setModel(proxy);
+    ui->view->setModel(proxy);
 
-    auto edit_button = new QPushButton(tr("Edit..."));
-    edit_button->setObjectName("edit_button");
-    auto filter_button = new QPushButton(tr("Filter"));
-    filter_button->setObjectName("filter_button");
-    auto buttons = new QHBoxLayout();
-    buttons->addWidget(edit_button);
-    buttons->addStretch();
-    buttons->addWidget(filter_button);
+    ui->filter_button->setMenu(filter_menu);
 
-    filter_button->setMenu(filter_menu);
+    enable_widget_on_selection(ui->edit_button, ui->view);
 
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(view);
-    layout->addLayout(buttons);
-
-    enable_widget_on_selection(edit_button, view);
-
-    settings_restore_header_state(SETTING_attributes_tab_header_state, view->header());
+    settings_restore_header_state(SETTING_attributes_tab_header_state, ui->view->header());
 
     const QHash<QString, QVariant> state = settings_get_variant(SETTING_attributes_tab_header_state).toHash();
 
-    view->header()->restoreState(state["header"].toByteArray());
+    ui->view->header()->restoreState(state["header"].toByteArray());
 
     connect(
-        view, &QAbstractItemView::doubleClicked,
+        ui->view, &QAbstractItemView::doubleClicked,
         this, &AttributesTab::edit_attribute);
     connect(
-        edit_button, &QAbstractButton::clicked,
+        ui->edit_button, &QAbstractButton::clicked,
         this, &AttributesTab::edit_attribute);
     connect(
         filter_menu, &AttributesFilterMenu::filter_changed,
@@ -107,11 +83,11 @@ AttributesTab::AttributesTab() {
 }
 
 AttributesTab::~AttributesTab() {
-    settings_set_variant(SETTING_attributes_tab_header_state, view->header()->saveState());
+    settings_set_variant(SETTING_attributes_tab_header_state, ui->view->header()->saveState());
 }
 
 void AttributesTab::edit_attribute() {
-    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QItemSelectionModel *selection_model = ui->view->selectionModel();
     const QList<QModelIndex> selecteds = selection_model->selectedRows();
 
     if (selecteds.isEmpty()) {
@@ -183,7 +159,7 @@ void AttributesTab::load(AdInterface &ad, const AdObject &object) {
         load_row(row, attribute, values);
     }
 
-    view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
+    ui->view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
 bool AttributesTab::apply(AdInterface &ad, const QString &target) {

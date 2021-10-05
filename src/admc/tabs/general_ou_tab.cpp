@@ -18,20 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/os_tab.h"
-#include "tabs/ui_os_tab.h"
+#include "tabs/general_ou_tab.h"
+#include "tabs/ui_general_ou_tab.h"
 
+#include "tabs/general_other_tab.h"
 #include "adldap.h"
 #include "edits/string_edit.h"
+#include "edits/country_edit.h"
 
-OSTab::OSTab() {
-    ui = new Ui::OSTab();
+GeneralOUTab::GeneralOUTab(const AdObject &object) {
+    ui = new Ui::GeneralOUTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->os_edit, ATTRIBUTE_OS, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, CLASS_COMPUTER, &edits, this);
+    load_name_label(ui->name_label, object);
 
-    edits_set_read_only(edits, true);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, CLASS_OU, &edits, this);
+    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, CLASS_OU, &edits, this);
+    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, CLASS_OU, &edits, this);
+    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, CLASS_OU, &edits, this);
+    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, CLASS_OU, &edits, this);
+
+    new CountryEdit(ui->country_combo, &edits, this);
+
     edits_connect_to_tab(edits, this);
 }

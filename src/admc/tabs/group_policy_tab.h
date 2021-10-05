@@ -25,7 +25,6 @@
 
 #include "gplink.h"
 
-class QTreeView;
 class QString;
 class QStandardItemModel;
 class QStandardItem;
@@ -37,6 +36,10 @@ class SelectPolicyDialog;
  * attributes of an object(not a gpo!), such as gplink and
  * gpoptions.
  */
+
+namespace Ui {
+    class GroupPolicyTab;
+}
 
 class GroupPolicyTab final : public PropertiesTab {
     Q_OBJECT
@@ -55,9 +58,9 @@ private slots:
     void on_item_changed(QStandardItem *item);
 
 private:
+    Ui::GroupPolicyTab *ui;
     SelectPolicyDialog *add_dialog;
     QStandardItemModel *model;
-    QTreeView *view;
     Gplink gplink;
     QString original_gplink_string;
 
