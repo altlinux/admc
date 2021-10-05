@@ -31,14 +31,11 @@ class DateTimeEdit final : public AttributeEdit {
     Q_OBJECT
 public:
     DateTimeEdit(QDateTimeEdit *edit, const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     QString attribute;
     QDateTimeEdit *edit;
-
-    void init();
 };
 
 #endif /* DATETIME_EDIT_H */

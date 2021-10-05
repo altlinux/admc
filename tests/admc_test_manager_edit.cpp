@@ -21,6 +21,7 @@
 #include "admc_test_manager_edit.h"
 
 #include "edits/manager_edit.h"
+#include "edits/manager_widget.h"
 #include "globals.h"
 #include "properties_dialog.h"
 
@@ -30,7 +31,9 @@
 void ADMCTestManagerEdit::init() {
     ADMCTest::init();
 
-    edit = new ManagerEdit(ATTRIBUTE_MANAGER, &edits, parent_widget);
+    auto manager_widget = new ManagerWidget(parent_widget);
+
+    edit = new ManagerEdit(manager_widget, ATTRIBUTE_MANAGER, &edits, parent_widget);
     add_attribute_edit(edit);
 
     manager_display = parent_widget->findChild<QLineEdit *>("manager_display");

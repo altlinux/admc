@@ -36,15 +36,9 @@
 
 class QCheckBox;
 
-enum UnlockEditStyle {
-    UnlockEditStyle_CheckOnLeft,
-    UnlockEditStyle_CheckOnRight,
-};
-
 class UnlockEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    UnlockEdit(QList<AttributeEdit *> *edits_out, const UnlockEditStyle style, QObject *parent);
     UnlockEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
@@ -52,9 +46,6 @@ public:
 
 private:
     QCheckBox *check;
-    UnlockEditStyle style;
-
-    void init(const UnlockEditStyle style_arg, QCheckBox *check_arg);
 };
 
 #endif /* UNLOCK_EDIT_H */

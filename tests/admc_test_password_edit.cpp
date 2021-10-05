@@ -32,11 +32,11 @@
 void ADMCTestPasswordEdit::init() {
     ADMCTest::init();
 
-    edit = new PasswordEdit(&edits, parent_widget);
-    add_attribute_edit(edit);
+    main_edit = new QLineEdit(parent_widget);
+    confirm_edit = new QLineEdit(parent_widget);
 
-    main_edit = edit->get_edit();
-    confirm_edit = edit->get_confirm_edit();
+    edit = new PasswordEdit(main_edit, confirm_edit, &edits, parent_widget);
+    add_attribute_edit(edit);
 
     // Create test user
     const QString name = TEST_USER;

@@ -28,10 +28,10 @@
 void ADMCTestGroupTypeEdit::init() {
     ADMCTest::init();
 
-    edit = new GroupTypeEdit(&edits, parent_widget);
-    add_attribute_edit(edit);
+    combo = new QComboBox(parent_widget);
 
-    combo = parent_widget->findChild<QComboBox *>();
+    edit = new GroupTypeEdit(combo, &edits, parent_widget);
+    add_attribute_edit(edit);
 
     const QString name = TEST_GROUP;
     dn = test_object_dn(name, CLASS_GROUP);

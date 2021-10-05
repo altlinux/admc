@@ -39,20 +39,16 @@ void ADMCTestAccountOptionEdit::init() {
 
         return out;
     }();
+    
     QList<AttributeEdit *> edit_list;
-    AccountOptionEdit::make_many(option_list, &edit_map, &edit_list, parent_widget);
 
-    check_map = [&]() {
-        QHash<AccountOption, QCheckBox *> out;
+    for (const AccountOption &option : option_list) {
+        auto check = new QCheckBox(parent_widget);
+        auto edit = new AccountOptionEdit(check, option, &edit_list, parent_widget);
 
-        for (const AccountOption option : edit_map.keys()) {
-            AccountOptionEdit *edit = edit_map[option];
-            QCheckBox *check = edit->get_check();
-            out[option] = check;
-        }
-
-        return out;
-    }();
+        check_map[option] = check;
+        edit_map[option] = edit;
+    }
 
     // Create test user
     const QString name = TEST_USER;
@@ -75,17 +71,6 @@ void ADMCTestAccountOptionEdit::test_emit_edited_signal() {
 
     check->setChecked(true);
     QVERIFY(edited_signal_emitted);
-}
-
-void ADMCTestAccountOptionEdit::correct_label() {
-    for (int i = 0; i < AccountOption_COUNT; i++) {
-        const AccountOption option = (AccountOption) i;
-        QCheckBox *check = check_map[option];
-        const QString expected_text = account_option_string(option);
-        const QString actual_text = check->text();
-
-        QCOMPARE(actual_text, expected_text);
-    }
 }
 
 void ADMCTestAccountOptionEdit::load_data() {

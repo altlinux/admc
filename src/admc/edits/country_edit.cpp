@@ -27,17 +27,6 @@
 #include <QComboBox>
 #include <QFormLayout>
 
-CountryEdit::CountryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    combo = new QComboBox();
-
-    country_combo_init(combo);
-
-    connect(
-        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &CountryEdit::edited);
-}
-
 CountryEdit::CountryEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     combo = combo_arg;

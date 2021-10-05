@@ -27,11 +27,11 @@
 
 void ADMCTestGroupScopeEdit::init() {
     ADMCTest::init();
+    
+    combo = new QComboBox(parent_widget);
 
-    edit = new GroupScopeEdit(&edits, parent_widget);
+    edit = new GroupScopeEdit(combo, &edits, parent_widget);
     add_attribute_edit(edit);
-
-    combo = parent_widget->findChild<QComboBox *>();
 
     const QString name = TEST_GROUP;
     dn = test_object_dn(name, CLASS_GROUP);

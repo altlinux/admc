@@ -30,11 +30,10 @@
 void ADMCTestStringLargeEdit::init() {
     ADMCTest::init();
 
-    edit = new StringLargeEdit(TEST_ATTRIBUTE, CLASS_USER, &edits, parent_widget);
-    add_attribute_edit(edit);
+    text_edit = new QPlainTextEdit(parent_widget);
 
-    text_edit = parent_widget->findChild<QPlainTextEdit *>();
-    QVERIFY(text_edit);
+    edit = new StringLargeEdit(text_edit, TEST_ATTRIBUTE, CLASS_USER, &edits, parent_widget);
+    add_attribute_edit(edit);
 
     // Create test user
     const QString name = TEST_USER;

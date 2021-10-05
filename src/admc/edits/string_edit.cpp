@@ -27,31 +27,12 @@
 #include <QFormLayout>
 #include <QLineEdit>
 
-void StringEdit::make_many(const QList<QString> attributes, const QString &objectClass, QList<AttributeEdit *> *edits_out, QObject *parent) {
-    for (auto attribute : attributes) {
-        new StringEdit(attribute, objectClass, edits_out, parent);
-    }
-}
-
 StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     attribute = attribute_arg;
     objectClass = objectClass_arg;
     edit = edit_arg;
     
-    init();
-}
-
-StringEdit::StringEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    attribute = attribute_arg;
-    objectClass = objectClass_arg;
-    edit = new QLineEdit();
-
-    init();
-}
-
-void StringEdit::init() {
     if (g_adconfig->get_attribute_is_number(attribute)) {
         set_line_edit_to_numbers_only(edit);
     }

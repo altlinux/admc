@@ -29,42 +29,16 @@
 #include <QMap>
 #include <QGroupBox>
 
-void AccountOptionEdit::make_many(const QList<AccountOption> options, QMap<AccountOption, AccountOptionEdit *> *option_edits_out, QList<AttributeEdit *> *edits_out, QWidget *parent) {
-    QHash<AccountOption, QCheckBox *> check_map;
-
-    for (auto option : options) {
-        auto edit = new AccountOptionEdit(option, edits_out, parent);
-        check_map[option] = edit->check;
-        option_edits_out->insert(option, edit);
-    }
-
-    account_option_setup_conflicts(check_map);
-}
-
-QWidget *AccountOptionEdit::layout_many(const QList<AccountOption> &options, const QMap<AccountOption, AccountOptionEdit *> &option_edits) {
-    auto group_box = new QGroupBox(tr("Account options:"));
-    auto layout = new QVBoxLayout();
-    group_box->setLayout(layout);
-
-    for (const auto option : options) {
-        auto edit = option_edits[option];
-        layout->addWidget(edit->check, 0);
-    }
-
-    return group_box;
-}
-
-AccountOptionEdit::AccountOptionEdit(const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    const QString check_text = account_option_string(option_arg);
-    auto check_arg = new QCheckBox(check_text);
-
-    init(option_arg, check_arg);
-}
-
 AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    init(option_arg, check_arg);
+    option = option_arg;
+    check = check_arg;
+
+    QObject::connect(
+        check, &QCheckBox::stateChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 void AccountOptionEdit::load_internal(AdInterface &ad, const AdObject &object) {
@@ -85,25 +59,6 @@ bool AccountOptionEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool success = ad.user_set_account_option(dn, option, new_value);
 
     return success;
-}
-
-void AccountOptionEdit::set_checked(const bool checked) {
-    check->setChecked(checked);
-}
-
-QCheckBox *AccountOptionEdit::get_check() const {
-    return check;
-}
-
-void AccountOptionEdit::init(const AccountOption option_arg, QCheckBox *check_arg) {
-    option = option_arg;
-    check = check_arg;
-
-    QObject::connect(
-        check, &QCheckBox::stateChanged,
-        [this]() {
-            emit edited();
-        });
 }
 
 // PasswordExpired conflicts with (DontExpirePassword and

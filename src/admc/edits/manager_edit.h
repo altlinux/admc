@@ -36,7 +36,6 @@ class ManagerWidget;
 class ManagerEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    ManagerEdit(const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 

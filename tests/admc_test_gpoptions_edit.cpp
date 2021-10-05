@@ -30,11 +30,10 @@
 void ADMCTestGpoptionsEdit::init() {
     ADMCTest::init();
 
-    edit = new GpoptionsEdit(&edits, parent_widget);
-    add_attribute_edit(edit);
+    check = new QCheckBox(parent_widget);
 
-    check = parent_widget->findChild<QCheckBox *>();
-    QVERIFY(check);
+    edit = new GpoptionsEdit(check, &edits, parent_widget);
+    add_attribute_edit(edit);
 
     const QString name = TEST_OU;
     dn = test_object_dn(name, CLASS_OU);

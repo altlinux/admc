@@ -31,15 +31,12 @@
 void ADMCTestUpnEdit::init() {
     ADMCTest::init();
 
-    upn_edit = new UpnEdit(&edits, parent_widget);
+    prefix_edit = new QLineEdit();
+    suffix_edit = new QComboBox();
+
+    upn_edit = new UpnEdit(prefix_edit, suffix_edit, &edits, parent_widget);
     upn_edit->init_suffixes(ad);
     add_attribute_edit(upn_edit);
-
-    prefix_edit = parent_widget->findChild<QLineEdit *>();
-    QVERIFY(prefix_edit);
-
-    suffix_edit = parent_widget->findChild<QComboBox *>();
-    QVERIFY(suffix_edit);
 
     // Create test user
     const QString name = TEST_USER;

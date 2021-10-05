@@ -41,7 +41,7 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
     new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, CLASS_USER, &edit_list, this);
     sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
 
-    new PasswordEdit(&edit_list, ui->password_main_edit, ui->password_confirm_edit, this);
+    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edit_list, this);
 
     upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
 

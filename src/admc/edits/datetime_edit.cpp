@@ -32,16 +32,13 @@ DateTimeEdit::DateTimeEdit(QDateTimeEdit *edit_arg, const QString &attribute_arg
     attribute = attribute_arg;
     attribute = attribute_arg;
 
-    init();
-}
+    edit->setDisplayFormat(DATETIME_DISPLAY_FORMAT);
 
-
-DateTimeEdit::DateTimeEdit(const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    edit = new QDateTimeEdit();
-    attribute = attribute_arg;
-
-    init();
+    QObject::connect(
+        edit, &QDateTimeEdit::dateTimeChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 void DateTimeEdit::load_internal(AdInterface &ad, const AdObject &object) {
@@ -67,14 +64,4 @@ bool DateTimeEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool success = ad.attribute_replace_datetime(dn, attribute, datetime);
 
     return success;
-}
-
-void DateTimeEdit::init() {
-    edit->setDisplayFormat(DATETIME_DISPLAY_FORMAT);
-
-    QObject::connect(
-        edit, &QDateTimeEdit::dateTimeChanged,
-        [this]() {
-            emit edited();
-        });
 }

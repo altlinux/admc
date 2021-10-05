@@ -31,10 +31,10 @@
 void ADMCTestDateTimeEdit::init() {
     ADMCTest::init();
 
-    edit = new DateTimeEdit(ATTRIBUTE_WHEN_CHANGED, &edits, parent_widget);
-    add_attribute_edit(edit);
+    qedit = new QDateTimeEdit(parent_widget);
 
-    qedit = parent_widget->findChild<QDateTimeEdit *>();
+    edit = new DateTimeEdit(qedit, ATTRIBUTE_WHEN_CHANGED, &edits, parent_widget);
+    add_attribute_edit(edit);
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);

@@ -44,14 +44,11 @@ const QList<QByteArray> other_value_list = {
 void ADMCTestStringOtherEdit::init() {
     ADMCTest::init();
 
-    edit = new StringOtherEdit(TEST_ATTRIBUTE_MAIN, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, &edits, parent_widget);
+    line_edit = new QLineEdit(parent_widget);
+    other_button = new QPushButton(parent_widget);
+
+    edit = new StringOtherEdit(line_edit, other_button, TEST_ATTRIBUTE_MAIN, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, &edits, parent_widget);
     add_attribute_edit(edit);
-
-    line_edit = parent_widget->findChild<QLineEdit *>();
-    QVERIFY(line_edit);
-
-    other_button = parent_widget->findChild<QPushButton *>();
-    QVERIFY(other_button);
 
     // Create test user
     const QString name = TEST_USER;

@@ -28,7 +28,6 @@ class QLineEdit;
 class SamaEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    SamaEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     SamaEdit(QLineEdit *sama_edit, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
@@ -37,8 +36,6 @@ public:
 private:
     QLineEdit *edit;
     QLineEdit *domain_edit;
-
-    void init();
 };
 
 #endif /* SAMA_EDIT_H */

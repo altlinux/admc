@@ -25,18 +25,22 @@
 #include <QComboBox>
 #include <QFormLayout>
 
-GroupScopeEdit::GroupScopeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    combo = new QComboBox();
-
-    init();
-}
-
 GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     combo = combo_arg;
 
-    init();
+    for (int i = 0; i < GroupScope_COUNT; i++) {
+        const GroupScope type = (GroupScope) i;
+        const QString type_string = group_scope_string(type);
+
+        combo->addItem(type_string, (int) type);
+    }
+
+    QObject::connect(
+        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        [this]() {
+            emit edited();
+        });
 }
 
 
@@ -60,19 +64,4 @@ bool GroupScopeEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool success = ad.group_set_scope(dn, new_value);
 
     return success;
-}
-
-void GroupScopeEdit::init() {
-    for (int i = 0; i < GroupScope_COUNT; i++) {
-        const GroupScope type = (GroupScope) i;
-        const QString type_string = group_scope_string(type);
-
-        combo->addItem(type_string, (int) type);
-    }
-
-    QObject::connect(
-        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        [this]() {
-            emit edited();
-        });
 }

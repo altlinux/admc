@@ -35,7 +35,6 @@ private slots:
     void init() override;
 
     void test_emit_edited_signal();
-    void correct_label();
     void load_data();
     void load();
     void apply_data();

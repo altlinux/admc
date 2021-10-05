@@ -28,17 +28,25 @@
 #include <QLineEdit>
 #include <QTextCodec>
 
-PasswordEdit::PasswordEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
+PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    auto edit_arg = new QLineEdit();
-    auto confirm_edit_arg = new QLineEdit();
+    edit = edit_arg;
+    confirm_edit = confirm_edit_arg;
 
-    init(edit_arg, confirm_edit_arg);
-}
+    // TODO: remove later because i think this won't be
+    // needed if i set name in create object dialog when i
+    // ui'fy that
+    edit->setObjectName("password_main_edit");
+    confirm_edit->setObjectName("password_confirm_edit");
 
-PasswordEdit::PasswordEdit(QList<AttributeEdit *> *edits_out, QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    init(edit_arg, confirm_edit_arg);
+    limit_edit(edit, ATTRIBUTE_PASSWORD);
+    limit_edit(confirm_edit, ATTRIBUTE_PASSWORD);
+
+    QObject::connect(
+        edit, &QLineEdit::textChanged,
+        [this]() {
+            emit edited();
+        });
 }
 
 void PasswordEdit::load_internal(AdInterface &ad, const AdObject &object) {
@@ -92,24 +100,4 @@ QLineEdit *PasswordEdit::get_edit() const {
 
 QLineEdit *PasswordEdit::get_confirm_edit() const {
     return confirm_edit;
-}
-
-void PasswordEdit::init(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg) {
-    edit = edit_arg;
-    confirm_edit = confirm_edit_arg;
-
-    // TODO: remove later because i think this won't be
-    // needed if i set name in create object dialog when i
-    // ui'fy that
-    edit->setObjectName("password_main_edit");
-    confirm_edit->setObjectName("password_confirm_edit");
-
-    limit_edit(edit, ATTRIBUTE_PASSWORD);
-    limit_edit(confirm_edit, ATTRIBUTE_PASSWORD);
-
-    QObject::connect(
-        edit, &QLineEdit::textChanged,
-        [this]() {
-            emit edited();
-        });
 }

@@ -46,7 +46,7 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 
     const AdObject object = ad.search_object(target);
 
-    new PasswordEdit(&edits, ui->password_main_edit, ui->password_confirm_edit, this);
+    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edits, this);
 
     new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
 

@@ -33,7 +33,6 @@ class QCheckBox;
 class ProtectDeletionEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    ProtectDeletionEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     ProtectDeletionEdit(QCheckBox *check, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
@@ -41,8 +40,6 @@ public:
 
 private:
     QCheckBox *check;
-
-    void init();
 };
 
 #endif /* PROTECT_DELETION_EDIT_H */

@@ -25,17 +25,6 @@
 #include <QCheckBox>
 #include <QFormLayout>
 
-GpoptionsEdit::GpoptionsEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    check = new QCheckBox(tr("Block policy inheritance"));
-
-    QObject::connect(
-        check, &QCheckBox::stateChanged,
-        [this]() {
-            emit edited();
-        });
-}
-
 GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     check = check_arg;

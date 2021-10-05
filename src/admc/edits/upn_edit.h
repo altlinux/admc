@@ -30,7 +30,6 @@ class QComboBox;
 class UpnEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    UpnEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     UpnEdit(QLineEdit *prefix_edit, QComboBox *suffix_combo, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
@@ -45,8 +44,6 @@ private:
     friend class StringOtherEdit;
 
     QString get_new_value() const;
-
-    void init_internal();
 };
 
 #endif /* UPN_EDIT_H */

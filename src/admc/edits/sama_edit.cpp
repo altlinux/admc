@@ -32,18 +32,6 @@ SamaEdit::SamaEdit(QLineEdit *sama_edit, QLineEdit *domain_edit_arg, QList<Attri
     edit = sama_edit;
     domain_edit = domain_edit_arg;
 
-    init();
-}
-
-SamaEdit::SamaEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    edit = new QLineEdit();
-    domain_edit = nullptr;
-
-    init();
-}
-
-void SamaEdit::init() {
     limit_edit(edit, ATTRIBUTE_SAMACCOUNT_NAME);
 
     QObject::connect(

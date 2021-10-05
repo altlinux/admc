@@ -28,14 +28,11 @@ class QComboBox;
 class GroupScopeEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    GroupScopeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
     GroupScopeEdit(QComboBox *combo, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
     QComboBox *combo;
-
-    void init();
 };
 
 #endif /* GROUP_SCOPE_EDIT_H */

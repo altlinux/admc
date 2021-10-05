@@ -26,18 +26,6 @@
 
 #include <QFormLayout>
 
-ManagerEdit::ManagerEdit(const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    manager_attribute = manager_attribute_arg;
-
-    widget = new ManagerWidget();
-    widget->set_attribute(manager_attribute_arg);
-
-    connect(
-        widget, &ManagerWidget::edited,
-        this, &ManagerEdit::edited);
-}
-
 ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     manager_attribute = manager_attribute_arg;
