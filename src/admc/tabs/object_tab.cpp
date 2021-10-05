@@ -32,14 +32,14 @@ ObjectTab::ObjectTab() {
     ui = new Ui::ObjectTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->dn_edit, ATTRIBUTE_DN, "", &edits, this);
-    new StringEdit(ui->class_edit, ATTRIBUTE_OBJECT_CLASS, "", &edits, this);
+    new StringEdit(ui->dn_edit, ATTRIBUTE_DN, &edits, this);
+    new StringEdit(ui->class_edit, ATTRIBUTE_OBJECT_CLASS, &edits, this);
 
     new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, &edits, this);
     new DateTimeEdit(ui->changed_edit, ATTRIBUTE_WHEN_CHANGED, &edits, this);
 
-    new StringEdit(ui->usn_created_edit, ATTRIBUTE_USN_CREATED, "", &edits, this);
-    new StringEdit(ui->usn_changed_edit, ATTRIBUTE_USN_CHANGED, "", &edits, this);
+    new StringEdit(ui->usn_created_edit, ATTRIBUTE_USN_CREATED, &edits, this);
+    new StringEdit(ui->usn_changed_edit, ATTRIBUTE_USN_CHANGED, &edits, this);
 
     auto deletion_edit = new ProtectDeletionEdit(ui->deletion_check, &edits, this);
 

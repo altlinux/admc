@@ -45,9 +45,9 @@ OrganizationTab::OrganizationTab() {
     ui = new Ui::OrganizationTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->job_title_edit, ATTRIBUTE_TITLE, CLASS_USER, &edits, this);
-    new StringEdit(ui->department_edit, ATTRIBUTE_DEPARTMENT, CLASS_USER, &edits, this);
-    new StringEdit(ui->company_edit, ATTRIBUTE_COMPANY, CLASS_USER, &edits, this);
+    new StringEdit(ui->job_title_edit, ATTRIBUTE_TITLE, &edits, this);
+    new StringEdit(ui->department_edit, ATTRIBUTE_DEPARTMENT, &edits, this);
+    new StringEdit(ui->company_edit, ATTRIBUTE_COMPANY, &edits, this);
 
     new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGER, &edits, this);
 

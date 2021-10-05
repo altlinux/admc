@@ -33,9 +33,9 @@ GeneralComputerTab::GeneralComputerTab(const AdObject &object) {
     load_name_label(ui->name_label, object);
 
     auto sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edits, this);
-    auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, CLASS_COMPUTER, &edits, this);
+    auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, &edits, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
+    new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, &edits, this);
 
     sama_edit->set_read_only(true);
     dns_edit->set_read_only(true);

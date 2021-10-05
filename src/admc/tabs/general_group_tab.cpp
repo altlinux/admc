@@ -35,9 +35,9 @@ GeneralGroupTab::GeneralGroupTab(const AdObject &object) {
     load_name_label(ui->name_label, object);
 
     new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edits, this);
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, CLASS_GROUP, &edits, this);
-    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, CLASS_GROUP, &edits, this);
-    new StringEdit(ui->notes_edit, ATTRIBUTE_INFO, CLASS_GROUP, &edits, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
+    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, &edits, this);
+    new StringEdit(ui->notes_edit, ATTRIBUTE_INFO, &edits, this);
 
     auto scope_edit = new GroupScopeEdit(ui->scope_combo, &edits, this);
     auto type_edit = new GroupTypeEdit(ui->type_combo, &edits, this);

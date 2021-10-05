@@ -25,10 +25,9 @@
 
 #include <QPlainTextEdit>
 
-StringLargeEdit::StringLargeEdit(QPlainTextEdit *edit_arg, const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+StringLargeEdit::StringLargeEdit(QPlainTextEdit *edit_arg, const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     attribute = attribute_arg;
-    objectClass = objectClass_arg;
     edit = edit_arg;
 
     const int range_upper = g_adconfig->get_attribute_range_upper(attribute);

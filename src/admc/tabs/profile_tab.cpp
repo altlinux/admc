@@ -28,11 +28,11 @@ ProfileTab::ProfileTab() {
     ui = new Ui::ProfileTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->profile_path_edit, ATTRIBUTE_PROFILE_PATH, CLASS_USER, &edits, this);
-    new StringEdit(ui->script_path_edit, ATTRIBUTE_SCRIPT_PATH, CLASS_USER, &edits, this);
+    new StringEdit(ui->profile_path_edit, ATTRIBUTE_PROFILE_PATH, &edits, this);
+    new StringEdit(ui->script_path_edit, ATTRIBUTE_SCRIPT_PATH, &edits, this);
 
     // TODO: verify that local path exists. Also add alternate input method named "Connect"? Has drop-down of disk letters and path input.
-    new StringEdit(ui->home_dir_edit, ATTRIBUTE_HOME_DIRECTORY, CLASS_USER, &edits, this);
+    new StringEdit(ui->home_dir_edit, ATTRIBUTE_HOME_DIRECTORY, &edits, this);
 
     edits_connect_to_tab(edits, this);
 }

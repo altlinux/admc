@@ -32,11 +32,11 @@ GeneralOUTab::GeneralOUTab(const AdObject &object) {
 
     load_name_label(ui->name_label, object);
 
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, CLASS_OU, &edits, this);
-    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, CLASS_OU, &edits, this);
-    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, CLASS_OU, &edits, this);
-    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, CLASS_OU, &edits, this);
-    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, CLASS_OU, &edits, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
+    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, &edits, this);
+    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, &edits, this);
+    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, &edits, this);
+    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, &edits, this);
 
     new CountryEdit(ui->country_combo, &edits, this);
 

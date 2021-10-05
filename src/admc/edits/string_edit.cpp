@@ -26,10 +26,9 @@
 
 #include <QLineEdit>
 
-StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     attribute = attribute_arg;
-    objectClass = objectClass_arg;
     edit = edit_arg;
     
     if (g_adconfig->get_attribute_is_number(attribute)) {

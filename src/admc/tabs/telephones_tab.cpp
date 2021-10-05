@@ -29,13 +29,13 @@ TelephonesTab::TelephonesTab() {
     ui = new Ui::TelephonesTab();
     ui->setupUi(this);
 
-    new StringOtherEdit(ui->home_phone_edit, ui->home_phone_button, ATTRIBUTE_HOME_PHONE, ATTRIBUTE_OTHER_HOME_PHONE, CLASS_USER, &edits, this);
-    new StringOtherEdit(ui->pager_edit, ui->pager_button, ATTRIBUTE_PAGER, ATTRIBUTE_OTHER_PAGER, CLASS_USER, &edits, this);
-    new StringOtherEdit(ui->mobile_edit, ui->mobile_button, ATTRIBUTE_MOBILE, ATTRIBUTE_OTHER_MOBILE, CLASS_USER, &edits, this);
-    new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, CLASS_USER, &edits, this);
-    new StringOtherEdit(ui->ip_phone_edit, ui->ip_phone_button, ATTRIBUTE_IP_PHONE, ATTRIBUTE_OTHER_IP_PHONE, CLASS_USER, &edits, this);
+    new StringOtherEdit(ui->home_phone_edit, ui->home_phone_button, ATTRIBUTE_HOME_PHONE, ATTRIBUTE_OTHER_HOME_PHONE, &edits, this);
+    new StringOtherEdit(ui->pager_edit, ui->pager_button, ATTRIBUTE_PAGER, ATTRIBUTE_OTHER_PAGER, &edits, this);
+    new StringOtherEdit(ui->mobile_edit, ui->mobile_button, ATTRIBUTE_MOBILE, ATTRIBUTE_OTHER_MOBILE, &edits, this);
+    new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, &edits, this);
+    new StringOtherEdit(ui->ip_phone_edit, ui->ip_phone_button, ATTRIBUTE_IP_PHONE, ATTRIBUTE_OTHER_IP_PHONE, &edits, this);
 
-    new StringLargeEdit(ui->notes_edit, ATTRIBUTE_INFO, CLASS_USER, &edits, this);
+    new StringLargeEdit(ui->notes_edit, ATTRIBUTE_INFO, &edits, this);
 
     edits_connect_to_tab(edits, this);
 }

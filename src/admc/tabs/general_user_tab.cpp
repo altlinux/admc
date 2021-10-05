@@ -32,16 +32,16 @@ GeneralUserTab::GeneralUserTab(const AdObject &object) {
 
     load_name_label(ui->name_label, object);
 
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, CLASS_USER, &edits, this);
-    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, CLASS_USER, &edits, this);
-    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, CLASS_USER, &edits, this);
-    new StringEdit(ui->display_name_edit, ATTRIBUTE_DISPLAY_NAME, CLASS_USER, &edits, this);
-    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, CLASS_USER, &edits, this);
-    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, CLASS_USER, &edits, this);
-    new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, CLASS_USER, &edits, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
+    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edits, this);
+    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edits, this);
+    new StringEdit(ui->display_name_edit, ATTRIBUTE_DISPLAY_NAME, &edits, this);
+    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, &edits, this);
+    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, &edits, this);
+    new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, &edits, this);
 
-    new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, &edits, this);
-    new StringOtherEdit(ui->web_page_edit, ui->web_page_button, ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, &edits, this);
+    new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, &edits, this);
+    new StringOtherEdit(ui->web_page_edit, ui->web_page_button, ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, &edits, this);
 
     edits_connect_to_tab(edits, this);
 }

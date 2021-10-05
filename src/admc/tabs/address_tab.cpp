@@ -30,12 +30,12 @@ AddressTab::AddressTab() {
     ui = new Ui::AddressTab();
     ui->setupUi(this);
 
-    new StringLargeEdit(ui->street_edit, ATTRIBUTE_STREET, CLASS_USER, &edits, this);
+    new StringLargeEdit(ui->street_edit, ATTRIBUTE_STREET, &edits, this);
 
-    new StringEdit(ui->po_box_edit, ATTRIBUTE_PO_BOX, CLASS_USER, &edits, this);
-    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, CLASS_USER, &edits, this);
-    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, CLASS_USER, &edits, this);
-    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, CLASS_USER, &edits, this);
+    new StringEdit(ui->po_box_edit, ATTRIBUTE_PO_BOX, &edits, this);
+    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, &edits, this);
+    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, &edits, this);
+    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, &edits, this);
 
     new CountryEdit(ui->country_combo, &edits, this);
 

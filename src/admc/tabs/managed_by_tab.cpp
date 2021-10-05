@@ -39,18 +39,18 @@ ManagedByTab::ManagedByTab() {
 
     manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGED_BY, &edits, this);
 
-    new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, CLASS_USER, &manager_edits, this);
-    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, CLASS_USER, &manager_edits, this);
-    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, CLASS_USER, &manager_edits, this);
-    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, CLASS_USER, &manager_edits, this);
+    new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, &manager_edits, this);
+    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, &manager_edits, this);
+    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, &manager_edits, this);
+    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, &manager_edits, this);
 
     new CountryEdit(ui->country_combo, &manager_edits, this);
 
     // TODO: this is currently only showing the disabled
     // "other..." button. Need to be able to see other
     // values in dialog (but not edit them)
-    new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, CLASS_USER, &manager_edits, this);
-    new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, CLASS_USER, &manager_edits, this);
+    new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, &manager_edits, this);
+    new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, &manager_edits, this);
 
     edits_set_read_only(manager_edits, true);
 

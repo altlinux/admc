@@ -33,9 +33,9 @@ RenameUserDialog::RenameUserDialog(QWidget *parent)
     ui->setupUi(this);
 
     QList<AttributeEdit *> edit_list;
-    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, CLASS_USER, &edit_list, this);
-    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, CLASS_USER, &edit_list, this);
-    new StringEdit(ui->full_name_edit, ATTRIBUTE_DISPLAY_NAME, CLASS_USER, &edit_list, this);
+    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
+    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);
+    new StringEdit(ui->full_name_edit, ATTRIBUTE_DISPLAY_NAME, &edit_list, this);
     upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
     sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
 

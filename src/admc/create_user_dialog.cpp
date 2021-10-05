@@ -36,9 +36,9 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
     ui->setupUi(this);
 
     QList<AttributeEdit *> edit_list;
-    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, CLASS_USER, &edit_list, this);
-    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, CLASS_USER, &edit_list, this);
-    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, CLASS_USER, &edit_list, this);
+    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
+    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);
+    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, &edit_list, this);
     sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
 
     new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edit_list, this);

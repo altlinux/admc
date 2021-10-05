@@ -31,7 +31,7 @@ GeneralOtherTab::GeneralOtherTab(const AdObject &object) {
 
     load_name_label(ui->name_label, object);
 
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, CLASS_GROUP, &edits, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
 
     edits_connect_to_tab(edits, this);
 }
