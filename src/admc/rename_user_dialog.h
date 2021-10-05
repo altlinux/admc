@@ -36,12 +36,11 @@ class RenameUserDialog final : public RenameDialog {
 public:
     RenameUserDialog(QWidget *parent);
 
-    Ui::RenameUserDialog *ui;
-
 public slots:
     void open() override;
 
 private:
+    Ui::RenameUserDialog *ui;
     UpnEdit *upn_edit;
     SamaEdit *sama_edit;
 };
