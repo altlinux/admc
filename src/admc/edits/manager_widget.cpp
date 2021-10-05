@@ -30,10 +30,8 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
-ManagerWidget::ManagerWidget(const QString &manager_attribute_arg)
-: QWidget() {
-    manager_attribute = manager_attribute_arg;
-
+ManagerWidget::ManagerWidget(QWidget *parent)
+: QWidget(parent) {
     edit = new QLineEdit();
     edit->setReadOnly(true);
     edit->setObjectName("manager_display");
@@ -67,6 +65,10 @@ ManagerWidget::ManagerWidget(const QString &manager_attribute_arg)
     connect(
         clear_button, &QPushButton::clicked,
         this, &ManagerWidget::on_clear);
+}
+
+void ManagerWidget::set_attribute(const QString &attribute) {
+    manager_attribute = attribute;
 }
 
 void ManagerWidget::load(const AdObject &object) {

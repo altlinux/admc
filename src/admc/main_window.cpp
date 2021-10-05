@@ -38,6 +38,7 @@
 #include "console_widget/console_widget.h"
 #include "console_filter_dialog.h"
 #include "console_impls/item_type.h"
+#include "edits/country_widget.h"
 
 #include <QAction>
 #include <QActionGroup>
@@ -53,6 +54,8 @@
 
 MainWindow::MainWindow()
 : QMainWindow() {
+    country_combo_load_data();
+
     setStatusBar(g_status()->status_bar());
 
     auto message_log_dock = new QDockWidget();

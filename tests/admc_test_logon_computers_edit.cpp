@@ -31,7 +31,9 @@
 void ADMCTestLogonComputersEdit::init() {
     ADMCTest::init();
 
-    edit = new LogonComputersEdit(&edits, parent_widget);
+    auto button = new QPushButton(parent_widget);
+
+    edit = new LogonComputersEdit(button, &edits, parent_widget);
     add_attribute_edit(edit);
 
     dialog = parent_widget->findChild<LogonComputersDialog *>();

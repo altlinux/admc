@@ -29,6 +29,7 @@ class DelegationEdit final : public AttributeEdit {
     Q_OBJECT
 public:
     DelegationEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
+    DelegationEdit(QRadioButton *off_button, QRadioButton *on_button, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

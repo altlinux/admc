@@ -29,6 +29,7 @@ class ManagerMultiEdit : public AttributeMultiEdit {
     Q_OBJECT
 public:
     ManagerMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    ManagerMultiEdit(ManagerWidget *widget, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
     DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 

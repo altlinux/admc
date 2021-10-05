@@ -26,13 +26,7 @@
 #include <QFormLayout>
 #include <QPlainTextEdit>
 
-StringLargeEdit::StringLargeEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
-    attribute = attribute_arg;
-    objectClass = objectClass_arg;
-
-    edit = new QPlainTextEdit();
-
+void StringLargeEdit::init() {
     const int range_upper = g_adconfig->get_attribute_range_upper(attribute);
     if (range_upper > 0) {
         // NOTE: QPlainTextEdit doesn't have a straightforward setMaxLength() so have to do it ourselves
@@ -54,6 +48,25 @@ StringLargeEdit::StringLargeEdit(const QString &attribute_arg, const QString &ob
         [this]() {
             emit edited();
         });
+}
+
+StringLargeEdit::StringLargeEdit(const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    attribute = attribute_arg;
+    objectClass = objectClass_arg;
+
+    edit = new QPlainTextEdit();
+
+    init();
+}
+
+StringLargeEdit::StringLargeEdit(QPlainTextEdit *edit_arg, const QString &attribute_arg, const QString &objectClass_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    attribute = attribute_arg;
+    objectClass = objectClass_arg;
+    edit = edit_arg;
+
+    init();
 }
 
 void StringLargeEdit::load_internal(AdInterface &ad, const AdObject &object) {

@@ -24,30 +24,44 @@
 #include "edits/country_widget.h"
 #include "globals.h"
 
+#include <QComboBox>
 #include <QFormLayout>
 
 CountryEdit::CountryEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
-    country_widget = new CountryWidget();
+    combo = new QComboBox();
+
+    country_combo_init(combo);
 
     connect(
-        country_widget, &CountryWidget::edited,
+        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &CountryEdit::edited);
+}
+
+CountryEdit::CountryEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    combo = combo_arg;
+
+    country_combo_init(combo);
+
+    connect(
+        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CountryEdit::edited);
 }
 
 void CountryEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    country_widget->load(object);
+    country_combo_load(combo, object);
 }
 
 void CountryEdit::set_read_only(const bool read_only) {
-    country_widget->set_enabled(!read_only);
+    combo->setEnabled(!read_only);
 }
 
 void CountryEdit::add_to_layout(QFormLayout *layout) {
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
-    layout->addRow(label_text, country_widget);
+    layout->addRow(label_text, combo);
 }
 
 bool CountryEdit::apply(AdInterface &ad, const QString &dn) const {
-    return country_widget->apply(ad, dn);
+    return country_combo_apply(combo, ad, dn);
 }

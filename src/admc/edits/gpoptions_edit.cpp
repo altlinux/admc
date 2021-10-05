@@ -36,6 +36,17 @@ GpoptionsEdit::GpoptionsEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
         });
 }
 
+GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    check = check_arg;
+
+    QObject::connect(
+        check, &QCheckBox::stateChanged,
+        [this]() {
+            emit edited();
+        });
+}
+
 void GpoptionsEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
     const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);

@@ -32,7 +32,23 @@ ManagerMultiEdit::ManagerMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObje
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_MANAGER, CLASS_USER) + ":";
     apply_check->setText(label_text);
 
-    widget = new ManagerWidget(ATTRIBUTE_MANAGER);
+    widget = new ManagerWidget();
+    widget->set_attribute(ATTRIBUTE_MANAGER);
+
+    connect(
+        widget, &ManagerWidget::edited,
+        this, &ManagerMultiEdit::edited);
+
+    set_enabled(false);
+}
+
+ManagerMultiEdit::ManagerMultiEdit(ManagerWidget *widget_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
+: AttributeMultiEdit(edits_out, parent) {
+    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_MANAGER, CLASS_USER) + ":";
+    apply_check->setText(label_text);
+
+    widget = widget_arg;
+    widget->set_attribute(ATTRIBUTE_MANAGER);
 
     connect(
         widget, &ManagerWidget::edited,

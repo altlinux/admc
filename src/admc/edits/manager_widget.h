@@ -32,8 +32,9 @@ class ManagerWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    ManagerWidget(const QString &manager_attribute_arg);
+    ManagerWidget(QWidget *parent = nullptr);
 
+    void set_attribute(const QString &attribute);
     void load(const AdObject &object);
     bool apply(AdInterface &ad, const QString &dn) const;
 

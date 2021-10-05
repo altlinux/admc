@@ -29,6 +29,34 @@
 #include <QLineEdit>
 #include <QPushButton>
 
+StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_button_arg, const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent)
+, other_attribute(other_attribute_arg) {
+    main_edit = new StringEdit(line_edit_arg, main_attribute, object_class, nullptr, parent);
+    
+    connect(
+        main_edit, &AttributeEdit::edited,
+        [this]() {
+            emit edited();
+        });
+
+    other_button = other_button_arg;
+    connect(other_button, &QPushButton::clicked,
+        [this]() {
+            auto dialog = new MultiEditor(other_attribute, other_button);
+            dialog->load(other_values);
+            dialog->open();
+
+            connect(
+                dialog, &QDialog::accepted,
+                [this, dialog]() {
+                    other_values = dialog->get_new_values();
+
+                    emit edited();
+                });
+        });
+}
+
 StringOtherEdit::StringOtherEdit(const QString &main_attribute, const QString &other_attribute_arg, const QString &object_class, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent)
 , other_attribute(other_attribute_arg) {

@@ -29,30 +29,33 @@
 #include <QDebug>
 #include <QFile>
 #include <QHash>
-#include <QVBoxLayout>
 #include <algorithm>
 
 // TODO: translate country strings to Russian (qt doesn't have it)
 
 #define COUNTRY_CODE_NONE 0
 
-CountryWidget::CountryWidget()
-: QWidget() {
-    combo = new QComboBox();
+bool loaded_country_data = false;
+QList<QString> all_countries;
+QHash<QString, int> string_to_code;
+QHash<int, QString> country_strings;
+QHash<int, QString> country_abbreviations;
 
-    // Load all country names into combobox
-    // NOTE: temp collections to sort items for combo box
-    QList<QString> all_countries;
-    QHash<QString, int> string_to_code;
+void country_combo_load_data() {
+    if (loaded_country_data) {
+        qDebug() << "ERROR: Attempted to load country data more than once";
 
-    // TODO: cache this
+        return;
+    }
+
     QFile file(":/admc/countries.csv");
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << "ERROR: Failed to load countries file!\n";
+
+        return;
     } else {
-        // Load countries csv into maps
-        // Map country code to country string and country abbreviation
-        QHash<QString, int> country_string_to_code;
+        // Load countries csv into maps. Map country code to
+        // country string and country abbreviation
 
         // Skip header
         file.readLine();
@@ -77,37 +80,35 @@ CountryWidget::CountryWidget()
             all_countries.append(country_string);
             string_to_code[country_string] = code;
         }
+
+        file.close();
     }
 
-    // Put country strings/codes into combo box, sorted by strings
+    // Sort countries by name
     std::sort(all_countries.begin(), all_countries.end());
 
     // Special case for "None" country
     // TODO: this seems really easy to break
-    const QString none_string = tr("None");
+    const QString none_string = QCoreApplication::translate("country_widget", "None");
     string_to_code[none_string] = COUNTRY_CODE_NONE;
     all_countries.insert(0, none_string);
     country_strings[COUNTRY_CODE_NONE] = "";
     country_abbreviations[COUNTRY_CODE_NONE] = "";
 
+    loaded_country_data = true;
+}
+
+void country_combo_init(QComboBox *combo) {
+    // Fill combo with country names. Add country codes to
+    // item data.
     for (auto country_string : all_countries) {
         const int code = string_to_code[country_string];
 
         combo->addItem(country_string, code);
     }
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(combo);
-
-    connect(
-        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &CountryWidget::edited);
 }
 
-void CountryWidget::load(const AdObject &object) {
+void country_combo_load(QComboBox *combo, const AdObject &object) {
     const int country_code = [object]() {
         if (object.contains(ATTRIBUTE_COUNTRY_CODE)) {
             return object.get_int(ATTRIBUTE_COUNTRY_CODE);
@@ -122,12 +123,16 @@ void CountryWidget::load(const AdObject &object) {
     }
 }
 
-void CountryWidget::set_enabled(const bool enabled) {
-    combo->setEnabled(enabled);
-}
-
-bool CountryWidget::apply(AdInterface &ad, const QString &dn) const {
+bool country_combo_apply(const QComboBox *combo, AdInterface &ad, const QString &dn) {
     const int code = combo->currentData().toInt();
+
+    const bool country_code_is_known = (country_strings.contains(code) && country_abbreviations.contains(code));
+
+    if (!country_code_is_known) {
+        qDebug() << "Unknown country code:" << code;
+
+        return false;
+    }
 
     const QString code_string = QString::number(code);
     const QString country_string = country_strings[code];

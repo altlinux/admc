@@ -42,6 +42,22 @@ DelegationEdit::DelegationEdit(QList<AttributeEdit *> *edits_out, QObject *paren
         this, &AttributeEdit::edited);
 }
 
+DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+: AttributeEdit(edits_out, parent) {
+    off_button = off_button_arg;
+    on_button = on_button_arg;
+
+    off_button->setObjectName("off_button");
+    on_button->setObjectName("on_button");
+
+    QObject::connect(
+        off_button, &QAbstractButton::clicked,
+        this, &AttributeEdit::edited);
+    QObject::connect(
+        on_button, &QAbstractButton::clicked,
+        this, &AttributeEdit::edited);
+}
+
 void DelegationEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const bool is_on = object.get_account_option(AccountOption_TrustedForDelegation, g_adconfig);
 

@@ -23,7 +23,7 @@
 
 #include "multi_edits/attribute_multi_edit.h"
 
-class CountryWidget;
+class QComboBox;
 
 /**
  * Edit for editing string attributes of multiple objects.
@@ -33,11 +33,12 @@ class CountryMultiEdit : public AttributeMultiEdit {
     Q_OBJECT
 public:
     CountryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    CountryMultiEdit(QComboBox *combo, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
     DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
 private:
-    CountryWidget *country_widget;
+    QComboBox *combo;
 };
 
 #endif /* COUNTRY_MULTI_EDIT_H */

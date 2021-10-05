@@ -26,29 +26,46 @@
 
 #include <QFormLayout>
 #include <QCheckBox>
+#include <QComboBox>
 
 CountryMultiEdit::CountryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : AttributeMultiEdit(edits_out, parent) {
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
     apply_check->setText(label_text);
 
-    country_widget = new CountryWidget();
+    combo = new QComboBox();
+    country_combo_init(combo);
 
     connect(
-        country_widget, &CountryWidget::edited,
+        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &CountryMultiEdit::edited);
+
+    set_enabled(false);
+}
+
+CountryMultiEdit::CountryMultiEdit(QComboBox *combo_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
+: AttributeMultiEdit(edits_out, parent) {
+    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_COUNTRY, CLASS_USER) + ":";
+    apply_check->setText(label_text);
+
+    combo = combo_arg;
+    country_combo_init(combo);
+
+    connect(
+        combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CountryMultiEdit::edited);
 
     set_enabled(false);
 }
 
 void CountryMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(apply_check, country_widget);
+    layout->addRow(apply_check, combo);
 }
 
 bool CountryMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
-    return country_widget->apply(ad, target);
+    return country_combo_apply(combo, ad, target);
 }
 
 void CountryMultiEdit::set_enabled(const bool enabled) {
-    country_widget->set_enabled(enabled);
+    combo->setEnabled(enabled);
 }

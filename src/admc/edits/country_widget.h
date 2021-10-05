@@ -21,31 +21,14 @@
 #ifndef COUNTRY_WIDGET_H
 #define COUNTRY_WIDGET_H
 
-#include <QWidget>
-
 class QComboBox;
 class AdObject;
 class AdInterface;
+class QString;
 
-class CountryWidget final : public QWidget {
-    Q_OBJECT
-
-public:
-    CountryWidget();
-
-    void load(const AdObject &object);
-    void set_enabled(const bool enabled);
-    bool apply(AdInterface &ad, const QString &dn) const;
-
-signals:
-    void edited();
-
-private:
-    QComboBox *combo;
-
-    // NOTE: country codes are 3 digits only, so 0-999 = 1000
-    QString country_strings[1000];
-    QString country_abbreviations[1000];
-};
+void country_combo_load_data();
+void country_combo_init(QComboBox *combo);
+void country_combo_load(QComboBox *combo, const AdObject &object);
+bool country_combo_apply(const QComboBox *combo, AdInterface &ad, const QString &dn);
 
 #endif /* COUNTRY_WIDGET_H */

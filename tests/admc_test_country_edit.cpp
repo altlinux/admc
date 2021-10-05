@@ -21,6 +21,7 @@
 #include "admc_test_country_edit.h"
 
 #include "edits/country_edit.h"
+#include "edits/country_widget.h"
 
 #include <QComboBox>
 #include <QFormLayout>
@@ -29,6 +30,8 @@
 
 void ADMCTestCountryEdit::init() {
     ADMCTest::init();
+
+    country_combo_load_data();
 
     edit = new CountryEdit(&edits, parent_widget);
     add_attribute_edit(edit);
