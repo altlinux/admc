@@ -19,6 +19,7 @@
 
 #include "tabs/security_tab.h"
 #include "tabs/ui_security_tab.h"
+#include "tabs/ui_select_trustee_dialog.h"
 
 #include "ad_security.h"
 #include "adldap.h"
@@ -30,12 +31,8 @@
 #include "samba/ndr_security.h"
 
 #include <QDebug>
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QLabel>
-#include <QListWidget>
 #include <QPersistentModelIndex>
-#include <QPushButton>
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -431,13 +428,10 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
 
 SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
 : QDialog(parent) {
-    setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(tr("Select Well-Known Trustees"));
+    ui = new Ui::SelectWellKnownTrusteeDialog();
+    ui->setupUi(this);
 
-    resize(600, 400);
-    
-    list = new QListWidget();
-    list->setSelectionMode(QListWidget::ExtendedSelection);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     for (const QString &sid_string : well_known_sid_list) {
         auto item = new QListWidgetItem();
@@ -448,30 +442,14 @@ SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
         const QString name = ad_security_get_well_known_trustee_name(sid_bytes);
         item->setText(name);
 
-        list->addItem(item);
+        ui->list->addItem(item);
     }
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(list);
-    layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
 }
 
 QList<QByteArray> SelectWellKnownTrusteeDialog::get_selected() const {
     QList<QByteArray> out;
 
-    const QList<QListWidgetItem *> selected = list->selectedItems();
+    const QList<QListWidgetItem *> selected = ui->list->selectedItems();
     for (QListWidgetItem *item : selected) {
         const QByteArray sid = item->data(Qt::UserRole).toByteArray();
         out.append(sid);

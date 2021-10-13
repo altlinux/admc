@@ -50,6 +50,7 @@ extern const QSet<AcePermission> write_prop_permissions;
 
 namespace Ui {
     class SecurityTab;
+    class SelectWellKnownTrusteeDialog;
 }
 
 class SecurityTab final : public PropertiesTab {
@@ -97,7 +98,7 @@ public:
     QList<QByteArray> get_selected() const;
 
 private:
-    QListWidget *list;
+    Ui::SelectWellKnownTrusteeDialog *ui;
 };
 
 #endif /* SECURITY_TAB_H */
