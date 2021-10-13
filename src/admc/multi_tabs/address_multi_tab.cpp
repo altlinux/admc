@@ -19,26 +19,21 @@
  */
 
 #include "multi_tabs/address_multi_tab.h"
+#include "ui_address_multi_tab.h"
 
 #include "adldap.h"
 #include "multi_edits/country_multi_edit.h"
 #include "multi_edits/string_multi_edit.h"
 
-#include <QFormLayout>
-
 AddressMultiTab::AddressMultiTab() {
-    auto edit_layout = new QFormLayout();
+    ui = new Ui::AddressMultiTab();
+    ui->setupUi(this);
 
-    new StringMultiEdit(ATTRIBUTE_PO_BOX, edit_list, this);
-    new StringMultiEdit(ATTRIBUTE_CITY, edit_list, this);
-    new StringMultiEdit(ATTRIBUTE_STATE, edit_list, this);
-    new StringMultiEdit(ATTRIBUTE_POSTAL_CODE, edit_list, this);
-    new CountryMultiEdit(edit_list, this);
+    new StringMultiEdit(ui->po_edit, ui->po_check, ATTRIBUTE_PO_BOX, edit_list, this);
+    new StringMultiEdit(ui->city_edit, ui->city_check, ATTRIBUTE_CITY, edit_list, this);
+    new StringMultiEdit(ui->state_edit, ui->state_check, ATTRIBUTE_STATE, edit_list, this);
+    new StringMultiEdit(ui->postal_edit, ui->postal_check, ATTRIBUTE_POSTAL_CODE, edit_list, this);
+    new CountryMultiEdit(ui->country_combo, ui->country_check, edit_list, this);
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edit_layout);
-
-    multi_edits_add_to_layout(edit_list, edit_layout);
     multi_edits_connect_to_tab(edit_list, this);
 }

@@ -23,31 +23,19 @@
 #include "adldap.h"
 #include "globals.h"
 
-#include <QFormLayout>
-#include <QCheckBox>
 #include <QLineEdit>
 
-StringMultiEdit::StringMultiEdit(const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(edits_out, parent) {
+StringMultiEdit::StringMultiEdit(QLineEdit *edit_arg, QCheckBox *check, const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
+: AttributeMultiEdit(check, edits_out, parent) {
     attribute = attribute_arg;
 
-    // NOTE: default to using user object class for
-    // attribute display name because multi edits are mostly
-    // for users
-    const QString label_text = g_adconfig->get_attribute_display_name(attribute, CLASS_USER) + ":";
-    apply_check->setText(label_text);
-
-    edit = new QLineEdit();
+    edit = edit_arg;
 
     connect(
         edit, &QLineEdit::textChanged,
         this, &StringMultiEdit::edited);
 
     set_enabled(false);
-}
-
-void StringMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(apply_check, edit);
 }
 
 bool StringMultiEdit::apply_internal(AdInterface &ad, const QString &target) {

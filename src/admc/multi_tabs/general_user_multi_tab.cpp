@@ -18,21 +18,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "multi_tabs/organization_multi_tab.h"
-#include "multi_tabs/ui_organization_multi_tab.h"
+#include "multi_tabs/general_user_multi_tab.h"
+#include "multi_tabs/ui_general_user_multi_tab.h"
 
 #include "adldap.h"
-#include "multi_edits/manager_multi_edit.h"
 #include "multi_edits/string_multi_edit.h"
 
-OrganizationMultiTab::OrganizationMultiTab() {
-    ui = new Ui::OrganizationMultiTab();
+GeneralUserMultiTab::GeneralUserMultiTab() {
+    ui = new Ui::GeneralUserMultiTab();
     ui->setupUi(this);
 
-    new StringMultiEdit(ui->title_edit, ui->title_check, ATTRIBUTE_TITLE, edit_list, this);
-    new StringMultiEdit(ui->department_edit, ui->department_check, ATTRIBUTE_DEPARTMENT, edit_list, this);
-    new StringMultiEdit(ui->company_edit, ui->company_check, ATTRIBUTE_COMPANY, edit_list, this);
-    new ManagerMultiEdit(ui->manager_edit, ui->manager_check, edit_list, this);
+    new StringMultiEdit(ui->description_edit, ui->description_check, ATTRIBUTE_DESCRIPTION, edit_list, this);
+    new StringMultiEdit(ui->office_edit, ui->office_check, ATTRIBUTE_OFFICE, edit_list, this);
+    new StringMultiEdit(ui->mobile_edit, ui->mobile_check, ATTRIBUTE_MOBILE, edit_list, this);
+    new StringMultiEdit(ui->fax_edit, ui->fax_check, ATTRIBUTE_FAX_NUMBER, edit_list, this);
+    new StringMultiEdit(ui->web_edit, ui->web_check, ATTRIBUTE_WWW_HOMEPAGE, edit_list, this);
+    new StringMultiEdit(ui->email_edit, ui->email_check, ATTRIBUTE_MAIL, edit_list, this);
 
     multi_edits_connect_to_tab(edit_list, this);
 }

@@ -25,52 +25,14 @@
 #include "globals.h"
 
 #include <QCheckBox>
-#include <QFormLayout>
-#include <QScrollArea>
 
-// TODO: slight duplication of account_option_edit.cpp, but
-// not a big deal
-
-AccountOptionMultiEdit::AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(edits_out, parent) {
-    apply_check->setText(tr("Account options:"));
-
-    auto checks_layout = new QVBoxLayout();
-
-    const QList<AccountOption> option_list = {
-        AccountOption_Disabled,
-        AccountOption_PasswordExpired,
-        AccountOption_DontExpirePassword,
-        AccountOption_UseDesKey,
-        AccountOption_SmartcardRequired,
-        AccountOption_CantDelegate,
-        AccountOption_DontRequirePreauth,
-    };
-
-    for (const AccountOption &option : option_list) {
-        const QString option_string = account_option_string(option);
-        auto check = new QCheckBox(option_string);
-        check_map[option] = check;
-        checks_layout->addWidget(check);
-    }
-
-    auto layout = new QVBoxLayout();
-    layout->addLayout(checks_layout);
-
-    auto options_widget = new QWidget();
-    options_widget->setLayout(layout);
-
-    options_scroll = new QScrollArea();
-    options_scroll->setWidget(options_widget);
+AccountOptionMultiEdit::AccountOptionMultiEdit(const QHash<AccountOption, QCheckBox *> &check_map_arg, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
+: AttributeMultiEdit(check, edits_out, parent) {
+    check_map = check_map_arg;
 
     account_option_setup_conflicts(check_map);
 
     set_enabled(false);
-}
-
-void AccountOptionMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(apply_check);
-    layout->addRow(options_scroll);
 }
 
 // NOTE: this is slightly inefficient because every account
@@ -120,6 +82,4 @@ void AccountOptionMultiEdit::set_enabled(const bool enabled) {
             check->setChecked(false);
         }
     }
-
-    options_scroll->setEnabled(enabled);
 }

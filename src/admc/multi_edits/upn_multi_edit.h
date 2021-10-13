@@ -33,7 +33,7 @@ class QComboBox;
 class UpnMultiEdit final : public AttributeMultiEdit {
     Q_OBJECT
 public:
-    UpnMultiEdit(QList<AttributeMultiEdit *> &edits_out, AdInterface &ad, QObject *parent);
+    UpnMultiEdit(QComboBox *upn_suffix_combo_arg, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, AdInterface &ad, QObject *parent);
 
     DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 

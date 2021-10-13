@@ -24,27 +24,18 @@
 #include "edits/upn_suffix_widget.h"
 #include "globals.h"
 
-#include <QFormLayout>
-#include <QCheckBox>
 #include <QComboBox>
 
-UpnMultiEdit::UpnMultiEdit(QList<AttributeMultiEdit *> &edits_out, AdInterface &ad, QObject *parent)
-: AttributeMultiEdit(edits_out, parent) {
-    upn_suffix_combo = new QComboBox();
+UpnMultiEdit::UpnMultiEdit(QComboBox *upn_suffix_combo_arg, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, AdInterface &ad, QObject *parent)
+: AttributeMultiEdit(check, edits_out, parent) {
+    upn_suffix_combo = upn_suffix_combo_arg;
     upn_suffix_combo_init(upn_suffix_combo, ad);
 
-    const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_USER_PRINCIPAL_NAME, CLASS_USER) + ":";
-    apply_check->setText(label_text);
-
-    QObject::connect(
+    connect(
         upn_suffix_combo, &QComboBox::currentTextChanged,
         this, &UpnMultiEdit::edited);
 
     set_enabled(false);
-}
-
-void UpnMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(apply_check, upn_suffix_combo);
 }
 
 bool UpnMultiEdit::apply_internal(AdInterface &ad, const QString &target) {

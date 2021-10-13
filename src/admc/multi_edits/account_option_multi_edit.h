@@ -27,17 +27,14 @@
 
 #include <QHash>
 
-class QScrollArea;
-
 class AccountOptionMultiEdit final : public AttributeMultiEdit {
     Q_OBJECT
 public:
-    AccountOptionMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    AccountOptionMultiEdit(const QHash<AccountOption, QCheckBox *> &check_map_arg, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
     DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
 private:
-    QScrollArea *options_scroll;
     QHash<AccountOption, QCheckBox *> check_map;
 };
 

@@ -27,24 +27,18 @@
 #include <QFormLayout>
 #include <QCheckBox>
 
-ExpiryMultiEdit::ExpiryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(edits_out, parent) {
-    edit_widget = new ExpiryWidget();
+ExpiryMultiEdit::ExpiryMultiEdit(ExpiryWidget *edit_widget_arg, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
+: AttributeMultiEdit(check, edits_out, parent) {
+    edit_widget = edit_widget_arg;
 
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_ACCOUNT_EXPIRES, "") + ":";
     apply_check->setText(label_text);
 
     connect(
         edit_widget, &ExpiryWidget::edited,
-        [this]() {
-            emit edited();
-        });
+        this, &ExpiryMultiEdit::edited);
 
     set_enabled(false);
-}
-
-void ExpiryMultiEdit::add_to_layout(QFormLayout *layout) {
-    layout->addRow(apply_check, edit_widget);
 }
 
 bool ExpiryMultiEdit::apply_internal(AdInterface &ad, const QString &target) {

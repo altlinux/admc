@@ -18,21 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERAL_MULTI_TAB_H
-#define GENERAL_MULTI_TAB_H
+#include "multi_tabs/general_other_multi_tab.h"
+#include "multi_tabs/ui_general_other_multi_tab.h"
 
-/**
- * General multi tab that contains general object
- * attributes.
- */
+#include "adldap.h"
+#include "multi_edits/string_multi_edit.h"
 
-#include "multi_tabs/properties_multi_tab.h"
+GeneralOtherMultiTab::GeneralOtherMultiTab() {
+    ui = new Ui::GeneralOtherMultiTab();
+    ui->setupUi(this);
 
-class GeneralMultiTab final : public PropertiesMultiTab {
-    Q_OBJECT
+    new StringMultiEdit(ui->description_edit, ui->description_check, ATTRIBUTE_DESCRIPTION, edit_list, this);
 
-public:
-    GeneralMultiTab(const QList<QString> &class_list);
-};
-
-#endif /* GENERAL_MULTI_TAB_H */
+    multi_edits_connect_to_tab(edit_list, this);
+}

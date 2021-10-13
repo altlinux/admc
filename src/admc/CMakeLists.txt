@@ -113,7 +113,8 @@ set(ADMC_SOURCES
     tabs/delegation_tab.cpp
 
     multi_tabs/properties_multi_tab.cpp
-    multi_tabs/general_multi_tab.cpp
+    multi_tabs/general_user_multi_tab.cpp
+    multi_tabs/general_other_multi_tab.cpp
     multi_tabs/account_multi_tab.cpp
     multi_tabs/address_multi_tab.cpp
     multi_tabs/profile_multi_tab.cpp

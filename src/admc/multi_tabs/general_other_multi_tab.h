@@ -18,21 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "multi_tabs/organization_multi_tab.h"
-#include "multi_tabs/ui_organization_multi_tab.h"
+#ifndef GENERAL_OTHER_MULTI_TAB_H
+#define GENERAL_OTHER_MULTI_TAB_H
 
-#include "adldap.h"
-#include "multi_edits/manager_multi_edit.h"
-#include "multi_edits/string_multi_edit.h"
+/**
+ * General multi tab for all non-user objects.
+ */
 
-OrganizationMultiTab::OrganizationMultiTab() {
-    ui = new Ui::OrganizationMultiTab();
-    ui->setupUi(this);
+#include "multi_tabs/properties_multi_tab.h"
 
-    new StringMultiEdit(ui->title_edit, ui->title_check, ATTRIBUTE_TITLE, edit_list, this);
-    new StringMultiEdit(ui->department_edit, ui->department_check, ATTRIBUTE_DEPARTMENT, edit_list, this);
-    new StringMultiEdit(ui->company_edit, ui->company_check, ATTRIBUTE_COMPANY, edit_list, this);
-    new ManagerMultiEdit(ui->manager_edit, ui->manager_check, edit_list, this);
-
-    multi_edits_connect_to_tab(edit_list, this);
+namespace Ui {
+    class GeneralOtherMultiTab;
 }
+
+class GeneralOtherMultiTab final : public PropertiesMultiTab {
+    Q_OBJECT
+
+public:
+    GeneralOtherMultiTab();
+
+private:
+    Ui::GeneralOtherMultiTab *ui;
+};
+
+#endif /* GENERAL_OTHER_MULTI_TAB_H */

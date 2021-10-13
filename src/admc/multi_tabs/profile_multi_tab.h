@@ -23,11 +23,18 @@
 
 #include "multi_tabs/properties_multi_tab.h"
 
+namespace Ui {
+    class ProfileMultiTab;
+}
+
 class ProfileMultiTab final : public PropertiesMultiTab {
     Q_OBJECT
 
 public:
     ProfileMultiTab();
+
+private:
+    Ui::ProfileMultiTab *ui;
 };
 
 #endif /* PROFILE_MULTI_TAB_H */

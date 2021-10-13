@@ -23,11 +23,18 @@
 
 #include "multi_tabs/properties_multi_tab.h"
 
+namespace Ui {
+    class OrganizationMultiTab;
+}
+
 class OrganizationMultiTab final : public PropertiesMultiTab {
     Q_OBJECT
 
 public:
     OrganizationMultiTab();
+    
+private:
+    Ui::OrganizationMultiTab *ui;
 };
 
 #endif /* ORGANIZATION_MULTI_TAB_H */

@@ -28,11 +28,18 @@
 
 #include "multi_tabs/properties_multi_tab.h"
 
+namespace Ui {
+    class AddressMultiTab;
+}
+
 class AddressMultiTab final : public PropertiesMultiTab {
     Q_OBJECT
 
 public:
     AddressMultiTab();
+
+private:
+    Ui::AddressMultiTab *ui;
 };
 
 #endif /* ADDRESS_MULTI_TAB_H */

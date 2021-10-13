@@ -19,23 +19,18 @@
  */
 
 #include "multi_tabs/profile_multi_tab.h"
+#include "ui_profile_multi_tab.h"
 
 #include "adldap.h"
 #include "multi_edits/string_multi_edit.h"
 
-#include <QFormLayout>
-
 ProfileMultiTab::ProfileMultiTab() {
-    new StringMultiEdit(ATTRIBUTE_PROFILE_PATH, edit_list, this);
-    new StringMultiEdit(ATTRIBUTE_SCRIPT_PATH, edit_list, this);
-    new StringMultiEdit(ATTRIBUTE_HOME_DIRECTORY, edit_list, this);
+    ui = new Ui::ProfileMultiTab();
+    ui->setupUi(this);
 
-    auto edit_layout = new QFormLayout();
+    new StringMultiEdit(ui->profile_edit, ui->profile_check, ATTRIBUTE_PROFILE_PATH, edit_list, this);
+    new StringMultiEdit(ui->script_edit, ui->script_check, ATTRIBUTE_SCRIPT_PATH, edit_list, this);
+    new StringMultiEdit(ui->home_edit, ui->home_check, ATTRIBUTE_HOME_DIRECTORY, edit_list, this);
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edit_layout);
-
-    multi_edits_add_to_layout(edit_list, edit_layout);
     multi_edits_connect_to_tab(edit_list, this);
 }

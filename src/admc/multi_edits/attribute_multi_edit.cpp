@@ -25,7 +25,7 @@
 #include <QCheckBox>
 #include <QDebug>
 
-AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent)
+AttributeMultiEdit::AttributeMultiEdit(QCheckBox *apply_check_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : QObject(parent) {
     if (edits_out.contains(this)) {
         qDebug() << "ERROR: attribute edit added twice to list!";
@@ -33,7 +33,7 @@ AttributeMultiEdit::AttributeMultiEdit(QList<AttributeMultiEdit *> &edits_out, Q
         edits_out.append(this);
     }
 
-    apply_check = new QCheckBox();
+    apply_check = apply_check_arg;
 
     connect(
         apply_check, &QAbstractButton::toggled,
@@ -82,11 +82,5 @@ void multi_edits_connect_to_tab(const QList<AttributeMultiEdit *> &edits, Proper
         QObject::connect(
             edit, &AttributeMultiEdit::edited,
             tab, &PropertiesMultiTab::on_edit_edited);
-    }
-}
-
-void multi_edits_add_to_layout(const QList<AttributeMultiEdit *> &edits, QFormLayout *layout) {
-    for (auto edit : edits) {
-        edit->add_to_layout(layout);
     }
 }

@@ -32,13 +32,12 @@ class QComboBox;
 class CountryMultiEdit : public AttributeMultiEdit {
     Q_OBJECT
 public:
-    CountryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
-    CountryMultiEdit(QComboBox *combo, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    CountryMultiEdit(QComboBox *country_combo, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
     DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
 private:
-    QComboBox *combo;
+    QComboBox *country_combo;
 };
 
 #endif /* COUNTRY_MULTI_EDIT_H */

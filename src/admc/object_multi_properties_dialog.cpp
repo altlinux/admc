@@ -25,7 +25,8 @@
 #include "globals.h"
 #include "multi_tabs/account_multi_tab.h"
 #include "multi_tabs/address_multi_tab.h"
-#include "multi_tabs/general_multi_tab.h"
+#include "multi_tabs/general_user_multi_tab.h"
+#include "multi_tabs/general_other_multi_tab.h"
 #include "multi_tabs/organization_multi_tab.h"
 #include "multi_tabs/profile_multi_tab.h"
 #include "settings.h"
@@ -61,13 +62,15 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
         tab_list.append(tab);
     };
 
-    add_tab(new GeneralMultiTab(class_list), tr("General"));
 
     if (class_list == QList<QString>({CLASS_USER})) {
+        add_tab(new GeneralUserMultiTab(), tr("General"));
         add_tab(new AccountMultiTab(ad), tr("Account"));
         add_tab(new AddressMultiTab(), tr("Address"));
         add_tab(new ProfileMultiTab(), tr("Profile"));
         add_tab(new OrganizationMultiTab(), tr("Organization"));
+    } else {
+        add_tab(new GeneralOtherMultiTab(), tr("General"));
     }
 
     settings_setup_dialog_geometry(SETTING_object_multi_dialog_geometry, this);

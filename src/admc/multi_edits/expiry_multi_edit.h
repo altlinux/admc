@@ -24,11 +24,12 @@
 #include "multi_edits/attribute_multi_edit.h"
 
 class ExpiryWidget;
+class QCheckBox;
 
 class ExpiryMultiEdit final : public AttributeMultiEdit {
     Q_OBJECT
 public:
-    ExpiryMultiEdit(QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    ExpiryMultiEdit(ExpiryWidget *widget, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
 
     DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
 
