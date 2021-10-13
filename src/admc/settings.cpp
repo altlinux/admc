@@ -115,8 +115,6 @@ void settings_set_variant(const QString setting, const QVariant &value) {
 }
 
 void settings_connect_action_to_bool_setting(QAction *action, const QString setting) {
-    action->setCheckable(true);
-
     // Init action state to saved value
     const bool saved_value = settings_get_bool(setting);
     action->setChecked(saved_value);
@@ -127,28 +125,4 @@ void settings_connect_action_to_bool_setting(QAction *action, const QString sett
         [setting](bool checked) {
             settings_set_bool(setting, checked);
         });
-}
-
-QAction *settings_make_action(const QString setting, const QString &text, QObject *parent) {
-    auto action = new QAction(text, parent);
-    action->setCheckable(true);
-
-    // Init action state to saved value
-    const bool saved_value = settings_get_bool(setting);
-    action->setChecked(saved_value);
-
-    return action;
-}
-
-QAction *settings_make_and_connect_action(const QString setting, const QString &text, QObject *parent) {
-    auto action = settings_make_action(setting, text, parent);
-
-    // Update saved value when action is toggled
-    QObject::connect(
-        action, &QAction::toggled,
-        [setting](bool checked) {
-            settings_set_bool(setting, checked);
-        });
-
-    return action;
 }

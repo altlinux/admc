@@ -19,6 +19,7 @@
  */
 
 #include "main_window.h"
+#include "ui_main_window.h"
 
 #include "about_dialog.h"
 #include "adldap.h"
@@ -40,59 +41,37 @@
 #include "console_impls/item_type.h"
 #include "edits/country_widget.h"
 
-#include <QAction>
-#include <QActionGroup>
 #include <QDebug>
-#include <QDockWidget>
-#include <QMenuBar>
-#include <QStatusBar>
-#include <QTextEdit>
-#include <QToolBar>
 #include <QModelIndex>
-
-#define MESSAGE_LOG_OBJECT_NAME "MESSAGE_LOG_OBJECT_NAME"
 
 MainWindow::MainWindow()
 : QMainWindow() {
+    ui = new Ui::MainWindow();
+    ui->setupUi(this);
+
     country_combo_load_data();
 
-    setStatusBar(g_status()->status_bar());
-
-    auto message_log_dock = new QDockWidget();
-    message_log_dock->setWindowTitle(tr("Message Log"));
-    message_log_dock->setWidget(g_status()->message_log());
-    message_log_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    message_log_dock->setObjectName(MESSAGE_LOG_OBJECT_NAME);
-    addDockWidget(Qt::TopDockWidgetArea, message_log_dock);
+    g_status()->init(ui->statusbar, ui->message_log_edit);
 
     //
     // Console
     //
-    console = new ConsoleWidget(this);
-    setCentralWidget(console);
+    object_impl = new ObjectImpl(ui->console);
+    ui->console->register_impl(ItemType_Object, object_impl);
 
-    object_impl = new ObjectImpl(console);
-    console->register_impl(ItemType_Object, object_impl);
+    auto policy_root_impl = new PolicyRootImpl(ui->console);
+    ui->console->register_impl(ItemType_PolicyRoot, policy_root_impl);
 
-    auto policy_root_impl = new PolicyRootImpl(console);
-    console->register_impl(ItemType_PolicyRoot, policy_root_impl);
+    auto policy_impl = new PolicyImpl(ui->console);
+    ui->console->register_impl(ItemType_Policy, policy_impl);
 
-    auto policy_impl = new PolicyImpl(console);
-    console->register_impl(ItemType_Policy, policy_impl);
+    auto query_item_impl = new QueryItemImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    auto query_item_impl = new QueryItemImpl(console);
-    console->register_impl(ItemType_QueryItem, query_item_impl);
-
-    auto query_folder_impl = new QueryFolderImpl(console);
-    console->register_impl(ItemType_QueryFolder, query_folder_impl);
+    auto query_folder_impl = new QueryFolderImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
     object_impl->set_policy_impl(policy_impl);
-
-    //
-    // Menubar
-    //
-    auto menubar = new QMenuBar();
-    setMenuBar(menubar);
 
     // Create dialogs opened from menubar
     auto manual_dialog = new ManualDialog(this);
@@ -100,32 +79,27 @@ MainWindow::MainWindow()
     auto about_dialog = new AboutDialog(this);
     auto connection_options_dialog = new ConnectionOptionsDialog(this);
 
-    //
-    // Create actions
-    //
-    open_filter_action = new QAction(tr("&Filter objects..."), this);
+    // Setup console
+    const ConsoleWidgetActions console_actions = [&]() {
+        ConsoleWidgetActions out;
 
-    // NOTE: not using settings_make_and_connect_action()
-    // because they need to be connected to a custom slot
-    dev_mode_action = settings_make_action(SETTING_dev_mode, tr("Dev mode"), this);
-    show_noncontainers_action = settings_make_action(SETTING_show_non_containers_in_console_tree, tr("&Show non-container objects in Console tree"), this);
-    advanced_features_action = settings_make_action(SETTING_advanced_features, tr("Advanced features"), this);
+        out.navigate_up = ui->action_navigate_up;
+        out.navigate_back = ui->action_navigate_back;
+        out.navigate_forward = ui->action_navigate_forward;
+        out.refresh = ui->action_refresh;
+        out.customize_columns = ui->action_customize_columns;
+        out.view_icons = ui->action_view_icons;
+        out.view_list = ui->action_view_list;
+        out.view_detail = ui->action_view_detail;
+        out.toggle_console_tree = ui->action_toggle_console_tree;
+        out.toggle_description_bar = ui->action_toggle_description_bar;
 
-    connect_action = new QAction(tr("&Connect"), this);
-    auto connection_options_action = new QAction(tr("Connection options"), this);
-    auto quit_action = new QAction(tr("&Quit"), this);
-    quit_action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
+        return out;
+    }();
 
-    auto about_action = new QAction(tr("&About ADMC"), this);
+    ui->console->set_actions(console_actions);
 
-    auto confirm_actions_action = settings_make_and_connect_action(SETTING_confirm_actions, tr("&Confirm actions"), this);
-    auto last_before_first_name_action = settings_make_and_connect_action(SETTING_last_name_before_first_name, tr("&Put last name before first name when creating users"), this);
-    auto log_searches_action = settings_make_and_connect_action(SETTING_log_searches, tr("Log searches"), this);
-    auto timestamp_log_action = settings_make_and_connect_action(SETTING_timestamp_log, tr("Timestamps in message log"), this);
-
-    auto manual_action = new QAction(QIcon::fromTheme("help-contents"), tr("&Manual"), this);
-    auto changelog_action = new QAction(tr("&Changelog"), this);
-
+    // Create language actions
     const QList<QLocale::Language> language_list = {
         QLocale::English,
         QLocale::Russian,
@@ -164,106 +138,66 @@ MainWindow::MainWindow()
         return out;
     }();
 
-    //
-    // Create menus
-    //
-    auto file_menu = menubar->addMenu(tr("&File"));
-    auto action_menu = menubar->addMenu(tr("&Action"));
-    auto view_menu = menubar->addMenu(tr("&View"));
-    auto preferences_menu = menubar->addMenu(tr("&Preferences"));
-    auto language_menu = new QMenu(tr("&Language"));
-    auto help_menu = menubar->addMenu(tr("&Help"));
-
-    auto toolbar = new QToolBar(this);
-    addToolBar(toolbar);
-    toolbar->setObjectName("main_window_toolbar");
-    toolbar->setWindowTitle(tr("Toolbar"));
-
-    //
-    // Add actions
-    //
-
-    // File
-    file_menu->addAction(connect_action);
-    file_menu->addAction(connection_options_action);
-    file_menu->addAction(quit_action);
-
-    // Action
-    console->add_actions(action_menu);
-
-    // View
-    view_menu->addAction(console->set_results_to_icons_action());
-    view_menu->addAction(console->set_results_to_list_action());
-    view_menu->addAction(console->set_results_to_detail_action());
-    view_menu->addSeparator();
-    view_menu->addAction(message_log_dock->toggleViewAction());
-    view_menu->addAction(toolbar->toggleViewAction());
-    view_menu->addAction(console->toggle_console_tree_action());
-    view_menu->addAction(console->toggle_description_bar_action());
-    view_menu->addSeparator();
-    view_menu->addAction(console->customize_columns_action());
-    view_menu->addAction(open_filter_action);
-
-    // Preferences
-    #ifdef QT_DEBUG
-        preferences_menu->addAction(dev_mode_action);
-    #endif
-    preferences_menu->addAction(advanced_features_action);
-    preferences_menu->addAction(confirm_actions_action);
-    preferences_menu->addAction(last_before_first_name_action);
-    preferences_menu->addAction(log_searches_action);
-    preferences_menu->addAction(timestamp_log_action);
-    preferences_menu->addAction(show_noncontainers_action);
-    preferences_menu->addMenu(language_menu);
-
     for (const auto language : language_list) {
         QAction *language_action = language_actions[language];
-        language_menu->addAction(language_action);
+        ui->menu_language->addAction(language_action);
     }
 
-    // Help
-    help_menu->addAction(manual_action);
-    help_menu->addAction(changelog_action);
-    help_menu->addAction(about_action);
+    // NOTE: "Action" menu actions need to be filled by the
+    // console
+    ui->console->add_actions(ui->menu_action);
 
-    // Toolbar
-    toolbar->addAction(console->navigate_back_action());
-    toolbar->addAction(console->navigate_forward_action());
-    toolbar->addAction(console->navigate_up_action());
-    toolbar->addSeparator();
-    toolbar->addAction(console->refresh_current_scope_action());
-    toolbar->addAction(manual_action);
+    #ifndef QT_DEBUG
+        ui->action_dev_mode->setVisible(false);
+    #endif
+
+    // NOTE: toolbar and message log(dock widget) have built
+    // in toggle actions, but there's no way to add them
+    // through designer so add them here.
+    ui->menu_view->insertAction(ui->action_toggle_message_log, ui->message_log->toggleViewAction());
+    ui->menu_view->insertAction(ui->action_toggle_toolbar, ui->toolbar->toggleViewAction());
+    ui->menu_view->removeAction(ui->action_toggle_message_log);
+    ui->menu_view->removeAction(ui->action_toggle_toolbar);
 
     //
     // Connect actions
     //
     connect(
-        connect_action, &QAction::triggered,
+        ui->action_connect, &QAction::triggered,
         this, &MainWindow::connect_to_server);
     connect(
-        connection_options_action, &QAction::triggered,
+        ui->action_connection_options, &QAction::triggered,
         connection_options_dialog, &QDialog::open);
     connect(
-        quit_action, &QAction::triggered,
+        ui->action_quit, &QAction::triggered,
         this, &MainWindow::close);
     connect(
-        manual_action, &QAction::triggered,
+        ui->action_manual, &QAction::triggered,
         manual_dialog, &QDialog::show);
     connect(
-        changelog_action, &QAction::triggered,
+        ui->action_changelog, &QAction::triggered,
         changelog_dialog, &QDialog::show);
     connect(
-        about_action, &QAction::triggered,
+        ui->action_about, &QAction::triggered,
         about_dialog, &QDialog::open);
+
+    settings_connect_action_to_bool_setting(ui->action_confirm_actions, SETTING_confirm_actions);
+    settings_connect_action_to_bool_setting(ui->action_last_name_order, SETTING_last_name_before_first_name);
+    settings_connect_action_to_bool_setting(ui->action_log_searches, SETTING_log_searches);
+    settings_connect_action_to_bool_setting(ui->action_timestamps, SETTING_timestamp_log);
+
+    // NOTE: not using
+    // settings_connect_action_to_bool_setting() for these
+    // actions because they need custom slots
     connect(
-        show_noncontainers_action, &QAction::toggled,
+        ui->action_show_noncontainers, &QAction::toggled,
         this, &MainWindow::on_show_non_containers);
     connect(
-        dev_mode_action, &QAction::toggled,
-        this, &MainWindow::on_dev_mode);
-    connect(
-        advanced_features_action, &QAction::toggled,
+        ui->action_advanced_features, &QAction::toggled,
         this, &MainWindow::on_advanced_features);
+    connect(
+        ui->action_dev_mode, &QAction::toggled,
+        this, &MainWindow::on_dev_mode);
 
     for (const auto language : language_actions.keys()) {
         QAction *action = language_actions[language];
@@ -280,7 +214,7 @@ MainWindow::MainWindow()
     }
 
     connect(
-        log_searches_action, &QAction::toggled,
+        ui->action_log_searches, &QAction::triggered,
         this, &MainWindow::on_log_searches_changed);
     on_log_searches_changed();
 
@@ -290,8 +224,8 @@ MainWindow::MainWindow()
     load_connection_options();
 
     connect(
-        action_menu, &QMenu::aboutToShow,
-        console, &ConsoleWidget::update_actions);
+        ui->menu_action, &QMenu::aboutToShow,
+        ui->console, &ConsoleWidget::update_actions);
 
     const bool restored_geometry = settings_restore_geometry(SETTING_main_window_geometry, this);
     if (!restored_geometry) {
@@ -302,11 +236,12 @@ MainWindow::MainWindow()
     if (!state.isEmpty()) {
         restoreState(state);
     } else {
-        message_log_dock->hide();
+        // Hide message log by default
+        ui->message_log->hide();
     }
 
     const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
-    console->restore_state(console_widget_state);
+    ui->console->restore_state(console_widget_state);
 
     connect_to_server();
 
@@ -328,7 +263,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     const QByteArray state = saveState();
     settings_set_variant(SETTING_main_window_state, state);
 
-    const QVariant console_state = console->save_state();
+    const QVariant console_state = ui->console->save_state();
     settings_set_variant(SETTING_console_widget_state, console_state);
 
     QMainWindow::closeEvent(event);
@@ -340,20 +275,20 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 // more convenient way by connecting as a slot, call order
 // will be undefined.
 
-void MainWindow::on_show_non_containers() {
-    settings_set_bool(SETTING_show_non_containers_in_console_tree, show_noncontainers_action->isChecked());
+void MainWindow::on_show_non_containers(bool checked) {
+    settings_set_bool(SETTING_show_non_containers_in_console_tree, checked);
 
     refresh_object_tree();
 }
 
-void MainWindow::on_dev_mode() {
-    settings_set_bool(SETTING_dev_mode, dev_mode_action->isChecked());
+void MainWindow::on_dev_mode(bool checked) {
+    settings_set_bool(SETTING_dev_mode, checked);
 
     refresh_object_tree();
 }
 
-void MainWindow::on_advanced_features() {
-    settings_set_bool(SETTING_advanced_features, advanced_features_action->isChecked());
+void MainWindow::on_advanced_features(bool checked) {
+    settings_set_bool(SETTING_advanced_features, checked);
 
     refresh_object_tree();
 }
@@ -419,14 +354,14 @@ void MainWindow::connect_to_server() {
     qDebug() << "domain =" << g_adconfig->domain();
 
     // Load console tree's
-    console_object_tree_init(console, ad);
-    console_policy_tree_init(console, ad);
-    console_query_tree_init(console);
+    console_object_tree_init(ui->console, ad);
+    console_policy_tree_init(ui->console, ad);
+    console_query_tree_init(ui->console);
 
     // Set current scope to object head to load it
-    const QModelIndex object_tree_root = get_object_tree_root(console);
+    const QModelIndex object_tree_root = get_object_tree_root(ui->console);
     if (object_tree_root.isValid()) {
-        console->set_current_scope(object_tree_root);
+        ui->console->set_current_scope(object_tree_root);
     }
 
     // Display any errors that happened when loading the
@@ -438,7 +373,7 @@ void MainWindow::connect_to_server() {
     filter_dialog = new ConsoleFilterDialog(ad.adconfig(), this);
 
     connect(
-        open_filter_action, &QAction::triggered,
+        ui->action_filter_objects, &QAction::triggered,
         filter_dialog, &QDialog::open);
     connect(
         filter_dialog, &QDialog::accepted,
@@ -447,7 +382,7 @@ void MainWindow::connect_to_server() {
     
     // Disable connect action once connected because
     // it's not needed at that point
-    connect_action->setEnabled(false);
+    ui->action_connect->setEnabled(false);
 
     // NOTE: need to restore console state again after
     // successful connection because some state like column
@@ -455,18 +390,18 @@ void MainWindow::connect_to_server() {
     // items. Until connection to the domain, the object
     // tree is empty.
     const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
-    console->restore_state(console_widget_state);
+    ui->console->restore_state(console_widget_state);
 }
 
 void MainWindow::refresh_object_tree() {
-    const QModelIndex object_tree_root = get_object_tree_root(console);
+    const QModelIndex object_tree_root = get_object_tree_root(ui->console);
     if (!object_tree_root.isValid()) {
         return;
     }
 
     show_busy_indicator();
 
-    console->refresh_scope(object_tree_root);
+    ui->console->refresh_scope(object_tree_root);
 
     hide_busy_indicator();
 }

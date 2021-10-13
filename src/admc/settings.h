@@ -119,13 +119,10 @@ void settings_save_header_state(const QString setting, QHeaderView *header);
 bool settings_restore_header_state(const QString setting, QHeaderView *header);
 
 /** 
- * Make a checkable QAction that is connected to a bool
- * setting. Action state will be initialized to the current
- * setting value. The "connect" version of the f-n also
- * connects the action for you so that when toggling the
- * action modifies the setting.
+ * Connect a checkable QAction to a bool setting. Action
+ * state will be initialized to the current setting value.
+ * Toggling the action will modify the setting.
  */
-QAction *settings_make_action(const QString setting, const QString &text, QObject *parent);
-QAction *settings_make_and_connect_action(const QString setting, const QString &text, QObject *parent);
+void settings_connect_action_to_bool_setting(QAction *action, const QString setting);
 
 #endif /* SETTINGS_H */

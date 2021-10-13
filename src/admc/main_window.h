@@ -23,10 +23,12 @@
 
 #include <QMainWindow>
 
-class ConsoleWidget;
 class ObjectImpl;
 class ConsoleFilterDialog;
-class QAction;
+
+namespace Ui {
+    class MainWindow;
+}
 
 class MainWindow final : public QMainWindow {
     Q_OBJECT
@@ -37,27 +39,19 @@ public:
 protected:
     void closeEvent(QCloseEvent *event);
 
-private slots:
-    void on_show_non_containers();
-    void on_dev_mode();
-    void on_advanced_features();
-    void on_filter_dialog_accepted();
-    void on_log_searches_changed();
-    void load_connection_options();
-
 private:
-    ConsoleWidget *console;
+    Ui::MainWindow *ui;
     ObjectImpl *object_impl;
     ConsoleFilterDialog *filter_dialog;
     
-    QAction *connect_action;
-    QAction *open_filter_action;
-    QAction *dev_mode_action;
-    QAction *show_noncontainers_action;
-    QAction *advanced_features_action;
-
     void connect_to_server();
     void refresh_object_tree();
+    void on_show_non_containers(bool checked);
+    void on_dev_mode(bool checked);
+    void on_advanced_features(bool checked);
+    void on_filter_dialog_accepted();
+    void on_log_searches_changed();
+    void load_connection_options();
 };
 
 #endif /* MAIN_WINDOW_H */

@@ -40,6 +40,37 @@ FindWidget::FindWidget(QWidget *parent)
     ui = new Ui::FindWidget();
     ui->setupUi(this);
 
+    action_view_icons = new QAction(tr("Icons"));
+    action_view_icons->setCheckable(true);
+    action_view_list = new QAction(tr("List"));
+    action_view_list->setCheckable(true);
+    action_view_detail = new QAction(tr("Detail"));
+    action_view_detail->setCheckable(true);
+    action_customize_columns = new QAction(tr("Customize Columns"));
+    action_toggle_description_bar = new QAction(tr("Description Bar"));
+    action_toggle_description_bar->setCheckable(true);
+
+    const ConsoleWidgetActions console_actions = [&]() {
+        ConsoleWidgetActions out;
+
+        out.view_icons = action_view_icons;
+        out.view_list = action_view_list;
+        out.view_detail = action_view_detail;
+        out.toggle_description_bar = action_toggle_description_bar;
+
+        // Use placeholders for unused actions
+        out.navigate_up = new QAction();
+        out.navigate_back = new QAction();
+        out.navigate_forward = new QAction();
+        out.refresh = new QAction();
+        out.customize_columns = new QAction();
+        out.toggle_console_tree = new QAction();
+
+        return out;
+    }();
+
+    ui->console->set_actions(console_actions);
+
     object_impl = new ObjectImpl(ui->console);
     ui->console->register_impl(ItemType_Object, object_impl);
 
@@ -112,12 +143,12 @@ void FindWidget::setup_action_menu(QMenu *menu) {
 }
 
 void FindWidget::setup_view_menu(QMenu *menu) {
-    menu->addAction(ui->console->set_results_to_icons_action());
-    menu->addAction(ui->console->set_results_to_list_action());
-    menu->addAction(ui->console->set_results_to_detail_action());
+    menu->addAction(action_view_icons);
+    menu->addAction(action_view_list);
+    menu->addAction(action_view_detail);
     menu->addSeparator();
-    menu->addAction(ui->console->customize_columns_action());
-    menu->addAction(ui->console->toggle_description_bar_action());
+    menu->addAction(action_customize_columns);
+    menu->addAction(action_toggle_description_bar);
 }
 
 void FindWidget::clear() {

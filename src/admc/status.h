@@ -43,10 +43,7 @@ enum StatusType {
 class Status {
 
 public:
-    Status();
-
-    QStatusBar *status_bar() const;
-    QTextEdit *message_log() const;
+    void init(QStatusBar *statusbar, QTextEdit *message_log);
 
     void add_message(const QString &msg, const StatusType &type);
 

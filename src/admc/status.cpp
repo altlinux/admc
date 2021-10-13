@@ -36,18 +36,9 @@
 
 #define MAX_MESSAGES_IN_LOG 200
 
-Status::Status() {
-    m_status_bar = new QStatusBar();
-    m_message_log = new QTextEdit();
-    m_message_log->setReadOnly(true);
-}
-
-QStatusBar *Status::status_bar() const {
-    return m_status_bar;
-}
-
-QTextEdit *Status::message_log() const {
-    return m_message_log;
+void Status::init(QStatusBar *statusbar, QTextEdit *message_log) {
+    m_status_bar = statusbar;
+    m_message_log = message_log;
 }
 
 void Status::add_message(const QString &msg, const StatusType &type) {

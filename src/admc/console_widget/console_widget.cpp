@@ -89,24 +89,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     d->results_stacked_widget = new QStackedWidget();
 
-    d->navigate_up_action = new QAction(QIcon::fromTheme("go-up"), tr("&Up one level"), this);
-    d->navigate_back_action = new QAction(QIcon::fromTheme("go-previous"), tr("&Back"), this);
-    d->navigate_forward_action = new QAction(QIcon::fromTheme("go-next"), tr("&Forward"), this);
-    d->refresh_current_scope_action = new QAction(QIcon::fromTheme("view-refresh"), tr("&Refresh"), this);
-    d->customize_columns_action = new QAction(tr("&Customize columns..."), this);
-    d->set_results_to_icons_action = new QAction(tr("&Icons"), this);
-    d->set_results_to_list_action = new QAction(tr("&List"), this);
-    d->set_results_to_detail_action = new QAction(tr("&Detail"), this);
-
-    d->toggle_console_tree_action = new QAction(tr("Console Tree"), this);
-    d->toggle_console_tree_action->setCheckable(true);
-    d->toggle_description_bar_action = new QAction(tr("Description Bar"), this);
-    d->toggle_description_bar_action->setCheckable(true);
-
-    d->navigate_up_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_0));
-    d->navigate_back_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_Minus));
-    d->navigate_forward_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_Plus));
-
     d->standard_action_map[StandardAction_Copy] = new QAction(tr("Copy"), this);
     d->standard_action_map[StandardAction_Cut] = new QAction(tr("Cut"), this);
     d->standard_action_map[StandardAction_Rename] = new QAction(tr("Rename"), this);
@@ -178,37 +160,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->model, &QAbstractItemModel::rowsRemoved,
         d, &ConsoleWidgetPrivate::update_description);
 
-    connect(
-        d->navigate_up_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_navigate_up);
-    connect(
-        d->navigate_back_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_navigate_back);
-    connect(
-        d->navigate_forward_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_navigate_forward);
-    connect(
-        d->refresh_current_scope_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_refresh_current_scope);
-    connect(
-        d->customize_columns_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_customize_columns);
-    connect(
-        d->set_results_to_icons_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_set_results_to_icons);
-    connect(
-        d->set_results_to_list_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_set_results_to_list);
-    connect(
-        d->set_results_to_detail_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_set_results_to_detail);
-    connect(
-        d->toggle_console_tree_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_toggle_console_tree);
-    connect(
-        d->toggle_description_bar_action, &QAction::triggered,
-        d, &ConsoleWidgetPrivate::on_toggle_description_bar);
-
     for (const StandardAction &action_enum : standard_action_list) {
         QAction *action = d->standard_action_map[action_enum];
 
@@ -226,9 +177,6 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     connect(
         qApp, &QApplication::focusChanged,
         d, &ConsoleWidgetPrivate::on_focus_changed);
-
-    d->update_navigation_actions();
-    d->update_view_actions();
 }
 
 void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
@@ -449,8 +397,8 @@ QVariant ConsoleWidget::save_state() const {
     const QByteArray splitter_state = d->splitter->saveState();
     state[SPLITTER_STATE] = QVariant(splitter_state);
 
-    state[CONSOLE_TREE_STATE] = d->toggle_console_tree_action->isChecked();
-    state[DESCRIPTION_BAR_STATE] = d->toggle_description_bar_action->isChecked();
+    state[CONSOLE_TREE_STATE] = d->actions.toggle_console_tree->isChecked();
+    state[DESCRIPTION_BAR_STATE] = d->actions.toggle_description_bar->isChecked();
 
     for (const int type : d->impl_map.keys()) {
         const ConsoleImpl *impl = d->impl_map[type];
@@ -469,10 +417,10 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
     const QByteArray splitter_state = state.value(SPLITTER_STATE, QVariant()).toByteArray();
     d->splitter->restoreState(splitter_state);
 
-    d->toggle_console_tree_action->setChecked(state[CONSOLE_TREE_STATE].toBool());
+    d->actions.toggle_console_tree->setChecked(state[CONSOLE_TREE_STATE].toBool());
     d->on_toggle_console_tree();
 
-    d->toggle_description_bar_action->setChecked(state[DESCRIPTION_BAR_STATE].toBool());
+    d->actions.toggle_description_bar->setChecked(state[DESCRIPTION_BAR_STATE].toBool());
     d->on_toggle_description_bar();
 
     for (const int type : d->impl_map.keys()) {
@@ -661,44 +609,42 @@ void ConsoleWidget::update_actions() {
     }
 }
 
-QAction *ConsoleWidget::refresh_current_scope_action() const {
-    return d->refresh_current_scope_action;
-}
+void ConsoleWidget::set_actions(const ConsoleWidgetActions &actions_arg) {
+    d->actions = actions_arg;
 
-QAction *ConsoleWidget::navigate_up_action() const {
-    return d->navigate_up_action;
-}
+    connect(
+        d->actions.navigate_up, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_navigate_up);
+    connect(
+        d->actions.navigate_back, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_navigate_back);
+    connect(
+        d->actions.navigate_forward, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_navigate_forward);
+    connect(
+        d->actions.refresh, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_refresh);
+    connect(
+        d->actions.customize_columns, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_customize_columns);
+    connect(
+        d->actions.view_icons, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_view_icons);
+    connect(
+        d->actions.view_list, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_view_list);
+    connect(
+        d->actions.view_detail, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_view_detail);
+    connect(
+        d->actions.toggle_console_tree, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_toggle_console_tree);
+    connect(
+        d->actions.toggle_description_bar, &QAction::triggered,
+        d, &ConsoleWidgetPrivate::on_toggle_description_bar);
 
-QAction *ConsoleWidget::navigate_back_action() const {
-    return d->navigate_back_action;
-}
-
-QAction *ConsoleWidget::navigate_forward_action() const {
-    return d->navigate_forward_action;
-}
-
-QAction *ConsoleWidget::set_results_to_icons_action() const {
-    return d->set_results_to_icons_action;
-}
-
-QAction *ConsoleWidget::set_results_to_list_action() const {
-    return d->set_results_to_list_action;
-}
-
-QAction *ConsoleWidget::set_results_to_detail_action() const {
-    return d->set_results_to_detail_action;
-}
-
-QAction *ConsoleWidget::customize_columns_action() const {
-    return d->customize_columns_action;
-}
-
-QAction *ConsoleWidget::toggle_console_tree_action() const {
-    return d->toggle_console_tree_action;
-}
-
-QAction *ConsoleWidget::toggle_description_bar_action() const {
-    return d->toggle_description_bar_action;
+    d->update_navigation_actions();
+    d->update_view_actions();
 }
 
 ConsoleWidgetPrivate::ConsoleWidgetPrivate(ConsoleWidget *q_arg)
@@ -715,19 +661,19 @@ void ConsoleWidgetPrivate::update_navigation_actions() {
         return (current.isValid() && current_parent.isValid());
     }();
 
-    navigate_up_action->setEnabled(can_navigate_up);
-    navigate_back_action->setEnabled(!targets_past.isEmpty());
-    navigate_forward_action->setEnabled(!targets_future.isEmpty());
+    actions.navigate_up->setEnabled(can_navigate_up);
+    actions.navigate_back->setEnabled(!targets_past.isEmpty());
+    actions.navigate_forward->setEnabled(!targets_future.isEmpty());
 }
 
 void ConsoleWidgetPrivate::update_view_actions() {
     ConsoleImpl *impl = get_current_scope_impl();
     const bool results_view_exists = (impl->view() != nullptr);
 
-    set_results_to_icons_action->setVisible(results_view_exists);
-    set_results_to_list_action->setVisible(results_view_exists);
-    set_results_to_detail_action->setVisible(results_view_exists);
-    customize_columns_action->setVisible(results_view_exists);
+    actions.view_icons->setVisible(results_view_exists);
+    actions.view_list->setVisible(results_view_exists);
+    actions.view_detail->setVisible(results_view_exists);
+    actions.customize_columns->setVisible(results_view_exists);
 }
 
 void ConsoleWidgetPrivate::start_drag(const QList<QPersistentModelIndex> &dropped_list_arg) {
@@ -919,6 +865,25 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
         if (need_dummy) {
             model->removeRow(0, current);
         }
+
+        const ResultsViewType results_type = impl->view()->current_view_type();
+        switch (results_type) {
+            case ResultsViewType_Icons: {
+                actions.view_icons->setChecked(true);
+
+                break;
+            }
+            case ResultsViewType_List: {
+                actions.view_list->setChecked(true);
+
+                break;
+            }
+            case ResultsViewType_Detail: {
+                actions.view_detail->setChecked(true);
+
+                break;
+            }
+        }
     }
 
     // Switch to this item's results widget
@@ -994,7 +959,7 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
     }
 }
 
-void ConsoleWidgetPrivate::on_refresh_current_scope() {
+void ConsoleWidgetPrivate::on_refresh() {
     const QModelIndex current_scope = q->get_current_scope_item();
 
     q->refresh_scope(current_scope);
@@ -1082,25 +1047,25 @@ void ConsoleWidgetPrivate::on_navigate_forward() {
     update_navigation_actions();
 }
 
-void ConsoleWidgetPrivate::on_set_results_to_icons() {
+void ConsoleWidgetPrivate::on_view_icons() {
     set_results_to_type(ResultsViewType_Icons);
 }
 
-void ConsoleWidgetPrivate::on_set_results_to_list() {
+void ConsoleWidgetPrivate::on_view_list() {
     set_results_to_type(ResultsViewType_List);
 }
 
-void ConsoleWidgetPrivate::on_set_results_to_detail() {
+void ConsoleWidgetPrivate::on_view_detail() {
     set_results_to_type(ResultsViewType_Detail);
 }
 
 void ConsoleWidgetPrivate::on_toggle_console_tree() {
-    const bool visible = toggle_console_tree_action->isChecked();
+    const bool visible = actions.toggle_console_tree->isChecked();
     scope_view->setVisible(visible);
 }
 
 void ConsoleWidgetPrivate::on_toggle_description_bar() {
-    const bool visible = toggle_description_bar_action->isChecked();
+    const bool visible = actions.toggle_description_bar->isChecked();
     description_bar->setVisible(visible);
 }
 

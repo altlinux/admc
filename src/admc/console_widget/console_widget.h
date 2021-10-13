@@ -70,11 +70,30 @@ enum StandardAction {
     StandardAction_Properties,
 };
 
+class ConsoleWidgetActions final {
+public:
+    QAction *navigate_up;
+    QAction *navigate_back;
+    QAction *navigate_forward;
+    QAction *refresh;
+    QAction *customize_columns;
+    QAction *view_icons;
+    QAction *view_list;
+    QAction *view_detail;
+    QAction *toggle_console_tree;
+    QAction *toggle_description_bar;
+};
+
 class ConsoleWidget final : public QWidget {
     Q_OBJECT
 
 public:
     ConsoleWidget(QWidget *parent);
+
+    // Sets and connects actions to internal slots
+    // NOTE: must be called before restore_state(), so that
+    // action state is restored
+    void set_actions(const ConsoleWidgetActions &actions_arg);
 
     // NOTE: you must register all impl's before adding
     // items
@@ -144,17 +163,6 @@ public:
     // based on current selection. Call before showing the
     // menu that contains console actions.
     void update_actions();
-
-    QAction *refresh_current_scope_action() const;
-    QAction *navigate_up_action() const;
-    QAction *navigate_back_action() const;
-    QAction *navigate_forward_action() const;
-    QAction *set_results_to_icons_action() const;
-    QAction *set_results_to_list_action() const;
-    QAction *set_results_to_detail_action() const;
-    QAction *customize_columns_action() const;
-    QAction *toggle_console_tree_action() const;
-    QAction *toggle_description_bar_action() const;
 
 private:
     ConsoleWidgetPrivate *d;

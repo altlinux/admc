@@ -73,16 +73,7 @@ public:
     QWidget *default_results_widget;
     ConsoleImpl *default_impl;
 
-    QAction *refresh_current_scope_action;
-    QAction *navigate_up_action;
-    QAction *navigate_back_action;
-    QAction *navigate_forward_action;
-    QAction *set_results_to_icons_action;
-    QAction *set_results_to_list_action;
-    QAction *set_results_to_detail_action;
-    QAction *customize_columns_action;
-    QAction *toggle_console_tree_action;
-    QAction *toggle_description_bar_action;
+    ConsoleWidgetActions actions;
 
     QList<QPersistentModelIndex> dropped_list;
     QSet<int> dropped_type_list;
@@ -115,14 +106,14 @@ public slots:
     void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
     void on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last);
     void on_focus_changed(QWidget *old, QWidget *now);
-    void on_refresh_current_scope();
+    void on_refresh();
     void on_customize_columns();
     void on_navigate_up();
     void on_navigate_back();
     void on_navigate_forward();
-    void on_set_results_to_icons();
-    void on_set_results_to_list();
-    void on_set_results_to_detail();
+    void on_view_icons();
+    void on_view_list();
+    void on_view_detail();
     void on_toggle_console_tree();
     void on_toggle_description_bar();
     void on_standard_action(const StandardAction action_enum);
