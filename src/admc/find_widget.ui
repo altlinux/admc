@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true">Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -128,15 +128,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SelectBaseWidget</class>
-   <extends>QWidget</extends>
-   <header>filter_widget/select_base_widget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>FilterWidget</class>
    <extends>QWidget</extends>
    <header>filter_widget/filter_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SelectBaseWidget</class>
+   <extends>QWidget</extends>
+   <header>filter_widget/select_base_widget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
