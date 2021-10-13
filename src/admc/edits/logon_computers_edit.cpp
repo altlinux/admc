@@ -20,15 +20,9 @@
 
 #include "edits/logon_computers_edit.h"
 #include "edits/logon_computers_edit_p.h"
+#include "edits/ui_logon_computers_dialog.h"
 
 #include "adldap.h"
-
-#include <QDialogButtonBox>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QListWidget>
-#include <QLabel>
 
 LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -66,64 +60,19 @@ bool LogonComputersEdit::apply(AdInterface &ad, const QString &dn) const {
 
 LogonComputersDialog::LogonComputersDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle(tr("Edit Logon Computers"));
-
-    resize(400, 400);
-
-    auto edit_label = new QLabel(tr("New value:"));
-
-    edit = new QLineEdit();
-    edit->setObjectName("edit");
-
-    auto add_button = new QPushButton(tr("Add..."));
-    add_button->setObjectName("add_button");
-    
-    auto remove_button = new QPushButton(tr("Remove"));
-    remove_button->setObjectName("remove_button");
-
-    auto list_label = new QLabel(tr("Values:"));
-    
-    list = new QListWidget();
-    list->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    list->setObjectName("list");
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    auto edit_layout = new QHBoxLayout();
-    edit_layout->addWidget(edit_label);
-    edit_layout->addWidget(edit);
-    edit_layout->addWidget(add_button);
-
-    auto list_layout = new QHBoxLayout();
-    list_layout->addWidget(list);
-    list_layout->addWidget(remove_button);
-    list_layout->setAlignment(remove_button, Qt::AlignTop);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(edit_layout);
-    layout->addWidget(list_label);
-    layout->addLayout(list_layout);
-    layout->addWidget(button_box);
+    ui = new Ui::LogonComputersDialog();
+    ui->setupUi(this);
 
     connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-    connect(
-        add_button, &QPushButton::clicked,
+        ui->add_button, &QPushButton::clicked,
         this, &LogonComputersDialog::on_add_button);
     connect(
-        remove_button, &QPushButton::clicked,
+        ui->remove_button, &QPushButton::clicked,
         this, &LogonComputersDialog::on_remove_button);
 }
 
 void LogonComputersDialog::load(const QString &value) {
-    list->clear();
+    ui->list->clear();
 
     if (value.isEmpty()) {
         return;
@@ -132,7 +81,7 @@ void LogonComputersDialog::load(const QString &value) {
     const QList<QString> value_list = value.split(",");
 
     for (const QString &subvalue : value_list) {
-        list->addItem(subvalue);
+        ui->list->addItem(subvalue);
     }
 }
 
@@ -140,8 +89,8 @@ QString LogonComputersDialog::get() const {
     const QList<QString> value_list = [&]() {
         QList<QString> out;
 
-        for (int i = 0; i < list->count(); i++) {
-            QListWidgetItem *item = list->item(i);
+        for (int i = 0; i < ui->list->count(); i++) {
+            QListWidgetItem *item = ui->list->item(i);
             const QString value = item->text();
             out.append(value);
         }
@@ -155,22 +104,22 @@ QString LogonComputersDialog::get() const {
 }
 
 void LogonComputersDialog::on_add_button() {
-    const QString value = edit->text();
+    const QString value = ui->edit->text();
 
     if (value.isEmpty()) {
         return;
     }
 
-    list->addItem(value);
+    ui->list->addItem(value);
 
-    edit->clear();
+    ui->edit->clear();
 }
 
 void LogonComputersDialog::on_remove_button() {
-    const QList<QListWidgetItem *> selected = list->selectedItems();
+    const QList<QListWidgetItem *> selected = ui->list->selectedItems();
 
     for (const QListWidgetItem *item : selected) {
-        list->takeItem(list->row(item));
+        ui->list->takeItem(ui->list->row(item));
         delete item;
     }
 }

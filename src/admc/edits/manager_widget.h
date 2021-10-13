@@ -25,8 +25,10 @@
 
 class AdObject;
 class AdInterface;
-class QLineEdit;
-class QPushButton;
+
+namespace Ui {
+    class ManagerWidget;
+}
 
 class ManagerWidget final : public QWidget {
     Q_OBJECT
@@ -50,10 +52,7 @@ private slots:
     void on_clear();
 
 private:
-    QLineEdit *edit;
-    QPushButton *change_button;
-    QPushButton *properties_button;
-    QPushButton *clear_button;
+    Ui::ManagerWidget *ui;
     QString manager_attribute;
     QString current_value;
 

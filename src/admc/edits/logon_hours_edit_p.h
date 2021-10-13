@@ -48,6 +48,10 @@ enum Weekday {
 #define HOURS_IN_DAY 24
 #define LOGON_HOURS_SIZE (7 * 3)
 
+namespace Ui {
+    class LogonHoursDialog;
+}
+
 class LogonHoursDialog : public QDialog {
     Q_OBJECT
 
@@ -61,6 +65,7 @@ public:
     void reject() override;
 
 private:
+    Ui::LogonHoursDialog *ui;
     QTableView *view;
     QStandardItemModel *model;
     QByteArray original_value;

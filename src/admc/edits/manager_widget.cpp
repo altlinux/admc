@@ -19,51 +19,26 @@
  */
 
 #include "edits/manager_widget.h"
+#include "edits/ui_manager_widget.h"
 
 #include "adldap.h"
 #include "globals.h"
 #include "properties_dialog.h"
 #include "select_object_dialog.h"
 
-#include <QLineEdit>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-
 ManagerWidget::ManagerWidget(QWidget *parent)
 : QWidget(parent) {
-    edit = new QLineEdit();
-    edit->setReadOnly(true);
-    edit->setObjectName("manager_display");
-
-    change_button = new QPushButton(tr("Change..."));
-    properties_button = new QPushButton(tr("Properties"));
-    clear_button = new QPushButton(tr("Clear"));
-
-    change_button->setObjectName("change_button");
-    properties_button->setObjectName("properties_button");
-    clear_button->setObjectName("clear_button");
-
-    auto button_layout = new QHBoxLayout();
-    button_layout->addWidget(change_button);
-    button_layout->addWidget(properties_button);
-    button_layout->addWidget(clear_button);
-    button_layout->addStretch();
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(edit);
-    layout->addLayout(button_layout);
+    ui = new Ui::ManagerWidget();
+    ui->setupUi(this);
 
     connect(
-        change_button, &QPushButton::clicked,
+        ui->change_button, &QPushButton::clicked,
         this, &ManagerWidget::on_change);
     connect(
-        properties_button, &QPushButton::clicked,
+        ui->properties_button, &QPushButton::clicked,
         this, &ManagerWidget::on_properties);
     connect(
-        clear_button, &QPushButton::clicked,
+        ui->clear_button, &QPushButton::clicked,
         this, &ManagerWidget::on_clear);
 }
 
@@ -88,11 +63,11 @@ QString ManagerWidget::get_manager() const {
 }
 
 void ManagerWidget::reset() {
-    edit->setText(QString());
+    ui->manager_display->setText(QString());
 }
 
 void ManagerWidget::on_change() {
-    auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_CONTACT}, SelectObjectDialogMultiSelection_No, edit);
+    auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_CONTACT}, SelectObjectDialogMultiSelection_No, ui->manager_display);
     dialog->setWindowTitle(tr("Select Manager"));
 
     connect(
@@ -122,9 +97,9 @@ void ManagerWidget::load_value(const QString &value) {
     current_value = value;
 
     const QString rdn = dn_get_name(current_value);
-    edit->setText(current_value);
+    ui->manager_display->setText(current_value);
 
     const bool have_manager = !current_value.isEmpty();
-    properties_button->setEnabled(have_manager);
-    clear_button->setEnabled(have_manager);
+    ui->properties_button->setEnabled(have_manager);
+    ui->clear_button->setEnabled(have_manager);
 }

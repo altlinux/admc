@@ -26,6 +26,10 @@
 class QLineEdit;
 class QListWidget;
 
+namespace Ui {
+    class LogonComputersDialog;
+}
+
 class LogonComputersDialog final : public QDialog {
     Q_OBJECT
 
@@ -36,8 +40,7 @@ public:
     QString get() const;
 
 private:
-    QLineEdit *edit;
-    QListWidget *list;
+    Ui::LogonComputersDialog *ui;
 
     void on_add_button();  
     void on_remove_button();  

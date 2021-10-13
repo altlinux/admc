@@ -20,13 +20,12 @@
 
 #include "edits/logon_hours_edit.h"
 #include "edits/logon_hours_edit_p.h"
+#include "edits/ui_logon_hours_dialog.h"
 
 #include "adldap.h"
 #include "edits/expiry_widget.h"
 #include "globals.h"
 
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <QTableView>
 #include <QStandardItemModel>
 #include <QHeaderView>
@@ -35,6 +34,7 @@
 #include <QDateTime>
 #include <QTimeZone>
 #include <QRadioButton>
+#include <QPushButton>
 
 LogonHoursEdit::LogonHoursEdit(QPushButton *button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -71,7 +71,8 @@ QList<bool> shift_list(const QList<bool> &list, const int shift_amount);
 
 LogonHoursDialog::LogonHoursDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle(tr("Edit Logon Hours"));
+    ui = new Ui::LogonHoursDialog();
+    ui->setupUi(this);
 
     model = new QStandardItemModel(DAYS_IN_WEEK, HOURS_IN_DAY, this);
     model->setVerticalHeaderLabels({
@@ -84,55 +85,26 @@ LogonHoursDialog::LogonHoursDialog(QWidget *parent)
         tr("Saturday"),
     });
 
-    view = new QTableView();
-    view->setModel(model);
-    view->setSelectionMode(QAbstractItemView::MultiSelection);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->horizontalHeader()->setHighlightSections(false);
-    view->verticalHeader()->setHighlightSections(false);
-    view->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    view->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    view->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    ui->view->setModel(model);
+    ui->view->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->view->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 
     for (int col = 0; col < model->columnCount(); col++) {
-        view->setColumnWidth(col, 5);
+        ui->view->setColumnWidth(col, 5);
     }
 
-    local_time_button = new QRadioButton(tr("Local time"));
-    auto utc_time_button = new QRadioButton(tr("UTC time"));
-    local_time_button->setChecked(true);
+    ui->local_time_button->setChecked(true);
     is_local_time = true;
 
-    local_time_button->setObjectName("local_time_button");
-    utc_time_button->setObjectName("utc_time_button");
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(view);
-    layout->addWidget(local_time_button);
-    layout->addWidget(utc_time_button);
-    layout->addWidget(button_box);
-
     connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &LogonHoursDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &LogonHoursDialog::reject);
-    connect(
-        local_time_button, &QRadioButton::toggled,
+        ui->local_time_button, &QRadioButton::toggled,
         this, &LogonHoursDialog::on_local_time_button_toggled);
 }
 
 void LogonHoursDialog::load(const QByteArray &value) {
     original_value = value;
 
-    view->clearSelection();
+    ui->view->clearSelection();
 
     // NOTE: value may be empty if it's undefined
     if (value.size() != LOGON_HOURS_SIZE) {
@@ -149,7 +121,7 @@ void LogonHoursDialog::load(const QByteArray &value) {
                 const int row = day;
                 const int column = h;
                 const QModelIndex index = model->index(row, column);
-                view->selectionModel()->select(index, QItemSelectionModel::Select);
+                ui->view->selectionModel()->select(index, QItemSelectionModel::Select);
             }
         }
     }
@@ -159,7 +131,7 @@ QByteArray LogonHoursDialog::get() const {
     const QList<QList<bool>> bools = [&]() {
         QList<QList<bool>> out = logon_hours_to_bools(QByteArray(LOGON_HOURS_SIZE, '\0'));
 
-        const QList<QModelIndex> selected = view->selectionModel()->selectedIndexes();
+        const QList<QModelIndex> selected = ui->view->selectionModel()->selectedIndexes();
 
         for (const QModelIndex &index : selected) {
             const int day = index.row();
