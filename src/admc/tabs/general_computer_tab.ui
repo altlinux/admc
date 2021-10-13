@@ -50,7 +50,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="descriptionLabel">
        <property name="text">
-        <string>Description</string>
+        <string>Description:</string>
        </property>
       </widget>
      </item>

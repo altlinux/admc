@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string notr="true"/>
   </property>
   <widget class="ConsoleWidget" name="console"/>
   <widget class="QMenuBar" name="menubar">
@@ -135,7 +135,8 @@
   </action>
   <action name="action_manual">
    <property name="icon">
-    <iconset theme="help"/>
+    <iconset theme="help">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Manual</string>
@@ -272,7 +273,8 @@
   </action>
   <action name="action_navigate_up">
    <property name="icon">
-    <iconset theme="go-up"/>
+    <iconset theme="go-up">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Navigate Up</string>
@@ -283,7 +285,8 @@
   </action>
   <action name="action_navigate_back">
    <property name="icon">
-    <iconset theme="go-previous"/>
+    <iconset theme="go-previous">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Navigate Back</string>
@@ -294,7 +297,8 @@
   </action>
   <action name="action_navigate_forward">
    <property name="icon">
-    <iconset theme="go-next"/>
+    <iconset theme="go-next">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Navigate Forward</string>
@@ -305,7 +309,8 @@
   </action>
   <action name="action_refresh">
    <property name="icon">
-    <iconset theme="view-refresh"/>
+    <iconset theme="view-refresh">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Refresh</string>
