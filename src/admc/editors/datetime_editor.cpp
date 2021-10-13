@@ -19,45 +19,29 @@
  */
 
 #include "editors/datetime_editor.h"
+#include "editors/ui_datetime_editor.h"
 
 #include "adldap.h"
 #include "globals.h"
 
-#include <QDateTimeEdit>
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QVBoxLayout>
-
 DateTimeEditor::DateTimeEditor(const QString attribute_arg, QWidget *parent)
-: AttributeEditor(parent) {
-    setWindowTitle(tr("Edit Datetime"));
-
-    attribute = attribute_arg;
-
-    QLabel *attribute_label = make_attribute_label(attribute);
-
-    edit = new QDateTimeEdit();
-
-    QDialogButtonBox *button_box = make_button_box(attribute);
-    ;
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(attribute_label);
-    layout->addWidget(edit);
-    layout->addWidget(button_box);
+: AttributeEditor(attribute_arg, parent) {
+    ui = new Ui::DateTimeEditor();
+    ui->setupUi(this);
 
     const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
     if (system_only) {
-        edit->setReadOnly(true);
+        ui->edit->setReadOnly(true);
     }
+
+    init(ui->button_box, ui->attribute_label);
 }
 
 void DateTimeEditor::load(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);
     const QDateTime value_datetime = datetime_string_to_qdatetime(attribute, value_string, g_adconfig);
-    edit->setDateTime(value_datetime);
+    ui->edit->setDateTime(value_datetime);
 }
 
 QList<QByteArray> DateTimeEditor::get_new_values() const {

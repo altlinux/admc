@@ -19,70 +19,48 @@
  */
 
 #include "editors/bool_editor.h"
+#include "editors/ui_bool_editor.h"
 
 #include "adldap.h"
 #include "globals.h"
 
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QRadioButton>
-#include <QVBoxLayout>
-
-BoolEditor::BoolEditor(const QString attribute, QWidget *parent)
-: AttributeEditor(parent) {
-    setWindowTitle(tr("Edit Boolean"));
-
-    QLabel *attribute_label = make_attribute_label(attribute);
-
-    true_button = new QRadioButton(tr("True"));
-    false_button = new QRadioButton(tr("False"));
-    unset_button = new QRadioButton(tr("Unset"));
-
-    true_button->setObjectName("true_button");
-    false_button->setObjectName("false_button");
-    unset_button->setObjectName("unset_button");
-
-    QDialogButtonBox *button_box = make_button_box(attribute);
-    ;
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(attribute_label);
-    layout->addWidget(true_button);
-    layout->addWidget(false_button);
-    layout->addWidget(unset_button);
-    layout->addWidget(button_box);
+BoolEditor::BoolEditor(const QString attribute_arg, QWidget *parent)
+: AttributeEditor(attribute_arg, parent) {
+    ui = new Ui::BoolEditor();
+    ui->setupUi(this);
 
     if (g_adconfig->get_attribute_is_system_only(attribute)) {
-        true_button->setEnabled(false);
-        false_button->setEnabled(false);
-        unset_button->setEnabled(false);
+        ui->true_button->setEnabled(false);
+        ui->false_button->setEnabled(false);
+        ui->unset_button->setEnabled(false);
     }
+
+    init(ui->button_box, ui->attribute_label);
 }
 
 void BoolEditor::load(const QList<QByteArray> &values) {
     if (values.isEmpty()) {
-        unset_button->setChecked(true);
+        ui->unset_button->setChecked(true);
     } else {
         const QByteArray value = values[0];
         const QString value_string = QString(value);
         const bool value_bool = ad_string_to_bool(value_string);
 
         if (value_bool) {
-            true_button->setChecked(true);
+            ui->true_button->setChecked(true);
         } else {
-            false_button->setChecked(true);
+            ui->false_button->setChecked(true);
         }
     }
 }
 
 QList<QByteArray> BoolEditor::get_new_values() const {
-    if (unset_button->isChecked()) {
+    if (ui->unset_button->isChecked()) {
         return QList<QByteArray>();
-    } else if (true_button->isChecked()) {
+    } else if (ui->true_button->isChecked()) {
         const QByteArray value = QString(LDAP_BOOL_TRUE).toUtf8();
         return {value};
-    } else if (false_button->isChecked()) {
+    } else if (ui->false_button->isChecked()) {
         const QByteArray value = QString(LDAP_BOOL_FALSE).toUtf8();
         return {value};
     } else {

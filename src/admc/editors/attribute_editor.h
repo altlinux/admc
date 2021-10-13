@@ -46,10 +46,13 @@ public:
     virtual QList<QByteArray> get_new_values() const = 0;
 
 protected:
-    AttributeEditor(QWidget *parent);
+    QString attribute;
+   
+    AttributeEditor(const QString &attribute, QWidget *parent);
 
-    static QLabel *make_attribute_label(const QString &attribute);
-    QDialogButtonBox *make_button_box(const QString attribute);
+    // Configures button box and attribute label depending on
+    // attribute given to ctor
+    void init(QDialogButtonBox *button_box, QLabel *attribute_label);
 };
 
 #endif /* ATTRIBUTE_EDITOR_H */

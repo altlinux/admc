@@ -23,7 +23,6 @@
 
 #include "editors/attribute_editor.h"
 
-class QListWidget;
 class QListWidgetItem;
 
 enum MultiEditorType {
@@ -31,6 +30,10 @@ enum MultiEditorType {
     MultiEditorType_Octet,
     MultiEditorType_Datetime,
 };
+
+namespace Ui {
+    class MultiEditor;
+}
 
 class MultiEditor final : public AttributeEditor {
     Q_OBJECT
@@ -47,8 +50,7 @@ private slots:
     void edit_item(QListWidgetItem *item);
 
 private:
-    QString attribute;
-    QListWidget *list_widget;
+    Ui::MultiEditor *ui;
 
     void add_value(const QByteArray value);
     QString bytes_to_string(const QByteArray bytes) const;

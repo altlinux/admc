@@ -29,7 +29,9 @@
 
 #include "editors/attribute_editor.h"
 
-class QDateTimeEdit;
+namespace Ui {
+    class DateTimeEditor;
+}
 
 class DateTimeEditor final : public AttributeEditor {
     Q_OBJECT
@@ -41,8 +43,7 @@ public:
     QList<QByteArray> get_new_values() const override;
 
 private:
-    QDateTimeEdit *edit;
-    QString attribute;
+    Ui::DateTimeEditor *ui;
 };
 
 #endif /* DATETIME_EDITOR_H */

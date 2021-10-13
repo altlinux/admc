@@ -23,15 +23,16 @@
 
 #include "editors/attribute_editor.h"
 
-class QPlainTextEdit;
-class QComboBox;
-
 enum OctetDisplayFormat {
     OctetDisplayFormat_Hexadecimal = 0,
     OctetDisplayFormat_Binary,
     OctetDisplayFormat_Decimal,
     OctetDisplayFormat_Octal,
 };
+
+namespace Ui {
+    class OctetEditor;
+}
 
 class OctetEditor final : public AttributeEditor {
     Q_OBJECT
@@ -47,8 +48,7 @@ private slots:
     void on_format_combo();
 
 private:
-    QPlainTextEdit *edit;
-    QComboBox *format_combo;
+    Ui::OctetEditor *ui;
     OctetDisplayFormat prev_format;
 
     bool check_input(const OctetDisplayFormat format);

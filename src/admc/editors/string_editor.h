@@ -23,7 +23,9 @@
 
 #include "editors/attribute_editor.h"
 
-class QLineEdit;
+namespace Ui {
+    class StringEditor;
+}
 
 class StringEditor final : public AttributeEditor {
     Q_OBJECT
@@ -35,7 +37,7 @@ public:
     QList<QByteArray> get_new_values() const override;
 
 private:
-    QLineEdit *edit;
+    Ui::StringEditor *ui;
 };
 
 #endif /* STRING_EDITOR_H */

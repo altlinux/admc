@@ -19,6 +19,7 @@
  */
 
 #include "editors/multi_editor.h"
+#include "editors/ui_multi_editor.h"
 
 #include "adldap.h"
 #include "editors/bool_editor.h"
@@ -28,15 +29,10 @@
 #include "globals.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QListWidget>
-#include <QPushButton>
-#include <QVBoxLayout>
-
 MultiEditor::MultiEditor(const QString attribute_arg, QWidget *parent)
-: AttributeEditor(parent) {
-    attribute = attribute_arg;
+: AttributeEditor(attribute_arg, parent) {
+    ui = new Ui::MultiEditor();
+    ui->setupUi(this);
 
     const QString title = [this]() {
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
@@ -63,53 +59,25 @@ MultiEditor::MultiEditor(const QString attribute_arg, QWidget *parent)
     }();
     setWindowTitle(title);
 
-    QLabel *attribute_label = make_attribute_label(attribute);
-
-    auto add_button = new QPushButton(tr("Add..."));
-    add_button->setObjectName("add_button");
-
-    auto list_label = new QLabel(tr("Values:"));
-
-    list_widget = new QListWidget();
-
-    auto remove_button = new QPushButton(tr("Remove"));
-    remove_button->setObjectName("remove_button");
-
-    QDialogButtonBox *button_box = make_button_box(attribute);
-
-    auto list_button_layout = new QVBoxLayout();
-    list_button_layout->addWidget(add_button);
-    list_button_layout->addWidget(remove_button);
-    list_button_layout->addStretch();
-
-    auto list_layout = new QHBoxLayout();
-    list_layout->addWidget(list_widget);
-    list_layout->addLayout(list_button_layout);
-
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addWidget(attribute_label);
-    top_layout->addWidget(list_label);
-    top_layout->addLayout(list_layout);
-    top_layout->addWidget(button_box);
-
     const bool read_only = g_adconfig->get_attribute_is_system_only(attribute);
     if (read_only) {
-        add_button->setEnabled(false);
-        remove_button->setEnabled(false);
+        ui->add_button->setEnabled(false);
+        ui->remove_button->setEnabled(false);
     } else {
-        enable_widget_on_selection(remove_button, list_widget);
+        enable_widget_on_selection(ui->remove_button, ui->list_widget);
     }
 
     connect(
-        add_button, &QAbstractButton::clicked,
+        ui->add_button, &QAbstractButton::clicked,
         this, &MultiEditor::add);
     connect(
-        remove_button, &QAbstractButton::clicked,
+        ui->remove_button, &QAbstractButton::clicked,
         this, &MultiEditor::remove);
     connect(
-        list_widget, &QListWidget::itemDoubleClicked,
+        ui->list_widget, &QListWidget::itemDoubleClicked,
         this, &MultiEditor::edit_item);
+
+    init(ui->button_box, ui->attribute_label);
 }
 
 void MultiEditor::add() {
@@ -139,7 +107,7 @@ void MultiEditor::add() {
 }
 
 void MultiEditor::remove() {
-    const QList<QListWidgetItem *> selected = list_widget->selectedItems();
+    const QList<QListWidgetItem *> selected = ui->list_widget->selectedItems();
 
     for (const auto item : selected) {
         delete item;
@@ -155,8 +123,8 @@ void MultiEditor::load(const QList<QByteArray> &values) {
 QList<QByteArray> MultiEditor::get_new_values() const {
     QList<QByteArray> new_values;
 
-    for (int i = 0; i < list_widget->count(); i++) {
-        const QListWidgetItem *item = list_widget->item(i);
+    for (int i = 0; i < ui->list_widget->count(); i++) {
+        const QListWidgetItem *item = ui->list_widget->item(i);
         const QString new_value_string = item->text();
         const QByteArray new_value = string_to_bytes(new_value_string);
 
@@ -206,7 +174,7 @@ void MultiEditor::edit_item(QListWidgetItem *item) {
 
 void MultiEditor::add_value(const QByteArray value) {
     const QString text = bytes_to_string(value);
-    list_widget->addItem(text);
+    ui->list_widget->addItem(text);
 }
 
 MultiEditorType MultiEditor::get_editor_type() const {

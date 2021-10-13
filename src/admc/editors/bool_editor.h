@@ -23,7 +23,9 @@
 
 #include "editors/attribute_editor.h"
 
-class QRadioButton;
+namespace Ui {
+    class BoolEditor;
+}
 
 class BoolEditor final : public AttributeEditor {
     Q_OBJECT
@@ -35,9 +37,7 @@ public:
     QList<QByteArray> get_new_values() const override;
 
 private:
-    QRadioButton *true_button;
-    QRadioButton *false_button;
-    QRadioButton *unset_button;
+    Ui::BoolEditor *ui;
 };
 
 #endif /* BOOL_EDITOR_H */

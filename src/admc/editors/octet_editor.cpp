@@ -19,18 +19,14 @@
  */
 
 #include "editors/octet_editor.h"
+#include "editors/ui_octet_editor.h"
 
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
 
-#include <QComboBox>
-#include <QDialogButtonBox>
 #include <QFont>
 #include <QFontDatabase>
-#include <QLabel>
-#include <QPlainTextEdit>
-#include <QVBoxLayout>
 
 #include <cstdint>
 #include <cstdlib>
@@ -39,52 +35,36 @@ OctetDisplayFormat current_format(QComboBox *format_combo);
 int format_base(const OctetDisplayFormat format);
 char *itoa(int value, char *result, int base);
 
-OctetEditor::OctetEditor(const QString attribute, QWidget *parent)
-: AttributeEditor(parent) {
-    setWindowTitle(tr("Edit Octet String"));
+OctetEditor::OctetEditor(const QString attribute_arg, QWidget *parent)
+: AttributeEditor(attribute_arg, parent) {
+    ui = new Ui::OctetEditor();
+    ui->setupUi(this);
 
     prev_format = OctetDisplayFormat_Hexadecimal;
 
-    QLabel *attribute_label = make_attribute_label(attribute);
-
-    format_combo = new QComboBox();
-    format_combo->addItem(tr("Hexadecimal"), (int) OctetDisplayFormat_Hexadecimal);
-    format_combo->addItem(tr("Binary"), (int) OctetDisplayFormat_Binary);
-    format_combo->addItem(tr("Decimal"), (int) OctetDisplayFormat_Decimal);
-    format_combo->addItem(tr("Octal"), (int) OctetDisplayFormat_Octal);
-
-    edit = new QPlainTextEdit();
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    edit->setFont(fixed_font);
+    ui->edit->setFont(fixed_font);
 
     if (g_adconfig->get_attribute_is_system_only(attribute)) {
-        edit->setReadOnly(true);
+        ui->edit->setReadOnly(true);
     }
 
-    QDialogButtonBox *button_box = make_button_box(attribute);
-    ;
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(attribute_label);
-    layout->addWidget(format_combo);
-    layout->addWidget(edit);
-    layout->addWidget(button_box);
-
     connect(
-        format_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        ui->format_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &OctetEditor::on_format_combo);
+
+    init(ui->button_box, ui->attribute_label);
 }
 
 QList<QByteArray> OctetEditor::get_new_values() const {
-    const QString text = edit->toPlainText();
-    const QByteArray bytes = octet_string_to_bytes(text, current_format(format_combo));
+    const QString text = ui->edit->toPlainText();
+    const QByteArray bytes = octet_string_to_bytes(text, current_format(ui->format_combo));
 
     return {bytes};
 }
 
 void OctetEditor::accept() {
-    const bool input_ok = check_input(current_format(format_combo));
+    const bool input_ok = check_input(current_format(ui->format_combo));
 
     if (input_ok) {
         QDialog::accept();
@@ -93,8 +73,8 @@ void OctetEditor::accept() {
 
 void OctetEditor::load(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
-    const QString value_string = octet_bytes_to_string(value, current_format(format_combo));
-    edit->setPlainText(value_string);
+    const QString value_string = octet_bytes_to_string(value, current_format(ui->format_combo));
+    ui->edit->setPlainText(value_string);
 }
 
 void OctetEditor::on_format_combo() {
@@ -105,25 +85,25 @@ void OctetEditor::on_format_combo() {
         // Convert input in prev format back to bytes, then
         // convert bytes to input in new format
         // Ex: hex -> bytes -> octal
-        const QString old_text = edit->toPlainText();
+        const QString old_text = ui->edit->toPlainText();
         const QByteArray bytes = octet_string_to_bytes(old_text, prev_format);
-        const QString new_text = octet_bytes_to_string(bytes, current_format(format_combo));
+        const QString new_text = octet_bytes_to_string(bytes, current_format(ui->format_combo));
 
-        edit->setPlainText(new_text);
+        ui->edit->setPlainText(new_text);
 
-        prev_format = current_format(format_combo);
+        prev_format = current_format(ui->format_combo);
     } else {
         // Revert to previous format if input is invalid for
         // current format
-        format_combo->blockSignals(true);
-        format_combo->setCurrentIndex((int) prev_format);
-        format_combo->blockSignals(false);
+        ui->format_combo->blockSignals(true);
+        ui->format_combo->setCurrentIndex((int) prev_format);
+        ui->format_combo->blockSignals(false);
     }
 }
 
 bool OctetEditor::check_input(const OctetDisplayFormat format) {
     const bool ok = [=]() {
-        const QString text = edit->toPlainText();
+        const QString text = ui->edit->toPlainText();
 
         if (text.isEmpty()) {
             return true;
@@ -208,8 +188,7 @@ bool OctetEditor::check_input(const OctetDisplayFormat format) {
 
 OctetDisplayFormat current_format(QComboBox *format_combo) {
     const int format_index = format_combo->currentIndex();
-    const QVariant format_variant = format_combo->itemData(format_index);
-    const OctetDisplayFormat format = (OctetDisplayFormat)(format_variant.toInt());
+    const OctetDisplayFormat format = (OctetDisplayFormat)(format_index);
 
     return format;
 }

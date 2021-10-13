@@ -19,20 +19,19 @@
  */
 
 #include "editors/string_editor.h"
+#include "editors/ui_string_editor.h"
 
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QVBoxLayout>
+StringEditor::StringEditor(const QString attribute_arg, QWidget *parent)
+: AttributeEditor(attribute_arg, parent) {
+    ui = new Ui::StringEditor();
+    ui->setupUi(this);
 
-StringEditor::StringEditor(const QString attribute, QWidget *parent)
-: AttributeEditor(parent) {
-    const QString title = [attribute]() {
-        const AttributeType type = g_adconfig->get_attribute_type(attribute);
+    const QString title = [attribute_arg]() {
+        const AttributeType type = g_adconfig->get_attribute_type(attribute_arg);
 
         switch (type) {
             case AttributeType_Integer: return tr("Edit Integer");
@@ -45,39 +44,29 @@ StringEditor::StringEditor(const QString attribute, QWidget *parent)
     }();
     setWindowTitle(title);
 
-    QLabel *attribute_label = make_attribute_label(attribute);
-
-    edit = new QLineEdit();
-
+    // Configure line edit based on attribute type
     if (g_adconfig->get_attribute_is_number(attribute)) {
-        set_line_edit_to_numbers_only(edit);
+        set_line_edit_to_numbers_only(ui->edit);
     }
 
-    limit_edit(edit, attribute);
-
-    QDialogButtonBox *button_box = make_button_box(attribute);
-    ;
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(attribute_label);
-    layout->addWidget(edit);
-    layout->addWidget(button_box);
+    limit_edit(ui->edit, attribute);
 
     const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
     if (system_only) {
-        edit->setReadOnly(true);
+        ui->edit->setReadOnly(true);
     }
+
+    init(ui->button_box, ui->attribute_label);
 }
 
 void StringEditor::load(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);
-    edit->setText(value_string);
+    ui->edit->setText(value_string);
 }
 
 QList<QByteArray> StringEditor::get_new_values() const {
-    const QString new_value_string = edit->text();
+    const QString new_value_string = ui->edit->text();
 
     if (new_value_string.isEmpty()) {
         return {};

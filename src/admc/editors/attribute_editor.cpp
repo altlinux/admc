@@ -19,6 +19,7 @@
  */
 
 #include "editors/attribute_editor.h"
+
 #include "adldap.h"
 #include "editors/bool_editor.h"
 #include "editors/datetime_editor.h"
@@ -28,14 +29,14 @@
 #include "globals.h"
 
 #include <QDialogButtonBox>
-#include <QFormLayout>
+#include <QPushButton>
 #include <QLabel>
-#include <QVBoxLayout>
 
-AttributeEditor::AttributeEditor(QWidget *parent)
+AttributeEditor::AttributeEditor(const QString &attribute_arg, QWidget *parent)
 : QDialog(parent) {
     setAttribute(Qt::WA_DeleteOnClose);
-    resize(600, height());
+
+    attribute = attribute_arg;
 }
 
 AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByteArray> value_list, QWidget *parent) {
@@ -109,29 +110,15 @@ AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByt
     return editor;
 }
 
-QLabel *AttributeEditor::make_attribute_label(const QString &attribute) {
-    const QString text = QString(tr("Attribute: %1")).arg(attribute);
-    auto label = new QLabel(text);
-
-    return label;
-}
-
-QDialogButtonBox *AttributeEditor::make_button_box(const QString attribute) {
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
+void AttributeEditor::init(QDialogButtonBox *button_box, QLabel *attribute_label) {
+    // NOTE: for read-only case, disable ok button. Cancel button left
+    // enabled so that dialog can be closed
     const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
     if (system_only) {
-        button_box->setEnabled(false);
+        QPushButton *ok_button = button_box->button(QDialogButtonBox::Ok);
+        ok_button->setEnabled(false);
     }
 
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &AttributeEditor::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &AttributeEditor::reject);
-
-    return button_box;
+    const QString text = QString(tr("Attribute: %1")).arg(attribute);
+    attribute_label->setText(text);
 }
