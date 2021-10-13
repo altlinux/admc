@@ -19,35 +19,14 @@
  */
 
 #include "about_dialog.h"
+#include "ui_about_dialog.h"
 
 #include "config.h"
 
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QVBoxLayout>
-
 AboutDialog::AboutDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle(tr("About"));
+    ui = new Ui::AboutDialog();
+    ui->setupUi(this);
 
-    auto version_label = new QLabel(QString(tr("Version %1")).arg(ADMC_VERSION));
-    version_label->setAlignment(Qt::AlignHCenter);
-
-    auto description_label = new QLabel(tr("ADMC is a tool for Active Directory administration."));
-
-    auto license_label = new QLabel(tr("Copyright (C) 2020 BaseALT Ltd."));
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(version_label);
-    layout->addWidget(description_label);
-    layout->addWidget(license_label);
-    layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
+    ui->version_label->setText(QString(tr("Version %1")).arg(ADMC_VERSION));
 }
