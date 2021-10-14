@@ -24,6 +24,7 @@
 #include <QCoreApplication>
 #include <QList>
 
+class AdInterface;
 class AdConfig;
 class QString;
 typedef struct ldap LDAP;
@@ -35,7 +36,7 @@ class AdInterfacePrivate {
     friend AdInterface;
 
 public:
-    AdInterfacePrivate();
+    AdInterfacePrivate(AdInterface *q);
 
     LDAP *ld;
     bool is_connected;
@@ -49,10 +50,11 @@ public:
     void error_message_plain(const QString &text, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
     int get_ldap_result() const;
-    bool search_paged_internal(const char *base, const int scope, const char *filter, char **attributes, QHash<QString, AdObject> *results, AdCookie *cookie);
+    bool search_paged_internal(const char *base, const int scope, const char *filter, char **attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl = false);
     bool connect_via_ldap(const char *uri);
     bool delete_gpt(const QString &parent_path);
     bool smb_path_is_dir(const QString &path, bool *ok);
+    bool logged_in_as_admin();
 
     // Returns GPT contents including the root path, in
     // order of increasing depth, so root path is first
@@ -66,6 +68,7 @@ private:
     static int s_port;
     static CertStrategy s_cert_strat;
     static SMBCCTX *smbc;
+    AdInterface *q;
 };
 
 #endif /* AD_INTERFACE_P_H */
