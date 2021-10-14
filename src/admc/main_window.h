@@ -25,6 +25,7 @@
 
 class ObjectImpl;
 class ConsoleFilterDialog;
+class QLabel;
 
 namespace Ui {
     class MainWindow;
@@ -43,6 +44,7 @@ private:
     Ui::MainWindow *ui;
     ObjectImpl *object_impl;
     ConsoleFilterDialog *filter_dialog;
+    QLabel *client_user_label;
     
     void connect_to_server();
     void refresh_object_tree();
@@ -51,6 +53,7 @@ private:
     void on_advanced_features(bool checked);
     void on_filter_dialog_accepted();
     void on_log_searches_changed();
+    void on_show_client_user();
     void load_connection_options();
 };
 

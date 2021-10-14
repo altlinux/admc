@@ -85,6 +85,7 @@ DEFINE_SETTING(SETTING_show_results_header);
 DEFINE_SETTING(SETTING_log_searches);
 DEFINE_SETTING(SETTING_timestamp_log);
 DEFINE_SETTING(SETTING_sasl_nocanon);
+DEFINE_SETTING(SETTING_show_client_user);
 
 // Other
 DEFINE_SETTING(SETTING_dc);

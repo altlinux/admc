@@ -43,6 +43,7 @@
 
 #include <QDebug>
 #include <QModelIndex>
+#include <QLabel>
 
 MainWindow::MainWindow()
 : QMainWindow() {
@@ -52,6 +53,13 @@ MainWindow::MainWindow()
     country_combo_load_data();
 
     g_status()->init(ui->statusbar, ui->message_log_edit);
+
+    client_user_label = new QLabel();
+    ui->statusbar->addPermanentWidget(client_user_label);
+
+    auto action_show_client_user = new QAction("Show Client User");
+    action_show_client_user->setCheckable(true);
+    ui->statusbar->addAction(action_show_client_user);
 
     //
     // Console
@@ -185,6 +193,7 @@ MainWindow::MainWindow()
     settings_connect_action_to_bool_setting(ui->action_last_name_order, SETTING_last_name_before_first_name);
     settings_connect_action_to_bool_setting(ui->action_log_searches, SETTING_log_searches);
     settings_connect_action_to_bool_setting(ui->action_timestamps, SETTING_timestamp_log);
+    settings_connect_action_to_bool_setting(action_show_client_user, SETTING_show_client_user);
 
     // NOTE: not using
     // settings_connect_action_to_bool_setting() for these
@@ -217,6 +226,11 @@ MainWindow::MainWindow()
         ui->action_log_searches, &QAction::triggered,
         this, &MainWindow::on_log_searches_changed);
     on_log_searches_changed();
+
+    connect(
+        action_show_client_user, &QAction::triggered,
+        this, &MainWindow::on_show_client_user);
+    on_show_client_user();
 
     connect(
         connection_options_dialog, &QDialog::accepted,
@@ -310,6 +324,11 @@ void MainWindow::on_log_searches_changed() {
     AdInterface::set_log_searches(log_searches_ON);
 }
 
+void MainWindow::on_show_client_user() {
+    const bool visible = settings_get_bool(SETTING_show_client_user);
+    client_user_label->setVisible(visible);
+}
+
 void MainWindow::load_connection_options() {
     const QVariant sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon);
     if (sasl_nocanon.isValid()) {
@@ -345,6 +364,8 @@ void MainWindow::connect_to_server() {
     if (ad_failed(ad)) {
         return;
     }
+
+    client_user_label->setText(ad.client_user());
 
     // TODO: check for load failure
     const QLocale locale = settings_get_variant(SETTING_locale).toLocale();

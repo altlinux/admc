@@ -84,7 +84,11 @@
    <addaction name="menu_preferences"/>
    <addaction name="menu_help"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="contextMenuPolicy">
+    <enum>Qt::ActionsContextMenu</enum>
+   </property>
+  </widget>
   <widget class="QToolBar" name="toolbar">
    <property name="windowTitle">
     <string>Tool Bar</string>

@@ -117,6 +117,7 @@ public:
     bool any_error_messages() const;
     void clear_messages();
     AdConfig *adconfig() const;
+    QString client_user() const;
 
     // NOTE: If request attributes list is empty, all attributes are returned
 

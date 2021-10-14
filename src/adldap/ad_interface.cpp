@@ -242,6 +242,22 @@ AdInterface::AdInterface() {
         return;
     }
 
+    d->client_user = [&]() {
+        char *out_cstr = NULL;
+        ldap_get_option(d->ld, LDAP_OPT_X_SASL_USERNAME, &out_cstr);
+
+        if (out_cstr == NULL) {
+            return QString();
+        }
+
+        QString out = QString(out_cstr);
+        out = out.toLower();
+
+        ldap_memfree(out_cstr);
+
+        return out;
+    }();
+
     // Initialize SMB context
     
     // NOTE: initialize only once, because otherwise
@@ -335,6 +351,10 @@ void AdInterface::clear_messages() {
 
 AdConfig *AdInterface::adconfig() const {
     return d->adconfig;
+}
+
+QString AdInterface::client_user() const {
+    return d->client_user;
 }
 
 // Helper f-n for search()
@@ -1823,17 +1843,8 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
 bool AdInterfacePrivate::logged_in_as_admin() {
     const QString user_dn = [&]() {
         const QString user_sama = [&]() {
-            char *out_cstr = NULL;
-            ldap_get_option(ld, LDAP_OPT_X_SASL_USERNAME, &out_cstr);
-
-            if (out_cstr == NULL) {
-                return QString();
-            }
-
-            QString out = QString(out_cstr);
+            QString out = client_user;
             out = out.split("@")[0];
-
-            ldap_memfree(out_cstr);
 
             return out;
         }();
