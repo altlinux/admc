@@ -35,7 +35,48 @@ CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
 }
 
 void CreatePolicyDialog::open() {
-    ui->name_edit->setText("New Group Policy Object");
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QString default_name = [&]() {
+        const QList<QString> existing_name_list = [&]() {
+            const QString base = g_adconfig->domain_head();
+            const SearchScope scope = SearchScope_All;
+            const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+            const QList<QString> attributes = {ATTRIBUTE_DISPLAY_NAME};
+            const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+            QList<QString> out;
+
+            for (const AdObject &object : results.values()) {
+                const QString name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+                out.append(name);
+            }
+
+            return out;
+        }();
+
+        const QString first = "New Group Policy Object";
+        if (!existing_name_list.contains(first)) {
+            return first;
+        }
+
+        int n = 2;
+
+        auto get_name = [&]() {
+            return QString("New Group Policy Object (%1)").arg(n);
+        };
+
+        while(existing_name_list.contains(get_name())) {
+            n++;
+        }
+
+        return get_name();
+    }();
+
+    ui->name_edit->setText(default_name);
     ui->name_edit->selectAll();
 
     QDialog::open();
