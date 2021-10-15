@@ -96,7 +96,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_PWD_LAST_SET "pwdLastSet"
 #define ATTRIBUTE_NAME "name"
 #define ATTRIBUTE_INITIALS "initials"
-#define ATTRIBUTE_SAMACCOUNT_NAME "sAMAccountName"
+#define ATTRIBUTE_SAM_ACCOUNT_NAME "sAMAccountName"
 #define ATTRIBUTE_DISPLAY_NAME "displayName"
 #define ATTRIBUTE_DESCRIPTION "description"
 #define ATTRIBUTE_USER_PRINCIPAL_NAME "userPrincipalName"

@@ -24,7 +24,7 @@
 #include "adldap.h"
 #include "utils.h"
 #include "edits/string_edit.h"
-#include "edits/sama_edit.h"
+#include "edits/sam_name_edit.h"
 #include "edits/upn_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
@@ -35,17 +35,17 @@ CreateGroupDialog::CreateGroupDialog(QWidget *parent)
     ui->setupUi(this);
 
     QList<AttributeEdit *> edit_list;
-    sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
+    sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
     new GroupScopeEdit(ui->scope_combo, &edit_list, this);
     new GroupTypeEdit(ui->type_combo, &edit_list, this);
 
     const QList<QLineEdit *> required_edits = {
-        ui->sama_edit,
+        ui->sam_name_edit,
     };
 
     const QList<QWidget *> widget_list = {
         ui->name_edit,
-        ui->sama_edit,
+        ui->sam_name_edit,
         ui->scope_combo,
         ui->type_combo,
     };
@@ -54,7 +54,7 @@ CreateGroupDialog::CreateGroupDialog(QWidget *parent)
 }
 
 void CreateGroupDialog::open() {
-    sama_edit->load_domain();
+    sam_name_edit->load_domain();
 
     CreateDialog::open();
 }

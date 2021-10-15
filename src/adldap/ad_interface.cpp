@@ -1842,18 +1842,18 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
 
 bool AdInterfacePrivate::logged_in_as_admin() {
     const QString user_dn = [&]() {
-        const QString user_sama = [&]() {
+        const QString sam_account_name = [&]() {
             QString out = client_user;
             out = out.split("@")[0];
 
             return out;
         }();
 
-        if (user_sama.isEmpty()) {
+        if (sam_account_name.isEmpty()) {
             return QString();
         }
 
-        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_SAMACCOUNT_NAME, user_sama);
+        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_SAM_ACCOUNT_NAME, sam_account_name);
         const QHash<QString, AdObject> results = q->search(domain_head, SearchScope_All, filter, QList<QString>());
 
         if (results.isEmpty()) {

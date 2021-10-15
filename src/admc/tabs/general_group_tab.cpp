@@ -24,7 +24,7 @@
 #include "tabs/general_other_tab.h"
 #include "adldap.h"
 #include "edits/string_edit.h"
-#include "edits/sama_edit.h"
+#include "edits/sam_name_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
 
@@ -34,7 +34,7 @@ GeneralGroupTab::GeneralGroupTab(const AdObject &object) {
 
     load_name_label(ui->name_label, object);
 
-    new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edits, this);
+    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edits, this);
     new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
     new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, &edits, this);
     new StringEdit(ui->notes_edit, ATTRIBUTE_INFO, &edits, this);

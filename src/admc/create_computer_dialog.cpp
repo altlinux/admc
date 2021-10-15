@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "utils.h"
-#include "edits/sama_edit.h"
+#include "edits/sam_name_edit.h"
 #include "edits/upn_edit.h"
 
 CreateComputerDialog::CreateComputerDialog(QWidget *parent)
@@ -39,33 +39,33 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
 
     // TODO: "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
 
-    sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
+    sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
-        ui->sama_edit,
+        ui->sam_name_edit,
     };
 
     const QList<QWidget *> widget_list = {
         ui->name_edit,
-        ui->sama_edit,
-        // NOTE: not restoring sama domain state is intended
-        // ui->sama_domain_edit,
+        ui->sam_name_edit,
+        // NOTE: not restoring sam domain state is intended
+        // ui->sam_name_domain_edit,
     };
 
-    // Autofill name -> sama
+    // Autofill name -> sam account name
     connect(
         ui->name_edit, &QLineEdit::textChanged,
         [=]() {
             const QString name_input = ui->name_edit->text();
-            ui->sama_edit->setText(name_input.toUpper());
+            ui->sam_name_edit->setText(name_input.toUpper());
         });
 
     init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_COMPUTER);
 }
 
 void CreateComputerDialog::open() {
-    sama_edit->load_domain();
+    sam_name_edit->load_domain();
 
     CreateDialog::open();
 }

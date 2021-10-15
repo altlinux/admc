@@ -24,7 +24,7 @@
 #include "tabs/general_other_tab.h"
 #include "adldap.h"
 #include "edits/string_edit.h"
-#include "edits/sama_edit.h"
+#include "edits/sam_name_edit.h"
 
 GeneralComputerTab::GeneralComputerTab(const AdObject &object) {
     ui = new Ui::GeneralComputerTab();
@@ -32,12 +32,12 @@ GeneralComputerTab::GeneralComputerTab(const AdObject &object) {
 
     load_name_label(ui->name_label, object);
 
-    auto sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edits, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edits, this);
     auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, &edits, this);
     new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
     new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, &edits, this);
 
-    sama_edit->set_read_only(true);
+    sam_name_edit->set_read_only(true);
     dns_edit->set_read_only(true);
 
     edits_connect_to_tab(edits, this);

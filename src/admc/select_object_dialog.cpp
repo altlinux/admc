@@ -139,7 +139,7 @@ void SelectObjectDialog::on_add_button() {
         const QString name_filter = filter_OR({
             filter_CONDITION(Condition_StartsWith, ATTRIBUTE_NAME, entered_name),
             filter_CONDITION(Condition_StartsWith, ATTRIBUTE_CN, entered_name),
-            filter_CONDITION(Condition_StartsWith, ATTRIBUTE_SAMACCOUNT_NAME, entered_name),
+            filter_CONDITION(Condition_StartsWith, ATTRIBUTE_SAM_ACCOUNT_NAME, entered_name),
             filter_CONDITION(Condition_StartsWith, ATTRIBUTE_USER_PRINCIPAL_NAME, entered_name),
         });
 

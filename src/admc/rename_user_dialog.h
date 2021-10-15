@@ -24,7 +24,7 @@
 #include "rename_dialog.h"
 
 class UpnEdit;
-class SamaEdit;
+class SamNameEdit;
 
 namespace Ui {
     class RenameUserDialog;
@@ -42,7 +42,7 @@ public slots:
 private:
     Ui::RenameUserDialog *ui;
     UpnEdit *upn_edit;
-    SamaEdit *sama_edit;
+    SamNameEdit *sam_name_edit;
 };
 
 #endif /* RENAME_USER_DIALOG_H */

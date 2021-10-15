@@ -18,17 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SAMA_EDIT_H
-#define SAMA_EDIT_H
+#ifndef SAM_NAME_EDIT_H
+#define SAM_NAME_EDIT_H
 
 #include "edits/attribute_edit.h"
 
 class QLineEdit;
 
-class SamaEdit final : public AttributeEdit {
+class SamNameEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    SamaEdit(QLineEdit *sama_edit, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    SamNameEdit(QLineEdit *edit, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     void load_domain();
@@ -38,4 +38,4 @@ private:
     QLineEdit *domain_edit;
 };
 
-#endif /* SAMA_EDIT_H */
+#endif /* SAM_NAME_EDIT_H */

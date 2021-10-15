@@ -83,14 +83,14 @@
      <item row="5" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLineEdit" name="sama_domain_edit">
+        <widget class="QLineEdit" name="sam_name_domain_edit">
          <property name="enabled">
           <bool>false</bool>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="sama_edit"/>
+        <widget class="QLineEdit" name="sam_name_edit"/>
        </item>
       </layout>
      </item>

@@ -64,9 +64,9 @@ void ADMCTestObjectMenu::object_menu_new_user() {
     QVERIFY(name_edit);
     name_edit->setText(name);
 
-    auto sama_edit = create_dialog->findChild<QLineEdit *>("sama_edit");
-    QVERIFY(sama_edit);
-    sama_edit->setText(logon_name);
+    auto sam_name_edit = create_dialog->findChild<QLineEdit *>("sam_name_edit");
+    QVERIFY(sam_name_edit);
+    sam_name_edit->setText(logon_name);
 
     auto password_main_edit = create_dialog->findChild<QLineEdit *>("password_main_edit");
     QVERIFY(password_main_edit);
@@ -124,9 +124,9 @@ void ADMCTestObjectMenu::object_menu_new_computer() {
     name_edit->setText(name);
 
     // Enter logon name
-    auto sama_edit = create_dialog->findChild<QLineEdit *>("sama_edit");
-    QVERIFY(sama_edit);
-    sama_edit->setText(name);
+    auto sam_name_edit = create_dialog->findChild<QLineEdit *>("sam_name_edit");
+    QVERIFY(sam_name_edit);
+    sam_name_edit->setText(name);
 
     create_dialog->accept();
 
@@ -153,9 +153,9 @@ void ADMCTestObjectMenu::object_menu_new_group() {
     name_edit->setText(name);
 
     // Enter logon name
-    auto sama_edit = create_dialog->findChild<QLineEdit *>("sama_edit");
-    QVERIFY(sama_edit);
-    sama_edit->setText(name);
+    auto sam_name_edit = create_dialog->findChild<QLineEdit *>("sam_name_edit");
+    QVERIFY(sam_name_edit);
+    sam_name_edit->setText(name);
 
     create_dialog->accept();
 

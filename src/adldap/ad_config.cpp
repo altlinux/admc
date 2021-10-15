@@ -346,7 +346,7 @@ QString AdConfig::get_attribute_display_name(const Attribute &attribute, const O
         {ATTRIBUTE_OBJECT_CATEGORY, QCoreApplication::translate("AdConfig", "Type")},
         {ATTRIBUTE_PROFILE_PATH, QCoreApplication::translate("AdConfig", "Profile path")},
         {ATTRIBUTE_SCRIPT_PATH, QCoreApplication::translate("AdConfig", "Logon script")},
-        {ATTRIBUTE_SAMACCOUNT_NAME, QCoreApplication::translate("AdConfig", "Logon name (pre-Windows 2000)")},
+        {ATTRIBUTE_SAM_ACCOUNT_NAME, QCoreApplication::translate("AdConfig", "Logon name (pre-Windows 2000)")},
         {ATTRIBUTE_MAIL, QCoreApplication::translate("AdConfig", "E-mail")},
         {ATTRIBUTE_LOCATION, QCoreApplication::translate("AdConfig", "Location")},
         {ATTRIBUTE_MANAGED_BY, QCoreApplication::translate("managedBy", "Managed by")},

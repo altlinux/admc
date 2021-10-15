@@ -139,7 +139,7 @@ set(ADMC_SOURCES
     edits/string_edit.cpp
     edits/string_other_edit.cpp
     edits/string_large_edit.cpp
-    edits/sama_edit.cpp
+    edits/sam_name_edit.cpp
     edits/country_edit.cpp
     edits/expiry_edit.cpp
     edits/expiry_widget.cpp

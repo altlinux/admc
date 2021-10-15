@@ -25,7 +25,7 @@
 #include "utils.h"
 #include "settings.h"
 #include "edits/string_edit.h"
-#include "edits/sama_edit.h"
+#include "edits/sam_name_edit.h"
 #include "edits/upn_edit.h"
 #include "edits/password_edit.h"
 #include "edits/account_option_edit.h"
@@ -39,7 +39,7 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
     new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
     new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);
     new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, &edit_list, this);
-    sama_edit = new SamaEdit(ui->sama_edit, ui->sama_domain_edit, &edit_list, this);
+    sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
 
     new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edit_list, this);
 
@@ -91,18 +91,18 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
         ui->last_name_edit, &QLineEdit::textChanged,
         autofill_full_name);
 
-    // upn -> samaccount name
+    // upn -> sam account name
     connect(
         ui->upn_prefix_edit, &QLineEdit::textChanged,
         [=]() {
             const QString upn_input = ui->upn_prefix_edit->text();
-            ui->sama_edit->setText(upn_input);
+            ui->sam_name_edit->setText(upn_input);
         });
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
         ui->first_name_edit,
-        ui->sama_edit,
+        ui->sam_name_edit,
     };
 
     const QList<QWidget *> widget_list = {
@@ -110,9 +110,10 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
         ui->first_name_edit,
         ui->last_name_edit,
         ui->initials_edit,
-        ui->sama_edit,
-        // NOTE: not restoring sama domain state is intended
-        // ui->sama__domain_edit,
+        ui->sam_name_edit,
+        // NOTE: not restoring sam account name domain state
+        // is intended
+        // ui->sam_name_domain_edit,
         ui->password_confirm_edit,
         ui->upn_prefix_edit,
         // NOTE: not restoring upn suffix state is intended
@@ -133,7 +134,7 @@ void CreateUserDialog::open() {
     }
 
     upn_edit->init_suffixes(ad);
-    sama_edit->load_domain();
+    sam_name_edit->load_domain();
 
     CreateDialog::open();
 }

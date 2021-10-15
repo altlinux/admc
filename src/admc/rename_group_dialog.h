@@ -23,7 +23,7 @@
 
 #include "rename_dialog.h"
 
-class SamaEdit;
+class SamNameEdit;
 
 namespace Ui {
     class RenameGroupDialog;
@@ -39,7 +39,7 @@ public:
 
 private:
     Ui::RenameGroupDialog *ui;
-    SamaEdit *sama_edit;
+    SamNameEdit *sam_name_edit;
 };
 
 #endif /* RENAME_GROUP_DIALOG_H */
