@@ -21,7 +21,7 @@
 #include "multi_edits/country_multi_edit.h"
 
 #include "adldap.h"
-#include "edits/country_widget.h"
+#include "edits/country_combo.h"
 #include "globals.h"
 
 #include <QCheckBox>

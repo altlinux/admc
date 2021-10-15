@@ -18,14 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UPN_SUFFIX_WIDGET_H
-#define UPN_SUFFIX_WIDGET_H
+#ifndef COUNTRY_COMBO_H
+#define COUNTRY_COMBO_H
 
-class AdInterface;
-class AdObject;
 class QComboBox;
+class AdObject;
+class AdInterface;
+class QString;
 
-void upn_suffix_combo_init(QComboBox *combo, AdInterface &ad);
-void upn_suffix_combo_load(QComboBox *combo, const AdObject &object);
+void country_combo_load_data();
+void country_combo_init(QComboBox *combo);
+void country_combo_load(QComboBox *combo, const AdObject &object);
+bool country_combo_apply(const QComboBox *combo, AdInterface &ad, const QString &dn);
 
-#endif /* UPN_SUFFIX_WIDGET_H */
+#endif /* COUNTRY_COMBO_H */

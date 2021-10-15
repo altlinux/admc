@@ -21,7 +21,7 @@
 #include "edits/country_edit.h"
 
 #include "adldap.h"
-#include "edits/country_widget.h"
+#include "edits/country_combo.h"
 #include "globals.h"
 
 #include <QComboBox>

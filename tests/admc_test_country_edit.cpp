@@ -21,7 +21,7 @@
 #include "admc_test_country_edit.h"
 
 #include "edits/country_edit.h"
-#include "edits/country_widget.h"
+#include "edits/country_combo.h"
 
 #include <QComboBox>
 #include <QFormLayout>

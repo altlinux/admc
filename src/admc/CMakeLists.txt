@@ -152,8 +152,8 @@ set(ADMC_SOURCES
     edits/gpoptions_edit.cpp
     edits/manager_edit.cpp
     edits/upn_edit.cpp
-    edits/upn_suffix_widget.cpp
-    edits/country_widget.cpp
+    edits/upn_suffix_combo.cpp
+    edits/country_combo.cpp
     edits/manager_widget.cpp
     edits/delegation_edit.cpp
     edits/logon_hours_edit.cpp

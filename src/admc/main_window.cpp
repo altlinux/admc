@@ -39,7 +39,7 @@
 #include "console_widget/console_widget.h"
 #include "console_filter_dialog.h"
 #include "console_impls/item_type.h"
-#include "edits/country_widget.h"
+#include "edits/country_combo.h"
 
 #include <QDebug>
 #include <QModelIndex>

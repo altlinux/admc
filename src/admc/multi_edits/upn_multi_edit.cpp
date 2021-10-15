@@ -21,7 +21,7 @@
 #include "multi_edits/upn_multi_edit.h"
 
 #include "adldap.h"
-#include "edits/upn_suffix_widget.h"
+#include "edits/upn_suffix_combo.h"
 #include "globals.h"
 
 #include <QComboBox>

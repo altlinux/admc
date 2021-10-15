@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edits/country_widget.h"
+#include "edits/country_combo.h"
 
 #include "adldap.h"
 #include "globals.h"
