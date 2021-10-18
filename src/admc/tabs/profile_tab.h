@@ -31,10 +31,9 @@ class ProfileTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    ProfileTab();
-
-private:
     Ui::ProfileTab *ui;
+
+    ProfileTab();
 };
 
 #endif /* PROFILE_TAB_H */

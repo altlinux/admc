@@ -40,13 +40,14 @@ class GpoLinksTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::GpoLinksTab *ui;
+
     GpoLinksTab();
     ~GpoLinksTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
 
 private:
-    Ui::GpoLinksTab *ui;
     QStandardItemModel *model;
 };
 

@@ -35,13 +35,12 @@ class SelectObjectAdvancedDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::SelectObjectAdvancedDialog *ui;
+
     SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent);
     ~SelectObjectAdvancedDialog();
 
     QList<QString> get_selected_dns() const;
-
-private:
-    Ui::SelectObjectAdvancedDialog *ui;
 };
 
 #endif /* SELECT_OBJECT_ADVANCED_DIALOG_H */

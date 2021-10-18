@@ -40,6 +40,8 @@ class MembershipTab : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::MembershipTab *ui;
+
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;
 
@@ -53,7 +55,6 @@ protected:
     ~MembershipTab();
 
 private:
-    Ui::MembershipTab *ui;
     MembershipTabType type;
     QStandardItemModel *model;
 

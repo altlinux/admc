@@ -35,15 +35,14 @@ class FilterWidgetAdvancedTab final : public FilterWidgetTab {
     Q_OBJECT
 
 public:
+    Ui::FilterWidgetAdvancedTab *ui;
+
     FilterWidgetAdvancedTab();
 
     QString get_filter() const;
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
-
-private:
-    Ui::FilterWidgetAdvancedTab *ui;
 };
 
 #endif /* FILTER_WIDGET_ADVANCED_TAB_H */

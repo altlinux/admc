@@ -34,13 +34,14 @@ class EditQueryItemDialog : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::EditQueryItemDialog *ui;
+
     EditQueryItemDialog(ConsoleWidget *console_arg);
 
     void open() override;
     void accept() override;
 
 private:
-    Ui::EditQueryItemDialog *ui;
     ConsoleWidget *console;
 };
 

@@ -41,14 +41,14 @@ class ConnectionOptionsDialog : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::ConnectionOptionsDialog *ui;
+
     ConnectionOptionsDialog(QWidget *parent);
 
     void accept() override;
     void reject() override;
 
-private:
-    Ui::ConnectionOptionsDialog *ui;
-    
+private:    
     void reset();
     void restore_defaults();
 };

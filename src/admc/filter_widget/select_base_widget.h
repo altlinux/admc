@@ -38,6 +38,10 @@ class SelectBaseWidget final : public QWidget {
     Q_OBJECT
 
 public:
+    SelectContainerDialog *browse_dialog;
+
+    Ui::SelectBaseWidget *ui;
+
     SelectBaseWidget(QWidget *parent = nullptr);
 
     void init(AdConfig *adconfig, const QString &default_base = QString());
@@ -48,9 +52,6 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    Ui::SelectBaseWidget *ui;
-    SelectContainerDialog *browse_dialog;
-
     void on_browse_dialog();
 };
 

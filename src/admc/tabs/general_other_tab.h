@@ -34,10 +34,9 @@ class GeneralOtherTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    GeneralOtherTab(const AdObject &object);
-
-private:
     Ui::GeneralOtherTab *ui;
+
+    GeneralOtherTab(const AdObject &object);
 };
 
 void load_name_label(QLabel *name_label, const AdObject &object);

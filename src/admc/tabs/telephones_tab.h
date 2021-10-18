@@ -31,10 +31,9 @@ class TelephonesTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    TelephonesTab();
-
-private:
     Ui::TelephonesTab *ui;
+
+    TelephonesTab();
 };
 
 #endif /* TELEPHONES_TAB_H */

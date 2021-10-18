@@ -33,9 +33,9 @@ class AccountTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    AccountTab(AdInterface &ad);
-private:
     Ui::AccountTab *ui;
+
+    AccountTab(AdInterface &ad);
 };
 
 #endif /* ACCOUNT_TAB_H */

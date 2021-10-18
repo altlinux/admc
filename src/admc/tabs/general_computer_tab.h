@@ -31,10 +31,9 @@ class GeneralComputerTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    GeneralComputerTab(const AdObject &object);
-
-private:
     Ui::GeneralComputerTab *ui;
+
+    GeneralComputerTab(const AdObject &object);
 };
 
 #endif /* GENERAL_COMPUTER_TAB_H */

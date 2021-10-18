@@ -33,12 +33,13 @@ class RenameGroupDialog final : public RenameDialog {
     Q_OBJECT
 
 public:
+    Ui::RenameGroupDialog *ui;
+
     RenameGroupDialog(QWidget *parent);
 
     void open() override;
 
 private:
-    Ui::RenameGroupDialog *ui;
     SamNameEdit *sam_name_edit;
 };
 

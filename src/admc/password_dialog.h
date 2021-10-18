@@ -34,13 +34,14 @@ class PasswordDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::PasswordDialog *ui;
+
     PasswordDialog(const QString &target_arg, QWidget *parent);
 
 public slots:
     void accept();
 
 private:
-    Ui::PasswordDialog *ui;
     QString target;
     QList<AttributeEdit *> edits;
 };

@@ -32,10 +32,9 @@ class AddressTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    AddressTab();
-
-private:
     Ui::AddressTab *ui;
+
+    AddressTab();
 };
 
 #endif /* ADDRESS_TAB_H */

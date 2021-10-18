@@ -44,6 +44,8 @@ class SelectObjectDialog final : public QDialog {
 Q_OBJECT
 
 public:
+    Ui::SelectObjectDialog *ui;
+
     SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent);
     ~SelectObjectDialog();
 
@@ -55,7 +57,6 @@ public slots:
     void accept() override;
 
 private:
-    Ui::SelectObjectDialog *ui;
     QStandardItemModel *model;
     QList<QString> class_list;
     SelectObjectDialogMultiSelection multi_selection;
@@ -71,12 +72,11 @@ class SelectObjectMatchDialog final : public QDialog {
 Q_OBJECT
 
 public:
+    Ui::SelectObjectMatchDialog *ui;
+
     SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent);
 
     QList<QString> get_selected() const;
-
-private:
-    Ui::SelectObjectMatchDialog *ui;
 };
 
 #endif /* SELECT_OBJECT_DIALOG_H */

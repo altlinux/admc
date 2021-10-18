@@ -45,6 +45,8 @@ class SelectContainerDialog : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::SelectContainerDialog *ui;
+
     SelectContainerDialog(QWidget *parent);
 
     void open() override;
@@ -52,7 +54,6 @@ public:
     QString get_selected() const;
 
 private:
-    Ui::SelectContainerDialog *ui;
     QStandardItemModel *model;
     QSortFilterProxyModel *proxy_model;
 

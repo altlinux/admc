@@ -33,12 +33,13 @@ class EditQueryFolderDialog : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::EditQueryFolderDialog *ui;
+
     EditQueryFolderDialog(ConsoleWidget *console_arg);
 
     void open() override;
 
 private:
-    Ui::EditQueryFolderDialog *ui;
     ConsoleWidget *console;
 
     void accept() override;

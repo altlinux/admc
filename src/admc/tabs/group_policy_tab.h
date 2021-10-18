@@ -45,6 +45,8 @@ class GroupPolicyTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::GroupPolicyTab *ui;
+
     GroupPolicyTab();
     ~GroupPolicyTab();
 
@@ -58,7 +60,6 @@ private slots:
     void on_item_changed(QStandardItem *item);
 
 private:
-    Ui::GroupPolicyTab *ui;
     SelectPolicyDialog *add_dialog;
     QStandardItemModel *model;
     Gplink gplink;

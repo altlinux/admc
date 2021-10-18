@@ -41,6 +41,8 @@ class SelectClassesWidget final : public QWidget {
     Q_OBJECT
 
 public:
+    Ui::SelectClassesWidget *ui;
+
     SelectClassesWidget(QWidget *parent = nullptr);
 
     void add_classes(AdConfig *adconfig, const QList<QString> &class_list);
@@ -51,7 +53,6 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    Ui::SelectClassesWidget *ui;
     SelectClassesDialog *dialog;
 
     void update_classes_display();

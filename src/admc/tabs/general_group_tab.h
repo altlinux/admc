@@ -31,10 +31,9 @@ class GeneralGroupTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    GeneralGroupTab(const AdObject &object);
-
-private:
     Ui::GeneralGroupTab *ui;
+
+    GeneralGroupTab(const AdObject &object);
 };
 
 #endif /* GENERAL_GROUP_TAB_H */

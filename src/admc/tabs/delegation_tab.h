@@ -31,10 +31,9 @@ class DelegationTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    DelegationTab();
-
-private:
     Ui::DelegationTab *ui;
+
+    DelegationTab();
 };
 
 #endif /* DELEGATION_TAB_H */

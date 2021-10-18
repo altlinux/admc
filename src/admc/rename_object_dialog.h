@@ -31,10 +31,9 @@ class RenameObjectDialog final : public RenameDialog {
     Q_OBJECT
 
 public:
-    RenameObjectDialog(QWidget *parent);
-
-private:
     Ui::RenameObjectDialog *ui;
+
+    RenameObjectDialog(QWidget *parent);
 };
 
 #endif /* RENAME_OBJECT_DIALOG_H */

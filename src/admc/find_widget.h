@@ -43,6 +43,8 @@ class FindWidget final : public QWidget {
     Q_OBJECT
 
 public:
+    Ui::FindWidget *ui;
+
     FindWidget(QWidget *parent = nullptr);
 
     void init(const QList<QString> classes, const QString &default_base);
@@ -65,7 +67,6 @@ private slots:
     void handle_find_thread_results(const QHash<QString, AdObject> &results);
 
 private:
-    Ui::FindWidget *ui;
     ObjectImpl *object_impl;
     QStandardItem *head_item;
 

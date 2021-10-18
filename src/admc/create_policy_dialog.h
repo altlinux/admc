@@ -37,6 +37,8 @@ class CreatePolicyDialog : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::CreatePolicyDialog *ui;
+
     CreatePolicyDialog(QWidget *parent);
 
 signals:
@@ -45,9 +47,6 @@ signals:
 public slots:
     void open() override;
     void accept() override;
-
-private:
-    Ui::CreatePolicyDialog *ui;
 };
 
 #endif /* CREATE_POLICY_DIALOG_H */

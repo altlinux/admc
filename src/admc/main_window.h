@@ -35,13 +35,14 @@ class MainWindow final : public QMainWindow {
     Q_OBJECT
 
 public:
+    Ui::MainWindow *ui;
+
     MainWindow();
 
 protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    Ui::MainWindow *ui;
     ObjectImpl *object_impl;
     ConsoleFilterDialog *filter_dialog;
     QLabel *client_user_label;

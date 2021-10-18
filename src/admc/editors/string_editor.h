@@ -31,13 +31,12 @@ class StringEditor final : public AttributeEditor {
     Q_OBJECT
 
 public:
+    Ui::StringEditor *ui;
+
     StringEditor(const QString attribute, QWidget *parent);
 
     void load(const QList<QByteArray> &values) override;
     QList<QByteArray> get_new_values() const override;
-
-private:
-    Ui::StringEditor *ui;
 };
 
 #endif /* STRING_EDITOR_H */

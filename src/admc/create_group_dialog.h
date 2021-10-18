@@ -33,13 +33,13 @@ class CreateGroupDialog final : public CreateDialog {
     Q_OBJECT
 
 public:
+    Ui::CreateGroupDialog *ui;
+
     CreateGroupDialog(QWidget *parent);
 
     void open() override;
 
 private:
-    Ui::CreateGroupDialog *ui;
-
     SamNameEdit *sam_name_edit;
 };
 

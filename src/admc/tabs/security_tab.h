@@ -57,6 +57,8 @@ class SecurityTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::SecurityTab *ui;
+
     SecurityTab();
     ~SecurityTab();
 
@@ -73,7 +75,6 @@ private slots:
     void load_trustee_acl();
 
 private:
-    Ui::SecurityTab *ui;
     QStandardItemModel *trustee_model;
     QStandardItemModel *ace_model;
     QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;

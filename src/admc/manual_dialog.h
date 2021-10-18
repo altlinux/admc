@@ -35,10 +35,9 @@ class ManualDialog : public QDialog {
     Q_OBJECT
 
 public:
-    ManualDialog(QWidget *parent);
-
-private:
     Ui::ManualDialog *ui;
+    
+    ManualDialog(QWidget *parent);
 };
 
 #endif /* MANUAL_DIALOG_H */

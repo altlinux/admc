@@ -40,6 +40,8 @@ class FilterClassesWidget final : public QWidget {
     Q_OBJECT
 
 public:
+    Ui::FilterClassesWidget *ui;
+
     FilterClassesWidget(QWidget *parent = nullptr);
 
     void add_classes(AdConfig *adconfig, const QList<QString> &class_list);
@@ -50,7 +52,6 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    Ui::FilterClassesWidget *ui;
     QHash<QString, QCheckBox *> checkbox_map;
 
     void select_all();

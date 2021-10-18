@@ -33,6 +33,8 @@ class SelectPolicyDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::SelectPolicyDialog *ui;
+
     SelectPolicyDialog(QWidget *parent);
 
     void open() override;
@@ -40,7 +42,6 @@ public:
     QList<QString> get_selected_dns() const;
 
 private:
-    Ui::SelectPolicyDialog *ui;
     QStandardItemModel *model;
 };
 

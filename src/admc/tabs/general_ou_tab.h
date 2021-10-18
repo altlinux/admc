@@ -31,10 +31,9 @@ class GeneralOUTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    GeneralOUTab(const AdObject &object);
-
-private:
     Ui::GeneralOUTab *ui;
+
+    GeneralOUTab(const AdObject &object);
 };
 
 #endif /* GENERAL_OU_TAB_H */

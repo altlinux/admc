@@ -39,6 +39,8 @@ class ChangeDCDialog : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::ChangeDCDialog *ui;
+
     ChangeDCDialog(ConsoleWidget *console);
 
     void open() override;
@@ -46,7 +48,6 @@ public:
     void reject() override;
 
 private:
-    Ui::ChangeDCDialog *ui;
     ConsoleWidget *console;
     WidgetState state;
 };

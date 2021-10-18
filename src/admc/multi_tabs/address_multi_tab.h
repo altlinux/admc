@@ -36,10 +36,9 @@ class AddressMultiTab final : public PropertiesMultiTab {
     Q_OBJECT
 
 public:
-    AddressMultiTab();
-
-private:
     Ui::AddressMultiTab *ui;
+
+    AddressMultiTab();
 };
 
 #endif /* ADDRESS_MULTI_TAB_H */

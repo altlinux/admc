@@ -32,10 +32,9 @@ class ObjectTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    ObjectTab();
-
-private:
     Ui::ObjectTab *ui;
+
+    ObjectTab();
 };
 
 #endif /* OBJECT_TAB_H */

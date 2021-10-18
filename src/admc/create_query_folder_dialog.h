@@ -34,12 +34,13 @@ class CreateQueryFolderDialog : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::CreateQueryFolderDialog *ui;
+
     CreateQueryFolderDialog(ConsoleWidget *console_arg);
 
     void open() override;
 
 private:
-    Ui::CreateQueryFolderDialog *ui;
     ConsoleWidget *console;
 
     void accept() override;

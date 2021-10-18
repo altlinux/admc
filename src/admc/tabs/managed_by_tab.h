@@ -33,12 +33,13 @@ class ManagedByTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::ManagedByTab *ui;
+
     ManagedByTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
 
 private:
-    Ui::ManagedByTab *ui;
     QList<AttributeEdit *> manager_edits;
     ManagerEdit *manager_edit;
 

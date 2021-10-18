@@ -31,10 +31,9 @@ class OrganizationMultiTab final : public PropertiesMultiTab {
     Q_OBJECT
 
 public:
-    OrganizationMultiTab();
-    
-private:
     Ui::OrganizationMultiTab *ui;
+
+    OrganizationMultiTab();
 };
 
 #endif /* ORGANIZATION_MULTI_TAB_H */

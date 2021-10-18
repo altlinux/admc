@@ -33,14 +33,14 @@ class CreateQueryItemDialog : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::CreateQueryItemDialog *ui;
+
     CreateQueryItemDialog(ConsoleWidget *console_arg);
 
     void open() override;
     void accept() override;
 
-private:
-    Ui::CreateQueryItemDialog *ui;
-    
+private:    
     ConsoleWidget *console;
 };
 

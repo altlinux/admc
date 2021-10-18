@@ -41,6 +41,8 @@ class AttributesTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::AttributesTab *ui;
+
     AttributesTab();
     ~AttributesTab();
 
@@ -51,7 +53,6 @@ private slots:
     void edit_attribute();
 
 private:
-    Ui::AttributesTab *ui;
     AttributesFilterDialog *filter_dialog;
     QStandardItemModel *model;
     AttributesTabProxy *proxy;

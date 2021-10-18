@@ -37,13 +37,12 @@ class DateTimeEditor final : public AttributeEditor {
     Q_OBJECT
 
 public:
+    Ui::DateTimeEditor *ui;
+
     DateTimeEditor(const QString attribute, QWidget *parent);
 
     void load(const QList<QByteArray> &values) override;
     QList<QByteArray> get_new_values() const override;
-
-private:
-    Ui::DateTimeEditor *ui;
 };
 
 #endif /* DATETIME_EDITOR_H */

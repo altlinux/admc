@@ -38,6 +38,8 @@ class OctetEditor final : public AttributeEditor {
     Q_OBJECT
 
 public:
+    Ui::OctetEditor *ui;
+
     OctetEditor(const QString attribute, QWidget *parent);
 
     void load(const QList<QByteArray> &values) override;
@@ -48,7 +50,6 @@ private slots:
     void on_format_combo();
 
 private:
-    Ui::OctetEditor *ui;
     OctetDisplayFormat prev_format;
 
     bool check_input(const OctetDisplayFormat format);

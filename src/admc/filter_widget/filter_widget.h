@@ -40,6 +40,8 @@ class FilterWidget final : public QWidget {
     Q_OBJECT
 
 public:
+    Ui::FilterWidget *ui;
+    
     FilterWidget(QWidget *parent = nullptr);
 
     void add_classes(AdConfig *adconfig, const QList<QString> classes);
@@ -48,9 +50,6 @@ public:
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
-
-private:
-    Ui::FilterWidget *ui;
 };
 
 class FilterWidgetTab : public QWidget {

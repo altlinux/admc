@@ -31,10 +31,9 @@ class CreateOUDialog final : public CreateDialog {
     Q_OBJECT
 
 public:
-    CreateOUDialog(QWidget *parent);
-
-private:
     Ui::CreateOUDialog *ui;
+
+    CreateOUDialog(QWidget *parent);
 };
 
 #endif /* CREATE_OU_DIALOG_H */

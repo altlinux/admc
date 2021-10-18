@@ -35,10 +35,9 @@ class GeneralOtherMultiTab final : public PropertiesMultiTab {
     Q_OBJECT
 
 public:
-    GeneralOtherMultiTab();
-
-private:
     Ui::GeneralOtherMultiTab *ui;
+
+    GeneralOtherMultiTab();
 };
 
 #endif /* GENERAL_OTHER_MULTI_TAB_H */

@@ -42,6 +42,8 @@ class FilterWidgetNormalTab final : public FilterWidgetTab {
     Q_OBJECT
 
 public:
+    Ui::FilterWidgetNormalTab *ui;
+
     FilterWidgetNormalTab();
 
     void add_classes(AdConfig *adconfig, const QList<QString> classes);
@@ -60,7 +62,6 @@ private slots:
     void update_value_edit();
 
 private:
-    Ui::FilterWidgetNormalTab *ui;
     AdConfig *adconfig;
 };
 

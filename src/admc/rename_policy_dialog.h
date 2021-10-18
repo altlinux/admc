@@ -40,13 +40,14 @@ class RenamePolicyDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::RenamePolicyDialog *ui;
+
     RenamePolicyDialog(ConsoleWidget *console_arg);
 
     void open() override;
     void accept() override;
 
 private:
-    Ui::RenamePolicyDialog *ui;
     QString target;
     ConsoleWidget *console;
     QPushButton *ok_button;

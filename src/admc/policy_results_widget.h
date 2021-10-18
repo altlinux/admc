@@ -40,6 +40,8 @@ class PolicyResultsWidget final : public QWidget {
     Q_OBJECT
 
 public:
+    Ui::PolicyResultsWidget *ui;
+
     PolicyResultsWidget(QWidget *parent);
     ~PolicyResultsWidget();
 
@@ -52,7 +54,6 @@ public:
     ResultsView *get_view() const;
 
 private:
-    Ui::PolicyResultsWidget *ui;
     QStandardItemModel *model;
     QString gpo;
     QMenu *context_menu;

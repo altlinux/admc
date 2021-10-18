@@ -33,12 +33,13 @@ class CreateComputerDialog final : public CreateDialog {
     Q_OBJECT
 
 public:
+    Ui::CreateComputerDialog *ui;
+
     CreateComputerDialog(QWidget *parent);
 
     void open() override;
 
 private:
-    Ui::CreateComputerDialog *ui;
     SamNameEdit *sam_name_edit;
 };
 

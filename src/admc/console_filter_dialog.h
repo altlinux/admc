@@ -42,6 +42,8 @@ class ConsoleFilterDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::ConsoleFilterDialog *ui;
+
     ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent);
     ~ConsoleFilterDialog();
 
@@ -55,7 +57,6 @@ public:
     bool filtering_ON() const;
 
 private:
-    Ui::ConsoleFilterDialog *ui;
     FilterDialog *custom_dialog;
     QHash<QString, QRadioButton *> button_state_name_map;
     QVariant original_state;

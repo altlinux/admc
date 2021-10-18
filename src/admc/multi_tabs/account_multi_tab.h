@@ -36,10 +36,9 @@ class AccountMultiTab final : public PropertiesMultiTab {
     Q_OBJECT
 
 public:
-    AccountMultiTab(AdInterface &ad);
-
-private:
     Ui::AccountMultiTab *ui;
+
+    AccountMultiTab(AdInterface &ad);
 };
 
 #endif /* ACCOUNT_MULTI_TAB_H */

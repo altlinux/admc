@@ -27,8 +27,6 @@
 
 #include "filter_widget/filter_widget.h"
 
-class QLineEdit;
-class SelectClassesWidget;
 class AdConfig;
 
 namespace Ui {
@@ -39,6 +37,8 @@ class FilterWidgetSimpleTab final : public FilterWidgetTab {
     Q_OBJECT
 
 public:
+    Ui::FilterWidgetSimpleTab *ui;
+
     FilterWidgetSimpleTab();
 
     void add_classes(AdConfig *adconfig, const QList<QString> classes);
@@ -47,11 +47,6 @@ public:
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
-
-private:
-    Ui::FilterWidgetSimpleTab *ui;
-    SelectClassesWidget *select_classes;
-    QLineEdit *name_edit;
 };
 
 #endif /* FILTER_WIDGET_SIMPLE_TAB_H */

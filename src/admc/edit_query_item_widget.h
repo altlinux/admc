@@ -38,13 +38,14 @@ class EditQueryItemWidget : public QWidget {
     Q_OBJECT
 
 public:
+    Ui::EditQueryItemWidget *ui;
+
     EditQueryItemWidget(QWidget *parent = nullptr);
 
     void load(const QModelIndex &index);
     void save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const;
 
 private:
-    Ui::EditQueryItemWidget *ui;
     FilterDialog *filter_dialog;
 
     void update_filter_display();

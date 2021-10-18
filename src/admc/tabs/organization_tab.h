@@ -33,13 +33,14 @@ class OrganizationTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::OrganizationTab *ui;
+
     OrganizationTab();
     ~OrganizationTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
 
 private:
-    Ui::OrganizationTab *ui;
     QStandardItemModel *reports_model;
 };
 

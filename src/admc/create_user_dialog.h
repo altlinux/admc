@@ -34,12 +34,13 @@ class CreateUserDialog final : public CreateDialog {
     Q_OBJECT
 
 public:
+    Ui::CreateUserDialog *ui;
+
     CreateUserDialog(QWidget *parent);
 
     void open() override;
 
 private:
-    Ui::CreateUserDialog *ui;
     SamNameEdit *sam_name_edit;
     UpnEdit *upn_edit;
 };

@@ -35,6 +35,8 @@ class SelectClassesDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::SelectClassesDialog *ui;
+
     SelectClassesDialog(QWidget *parent);
     void open() override;
     void reject() override;
@@ -42,7 +44,6 @@ public:
     FilterClassesWidget *filter_classes_widget() const;
 
 private:
-    Ui::SelectClassesDialog *ui;
     QVariant state_to_restore;
 };
 

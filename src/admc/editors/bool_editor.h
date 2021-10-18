@@ -31,13 +31,12 @@ class BoolEditor final : public AttributeEditor {
     Q_OBJECT
 
 public:
+    Ui::BoolEditor *ui;
+
     BoolEditor(const QString attribute, QWidget *parent);
 
     void load(const QList<QByteArray> &values) override;
     QList<QByteArray> get_new_values() const override;
-
-private:
-    Ui::BoolEditor *ui;
 };
 
 #endif /* BOOL_EDITOR_H */

@@ -45,6 +45,8 @@ class PropertiesDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::PropertiesDialog *ui;
+
     static PropertiesDialog *open_for_target(const QString &target);
     static void open_when_view_item_activated(QAbstractItemView *view, const int dn_role);
 
@@ -60,7 +62,6 @@ private slots:
     void on_edited();
 
 private:
-    Ui::PropertiesDialog *ui;
     QList<PropertiesTab *> tabs;
     QString target;
     QPushButton *apply_button;

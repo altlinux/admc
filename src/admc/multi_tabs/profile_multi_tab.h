@@ -31,10 +31,9 @@ class ProfileMultiTab final : public PropertiesMultiTab {
     Q_OBJECT
 
 public:
-    ProfileMultiTab();
-
-private:
     Ui::ProfileMultiTab *ui;
+
+    ProfileMultiTab();
 };
 
 #endif /* PROFILE_MULTI_TAB_H */

@@ -40,6 +40,8 @@ class ObjectMultiPropertiesDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::ObjectMultiPropertiesDialog *ui;
+
     ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list);
 
 signals:
@@ -50,7 +52,6 @@ private slots:
     void reset();
 
 private:
-    Ui::ObjectMultiPropertiesDialog *ui;
     QList<QString> target_list;
     QList<PropertiesMultiTab *> tab_list;
 

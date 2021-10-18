@@ -31,10 +31,9 @@ class OSTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
-    OSTab();
-
-private:
     Ui::OSTab *ui;
+
+    OSTab();
 };
 
 #endif /* OS_TAB_H */

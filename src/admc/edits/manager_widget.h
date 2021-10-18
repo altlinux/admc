@@ -34,6 +34,8 @@ class ManagerWidget final : public QWidget {
     Q_OBJECT
 
 public:
+    Ui::ManagerWidget *ui;
+
     ManagerWidget(QWidget *parent = nullptr);
 
     void set_attribute(const QString &attribute);
@@ -52,7 +54,6 @@ private slots:
     void on_clear();
 
 private:
-    Ui::ManagerWidget *ui;
     QString manager_attribute;
     QString current_value;
 
