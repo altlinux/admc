@@ -22,6 +22,7 @@
 
 #include "edits/manager_edit.h"
 #include "edits/manager_widget.h"
+#include "edits/ui_manager_widget.h"
 #include "globals.h"
 #include "properties_dialog.h"
 
@@ -35,10 +36,10 @@ void ADMCTestManagerEdit::init() {
 
     edit = new ManagerEdit(manager_widget, ATTRIBUTE_MANAGER, &edits, parent_widget);
 
-    manager_display = parent_widget->findChild<QLineEdit *>("manager_display");
-    change_button = parent_widget->findChild<QPushButton *>("change_button");
-    clear_button = parent_widget->findChild<QPushButton *>("clear_button");
-    properties_button = parent_widget->findChild<QPushButton *>("properties_button");
+    manager_display = manager_widget->ui->manager_display;
+    change_button = manager_widget->ui->change_button;
+    clear_button = manager_widget->ui->clear_button;
+    properties_button = manager_widget->ui->properties_button;
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);

@@ -22,6 +22,9 @@
 
 #include "editors/multi_editor.h"
 #include "editors/string_editor.h"
+#include "editors/ui_multi_editor.h"
+#include "editors/ui_string_editor.h"
+#include "tabs/ui_attributes_tab.h"
 
 #include <QDialog>
 #include <QLineEdit>
@@ -54,8 +57,7 @@ void ADMCTestAttributesTab::init() {
     filter_menu = attributes_tab->findChild<AttributesFilterMenu *>();
     QVERIFY(filter_menu);
 
-    view = attributes_tab->findChild<QTreeView *>();
-    QVERIFY(view);
+    view = attributes_tab->ui->view;
 
     model = attributes_tab->findChild<QStandardItemModel *>();
     QVERIFY(model);
@@ -63,11 +65,9 @@ void ADMCTestAttributesTab::init() {
     proxy = attributes_tab->findChild<QSortFilterProxyModel *>();
     QVERIFY(proxy);
 
-    filter_button = attributes_tab->findChild<QPushButton *>("filter_button");
-    QVERIFY(filter_button);
+    filter_button = attributes_tab->ui->filter_button;
 
-    edit_button = attributes_tab->findChild<QPushButton *>("edit_button");
-    QVERIFY(filter_button);
+    edit_button = attributes_tab->ui->edit_button;
 
     // Create test user
     const QString name = TEST_USER;
@@ -169,16 +169,14 @@ void ADMCTestAttributesTab::apply() {
     QVERIFY(multi_editor);
     QVERIFY(QTest::qWaitForWindowExposed(multi_editor, 1000));
 
-    auto add_button = multi_editor->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button);
+    QPushButton *add_button = multi_editor->ui->add_button;
     add_button->click();
 
     auto string_editor = multi_editor->findChild<StringEditor *>();
     QVERIFY(string_editor);
     QVERIFY(QTest::qWaitForWindowExposed(string_editor, 1000));
 
-    auto string_editor_edit = string_editor->findChild<QLineEdit *>();
-    QVERIFY(string_editor_edit);
+    QLineEdit *string_editor_edit = string_editor->ui->edit;
     string_editor_edit->setText(correct_value);
 
     string_editor->accept();

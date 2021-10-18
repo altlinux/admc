@@ -22,6 +22,14 @@
 
 #include "filter_classes_widget.h"
 #include "filter_widget/filter_widget.h"
+#include "filter_widget/ui_filter_widget.h"
+#include "filter_widget/filter_widget_simple_tab.h"
+#include "filter_widget/ui_filter_widget_simple_tab.h"
+#include "filter_widget/filter_widget_normal_tab.h"
+#include "filter_widget/ui_filter_widget_normal_tab.h"
+#include "filter_widget/filter_widget_advanced_tab.h"
+#include "filter_widget/ui_filter_widget_advanced_tab.h"
+#include "filter_widget/ui_select_classes_widget.h"
 #include "filter_widget/select_classes_widget.h"
 
 #include <QCheckBox>
@@ -32,10 +40,6 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 
-#define SIMPLE_TAB_INDEX 0
-#define NORMAL_TAB_INDEX 1
-#define ADVANCED_TAB_INDEX 2
-
 void ADMCTestFilterWidget::init() {
     ADMCTest::init();
 
@@ -43,27 +47,18 @@ void ADMCTestFilterWidget::init() {
     filter_widget->add_classes(ad.adconfig(), filter_classes);
     add_widget(filter_widget);
 
-    tab_widget = filter_widget->findChild<QTabWidget *>();
-    QVERIFY(tab_widget);
-
-    simple_tab = tab_widget->widget(SIMPLE_TAB_INDEX);
-    QVERIFY(simple_tab);
-
-    normal_tab = tab_widget->widget(NORMAL_TAB_INDEX);
-    QVERIFY(normal_tab);
-
-    advanced_tab = tab_widget->widget(ADVANCED_TAB_INDEX);
-    QVERIFY(advanced_tab);
+    tab_widget = filter_widget->ui->tab_widget;
+    simple_tab = filter_widget->ui->simple_tab;
+    normal_tab = filter_widget->ui->normal_tab;
+    advanced_tab = filter_widget->ui->advanced_tab;
 }
 
 void ADMCTestFilterWidget::test_simple_tab() {
-    tab_widget->setCurrentIndex(SIMPLE_TAB_INDEX);
+    tab_widget->setCurrentWidget(simple_tab);
 
-    auto select_classes_widget = simple_tab->findChild<SelectClassesWidget *>();
-    QVERIFY(select_classes_widget);
+    SelectClassesWidget *select_classes_widget = simple_tab->ui->select_classes;
 
-    auto select_button = select_classes_widget->findChild<QPushButton *>();
-    QVERIFY(select_button);
+    QPushButton *select_button = select_classes_widget->ui->select_button;
     select_button->click();
 
     auto select_classes_dialog = select_classes_widget->findChild<QDialog *>();
@@ -80,7 +75,7 @@ void ADMCTestFilterWidget::test_simple_tab() {
 
     select_classes_dialog->accept();
 
-    QLineEdit *name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
+    QLineEdit *name_edit = simple_tab->ui->name_edit;
     name_edit->setText("test");
 
     const QString correct_filter = "(&(name=*test*)(objectClass=user))";
@@ -101,13 +96,11 @@ void ADMCTestFilterWidget::test_simple_tab() {
 }
 
 void ADMCTestFilterWidget::test_normal_tab() {
-    tab_widget->setCurrentIndex(NORMAL_TAB_INDEX);
+    tab_widget->setCurrentWidget(normal_tab);
 
-    auto select_classes_widget = normal_tab->findChild<SelectClassesWidget *>();
-    QVERIFY(select_classes_widget);
+    SelectClassesWidget *select_classes_widget = normal_tab->ui->select_classes;
 
-    auto select_button = select_classes_widget->findChild<QPushButton *>();
-    QVERIFY(select_button);
+    QPushButton *select_button = select_classes_widget->ui->select_button;
     select_button->click();
 
     auto select_classes_dialog = select_classes_widget->findChild<QDialog *>();
@@ -124,12 +117,10 @@ void ADMCTestFilterWidget::test_normal_tab() {
 
     select_classes_dialog->accept();
 
-    QLineEdit *value_edit = normal_tab->findChild<QLineEdit *>("value_edit");
-    QVERIFY(value_edit);
+    QLineEdit *value_edit = normal_tab->ui->value_edit;
     value_edit->setText("value");
 
-    QPushButton *add_button = normal_tab->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button);
+    QPushButton *add_button = normal_tab->ui->add_button;
     add_button->click();
 
     const QString correct_filter = "(&(objectClass=user)(assistant=value))";
@@ -151,10 +142,9 @@ void ADMCTestFilterWidget::test_normal_tab() {
 }
 
 void ADMCTestFilterWidget::test_advanced_tab() {
-    tab_widget->setCurrentIndex(ADVANCED_TAB_INDEX);
+    tab_widget->setCurrentWidget(advanced_tab);
 
-    auto edit = advanced_tab->findChild<QPlainTextEdit *>();
-    QVERIFY(edit);
+    QPlainTextEdit *edit = advanced_tab->ui->ldap_filter_edit;
 
     edit->setPlainText("test");
 

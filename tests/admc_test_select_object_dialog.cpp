@@ -24,6 +24,8 @@
 #include "console_impls/object_impl.h"
 #include "filter_widget/select_base_widget.h"
 #include "select_object_dialog.h"
+#include "ui_select_object_dialog.h"
+#include "ui_select_object_match_dialog.h"
 
 #include <QLineEdit>
 #include <QPushButton>
@@ -36,14 +38,11 @@ void ADMCTestSelectObjectDialog::init() {
     dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
-    auto select_base_widget = dialog->findChild<SelectBaseWidget *>();
+    SelectBaseWidget *select_base_widget = dialog->ui->select_base_widget;
     select_base_widget_add(select_base_widget, test_arena_dn());
 
-    edit = dialog->findChild<QLineEdit *>("name_edit");
-    QVERIFY(edit);
-
-    add_button = dialog->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button);
+    edit = dialog->ui->name_edit;
+    add_button = dialog->ui->add_button;
 }
 
 void ADMCTestSelectObjectDialog::empty() {
@@ -149,17 +148,13 @@ void ADMCTestSelectObjectDialog::select_object_in_multi_match_dialog(const QStri
     auto match_dialog = dialog->findChild<SelectObjectMatchDialog *>();
     QVERIFY(match_dialog);
 
-    auto match_dialog_view = match_dialog->findChild<QTreeView *>();
-    QVERIFY(match_dialog_view);
+    QTreeView *match_dialog_view = match_dialog->ui->view;
 
     wait_for_find_results_to_load(match_dialog_view);
 
     navigate_until_object(match_dialog_view, dn, ObjectRole_DN);
 
-    auto ok_button = match_dialog->findChild<QPushButton *>();
-    QVERIFY(ok_button);
-
-    ok_button->click();
+    match_dialog->accept();
 
     close_message_box();
 }

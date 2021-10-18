@@ -33,6 +33,8 @@ namespace Ui {
 class ExpiryWidget final : public QWidget {
     Q_OBJECT
 public:
+    Ui::ExpiryWidget *ui;
+
     ExpiryWidget(QWidget *parent = nullptr);
 
     void load(const AdObject &object);
@@ -43,8 +45,6 @@ signals:
     void edited();
 
 private:
-    Ui::ExpiryWidget *ui;
-
     QString get_new_value() const;
     void on_never_check();
     void on_end_of_check();

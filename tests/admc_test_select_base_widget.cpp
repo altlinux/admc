@@ -22,6 +22,7 @@
 
 #include "console_impls/object_impl.h"
 #include "filter_widget/select_base_widget.h"
+#include "filter_widget/ui_select_base_widget.h"
 #include "globals.h"
 #include "select_container_dialog.h"
 
@@ -37,8 +38,7 @@ void ADMCTestSelectBaseWidget::init() {
     select_base_widget->init(ad.adconfig());
     add_widget(select_base_widget);
 
-    combo = select_base_widget->findChild<QComboBox *>();
-    QVERIFY(combo);
+    combo = select_base_widget->ui->combo;
 
     // Create test OU's
     const QList<QString> ou_name_list = {

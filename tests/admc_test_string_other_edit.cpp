@@ -22,6 +22,7 @@
 
 #include "edits/string_other_edit.h"
 #include "editors/multi_editor.h"
+#include "editors/ui_multi_editor.h"
 #include "editors/string_editor.h"
 
 #include <QFormLayout>
@@ -147,9 +148,7 @@ void ADMCTestStringOtherEdit::add_new_other_value() {
     auto multi_editor = parent_widget->findChild<MultiEditor *>();
     QVERIFY(multi_editor);
 
-    auto add_button = multi_editor->findChild<QPushButton *>();
-    QVERIFY(add_button);
-
+    QPushButton *add_button = multi_editor->ui->add_button;
     add_button->click();
 
     auto string_editor = multi_editor->findChild<StringEditor *>();

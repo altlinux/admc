@@ -21,6 +21,7 @@
 #include "admc_test_logon_hours_dialog.h"
 
 #include "edits/logon_hours_edit_p.h"
+#include "edits/ui_logon_hours_dialog.h"
 
 #include <QTableView>
 #include <QStandardItemModel>
@@ -33,13 +34,9 @@ void ADMCTestLogonHoursDialog::init() {
     dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
-    // NOTE: use utc for 
-    local_time_button = dialog->findChild<QRadioButton *>("local_time_button");
-    utc_time_button = dialog->findChild<QRadioButton *>("utc_time_button");
-
-    view = dialog->findChild<QTableView *>();
-    QVERIFY(view);
-
+    local_time_button = dialog->ui->local_time_button;
+    utc_time_button = dialog->ui->utc_time_button;
+    view = dialog->ui->view;
     model = dialog->findChild<QStandardItemModel *>();
     QVERIFY(model);
 

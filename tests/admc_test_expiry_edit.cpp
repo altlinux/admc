@@ -22,6 +22,7 @@
 
 #include "edits/expiry_edit.h"
 #include "edits/expiry_widget.h"
+#include "edits/ui_expiry_widget.h"
 #include "globals.h"
 
 #include <QFormLayout>
@@ -45,11 +46,14 @@ void ADMCTestExpiryEdit::init() {
 
     edit = new ExpiryEdit(widget, &edits, parent_widget);
 
-    date_edit = parent_widget->findChild<QDateEdit *>("date_edit");
+    date_edit = widget->ui->date_edit;
 
     QFETCH_GLOBAL(QString, check_name);
-    check = parent_widget->findChild<QCheckBox *>(check_name);
-    QVERIFY(check);
+    const QHash<QString, QCheckBox *> check_map = {
+        {"end_of_check", widget->ui->end_of_check},
+        {"never_check", widget->ui->never_check},
+    };
+    check = check_map[check_name];
 
     // Create test user
     const QString name = TEST_USER;

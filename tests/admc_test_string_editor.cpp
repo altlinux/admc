@@ -21,6 +21,7 @@
 #include "admc_test_string_editor.h"
 
 #include "editors/string_editor.h"
+#include "editors/ui_string_editor.h"
 
 #include <QLineEdit>
 
@@ -31,8 +32,7 @@ void ADMCTestStringEditor::init() {
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
-    line_edit = edit->findChild<QLineEdit *>();
-    QVERIFY(line_edit);
+    line_edit = edit->ui->edit;
 }
 
 void ADMCTestStringEditor::load_empty() {

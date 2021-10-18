@@ -22,6 +22,7 @@
 
 #include "select_object_dialog.h"
 #include "tabs/membership_tab.h"
+#include "tabs/ui_membership_tab.h"
 
 #include <QPushButton>
 #include <QStandardItemModel>
@@ -36,17 +37,11 @@ void ADMCTestMembersTab::init() {
     members_tab = new MembersTab();
     add_widget(members_tab);
 
-    view = members_tab->findChild<QTreeView *>();
-    QVERIFY(view);
-
+    view = members_tab->ui->view;
     model = members_tab->findChild<QStandardItemModel *>();
     QVERIFY(model);
-
-    add_button = members_tab->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button);
-
-    remove_button = members_tab->findChild<QPushButton *>("remove_button");
-    QVERIFY(remove_button);
+    add_button = members_tab->ui->add_button;
+    remove_button = members_tab->ui->remove_button;
 
     // Create test user
     const QString user_name = TEST_USER;

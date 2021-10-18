@@ -21,6 +21,7 @@
 #include "admc_test_datetime_editor.h"
 
 #include "editors/datetime_editor.h"
+#include "editors/ui_datetime_editor.h"
 
 #include <QDateTimeEdit>
 
@@ -31,8 +32,7 @@ void ADMCTestDateTimeEditor::init() {
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
-    datetime_edit = edit->findChild<QDateTimeEdit *>();
-    QVERIFY(datetime_edit);
+    datetime_edit = edit->ui->edit;
 }
 
 void ADMCTestDateTimeEditor::load() {

@@ -22,6 +22,7 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl.h"
+#include "filter_widget/filter_widget.h"
 #include "filter_widget/filter_widget_simple_tab.h"
 #include "filter_widget/select_base_widget.h"
 #include "globals.h"
@@ -30,6 +31,14 @@
 #include "select_object_dialog.h"
 #include "utils.h"
 #include "edits/attribute_edit.h"
+#include "find_widget.h"
+#include "ui_select_object_dialog.h"
+#include "ui_find_widget.h"
+#include "ui_select_object_advanced_dialog.h"
+#include "filter_widget/ui_filter_widget.h"
+#include "filter_widget/ui_filter_widget_simple_tab.h"
+#include "filter_widget/ui_select_base_widget.h"
+#include "ui_select_container_dialog.h"
 
 #include <QLineEdit>
 #include <QMessageBox>
@@ -190,8 +199,7 @@ void ADMCTest::close_message_box() {
 }
 
 void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &dn) {
-    auto add_button = select_dialog->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button);
+    QPushButton *add_button = select_dialog->ui->add_button;
     add_button->click();
 
     // Find dialog has been opened, so switch to it
@@ -199,17 +207,15 @@ void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const 
     QVERIFY(find_select_dialog);
     QVERIFY(QTest::qWaitForWindowExposed(find_select_dialog, 1000));
 
+    FindWidget *find_widget = find_select_dialog->ui->find_widget;
+
     // Enter group name in "Name" edit
     const QString name = dn_get_name(dn);
-    auto simple_tab = select_dialog->findChild<FilterWidgetSimpleTab *>();
-    QVERIFY(simple_tab);
-    auto name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
-    QVERIFY(name_edit);
+    QLineEdit *name_edit = find_widget->ui->filter_widget->ui->simple_tab->ui->name_edit;
     name_edit->setText(name);
 
     // Press "Find" button
-    auto find_button = find_select_dialog->findChild<QPushButton *>("find_button");
-    QVERIFY(find_button);
+    auto find_button = find_widget->ui->find_button;
     find_button->click();
 
     // Switch to find results
@@ -230,17 +236,13 @@ void ADMCTest::select_object_dialog_select(const QString &dn) {
     auto select_dialog = parent_widget->findChild<SelectObjectDialog *>();
     QVERIFY(select_dialog);
 
-    auto select_base_widget = select_dialog->findChild<SelectBaseWidget *>();
-    QVERIFY(select_base_widget);
+    SelectBaseWidget *select_base_widget = select_dialog->ui->select_base_widget;
     select_base_widget_add(select_base_widget, test_arena_dn());
 
-    auto edit = select_dialog->findChild<QLineEdit *>("name_edit");
-    QVERIFY(edit);
-
-    auto add_button = select_dialog->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button);
-
+    QLineEdit *edit = select_dialog->ui->name_edit;
     edit->setText(dn_get_name(dn));
+
+    QPushButton *add_button = select_dialog->ui->add_button;
     add_button->click();
 
     select_dialog->accept();
@@ -266,18 +268,15 @@ void ADMCTest::test_edit_apply_unmodified(AttributeEdit *edit, const QString &dn
     QVERIFY(object_before.get_attributes_data() == object_after.get_attributes_data());
 }
 
-void select_base_widget_add(SelectBaseWidget *widget, const QString &dn) {
-    auto browse_button = widget->findChild<QPushButton *>();
-    QVERIFY(browse_button);
-
+void ADMCTest::select_base_widget_add(SelectBaseWidget *widget, const QString &dn) {
+    QPushButton *browse_button = widget->ui->browse_button;
     browse_button->click();
 
     auto select_container_dialog = widget->findChild<SelectContainerDialog *>();
     QVERIFY(select_container_dialog);
     QVERIFY(QTest::qWaitForWindowExposed(select_container_dialog, 1000));
 
-    auto select_container_view = select_container_dialog->findChild<QTreeView *>();
-    QVERIFY(select_container_view);
+    QTreeView *select_container_view = select_container_dialog->ui->view;
     navigate_until_object(select_container_view, dn, ContainerRole_DN);
 
     select_container_dialog->accept();

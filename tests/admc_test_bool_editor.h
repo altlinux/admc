@@ -26,6 +26,10 @@
 class BoolEditor;
 class QRadioButton;
 
+enum ADMCTestBoolEditorButton {
+    ADMCTestBoolEditorButton_True
+};
+
 class ADMCTestBoolEditor : public ADMCTest {
     Q_OBJECT
 

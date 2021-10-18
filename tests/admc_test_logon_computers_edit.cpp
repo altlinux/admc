@@ -22,6 +22,7 @@
 
 #include "edits/logon_computers_edit.h"
 #include "edits/logon_computers_edit_p.h"
+#include "edits/ui_logon_computers_dialog.h"
 
 #include <QFormLayout>
 #include <QLineEdit>
@@ -31,26 +32,17 @@
 void ADMCTestLogonComputersEdit::init() {
     ADMCTest::init();
 
-    auto button = new QPushButton(parent_widget);
+    open_dialog_button = new QPushButton(parent_widget);
 
-    edit = new LogonComputersEdit(button, &edits, parent_widget);
+    edit = new LogonComputersEdit(open_dialog_button, &edits, parent_widget);
 
     dialog = parent_widget->findChild<LogonComputersDialog *>();
     QVERIFY(dialog);
 
-    open_dialog_button = parent_widget->findChild<QPushButton *>("logon_computers_edit_button");
-
-    list = dialog->findChild<QListWidget *>("list");
-    QVERIFY(list);
-
-    value_edit = dialog->findChild<QLineEdit *>("edit");
-    QVERIFY(value_edit);
-
-    add_button = dialog->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button);
-
-    remove_button = dialog->findChild<QPushButton *>("remove_button");
-    QVERIFY(remove_button);
+    list = dialog->ui->list;
+    value_edit = dialog->ui->edit;
+    add_button = dialog->ui->add_button;
+    remove_button = dialog->ui->remove_button;
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);

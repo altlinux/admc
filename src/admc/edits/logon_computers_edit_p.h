@@ -34,14 +34,14 @@ class LogonComputersDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::LogonComputersDialog *ui;
+
     LogonComputersDialog(QWidget *parent);
 
     void load(const QString &value);
     QString get() const;
 
 private:
-    Ui::LogonComputersDialog *ui;
-
     void on_add_button();  
     void on_remove_button();  
 };

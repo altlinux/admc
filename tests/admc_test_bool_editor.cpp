@@ -21,6 +21,7 @@
 #include "admc_test_bool_editor.h"
 
 #include "editors/bool_editor.h"
+#include "editors/ui_bool_editor.h"
 
 #include <QRadioButton>
 
@@ -41,9 +42,15 @@ void ADMCTestBoolEditor::init() {
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
+    const QHash<QString, QRadioButton *> button_map = {
+        {"true_button", edit->ui->true_button},
+        {"false_button", edit->ui->false_button},
+        {"unset_button", edit->ui->unset_button},
+    };
+
     QFETCH_GLOBAL(QString, button_name);
-    button = parent_widget->findChild<QRadioButton *>(button_name);
-    QVERIFY(button);
+
+    button = button_map[button_name];
 }
 
 void ADMCTestBoolEditor::load() {

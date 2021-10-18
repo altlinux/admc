@@ -107,14 +107,14 @@ protected:
 
     void test_edit_apply_unmodified(AttributeEdit *edit, const QString &dn);
 
+    // Add a base to the base combo. Note that it is also
+    // automatically selected.
+    void select_base_widget_add(SelectBaseWidget *widget, const QString &dn);
+
 private:
     QFormLayout *layout;
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
-
-// Add a base to the base combo. Note that it is also
-// automatically selected.
-void select_base_widget_add(SelectBaseWidget *widget, const QString &dn);
 
 #endif /* ADMC_TEST_H */

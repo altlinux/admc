@@ -27,9 +27,7 @@
 
 #include <QDialog>
 
-class QTableView;
 class QStandardItemModel;
-class QRadioButton;
 
 // NOTE: this is the order in logon hours value. Different
 // from the display order in the dialog where first day is monday
@@ -56,6 +54,8 @@ class LogonHoursDialog : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::LogonHoursDialog *ui;
+
     LogonHoursDialog(QWidget *parent);
 
     void load(const QByteArray &value);
@@ -65,11 +65,8 @@ public:
     void reject() override;
 
 private:
-    Ui::LogonHoursDialog *ui;
-    QTableView *view;
     QStandardItemModel *model;
     QByteArray original_value;
-    QRadioButton *local_time_button;
 
     void switch_to_local_time();
     void on_local_time_button_toggled(bool checked);

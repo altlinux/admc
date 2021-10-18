@@ -21,7 +21,9 @@
 #include "admc_test_multi_editor.h"
 
 #include "editors/multi_editor.h"
+#include "editors/ui_multi_editor.h"
 #include "editors/string_editor.h"
+#include "editors/ui_string_editor.h"
 
 #include <QListWidget>
 #include <QLineEdit>
@@ -36,14 +38,9 @@ void ADMCTestMultiEditor::init() {
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
-    list_widget = edit->findChild<QListWidget *>();
-    QVERIFY(list_widget);
-
-    add_button = edit->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button);
-    
-    remove_button = edit->findChild<QPushButton *>("remove_button");
-    QVERIFY(remove_button);
+    list_widget = edit->ui->list_widget;
+    add_button = edit->ui->add_button;
+    remove_button = edit->ui->remove_button;
 }
 
 void ADMCTestMultiEditor::load_empty() {
@@ -72,8 +69,7 @@ void ADMCTestMultiEditor::add() {
     auto string_editor = edit->findChild<StringEditor *>();
     QVERIFY(string_editor);
 
-    auto line_edit = string_editor->findChild<QLineEdit *>();
-    QVERIFY(line_edit);
+    QLineEdit *line_edit = string_editor->ui->edit;
 
     const QString new_value = "new value";
 

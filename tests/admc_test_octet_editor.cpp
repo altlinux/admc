@@ -21,6 +21,7 @@
 #include "admc_test_octet_editor.h"
 
 #include "editors/octet_editor.h"
+#include "editors/ui_octet_editor.h"
 
 #include <QPlainTextEdit>
 #include <QComboBox>
@@ -46,11 +47,8 @@ void ADMCTestOctetEditor::init() {
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
-    format_combo = edit->findChild<QComboBox *>();
-    QVERIFY(format_combo);
-
-    text_edit = edit->findChild<QPlainTextEdit *>();
-    QVERIFY(text_edit);
+    format_combo = edit->ui->format_combo;
+    text_edit = edit->ui->edit;
 }
 
 void ADMCTestOctetEditor::display() {
