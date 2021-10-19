@@ -27,7 +27,6 @@
 LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     button = button_arg;
-    button->setObjectName("logon_computers_edit_button");
     
     dialog = new LogonComputersDialog(button);
 

@@ -32,12 +32,6 @@ PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QLi
     edit = edit_arg;
     confirm_edit = confirm_edit_arg;
 
-    // TODO: remove later because i think this won't be
-    // needed if i set name in create object dialog when i
-    // ui'fy that
-    edit->setObjectName("password_main_edit");
-    confirm_edit->setObjectName("password_confirm_edit");
-
     limit_edit(edit, ATTRIBUTE_PASSWORD);
     limit_edit(confirm_edit, ATTRIBUTE_PASSWORD);
 
