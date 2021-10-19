@@ -54,6 +54,8 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 
     edits_load(edits, ad, object);
 
+    ui->expired_check->setChecked(true);
+
     g_status()->display_ad_messages(ad, this);
 }
 
