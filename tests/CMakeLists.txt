@@ -28,7 +28,7 @@ include_directories(
         ${PROJECT_SOURCE_DIR}/tests
 
         # NOTE: hack to get to generated .ui headers
-        ${PROJECT_SOURCE_DIR}/build/src/admc/admctest_autogen/include
+        ${PROJECT_BINARY_DIR}/src/admc/admctest_autogen/include
 )
 
 # NOTE: ADD ALL TESTS TO THIS LIST
