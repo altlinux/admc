@@ -61,6 +61,7 @@ public:
     // manually undoes changes by retyping original value
     // for StringEdit for example.
     bool modified() const;
+    void set_modified(const bool modified);
 
     void reset_modified();
 
@@ -104,7 +105,7 @@ bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &
 // process stopped on first error, the user would have to
 // apply multiple times while fixing errors to see all of
 // them.
-bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn, const bool ignore_modified = false);
+bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
 
 void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object);
 
@@ -112,5 +113,7 @@ void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &o
 // specific edit headers to verify that they implement
 // set_read_only()
 void edits_set_read_only(QList<AttributeEdit *> edits, const bool read_only);
+
+void edits_set_modified(QList<AttributeEdit *> edits, const bool modified);
 
 #endif /* ATTRIBUTE_EDIT_H */

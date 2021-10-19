@@ -55,6 +55,10 @@ bool AttributeEdit::modified() const {
     return m_modified;
 }
 
+void AttributeEdit::set_modified(const bool modified) {
+    m_modified = modified;
+}
+
 void AttributeEdit::reset_modified() {
     m_modified = false;
 }
@@ -72,11 +76,11 @@ bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &
     return true;
 }
 
-bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn, const bool ignore_modified) {
+bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn) {
     bool success = true;
 
     for (auto edit : edits) {
-        if (edit->modified() || ignore_modified) {
+        if (edit->modified()) {
             const bool apply_success = edit->apply(ad, dn);
             if (apply_success) {
                 edit->reset_modified();
@@ -106,5 +110,11 @@ void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab) {
 void edits_set_read_only(QList<AttributeEdit *> edits, const bool read_only) {
     for (AttributeEdit *edit : edits) {
         edit->set_read_only(read_only);
+    }
+}
+
+void edits_set_modified(QList<AttributeEdit *> edits, const bool modified) {
+    for (AttributeEdit *edit : edits) {
+        edit->set_modified(modified);
     }
 }

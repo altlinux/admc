@@ -95,7 +95,15 @@ void CreateDialog::accept() {
 
     bool final_success = false;
     if (add_success) {
-        const bool apply_success = edits_apply(ad, m_edit_list, dn, true);
+        // NOTE: since this is a new object, we don't want
+        // edits like unchecked account options to not
+        // apply. We want all edits to apply, no matter if
+        // they were modified by user or not. So, we
+        // manually set the modified flag so that all edits
+        // apply
+        edits_set_modified(m_edit_list, true);
+
+        const bool apply_success = edits_apply(ad, m_edit_list, dn);
 
         if (apply_success) {
             final_success = true;
