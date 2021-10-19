@@ -48,13 +48,19 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 
     new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edits, this);
 
-    new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
+    auto pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
 
     new UnlockEdit(ui->unlock_check, &edits, this);
 
     edits_load(edits, ad, object);
 
     ui->expired_check->setChecked(true);
+
+    // NOTE: always set expired option to modified, so that
+    // it always applies, even if this option is already
+    // turned on. This is for consistent and understandable
+    // messaging to user.
+    pass_expired_edit->set_modified(true);
 
     g_status()->display_ad_messages(ad, this);
 }
