@@ -42,6 +42,10 @@ void Status::init(QStatusBar *statusbar, QTextEdit *message_log) {
 }
 
 void Status::add_message(const QString &msg, const StatusType &type) {
+    if (m_status_bar == nullptr || m_message_log == nullptr) {
+        return;
+    }
+
     m_status_bar->showMessage(msg);
 
     const QString timestamp = []() {
@@ -89,6 +93,9 @@ void Status::add_message(const QString &msg, const StatusType &type) {
 }
 
 void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
+    if (m_status_bar == nullptr || m_message_log == nullptr) {
+        return;
+    }
     //
     // Display all messages in status log
     //
