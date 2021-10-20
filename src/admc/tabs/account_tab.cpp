@@ -65,6 +65,7 @@ AccountTab::AccountTab(AdInterface &ad) {
         new AccountOptionEdit(check, option, &edits, this);
     }
     
+    account_option_setup_conflicts(check_map);
 
     edits_connect_to_tab(edits, this);
 }
