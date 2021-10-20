@@ -119,11 +119,12 @@ public:
     AdConfig *adconfig() const;
     QString client_user() const;
 
-    // NOTE: If request attributes list is empty, all attributes are returned
+    // NOTE: If request attributes list is empty, all
+    // attributes are returned
 
     // This is a simplified version that searches all pages
     // in one go
-    QHash<QString, AdObject> search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
+    QHash<QString, AdObject> search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, const bool get_sacl = false);
 
     // This is a more complicated version of search() which
     // separates the search process by pages as they arrive
@@ -131,11 +132,11 @@ public:
     // search(). This version is specifically for cases
     // where you need to do something between pages, like
     // processing UI events so it doesn't freeze.
-    bool search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie);
+    bool search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl = false);
 
     // Simplest search f-n that only searches for attributes
     // of one object
-    AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>());
+    AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>(), const bool get_sacl = false);
 
     bool attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg = DoStatusMsg_Yes);
 

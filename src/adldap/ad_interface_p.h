@@ -51,7 +51,7 @@ public:
     void error_message_plain(const QString &text, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     QString default_error() const;
     int get_ldap_result() const;
-    bool search_paged_internal(const char *base, const int scope, const char *filter, char **attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl = false);
+    bool search_paged_internal(const char *base, const int scope, const char *filter, char **attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl);
     bool connect_via_ldap(const char *uri);
     bool delete_gpt(const QString &parent_path);
     bool smb_path_is_dir(const QString &path, bool *ok);

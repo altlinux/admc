@@ -526,7 +526,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     return true;
 }
 
-QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes) {
+QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, const bool get_sacl) {
     AdCookie cookie;
     QHash<QString, AdObject> results;
 
@@ -548,7 +548,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchSc
     }
 
     while (true) {
-        const bool success = search_paged(base, scope, filter, attributes, &results, &cookie);
+        const bool success = search_paged(base, scope, filter, attributes, &results, &cookie, get_sacl);
 
         if (!success) {
             break;
@@ -562,7 +562,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchSc
     return results;
 }
 
-bool AdInterface::search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie) {
+bool AdInterface::search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl) {
     const char *base_cstr = cstr(base);
 
     const int scope_int = [&]() {
@@ -606,7 +606,7 @@ bool AdInterface::search_paged(const QString &base, const SearchScope scope, con
         return out;
     }();
 
-    const bool search_success = d->search_paged_internal(base_cstr, scope_int, filter_cstr, attributes_array, results, cookie);
+    const bool search_success = d->search_paged_internal(base_cstr, scope_int, filter_cstr, attributes_array, results, cookie, get_sacl);
     if (!search_success) {
         results->clear();
 
@@ -623,11 +623,11 @@ bool AdInterface::search_paged(const QString &base, const SearchScope scope, con
     return true;
 }
 
-AdObject AdInterface::search_object(const QString &dn, const QList<QString> &attributes) {
+AdObject AdInterface::search_object(const QString &dn, const QList<QString> &attributes, const bool get_sacl) {
     const QString base = dn;
     const SearchScope scope = SearchScope_Object;
     const QString filter = QString();
-    const QHash<QString, AdObject> results = search(base, scope, filter, attributes);
+    const QHash<QString, AdObject> results = search(base, scope, filter, attributes, get_sacl);
 
     if (results.contains(dn)) {
         return results[dn];
@@ -1590,7 +1590,9 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
         return true;
     }
 
-    const AdObject gpc_object = search_object(gpo);
+    const QList<QString> attributes = QList<QString>();
+    const bool get_sacl = true;
+    const AdObject gpc_object = search_object(gpo, attributes, get_sacl);
     const QString name = gpc_object.get_string(ATTRIBUTE_DISPLAY_NAME);
 
     const QString error_context = QString(tr("Failed to check permissions for GPO \"%1\".")).arg(name);
@@ -1680,7 +1682,9 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
 
 bool AdInterface::gpo_sync_perms(const QString &dn) {
     // First get GPC descriptor
-    const AdObject gpc_object = search_object(dn);
+    const QList<QString> attributes = QList<QString>();
+    const bool get_sacl = true;
+    const AdObject gpc_object = search_object(dn, attributes, get_sacl);
     const QString name = gpc_object.get_string(ATTRIBUTE_DISPLAY_NAME);
     const QString gpt_sd_string = get_gpt_sd_string(gpc_object, AceMaskFormat_Decimal);
 
