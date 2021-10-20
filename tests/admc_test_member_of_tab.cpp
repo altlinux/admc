@@ -80,15 +80,29 @@ void ADMCTestMemberOfTab::load() {
 
     QCOMPARE(model->rowCount(), 2);
 
-    auto item = model->item(1, 0);
-    QCOMPARE(item->text(), dn_get_name(group_dn));
+    const bool contains_group = (get_group_row(group_dn) != -1);
+    QVERIFY(contains_group);
+}
+
+int ADMCTestMemberOfTab::get_group_row(const QString &dn) {
+    const QString group_name = dn_get_name(group_dn);
+
+    for (int row = 0; row < model->rowCount(); row++) {
+        auto item = model->item(row, 0);
+        if (item->text() == group_name) {
+            return row;
+        }
+    }
+
+    return -1;
 }
 
 // Removing members should remove members from model and group
 void ADMCTestMemberOfTab::remove() {
     load();
 
-    const QModelIndex index = model->index(1, 0);
+    const int group_row = get_group_row(group_dn);
+    const QModelIndex index = model->index(group_row, 0);
     view->setCurrentIndex(index);
 
     remove_button->click();
@@ -107,10 +121,6 @@ void ADMCTestMemberOfTab::add() {
 
     select_object_dialog_select(group_dn);
 
-    // Check ui state before applying
-    QCOMPARE(model->rowCount(), 2);
-    QCOMPARE(model->item(1, 0)->text(), dn_get_name(group_dn));
-
     // Apply and check object state
     member_of_tab->apply(ad, user_dn);
     const AdObject object = ad.search_object(user_dn);
@@ -119,7 +129,8 @@ void ADMCTestMemberOfTab::add() {
 
     // Check ui state after applying (just in case)
     QCOMPARE(model->rowCount(), 2);
-    QCOMPARE(model->item(1, 0)->text(), dn_get_name(group_dn));
+    const bool contains_after_add = (get_group_row(group_dn) != -1);
+    QVERIFY(contains_after_add);
 }
 
 QTEST_MAIN(ADMCTestMemberOfTab)
