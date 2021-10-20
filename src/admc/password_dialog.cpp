@@ -54,13 +54,26 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
 
     edits_load(edits, ad, object);
 
-    ui->expired_check->setChecked(true);
+    const bool expired_check_enabled = [&]() {
+        const bool dont_expire_pass = object.get_account_option(AccountOption_DontExpirePassword, g_adconfig);
+        const bool cant_change_pass = object.get_account_option(AccountOption_CantChangePassword, g_adconfig);
+        const bool out = !(dont_expire_pass || cant_change_pass);
 
-    // NOTE: always set expired option to modified, so that
-    // it always applies, even if this option is already
-    // turned on. This is for consistent and understandable
-    // messaging to user.
-    pass_expired_edit->set_modified(true);
+        return out;
+    }();
+    
+    if (expired_check_enabled) {
+        ui->expired_check->setChecked(true);
+
+        // NOTE: always set expired option to modified, so that
+        // it always applies, even if this option is already
+        // turned on. This is for consistent and understandable
+        // messaging to user.
+        pass_expired_edit->set_modified(true);
+    } else {
+        ui->expired_check->setEnabled(false);
+        ui->expired_check->setToolTip(tr("Option is unavailable because a conflicting account option is currently enabled."));
+    }
 
     g_status()->display_ad_messages(ad, this);
 }
