@@ -57,7 +57,7 @@ signals:
 
 private slots:
     void accept() override;
-    bool apply();
+    void apply();
     void reset();
     void on_edited();
 

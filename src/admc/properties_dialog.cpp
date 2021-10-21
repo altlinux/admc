@@ -259,19 +259,30 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
 }
 
 void PropertiesDialog::accept() {
-    const bool success = apply();
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const bool success = apply_internal(ad);
 
     if (success) {
         QDialog::accept();
     }
 }
 
-bool PropertiesDialog::apply() {
+void PropertiesDialog::apply() {
     AdInterface ad;
-    if (ad_connected(ad)) {
-        return apply_internal(ad);
-    } else {
-        return false;
+    if (ad_failed(ad)) {
+        return;
+    }
+    
+    const bool apply_success = apply_internal(ad);
+
+    ad.clear_messages();
+
+    if (apply_success) {
+        reset_internal(ad);
     }
 }
 
