@@ -151,7 +151,7 @@ int account_option_bit(const AccountOption &option) {
             return 0x00040000;
         case AccountOption_DontRequirePreauth:
             return 0x00400000;
-        case AccountOption_CantDelegate:
+        case AccountOption_CantDelegate: return 0x00100000;
         case AccountOption_TrustedForDelegation:
             return 0x00080000;
 
