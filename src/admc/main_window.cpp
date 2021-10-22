@@ -57,7 +57,7 @@ MainWindow::MainWindow()
     client_user_label = new QLabel();
     ui->statusbar->addPermanentWidget(client_user_label);
 
-    auto action_show_client_user = new QAction("Show Client User");
+    auto action_show_client_user = new QAction("Show Client User", this);
     action_show_client_user->setCheckable(true);
     ui->statusbar->addAction(action_show_client_user);
 
