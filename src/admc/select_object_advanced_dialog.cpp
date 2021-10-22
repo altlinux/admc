@@ -48,6 +48,8 @@ SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> clas
 SelectObjectAdvancedDialog::~SelectObjectAdvancedDialog() {
     const QVariant state = ui->find_widget->save_state();
     settings_set_variant(SETTING_select_object_advanced_state, state);
+
+    delete ui;
 }
 
 QList<QString> SelectObjectAdvancedDialog::get_selected_dns() const {

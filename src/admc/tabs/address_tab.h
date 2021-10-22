@@ -35,6 +35,7 @@ public:
     Ui::AddressTab *ui;
 
     AddressTab();
+    ~AddressTab();
 };
 
 #endif /* ADDRESS_TAB_H */

@@ -42,6 +42,10 @@ RenameUserDialog::RenameUserDialog(QWidget *parent)
     init(ui->name_edit, ui->button_box, edit_list);
 }
 
+RenameUserDialog::~RenameUserDialog() {
+    delete ui;
+}
+
 void RenameUserDialog::open() {
     AdInterface ad;
     if (ad_failed(ad)) {

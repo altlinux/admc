@@ -28,3 +28,7 @@ RenameObjectDialog::RenameObjectDialog(QWidget *parent)
 
     init(ui->name_edit, ui->button_box, {});
 }
+
+RenameObjectDialog::~RenameObjectDialog() {
+    delete ui;
+}

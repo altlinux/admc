@@ -34,6 +34,7 @@ public:
     Ui::StringEditor *ui;
 
     StringEditor(const QString attribute, QWidget *parent);
+    ~StringEditor();
 
     void load(const QList<QByteArray> &values) override;
     QList<QByteArray> get_new_values() const override;

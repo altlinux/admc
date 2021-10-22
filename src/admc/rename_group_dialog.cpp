@@ -34,6 +34,10 @@ RenameGroupDialog::RenameGroupDialog(QWidget *parent)
     init(ui->name_edit, ui->button_box, edit_list);
 }
 
+RenameGroupDialog::~RenameGroupDialog() {
+    delete ui;
+}
+
 void RenameGroupDialog::open() {
     sam_name_edit->load_domain();
 

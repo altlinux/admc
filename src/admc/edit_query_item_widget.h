@@ -41,6 +41,7 @@ public:
     Ui::EditQueryItemWidget *ui;
 
     EditQueryItemWidget(QWidget *parent = nullptr);
+    ~EditQueryItemWidget();
 
     void load(const QModelIndex &index);
     void save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const;

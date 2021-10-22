@@ -36,6 +36,7 @@ public:
     Ui::AccountTab *ui;
 
     AccountTab(AdInterface &ad);
+    ~AccountTab();
 };
 
 #endif /* ACCOUNT_TAB_H */

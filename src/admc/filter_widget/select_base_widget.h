@@ -43,6 +43,7 @@ public:
     Ui::SelectBaseWidget *ui;
 
     SelectBaseWidget(QWidget *parent = nullptr);
+    ~SelectBaseWidget();
 
     void init(AdConfig *adconfig, const QString &default_base = QString());
 

@@ -40,6 +40,7 @@ public:
     Ui::FilterWidgetSimpleTab *ui;
 
     FilterWidgetSimpleTab();
+    ~FilterWidgetSimpleTab();
 
     void add_classes(AdConfig *adconfig, const QList<QString> classes);
 

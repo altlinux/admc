@@ -59,6 +59,10 @@ StringEditor::StringEditor(const QString attribute_arg, QWidget *parent)
     init(ui->button_box, ui->attribute_label);
 }
 
+StringEditor::~StringEditor() {
+    delete ui;
+}
+
 void StringEditor::load(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);

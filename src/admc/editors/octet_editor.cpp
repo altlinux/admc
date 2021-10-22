@@ -56,6 +56,10 @@ OctetEditor::OctetEditor(const QString attribute_arg, QWidget *parent)
     init(ui->button_box, ui->attribute_label);
 }
 
+OctetEditor::~OctetEditor() {
+    delete ui;
+}
+
 QList<QByteArray> OctetEditor::get_new_values() const {
     const QString text = ui->edit->toPlainText();
     const QByteArray bytes = octet_string_to_bytes(text, current_format(ui->format_combo));

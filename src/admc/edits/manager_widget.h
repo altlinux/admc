@@ -37,6 +37,7 @@ public:
     Ui::ManagerWidget *ui;
 
     ManagerWidget(QWidget *parent = nullptr);
+    ~ManagerWidget();
 
     void set_attribute(const QString &attribute);
     void load(const AdObject &object);

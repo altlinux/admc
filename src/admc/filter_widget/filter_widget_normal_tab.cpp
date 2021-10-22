@@ -50,6 +50,10 @@ FilterWidgetNormalTab::FilterWidgetNormalTab()
         this, &FilterWidgetNormalTab::clear_filters);
 }
 
+FilterWidgetNormalTab::~FilterWidgetNormalTab() {
+    delete ui;
+}
+
 void FilterWidgetNormalTab::add_classes(AdConfig *adconfig_arg, const QList<QString> classes) {
     adconfig = adconfig_arg;
 

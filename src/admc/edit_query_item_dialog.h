@@ -37,6 +37,7 @@ public:
     Ui::EditQueryItemDialog *ui;
 
     EditQueryItemDialog(ConsoleWidget *console_arg);
+    ~EditQueryItemDialog();
 
     void open() override;
     void accept() override;

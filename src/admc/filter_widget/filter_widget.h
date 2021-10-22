@@ -43,6 +43,7 @@ public:
     Ui::FilterWidget *ui;
     
     FilterWidget(QWidget *parent = nullptr);
+    ~FilterWidget();
 
     void add_classes(AdConfig *adconfig, const QList<QString> classes);
 

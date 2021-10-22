@@ -37,6 +37,7 @@ public:
     Ui::CreateQueryFolderDialog *ui;
 
     CreateQueryFolderDialog(ConsoleWidget *console_arg);
+    ~CreateQueryFolderDialog();
 
     void open() override;
 

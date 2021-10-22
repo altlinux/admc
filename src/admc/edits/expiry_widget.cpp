@@ -53,6 +53,10 @@ ExpiryWidget::ExpiryWidget(QWidget *parent)
         this, &ExpiryWidget::edited);
 }
 
+ExpiryWidget::~ExpiryWidget() {
+    delete ui;
+}
+
 void ExpiryWidget::load(const AdObject &object) {
     const bool never = [object]() {
         const QString expiry_string = object.get_string(ATTRIBUTE_ACCOUNT_EXPIRES);

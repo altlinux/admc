@@ -42,6 +42,7 @@ public:
     Ui::ChangeDCDialog *ui;
 
     ChangeDCDialog(ConsoleWidget *console);
+    ~ChangeDCDialog();
 
     void open() override;
     void accept() override;

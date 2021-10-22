@@ -38,6 +38,10 @@ FilterClassesWidget::FilterClassesWidget(QWidget *parent)
         this, &FilterClassesWidget::clear_selection);
 }
 
+FilterClassesWidget::~FilterClassesWidget() {
+    delete ui;
+}
+
 void FilterClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list) {
     for (const QString &object_class : class_list) {
         const QString class_string = adconfig->get_class_display_name(object_class);

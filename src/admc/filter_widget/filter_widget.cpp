@@ -33,6 +33,10 @@ FilterWidget::FilterWidget(QWidget *parent)
     ui->setupUi(this);
 }
 
+FilterWidget::~FilterWidget() {
+    delete ui;
+}
+
 void FilterWidget::add_classes(AdConfig *adconfig, const QList<QString> classes) {
     ui->simple_tab->add_classes(adconfig, classes);
     ui->normal_tab->add_classes(adconfig, classes);

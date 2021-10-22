@@ -36,6 +36,7 @@ public:
     Ui::CreateComputerDialog *ui;
 
     CreateComputerDialog(QWidget *parent);
+    ~CreateComputerDialog();
 
     void open() override;
 

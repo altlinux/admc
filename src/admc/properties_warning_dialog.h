@@ -46,6 +46,7 @@ public:
     Ui::PropertiesWarningDialog *ui;
 
     PropertiesWarningDialog(QWidget *parent);
+    ~PropertiesWarningDialog();
 
     void set_type(const PropertiesWarningType type);
 };

@@ -39,6 +39,7 @@ public:
     Ui::AccountMultiTab *ui;
 
     AccountMultiTab(AdInterface &ad);
+    ~AccountMultiTab();
 };
 
 #endif /* ACCOUNT_MULTI_TAB_H */

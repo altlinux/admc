@@ -68,3 +68,7 @@ ChangelogDialog::ChangelogDialog(QWidget *parent)
 
     settings_setup_dialog_geometry(SETTING_manual_dialog_geometry, this);
 }
+
+ChangelogDialog::~ChangelogDialog() {
+    delete ui;
+}

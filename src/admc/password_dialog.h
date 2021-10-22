@@ -37,6 +37,7 @@ public:
     Ui::PasswordDialog *ui;
 
     PasswordDialog(const QString &target_arg, QWidget *parent);
+    ~PasswordDialog();
 
 public slots:
     void accept();

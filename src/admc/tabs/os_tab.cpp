@@ -35,3 +35,7 @@ OSTab::OSTab() {
     edits_set_read_only(edits, true);
     edits_connect_to_tab(edits, this);
 }
+
+OSTab::~OSTab() {
+    delete ui;
+}

@@ -78,6 +78,10 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     g_status()->display_ad_messages(ad, this);
 }
 
+PasswordDialog::~PasswordDialog() {
+    delete ui;
+}
+
 void PasswordDialog::accept() {
     AdInterface ad;
     if (ad_failed(ad)) {

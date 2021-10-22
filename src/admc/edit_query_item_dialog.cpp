@@ -37,6 +37,10 @@ EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
     console = console_arg;
 }
 
+EditQueryItemDialog::~EditQueryItemDialog() {
+    delete ui;
+}
+
 void EditQueryItemDialog::open() {
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 

@@ -46,6 +46,7 @@ public:
     Ui::FindWidget *ui;
 
     FindWidget(QWidget *parent = nullptr);
+    ~FindWidget();
 
     void init(const QList<QString> classes, const QString &default_base);
     

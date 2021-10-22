@@ -101,6 +101,10 @@ LogonHoursDialog::LogonHoursDialog(QWidget *parent)
         this, &LogonHoursDialog::on_local_time_button_toggled);
 }
 
+LogonHoursDialog::~LogonHoursDialog() {
+    delete ui;
+}
+
 void LogonHoursDialog::load(const QByteArray &value) {
     original_value = value;
 

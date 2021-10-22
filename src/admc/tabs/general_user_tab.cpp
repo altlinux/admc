@@ -45,3 +45,7 @@ GeneralUserTab::GeneralUserTab(const AdObject &object) {
 
     edits_connect_to_tab(edits, this);
 }
+
+GeneralUserTab::~GeneralUserTab() {
+    delete ui;
+}

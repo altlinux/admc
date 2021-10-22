@@ -34,6 +34,7 @@ public:
     Ui::OrganizationMultiTab *ui;
 
     OrganizationMultiTab();
+    ~OrganizationMultiTab();
 };
 
 #endif /* ORGANIZATION_MULTI_TAB_H */

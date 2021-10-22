@@ -34,3 +34,7 @@ ProfileMultiTab::ProfileMultiTab() {
 
     multi_edits_connect_to_tab(edit_list, this);
 }
+
+ProfileMultiTab::~ProfileMultiTab() {
+    delete ui;
+}

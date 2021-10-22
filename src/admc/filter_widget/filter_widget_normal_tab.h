@@ -45,6 +45,7 @@ public:
     Ui::FilterWidgetNormalTab *ui;
 
     FilterWidgetNormalTab();
+    ~FilterWidgetNormalTab();
 
     void add_classes(AdConfig *adconfig, const QList<QString> classes);
 

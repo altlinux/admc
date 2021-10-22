@@ -45,6 +45,10 @@ ChangeDCDialog::ChangeDCDialog(ConsoleWidget *console_arg)
     state.set_widget_list(widget_list);
 }
 
+ChangeDCDialog::~ChangeDCDialog() {
+    delete ui;
+}
+
 void ChangeDCDialog::open() {
     // Load hosts into list when dialog is opened for the
     // first time

@@ -41,6 +41,10 @@ SelectClassesWidget::SelectClassesWidget(QWidget *parent)
         this, &SelectClassesWidget::update_classes_display);
 }
 
+SelectClassesWidget::~SelectClassesWidget() {
+    delete ui;
+}
+
 void SelectClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list) {
     dialog->filter_classes_widget()->add_classes(adconfig, class_list);
 
@@ -86,6 +90,10 @@ SelectClassesDialog::SelectClassesDialog(QWidget *parent)
     connect(
         ui->button_box->button(QDialogButtonBox::Reset), &QPushButton::clicked,
         this, &SelectClassesDialog::reset);
+}
+
+SelectClassesDialog::~SelectClassesDialog() {
+    delete ui;
 }
 
 void SelectClassesDialog::open() {

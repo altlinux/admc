@@ -38,6 +38,7 @@ public:
     Ui::GeneralUserMultiTab *ui;
 
     GeneralUserMultiTab();
+    ~GeneralUserMultiTab();
 };
 
 #endif /* GENERAL_USER_MULTI_TAB_H */

@@ -37,6 +37,10 @@ DateTimeEditor::DateTimeEditor(const QString attribute_arg, QWidget *parent)
     init(ui->button_box, ui->attribute_label);
 }
 
+DateTimeEditor::~DateTimeEditor() {
+    delete ui;
+}
+
 void DateTimeEditor::load(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);

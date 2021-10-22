@@ -34,6 +34,7 @@ public:
     Ui::RenameObjectDialog *ui;
 
     RenameObjectDialog(QWidget *parent);
+    ~RenameObjectDialog();
 };
 
 #endif /* RENAME_OBJECT_DIALOG_H */

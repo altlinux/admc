@@ -44,6 +44,7 @@ public:
     Ui::SelectClassesWidget *ui;
 
     SelectClassesWidget(QWidget *parent = nullptr);
+    ~SelectClassesWidget();
 
     void add_classes(AdConfig *adconfig, const QList<QString> &class_list);
 

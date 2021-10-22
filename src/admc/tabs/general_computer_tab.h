@@ -34,6 +34,7 @@ public:
     Ui::GeneralComputerTab *ui;
 
     GeneralComputerTab(const AdObject &object);
+    ~GeneralComputerTab();
 };
 
 #endif /* GENERAL_COMPUTER_TAB_H */

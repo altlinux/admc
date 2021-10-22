@@ -34,6 +34,7 @@ public:
     Ui::CreateOUDialog *ui;
 
     CreateOUDialog(QWidget *parent);
+    ~CreateOUDialog();
 };
 
 #endif /* CREATE_OU_DIALOG_H */

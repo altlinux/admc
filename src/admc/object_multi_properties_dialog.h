@@ -43,6 +43,7 @@ public:
     Ui::ObjectMultiPropertiesDialog *ui;
 
     ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list);
+    ~ObjectMultiPropertiesDialog();
 
 signals:
     void applied();

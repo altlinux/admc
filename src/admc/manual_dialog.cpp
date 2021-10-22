@@ -97,3 +97,7 @@ ManualDialog::ManualDialog(QWidget *parent)
 
     settings_setup_dialog_geometry(SETTING_manual_dialog_geometry, this);
 }
+
+ManualDialog::~ManualDialog() {
+    delete ui;
+}

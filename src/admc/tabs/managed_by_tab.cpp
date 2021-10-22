@@ -62,6 +62,10 @@ ManagedByTab::ManagedByTab() {
         this, &ManagedByTab::on_manager_edited);
 }
 
+ManagedByTab::~ManagedByTab() {
+    delete ui;
+}
+
 void ManagedByTab::on_manager_edited() {
     AdInterface ad;
     if (ad_failed(ad)) {

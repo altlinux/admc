@@ -98,6 +98,8 @@ GroupPolicyTab::GroupPolicyTab() {
 
 GroupPolicyTab::~GroupPolicyTab() {
     settings_save_header_state(SETTING_group_policy_tab_header_state, ui->view->header());   
+
+    delete ui;
 }
 
 void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {

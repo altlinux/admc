@@ -59,6 +59,8 @@ GpoLinksTab::GpoLinksTab() {
 
 GpoLinksTab::~GpoLinksTab() {
     settings_save_header_state(SETTING_gpo_links_tab_header_state, ui->view->header());   
+
+    delete ui;
 }
 
 void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {

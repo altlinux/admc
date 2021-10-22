@@ -43,6 +43,7 @@ public:
     Ui::RenamePolicyDialog *ui;
 
     RenamePolicyDialog(ConsoleWidget *console_arg);
+    ~RenamePolicyDialog();
 
     void open() override;
     void accept() override;

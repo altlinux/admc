@@ -48,3 +48,7 @@ ObjectTab::ObjectTab() {
 
     edits_connect_to_tab(edits, this);
 }
+
+ObjectTab::~ObjectTab() {
+    delete ui;
+}

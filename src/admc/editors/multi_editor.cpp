@@ -80,6 +80,10 @@ MultiEditor::MultiEditor(const QString attribute_arg, QWidget *parent)
     init(ui->button_box, ui->attribute_label);
 }
 
+MultiEditor::~MultiEditor() {
+    delete ui;
+}
+
 void MultiEditor::add() {
     AttributeEditor *editor = [this]() -> AttributeEditor * {
         const bool is_bool = (g_adconfig->get_attribute_type(attribute) == AttributeType_Boolean);

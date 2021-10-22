@@ -270,6 +270,10 @@ MainWindow::MainWindow()
     }
 }
 
+MainWindow::~MainWindow() {
+    delete ui;
+}
+
 void MainWindow::closeEvent(QCloseEvent *event) {
     const QByteArray geometry = saveGeometry();
     settings_set_variant(SETTING_main_window_geometry, geometry);

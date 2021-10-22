@@ -37,3 +37,7 @@ GeneralUserMultiTab::GeneralUserMultiTab() {
 
     multi_edits_connect_to_tab(edit_list, this);
 }
+
+GeneralUserMultiTab::~GeneralUserMultiTab() {
+    delete ui;
+}

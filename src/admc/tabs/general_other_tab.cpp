@@ -36,6 +36,10 @@ GeneralOtherTab::GeneralOtherTab(const AdObject &object) {
     edits_connect_to_tab(edits, this);
 }
 
+GeneralOtherTab::~GeneralOtherTab() {
+    delete ui;
+}
+
 void load_name_label(QLabel *name_label, const AdObject &object) {
     const QString name = object.get_string(ATTRIBUTE_NAME);
     name_label->setText(name);

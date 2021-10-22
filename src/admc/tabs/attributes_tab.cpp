@@ -84,6 +84,8 @@ AttributesTab::AttributesTab() {
 
 AttributesTab::~AttributesTab() {
     settings_set_variant(SETTING_attributes_tab_header_state, ui->view->header()->saveState());
+
+    delete ui;
 }
 
 void AttributesTab::edit_attribute() {

@@ -40,6 +40,7 @@ public:
     Ui::CreatePolicyDialog *ui;
 
     CreatePolicyDialog(QWidget *parent);
+    ~CreatePolicyDialog();
 
 signals:
     void created_policy(const QString &dn);

@@ -158,6 +158,8 @@ SecurityTab::SecurityTab() {
 
 SecurityTab::~SecurityTab() {
     settings_save_header_state(SETTING_security_tab_header_state, ui->ace_view->header());   
+
+    delete ui;
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {

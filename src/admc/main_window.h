@@ -38,6 +38,7 @@ public:
     Ui::MainWindow *ui;
 
     MainWindow();
+    ~MainWindow();
 
 protected:
     void closeEvent(QCloseEvent *event);

@@ -58,6 +58,10 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     reset();
 }
 
+ConnectionOptionsDialog::~ConnectionOptionsDialog() {
+    delete ui;
+}
+
 void ConnectionOptionsDialog::accept() {
     const int port = ui->port_spinbox->value();
     settings_set_variant(SETTING_port, port);

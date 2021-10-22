@@ -42,6 +42,10 @@ ManagerWidget::ManagerWidget(QWidget *parent)
         this, &ManagerWidget::on_clear);
 }
 
+ManagerWidget::~ManagerWidget() {
+    delete ui;
+}
+
 void ManagerWidget::set_attribute(const QString &attribute) {
     manager_attribute = attribute;
 }

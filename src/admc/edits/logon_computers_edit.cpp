@@ -70,6 +70,10 @@ LogonComputersDialog::LogonComputersDialog(QWidget *parent)
         this, &LogonComputersDialog::on_remove_button);
 }
 
+LogonComputersDialog::~LogonComputersDialog() {
+    delete ui;
+}
+
 void LogonComputersDialog::load(const QString &value) {
     ui->list->clear();
 

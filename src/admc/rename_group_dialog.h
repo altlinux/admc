@@ -36,6 +36,7 @@ public:
     Ui::RenameGroupDialog *ui;
 
     RenameGroupDialog(QWidget *parent);
+    ~RenameGroupDialog();
 
     void open() override;
 

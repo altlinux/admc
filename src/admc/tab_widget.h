@@ -40,6 +40,7 @@ public:
     Ui::TabWidget *ui;
 
     TabWidget(QWidget *parent = nullptr);
+    ~TabWidget();
 
     void add_tab(QWidget *tab, const QString &title);
 

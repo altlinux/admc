@@ -38,6 +38,7 @@ public:
     Ui::ChangelogDialog *ui;
 
     ChangelogDialog(QWidget *parent);
+    ~ChangelogDialog();
 };
 
 #endif /* CHANGELOG_DIALOG_H */

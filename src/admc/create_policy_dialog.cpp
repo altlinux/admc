@@ -34,6 +34,10 @@ CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
     ui->setupUi(this);
 }
 
+CreatePolicyDialog::~CreatePolicyDialog() {
+    delete ui;
+}
+
 void CreatePolicyDialog::open() {
     AdInterface ad;
     if (ad_failed(ad)) {

@@ -39,3 +39,7 @@ TelephonesTab::TelephonesTab() {
 
     edits_connect_to_tab(edits, this);
 }
+
+TelephonesTab::~TelephonesTab() {
+    delete ui;
+}

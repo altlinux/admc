@@ -34,6 +34,7 @@ public:
     Ui::GeneralUserTab *ui;
 
     GeneralUserTab(const AdObject &object);
+    ~GeneralUserTab();
 };
 
 #endif /* GENERAL_USER_TAB_H */

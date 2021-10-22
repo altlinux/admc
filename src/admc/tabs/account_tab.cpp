@@ -69,3 +69,7 @@ AccountTab::AccountTab(AdInterface &ad) {
 
     edits_connect_to_tab(edits, this);
 }
+
+AccountTab::~AccountTab() {
+    delete ui;
+}

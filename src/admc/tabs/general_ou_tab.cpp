@@ -42,3 +42,7 @@ GeneralOUTab::GeneralOUTab(const AdObject &object) {
 
     edits_connect_to_tab(edits, this);
 }
+
+GeneralOUTab::~GeneralOUTab() {
+    delete ui;
+}

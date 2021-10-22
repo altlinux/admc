@@ -40,6 +40,10 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
     console = console_arg;
 }
 
+CreateQueryFolderDialog::~CreateQueryFolderDialog() {
+    delete ui;
+}
+
 void CreateQueryFolderDialog::open() {
     ui->name_edit->setText(tr("New folder"));
     ui->description_edit->setText("");

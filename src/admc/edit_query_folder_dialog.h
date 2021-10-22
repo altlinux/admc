@@ -36,6 +36,7 @@ public:
     Ui::EditQueryFolderDialog *ui;
 
     EditQueryFolderDialog(ConsoleWidget *console_arg);
+    ~EditQueryFolderDialog();
 
     void open() override;
 

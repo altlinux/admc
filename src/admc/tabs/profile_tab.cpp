@@ -36,3 +36,7 @@ ProfileTab::ProfileTab() {
 
     edits_connect_to_tab(edits, this);
 }
+
+ProfileTab::~ProfileTab() {
+    delete ui;
+}

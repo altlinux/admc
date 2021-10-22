@@ -50,3 +50,7 @@ GeneralGroupTab::GeneralGroupTab(const AdObject &object) {
 
     edits_connect_to_tab(edits, this);
 }
+
+GeneralGroupTab::~GeneralGroupTab() {
+    delete ui;
+}

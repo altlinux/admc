@@ -34,6 +34,7 @@ public:
     Ui::GeneralGroupTab *ui;
 
     GeneralGroupTab(const AdObject &object);
+    ~GeneralGroupTab();
 };
 
 #endif /* GENERAL_GROUP_TAB_H */

@@ -41,6 +41,10 @@ SelectBaseWidget::SelectBaseWidget(QWidget *parent)
         this, &SelectBaseWidget::on_browse_dialog);
 }
 
+SelectBaseWidget::~SelectBaseWidget() {
+    delete ui;
+}
+
 void SelectBaseWidget::init(AdConfig *adconfig, const QString &default_base) {
     const QString domain_head = adconfig->domain_head();
 

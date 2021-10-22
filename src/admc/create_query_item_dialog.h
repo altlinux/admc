@@ -36,6 +36,7 @@ public:
     Ui::CreateQueryItemDialog *ui;
 
     CreateQueryItemDialog(ConsoleWidget *console_arg);
+    ~CreateQueryItemDialog();
 
     void open() override;
     void accept() override;

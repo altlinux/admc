@@ -37,6 +37,7 @@ public:
     Ui::LogonComputersDialog *ui;
 
     LogonComputersDialog(QWidget *parent);
+    ~LogonComputersDialog();
 
     void load(const QString &value);
     QString get() const;

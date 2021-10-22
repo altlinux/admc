@@ -38,6 +38,7 @@ public:
     Ui::SelectClassesDialog *ui;
 
     SelectClassesDialog(QWidget *parent);
+    ~SelectClassesDialog();
     void open() override;
     void reject() override;
     void reset();

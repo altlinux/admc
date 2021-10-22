@@ -34,6 +34,7 @@ public:
     Ui::BoolEditor *ui;
 
     BoolEditor(const QString attribute, QWidget *parent);
+    ~BoolEditor();
 
     void load(const QList<QByteArray> &values) override;
     QList<QByteArray> get_new_values() const override;

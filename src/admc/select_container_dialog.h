@@ -48,6 +48,7 @@ public:
     Ui::SelectContainerDialog *ui;
 
     SelectContainerDialog(QWidget *parent);
+    ~SelectContainerDialog();
 
     void open() override;
 

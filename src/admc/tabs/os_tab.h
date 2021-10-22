@@ -34,6 +34,7 @@ public:
     Ui::OSTab *ui;
 
     OSTab();
+    ~OSTab();
 };
 
 #endif /* OS_TAB_H */

@@ -34,6 +34,7 @@ public:
     Ui::ProfileMultiTab *ui;
 
     ProfileMultiTab();
+    ~ProfileMultiTab();
 };
 
 #endif /* PROFILE_MULTI_TAB_H */

@@ -38,6 +38,10 @@ FilterDialog::FilterDialog(QWidget *parent)
     ui->setupUi(this);
 }
 
+FilterDialog::~FilterDialog() {
+    delete ui;
+}
+
 void FilterDialog::open() {
     original_state = save_state();
 

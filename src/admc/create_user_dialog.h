@@ -37,6 +37,7 @@ public:
     Ui::CreateUserDialog *ui;
 
     CreateUserDialog(QWidget *parent);
+    ~CreateUserDialog();
 
     void open() override;
 

@@ -31,6 +31,10 @@ TabWidget::TabWidget(QWidget *parent)
         this, &TabWidget::on_list_current_row_changed);
 }
 
+TabWidget::~TabWidget() {
+    delete ui;
+}
+
 void TabWidget::add_tab(QWidget *tab, const QString &title) {
     ui->list_widget->addItem(title);
     ui->stacked_widget->addWidget(tab);

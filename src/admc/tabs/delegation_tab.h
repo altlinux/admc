@@ -34,6 +34,7 @@ public:
     Ui::DelegationTab *ui;
 
     DelegationTab();
+    ~DelegationTab();
 };
 
 #endif /* DELEGATION_TAB_H */

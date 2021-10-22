@@ -85,6 +85,10 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
     reset();
 }
 
+ObjectMultiPropertiesDialog::~ObjectMultiPropertiesDialog() {
+    delete ui;
+}
+
 void ObjectMultiPropertiesDialog::accept() {
     const bool success = apply();
 

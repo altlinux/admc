@@ -30,3 +30,7 @@ AboutDialog::AboutDialog(QWidget *parent)
 
     ui->version_label->setText(QString(tr("Version %1")).arg(ADMC_VERSION));
 }
+
+AboutDialog::~AboutDialog() {
+    delete ui;
+}

@@ -36,6 +36,7 @@ public:
     Ui::ManagedByTab *ui;
 
     ManagedByTab();
+    ~ManagedByTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
 

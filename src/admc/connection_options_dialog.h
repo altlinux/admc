@@ -44,6 +44,7 @@ public:
     Ui::ConnectionOptionsDialog *ui;
 
     ConnectionOptionsDialog(QWidget *parent);
+    ~ConnectionOptionsDialog();
 
     void accept() override;
     void reject() override;

@@ -29,6 +29,10 @@ FilterWidgetSimpleTab::FilterWidgetSimpleTab()
     ui->setupUi(this);
 }
 
+FilterWidgetSimpleTab::~FilterWidgetSimpleTab() {
+    delete ui;
+}
+
 void FilterWidgetSimpleTab::add_classes(AdConfig *adconfig, const QList<QString> classes) {
     ui->select_classes->add_classes(adconfig, classes);
 }

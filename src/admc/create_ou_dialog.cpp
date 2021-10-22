@@ -46,3 +46,7 @@ CreateOUDialog::CreateOUDialog(QWidget *parent)
 
     init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_OU);
 }
+
+CreateOUDialog::~CreateOUDialog() {
+    delete ui;
+}

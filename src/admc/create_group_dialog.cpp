@@ -53,6 +53,10 @@ CreateGroupDialog::CreateGroupDialog(QWidget *parent)
     init(ui->name_edit, ui->button_box, edit_list, required_edits, widget_list, CLASS_GROUP);
 }
 
+CreateGroupDialog::~CreateGroupDialog() {
+    delete ui;
+}
+
 void CreateGroupDialog::open() {
     sam_name_edit->load_domain();
 

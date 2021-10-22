@@ -46,3 +46,7 @@ AccountMultiTab::AccountMultiTab(AdInterface &ad) {
 
     multi_edits_connect_to_tab(edit_list, this);
 }
+
+AccountMultiTab::~AccountMultiTab() {
+    delete ui;
+}

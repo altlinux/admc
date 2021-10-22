@@ -41,6 +41,7 @@ public:
     Ui::OctetEditor *ui;
 
     OctetEditor(const QString attribute, QWidget *parent);
+    ~OctetEditor();
 
     void load(const QList<QByteArray> &values) override;
     QList<QByteArray> get_new_values() const override;

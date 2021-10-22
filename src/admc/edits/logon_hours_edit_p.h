@@ -57,6 +57,7 @@ public:
     Ui::LogonHoursDialog *ui;
 
     LogonHoursDialog(QWidget *parent);
+    ~LogonHoursDialog();
 
     void load(const QByteArray &value);
     QByteArray get() const;

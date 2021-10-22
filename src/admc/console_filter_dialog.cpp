@@ -82,6 +82,8 @@ ConsoleFilterDialog::~ConsoleFilterDialog() {
     const QVariant state = save_state();
 
     settings_set_variant(SETTING_filter_dialog_state, state);
+
+    delete ui;
 }
 
 void ConsoleFilterDialog::open() {

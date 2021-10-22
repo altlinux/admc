@@ -37,6 +37,7 @@ public:
     Ui::GeneralOtherTab *ui;
 
     GeneralOtherTab(const AdObject &object);
+    ~GeneralOtherTab();
 };
 
 void load_name_label(QLabel *name_label, const AdObject &object);

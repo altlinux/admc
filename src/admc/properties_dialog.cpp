@@ -239,6 +239,10 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         this, &PropertiesDialog::on_warning_dialog_rejected);
 }
 
+PropertiesDialog::~PropertiesDialog() {
+    delete ui;
+}
+
 void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab) {
     const bool switching_to_or_from_attributes = (prev_tab == attributes_tab || new_tab == attributes_tab);
     const bool need_to_open_dialog = (switching_to_or_from_attributes && is_modified);

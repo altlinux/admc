@@ -34,6 +34,7 @@ public:
     Ui::GeneralOUTab *ui;
 
     GeneralOUTab(const AdObject &object);
+    ~GeneralOUTab();
 };
 
 #endif /* GENERAL_OU_TAB_H */

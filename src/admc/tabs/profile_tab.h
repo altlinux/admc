@@ -34,6 +34,7 @@ public:
     Ui::ProfileTab *ui;
 
     ProfileTab();
+    ~ProfileTab();
 };
 
 #endif /* PROFILE_TAB_H */

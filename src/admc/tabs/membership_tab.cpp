@@ -106,6 +106,8 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
 
 MembershipTab::~MembershipTab() {
     settings_save_header_state(SETTING_membership_tab_header_state, ui->view->header());   
+
+    delete ui;
 }
 
 void MembershipTab::load(AdInterface &ad, const AdObject &object) {

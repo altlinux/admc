@@ -117,6 +117,8 @@ PolicyResultsWidget::PolicyResultsWidget(QWidget *parent) {
 PolicyResultsWidget::~PolicyResultsWidget() {
     const QVariant state = ui->view->save_state();
     settings_set_variant(SETTING_policy_results_state, state);
+
+    delete ui;
 }
 
 void PolicyResultsWidget::update(const QModelIndex &index) {

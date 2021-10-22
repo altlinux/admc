@@ -39,6 +39,7 @@ public:
     Ui::AboutDialog *ui;
 
     AboutDialog(QWidget *parent);
+    ~AboutDialog();
 };
 
 #endif /* ABOUT_DIALOG_H */

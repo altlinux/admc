@@ -47,6 +47,10 @@ EditQueryItemWidget::EditQueryItemWidget(QWidget *parent)
     update_filter_display();
 }
 
+EditQueryItemWidget::~EditQueryItemWidget() {
+    delete ui;
+}
+
 void EditQueryItemWidget::load(const QModelIndex &index) {
     QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
     QDataStream filter_state_stream(filter_state);

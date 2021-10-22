@@ -39,6 +39,7 @@ public:
     Ui::AddressMultiTab *ui;
 
     AddressMultiTab();
+    ~AddressMultiTab();
 };
 
 #endif /* ADDRESS_MULTI_TAB_H */

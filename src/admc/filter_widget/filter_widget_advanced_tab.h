@@ -38,6 +38,7 @@ public:
     Ui::FilterWidgetAdvancedTab *ui;
 
     FilterWidgetAdvancedTab();
+    ~FilterWidgetAdvancedTab();
 
     QString get_filter() const;
 

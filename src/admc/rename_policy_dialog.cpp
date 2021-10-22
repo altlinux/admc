@@ -51,6 +51,10 @@ RenamePolicyDialog::RenamePolicyDialog(ConsoleWidget *console_arg)
     on_edited();
 }
 
+RenamePolicyDialog::~RenamePolicyDialog() {
+    delete ui;
+}
+
 void RenamePolicyDialog::open() {
     reset();
 

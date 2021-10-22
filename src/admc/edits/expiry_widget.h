@@ -36,6 +36,7 @@ public:
     Ui::ExpiryWidget *ui;
 
     ExpiryWidget(QWidget *parent = nullptr);
+    ~ExpiryWidget();
 
     void load(const AdObject &object);
     void set_read_only(const bool read_only);

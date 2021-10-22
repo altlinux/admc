@@ -41,3 +41,7 @@ AddressTab::AddressTab() {
 
     edits_connect_to_tab(edits, this);
 }
+
+AddressTab::~AddressTab() {
+    delete ui;
+}

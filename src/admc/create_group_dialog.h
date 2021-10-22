@@ -36,6 +36,7 @@ public:
     Ui::CreateGroupDialog *ui;
 
     CreateGroupDialog(QWidget *parent);
+    ~CreateGroupDialog();
 
     void open() override;
 

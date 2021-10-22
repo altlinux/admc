@@ -37,6 +37,7 @@ public:
     Ui::RenameUserDialog *ui;
 
     RenameUserDialog(QWidget *parent);
+    ~RenameUserDialog();
 
 public slots:
     void open() override;

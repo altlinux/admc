@@ -38,6 +38,10 @@ BoolEditor::BoolEditor(const QString attribute_arg, QWidget *parent)
     init(ui->button_box, ui->attribute_label);
 }
 
+BoolEditor::~BoolEditor() {
+    delete ui;
+}
+
 void BoolEditor::load(const QList<QByteArray> &values) {
     if (values.isEmpty()) {
         ui->unset_button->setChecked(true);

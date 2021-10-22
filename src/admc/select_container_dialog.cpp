@@ -76,6 +76,10 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
         });
 }
 
+SelectContainerDialog::~SelectContainerDialog() {
+    delete ui;
+}
+
 void SelectContainerDialog::open() {
     AdInterface ad;
     if (ad_failed(ad)) {

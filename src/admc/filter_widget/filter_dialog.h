@@ -42,6 +42,7 @@ public:
     Ui::FilterDialog *ui;
 
     FilterDialog(QWidget *parent);
+    ~FilterDialog();
 
     void open() override;
     void reject() override;

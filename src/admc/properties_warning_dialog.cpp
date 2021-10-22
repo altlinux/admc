@@ -30,6 +30,10 @@ PropertiesWarningDialog::PropertiesWarningDialog(QWidget *parent)
     ui->button_box->addButton(tr("Discard changes"), QDialogButtonBox::RejectRole);
 }
 
+PropertiesWarningDialog::~PropertiesWarningDialog() {
+    delete ui;
+}
+
 void PropertiesWarningDialog::set_type(const PropertiesWarningType type) {
     const QString label_text = [&]() {
         switch (type) {

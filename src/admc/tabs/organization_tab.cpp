@@ -69,6 +69,8 @@ OrganizationTab::OrganizationTab() {
 
 OrganizationTab::~OrganizationTab() {
     settings_save_header_state(SETTING_organization_tab_header_state, ui->reports_view->header());   
+
+    delete ui;
 }
 
 void OrganizationTab::load(AdInterface &ad, const AdObject &object) {

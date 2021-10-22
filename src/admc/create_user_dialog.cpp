@@ -127,6 +127,10 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
     init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list,  CLASS_USER);
 }
 
+CreateUserDialog::~CreateUserDialog() {
+    delete ui;
+}
+
 void CreateUserDialog::open() {
     AdInterface ad;
     if (ad_failed(ad)) {

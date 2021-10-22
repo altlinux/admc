@@ -39,6 +39,10 @@ EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
     console = console_arg;
 }
 
+EditQueryFolderDialog::~EditQueryFolderDialog() {
+    delete ui;
+}
+
 void EditQueryFolderDialog::open() {
     const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
     const QString current_name = index.data(Qt::DisplayRole).toString();

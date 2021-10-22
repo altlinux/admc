@@ -85,6 +85,8 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 
 SelectObjectDialog::~SelectObjectDialog() {
     settings_save_header_state(SETTING_select_object_header_state, ui->view->header());   
+
+    delete ui;
 }
 
 QList<QString> SelectObjectDialog::header_labels() {

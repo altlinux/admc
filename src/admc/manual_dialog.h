@@ -38,6 +38,7 @@ public:
     Ui::ManualDialog *ui;
     
     ManualDialog(QWidget *parent);
+    ~ManualDialog();
 };
 
 #endif /* MANUAL_DIALOG_H */

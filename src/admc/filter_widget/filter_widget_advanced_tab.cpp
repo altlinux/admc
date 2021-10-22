@@ -27,6 +27,10 @@ FilterWidgetAdvancedTab::FilterWidgetAdvancedTab()
     ui->setupUi(this);
 }
 
+FilterWidgetAdvancedTab::~FilterWidgetAdvancedTab() {
+    delete ui;
+}
+
 QString FilterWidgetAdvancedTab::get_filter() const {
     const QString filter = ui->ldap_filter_edit->toPlainText();
 

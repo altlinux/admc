@@ -37,3 +37,7 @@ AddressMultiTab::AddressMultiTab() {
 
     multi_edits_connect_to_tab(edit_list, this);
 }
+
+AddressMultiTab::~AddressMultiTab() {
+    delete ui;
+}

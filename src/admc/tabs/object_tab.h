@@ -35,6 +35,7 @@ public:
     Ui::ObjectTab *ui;
 
     ObjectTab();
+    ~ObjectTab();
 };
 
 #endif /* OBJECT_TAB_H */

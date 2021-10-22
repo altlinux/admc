@@ -44,6 +44,10 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
     enable_widget_on_selection(ok_button, ui->view);
 }
 
+SelectPolicyDialog::~SelectPolicyDialog() {
+    delete ui;
+}
+
 void SelectPolicyDialog::open() {
     AdInterface ad;
     if (ad_failed(ad)) {

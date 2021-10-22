@@ -33,3 +33,7 @@ DelegationTab::DelegationTab() {
 
     edits_connect_to_tab(edits, this);
 }
+
+DelegationTab::~DelegationTab() {
+    delete ui;
+}

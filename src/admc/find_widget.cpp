@@ -115,6 +115,10 @@ FindWidget::FindWidget(QWidget *parent)
         });
 }
 
+FindWidget::~FindWidget() {
+    delete ui;
+}
+
 void FindWidget::init(const QList<QString> classes, const QString &default_base) {
     ui->filter_widget->add_classes(g_adconfig, classes);
     ui->select_base_widget->init(g_adconfig, default_base);

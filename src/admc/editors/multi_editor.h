@@ -42,6 +42,7 @@ public:
     Ui::MultiEditor *ui;
 
     MultiEditor(const QString attribute_arg, QWidget *parent);
+    ~MultiEditor();
 
     void load(const QList<QByteArray> &values) override;
     QList<QByteArray> get_new_values() const override;

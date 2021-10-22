@@ -36,6 +36,7 @@ public:
     Ui::SelectPolicyDialog *ui;
 
     SelectPolicyDialog(QWidget *parent);
+    ~SelectPolicyDialog();
 
     void open() override;
 
