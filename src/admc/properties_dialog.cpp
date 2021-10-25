@@ -160,7 +160,8 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     add_tab(general_tab, tr("General"));
 
     const bool advanced_view_ON = settings_get_bool(SETTING_advanced_features);
-    if (advanced_view_ON) {
+
+    if (advanced_view_ON && !object.is_class(CLASS_GP_CONTAINER)) {
         add_tab(new ObjectTab(), tr("Object"));
 
         attributes_tab = new AttributesTab();

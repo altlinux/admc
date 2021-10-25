@@ -180,6 +180,8 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     // emits "current change" signal
     ui->trustee_view->selectionModel()->setCurrentIndex(trustee_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 
+    is_policy = object.is_class(CLASS_GP_CONTAINER);
+
     PropertiesTab::load(ad, object);
 }
 
@@ -259,6 +261,21 @@ bool SecurityTab::set_trustee(const QString &trustee_name) {
     ui->trustee_view->setCurrentIndex(item->index());
 
     return true;
+}
+
+bool SecurityTab::verify(AdInterface &ad, const QString &target) const {
+    UNUSED_ARG(target);
+
+    if (is_policy) {
+        // To apply security tab for policies we need user
+        // to have admin rights to be able to sync perms of
+        // GPT
+        const bool have_sufficient_rights = ad.logged_in_as_admin();
+
+        return have_sufficient_rights;
+    } else {
+        return true;
+    }
 }
 
 bool SecurityTab::apply(AdInterface &ad, const QString &target) {

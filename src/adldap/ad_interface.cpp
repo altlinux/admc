@@ -1278,7 +1278,7 @@ bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
         d->error_message(tr("Failed to create GPO."), error);
     };
 
-    if (!d->logged_in_as_admin()) {
+    if (!logged_in_as_admin()) {
         error_message(tr("Insufficient rights."));
 
         return false;
@@ -1598,7 +1598,7 @@ QString AdInterface::filesys_path_to_smb_path(const QString &filesys_path) const
 bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     // NOTE: skip perms check for non-admins, because don't
     // have enough rights to get full sd
-    if (!d->logged_in_as_admin()) {
+    if (!logged_in_as_admin()) {
         return true;
     }
 
@@ -1856,10 +1856,10 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
     }
 }
 
-bool AdInterfacePrivate::logged_in_as_admin() {
+bool AdInterface::logged_in_as_admin() {
     const QString user_dn = [&]() {
         const QString sam_account_name = [&]() {
-            QString out = client_user;
+            QString out = d->client_user;
             out = out.split("@")[0];
 
             return out;
@@ -1870,7 +1870,7 @@ bool AdInterfacePrivate::logged_in_as_admin() {
         }
 
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_SAM_ACCOUNT_NAME, sam_account_name);
-        const QHash<QString, AdObject> results = q->search(domain_head, SearchScope_All, filter, QList<QString>());
+        const QHash<QString, AdObject> results = search(d->domain_head, SearchScope_All, filter, QList<QString>());
 
         if (results.isEmpty()) {
             return QString();
@@ -1886,9 +1886,9 @@ bool AdInterfacePrivate::logged_in_as_admin() {
     }
     
     const bool user_is_admin = [&]() {
-        const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(domain_head);
+        const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(d->domain_head);
 
-        const AdObject domain_admins_object = q->search_object(domain_admins_dn);
+        const AdObject domain_admins_object = search_object(domain_admins_dn);
         const QList<QString> member_list = domain_admins_object.get_strings(ATTRIBUTE_MEMBER);
         
         const bool out = member_list.contains(user_dn);

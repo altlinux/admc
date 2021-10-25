@@ -118,6 +118,7 @@ public:
     void clear_messages();
     AdConfig *adconfig() const;
     QString client_user() const;
+    bool logged_in_as_admin();
 
     // NOTE: If request attributes list is empty, all
     // attributes are returned
