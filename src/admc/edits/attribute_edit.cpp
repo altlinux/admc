@@ -21,6 +21,7 @@
 #include "edits/attribute_edit.h"
 
 #include "tabs/properties_tab.h"
+#include "utils.h"
 
 #include <QDebug>
 
@@ -48,6 +49,9 @@ void AttributeEdit::load(AdInterface &ad, const AdObject &object) {
 }
 
 bool AttributeEdit::verify(AdInterface &ad, const QString &dn) const {
+    UNUSED_ARG(ad);
+    UNUSED_ARG(dn);
+
     return true;
 }
 

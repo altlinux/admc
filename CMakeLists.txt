@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # NOTE: neeed largefile options to prevent problems with
 # smbclient on 32bit systems
-add_compile_options(-Wall -Wshadow -Werror=switch -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
+add_compile_options(-Wall -Wextra -Wshadow -Werror -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
 
 # You can get version from spec by first finding Versions keyword.
 # After that you can use awk to split line by : and then select second part of it.

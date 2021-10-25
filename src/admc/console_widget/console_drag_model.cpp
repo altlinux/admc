@@ -101,6 +101,8 @@ bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, in
 }
 
 bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int, int, const QModelIndex &parent) {
+    UNUSED_ARG(action);
+
     if (!data->hasFormat(MIME_TYPE_CONSOLE)) {
         return false;
     }

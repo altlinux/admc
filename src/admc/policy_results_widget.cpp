@@ -70,7 +70,8 @@ const QHash<PolicyResultsColumn, GplinkOption> column_to_option = {
 // TODO: need to sync this with changes done through group
 // policy tab (just call load after properties is closed?)
 
-PolicyResultsWidget::PolicyResultsWidget(QWidget *parent) {
+PolicyResultsWidget::PolicyResultsWidget(QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::PolicyResultsWidget();
     ui->setupUi(this);
 

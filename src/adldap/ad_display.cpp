@@ -59,6 +59,8 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
                 case LargeIntegerSubtype_Timespan: return timespan_display_value(value);
                 case LargeIntegerSubtype_Integer: return QString(value);
             }
+
+            return QString();
         }
         case AttributeType_UTCTime: return datetime_display_value(attribute, value, adconfig);
         case AttributeType_GeneralizedTime: return datetime_display_value(attribute, value, adconfig);

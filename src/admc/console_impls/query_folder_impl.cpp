@@ -82,12 +82,19 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 }
 
 bool QueryFolderImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    UNUSED_ARG(dropped_list);
+    UNUSED_ARG(target);
+    UNUSED_ARG(target_type);
+
     const bool dropped_are_query_item_or_folder = (dropped_type_list - QSet<int>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
 
     return dropped_are_query_item_or_folder;
 }
 
 void QueryFolderImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    UNUSED_ARG(dropped_type_list);
+    UNUSED_ARG(target_type);
+
     console_query_move(console, dropped_list, target);
 }
 
@@ -103,6 +110,8 @@ QList<QAction *> QueryFolderImpl::get_all_custom_actions() const {
 }
 
 QSet<QAction *> QueryFolderImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+
     QSet<QAction *> out;
 
     if (single_selection) {
@@ -115,6 +124,8 @@ QSet<QAction *> QueryFolderImpl::get_custom_actions(const QModelIndex &index, co
 }
 
 QSet<StandardAction> QueryFolderImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Delete);

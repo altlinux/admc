@@ -132,6 +132,8 @@ void AttributesTab::edit_attribute() {
 }
 
 void AttributesTab::load(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     original.clear();
 
     for (auto attribute : object.attributes()) {

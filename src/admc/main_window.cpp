@@ -380,7 +380,7 @@ void MainWindow::connect_to_server() {
 
     // Load console tree's
     console_object_tree_init(ui->console, ad);
-    console_policy_tree_init(ui->console, ad);
+    console_policy_tree_init(ui->console);
     console_query_tree_init(ui->console);
 
     // Set current scope to object head to load it

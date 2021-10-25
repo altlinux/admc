@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "edits/expiry_widget.h"
 #include "globals.h"
+#include "utils.h"
 
 ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -36,6 +37,8 @@ ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QList<AttributeEdit *> *ed
 }
 
 void ExpiryEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     edit_widget->load(object);
 }
 

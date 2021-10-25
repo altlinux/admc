@@ -21,6 +21,7 @@
 #include "edits/gpoptions_edit.h"
 
 #include "adldap.h"
+#include "utils.h"
 
 #include <QCheckBox>
 
@@ -36,6 +37,8 @@ GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits
 }
 
 void GpoptionsEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
     const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);
 

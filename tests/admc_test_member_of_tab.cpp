@@ -85,7 +85,7 @@ void ADMCTestMemberOfTab::load() {
 }
 
 int ADMCTestMemberOfTab::get_group_row(const QString &dn) {
-    const QString group_name = dn_get_name(group_dn);
+    const QString group_name = dn_get_name(dn);
 
     for (int row = 0; row < model->rowCount(); row++) {
         auto item = model->item(row, 0);

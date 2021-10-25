@@ -218,6 +218,8 @@ void ObjectImpl::fetch(const QModelIndex &index) {
 }
 
 bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    UNUSED_ARG(target_type);
+
     const bool dropped_are_all_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
     const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
@@ -246,6 +248,8 @@ bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
 }
 
 void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    UNUSED_ARG(target_type);
+
     const bool dropped_are_all_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
     const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
@@ -363,6 +367,8 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
 }
 
 QSet<QAction *> ObjectImpl::get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(single_selection);
+
     QSet<QAction *> out;
 
     const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
@@ -397,6 +403,8 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(const QModelIndex &index, 
 }
 
 QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(single_selection);
+
     QSet<StandardAction> out;
 
     const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();

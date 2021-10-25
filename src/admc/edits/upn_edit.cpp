@@ -50,6 +50,8 @@ void UpnEdit::init_suffixes(AdInterface &ad) {
 }
 
 void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     upn_suffix_combo_load(upn_suffix_combo, object);
 
     const QString prefix = object.get_upn_prefix();

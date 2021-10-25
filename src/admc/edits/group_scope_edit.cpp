@@ -21,6 +21,7 @@
 #include "edits/group_scope_edit.h"
 
 #include "adldap.h"
+#include "utils.h"
 
 #include <QComboBox>
 #include <QFormLayout>
@@ -45,6 +46,8 @@ GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edi
 
 
 void GroupScopeEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+    
     const GroupScope scope = object.get_group_scope();
 
     combo->setCurrentIndex((int) scope);

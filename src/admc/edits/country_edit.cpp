@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "edits/country_combo.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QComboBox>
 
@@ -38,6 +39,8 @@ CountryEdit::CountryEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out
 }
 
 void CountryEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     country_combo_load(combo, object);
 }
 

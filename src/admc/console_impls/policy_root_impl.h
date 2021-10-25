@@ -59,6 +59,6 @@ private:
     void create_policy_in_console(const AdObject &object);
 };
 
-void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad);
+void console_policy_tree_init(ConsoleWidget *console);
 
 #endif /* POLICY_ROOT_IMPL_H */

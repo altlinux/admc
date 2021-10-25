@@ -98,6 +98,8 @@ QList<QAction *> QueryItemImpl::get_all_custom_actions() const {
 }
 
 QSet<QAction *> QueryItemImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+
     QSet<QAction *> out;
 
     if (single_selection) {

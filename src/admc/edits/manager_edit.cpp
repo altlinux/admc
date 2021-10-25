@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "edits/manager_widget.h"
 #include "globals.h"
+#include "utils.h"
 
 ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -37,6 +38,8 @@ ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attri
 }
 
 void ManagerEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     widget->load(object);
 }
 

@@ -20,6 +20,8 @@
 
 #include "help_browser.h"
 
+#include "utils.h"
+
 #include <QHelpContentWidget>
 #include <QHelpEngine>
 #include <QHelpIndexWidget>
@@ -52,6 +54,8 @@ void HelpBrowser::init(QHelpEngine *help_engine_arg) {
 // engine. Returning file data from this function causes it
 // to be loaded by text browser.
 QVariant HelpBrowser::loadResource(int type, const QUrl &name) {
+    UNUSED_ARG(type);
+
     const QByteArray file_data = help_engine->fileData(name);
 
     return QVariant(file_data);

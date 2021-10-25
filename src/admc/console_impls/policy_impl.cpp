@@ -58,6 +58,9 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
 }
 
 bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    UNUSED_ARG(target);
+    UNUSED_ARG(target_type);
+
     const bool dropped_are_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
     if (!dropped_are_objects) {
         return false;
@@ -77,6 +80,9 @@ bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
 }
 
 void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    UNUSED_ARG(target_type);
+    UNUSED_ARG(dropped_type_list);
+
     const QString policy_dn = target.data(PolicyRole_DN).toString();
     const QList<QString> policy_list = {policy_dn};
 
@@ -115,6 +121,8 @@ QList<QAction *> PolicyImpl::get_all_custom_actions() const {
 }
 
 QSet<QAction *> PolicyImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+
     QSet<QAction *> out;
 
     if (single_selection) {
@@ -126,6 +134,8 @@ QSet<QAction *> PolicyImpl::get_custom_actions(const QModelIndex &index, const b
 }
 
 QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Delete);
@@ -139,6 +149,8 @@ QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, 
 }
 
 void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
+    UNUSED_ARG(index_list);
+
     rename_dialog->open();
 }
 

@@ -97,7 +97,7 @@ bool dom_sid_equal(const struct dom_sid *sid1, const struct dom_sid *sid2)
 
 bool sid_append_rid(struct dom_sid *sid, uint32_t rid)
 {
-    if (sid->num_auths < ARRAY_SIZE(sid->sub_auths)) {
+    if ((size_t) (sid->num_auths) < ARRAY_SIZE(sid->sub_auths)) {
         sid->sub_auths[sid->num_auths++] = rid;
         return true;
     }
@@ -495,7 +495,7 @@ char *dom_sid_string(TALLOC_CTX *mem_ctx, const struct dom_sid *sid)
 
     len = dom_sid_string_buf(sid, buf, sizeof(buf));
 
-    if ((len < 0) || (len+1 > sizeof(buf))) {
+    if ((len < 0) || ((size_t) (len+1) > sizeof(buf))) {
         return talloc_strdup(mem_ctx, "(SID ERR)");
     }
 
@@ -519,7 +519,7 @@ char *dom_sid_str_buf(const struct dom_sid *sid, struct dom_sid_buf *dst)
 {
     int ret;
     ret = dom_sid_string_buf(sid, dst->buf, sizeof(dst->buf));
-    if ((ret < 0) || (ret >= sizeof(dst->buf))) {
+    if ((ret < 0) || ((size_t) ret >= sizeof(dst->buf))) {
         strlcpy(dst->buf, "(INVALID SID)", sizeof(dst->buf));
     }
     return dst->buf;

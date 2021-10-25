@@ -22,6 +22,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QDateTimeEdit>
 
@@ -41,6 +42,8 @@ DateTimeEdit::DateTimeEdit(QDateTimeEdit *edit_arg, const QString &attribute_arg
 }
 
 void DateTimeEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     const QDateTime datetime = object.get_datetime(attribute, g_adconfig);
     const QDateTime datetime_local = datetime.toLocalTime();
 

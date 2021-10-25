@@ -23,6 +23,7 @@
 #include "edits/ui_logon_computers_dialog.h"
 
 #include "adldap.h"
+#include "utils.h"
 
 LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
@@ -41,7 +42,8 @@ LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QList<AttributeE
 }
 
 void LogonComputersEdit::load_internal(AdInterface &ad, const AdObject &object) {
-    const 
+    UNUSED_ARG(ad);
+
     QString value = object.get_value(ATTRIBUTE_USER_WORKSTATIONS);
     dialog->load(value);
 }

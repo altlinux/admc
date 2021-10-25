@@ -43,6 +43,9 @@ PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QLi
 }
 
 void PasswordEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+    UNUSED_ARG(object);
+
     edit->clear();
     confirm_edit->clear();
 }
@@ -53,6 +56,8 @@ void PasswordEdit::set_read_only(const bool read_only) {
 }
 
 bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
+    UNUSED_ARG(ad);
+
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();
     if (pass != confirm_pass) {

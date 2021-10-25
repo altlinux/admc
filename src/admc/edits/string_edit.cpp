@@ -45,6 +45,8 @@ StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QList<
 }
 
 void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     const QString value = [=]() {
         const QString raw_value = object.get_string(attribute);
 

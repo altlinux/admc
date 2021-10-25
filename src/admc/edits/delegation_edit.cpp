@@ -22,6 +22,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QRadioButton>
 
@@ -39,6 +40,8 @@ DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_bu
 }
 
 void DelegationEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     const bool is_on = object.get_account_option(AccountOption_TrustedForDelegation, g_adconfig);
 
     if (is_on) {

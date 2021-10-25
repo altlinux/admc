@@ -34,27 +34,37 @@ ConsoleImpl::ConsoleImpl(ConsoleWidget *console_arg)
 }
 
 void ConsoleImpl::fetch(const QModelIndex &index) {
-
+    UNUSED_ARG(index);
 }
 
 bool ConsoleImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    UNUSED_ARG(dropped_list);
+    UNUSED_ARG(dropped_type_list);
+    UNUSED_ARG(target);
+    UNUSED_ARG(target_type);
+    
     return false;
 }
 
 void ConsoleImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-
+    UNUSED_ARG(dropped_list);
+    UNUSED_ARG(dropped_type_list);
+    UNUSED_ARG(target);
+    UNUSED_ARG(target_type);
 }
 
 QString ConsoleImpl::get_description(const QModelIndex &index) const {
+    UNUSED_ARG(index);
+    
     return QString();
 }
 
 void ConsoleImpl::activate(const QModelIndex &index) {
-
+    UNUSED_ARG(index);
 }
 
 void ConsoleImpl::selected_as_scope(const QModelIndex &index) {
-
+    UNUSED_ARG(index);
 }
 
 QList<QAction *> ConsoleImpl::get_all_custom_actions() const {
@@ -62,51 +72,63 @@ QList<QAction *> ConsoleImpl::get_all_custom_actions() const {
 }
 
 QSet<QAction *> ConsoleImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+    UNUSED_ARG(single_selection);
+
     return {};
 }
 
 QSet<QAction *> ConsoleImpl::get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+    UNUSED_ARG(single_selection);
+
     return {};
 }
 
 QSet<StandardAction> ConsoleImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+    UNUSED_ARG(single_selection);
+
     return {};
 }
 
 QSet<StandardAction> ConsoleImpl::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+    UNUSED_ARG(single_selection);
+    
     return {};
 }
 
 void ConsoleImpl::copy(const QList<QModelIndex> &index_list) {
-
+    UNUSED_ARG(index_list);
 }
 
 void ConsoleImpl::cut(const QList<QModelIndex> &index_list) {
-
+    UNUSED_ARG(index_list);
 }
     
 void ConsoleImpl::rename(const QList<QModelIndex> &index_list) {
-
+    UNUSED_ARG(index_list);
 }
     
 void ConsoleImpl::delete_action(const QList<QModelIndex> &index_list) {
-
+    UNUSED_ARG(index_list);
 }
     
 void ConsoleImpl::paste(const QList<QModelIndex> &index_list) {
-
+    UNUSED_ARG(index_list);
 }
     
 void ConsoleImpl::print(const QList<QModelIndex> &index_list) {
-
+    UNUSED_ARG(index_list);
 }
     
 void ConsoleImpl::refresh(const QList<QModelIndex> &index_list) {
-
+    UNUSED_ARG(index_list);
 }
     
 void ConsoleImpl::properties(const QList<QModelIndex> &index_list) {
-
+    UNUSED_ARG(index_list);
 }
 
 QList<QString> ConsoleImpl::column_labels() const {

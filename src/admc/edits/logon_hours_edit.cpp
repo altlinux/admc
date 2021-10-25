@@ -25,6 +25,7 @@
 #include "adldap.h"
 #include "edits/expiry_widget.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QTableView>
 #include <QStandardItemModel>
@@ -52,6 +53,8 @@ LogonHoursEdit::LogonHoursEdit(QPushButton *button_arg, QList<AttributeEdit *> *
 }
 
 void LogonHoursEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     const QByteArray value = object.get_value(ATTRIBUTE_LOGON_HOURS);
     dialog->load(value);
 }

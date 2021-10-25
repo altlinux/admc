@@ -59,6 +59,8 @@ PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
 }
 
 void PolicyRootImpl::fetch(const QModelIndex &index) {
+    UNUSED_ARG(index);
+
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -91,6 +93,9 @@ QList<QAction *> PolicyRootImpl::get_all_custom_actions() const {
 }
 
 QSet<QAction *> PolicyRootImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+    UNUSED_ARG(single_selection);
+
     QSet<QAction *> out;
 
     out.insert(create_policy_action);
@@ -99,6 +104,9 @@ QSet<QAction *> PolicyRootImpl::get_custom_actions(const QModelIndex &index, con
 }
 
 QSet<StandardAction> PolicyRootImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+    UNUSED_ARG(single_selection);
+
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Refresh);
@@ -155,7 +163,7 @@ void PolicyRootImpl::create_policy_in_console(const AdObject &object) {
     console_policy_load(row, object);
 }
 
-void console_policy_tree_init(ConsoleWidget *console, AdInterface &ad) {
+void console_policy_tree_init(ConsoleWidget *console) {
     const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, QModelIndex());
     auto policy_tree_head = head_row[0];
     policy_tree_head->setText(QCoreApplication::translate("policy_root_impl", "Group Policy Objects"));

@@ -62,6 +62,8 @@
 #define UNUSED(x) x
 #endif
 
+#define UNUSED_ARG(x) (void)(x)
+
 #define MAX_DN_LENGTH 1024
 #define MAX_PASSWORD_LENGTH 255
 
@@ -91,6 +93,14 @@ CertStrategy AdInterfacePrivate::s_cert_strat = CertStrategy_Never;
 SMBCCTX *AdInterfacePrivate::smbc = NULL;
 
 void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup, int maxLenWorkgroup, char *pUsername, int maxLenUsername, char *pPassword, int maxLenPassword) {
+    UNUSED_ARG(pServer);
+    UNUSED_ARG(pShare);
+    UNUSED_ARG(pWorkgroup);
+    UNUSED_ARG(maxLenWorkgroup);
+    UNUSED_ARG(pUsername);
+    UNUSED_ARG(maxLenUsername);
+    UNUSED_ARG(pPassword);
+    UNUSED_ARG(maxLenPassword);
 }
 
 AdInterface::AdInterface() {
@@ -1510,6 +1520,8 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
 }
 
 bool AdInterface::gpo_delete(const QString &dn, bool *deleted_object) {
+    UNUSED_ARG(deleted_object);
+
     // NOTE: try to execute both steps, even if first one
     // (deleting gpc) fails
 
@@ -1935,7 +1947,7 @@ QList<QString> query_server_for_hosts(const char *dname) {
 
     const long unsigned msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
 
-    const bool message_error = (msg_len < 0 || msg_len < sizeof(HEADER));
+    const bool message_error = (msg_len < sizeof(HEADER));
     if (message_error) {
         error();
     }
@@ -2021,6 +2033,8 @@ QList<QString> query_server_for_hosts(const char *dname) {
  * Callback for ldap_sasl_interactive_bind_s
  */
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
+    UNUSED_ARG(flags);
+
     sasl_defaults_gssapi *defaults = (sasl_defaults_gssapi *) indefaults;
     sasl_interact_t *interact = (sasl_interact_t *) in;
 

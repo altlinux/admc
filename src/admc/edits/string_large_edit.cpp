@@ -22,6 +22,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QPlainTextEdit>
 
@@ -54,6 +55,8 @@ StringLargeEdit::StringLargeEdit(QPlainTextEdit *edit_arg, const QString &attrib
 }
 
 void StringLargeEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     const QString value = object.get_string(attribute);
 
     edit->setPlainText(value);
