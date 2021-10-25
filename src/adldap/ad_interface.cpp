@@ -1520,8 +1520,6 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
 }
 
 bool AdInterface::gpo_delete(const QString &dn, bool *deleted_object) {
-    UNUSED_ARG(deleted_object);
-
     // NOTE: try to execute both steps, even if first one
     // (deleting gpc) fails
 
@@ -1570,6 +1568,8 @@ bool AdInterface::gpo_delete(const QString &dn, bool *deleted_object) {
             d->success_message(QString(tr("Failed to delete policy %1.")).arg(name));
         }
     }
+
+    *deleted_object = delete_gpc_success;
 
     return total_success;
 }
