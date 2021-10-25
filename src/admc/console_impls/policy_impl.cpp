@@ -32,6 +32,7 @@
 #include "select_object_dialog.h"
 #include "create_policy_dialog.h"
 #include "console_impls/item_type.h"
+#include "properties_dialog.h"
 
 #include <QDebug>
 #include <QList>
@@ -143,6 +144,7 @@ QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, 
     if (single_selection) {
         out.insert(StandardAction_Rename);
         out.insert(StandardAction_Refresh);
+        out.insert(StandardAction_Properties);
     }
 
     return out;
@@ -193,6 +195,13 @@ void PolicyImpl::refresh(const QList<QModelIndex> &index_list) {
     const QModelIndex index = index_list[0];
 
     policy_results_widget->update(index);
+}
+
+void PolicyImpl::properties(const QList<QModelIndex> &index_list) {
+    const QModelIndex index = index_list[0];
+    const QString dn = index.data(PolicyRole_DN).toString();
+
+    PropertiesDialog::open_for_target(dn);
 }
 
 void PolicyImpl::add_link(const QList<QString> &policy_list, const QList<QString> &ou_list) {

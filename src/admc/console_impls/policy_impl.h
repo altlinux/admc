@@ -57,6 +57,7 @@ public:
     void rename(const QList<QModelIndex> &index_list);
     void delete_action(const QList<QModelIndex> &index_list);
     void refresh(const QList<QModelIndex> &index_list);
+    void properties(const QList<QModelIndex> &index_list) override;
 
     void add_link(const QList<QString> &policy_list, const QList<QString> &ou_list);
 
