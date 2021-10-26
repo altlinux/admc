@@ -178,6 +178,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_OS_SERVICE_PACK "operatingSystemServicePack"
 #define ATTRIBUTE_LOGON_HOURS "logonHours"
 #define ATTRIBUTE_USER_WORKSTATIONS "userWorkstations"
+#define ATTRIBUTE_VERSION_NUMBER "versionNumber"
 
 #define CLASS_GROUP "group"
 #define CLASS_USER "user"

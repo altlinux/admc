@@ -1738,6 +1738,69 @@ bool AdInterface::gpo_sync_perms(const QString &dn) {
     return true;
 }
 
+bool AdInterface::gpo_get_sysvol_version(const AdObject &gpc_object, int *version_out) {
+    const QString error_context = tr("Failed to load GPO's sysvol version.");
+
+    const QString ini_contents = [&]() {
+        const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+        const QString smb_path = filesys_path_to_smb_path(filesys_path);
+
+        const QString ini_path = smb_path + "/GPT.INI";
+
+        const int ini_fd = smbc_open(cstr(ini_path), O_RDONLY, 0);
+
+        if (ini_fd < 0) {
+            const QString error_text = QString(tr("Failed to open GPT.INI, %1.")).arg(strerror(errno));
+            d->error_message(error_context, error_text);
+
+            return QString();
+        }
+
+        const size_t buffer_size = 2000;
+        char buffer[buffer_size];
+        const ssize_t bytes_read = smbc_read(ini_fd, buffer, buffer_size);
+
+        if (bytes_read < 0) {
+            const QString error_text = QString(tr("Failed to open GPT.INI, %1.")).arg(strerror(errno));
+            d->error_message(error_context, error_text);
+
+            return QString();
+        }
+
+        smbc_close(ini_fd);
+
+        return QString(buffer);
+    }();
+
+    if (ini_contents.isEmpty()) {
+        return false;
+    }
+
+    const int version = [&]() {
+        int out;
+
+        const int scan_result = sscanf(cstr(ini_contents), "[General]\r\nVersion=%i\r\n", &out);
+        const bool scan_success = (scan_result > 0);
+
+        if (!scan_success) {
+            const QString error_text = QString(tr("Failed to extract version from GPT.INI, %1.")).arg(strerror(errno));
+            d->error_message(error_context, error_text);
+
+            return -1;
+        }
+
+        return out; 
+    }();
+
+    if (version >= 0) {
+        *version_out = version;
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void AdInterfacePrivate::success_message(const QString &msg, const DoStatusMsg do_msg) {
     if (do_msg == DoStatusMsg_No) {
         return;

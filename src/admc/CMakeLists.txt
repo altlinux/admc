@@ -96,6 +96,7 @@ set(ADMC_SOURCES
     tabs/general_group_tab.cpp
     tabs/general_ou_tab.cpp
     tabs/general_computer_tab.cpp
+    tabs/general_policy_tab.cpp
     tabs/general_other_tab.cpp
     tabs/object_tab.cpp
     tabs/attributes_tab.cpp
