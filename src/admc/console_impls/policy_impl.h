@@ -54,9 +54,9 @@ public:
     QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
 
-    void rename(const QList<QModelIndex> &index_list);
-    void delete_action(const QList<QModelIndex> &index_list);
-    void refresh(const QList<QModelIndex> &index_list);
+    void rename(const QList<QModelIndex> &index_list) override;
+    void delete_action(const QList<QModelIndex> &index_list) override;
+    void refresh(const QList<QModelIndex> &index_list) override;
     void properties(const QList<QModelIndex> &index_list) override;
 
     void add_link(const QList<QString> &policy_list, const QList<QString> &ou_list);

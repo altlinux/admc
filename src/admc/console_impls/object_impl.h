@@ -75,7 +75,7 @@ public:
     void enable_filtering(const QString &filter);
     void disable_filtering();
     
-    void fetch(const QModelIndex &index);
+    void fetch(const QModelIndex &index) override;
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     QString get_description(const QModelIndex &index) const override;
