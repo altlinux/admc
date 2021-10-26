@@ -55,7 +55,6 @@ public:
     bool connect_via_ldap(const char *uri);
     bool delete_gpt(const QString &parent_path);
     bool smb_path_is_dir(const QString &path, bool *ok);
-    bool logged_in_as_admin();
 
     // Returns GPT contents including the root path, in
     // order of increasing depth, so root path is first

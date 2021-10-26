@@ -1278,7 +1278,7 @@ bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
         d->error_message(tr("Failed to create GPO."), error);
     };
 
-    if (!d->logged_in_as_admin()) {
+    if (!logged_in_as_admin()) {
         error_message(tr("Insufficient rights."));
 
         return false;
@@ -1598,7 +1598,7 @@ QString AdInterface::filesys_path_to_smb_path(const QString &filesys_path) const
 bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     // NOTE: skip perms check for non-admins, because don't
     // have enough rights to get full sd
-    if (!d->logged_in_as_admin()) {
+    if (!logged_in_as_admin()) {
         return true;
     }
 
@@ -1738,6 +1738,69 @@ bool AdInterface::gpo_sync_perms(const QString &dn) {
     return true;
 }
 
+bool AdInterface::gpo_get_sysvol_version(const AdObject &gpc_object, int *version_out) {
+    const QString error_context = tr("Failed to load GPO's sysvol version.");
+
+    const QString ini_contents = [&]() {
+        const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+        const QString smb_path = filesys_path_to_smb_path(filesys_path);
+
+        const QString ini_path = smb_path + "/GPT.INI";
+
+        const int ini_fd = smbc_open(cstr(ini_path), O_RDONLY, 0);
+
+        if (ini_fd < 0) {
+            const QString error_text = QString(tr("Failed to open GPT.INI, %1.")).arg(strerror(errno));
+            d->error_message(error_context, error_text);
+
+            return QString();
+        }
+
+        const size_t buffer_size = 2000;
+        char buffer[buffer_size];
+        const ssize_t bytes_read = smbc_read(ini_fd, buffer, buffer_size);
+
+        if (bytes_read < 0) {
+            const QString error_text = QString(tr("Failed to open GPT.INI, %1.")).arg(strerror(errno));
+            d->error_message(error_context, error_text);
+
+            return QString();
+        }
+
+        smbc_close(ini_fd);
+
+        return QString(buffer);
+    }();
+
+    if (ini_contents.isEmpty()) {
+        return false;
+    }
+
+    const int version = [&]() {
+        int out;
+
+        const int scan_result = sscanf(cstr(ini_contents), "[General]\r\nVersion=%i\r\n", &out);
+        const bool scan_success = (scan_result > 0);
+
+        if (!scan_success) {
+            const QString error_text = QString(tr("Failed to extract version from GPT.INI, %1.")).arg(strerror(errno));
+            d->error_message(error_context, error_text);
+
+            return -1;
+        }
+
+        return out; 
+    }();
+
+    if (version >= 0) {
+        *version_out = version;
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void AdInterfacePrivate::success_message(const QString &msg, const DoStatusMsg do_msg) {
     if (do_msg == DoStatusMsg_No) {
         return;
@@ -1856,10 +1919,10 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
     }
 }
 
-bool AdInterfacePrivate::logged_in_as_admin() {
+bool AdInterface::logged_in_as_admin() {
     const QString user_dn = [&]() {
         const QString sam_account_name = [&]() {
-            QString out = client_user;
+            QString out = d->client_user;
             out = out.split("@")[0];
 
             return out;
@@ -1870,7 +1933,7 @@ bool AdInterfacePrivate::logged_in_as_admin() {
         }
 
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_SAM_ACCOUNT_NAME, sam_account_name);
-        const QHash<QString, AdObject> results = q->search(domain_head, SearchScope_All, filter, QList<QString>());
+        const QHash<QString, AdObject> results = search(d->domain_head, SearchScope_All, filter, QList<QString>());
 
         if (results.isEmpty()) {
             return QString();
@@ -1886,9 +1949,9 @@ bool AdInterfacePrivate::logged_in_as_admin() {
     }
     
     const bool user_is_admin = [&]() {
-        const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(domain_head);
+        const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(d->domain_head);
 
-        const AdObject domain_admins_object = q->search_object(domain_admins_dn);
+        const AdObject domain_admins_object = search_object(domain_admins_dn);
         const QList<QString> member_list = domain_admins_object.get_strings(ATTRIBUTE_MEMBER);
         
         const bool out = member_list.contains(user_dn);

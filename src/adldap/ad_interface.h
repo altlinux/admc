@@ -118,6 +118,7 @@ public:
     void clear_messages();
     AdConfig *adconfig() const;
     QString client_user() const;
+    bool logged_in_as_admin();
 
     // NOTE: If request attributes list is empty, all
     // attributes are returned
@@ -170,6 +171,7 @@ public:
     bool gpo_delete(const QString &dn, bool *deleted_object);
     bool gpo_check_perms(const QString &gpo, bool *ok);
     bool gpo_sync_perms(const QString &gpo);
+    bool gpo_get_sysvol_version(const AdObject &gpc_object, int *version);
 
     QString filesys_path_to_smb_path(const QString &filesys_path) const;
 

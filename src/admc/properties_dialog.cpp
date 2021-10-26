@@ -34,6 +34,7 @@
 #include "tabs/general_group_tab.h"
 #include "tabs/general_ou_tab.h"
 #include "tabs/general_computer_tab.h"
+#include "tabs/general_policy_tab.h"
 #include "tabs/general_other_tab.h"
 #include "tabs/gpo_links_tab.h"
 #include "tabs/group_policy_tab.h"
@@ -152,6 +153,8 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
             return new GeneralOUTab(object);
         } else if (object.is_class(CLASS_GROUP)) {
             return new GeneralGroupTab(object);
+        } else if (object.is_class(CLASS_GP_CONTAINER)) {
+            return new GeneralPolicyTab();
         } else {
             return new GeneralOtherTab(object);
         }
@@ -160,7 +163,8 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     add_tab(general_tab, tr("General"));
 
     const bool advanced_view_ON = settings_get_bool(SETTING_advanced_features);
-    if (advanced_view_ON) {
+
+    if (advanced_view_ON && !object.is_class(CLASS_GP_CONTAINER)) {
         add_tab(new ObjectTab(), tr("Object"));
 
         attributes_tab = new AttributesTab();

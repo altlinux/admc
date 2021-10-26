@@ -65,6 +65,7 @@ public:
     static QHash<AcePermission, QString> ace_permission_to_name_map();
 
     void load(AdInterface &ad, const AdObject &object) override;
+    bool verify(AdInterface &ad, const QString &target) const override;
     bool apply(AdInterface &ad, const QString &target) override;
 
     // NOTE: f-ns for testings
@@ -81,6 +82,7 @@ private:
     QHash<QByteArray, QHash<AcePermission, PermissionState>> original_permission_state_map;
     QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
     bool ignore_item_changed_signal;
+    bool is_policy;
 
     void on_item_changed(QStandardItem *item);
     void on_add_trustee_button();

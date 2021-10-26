@@ -180,6 +180,8 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     // emits "current change" signal
     ui->trustee_view->selectionModel()->setCurrentIndex(trustee_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 
+    is_policy = object.is_class(CLASS_GP_CONTAINER);
+
     PropertiesTab::load(ad, object);
 }
 
@@ -261,15 +263,34 @@ bool SecurityTab::set_trustee(const QString &trustee_name) {
     return true;
 }
 
+bool SecurityTab::verify(AdInterface &ad, const QString &target) const {
+    UNUSED_ARG(target);
+
+    if (is_policy) {
+        // To apply security tab for policies we need user
+        // to have admin rights to be able to sync perms of
+        // GPT
+        const bool have_sufficient_rights = ad.logged_in_as_admin();
+
+        return have_sufficient_rights;
+    } else {
+        return true;
+    }
+}
+
 bool SecurityTab::apply(AdInterface &ad, const QString &target) {
     const bool modified = (original_permission_state_map != permission_state_map);
     if (!modified) {
         return true;
     }
-
-    const bool apply_success = attribute_replace_security_descriptor(&ad, target, permission_state_map);
+ 
+    const bool replace_sd_success = attribute_replace_security_descriptor(&ad, target, permission_state_map);
 
     original_permission_state_map = permission_state_map;
+
+    const bool sync_perms_success = ad.gpo_sync_perms(target);
+
+    const bool apply_success = (replace_sd_success && sync_perms_success);
 
     return apply_success;
 }
