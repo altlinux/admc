@@ -61,6 +61,8 @@ private:
     QPushButton *ok_button;
     QString m_object_class;
     WidgetState m_state;
+
+    QString get_created_name() const;
 };
 
 #endif /* CREATE_DIALOG_H */

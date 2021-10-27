@@ -53,7 +53,7 @@ void CreateDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, 
 }
 
 QString CreateDialog::get_created_dn() const {
-    const QString name = name_edit->text();
+    const QString name = get_created_name();
     const QString dn = dn_from_name_and_parent(name, parent_dn, m_object_class);
 
     return dn;
@@ -75,8 +75,7 @@ void CreateDialog::accept() {
         return;
     }
 
-    const QString name = name_edit->text();
-
+    const QString name = get_created_name();
     const QString dn = get_created_dn();
 
     // Verify edits
@@ -138,4 +137,10 @@ void CreateDialog::on_edited() {
     }();
 
     ok_button->setEnabled(all_required_filled);
+}
+
+QString CreateDialog::get_created_name() const {
+    // NOTE: trim whitespaces because server will do it
+    // anyway and we want a correct name
+    return name_edit->text().trimmed();
 }
