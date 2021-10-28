@@ -28,7 +28,7 @@
  * current tab.
  */
 
-#include "create_object_dialog.h"
+#include <QDialog>
 
 enum PropertiesWarningType {
     PropertiesWarningType_SwitchToAttributes,
