@@ -18,26 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_OBJECT_MENU_H
-#define ADMC_TEST_OBJECT_MENU_H
+#ifndef ADMC_TEST_RENAME_OBJECT_DIALOG_H
+#define ADMC_TEST_RENAME_OBJECT_DIALOG_H
 
 #include "admc_test.h"
 
-class ADMCTestObjectMenu : public ADMCTest {
+class ADMCTestRenameObjectDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
-    void object_menu_new_user();
-    void object_menu_new_ou();
-    void object_menu_new_computer();
-    void object_menu_new_group();
-
-    void object_menu_rename();
-
-    void object_menu_find_simple();
-    void object_menu_find_advanced();
-
-private:
+    void rename();
 };
 
-#endif /* ADMC_TEST_OBJECT_MENU_H */
+#endif /* ADMC_TEST_RENAME_OBJECT_DIALOG_H */

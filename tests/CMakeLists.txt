@@ -36,7 +36,6 @@ include_directories(
 # target + target.cpp
 set(TEST_TARGETS
     admc_test_ad_interface
-    admc_test_object_menu
     admc_test_unlock_edit
     admc_test_upn_edit
     admc_test_string_edit
@@ -70,6 +69,9 @@ set(TEST_TARGETS
     admc_test_multi_editor
     admc_test_edit_query_item_widget
     admc_test_policy_results_widget
+    admc_test_find_object_dialog
+    admc_test_rename_object_dialog
+    admc_test_create_object_dialog
 )
 
 foreach(target ${TEST_TARGETS})

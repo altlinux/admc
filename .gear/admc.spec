@@ -75,7 +75,6 @@ Tests for ADMC
 
 %files test
 %_libdir/libadmctest.so
-%_bindir/admc_test_object_menu
 %_bindir/admc_test_unlock_edit
 %_bindir/admc_test_upn_edit
 %_bindir/admc_test_string_edit
@@ -110,6 +109,9 @@ Tests for ADMC
 %_bindir/admc_test_datetime_editor
 %_bindir/admc_test_edit_query_item_widget
 %_bindir/admc_test_policy_results_widget
+%_bindir/admc_test_find_object_dialog
+%_bindir/admc_test_rename_object_dialog
+%_bindir/admc_test_create_object_dialog
 
 %changelog
 * %(LC_TIME=C date "+%%a %%b %%d %%Y") %{?package_signer:%package_signer}%{!?package_signer:%packager} %version-%release
