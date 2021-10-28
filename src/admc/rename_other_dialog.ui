@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RenameObjectDialog</class>
- <widget class="QDialog" name="RenameObjectDialog">
+ <class>RenameOtherDialog</class>
+ <widget class="QDialog" name="RenameOtherDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -45,7 +45,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>RenameObjectDialog</receiver>
+   <receiver>RenameOtherDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -61,7 +61,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>RenameObjectDialog</receiver>
+   <receiver>RenameOtherDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

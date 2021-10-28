@@ -18,17 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rename_object_dialog.h"
-#include "ui_rename_object_dialog.h"
+#include "rename_other_dialog.h"
+#include "ui_rename_other_dialog.h"
 
-RenameObjectDialog::RenameObjectDialog(QWidget *parent)
+RenameOtherDialog::RenameOtherDialog(QWidget *parent)
 : RenameDialog(parent) {
-    ui = new Ui::RenameObjectDialog();
+    ui = new Ui::RenameOtherDialog();
     ui->setupUi(this);
 
     init(ui->name_edit, ui->button_box, {});
 }
 
-RenameObjectDialog::~RenameObjectDialog() {
+RenameOtherDialog::~RenameOtherDialog() {
     delete ui;
 }

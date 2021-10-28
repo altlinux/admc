@@ -2491,14 +2491,14 @@
     </message>
 </context>
 <context>
-    <name>RenameObjectDialog</name>
+    <name>RenameOtherDialog</name>
     <message>
-        <location filename="rename_object_dialog.ui" line="14"/>
+        <location filename="rename_other_dialog.ui" line="14"/>
         <source>Rename Object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="rename_object_dialog.ui" line="22"/>
+        <location filename="rename_other_dialog.ui" line="22"/>
         <source>Name:</source>
         <translation></translation>
     </message>

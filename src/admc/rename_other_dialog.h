@@ -18,23 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RENAME_OBJECT_DIALOG_H
-#define RENAME_OBJECT_DIALOG_H
+#ifndef RENAME_OTHER_DIALOG_H
+#define RENAME_OTHER_DIALOG_H
 
 #include "rename_dialog.h"
 
 namespace Ui {
-    class RenameObjectDialog;
+    class RenameOtherDialog;
 }
 
-class RenameObjectDialog final : public RenameDialog {
+class RenameOtherDialog final : public RenameDialog {
     Q_OBJECT
 
 public:
-    Ui::RenameObjectDialog *ui;
+    Ui::RenameOtherDialog *ui;
 
-    RenameObjectDialog(QWidget *parent);
-    ~RenameObjectDialog();
+    RenameOtherDialog(QWidget *parent);
+    ~RenameOtherDialog();
 };
 
-#endif /* RENAME_OBJECT_DIALOG_H */
+#endif /* RENAME_OTHER_DIALOG_H */

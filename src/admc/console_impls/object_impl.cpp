@@ -36,7 +36,7 @@
 #include "create_ou_dialog.h"
 #include "create_computer_dialog.h"
 #include "rename_dialog.h"
-#include "rename_object_dialog.h"
+#include "rename_other_dialog.h"
 #include "rename_user_dialog.h"
 #include "rename_group_dialog.h"
 #include "select_container_dialog.h"
@@ -74,7 +74,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 
     change_dc_dialog = new ChangeDCDialog(console);
     move_dialog = new SelectContainerDialog(console);
-    rename_object_dialog = new RenameObjectDialog(console);
+    rename_other_dialog = new RenameOtherDialog(console);
     rename_user_dialog = new RenameUserDialog(console);
     rename_group_dialog = new RenameGroupDialog(console);
     create_user_dialog = new CreateUserDialog(console);
@@ -433,7 +433,7 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
         } else if (is_group) {
             return rename_group_dialog;
         } else {
-            return rename_object_dialog;
+            return rename_other_dialog;
         }
     }();
 
