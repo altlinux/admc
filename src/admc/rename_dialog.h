@@ -49,6 +49,8 @@ private:
     QString target;
     QLineEdit *name_edit;
     QList<AttributeEdit *> edits;
+
+    QString get_new_name() const;
 };
 
 #endif /* RENAME_DIALOG_H */
