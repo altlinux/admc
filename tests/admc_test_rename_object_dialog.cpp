@@ -49,4 +49,32 @@ void ADMCTestRenameObjectDialog::rename() {
     QVERIFY(object_exists(new_dn));
 }
 
+// Leading and trailing spaces should get removed
+void ADMCTestRenameObjectDialog::trim_spaces() {
+    const QString old_name = TEST_USER;
+    const QString new_name = old_name + "2";
+
+    const QString old_dn = test_object_dn(old_name, CLASS_USER);
+    const QString new_dn = dn_rename(old_dn, new_name);
+
+    // Create test object
+    const bool create_success = ad.object_add(old_dn, CLASS_USER);
+    QVERIFY(create_success);
+    QVERIFY(object_exists(old_dn));
+
+    // Open rename dialog
+    auto rename_object_dialog = new RenameUserDialog(parent_widget);
+    rename_object_dialog->set_target(old_dn);
+    rename_object_dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(rename_object_dialog, 1000));
+
+    const QString with_leading_space = " " + new_name;
+    rename_object_dialog->ui->name_edit->setText(with_leading_space);
+    QCOMPARE(new_dn, rename_object_dialog->get_new_dn());
+
+    const QString with_trailing_space = new_name + " ";
+    rename_object_dialog->ui->name_edit->setText(with_trailing_space);
+    QCOMPARE(new_dn, rename_object_dialog->get_new_dn());
+}
+
 QTEST_MAIN(ADMCTestRenameObjectDialog)

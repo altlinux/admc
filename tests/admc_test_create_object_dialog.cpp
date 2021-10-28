@@ -119,4 +119,22 @@ void ADMCTestCreateObjectDialog::create_group() {
     QVERIFY(true);
 }
 
+// Leading and trailing spaces should get removed
+void ADMCTestCreateObjectDialog::trim_spaces() {
+    const QString name = TEST_USER;
+    const QString dn = test_object_dn(name, CLASS_USER);
+    const QString parent = test_arena_dn();
+
+    auto create_dialog = new CreateUserDialog(parent_widget);
+    create_dialog->set_parent_dn(parent);
+
+    const QString with_leading_space = " " + name;
+    create_dialog->ui->name_edit->setText(with_leading_space);
+    QCOMPARE(dn, create_dialog->get_created_dn());
+
+    const QString with_trailing_space = name + " ";
+    create_dialog->ui->name_edit->setText(with_trailing_space);
+    QCOMPARE(dn, create_dialog->get_created_dn());
+}
+
 QTEST_MAIN(ADMCTestCreateObjectDialog)

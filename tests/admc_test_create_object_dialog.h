@@ -31,6 +31,7 @@ private slots:
     void create_ou();
     void create_computer();
     void create_group();
+    void trim_spaces();
 };
 
 #endif /* ADMC_TEST_CREATE_OBJECT_DIALOG_H */
