@@ -38,7 +38,7 @@ class ChangeDCDialog;
 class ConsoleWidget;
 class SelectContainerDialog;
 class RenameDialog;
-class CreateDialog;
+class CreateObjectDialog;
 
 /**
  * Some f-ns used for models that store objects.
@@ -121,10 +121,10 @@ private:
     RenameDialog *rename_object_dialog;
     RenameDialog *rename_user_dialog;
     RenameDialog *rename_group_dialog;
-    CreateDialog *create_user_dialog;
-    CreateDialog *create_group_dialog;
-    CreateDialog *create_ou_dialog;
-    CreateDialog *create_computer_dialog;
+    CreateObjectDialog *create_user_dialog;
+    CreateObjectDialog *create_group_dialog;
+    CreateObjectDialog *create_ou_dialog;
+    CreateObjectDialog *create_computer_dialog;
 
     QString current_filter;
     bool filtering_is_ON;
@@ -143,7 +143,7 @@ private:
     bool find_action_enabled;
     bool refresh_action_enabled;
 
-    void new_object(CreateDialog *dialog);
+    void new_object(CreateObjectDialog *dialog);
     void set_disabled(const bool disabled);
     void drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
     void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);

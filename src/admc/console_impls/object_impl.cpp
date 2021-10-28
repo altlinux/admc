@@ -755,7 +755,7 @@ void ObjectImpl::on_reset_account() {
     }
 }
 
-void ObjectImpl::new_object(CreateDialog *dialog) {
+void ObjectImpl::new_object(CreateObjectDialog *dialog) {
     const QString parent_dn = get_selected_dn_object(console);
 
     dialog->set_parent_dn(parent_dn);

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_dialog.h"
+#include "create_object_dialog.h"
 
 #include "adldap.h"
 #include "edits/attribute_edit.h"
@@ -30,7 +30,7 @@
 #include <QDialogButtonBox>
 #include <QLineEdit>
 
-void CreateDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QList<QWidget *> &widget_list, const QString &object_class) {
+void CreateObjectDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QList<QWidget *> &widget_list, const QString &object_class) {
     name_edit = name_edit_arg;
     m_edit_list = edits_list;
     m_required_list = required_list;
@@ -47,29 +47,29 @@ void CreateDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, 
     for (QLineEdit *edit : m_required_list) {
         connect(
             edit, &QLineEdit::textChanged,
-            this, &CreateDialog::on_edited);
+            this, &CreateObjectDialog::on_edited);
     }
     on_edited();
 }
 
-QString CreateDialog::get_created_dn() const {
+QString CreateObjectDialog::get_created_dn() const {
     const QString name = get_created_name();
     const QString dn = dn_from_name_and_parent(name, parent_dn, m_object_class);
 
     return dn;
 }
 
-void CreateDialog::set_parent_dn(const QString &dn) {
+void CreateObjectDialog::set_parent_dn(const QString &dn) {
     parent_dn = dn;
 }
 
-void CreateDialog::open() {
+void CreateObjectDialog::open() {
     m_state.restore();
 
     QDialog::open();
 }
 
-void CreateDialog::accept() {
+void CreateObjectDialog::accept() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -125,7 +125,7 @@ void CreateDialog::accept() {
 }
 
 // Enable/disable create button if all required edits filled
-void CreateDialog::on_edited() {
+void CreateObjectDialog::on_edited() {
     const bool all_required_filled = [this]() {
         for (QLineEdit *edit : m_required_list) {
             if (edit->text().isEmpty()) {
@@ -139,7 +139,7 @@ void CreateDialog::on_edited() {
     ok_button->setEnabled(all_required_filled);
 }
 
-QString CreateDialog::get_created_name() const {
+QString CreateObjectDialog::get_created_name() const {
     // NOTE: trim whitespaces because server will do it
     // anyway and we want a correct name
     return name_edit->text().trimmed();

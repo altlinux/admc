@@ -27,7 +27,7 @@
 #include "edits/upn_edit.h"
 
 CreateComputerDialog::CreateComputerDialog(QWidget *parent)
-: CreateDialog(parent) {
+: CreateObjectDialog(parent) {
     ui = new Ui::CreateComputerDialog();
     ui->setupUi(this);
 
@@ -71,5 +71,5 @@ CreateComputerDialog::~CreateComputerDialog() {
 void CreateComputerDialog::open() {
     sam_name_edit->load_domain();
 
-    CreateDialog::open();
+    CreateObjectDialog::open();
 }

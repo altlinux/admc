@@ -28,7 +28,7 @@
  * current tab.
  */
 
-#include "create_dialog.h"
+#include "create_object_dialog.h"
 
 enum PropertiesWarningType {
     PropertiesWarningType_SwitchToAttributes,

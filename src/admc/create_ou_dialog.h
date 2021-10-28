@@ -21,13 +21,13 @@
 #ifndef CREATE_OU_DIALOG_H
 #define CREATE_OU_DIALOG_H
 
-#include "create_dialog.h"
+#include "create_object_dialog.h"
 
 namespace Ui {
     class CreateOUDialog;
 }
 
-class CreateOUDialog final : public CreateDialog {
+class CreateOUDialog final : public CreateObjectDialog {
     Q_OBJECT
 
 public:

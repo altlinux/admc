@@ -21,7 +21,7 @@
 #ifndef CREATE_USER_DIALOG_H
 #define CREATE_USER_DIALOG_H
 
-#include "create_dialog.h"
+#include "create_object_dialog.h"
 
 class SamNameEdit;
 class UpnEdit;
@@ -30,7 +30,7 @@ namespace Ui {
     class CreateUserDialog;
 }
 
-class CreateUserDialog final : public CreateDialog {
+class CreateUserDialog final : public CreateObjectDialog {
     Q_OBJECT
 
 public:

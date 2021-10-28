@@ -30,7 +30,7 @@
 #include "edits/group_type_edit.h"
 
 CreateGroupDialog::CreateGroupDialog(QWidget *parent)
-: CreateDialog(parent) {
+: CreateObjectDialog(parent) {
     ui = new Ui::CreateGroupDialog();
     ui->setupUi(this);
 
@@ -60,5 +60,5 @@ CreateGroupDialog::~CreateGroupDialog() {
 void CreateGroupDialog::open() {
     sam_name_edit->load_domain();
 
-    CreateDialog::open();
+    CreateObjectDialog::open();
 }

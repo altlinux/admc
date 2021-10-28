@@ -21,7 +21,7 @@
 #ifndef CREATE_GROUP_DIALOG_H
 #define CREATE_GROUP_DIALOG_H
 
-#include "create_dialog.h"
+#include "create_object_dialog.h"
 
 class SamNameEdit;
 
@@ -29,7 +29,7 @@ namespace Ui {
     class CreateGroupDialog;
 }
 
-class CreateGroupDialog final : public CreateDialog {
+class CreateGroupDialog final : public CreateObjectDialog {
     Q_OBJECT
 
 public:

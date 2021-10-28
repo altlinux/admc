@@ -31,7 +31,7 @@
 #include "edits/account_option_edit.h"
 
 CreateUserDialog::CreateUserDialog(QWidget *parent)
-: CreateDialog(parent) {
+: CreateObjectDialog(parent) {
     ui = new Ui::CreateUserDialog();
     ui->setupUi(this);
 
@@ -140,5 +140,5 @@ void CreateUserDialog::open() {
     upn_edit->init_suffixes(ad);
     sam_name_edit->load_domain();
 
-    CreateDialog::open();
+    CreateObjectDialog::open();
 }

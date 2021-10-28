@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_DIALOG_H
-#define CREATE_DIALOG_H
+#ifndef CREATE_OBJECT_DIALOG_H
+#define CREATE_OBJECT_DIALOG_H
 
 /**
  * Base class for dialogs that create objects. 
@@ -33,7 +33,7 @@ class QLineEdit;
 class QDialogButtonBox;
 class AttributeEdit;
 
-class CreateDialog : public QDialog {
+class CreateObjectDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -65,4 +65,4 @@ private:
     QString get_created_name() const;
 };
 
-#endif /* CREATE_DIALOG_H */
+#endif /* CREATE_OBJECT_DIALOG_H */

@@ -61,7 +61,7 @@ set(ADMC_SOURCES
     rename_policy_dialog.cpp
     rename_user_dialog.cpp
     rename_group_dialog.cpp
-    create_dialog.cpp
+    create_object_dialog.cpp
     create_user_dialog.cpp
     create_group_dialog.cpp
     create_computer_dialog.cpp

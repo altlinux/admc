@@ -583,14 +583,14 @@
     </message>
 </context>
 <context>
-    <name>CreateDialog</name>
+    <name>CreateObjectDialog</name>
     <message>
-        <location filename="create_dialog.cpp" line="90"/>
+        <location filename="create_object_dialog.cpp" line="90"/>
         <source>Failed to create object %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="create_dialog.cpp" line="112"/>
+        <location filename="create_object_dialog.cpp" line="112"/>
         <source>Object %1 was created</source>
         <translation type="unfinished"></translation>
     </message>

@@ -21,7 +21,7 @@
 #ifndef CREATE_COMPUTER_DIALOG_H
 #define CREATE_COMPUTER_DIALOG_H
 
-#include "create_dialog.h"
+#include "create_object_dialog.h"
 
 class SamNameEdit;
 
@@ -29,7 +29,7 @@ namespace Ui {
     class CreateComputerDialog;
 }
 
-class CreateComputerDialog final : public CreateDialog {
+class CreateComputerDialog final : public CreateObjectDialog {
     Q_OBJECT
 
 public:

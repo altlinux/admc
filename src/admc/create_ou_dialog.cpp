@@ -28,7 +28,7 @@
 #include "edits/protect_deletion_edit.h"
 
 CreateOUDialog::CreateOUDialog(QWidget *parent)
-: CreateDialog(parent) {
+: CreateObjectDialog(parent) {
     ui = new Ui::CreateOUDialog();
     ui->setupUi(this);
 
