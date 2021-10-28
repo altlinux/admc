@@ -45,7 +45,7 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
     policy_results_widget = new PolicyResultsWidget(console_arg);
     set_results_widget(policy_results_widget);
 
-    rename_dialog = new RenamePolicyDialog(console_arg);
+    rename_object_dialog = new RenamePolicyDialog(console_arg);
 
     add_link_action = new QAction(tr("Add link..."), this);
     edit_action = new QAction(tr("Edit..."), this);
@@ -153,7 +153,7 @@ QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, 
 void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 
-    rename_dialog->open();
+    rename_object_dialog->open();
 }
 
 void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {

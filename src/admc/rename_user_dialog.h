@@ -21,7 +21,7 @@
 #ifndef RENAME_USER_DIALOG_H
 #define RENAME_USER_DIALOG_H
 
-#include "rename_dialog.h"
+#include "rename_object_dialog.h"
 
 class UpnEdit;
 class SamNameEdit;
@@ -30,7 +30,7 @@ namespace Ui {
     class RenameUserDialog;
 }
 
-class RenameUserDialog final : public RenameDialog {
+class RenameUserDialog final : public RenameObjectDialog {
     Q_OBJECT
 
 public:

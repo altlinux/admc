@@ -28,7 +28,7 @@
 #include "edits/upn_edit.h"
 
 RenameUserDialog::RenameUserDialog(QWidget *parent)
-: RenameDialog(parent) {
+: RenameObjectDialog(parent) {
     ui = new Ui::RenameUserDialog();
     ui->setupUi(this);
 
@@ -55,5 +55,5 @@ void RenameUserDialog::open() {
     upn_edit->init_suffixes(ad);
     sam_name_edit->load_domain();
 
-    RenameDialog::open();
+    RenameObjectDialog::open();
 }

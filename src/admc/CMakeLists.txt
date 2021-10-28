@@ -56,7 +56,7 @@ set(ADMC_SOURCES
     console_impls/query_folder_impl.cpp
     console_impls/policy_root_impl.cpp
 
-    rename_dialog.cpp
+    rename_object_dialog.cpp
     rename_other_dialog.cpp
     rename_policy_dialog.cpp
     rename_user_dialog.cpp

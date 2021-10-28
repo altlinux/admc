@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rename_dialog.h"
+#include "rename_object_dialog.h"
 
 #include "adldap.h"
 #include "edits/attribute_edit.h"
@@ -30,17 +30,17 @@
 #include <QDialogButtonBox>
 #include <QLineEdit>
 
-void RenameDialog::success_msg(const QString &old_name) {
+void RenameObjectDialog::success_msg(const QString &old_name) {
     const QString message = QString(tr("Object %1 was renamed.")).arg(old_name);
     g_status()->add_message(message, StatusType_Success);
 }
 
-void RenameDialog::fail_msg(const QString &old_name) {
+void RenameObjectDialog::fail_msg(const QString &old_name) {
     const QString message = QString(tr("Failed to rename object %1")).arg(old_name);
     g_status()->add_message(message, StatusType_Error);
 }
 
-void RenameDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_arg) {
+void RenameObjectDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_arg) {
     name_edit = name_edit_arg;
     edits = edits_arg;
 
@@ -48,14 +48,14 @@ void RenameDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, 
 
     connect(
         reset_button, &QPushButton::clicked,
-        this, &RenameDialog::reset);
+        this, &RenameObjectDialog::reset);
 }
 
-void RenameDialog::set_target(const QString &dn) {
+void RenameObjectDialog::set_target(const QString &dn) {
     target = dn;
 }
 
-void RenameDialog::reset() {
+void RenameObjectDialog::reset() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -68,20 +68,20 @@ void RenameDialog::reset() {
     edits_load(edits, ad, object);
 }
 
-QString RenameDialog::get_new_dn() const {
+QString RenameObjectDialog::get_new_dn() const {
     const QString new_name = get_new_name();
     const QString new_dn = dn_rename(target, new_name);
 
     return new_dn;
 }
 
-void RenameDialog::open() {
+void RenameObjectDialog::open() {
     reset();
 
     QDialog::open();
 }
 
-void RenameDialog::accept() {
+void RenameObjectDialog::accept() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -116,12 +116,12 @@ void RenameDialog::accept() {
     g_status()->display_ad_messages(ad, this);
 
     if (final_success) {
-        RenameDialog::success_msg(old_name);
+        RenameObjectDialog::success_msg(old_name);
     } else {
-        RenameDialog::fail_msg(old_name);
+        RenameObjectDialog::fail_msg(old_name);
     }
 }
 
-QString RenameDialog::get_new_name() const {
+QString RenameObjectDialog::get_new_name() const {
     return name_edit->text().trimmed();
 }

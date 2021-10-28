@@ -22,7 +22,7 @@
 #include "ui_rename_other_dialog.h"
 
 RenameOtherDialog::RenameOtherDialog(QWidget *parent)
-: RenameDialog(parent) {
+: RenameObjectDialog(parent) {
     ui = new Ui::RenameOtherDialog();
     ui->setupUi(this);
 

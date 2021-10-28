@@ -35,7 +35,7 @@
 #include "create_group_dialog.h"
 #include "create_ou_dialog.h"
 #include "create_computer_dialog.h"
-#include "rename_dialog.h"
+#include "rename_object_dialog.h"
 #include "rename_other_dialog.h"
 #include "rename_user_dialog.h"
 #include "rename_group_dialog.h"
@@ -422,7 +422,7 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex
 }
 
 void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
-    RenameDialog *dialog = [&]() -> RenameDialog * {
+    RenameObjectDialog *dialog = [&]() -> RenameObjectDialog * {
         const QModelIndex index = index_list[0];
         const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
         const bool is_user = (object_class == CLASS_USER);

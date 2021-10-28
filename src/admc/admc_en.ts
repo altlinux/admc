@@ -2460,14 +2460,14 @@
     </message>
 </context>
 <context>
-    <name>RenameDialog</name>
+    <name>RenameObjectDialog</name>
     <message>
-        <location filename="rename_dialog.cpp" line="34"/>
+        <location filename="rename_object_dialog.cpp" line="34"/>
         <source>Object %1 was renamed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="rename_dialog.cpp" line="39"/>
+        <location filename="rename_object_dialog.cpp" line="39"/>
         <source>Failed to rename object %1</source>
         <translation type="unfinished"></translation>
     </message>

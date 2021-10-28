@@ -21,13 +21,13 @@
 #ifndef RENAME_OTHER_DIALOG_H
 #define RENAME_OTHER_DIALOG_H
 
-#include "rename_dialog.h"
+#include "rename_object_dialog.h"
 
 namespace Ui {
     class RenameOtherDialog;
 }
 
-class RenameOtherDialog final : public RenameDialog {
+class RenameOtherDialog final : public RenameObjectDialog {
     Q_OBJECT
 
 public:

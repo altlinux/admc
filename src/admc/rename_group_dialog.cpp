@@ -24,7 +24,7 @@
 #include "edits/sam_name_edit.h"
 
 RenameGroupDialog::RenameGroupDialog(QWidget *parent)
-: RenameDialog(parent) {
+: RenameObjectDialog(parent) {
     ui = new Ui::RenameGroupDialog();
     ui->setupUi(this);
 
@@ -41,5 +41,5 @@ RenameGroupDialog::~RenameGroupDialog() {
 void RenameGroupDialog::open() {
     sam_name_edit->load_domain();
 
-    RenameDialog::open();
+    RenameObjectDialog::open();
 }

@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RENAME_DIALOG_H
-#define RENAME_DIALOG_H
+#ifndef RENAME_OBJECT_DIALOG_H
+#define RENAME_OBJECT_DIALOG_H
 
 #include <QDialog>
 
@@ -28,7 +28,7 @@ class QDialogButtonBox;
 class AttributeEdit;
 class AdInterface;
 
-class RenameDialog : public QDialog {
+class RenameObjectDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -53,4 +53,4 @@ private:
     QString get_new_name() const;
 };
 
-#endif /* RENAME_DIALOG_H */
+#endif /* RENAME_OBJECT_DIALOG_H */

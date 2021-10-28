@@ -37,7 +37,7 @@ class PolicyImpl;
 class ChangeDCDialog;
 class ConsoleWidget;
 class SelectContainerDialog;
-class RenameDialog;
+class RenameObjectDialog;
 class CreateObjectDialog;
 
 /**
@@ -118,9 +118,9 @@ private:
     PolicyImpl *policy_impl;
     ChangeDCDialog *change_dc_dialog;
     SelectContainerDialog *move_dialog;
-    RenameDialog *rename_other_dialog;
-    RenameDialog *rename_user_dialog;
-    RenameDialog *rename_group_dialog;
+    RenameObjectDialog *rename_other_dialog;
+    RenameObjectDialog *rename_user_dialog;
+    RenameObjectDialog *rename_group_dialog;
     CreateObjectDialog *create_user_dialog;
     CreateObjectDialog *create_group_dialog;
     CreateObjectDialog *create_ou_dialog;

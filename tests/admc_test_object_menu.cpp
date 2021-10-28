@@ -225,14 +225,14 @@ void ADMCTestObjectMenu::object_menu_rename() {
     QVERIFY(object_exists(old_dn));
 
     // Open rename dialog
-    auto rename_dialog = new RenameUserDialog(parent_widget);
-    rename_dialog->set_target(old_dn);
-    rename_dialog->open();
-    QVERIFY(QTest::qWaitForWindowExposed(rename_dialog, 1000));
+    auto rename_object_dialog = new RenameUserDialog(parent_widget);
+    rename_object_dialog->set_target(old_dn);
+    rename_object_dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(rename_object_dialog, 1000));
 
-    rename_dialog->ui->name_edit->setText(new_name);
+    rename_object_dialog->ui->name_edit->setText(new_name);
 
-    rename_dialog->accept();
+    rename_object_dialog->accept();
 
     QVERIFY(object_exists(new_dn));
 }
