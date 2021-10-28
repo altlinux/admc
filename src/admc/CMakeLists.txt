@@ -32,30 +32,23 @@ link_libraries(
 )
 
 set(ADMC_SOURCES
-    properties_dialog.cpp
-    main_window.cpp
     status.cpp
-    select_object_dialog.cpp
-    password_dialog.cpp
-    console_filter_dialog.cpp
-    find_widget.cpp
-    tab_widget.cpp
     search_thread.cpp
-    help_browser.cpp
     globals.cpp
     utils.cpp
     settings.cpp
+    widget_state.cpp
+
+    main_window.cpp
+    find_widget.cpp
+    tab_widget.cpp
+    help_browser.cpp
     policy_results_widget.cpp
     filter_classes_widget.cpp
     edit_query_item_widget.cpp
-    widget_state.cpp
-    
-    console_impls/object_impl.cpp
-    console_impls/policy_impl.cpp
-    console_impls/query_item_impl.cpp
-    console_impls/query_folder_impl.cpp
-    console_impls/policy_root_impl.cpp
 
+    console_filter_dialog.cpp
+    password_dialog.cpp
     rename_object_dialog.cpp
     rename_other_dialog.cpp
     rename_policy_dialog.cpp
@@ -66,22 +59,24 @@ set(ADMC_SOURCES
     create_group_dialog.cpp
     create_computer_dialog.cpp
     create_ou_dialog.cpp
-    find_object_dialog.cpp
-    select_object_advanced_dialog.cpp
-    select_container_dialog.cpp
-    about_dialog.cpp
-    manual_dialog.cpp
-    select_policy_dialog.cpp
     create_policy_dialog.cpp
     create_query_item_dialog.cpp
     create_query_folder_dialog.cpp
+    find_object_dialog.cpp
+    select_object_dialog.cpp
+    select_object_advanced_dialog.cpp
+    select_container_dialog.cpp
+    select_policy_dialog.cpp
+    about_dialog.cpp
+    manual_dialog.cpp
     edit_query_item_dialog.cpp
     edit_query_folder_dialog.cpp
+    properties_dialog.cpp
     properties_multi_dialog.cpp
+    properties_warning_dialog.cpp
     change_dc_dialog.cpp
     connection_options_dialog.cpp
     changelog_dialog.cpp
-    properties_warning_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_dialog.cpp
@@ -121,21 +116,6 @@ set(ADMC_SOURCES
     multi_tabs/profile_multi_tab.cpp
     multi_tabs/organization_multi_tab.cpp
 
-    multi_edits/attribute_multi_edit.cpp
-    multi_edits/string_multi_edit.cpp
-    multi_edits/expiry_multi_edit.cpp
-    multi_edits/upn_multi_edit.cpp
-    multi_edits/account_option_multi_edit.cpp
-    multi_edits/country_multi_edit.cpp
-    multi_edits/manager_multi_edit.cpp
-
-    editors/attribute_editor.cpp
-    editors/multi_editor.cpp
-    editors/string_editor.cpp
-    editors/octet_editor.cpp
-    editors/bool_editor.cpp
-    editors/datetime_editor.cpp
-
     edits/attribute_edit.cpp
     edits/string_edit.cpp
     edits/string_other_edit.cpp
@@ -161,12 +141,33 @@ set(ADMC_SOURCES
     edits/logon_computers_edit.cpp
     edits/protect_deletion_edit.cpp
 
+    multi_edits/attribute_multi_edit.cpp
+    multi_edits/string_multi_edit.cpp
+    multi_edits/expiry_multi_edit.cpp
+    multi_edits/upn_multi_edit.cpp
+    multi_edits/account_option_multi_edit.cpp
+    multi_edits/country_multi_edit.cpp
+    multi_edits/manager_multi_edit.cpp
+
+    editors/attribute_editor.cpp
+    editors/multi_editor.cpp
+    editors/string_editor.cpp
+    editors/octet_editor.cpp
+    editors/bool_editor.cpp
+    editors/datetime_editor.cpp
+
     console_widget/console_widget.cpp
     console_widget/scope_proxy_model.cpp
     console_widget/customize_columns_dialog.cpp
     console_widget/results_view.cpp
     console_widget/console_drag_model.cpp
     console_widget/console_impl.cpp
+
+    console_impls/object_impl.cpp
+    console_impls/policy_impl.cpp
+    console_impls/query_item_impl.cpp
+    console_impls/query_folder_impl.cpp
+    console_impls/policy_root_impl.cpp
 
     admc.qrc
 )
