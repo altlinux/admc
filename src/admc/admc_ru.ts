@@ -1929,35 +1929,35 @@
     </message>
 </context>
 <context>
-    <name>ObjectMultiPropertiesDialog</name>
+    <name>PropertiesMultiDialog</name>
     <message>
-        <location filename="object_multi_properties_dialog.ui" line="14"/>
+        <location filename="properties_multi_dialog.ui" line="14"/>
         <source>Properties for Multiple Objects</source>
         <translation>Свойства для нескольких объектов</translation>
     </message>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="67"/>
-        <location filename="object_multi_properties_dialog.cpp" line="73"/>
+        <location filename="properties_multi_dialog.cpp" line="67"/>
+        <location filename="properties_multi_dialog.cpp" line="73"/>
         <source>General</source>
         <translation>Общее</translation>
     </message>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="68"/>
+        <location filename="properties_multi_dialog.cpp" line="68"/>
         <source>Account</source>
         <translation>Учётная запись</translation>
     </message>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="69"/>
+        <location filename="properties_multi_dialog.cpp" line="69"/>
         <source>Address</source>
         <translation>Адрес</translation>
     </message>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="70"/>
+        <location filename="properties_multi_dialog.cpp" line="70"/>
         <source>Profile</source>
         <translation>Профиль</translation>
     </message>
     <message>
-        <location filename="object_multi_properties_dialog.cpp" line="71"/>
+        <location filename="properties_multi_dialog.cpp" line="71"/>
         <source>Organization</source>
         <translation>Организация</translation>
     </message>

@@ -44,7 +44,7 @@
 #include "find_object_dialog.h"
 #include "select_object_dialog.h"
 #include "properties_dialog.h"
-#include "object_multi_properties_dialog.h"
+#include "properties_multi_dialog.h"
 #include "password_dialog.h"
 #include "editors/multi_editor.h"
 #include "console_impls/item_type.h"
@@ -512,11 +512,11 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
             return out.toList();
         }();
 
-        auto dialog = new ObjectMultiPropertiesDialog(dn_list, class_list);
+        auto dialog = new PropertiesMultiDialog(dn_list, class_list);
         dialog->open();
 
         connect(
-            dialog, &ObjectMultiPropertiesDialog::applied,
+            dialog, &PropertiesMultiDialog::applied,
             on_object_properties_applied);
     }
 }

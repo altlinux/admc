@@ -77,7 +77,7 @@ set(ADMC_SOURCES
     create_query_folder_dialog.cpp
     edit_query_item_dialog.cpp
     edit_query_folder_dialog.cpp
-    object_multi_properties_dialog.cpp
+    properties_multi_dialog.cpp
     change_dc_dialog.cpp
     connection_options_dialog.cpp
     changelog_dialog.cpp

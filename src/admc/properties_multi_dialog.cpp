@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "object_multi_properties_dialog.h"
-#include "ui_object_multi_properties_dialog.h"
+#include "properties_multi_dialog.h"
+#include "ui_properties_multi_dialog.h"
 
 #include "adldap.h"
 #include "globals.h"
@@ -38,9 +38,9 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
-ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list)
+PropertiesMultiDialog::PropertiesMultiDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list)
 : QDialog() {
-    ui = new Ui::ObjectMultiPropertiesDialog();
+    ui = new Ui::PropertiesMultiDialog();
     ui->setupUi(this);
 
     target_list = target_list_arg;
@@ -77,19 +77,19 @@ ObjectMultiPropertiesDialog::ObjectMultiPropertiesDialog(const QList<QString> &t
 
     connect(
         apply_button, &QPushButton::clicked,
-        this, &ObjectMultiPropertiesDialog::apply);
+        this, &PropertiesMultiDialog::apply);
     connect(
         reset_button, &QPushButton::clicked,
-        this, &ObjectMultiPropertiesDialog::reset);
+        this, &PropertiesMultiDialog::reset);
 
     reset();
 }
 
-ObjectMultiPropertiesDialog::~ObjectMultiPropertiesDialog() {
+PropertiesMultiDialog::~PropertiesMultiDialog() {
     delete ui;
 }
 
-void ObjectMultiPropertiesDialog::accept() {
+void PropertiesMultiDialog::accept() {
     const bool success = apply();
 
     if (success) {
@@ -97,7 +97,7 @@ void ObjectMultiPropertiesDialog::accept() {
     }
 }
 
-bool ObjectMultiPropertiesDialog::apply() {
+bool PropertiesMultiDialog::apply() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return false;
@@ -123,7 +123,7 @@ bool ObjectMultiPropertiesDialog::apply() {
     return total_apply_success;
 }
 
-void ObjectMultiPropertiesDialog::reset() {
+void PropertiesMultiDialog::reset() {
     for (PropertiesMultiTab *tab : tab_list) {
         tab->reset();
     }

@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OBJECT_MULTI_PROPERTIES_DIALOG_H
-#define OBJECT_MULTI_PROPERTIES_DIALOG_H
+#ifndef PROPERTIES_MULTI_DIALOG_H
+#define PROPERTIES_MULTI_DIALOG_H
 
 /**
  * Properties dialog for editing attributes of multiple
@@ -33,17 +33,17 @@
 class PropertiesMultiTab;
 
 namespace Ui {
-    class ObjectMultiPropertiesDialog;
+    class PropertiesMultiDialog;
 }
 
-class ObjectMultiPropertiesDialog final : public QDialog {
+class PropertiesMultiDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    Ui::ObjectMultiPropertiesDialog *ui;
+    Ui::PropertiesMultiDialog *ui;
 
-    ObjectMultiPropertiesDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list);
-    ~ObjectMultiPropertiesDialog();
+    PropertiesMultiDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list);
+    ~PropertiesMultiDialog();
 
 signals:
     void applied();
@@ -59,4 +59,4 @@ private:
     bool apply();
 };
 
-#endif /* OBJECT_MULTI_PROPERTIES_DIALOG_H */
+#endif /* PROPERTIES_MULTI_DIALOG_H */
