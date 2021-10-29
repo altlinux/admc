@@ -52,13 +52,6 @@ void CreateObjectDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button
     on_edited();
 }
 
-QString CreateObjectDialog::get_created_dn() const {
-    const QString name = get_created_name();
-    const QString dn = dn_from_name_and_parent(name, parent_dn, m_object_class);
-
-    return dn;
-}
-
 void CreateObjectDialog::set_parent_dn(const QString &dn) {
     parent_dn = dn;
 }
@@ -75,8 +68,10 @@ void CreateObjectDialog::accept() {
         return;
     }
 
-    const QString name = get_created_name();
-    const QString dn = get_created_dn();
+    // NOTE: trim whitespaces because server will do it
+    // anyway and we want a correct name
+    const QString name = name_edit->text().trimmed();
+    const QString dn = dn_from_name_and_parent(name, parent_dn, m_object_class);
 
     // Verify edits
     const bool verify_success = edits_verify(ad, m_edit_list, dn, true);
@@ -106,8 +101,6 @@ void CreateObjectDialog::accept() {
 
         if (apply_success) {
             final_success = true;
-
-            QDialog::accept();
         } else {
             ad.object_delete(dn);
         }
@@ -119,6 +112,10 @@ void CreateObjectDialog::accept() {
         const QString message = QString(tr("Object %1 was created")).arg(name);
 
         g_status()->add_message(message, StatusType_Success);
+
+        emit complete(dn);
+
+        QDialog::accept();
     } else {
         fail_msg();
     }
@@ -137,10 +134,4 @@ void CreateObjectDialog::on_edited() {
     }();
 
     ok_button->setEnabled(all_required_filled);
-}
-
-QString CreateObjectDialog::get_created_name() const {
-    // NOTE: trim whitespaces because server will do it
-    // anyway and we want a correct name
-    return name_edit->text().trimmed();
 }
