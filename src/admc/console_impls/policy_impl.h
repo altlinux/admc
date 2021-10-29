@@ -30,6 +30,7 @@ class AdInterface;
 class ConsoleActions;
 class PolicyResultsWidget;
 class CreatePolicyDialog;
+class RenamePolicyDialog;
 template <typename T>
 class QList;
 
@@ -64,10 +65,11 @@ public:
 private slots:
     void on_add_link();
     void on_edit();
+    void on_rename_complete();
 
 private:
     PolicyResultsWidget *policy_results_widget;
-    QDialog *rename_object_dialog;
+    RenamePolicyDialog *rename_policy_dialog;
     QAction *add_link_action;
     QAction *edit_action;
 };

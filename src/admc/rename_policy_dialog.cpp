@@ -26,18 +26,13 @@
 #include "rename_object_dialog.h"
 #include "status.h"
 #include "utils.h"
-#include "console_impls/policy_impl.h"
-#include "console_impls/item_type.h"
 
 #include <QPushButton>
-#include <QModelIndex>
 
-RenamePolicyDialog::RenamePolicyDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
+RenamePolicyDialog::RenamePolicyDialog(QWidget *parent)
+: QDialog(parent) {
     ui = new Ui::RenamePolicyDialog();
     ui->setupUi(this);
-
-    console = console_arg;
 
     ok_button = ui->button_box->button(QDialogButtonBox::Ok);
     reset_button = ui->button_box->button(QDialogButtonBox::Reset);
@@ -67,26 +62,35 @@ void RenamePolicyDialog::accept() {
         return;
     }
 
-    const QModelIndex index = console->get_selected_item(ItemType_Policy);
-    const QString old_name = index.data(Qt::DisplayRole).toString();
-
     const QString new_name = ui->name_edit->text();
-    const bool apply_success = ad.attribute_replace_string(target, ATTRIBUTE_DISPLAY_NAME, new_name);
+    const bool apply_success = ad.attribute_replace_string(target_dn, ATTRIBUTE_DISPLAY_NAME, new_name);
 
     if (apply_success) {
-        RenameObjectDialog::success_msg(old_name);
-        QDialog::accept();
+        RenameObjectDialog::success_msg(target_old_name);
     } else {
-        RenameObjectDialog::fail_msg(old_name);
+        RenameObjectDialog::fail_msg(target_old_name);
     }
 
     g_status()->display_ad_messages(ad, this);
 
-    const QString dn = index.data(PolicyRole_DN).toString();
-    const AdObject object = ad.search_object(dn);
+    if (apply_success) {
+        QDialog::accept();
+    }
+}
 
-    const QList<QStandardItem *> row = console->get_row(index);
-    console_policy_load(row, object);
+void RenamePolicyDialog::set_target(const QString &dn) {
+    target_dn = dn;
+
+    target_old_name = [&]() {
+        AdInterface ad;
+        if (ad_failed(ad)) {
+            return QString();
+        }
+
+        const AdObject object = ad.search_object(target_dn);
+
+        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    }();
 }
 
 void RenamePolicyDialog::on_edited() {
@@ -95,20 +99,8 @@ void RenamePolicyDialog::on_edited() {
 }
 
 void RenamePolicyDialog::reset() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    const QString name = [&]() {
-        const QModelIndex index = console->get_selected_item(ItemType_Policy);
-        const QString dn = index.data(PolicyRole_DN).toString();
-        const AdObject object = ad.search_object(dn);
-
-        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
-    }();
-    ui->name_edit->setText(name);
-
     reset_button->setEnabled(false);
     ok_button->setEnabled(false);
+
+    ui->name_edit->setText(target_old_name);
 }

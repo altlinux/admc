@@ -45,7 +45,7 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
     policy_results_widget = new PolicyResultsWidget(console_arg);
     set_results_widget(policy_results_widget);
 
-    rename_object_dialog = new RenamePolicyDialog(console_arg);
+    rename_policy_dialog = new RenamePolicyDialog(console_arg);
 
     add_link_action = new QAction(tr("Add link..."), this);
     edit_action = new QAction(tr("Edit..."), this);
@@ -56,6 +56,9 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
     connect(
         edit_action, &QAction::triggered,
         this, &PolicyImpl::on_edit);
+    connect(
+        rename_policy_dialog, &QDialog::accepted,
+        this, &PolicyImpl::on_rename_complete);
 }
 
 bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -153,7 +156,11 @@ QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, 
 void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 
-    rename_object_dialog->open();
+    const QModelIndex index = console->get_selected_item(ItemType_Policy);
+    const QString dn = index.data(PolicyRole_DN).toString();
+
+    rename_policy_dialog->set_target(dn);
+    rename_policy_dialog->open();
 }
 
 void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
@@ -311,6 +318,20 @@ void PolicyImpl::on_edit() {
         });
 
     process->start(QIODevice::ReadOnly);
+}
+
+void PolicyImpl::on_rename_complete() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+    
+    const QModelIndex index = console->get_selected_item(ItemType_Policy);
+    const QString dn = index.data(PolicyRole_DN).toString();
+    const AdObject object = ad.search_object(dn);
+
+    const QList<QStandardItem *> row = console->get_row(index);
+    console_policy_load(row, object);
 }
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {

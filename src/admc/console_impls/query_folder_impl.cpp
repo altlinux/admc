@@ -592,7 +592,6 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
     console_query_tree_save(console);
 }
 
-// NOTE:
 QList<QString> get_sibling_name_list(const QModelIndex &parent_index, const QModelIndex &index_to_omit) {
     QList<QString> out;
 
