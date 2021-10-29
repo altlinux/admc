@@ -44,12 +44,15 @@ enum QueryColumn {
 
 class EditQueryItemDialog;
 class EditQueryItemWidget;
+class QueryFolderImpl;
 
 class QueryItemImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
     QueryItemImpl(ConsoleWidget *console_arg);
+
+    void set_query_folder_impl(QueryFolderImpl *impl);
 
     void fetch(const QModelIndex &index) override;
     QString get_description(const QModelIndex &index) const override;
@@ -73,6 +76,7 @@ private:
     QAction *edit_action;
     QAction *export_action;
     EditQueryItemDialog *edit_query_item_dialog;
+    QueryFolderImpl *query_folder_impl;
 
     void on_edit_query_item();
     void on_edit_query_item_accepted();

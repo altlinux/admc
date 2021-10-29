@@ -80,6 +80,7 @@ MainWindow::MainWindow()
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
     object_impl->set_policy_impl(policy_impl);
+    query_item_impl->set_query_folder_impl(query_folder_impl);
 
     // Create dialogs opened from menubar
     auto manual_dialog = new ManualDialog(this);

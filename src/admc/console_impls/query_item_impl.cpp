@@ -46,6 +46,8 @@ const QString query_item_icon = "emblem-system";
 
 QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
+    query_folder_impl = nullptr;
+
     set_results_view(new ResultsView(console_arg));
 
     edit_query_item_dialog = new EditQueryItemDialog(console);
@@ -62,6 +64,10 @@ QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
     connect(
         export_action, &QAction::triggered,
         this, &QueryItemImpl::on_export);
+}
+
+void QueryItemImpl::set_query_folder_impl(QueryFolderImpl *impl) {
+    query_folder_impl = impl;
 }
 
 void QueryItemImpl::fetch(const QModelIndex &index) {
@@ -119,9 +125,6 @@ QSet<StandardAction> QueryItemImpl::get_standard_actions(const QModelIndex &inde
 
     out.insert(StandardAction_Delete);
 
-    // TODO: currently implementation only supports single
-    // selection cut/copy but probably should be able to do
-    // multi?
     if (single_selection) {
         out.insert(StandardAction_Cut);
         out.insert(StandardAction_Copy);
@@ -147,11 +150,15 @@ void QueryItemImpl::delete_action(const QList<QModelIndex> &index_list) {
 }
 
 void QueryItemImpl::cut(const QList<QModelIndex> &index_list) {
-    query_action_cut(index_list);
+    if (query_folder_impl != nullptr) {
+        query_folder_impl->cut(index_list);
+    }
 }
 
 void QueryItemImpl::copy(const QList<QModelIndex> &index_list) {
-    query_action_copy(index_list);
+    if (query_folder_impl != nullptr) {
+        query_folder_impl->copy(index_list);
+    }
 }
 
 QList<QString> QueryItemImpl::column_labels() const {

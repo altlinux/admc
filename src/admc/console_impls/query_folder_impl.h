@@ -55,6 +55,8 @@ private:
     CreateQueryFolderDialog *create_query_folder_dialog;
     CreateQueryItemDialog *create_query_item_dialog;
     EditQueryFolderDialog *edit_query_folder_dialog;
+    bool copied_is_cut;
+    QList<QPersistentModelIndex> copied_list;
 
     void on_import();
     void on_create_query_folder();
@@ -73,8 +75,6 @@ QList<int> console_query_folder_default_columns();
 QString console_query_folder_path(const QModelIndex &index);
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent);
 void console_query_folder_load(const QList<QStandardItem *> &row, const QString &name, const QString &description);
-void query_action_cut(const QList<QModelIndex> &index_list);
-void query_action_copy(const QList<QModelIndex> &index_list);
 bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
 bool console_query_or_folder_name_is_good(const QString &name, const QList<QString> &sibling_names, QWidget *parent_widget);
 void query_action_delete(ConsoleWidget *console, const QList<QModelIndex> &index_list);

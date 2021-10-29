@@ -42,13 +42,12 @@
 
 #define QUERY_ROOT "QUERY_ROOT"
 
-bool copied_index_is_cut = false;
-QPersistentModelIndex copied_index;
-
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch = true);
 
 QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
+    copied_is_cut = false;
+
     set_results_view(new ResultsView(console_arg));
     
     auto create_query_folder_action = new QAction(tr("Query folder"), this);
@@ -203,9 +202,6 @@ QSet<StandardAction> QueryFolderImpl::get_standard_actions(const QModelIndex &in
 
     out.insert(StandardAction_Delete);
 
-    // TODO: currently implementation only supports single
-    // selection cut/copy but probably should be able to do
-    // multi?
     if (single_selection) {
         out.insert(StandardAction_Cut);
         out.insert(StandardAction_Copy);
@@ -220,18 +216,20 @@ void QueryFolderImpl::delete_action(const QList<QModelIndex> &index_list) {
 }
 
 void QueryFolderImpl::cut(const QList<QModelIndex> &index_list) {
-    query_action_cut(index_list);
+    copied_list = persistent_index_list(index_list);
+    copied_is_cut = true;
 }
 
 void QueryFolderImpl::copy(const QList<QModelIndex> &index_list) {
-    query_action_copy(index_list);
+    copied_list = persistent_index_list(index_list);
+    copied_is_cut = false;
 }
 
 void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
     const QModelIndex parent_index = index_list[0];
 
-    const bool delete_old_branch = copied_index_is_cut;
-    console_query_move(console, {copied_index}, parent_index, delete_old_branch);
+    const bool delete_old_branch = copied_is_cut;
+    console_query_move(console, copied_list, parent_index, delete_old_branch);
 }
 
 void QueryFolderImpl::on_import() {
@@ -480,16 +478,6 @@ void console_query_folder_load(const QList<QStandardItem *> &row, const QString 
 
     row[QueryColumn_Name]->setText(name);
     row[QueryColumn_Description]->setText(description);
-}
-
-void query_action_cut(const QList<QModelIndex> &index_list) {
-    copied_index = index_list[0];
-    copied_index_is_cut = true;
-}
-
-void query_action_copy(const QList<QModelIndex> &index_list) {
-    copied_index = index_list[0];
-    copied_index_is_cut = false;
 }
 
 bool console_query_or_folder_name_is_good(const QString &name, const QList<QString> &sibling_names, QWidget *parent_widget) {
