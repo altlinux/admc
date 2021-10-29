@@ -21,52 +21,38 @@
 #include "edit_query_folder_dialog.h"
 #include "ui_edit_query_folder_dialog.h"
 
-#include "ad_filter.h"
-#include "console_impls/query_item_impl.h"
 #include "console_impls/query_folder_impl.h"
-#include "console_widget/console_widget.h"
-#include "globals.h"
-#include "status.h"
-#include "console_impls/item_type.h"
 
-#include <QModelIndex>
-
-EditQueryFolderDialog::EditQueryFolderDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
+EditQueryFolderDialog::EditQueryFolderDialog(QWidget *parent)
+: QDialog(parent) {
     ui = new Ui::EditQueryFolderDialog();
     ui->setupUi(this);
-
-    console = console_arg;
 }
 
 EditQueryFolderDialog::~EditQueryFolderDialog() {
     delete ui;
 }
 
-void EditQueryFolderDialog::open() {
-    const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
-    const QString current_name = index.data(Qt::DisplayRole).toString();
-    const QString current_description = index.data(QueryItemRole_Description).toString();
+QString EditQueryFolderDialog::name() const {
+    return ui->name_edit->text();
+}
 
-    ui->name_edit->setText(current_name);
-    ui->description_edit->setText(current_description);
+QString EditQueryFolderDialog::description() const {
+    return ui->description_edit->text();
+}
 
-    QDialog::open();
+void EditQueryFolderDialog::set_data(const QList<QString> &sibling_name_list_arg, const QString &name, const QString &description) {
+    sibling_name_list = sibling_name_list_arg;
+    ui->name_edit->setText(name);
+    ui->description_edit->setText(description);
 }
 
 void EditQueryFolderDialog::accept() {
-    const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
     const QString name = ui->name_edit->text();
-    const QString description = ui->description_edit->text();
 
-    if (!console_query_or_folder_name_is_good(name, index.parent(), this, index)) {
-        return;
+    const bool name_is_valid = console_query_or_folder_name_is_good(name, sibling_name_list, this);
+
+    if (name_is_valid) {
+        QDialog::accept();
     }
-
-    const QList<QStandardItem *> row = console->get_row(index);
-    console_query_folder_load(row, name, description);
-
-    console_query_tree_save(console);
-
-    QDialog::accept();
 }

@@ -31,6 +31,7 @@
 #include "edit_query_folder_dialog.h"
 #include "console_impls/item_type.h"
 #include "console_widget/results_view.h"
+#include "edit_query_item_widget.h"
 
 #include <QFileDialog>
 #include <QJsonDocument>
@@ -63,22 +64,94 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 
     import_action = new QAction(tr("&Import query..."), this);
 
-    auto create_query_folder_dialog = new CreateQueryFolderDialog(console);
-    auto create_query_item_dialog = new CreateQueryItemDialog(console);
-    auto edit_query_folder_dialog = new EditQueryFolderDialog(console);
+    create_query_folder_dialog = new CreateQueryFolderDialog(console);
+    create_query_item_dialog = new CreateQueryItemDialog(console);
+    edit_query_folder_dialog = new EditQueryFolderDialog(console);
 
     connect(
         create_query_folder_action, &QAction::triggered,
-        create_query_folder_dialog, &QDialog::open);
+        this, &QueryFolderImpl::on_create_query_folder);
     connect(
-        create_query_item_action, &QAction::triggered,
-        create_query_item_dialog, &QDialog::open);
+        create_query_folder_dialog, &QDialog::accepted,
+        this, &QueryFolderImpl::on_create_query_folder_accepted);
+    connect(
+        create_query_folder_action, &QAction::triggered,
+        this, &QueryFolderImpl::on_create_query_folder);
+    connect(
+        create_query_item_dialog, &QDialog::accepted,
+        this, &QueryFolderImpl::on_create_query_item_accepted);
     connect(
         edit_action, &QAction::triggered,
-        edit_query_folder_dialog, &QDialog::open);
+        this, &QueryFolderImpl::on_edit_query_folder);
+    connect(
+        edit_query_folder_dialog, &QDialog::accepted,
+        this, &QueryFolderImpl::on_edit_query_folder_accepted);
     connect(
         import_action, &QAction::triggered,
         this, &QueryFolderImpl::on_import);
+}
+
+void QueryFolderImpl::on_create_query_folder() {
+    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
+    const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, QModelIndex());
+
+    create_query_folder_dialog->set_sibling_name_list(sibling_name_list);
+    create_query_folder_dialog->open();
+}
+
+void QueryFolderImpl::on_create_query_folder_accepted() {
+    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
+    const QString name = create_query_folder_dialog->name();
+    const QString description = create_query_folder_dialog->description();
+
+    console_query_folder_create(console, name, description, parent_index);
+
+    console_query_tree_save(console);
+}
+
+void QueryFolderImpl::on_create_query_item() {
+    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
+    const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, QModelIndex());
+
+    create_query_item_dialog->set_sibling_name_list(sibling_name_list);
+    create_query_item_dialog->open();
+}
+
+void QueryFolderImpl::on_create_query_item_accepted() {
+    EditQueryItemWidget *edit_widget = create_query_item_dialog->edit_widget();
+    const QString name = edit_widget->name();
+    const QString description = edit_widget->description();
+    const QString filter = edit_widget->filter();
+    const QString base = edit_widget->base();
+    const QByteArray filter_state = edit_widget->filter_state();
+    const bool scope_is_children = edit_widget->scope_is_children();
+    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryItem);
+
+    console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
+
+    console_query_tree_save(console);
+}
+
+void QueryFolderImpl::on_edit_query_folder() {
+    const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
+    const QString name = index.data(Qt::DisplayRole).toString();
+    const QString description = index.data(QueryItemRole_Description).toString();
+    const QModelIndex parent_index = index.parent();
+    const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);
+
+    edit_query_folder_dialog->set_data(sibling_name_list, name, description);
+    edit_query_folder_dialog->open();
+}
+
+void QueryFolderImpl::on_edit_query_folder_accepted() {
+    const QString name = edit_query_folder_dialog->name();
+    const QString description = edit_query_folder_dialog->description();
+
+    const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
+    const QList<QStandardItem *> row = console->get_row(index);
+    console_query_folder_load(row, name, description);
+
+    console_query_tree_save(console);
 }
 
 bool QueryFolderImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -419,35 +492,13 @@ void query_action_copy(const QList<QModelIndex> &index_list) {
     copied_index_is_cut = false;
 }
 
-bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index) {
+bool console_query_or_folder_name_is_good(const QString &name, const QList<QString> &sibling_names, QWidget *parent_widget) {
     if (name.isEmpty()) {
         const QString error_text = QString(QCoreApplication::translate("query.cpp", "Name may not be empty"));
         message_box_warning(parent_widget, QCoreApplication::translate("query.cpp", "Error"), error_text);
 
         return false;
     }
-
-    const QString current_name = current_index.data(Qt::DisplayRole).toString();
-
-    const QList<QString> sibling_names = [&]() {
-        QList<QString> out;
-
-        const QAbstractItemModel *model = parent_index.model();
-
-        for (int row = 0; row < model->rowCount(parent_index); row++) {
-            const QModelIndex sibling = model->index(row, 0, parent_index);
-            const QString sibling_name = sibling.data(Qt::DisplayRole).toString();
-
-            const bool this_is_query_itself = (sibling == current_index);
-            if (this_is_query_itself) {
-                continue;
-            }
-
-            out.append(sibling_name);
-        }
-
-        return out;
-    }();
 
     const bool name_conflict = sibling_names.contains(name);
     const bool name_contains_slash = name.contains("/");
@@ -463,6 +514,12 @@ bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex
     const bool name_is_good = (!name_conflict && !name_contains_slash);
 
     return name_is_good;
+}
+
+bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index) {
+    const QList<QString> sibling_names = get_sibling_name_list(parent_index, current_index);
+
+    return console_query_or_folder_name_is_good(name, sibling_names, parent_widget);
 }
 
 void query_action_delete(ConsoleWidget *console, const QList<QModelIndex> &index_list) {
@@ -533,4 +590,25 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
     }
 
     console_query_tree_save(console);
+}
+
+// NOTE:
+QList<QString> get_sibling_name_list(const QModelIndex &parent_index, const QModelIndex &index_to_omit) {
+    QList<QString> out;
+
+    const QAbstractItemModel *model = parent_index.model();
+
+    for (int row = 0; row < model->rowCount(parent_index); row++) {
+        const QModelIndex sibling = model->index(row, 0, parent_index);
+        const QString sibling_name = sibling.data(Qt::DisplayRole).toString();
+
+        const bool this_is_query_itself = (sibling == index_to_omit);
+        if (this_is_query_itself) {
+            continue;
+        }
+
+        out.append(sibling_name);
+    }
+
+    return out;
 }

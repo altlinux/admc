@@ -21,56 +21,36 @@
 #include "edit_query_item_dialog.h"
 #include "ui_edit_query_item_dialog.h"
 
-#include "console_impls/query_item_impl.h"
 #include "console_impls/query_folder_impl.h"
-#include "edit_query_item_widget.h"
-#include "utils.h"
-#include "console_impls/item_type.h"
 
-#include <QModelIndex>
-
-EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
+EditQueryItemDialog::EditQueryItemDialog(QWidget *parent)
+: QDialog(parent) {
     ui = new Ui::EditQueryItemDialog();
     ui->setupUi(this);
-
-    console = console_arg;
 }
 
 EditQueryItemDialog::~EditQueryItemDialog() {
     delete ui;
 }
 
-void EditQueryItemDialog::open() {
-    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
+EditQueryItemWidget *EditQueryItemDialog::edit_widget() const {
+    return ui->edit_query_item_widget;
+}
 
-    ui->edit_query_item_widget->load(index);
+void EditQueryItemDialog::set_sibling_name_list(const QList<QString> &sibling_name_list_arg) {
+    sibling_name_list = sibling_name_list_arg;
+}
+
+void EditQueryItemDialog::open() {
 
     QDialog::open();
 }
 
 void EditQueryItemDialog::accept() {
-    QString name;
-    QString description;
-    QString filter;
-    QString base;
-    QByteArray filter_state;
-    bool scope_is_children;
-    ui->edit_query_item_widget->save(name, description, filter, base, scope_is_children, filter_state);
+    const QString name = ui->edit_query_item_widget->name();
+    const bool name_is_valid = console_query_or_folder_name_is_good(name, sibling_name_list, this);
 
-    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
-
-    if (!console_query_or_folder_name_is_good(name, index.parent(), this, index)) {
-        return;
+    if (name_is_valid) {
+        QDialog::accept();
     }
-
-    const QList<QStandardItem *> row = console->get_row(index);
-
-    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
-
-    console_query_tree_save(console);
-
-    console->refresh_scope(index);
-
-    QDialog::accept();
 }

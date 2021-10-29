@@ -92,13 +92,12 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
 
     const QString correct_filter = filter_display->toPlainText();
 
-    QString name;
-    QString description;
-    QString filter;
-    QString base;
-    QByteArray filter_state;
-    bool scope_is_children;
-    widget->save(name, description, filter, base, scope_is_children, filter_state);
+    const QString name = widget->name();
+    const QString description = widget->description();
+    const QString filter = widget->filter();
+    const QString base = widget->base();
+    const QByteArray filter_state = widget->filter_state();
+    const bool scope_is_children = widget->scope_is_children();
 
     const QList<QStandardItem *> row = [=]() {
         QList<QStandardItem *> out;
@@ -116,7 +115,15 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
 
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 
-    widget->load(row[0]->index());
+    const QModelIndex index = row[0]->index();
+    
+    QString name;
+    QString description;
+    bool scope_is_children;
+    QByteArray filter_state;
+    get_query_item_data(index, &name, &description, &scope_is_children, &filter_state);
+
+    edit_widget->set_data(name, description, scope_is_children, filter_state);
 
     QCOMPARE(name_edit->text(), correct_name);
     QCOMPARE(description_edit->text(), correct_description);

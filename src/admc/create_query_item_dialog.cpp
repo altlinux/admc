@@ -21,50 +21,37 @@
 #include "create_query_item_dialog.h"
 #include "ui_create_query_item_dialog.h"
 
-#include "console_impls/query_item_impl.h"
 #include "console_impls/query_folder_impl.h"
-#include "edit_query_item_widget.h"
-#include "utils.h"
-#include "console_impls/item_type.h"
 
-#include <QModelIndex>
-
-CreateQueryItemDialog::CreateQueryItemDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
+CreateQueryItemDialog::CreateQueryItemDialog(QWidget *parent)
+: QDialog(parent) {
     ui = new Ui::CreateQueryItemDialog();
     ui->setupUi(this);
-
-    console = console_arg;
 }
 
 CreateQueryItemDialog::~CreateQueryItemDialog() {
     delete ui;
 }
 
+EditQueryItemWidget *CreateQueryItemDialog::edit_widget() const {
+    return ui->edit_query_widget;
+}
+
+void CreateQueryItemDialog::set_sibling_name_list(const QList<QString> &list) {
+    sibling_name_list = list;
+}
+
 void CreateQueryItemDialog::open() {
-    ui->edit_query_widget->load(QModelIndex());
+    ui->edit_query_widget->clear();
 
     QDialog::open();
 }
 
 void CreateQueryItemDialog::accept() {
-    QString name;
-    QString description;
-    QString filter;
-    QString base;
-    QByteArray filter_state;
-    bool scope_is_children;
-    ui->edit_query_widget->save(name, description, filter, base, scope_is_children, filter_state);
+    const QString name = ui->edit_query_widget->name();
+    const bool name_is_valid = console_query_or_folder_name_is_good(name, sibling_name_list, this);
 
-    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryItem);
-
-    if (!console_query_or_folder_name_is_good(name, parent_index, this, QModelIndex())) {
-        return;
+    if (name_is_valid) {
+        QDialog::accept();
     }
-
-    console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
-
-    console_query_tree_save(console);
-
-    QDialog::accept();
 }

@@ -23,6 +23,10 @@
 
 #include "console_widget/console_impl.h"
 
+class CreateQueryFolderDialog;
+class CreateQueryItemDialog;
+class EditQueryFolderDialog;
+
 class QueryFolderImpl final : public ConsoleImpl {
     Q_OBJECT
 
@@ -48,8 +52,17 @@ private:
     QAction *new_action;
     QAction *edit_action;
     QAction *import_action;
+    CreateQueryFolderDialog *create_query_folder_dialog;
+    CreateQueryItemDialog *create_query_item_dialog;
+    EditQueryFolderDialog *edit_query_folder_dialog;
 
     void on_import();
+    void on_create_query_folder();
+    void on_create_query_folder_accepted();
+    void on_create_query_item();
+    void on_create_query_item_accepted();
+    void on_edit_query_folder();
+    void on_edit_query_folder_accepted();
 };
 
 void console_query_tree_init(ConsoleWidget *console);
@@ -63,6 +76,8 @@ void console_query_folder_load(const QList<QStandardItem *> &row, const QString 
 void query_action_cut(const QList<QModelIndex> &index_list);
 void query_action_copy(const QList<QModelIndex> &index_list);
 bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
+bool console_query_or_folder_name_is_good(const QString &name, const QList<QString> &sibling_names, QWidget *parent_widget);
 void query_action_delete(ConsoleWidget *console, const QList<QModelIndex> &index_list);
+QList<QString> get_sibling_name_list(const QModelIndex &parent_index, const QModelIndex &index_to_omit);
 
 #endif /* QUERY_FOLDER_IMPL_H */

@@ -43,8 +43,15 @@ public:
     EditQueryItemWidget(QWidget *parent = nullptr);
     ~EditQueryItemWidget();
 
-    void load(const QModelIndex &index);
-    void save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const;
+    QString name() const;
+    QString description() const;
+    QString filter() const;
+    QString base() const;
+    bool scope_is_children() const;
+    QByteArray filter_state() const;
+
+    void clear();
+    void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state);
 
 private:
     FilterDialog *filter_dialog;

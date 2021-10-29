@@ -30,6 +30,7 @@
 #include "edit_query_item_dialog.h"
 #include "console_impls/item_type.h"
 #include "console_widget/results_view.h"
+#include "edit_query_item_widget.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -47,14 +48,17 @@ QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));
 
-    auto edit_query_item_dialog = new EditQueryItemDialog(console);
+    edit_query_item_dialog = new EditQueryItemDialog(console);
 
     edit_action = new QAction(tr("Edit..."), this);
     export_action = new QAction(tr("Export query..."), this);
 
     connect(
         edit_action, &QAction::triggered,
-        edit_query_item_dialog, &QDialog::open);
+        this, &QueryItemImpl::on_edit_query_item);
+    connect(
+        edit_query_item_dialog, &QDialog::accepted,
+        this, &QueryItemImpl::on_edit_query_item_accepted);
     connect(
         export_action, &QAction::triggered,
         this, &QueryItemImpl::on_export);
@@ -240,4 +244,49 @@ void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, Q
     }
 
     console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
+}
+
+void QueryItemImpl::on_edit_query_item() {
+    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
+
+    const QModelIndex parent_index = index.parent();
+    const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);
+    edit_query_item_dialog->set_sibling_name_list(sibling_name_list);
+    
+    EditQueryItemWidget *edit_widget = edit_query_item_dialog->edit_widget();
+
+    QString name;
+    QString description;
+    bool scope_is_children;
+    QByteArray filter_state;
+    get_query_item_data(index, &name, &description, &scope_is_children, &filter_state);
+
+    edit_widget->set_data(name, description, scope_is_children, filter_state);
+
+    edit_query_item_dialog->open();
+}
+
+void QueryItemImpl::on_edit_query_item_accepted() {
+    EditQueryItemWidget *edit_widget = edit_query_item_dialog->edit_widget();
+    const QString name = edit_widget->name();
+    const QString description = edit_widget->description();
+    const QString filter = edit_widget->filter();
+    const QString base = edit_widget->base();
+    const QByteArray filter_state = edit_widget->filter_state();
+    const bool scope_is_children = edit_widget->scope_is_children();
+
+    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
+    const QList<QStandardItem *> row = console->get_row(index);
+    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+
+    console_query_tree_save(console);
+
+    console->refresh_scope(index);
+}
+
+void get_query_item_data(const QModelIndex &index, QString *name, QString *description, bool *scope_is_children, QByteArray *filter_state) {
+    *name = index.data(Qt::DisplayRole).toString();
+    *description = index.data(QueryItemRole_Description).toString();
+    *scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
+    *filter_state = index.data(QueryItemRole_FilterState).toByteArray();
 }

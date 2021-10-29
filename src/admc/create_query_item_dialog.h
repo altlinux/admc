@@ -23,7 +23,7 @@
 
 #include <QDialog>
 
-class ConsoleWidget;
+class EditQueryItemWidget;
 
 namespace Ui {
     class CreateQueryItemDialog;
@@ -35,14 +35,18 @@ class CreateQueryItemDialog : public QDialog {
 public:
     Ui::CreateQueryItemDialog *ui;
 
-    CreateQueryItemDialog(ConsoleWidget *console_arg);
+    CreateQueryItemDialog(QWidget *parent);
     ~CreateQueryItemDialog();
+
+    EditQueryItemWidget *edit_widget() const;
+
+    void set_sibling_name_list(const QList<QString> &list);
 
     void open() override;
     void accept() override;
 
-private:    
-    ConsoleWidget *console;
+private:
+    QList<QString> sibling_name_list;
 };
 
 #endif /* CREATE_QUERY_ITEM_DIALOG_H */

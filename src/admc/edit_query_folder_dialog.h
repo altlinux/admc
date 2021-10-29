@@ -23,8 +23,6 @@
 
 #include <QDialog>
 
-class ConsoleWidget;
-
 namespace Ui {
     class EditQueryFolderDialog;
 }
@@ -35,15 +33,17 @@ class EditQueryFolderDialog : public QDialog {
 public:
     Ui::EditQueryFolderDialog *ui;
 
-    EditQueryFolderDialog(ConsoleWidget *console_arg);
+    EditQueryFolderDialog(QWidget *parent);
     ~EditQueryFolderDialog();
 
-    void open() override;
+    QString name() const;
+    QString description() const;
+
+    void set_data(const QList<QString> &sibling_name_list, const QString &name, const QString &description);
+    void accept() override;
 
 private:
-    ConsoleWidget *console;
-
-    void accept() override;
+    QList<QString> sibling_name_list;
 };
 
 #endif /* EDIT_QUERY_FOLDER_DIALOG_H */

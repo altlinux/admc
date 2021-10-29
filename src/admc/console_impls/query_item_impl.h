@@ -42,6 +42,9 @@ enum QueryColumn {
     QueryColumn_COUNT,
 };
 
+class EditQueryItemDialog;
+class EditQueryItemWidget;
+
 class QueryItemImpl final : public ConsoleImpl {
     Q_OBJECT
 
@@ -69,12 +72,16 @@ private slots:
 private:
     QAction *edit_action;
     QAction *export_action;
+    EditQueryItemDialog *edit_query_item_dialog;
 
+    void on_edit_query_item();
+    void on_edit_query_item_accepted();
 };
 
 void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children);
 void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent);
 QHash<QString, QVariant> console_query_item_save_hash(const QModelIndex &index);
 void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index);
+void get_query_item_data(const QModelIndex &index, QString *name, QString *description, bool *scope_is_children, QByteArray *filter_state);
 
 #endif /* CONSOLE_QUERY_H */

@@ -21,30 +21,34 @@
 #include "create_query_folder_dialog.h"
 #include "ui_create_query_folder_dialog.h"
 
-#include "ad_filter.h"
-#include "console_impls/query_item_impl.h"
 #include "console_impls/query_folder_impl.h"
-#include "filter_widget/filter_widget.h"
-#include "filter_widget/select_base_widget.h"
-#include "globals.h"
-#include "status.h"
-#include "console_impls/item_type.h"
 
-#include <QModelIndex>
-
-CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
+CreateQueryFolderDialog::CreateQueryFolderDialog(QWidget *parent)
+: QDialog(parent) {
     ui = new Ui::CreateQueryFolderDialog();
     ui->setupUi(this);
-
-    console = console_arg;
 }
 
 CreateQueryFolderDialog::~CreateQueryFolderDialog() {
     delete ui;
 }
 
+QString CreateQueryFolderDialog::name() const {
+    return ui->name_edit->text();
+}
+
+QString CreateQueryFolderDialog::description() const {
+    return ui->description_edit->text();
+}
+
+void CreateQueryFolderDialog::set_sibling_name_list(const QList<QString> &list) {
+    sibling_name_list = list;
+}
+
 void CreateQueryFolderDialog::open() {
+    // TODO: suggest unique "New folder (N)" name? Can reuse
+    // algorithm for policy name, just make a f-n that takes
+    // a list of names
     ui->name_edit->setText(tr("New folder"));
     ui->description_edit->setText("");
 
@@ -52,17 +56,10 @@ void CreateQueryFolderDialog::open() {
 }
 
 void CreateQueryFolderDialog::accept() {
-    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
     const QString name = ui->name_edit->text();
-    const QString description = ui->description_edit->text();
+    const bool name_is_valid = console_query_or_folder_name_is_good(name, sibling_name_list, this);
 
-    if (!console_query_or_folder_name_is_good(name, parent_index, this, QModelIndex())) {
-        return;
+    if (name_is_valid) {
+        QDialog::accept();
     }
-
-    console_query_folder_create(console, name, description, parent_index);
-
-    console_query_tree_save(console);
-
-    QDialog::accept();
 }
