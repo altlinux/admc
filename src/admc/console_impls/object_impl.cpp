@@ -151,6 +151,9 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     connect(
         change_dc_action, &QAction::triggered,
         change_dc_dialog, &QDialog::open);
+    connect(
+        change_dc_dialog, &QDialog::accepted,
+        this, &ObjectImpl::on_change_dc_complete);
 
     const QList<CreateObjectDialog *> create_dialog_list = {
         create_user_dialog,
@@ -1054,6 +1057,14 @@ void ObjectImpl::on_create_dialog_complete(const QString &created_dn) {
     }
 
     hide_busy_indicator();
+}
+
+void ObjectImpl::on_change_dc_complete() {
+    const QModelIndex root = get_object_tree_root(console);
+    if (root.isValid()) {
+        QStandardItem *root_item = console->get_item(root);
+        console_object_load_root_text(root_item);
+    }
 }
 
 void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {

@@ -21,18 +21,15 @@
 #include "change_dc_dialog.h"
 #include "ui_change_dc_dialog.h"
 
-#include "console_impls/object_impl.h"
 #include "adldap.h"
 #include "settings.h"
 #include "utils.h"
 #include "widget_state.h"
 
-ChangeDCDialog::ChangeDCDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
+ChangeDCDialog::ChangeDCDialog(QWidget *parent)
+: QDialog(parent) {
     ui = new Ui::ChangeDCDialog();
     ui->setupUi(this);
-
-    console = console_arg;
 
     const QList<QWidget *> widget_list = {
         ui->select_button,
@@ -81,25 +78,19 @@ void ChangeDCDialog::accept() {
         }
     }();
 
-    if (selected_dc.isEmpty()) {
+    const bool dc_is_valid = !selected_dc.isEmpty();
+
+    if (dc_is_valid) {
+        AdInterface::set_dc(selected_dc);
+
+        if (ui->save_this_setting_check->isChecked()) {
+            settings_set_variant(SETTING_dc, selected_dc);
+        }
+
+        QDialog::accept();
+    } else {
         message_box_warning(this, tr("Error"), tr("Select or enter a domain controller."));
-
-        return;
     }
-    
-    AdInterface::set_dc(selected_dc);
-
-    if (ui->save_this_setting_check->isChecked()) {
-        settings_set_variant(SETTING_dc, selected_dc);
-    }
-
-    const QModelIndex root = get_object_tree_root(console);
-    if (root.isValid()) {
-        QStandardItem *root_item = console->get_item(root);
-        console_object_load_root_text(root_item);
-    }
-
-    QDialog::accept();
 }
 
 void ChangeDCDialog::reject() {
