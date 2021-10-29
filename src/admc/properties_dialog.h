@@ -47,7 +47,11 @@ class PropertiesDialog final : public QDialog {
 public:
     Ui::PropertiesDialog *ui;
 
-    static PropertiesDialog *open_for_target(const QString &target);
+    // "dialog_is_new" flag is set to true if this is a
+    // newly created dialog and false if a dialog was
+    // already open for given target and reused. Use to know
+    // whether to connect to applied() signal
+    static PropertiesDialog *open_for_target(const QString &target, bool *dialog_is_new = nullptr);
     static void open_when_view_item_activated(QAbstractItemView *view, const int dn_role);
 
     ~PropertiesDialog();

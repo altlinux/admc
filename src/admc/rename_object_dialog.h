@@ -41,16 +41,16 @@ public:
 
     void set_target(const QString &dn);
     void reset();
-    QString get_new_dn() const;
     void open() override;
     void accept() override;
+
+signals:
+    void complete(const QString &old_dn, const QString &new_dn);
 
 private:
     QString target;
     QLineEdit *name_edit;
     QList<AttributeEdit *> edits;
-
-    QString get_new_name() const;
 };
 
 #endif /* RENAME_OBJECT_DIALOG_H */

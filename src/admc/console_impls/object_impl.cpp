@@ -112,7 +112,6 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     new_menu->addAction(new_ou_action);
     new_menu->addAction(new_group_action);
 
-    // TODO: probably should just be members
     connect(
         new_user_action, &QAction::triggered,
         this, &ObjectImpl::on_new_user);
@@ -152,6 +151,31 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     connect(
         change_dc_action, &QAction::triggered,
         change_dc_dialog, &QDialog::open);
+
+    const QList<CreateObjectDialog *> create_dialog_list = {
+        create_user_dialog,
+        create_group_dialog,
+        create_ou_dialog,
+        create_computer_dialog,
+    };
+
+    for (CreateObjectDialog *dialog : create_dialog_list) {
+        connect(
+            dialog, &CreateObjectDialog::complete,
+            this, &ObjectImpl::on_create_dialog_complete);
+    }
+
+    const QList<RenameObjectDialog *> rename_dialog_list = {
+        rename_user_dialog,
+        rename_group_dialog,
+        rename_other_dialog,
+    };
+
+    for (RenameObjectDialog *dialog : rename_dialog_list) {
+        connect(
+            dialog, &RenameObjectDialog::complete,
+            this, &ObjectImpl::on_rename_dialog_complete);
+    }
 }
 
 void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
@@ -440,21 +464,6 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
     const QString dn = get_selected_dn_object(console);
 
     dialog->set_target(dn);
-
-    QObject::connect(
-        dialog, &QDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            const QString old_dn = dn;
-            const QString new_dn = dialog->get_new_dn();
-            const QString parent_dn = dn_get_parent(old_dn);
-            move_and_rename(ad, {{old_dn, new_dn}}, parent_dn);
-        });
-
     dialog->open();
 }
 
@@ -494,11 +503,14 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
     if (dn_list.size() == 1) {
         const QString dn = dn_list[0];
 
-        PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn);
+        bool dialog_is_new;
+        PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn, &dialog_is_new);
 
-        connect(
-            dialog, &PropertiesDialog::applied,
-            on_object_properties_applied);
+        if (dialog_is_new) {
+            connect(
+                dialog, &PropertiesDialog::applied,
+                on_object_properties_applied);
+        }
     } else if (dn_list.size() > 1) {
         const QList<QString> class_list = [&]() {
             QSet<QString> out;
@@ -760,47 +772,6 @@ void ObjectImpl::new_object(CreateObjectDialog *dialog) {
 
     dialog->set_parent_dn(parent_dn);
     dialog->open();
-
-    // NOTE: can't just add new object to this by adding
-    // to selected index, because you can create an object
-    // by using action menu of an object in a query tree.
-    // Therefore need to search for parent in domain tree.
-    connect(
-        dialog, &QDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            show_busy_indicator();
-
-            auto apply_changes = [&ad, &parent_dn, dialog](ConsoleWidget *target_console) {
-                const QModelIndex root = get_object_tree_root(target_console);
-                if (!root.isValid()) {
-                    return;
-                }
-
-                const QList<QModelIndex> search_parent = target_console->search_items(root, ObjectRole_DN, parent_dn, ItemType_Object);
-
-                if (search_parent.isEmpty()) {
-                    hide_busy_indicator();
-                    return;
-                }
-
-                const QModelIndex scope_parent_index = search_parent[0];
-                const QString created_dn = dialog->get_created_dn();
-                object_impl_add_objects_to_console_from_dns(target_console, ad, {created_dn}, scope_parent_index);
-            };
-
-            apply_changes(console);
-
-            if (buddy_console != nullptr) {
-                apply_changes(buddy_console);
-            }
-
-            hide_busy_indicator();
-        });
 }
 
 void ObjectImpl::set_disabled(const bool disabled) {
@@ -1033,6 +1004,56 @@ void ObjectImpl::move(AdInterface &ad, const QList<QString> &old_dn_list, const 
     }();
 
     move_and_rename(ad, old_to_new_dn_map, new_parent_dn);
+}
+
+void ObjectImpl::on_rename_dialog_complete(const QString &old_dn, const QString &new_dn) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QString parent_dn = dn_get_parent(old_dn);
+    move_and_rename(ad, {{old_dn, new_dn}}, parent_dn);
+}
+
+void ObjectImpl::on_create_dialog_complete(const QString &created_dn) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    // NOTE: we don't just use currently selected index as
+    // parent to add new object onto, because you can create
+    // an object in a query tree or find dialog. Therefore
+    // need to search for index of parent object in domain
+    // tree.
+    auto apply_changes = [&](ConsoleWidget *target_console) {
+        const QModelIndex root = get_object_tree_root(target_console);
+        if (!root.isValid()) {
+            return;
+        }
+
+        const QString parent_dn = get_selected_dn_object(console);
+        const QList<QModelIndex> search_parent = target_console->search_items(root, ObjectRole_DN, parent_dn, ItemType_Object);
+
+        if (search_parent.isEmpty()) {
+            hide_busy_indicator();
+            return;
+        }
+
+        const QModelIndex scope_parent_index = search_parent[0];
+        object_impl_add_objects_to_console_from_dns(target_console, ad, {created_dn}, scope_parent_index);
+    };
+
+    apply_changes(console);
+
+    if (buddy_console != nullptr) {
+        apply_changes(buddy_console);
+    }
+
+    hide_busy_indicator();
 }
 
 void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {

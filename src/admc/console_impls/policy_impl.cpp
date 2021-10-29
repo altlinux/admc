@@ -201,7 +201,8 @@ void PolicyImpl::properties(const QList<QModelIndex> &index_list) {
     const QModelIndex index = index_list[0];
     const QString dn = index.data(PolicyRole_DN).toString();
 
-    PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn);
+    bool dialog_is_new;
+    PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn, &dialog_is_new);
 
     // Need to update results when properties are applied,
     // in case links were modified in links tab
@@ -210,9 +211,11 @@ void PolicyImpl::properties(const QList<QModelIndex> &index_list) {
         policy_results_widget->update(current_scope);
     };
 
-    connect(
-        dialog, &PropertiesDialog::applied,
-        on_propeties_applied);
+    if (dialog_is_new) {
+        connect(
+            dialog, &PropertiesDialog::applied,
+            on_propeties_applied);
+    }
 }
 
 void PolicyImpl::add_link(const QList<QString> &policy_list, const QList<QString> &ou_list) {

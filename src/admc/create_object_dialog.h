@@ -47,11 +47,13 @@ public:
     // save/restore their state.
     void init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QList<QWidget *> &widget_list, const QString &object_class);
 
-    QString get_created_dn() const;
     void set_parent_dn(const QString &dn);
     void open() override;
     void accept() override;
     void on_edited();
+
+signals:
+    void complete(const QString &created_dn);
 
 private:
     QString parent_dn;

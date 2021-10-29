@@ -112,6 +112,8 @@ private slots:
     void on_reset_password();
     void on_edit_upn_suffixes();
     void on_reset_account();
+    void on_create_dialog_complete(const QString &created_dn);
+    void on_rename_dialog_complete(const QString &old_dn, const QString &new_dn);
 
 private:
     ConsoleWidget *buddy_console;
