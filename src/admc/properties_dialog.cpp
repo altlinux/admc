@@ -57,7 +57,7 @@
 #include <QLabel>
 #include <QPushButton>
 
-PropertiesDialog *PropertiesDialog::open_for_target(const QString &target) {
+PropertiesDialog *PropertiesDialog::open_for_target(const QString &target, bool *dialog_is_new) {
     if (target.isEmpty()) {
         return nullptr;
     }
@@ -90,6 +90,10 @@ PropertiesDialog *PropertiesDialog::open_for_target(const QString &target) {
     }
 
     hide_busy_indicator();
+
+    if (dialog_is_new != nullptr) {
+        *dialog_is_new = !dialog_already_open_for_this_target;
+    }
 
     return dialog;
 }

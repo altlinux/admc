@@ -112,7 +112,6 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     new_menu->addAction(new_ou_action);
     new_menu->addAction(new_group_action);
 
-    // TODO: probably should just be members
     connect(
         new_user_action, &QAction::triggered,
         this, &ObjectImpl::on_new_user);
@@ -504,11 +503,14 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
     if (dn_list.size() == 1) {
         const QString dn = dn_list[0];
 
-        PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn);
+        bool dialog_is_new;
+        PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn, &dialog_is_new);
 
-        connect(
-            dialog, &PropertiesDialog::applied,
-            on_object_properties_applied);
+        if (dialog_is_new) {
+            connect(
+                dialog, &PropertiesDialog::applied,
+                on_object_properties_applied);
+        }
     } else if (dn_list.size() > 1) {
         const QList<QString> class_list = [&]() {
             QSet<QString> out;
