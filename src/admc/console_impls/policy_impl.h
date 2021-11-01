@@ -65,7 +65,7 @@ public:
 private slots:
     void on_add_link();
     void on_edit();
-    void on_rename_complete();
+    void on_rename_accepted();
 
 private:
     PolicyResultsWidget *policy_results_widget;

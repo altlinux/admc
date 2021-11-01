@@ -64,7 +64,6 @@ private:
     AttributeEditor *m_bool_editor;
     AttributeEditor *m_datetime_editor;
     AttributeEditor *m_multi_editor;
-    AttributeEditor *current_editor;
 
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
     void on_editor_accepted();

@@ -58,7 +58,7 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
         this, &PolicyImpl::on_edit);
     connect(
         rename_policy_dialog, &QDialog::accepted,
-        this, &PolicyImpl::on_rename_complete);
+        this, &PolicyImpl::on_rename_accepted);
 }
 
 bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -320,7 +320,7 @@ void PolicyImpl::on_edit() {
     process->start(QIODevice::ReadOnly);
 }
 
-void PolicyImpl::on_rename_complete() {
+void PolicyImpl::on_rename_accepted() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;

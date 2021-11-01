@@ -154,7 +154,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
         change_dc_dialog, &QDialog::open);
     connect(
         change_dc_dialog, &QDialog::accepted,
-        this, &ObjectImpl::on_change_dc_complete);
+        this, &ObjectImpl::on_change_dc_accepted);
     connect(
         upn_suffixes_editor, &QDialog::accepted,
         this, &ObjectImpl::on_upn_suffixes_editor_accepted);
@@ -168,8 +168,8 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 
     for (CreateObjectDialog *dialog : create_dialog_list) {
         connect(
-            dialog, &CreateObjectDialog::complete,
-            this, &ObjectImpl::on_create_dialog_complete);
+            dialog, &QDialog::accepted,
+            this, &ObjectImpl::on_create_dialog_accepted);
     }
 
     const QList<RenameObjectDialog *> rename_dialog_list = {
@@ -180,8 +180,8 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 
     for (RenameObjectDialog *dialog : rename_dialog_list) {
         connect(
-            dialog, &RenameObjectDialog::complete,
-            this, &ObjectImpl::on_rename_dialog_complete);
+            dialog, &RenameObjectDialog::accepted,
+            this, &ObjectImpl::on_rename_dialog_accepted);
     }
 }
 
@@ -1001,23 +1001,30 @@ void ObjectImpl::move(AdInterface &ad, const QList<QString> &old_dn_list, const 
     move_and_rename(ad, old_to_new_dn_map, new_parent_dn);
 }
 
-void ObjectImpl::on_rename_dialog_complete(const QString &old_dn, const QString &new_dn) {
+void ObjectImpl::on_rename_dialog_accepted() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
     }
 
+    RenameObjectDialog *dialog = qobject_cast<RenameObjectDialog *>(QObject::sender());
+    const QString old_dn = dialog->get_target();
+    const QString new_dn = dialog->get_new_dn();
     const QString parent_dn = dn_get_parent(old_dn);
+
     move_and_rename(ad, {{old_dn, new_dn}}, parent_dn);
 }
 
-void ObjectImpl::on_create_dialog_complete(const QString &created_dn) {
+void ObjectImpl::on_create_dialog_accepted() {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
     }
 
     show_busy_indicator();
+
+    CreateObjectDialog *dialog = qobject_cast<CreateObjectDialog *>(QObject::sender());
+    const QString created_dn = dialog->get_created_dn();
 
     // NOTE: we don't just use currently selected index as
     // parent to add new object onto, because you can create
@@ -1051,7 +1058,7 @@ void ObjectImpl::on_create_dialog_complete(const QString &created_dn) {
     hide_busy_indicator();
 }
 
-void ObjectImpl::on_change_dc_complete() {
+void ObjectImpl::on_change_dc_accepted() {
     const QModelIndex root = get_object_tree_root(console);
     if (root.isValid()) {
         QStandardItem *root_item = console->get_item(root);

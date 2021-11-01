@@ -44,8 +44,9 @@ public:
     void open() override;
     void accept() override;
 
-signals:
-    void complete(const QString &old_dn, const QString &new_dn);
+    QString get_target() const;
+    QString get_new_name() const;
+    QString get_new_dn() const;
 
 private:
     QString target;

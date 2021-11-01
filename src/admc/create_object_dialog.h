@@ -51,9 +51,8 @@ public:
     void open() override;
     void accept() override;
     void on_edited();
-
-signals:
-    void complete(const QString &created_dn);
+    QString get_created_name() const;
+    QString get_created_dn() const;
 
 private:
     QString parent_dn;
@@ -63,8 +62,6 @@ private:
     QPushButton *ok_button;
     QString m_object_class;
     WidgetState m_state;
-
-    QString get_created_name() const;
 };
 
 #endif /* CREATE_OBJECT_DIALOG_H */

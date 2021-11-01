@@ -51,8 +51,6 @@ AttributesTab::AttributesTab() {
     ui = new Ui::AttributesTab();
     ui->setupUi(this);
 
-    current_editor = nullptr;
-
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
     {
@@ -220,8 +218,6 @@ void AttributesTab::edit_attribute() {
     }();
 
     if (editor != nullptr) {
-        current_editor = editor;
-
         editor->set_attribute(attribute);
         
         const QList<QByteArray> value_list = current[attribute];
@@ -299,11 +295,7 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
 }
 
 void AttributesTab::on_editor_accepted() {
-    if (current_editor == nullptr) {
-        qDebug() << "on_editor_accepted() called but no current editor!";
-
-        return;
-    }
+    AttributeEditor *editor = qobject_cast<AttributeEditor *>(QObject::sender());
 
     const QList<QStandardItem *> row = get_selected_row();
 
@@ -311,13 +303,11 @@ void AttributesTab::on_editor_accepted() {
         return;
     }
     
-    const QString attribute = current_editor->get_attribute();
-    const QList<QByteArray> value_list = current_editor->get_value_list();
+    const QString attribute = editor->get_attribute();
+    const QList<QByteArray> value_list = editor->get_value_list();
 
     current[attribute] = value_list;
     load_row(row, attribute, value_list);
-
-    current_editor = nullptr;
 
     emit edited();
 }

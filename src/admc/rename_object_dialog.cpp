@@ -90,8 +90,9 @@ void RenameObjectDialog::accept() {
 
     show_busy_indicator();
 
-    const QString new_name = name_edit->text().trimmed();
-    const QString new_dn = dn_rename(target, new_name);
+    const QString new_name = get_new_name();
+    const QString new_dn = get_new_dn();
+
     const bool rename_success = ad.object_rename(target, new_name);
 
     bool final_success = false;
@@ -110,10 +111,25 @@ void RenameObjectDialog::accept() {
     if (final_success) {
         RenameObjectDialog::success_msg(old_name);
 
-        emit complete(old_dn, new_dn);
-
         QDialog::accept();
     } else {
         RenameObjectDialog::fail_msg(old_name);
     }
+}
+
+QString RenameObjectDialog::get_target() const {
+    return target;
+}
+
+QString RenameObjectDialog::get_new_name() const {
+    const QString new_name = name_edit->text().trimmed();
+
+    return new_name;
+}
+
+QString RenameObjectDialog::get_new_dn() const {
+    const QString new_name = get_new_name();
+    const QString new_dn = dn_rename(target, new_name);
+
+    return new_dn;
 }

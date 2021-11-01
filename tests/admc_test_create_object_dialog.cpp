@@ -51,8 +51,8 @@ void ADMCTestCreateObjectDialog::create_user() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created user doesn't exist");
-
-    QVERIFY(true);
+    QCOMPARE(create_dialog->get_created_name(), name);
+    QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
 void ADMCTestCreateObjectDialog::create_ou() {
@@ -71,8 +71,8 @@ void ADMCTestCreateObjectDialog::create_ou() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created OU doesn't exist");
-
-    QVERIFY(true);
+    QCOMPARE(create_dialog->get_created_name(), name);
+    QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
 void ADMCTestCreateObjectDialog::create_computer() {
@@ -93,8 +93,8 @@ void ADMCTestCreateObjectDialog::create_computer() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created computer doesn't exist");
-
-    QVERIFY(true);
+    QCOMPARE(create_dialog->get_created_name(), name);
+    QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
 void ADMCTestCreateObjectDialog::create_group() {
@@ -115,8 +115,8 @@ void ADMCTestCreateObjectDialog::create_group() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created group doesn't exist");
-
-    QVERIFY(true);
+    QCOMPARE(create_dialog->get_created_name(), name);
+    QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
 QTEST_MAIN(ADMCTestCreateObjectDialog)

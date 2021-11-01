@@ -68,10 +68,8 @@ void CreateObjectDialog::accept() {
         return;
     }
 
-    // NOTE: trim whitespaces because server will do it
-    // anyway and we want a correct name
-    const QString name = name_edit->text().trimmed();
-    const QString dn = dn_from_name_and_parent(name, parent_dn, m_object_class);
+    const QString name = get_created_name();
+    const QString dn = get_created_dn();
 
     // Verify edits
     const bool verify_success = edits_verify(ad, m_edit_list, dn, true);
@@ -113,8 +111,6 @@ void CreateObjectDialog::accept() {
 
         g_status()->add_message(message, StatusType_Success);
 
-        emit complete(dn);
-
         QDialog::accept();
     } else {
         fail_msg();
@@ -134,4 +130,19 @@ void CreateObjectDialog::on_edited() {
     }();
 
     ok_button->setEnabled(all_required_filled);
+}
+
+QString CreateObjectDialog::get_created_name() const {
+    // NOTE: trim whitespaces because server will do it
+    // anyway and we want a correct name
+    const QString name = name_edit->text().trimmed();
+
+    return name;
+}
+
+QString CreateObjectDialog::get_created_dn() const {
+    const QString name = get_created_name();
+    const QString dn = dn_from_name_and_parent(name, parent_dn, m_object_class);
+
+    return dn;
 }
