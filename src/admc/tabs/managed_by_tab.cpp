@@ -46,9 +46,6 @@ ManagedByTab::ManagedByTab() {
 
     new CountryEdit(ui->country_combo, &manager_edits, this);
 
-    // TODO: this is currently only showing the disabled
-    // "other..." button. Need to be able to see other
-    // values in dialog (but not edit them)
     new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, &manager_edits, this);
     new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, &manager_edits, this);
 
