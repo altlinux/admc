@@ -29,28 +29,31 @@
 #include "status.h"
 #include "utils.h"
 
-PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
+PasswordDialog::PasswordDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::PasswordDialog();
     ui->setupUi(this);
 
-    setAttribute(Qt::WA_DeleteOnClose);
+    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edits, this);
 
+    pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
+
+    new UnlockEdit(ui->unlock_check, &edits, this);
+}
+
+PasswordDialog::~PasswordDialog() {
+    delete ui;
+}
+
+void PasswordDialog::set_target(const QString &target_arg) {
     target = target_arg;
 
     AdInterface ad;
     if (ad_failed(ad)) {
-        close();
         return;
     }
 
     const AdObject object = ad.search_object(target);
-
-    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edits, this);
-
-    auto pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
-
-    new UnlockEdit(ui->unlock_check, &edits, this);
 
     edits_load(edits, ad, object);
 
@@ -76,10 +79,6 @@ PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
     }
 
     g_status()->display_ad_messages(ad, this);
-}
-
-PasswordDialog::~PasswordDialog() {
-    delete ui;
 }
 
 void PasswordDialog::accept() {

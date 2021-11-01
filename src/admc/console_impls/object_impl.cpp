@@ -82,6 +82,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     create_ou_dialog = new CreateOUDialog(console);
     create_computer_dialog = new CreateComputerDialog(console);
     upn_suffixes_editor = new MultiEditor(console);
+    password_dialog = new PasswordDialog(console);
 
     current_filter = QString();
     filtering_is_ON = false;
@@ -723,7 +724,7 @@ void ObjectImpl::on_find() {
 
 void ObjectImpl::on_reset_password() {
     const QString dn = get_selected_dn_object(console);
-    const auto password_dialog = new PasswordDialog(dn, console);
+    password_dialog->set_target(dn);
     password_dialog->open();
 }
 

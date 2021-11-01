@@ -40,6 +40,7 @@ class SelectContainerDialog;
 class RenameObjectDialog;
 class CreateObjectDialog;
 class AttributeEditor;
+class PasswordDialog;
 
 /**
  * Some f-ns used for models that store objects.
@@ -131,6 +132,7 @@ private:
     CreateObjectDialog *create_ou_dialog;
     CreateObjectDialog *create_computer_dialog;
     AttributeEditor *upn_suffixes_editor;
+    PasswordDialog *password_dialog;
 
     QString current_filter;
     bool filtering_is_ON;

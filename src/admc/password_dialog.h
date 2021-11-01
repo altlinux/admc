@@ -36,8 +36,10 @@ class PasswordDialog final : public QDialog {
 public:
     Ui::PasswordDialog *ui;
 
-    PasswordDialog(const QString &target_arg, QWidget *parent);
+    PasswordDialog(QWidget *parent);
     ~PasswordDialog();
+
+    void set_target(const QString &dn);
 
 public slots:
     void accept();
@@ -45,6 +47,7 @@ public slots:
 private:
     QString target;
     QList<AttributeEdit *> edits;
+    AttributeEdit *pass_expired_edit;
 };
 
 #endif /* PASSWORD_DIALOG_H */
