@@ -42,6 +42,7 @@ StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_bu
     other_button = other_button_arg;
 
     other_editor = new MultiEditor(other_button);
+    other_editor->set_attribute(other_attribute_arg);
 
     connect(
         other_button, &QPushButton::clicked,
