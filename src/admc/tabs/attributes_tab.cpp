@@ -260,8 +260,6 @@ void AttributesTab::load(AdInterface &ad, const AdObject &object) {
         model->appendRow(row);
         load_row(row, attribute, values);
     }
-
-    ui->view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
 bool AttributesTab::apply(AdInterface &ad, const QString &target) {
