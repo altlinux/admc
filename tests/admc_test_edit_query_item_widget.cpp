@@ -92,13 +92,6 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
 
     const QString correct_filter = filter_display->toPlainText();
 
-    const QString name = widget->name();
-    const QString description = widget->description();
-    const QString filter = widget->filter();
-    const QString base = widget->base();
-    const QByteArray filter_state = widget->filter_state();
-    const bool scope_is_children = widget->scope_is_children();
-
     const QList<QStandardItem *> row = [=]() {
         QList<QStandardItem *> out;
 
@@ -113,17 +106,28 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
     auto model = new QStandardItemModel();
     model->appendRow(row);
 
-    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+    {
+        const QString name = widget->name();
+        const QString description = widget->description();
+        const QString filter = widget->filter();
+        const QString base = widget->base();
+        const QByteArray filter_state = widget->filter_state();
+        const bool scope_is_children = widget->scope_is_children();
+
+        console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+    }
 
     const QModelIndex index = row[0]->index();
     
-    QString name;
-    QString description;
-    bool scope_is_children;
-    QByteArray filter_state;
-    get_query_item_data(index, &name, &description, &scope_is_children, &filter_state);
+    {
+        QString name;
+        QString description;
+        bool scope_is_children;
+        QByteArray filter_state;
+        get_query_item_data(index, &name, &description, &scope_is_children, &filter_state);
 
-    edit_widget->set_data(name, description, scope_is_children, filter_state);
+        widget->set_data(name, description, scope_is_children, filter_state);
+    }
 
     QCOMPARE(name_edit->text(), correct_name);
     QCOMPARE(description_edit->text(), correct_description);

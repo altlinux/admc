@@ -28,7 +28,6 @@ class ADMCTestRenameObjectDialog : public ADMCTest {
 
 private slots:
     void rename();
-    void trim_spaces();
 };
 
 #endif /* ADMC_TEST_RENAME_OBJECT_DIALOG_H */
