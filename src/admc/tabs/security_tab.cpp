@@ -283,16 +283,18 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
     if (!modified) {
         return true;
     }
+
+    bool total_success = true;
  
-    const bool replace_sd_success = attribute_replace_security_descriptor(&ad, target, permission_state_map);
+    total_success &= attribute_replace_security_descriptor(&ad, target, permission_state_map);
 
     original_permission_state_map = permission_state_map;
 
-    const bool sync_perms_success = ad.gpo_sync_perms(target);
+    if (is_policy) {
+        total_success &= ad.gpo_sync_perms(target);
+    }
 
-    const bool apply_success = (replace_sd_success && sync_perms_success);
-
-    return apply_success;
+    return total_success;
 }
 
 void SecurityTab::on_add_trustee_button() {
