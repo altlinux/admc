@@ -35,8 +35,8 @@ OctetDisplayFormat current_format(QComboBox *format_combo);
 int format_base(const OctetDisplayFormat format);
 char *itoa(int value, char *result, int base);
 
-OctetEditor::OctetEditor(const QString attribute_arg, QWidget *parent)
-: AttributeEditor(attribute_arg, parent) {
+OctetEditor::OctetEditor(QWidget *parent)
+: AttributeEditor(parent) {
     ui = new Ui::OctetEditor();
     ui->setupUi(this);
 
@@ -45,22 +45,24 @@ OctetEditor::OctetEditor(const QString attribute_arg, QWidget *parent)
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     ui->edit->setFont(fixed_font);
 
-    if (g_adconfig->get_attribute_is_system_only(attribute)) {
-        ui->edit->setReadOnly(true);
-    }
-
     connect(
         ui->format_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &OctetEditor::on_format_combo);
-
-    init(ui->button_box, ui->attribute_label);
 }
 
 OctetEditor::~OctetEditor() {
     delete ui;
 }
 
-QList<QByteArray> OctetEditor::get_new_values() const {
+void OctetEditor::set_attribute(const QString &attribute) {
+    AttributeEditor::set_attribute_internal(attribute, ui->attribute_label);
+
+    if (g_adconfig->get_attribute_is_system_only(attribute)) {
+        ui->edit->setReadOnly(true);
+    }
+}
+
+QList<QByteArray> OctetEditor::get_value_list() const {
     const QString text = ui->edit->toPlainText();
     const QByteArray bytes = octet_string_to_bytes(text, current_format(ui->format_combo));
 
@@ -75,7 +77,7 @@ void OctetEditor::accept() {
     }
 }
 
-void OctetEditor::load(const QList<QByteArray> &values) {
+void OctetEditor::set_value_list(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = octet_bytes_to_string(value, current_format(ui->format_combo));
     ui->edit->setPlainText(value_string);

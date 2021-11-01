@@ -40,20 +40,15 @@ StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_bu
         });
 
     other_button = other_button_arg;
-    connect(other_button, &QPushButton::clicked,
-        [this]() {
-            auto dialog = new MultiEditor(other_attribute, other_button);
-            dialog->load(other_values);
-            dialog->open();
 
-            connect(
-                dialog, &QDialog::accepted,
-                [this, dialog]() {
-                    other_values = dialog->get_new_values();
+    other_editor = new MultiEditor(other_button);
 
-                    emit edited();
-                });
-        });
+    connect(
+        other_button, &QPushButton::clicked,
+        this, &StringOtherEdit::on_other_button);
+    connect(
+        other_editor, &QDialog::accepted,
+        this, &StringOtherEdit::on_other_editor_accepted);
 }
 
 void StringOtherEdit::load_internal(AdInterface &ad, const AdObject &object) {
@@ -72,4 +67,15 @@ bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool other_success = ad.attribute_replace_values(dn, other_attribute, other_values);
 
     return (main_succcess && other_success);
+}
+
+void StringOtherEdit::on_other_button() {
+    other_editor->set_value_list(other_values);
+    other_editor->open();
+}
+
+void StringOtherEdit::on_other_editor_accepted() {
+    other_values = other_editor->get_value_list();
+
+    emit edited();
 }

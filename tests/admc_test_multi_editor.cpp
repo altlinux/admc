@@ -34,7 +34,8 @@ const QList<QByteArray> test_value = {QByteArray("hello")};
 void ADMCTestMultiEditor::init() {
     ADMCTest::init();
 
-    edit = new MultiEditor(ATTRIBUTE_DESCRIPTION, parent_widget);
+    edit = new MultiEditor(parent_widget);
+    edit->set_attribute(ATTRIBUTE_DESCRIPTION);
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
@@ -43,26 +44,26 @@ void ADMCTestMultiEditor::init() {
     remove_button = edit->ui->remove_button;
 }
 
-void ADMCTestMultiEditor::load_empty() {
-    edit->load({});
+void ADMCTestMultiEditor::set_value_list_empty() {
+    edit->set_value_list({});
     QCOMPARE(list_widget->count(), 0);
 }
 
-void ADMCTestMultiEditor::load() {
-    edit->load(test_value);
+void ADMCTestMultiEditor::set_value_list() {
+    edit->set_value_list(test_value);
     QListWidgetItem *item = list_widget->item(0);
     QVERIFY(item);
     QCOMPARE(item->text(), "hello");
 }
 
-void ADMCTestMultiEditor::get_new_values() {
-    edit->load(test_value);
-    const QList<QByteArray> current = edit->get_new_values();
+void ADMCTestMultiEditor::get_value_list() {
+    edit->set_value_list(test_value);
+    const QList<QByteArray> current = edit->get_value_list();
     QCOMPARE(current, test_value);
 }
 
 void ADMCTestMultiEditor::add() {
-    edit->load(test_value);
+    edit->set_value_list(test_value);
 
     add_button->click();
 
@@ -85,7 +86,7 @@ void ADMCTestMultiEditor::add() {
 }
 
 void ADMCTestMultiEditor::remove() {
-    edit->load({
+    edit->set_value_list({
         QByteArray("first"),
         QByteArray("second"),
         QByteArray("third"),

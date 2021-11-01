@@ -33,9 +33,9 @@ class ADMCTestMultiEditor : public ADMCTest {
 private slots:
     void init() override;
 
-    void load_empty();
-    void load();
-    void get_new_values();
+    void set_value_list_empty();
+    void set_value_list();
+    void get_value_list();
     void add();
     void remove();
 

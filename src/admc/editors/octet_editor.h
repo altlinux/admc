@@ -40,20 +40,20 @@ class OctetEditor final : public AttributeEditor {
 public:
     Ui::OctetEditor *ui;
 
-    OctetEditor(const QString attribute, QWidget *parent);
+    OctetEditor(QWidget *parent);
     ~OctetEditor();
 
-    void load(const QList<QByteArray> &values) override;
-    QList<QByteArray> get_new_values() const override;
-    void accept() override;
+    void set_attribute(const QString &attribute) override;
 
-private slots:
-    void on_format_combo();
+    void set_value_list(const QList<QByteArray> &values) override;
+    QList<QByteArray> get_value_list() const override;
+    void accept() override;
 
 private:
     OctetDisplayFormat prev_format;
 
     bool check_input(const OctetDisplayFormat format);
+    void on_format_combo();
 };
 
 QString octet_bytes_to_string(const QByteArray bytes, const OctetDisplayFormat format);

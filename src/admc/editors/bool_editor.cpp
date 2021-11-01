@@ -24,25 +24,27 @@
 #include "adldap.h"
 #include "globals.h"
 
-BoolEditor::BoolEditor(const QString attribute_arg, QWidget *parent)
-: AttributeEditor(attribute_arg, parent) {
+BoolEditor::BoolEditor(QWidget *parent)
+: AttributeEditor(parent) {
     ui = new Ui::BoolEditor();
     ui->setupUi(this);
-
-    if (g_adconfig->get_attribute_is_system_only(attribute)) {
-        ui->true_button->setEnabled(false);
-        ui->false_button->setEnabled(false);
-        ui->unset_button->setEnabled(false);
-    }
-
-    init(ui->button_box, ui->attribute_label);
 }
 
 BoolEditor::~BoolEditor() {
     delete ui;
 }
 
-void BoolEditor::load(const QList<QByteArray> &values) {
+void BoolEditor::set_attribute(const QString &attribute) {
+    AttributeEditor::set_attribute_internal(attribute, ui->attribute_label);
+
+    if (g_adconfig->get_attribute_is_system_only(attribute)) {
+        ui->true_button->setEnabled(false);
+        ui->false_button->setEnabled(false);
+        ui->unset_button->setEnabled(false);
+    }
+}
+
+void BoolEditor::set_value_list(const QList<QByteArray> &values) {
     if (values.isEmpty()) {
         ui->unset_button->setChecked(true);
     } else {
@@ -58,7 +60,7 @@ void BoolEditor::load(const QList<QByteArray> &values) {
     }
 }
 
-QList<QByteArray> BoolEditor::get_new_values() const {
+QList<QByteArray> BoolEditor::get_value_list() const {
     if (ui->unset_button->isChecked()) {
         return QList<QByteArray>();
     } else if (ui->true_button->isChecked()) {

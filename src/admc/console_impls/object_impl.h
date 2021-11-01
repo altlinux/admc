@@ -39,6 +39,7 @@ class ConsoleWidget;
 class SelectContainerDialog;
 class RenameObjectDialog;
 class CreateObjectDialog;
+class AttributeEditor;
 
 /**
  * Some f-ns used for models that store objects.
@@ -115,6 +116,7 @@ private slots:
     void on_create_dialog_complete(const QString &created_dn);
     void on_rename_dialog_complete(const QString &old_dn, const QString &new_dn);
     void on_change_dc_complete();
+    void on_upn_suffixes_editor_accepted();
 
 private:
     ConsoleWidget *buddy_console;
@@ -128,6 +130,7 @@ private:
     CreateObjectDialog *create_group_dialog;
     CreateObjectDialog *create_ou_dialog;
     CreateObjectDialog *create_computer_dialog;
+    AttributeEditor *upn_suffixes_editor;
 
     QString current_filter;
     bool filtering_is_ON;

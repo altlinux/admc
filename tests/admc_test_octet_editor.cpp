@@ -43,7 +43,8 @@ void ADMCTestOctetEditor::initTestCase_data() {
 void ADMCTestOctetEditor::init() {
     ADMCTest::init();
 
-    edit = new OctetEditor(ATTRIBUTE_DESCRIPTION, parent_widget);
+    edit = new OctetEditor(parent_widget);
+    edit->set_attribute(ATTRIBUTE_DESCRIPTION);
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
@@ -55,7 +56,7 @@ void ADMCTestOctetEditor::display() {
     QFETCH_GLOBAL(int, index);
     QFETCH_GLOBAL(QString, value);
 
-    edit->load(value_bytes);
+    edit->set_value_list(value_bytes);
 
     format_combo->setCurrentIndex(index);
     QCOMPARE(text_edit->toPlainText(), value);
@@ -63,16 +64,16 @@ void ADMCTestOctetEditor::display() {
 
 // Check that edit correctly converts formatted strings back
 // to bytes for each format
-void ADMCTestOctetEditor::get_new_values() {
+void ADMCTestOctetEditor::get_value_list() {
     QFETCH_GLOBAL(int, index);
     QFETCH_GLOBAL(QString, value);
 
-    edit->load({});
+    edit->set_value_list({});
 
     format_combo->setCurrentIndex(index);
     text_edit->setPlainText(value);
 
-    QCOMPARE(edit->get_new_values(), value_bytes);
+    QCOMPARE(edit->get_value_list(), value_bytes);
 }
 
 void ADMCTestOctetEditor::handle_empty_value() {
@@ -80,7 +81,7 @@ void ADMCTestOctetEditor::handle_empty_value() {
     QFETCH_GLOBAL(int, other_index);
     QFETCH_GLOBAL(QString, value);
 
-    edit->load({});
+    edit->set_value_list({});
     
     // Check that empty value correctly loads and is
     // displayed as empty string
@@ -100,7 +101,7 @@ void ADMCTestOctetEditor::handle_incorrect_input() {
     QFETCH_GLOBAL(int, other_index);
     QFETCH_GLOBAL(QString, value);
 
-    edit->load({});
+    edit->set_value_list({});
     
     text_edit->setPlainText("");
 

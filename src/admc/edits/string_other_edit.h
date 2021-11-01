@@ -26,6 +26,7 @@
 class StringEdit;
 class QPushButton;
 class QLineEdit;
+class AttributeEditor;
 
 /**
  * Edit for attributes which have "other" version which is
@@ -44,9 +45,13 @@ public:
 private:
     StringEdit *main_edit;
     QPushButton *other_button;
+    AttributeEditor *other_editor;
 
     const QString other_attribute;
     QList<QByteArray> other_values;
+
+    void on_other_button();
+    void on_other_editor_accepted();
 };
 
 #endif /* STRING_OTHER_EDIT_H */

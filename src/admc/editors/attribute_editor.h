@@ -24,11 +24,10 @@
 #include <QDialog>
 
 class QLabel;
-class QDialogButtonBox;
 
 /**
  * Gets input from user, which can be obtained through
- * get_new_values(). Different from AttributeEdit because it
+ * get_value_list(). Different from AttributeEdit because it
  * is opened as a separate dialog and parent object is
  * responsible for actually applying the changes.
  */
@@ -37,22 +36,27 @@ class AttributeEditor : public QDialog {
     Q_OBJECT
 
 public:
-    // Makes a dialog by picking the appropriate type of
-    // editor for given attribute. If attribute is not
-    // supported, returns nullptr.
-    static AttributeEditor *make(const QString attribute, const QList<QByteArray> value_list, QWidget *parent);
+    using QDialog::QDialog;
 
-    virtual void load(const QList<QByteArray> &value_list) = 0;
-    virtual QList<QByteArray> get_new_values() const = 0;
+    // Store attribute and also configure widget settings so
+    // that they are appropriate for given attribute.
+    virtual void set_attribute(const QString &attribute) = 0;
+
+    QString get_attribute() const;
+
+    virtual void set_value_list(const QList<QByteArray> &value_list) = 0;
+
+    // Returns current value list, which includes
+    // modifications made by the user
+    virtual QList<QByteArray> get_value_list() const = 0;
 
 protected:
-    QString attribute;
-   
-    AttributeEditor(const QString &attribute, QWidget *parent);
+    // Stores attribute variable and updates attribute label
+    // text
+    void set_attribute_internal(const QString &attribute, QLabel *attribute_label);
 
-    // Configures button box and attribute label depending on
-    // attribute given to ctor
-    void init(QDialogButtonBox *button_box, QLabel *attribute_label);
+private:
+    QString m_attribute;
 };
 
 #endif /* ATTRIBUTE_EDITOR_H */

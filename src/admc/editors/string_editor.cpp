@@ -25,13 +25,21 @@
 #include "globals.h"
 #include "utils.h"
 
-StringEditor::StringEditor(const QString attribute_arg, QWidget *parent)
-: AttributeEditor(attribute_arg, parent) {
+StringEditor::StringEditor(QWidget *parent)
+: AttributeEditor(parent) {
     ui = new Ui::StringEditor();
     ui->setupUi(this);
+}
 
-    const QString title = [attribute_arg]() {
-        const AttributeType type = g_adconfig->get_attribute_type(attribute_arg);
+StringEditor::~StringEditor() {
+    delete ui;
+}
+
+void StringEditor::set_attribute(const QString &attribute) {
+    AttributeEditor::set_attribute_internal(attribute, ui->attribute_label);
+
+    const QString title = [&]() {
+        const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
         switch (type) {
             case AttributeType_Integer: return tr("Edit Integer");
@@ -55,21 +63,15 @@ StringEditor::StringEditor(const QString attribute_arg, QWidget *parent)
     if (system_only) {
         ui->edit->setReadOnly(true);
     }
-
-    init(ui->button_box, ui->attribute_label);
 }
 
-StringEditor::~StringEditor() {
-    delete ui;
-}
-
-void StringEditor::load(const QList<QByteArray> &values) {
+void StringEditor::set_value_list(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);
     ui->edit->setText(value_string);
 }
 
-QList<QByteArray> StringEditor::get_new_values() const {
+QList<QByteArray> StringEditor::get_value_list() const {
     const QString new_value_string = ui->edit->text();
 
     if (new_value_string.isEmpty()) {

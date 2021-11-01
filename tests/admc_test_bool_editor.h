@@ -37,8 +37,8 @@ private slots:
     void initTestCase_data();
     void init() override;
 
-    void load();
-    void get_new_values();
+    void set_value_list();
+    void get_value_list();
 
 private:
     BoolEditor *edit;

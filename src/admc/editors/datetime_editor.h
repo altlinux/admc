@@ -39,11 +39,13 @@ class DateTimeEditor final : public AttributeEditor {
 public:
     Ui::DateTimeEditor *ui;
 
-    DateTimeEditor(const QString attribute, QWidget *parent);
+    DateTimeEditor(QWidget *parent);
     ~DateTimeEditor();
 
-    void load(const QList<QByteArray> &values) override;
-    QList<QByteArray> get_new_values() const override;
+    void set_attribute(const QString &attribute) override;
+
+    void set_value_list(const QList<QByteArray> &values) override;
+    QList<QByteArray> get_value_list() const override;
 };
 
 #endif /* DATETIME_EDITOR_H */

@@ -28,24 +28,25 @@
 void ADMCTestDateTimeEditor::init() {
     ADMCTest::init();
 
-    edit = new DateTimeEditor(ATTRIBUTE_WHEN_CHANGED, parent_widget);
+    edit = new DateTimeEditor(parent_widget);
+    edit->set_attribute(ATTRIBUTE_WHEN_CHANGED);
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
     datetime_edit = edit->ui->edit;
 }
 
-void ADMCTestDateTimeEditor::load() {
-    edit->load({QByteArray("20210706131457.0Z")});
+void ADMCTestDateTimeEditor::set_value_list() {
+    edit->set_value_list({QByteArray("20210706131457.0Z")});
     const QDateTime correct_datetime = QDateTime(QDate(2021, 7, 6), QTime(13, 14, 57));
     QCOMPARE(datetime_edit->dateTime(), correct_datetime);
 }
 
 // NOTE: datetime edit always returns empty list, see
 // comment in it's source
-void ADMCTestDateTimeEditor::get_new_values() {
-    edit->load({QByteArray("20210706131457.0Z")});
-    const QList<QByteArray> value_list = edit->get_new_values();
+void ADMCTestDateTimeEditor::get_value_list() {
+    edit->set_value_list({QByteArray("20210706131457.0Z")});
+    const QList<QByteArray> value_list = edit->get_value_list();
     QVERIFY(value_list.isEmpty());
 }
 

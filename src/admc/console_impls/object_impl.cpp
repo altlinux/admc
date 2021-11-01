@@ -81,6 +81,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     create_group_dialog = new CreateGroupDialog(console);
     create_ou_dialog = new CreateOUDialog(console);
     create_computer_dialog = new CreateComputerDialog(console);
+    upn_suffixes_editor = new MultiEditor(console);
 
     current_filter = QString();
     filtering_is_ON = false;
@@ -154,6 +155,9 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     connect(
         change_dc_dialog, &QDialog::accepted,
         this, &ObjectImpl::on_change_dc_complete);
+    connect(
+        upn_suffixes_editor, &QDialog::accepted,
+        this, &ObjectImpl::on_upn_suffixes_editor_accepted);
 
     const QList<CreateObjectDialog *> create_dialog_list = {
         create_user_dialog,
@@ -737,24 +741,12 @@ void ObjectImpl::on_edit_upn_suffixes() {
 
     g_status()->display_ad_messages(ad, console);
 
-    auto editor = new MultiEditor(ATTRIBUTE_UPN_SUFFIXES, console);
-    editor->load(current_values);
-    editor->open();
-
-    // When editor is accepted, update values of upn
-    // suffixes
-    connect(editor, &QDialog::accepted,
-        [this, editor, partitions_dn]() {
-            AdInterface ad2;
-            if (ad_failed(ad2)) {
-                return;
-            }
-
-            const QList<QByteArray> new_values = editor->get_new_values();
-
-            ad2.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
-            g_status()->display_ad_messages(ad2, console);
-        });
+    // NOTE: setting attribute here because on creation
+    // there's no access to adconfig which is needed by
+    // attribute editor
+    upn_suffixes_editor->set_attribute(ATTRIBUTE_UPN_SUFFIXES);
+    upn_suffixes_editor->set_value_list(current_values);
+    upn_suffixes_editor->open();
 }
 
 void ObjectImpl::on_reset_account() {
@@ -1065,6 +1057,22 @@ void ObjectImpl::on_change_dc_complete() {
         QStandardItem *root_item = console->get_item(root);
         console_object_load_root_text(root_item);
     }
+}
+
+// When editor is accepted, update values of upn
+// suffixes
+void ObjectImpl::on_upn_suffixes_editor_accepted() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QList<QByteArray> new_values = upn_suffixes_editor->get_value_list();
+
+    const QString partitions_dn = g_adconfig->partitions_dn();
+
+    ad.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
+    g_status()->display_ad_messages(ad, console);
 }
 
 void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {

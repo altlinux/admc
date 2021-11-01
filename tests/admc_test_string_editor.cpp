@@ -28,27 +28,28 @@
 void ADMCTestStringEditor::init() {
     ADMCTest::init();
 
-    edit = new StringEditor(ATTRIBUTE_NAME, parent_widget);
+    edit = new StringEditor(parent_widget);
+    edit->set_attribute(ATTRIBUTE_NAME);
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
     line_edit = edit->ui->edit;
 }
 
-void ADMCTestStringEditor::load_empty() {
-    edit->load({});
+void ADMCTestStringEditor::set_value_list_empty() {
+    edit->set_value_list({});
     QVERIFY(line_edit->text().isEmpty());
 }
 
-void ADMCTestStringEditor::load() {
-    edit->load({QByteArray("hello")});
+void ADMCTestStringEditor::set_value_list() {
+    edit->set_value_list({QByteArray("hello")});
     QCOMPARE(line_edit->text(), "hello");
 }
 
-void ADMCTestStringEditor::get_new_values() {
+void ADMCTestStringEditor::get_value_list() {
     const QList<QByteArray> correct_value_list = {QByteArray("hello")};
-    edit->load(correct_value_list);
-    const QList<QByteArray> value_list = edit->get_new_values();
+    edit->set_value_list(correct_value_list);
+    const QList<QByteArray> value_list = edit->get_value_list();
     QCOMPARE(correct_value_list, value_list);
 }
 

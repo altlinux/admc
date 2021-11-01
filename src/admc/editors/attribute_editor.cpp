@@ -20,105 +20,15 @@
 
 #include "editors/attribute_editor.h"
 
-#include "adldap.h"
-#include "editors/bool_editor.h"
-#include "editors/datetime_editor.h"
-#include "editors/multi_editor.h"
-#include "editors/octet_editor.h"
-#include "editors/string_editor.h"
-#include "globals.h"
-
-#include <QDialogButtonBox>
-#include <QPushButton>
 #include <QLabel>
 
-AttributeEditor::AttributeEditor(const QString &attribute_arg, QWidget *parent)
-: QDialog(parent) {
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    attribute = attribute_arg;
+QString AttributeEditor::get_attribute() const {
+    return m_attribute;
 }
 
-AttributeEditor *AttributeEditor::make(const QString attribute, const QList<QByteArray> value_list, QWidget *parent) {
-    const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
+void AttributeEditor::set_attribute_internal(const QString &attribute, QLabel *attribute_label) {
+    m_attribute = attribute;
 
-    auto octet_dialog = [=]() -> AttributeEditor * {
-        if (single_valued) {
-            return new OctetEditor(attribute, parent);
-        } else {
-            return new MultiEditor(attribute, parent);
-        }
-    };
-
-    auto string_dialog = [=]() -> AttributeEditor * {
-        if (single_valued) {
-            return new StringEditor(attribute, parent);
-        } else {
-            return new MultiEditor(attribute, parent);
-        }
-    };
-
-    auto bool_dialog = [=]() -> AttributeEditor * {
-        if (single_valued) {
-            return new BoolEditor(attribute, parent);
-        } else {
-            // NOTE: yes, string multi editor also works for multi-valued bools since they are just strings (TRUE/FALSE)
-            return new MultiEditor(attribute, parent);
-        }
-    };
-
-    auto datetime_dialog = [=]() -> AttributeEditor * {
-        if (single_valued) {
-            return new DateTimeEditor(attribute, parent);
-        } else {
-            return nullptr;
-        }
-    };
-
-    AttributeEditor *editor = [&]() -> AttributeEditor * {
-        const AttributeType type = g_adconfig->get_attribute_type(attribute);
-        switch (type) {
-            case AttributeType_Octet: return octet_dialog();
-            case AttributeType_Sid: return octet_dialog();
-
-            case AttributeType_Boolean: return bool_dialog();
-
-            case AttributeType_Unicode: return string_dialog();
-            case AttributeType_StringCase: return string_dialog();
-            case AttributeType_DSDN: return string_dialog();
-            case AttributeType_IA5: return string_dialog();
-            case AttributeType_Teletex: return string_dialog();
-            case AttributeType_ObjectIdentifier: return string_dialog();
-            case AttributeType_Integer: return string_dialog();
-            case AttributeType_Enumeration: return string_dialog();
-            case AttributeType_LargeInteger: return string_dialog();
-
-            case AttributeType_UTCTime: return datetime_dialog();
-            case AttributeType_GeneralizedTime: return datetime_dialog();
-
-            // NOTE: putting these here as confirmed to be unsupported
-            case AttributeType_DNBinary: return nullptr;
-
-            default: return nullptr;
-        }
-    }();
-
-    if (editor != nullptr) {
-        editor->load(value_list);
-    }
-
-    return editor;
-}
-
-void AttributeEditor::init(QDialogButtonBox *button_box, QLabel *attribute_label) {
-    // NOTE: for read-only case, disable ok button. Cancel button left
-    // enabled so that dialog can be closed
-    const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
-    if (system_only) {
-        QPushButton *ok_button = button_box->button(QDialogButtonBox::Ok);
-        ok_button->setEnabled(false);
-    }
-
-    const QString text = QString(tr("Attribute: %1")).arg(attribute);
+    const QString text = QString(tr("Attribute: %1")).arg(m_attribute);
     attribute_label->setText(text);
 }

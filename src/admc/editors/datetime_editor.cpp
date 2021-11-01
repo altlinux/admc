@@ -24,30 +24,32 @@
 #include "adldap.h"
 #include "globals.h"
 
-DateTimeEditor::DateTimeEditor(const QString attribute_arg, QWidget *parent)
-: AttributeEditor(attribute_arg, parent) {
+DateTimeEditor::DateTimeEditor(QWidget *parent)
+: AttributeEditor(parent) {
     ui = new Ui::DateTimeEditor();
     ui->setupUi(this);
-
-    const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
-    if (system_only) {
-        ui->edit->setReadOnly(true);
-    }
-
-    init(ui->button_box, ui->attribute_label);
 }
 
 DateTimeEditor::~DateTimeEditor() {
     delete ui;
 }
 
-void DateTimeEditor::load(const QList<QByteArray> &values) {
+void DateTimeEditor::set_attribute(const QString &attribute) {
+    AttributeEditor::set_attribute_internal(attribute, ui->attribute_label);
+
+    const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
+    if (system_only) {
+        ui->edit->setReadOnly(true);
+    }
+}
+
+void DateTimeEditor::set_value_list(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);
-    const QDateTime value_datetime = datetime_string_to_qdatetime(attribute, value_string, g_adconfig);
+    const QDateTime value_datetime = datetime_string_to_qdatetime(get_attribute(), value_string, g_adconfig);
     ui->edit->setDateTime(value_datetime);
 }
 
-QList<QByteArray> DateTimeEditor::get_new_values() const {
+QList<QByteArray> DateTimeEditor::get_value_list() const {
     return QList<QByteArray>();
 }

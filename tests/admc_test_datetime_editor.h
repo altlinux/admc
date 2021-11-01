@@ -32,8 +32,8 @@ class ADMCTestDateTimeEditor : public ADMCTest {
 private slots:
     void init() override;
 
-    void load();
-    void get_new_values();
+    void set_value_list();
+    void get_value_list();
 
 private:
     DateTimeEditor *edit;

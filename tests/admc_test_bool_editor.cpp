@@ -37,8 +37,9 @@ void ADMCTestBoolEditor::initTestCase_data() {
 void ADMCTestBoolEditor::init() {
     ADMCTest::init();
 
-    edit = new BoolEditor(ATTRIBUTE_DESCRIPTION, parent_widget);
-    edit->load(QList<QByteArray>());
+    edit = new BoolEditor(parent_widget);
+    edit->set_attribute(ATTRIBUTE_DESCRIPTION);
+    edit->set_value_list(QList<QByteArray>());
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
 
@@ -53,18 +54,18 @@ void ADMCTestBoolEditor::init() {
     button = button_map[button_name];
 }
 
-void ADMCTestBoolEditor::load() {
+void ADMCTestBoolEditor::set_value_list() {
     QFETCH_GLOBAL(QList<QByteArray>, value);
 
-    edit->load(value);
+    edit->set_value_list(value);
     QVERIFY(button->isChecked());
 }
 
-void ADMCTestBoolEditor::get_new_values() {
+void ADMCTestBoolEditor::get_value_list() {
     QFETCH_GLOBAL(QList<QByteArray>, value);
 
     button->click();
-    QCOMPARE(edit->get_new_values(), value);
+    QCOMPARE(edit->get_value_list(), value);
 }
 
 QTEST_MAIN(ADMCTestBoolEditor)

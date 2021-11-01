@@ -35,7 +35,7 @@ private slots:
     void init() override;
 
     void display();
-    void get_new_values();
+    void get_value_list();
     void handle_empty_value();
     void handle_incorrect_input();
 

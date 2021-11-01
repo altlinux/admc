@@ -29,12 +29,40 @@
 #include "globals.h"
 #include "utils.h"
 
-MultiEditor::MultiEditor(const QString attribute_arg, QWidget *parent)
-: AttributeEditor(attribute_arg, parent) {
+MultiEditor::MultiEditor(QWidget *parent)
+: AttributeEditor(parent) {
     ui = new Ui::MultiEditor();
     ui->setupUi(this);
 
-    const QString title = [this]() {
+    // TODO: in read only case somehow disable this? maybe
+    // disallow selection. but do want to allow copying of
+    // values
+    enable_widget_on_selection(ui->remove_button, ui->list_widget);
+
+    string_editor = new StringEditor(this);
+    bool_editor = new BoolEditor(this);
+    octet_editor = new OctetEditor(this);
+    datetime_editor = new DateTimeEditor(this);
+
+    connect(
+        ui->add_button, &QAbstractButton::clicked,
+        this, &MultiEditor::add);
+    connect(
+        ui->remove_button, &QAbstractButton::clicked,
+        this, &MultiEditor::remove);
+    connect(
+        ui->list_widget, &QListWidget::itemDoubleClicked,
+        this, &MultiEditor::edit_item);
+}
+
+MultiEditor::~MultiEditor() {
+    delete ui;
+}
+
+void MultiEditor::set_attribute(const QString &attribute) {
+    AttributeEditor::set_attribute_internal(attribute, ui->attribute_label);
+
+    const QString title = [&]() {
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
         const QString octet_title = tr("Edit Multi-Valued Octet");
@@ -63,43 +91,27 @@ MultiEditor::MultiEditor(const QString attribute_arg, QWidget *parent)
     if (read_only) {
         ui->add_button->setEnabled(false);
         ui->remove_button->setEnabled(false);
-    } else {
-        enable_widget_on_selection(ui->remove_button, ui->list_widget);
     }
-
-    connect(
-        ui->add_button, &QAbstractButton::clicked,
-        this, &MultiEditor::add);
-    connect(
-        ui->remove_button, &QAbstractButton::clicked,
-        this, &MultiEditor::remove);
-    connect(
-        ui->list_widget, &QListWidget::itemDoubleClicked,
-        this, &MultiEditor::edit_item);
-
-    init(ui->button_box, ui->attribute_label);
-}
-
-MultiEditor::~MultiEditor() {
-    delete ui;
 }
 
 void MultiEditor::add() {
     AttributeEditor *editor = [this]() -> AttributeEditor * {
-        const bool is_bool = (g_adconfig->get_attribute_type(attribute) == AttributeType_Boolean);
+        const bool is_bool = (g_adconfig->get_attribute_type(get_attribute()) == AttributeType_Boolean);
+
         if (is_bool) {
-            return new BoolEditor(attribute, this);
+            return bool_editor;
         } else {
-            return new StringEditor(attribute, this);
+            return string_editor;
         }
     }();
 
-    editor->load({});
+    editor->set_attribute(get_attribute());
+    editor->set_value_list({});
 
     connect(
         editor, &QDialog::accepted,
         [this, editor]() {
-            const QList<QByteArray> new_values = editor->get_new_values();
+            const QList<QByteArray> new_values = editor->get_value_list();
 
             if (!new_values.isEmpty()) {
                 const QByteArray value = new_values[0];
@@ -118,13 +130,13 @@ void MultiEditor::remove() {
     }
 }
 
-void MultiEditor::load(const QList<QByteArray> &values) {
+void MultiEditor::set_value_list(const QList<QByteArray> &values) {
     for (const QByteArray &value : values) {
         add_value(value);
     }
 }
 
-QList<QByteArray> MultiEditor::get_new_values() const {
+QList<QByteArray> MultiEditor::get_value_list() const {
     QList<QByteArray> new_values;
 
     for (int i = 0; i < ui->list_widget->count(); i++) {
@@ -146,24 +158,25 @@ void MultiEditor::edit_item(QListWidgetItem *item) {
         const MultiEditorType editor_type = get_editor_type();
 
         switch (editor_type) {
-            case MultiEditorType_String: return new StringEditor(attribute, this);
-            case MultiEditorType_Octet: return new OctetEditor(attribute, this);
-            case MultiEditorType_Datetime: return new DateTimeEditor(attribute, this);
+            case MultiEditorType_String: return string_editor;
+            case MultiEditorType_Octet: return octet_editor;
+            case MultiEditorType_Datetime: return datetime_editor;
         }
 
         return nullptr;
     }();
 
-    editor->load({bytes});
-
     if (editor == nullptr) {
         return;
     }
 
+    editor->set_attribute(get_attribute());
+    editor->set_value_list({bytes});
+
     connect(
         editor, &QDialog::accepted,
         [this, editor, item]() {
-            const QList<QByteArray> new_values = editor->get_new_values();
+            const QList<QByteArray> new_values = editor->get_value_list();
 
             if (!new_values.isEmpty()) {
                 const QByteArray new_bytes = new_values[0];
@@ -182,7 +195,7 @@ void MultiEditor::add_value(const QByteArray value) {
 }
 
 MultiEditorType MultiEditor::get_editor_type() const {
-    const AttributeType type = g_adconfig->get_attribute_type(attribute);
+    const AttributeType type = g_adconfig->get_attribute_type(get_attribute());
 
     switch (type) {
         case AttributeType_Octet: return MultiEditorType_Octet;
@@ -191,8 +204,10 @@ MultiEditorType MultiEditor::get_editor_type() const {
         case AttributeType_UTCTime: return MultiEditorType_Datetime;
         case AttributeType_GeneralizedTime: return MultiEditorType_Datetime;
 
-        default: return MultiEditorType_String;
+        default: break;
     }
+
+    return MultiEditorType_String;
 }
 
 QString MultiEditor::bytes_to_string(const QByteArray bytes) const {
