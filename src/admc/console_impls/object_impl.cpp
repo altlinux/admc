@@ -683,7 +683,7 @@ void ObjectImpl::on_disable() {
 void ObjectImpl::on_add_to_group() {
     auto dialog = new SelectObjectDialog({CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, console);
     dialog->select_all_classes();
-    dialog->setWindowTitle(QObject::tr("Add to Group"));
+    dialog->setWindowTitle(tr("Add to Group"));
 
     connect(
         dialog, &SelectObjectDialog::accepted,
