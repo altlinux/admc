@@ -112,6 +112,10 @@ QList<QString> SelectObjectDialog::get_selected() const {
     return out;
 }
 
+void SelectObjectDialog::select_all_classes() {
+    ui->select_classes->select_all();
+}
+
 void SelectObjectDialog::accept() {
     const QList<QString> selected = get_selected();
 

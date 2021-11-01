@@ -51,11 +51,11 @@ public:
     QList<QString> get_selected_classes_display() const;
     QVariant save_state() const;
     void restore_state(const QVariant &state);
+    void select_all();
 
 private:
     QHash<QString, QCheckBox *> checkbox_map;
 
-    void select_all();
     void clear_selection();
 };
 

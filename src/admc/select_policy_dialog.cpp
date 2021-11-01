@@ -64,13 +64,11 @@ void SelectPolicyDialog::open() {
 
     const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-    // TODO: assuming that policy row has 1 column, need to
-    // make it depend on some constant
     for (const AdObject &object : results.values()) {
-        const QList<QStandardItem *> row = {new QStandardItem()};
-        model->appendRow(row);
+        auto item = new QStandardItem();
+        model->appendRow(item);
 
-        console_policy_load(row, object);
+        console_policy_load_item(item, object);
     }
 
     QDialog::open();

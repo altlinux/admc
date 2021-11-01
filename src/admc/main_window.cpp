@@ -372,7 +372,6 @@ void MainWindow::connect_to_server() {
 
     client_user_label->setText(ad.client_user());
 
-    // TODO: check for load failure
     const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
     g_adconfig->load(ad, locale);
     AdInterface::set_config(g_adconfig);

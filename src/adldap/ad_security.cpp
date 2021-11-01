@@ -68,7 +68,6 @@ const QList<QString> well_known_sid_list = {
     SID_NT_OTHER_ORGANISATION,
 };
 
-// TODO: not sure if these are supposed to be translated?
 const QHash<QString, QString> trustee_name_map = {
     {SID_WORLD_DOMAIN, "Everyone in Domain"},
     {SID_WORLD, "Everyone"},
@@ -102,16 +101,9 @@ const QHash<QString, QString> trustee_name_map = {
     {SID_NT_OTHER_ORGANISATION, "Other Organization"},
 };
 
-// TODO: values of SEC_ADS_GENERIC_READ and
-// SEC_ADS_GENERIC_WRITE constants don't match with the bits
-// that ADUC sets when you enable those permissions in
-// security tab. There are some extra bits in these
-// constants, took them out as a quick fix.
 const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
     {AcePermission_FullControl, SEC_ADS_GENERIC_ALL},
-    // {AcePermission_Read, SEC_ADS_GENERIC_READ},
     {AcePermission_Read, (SEC_STD_READ_CONTROL | SEC_ADS_LIST | SEC_ADS_READ_PROP)},
-    // {AcePermission_Write, SEC_ADS_GENERIC_WRITE},
     {AcePermission_Write, (SEC_ADS_SELF_WRITE | SEC_ADS_WRITE_PROP)},
     {AcePermission_Delete, SEC_STD_DELETE},
     {AcePermission_DeleteSubtree, SEC_DIR_DELETE_CHILD},
@@ -531,9 +523,6 @@ void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee) {
     talloc_free(tmp_ctx);
 }
 
-// TODO: this requiring adconfig is so messy and causes
-// other f-ns that use this f-n to require adconfig also.
-// Not sure if possible to remove this requirement.
 QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig) {
     QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
 

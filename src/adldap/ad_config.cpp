@@ -247,7 +247,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         const QString ui_settings_dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
         const AdObject object = ad.search_object(ui_settings_dn, {ATTRIBUTE_FILTER_CONTAINERS});
 
-        // TODO: dns-Zone category is mispelled in
+        // NOTE: dns-Zone category is mispelled in
         // ATTRIBUTE_FILTER_CONTAINERS, no idea why, might
         // just be on this domain version
         const QList<QString> categories = [object]() {

@@ -75,6 +75,7 @@ private:
 };
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object);
+void console_policy_load_item(QStandardItem * item, const AdObject &object);
 QList<QString> console_policy_search_attributes();
 
 #endif /* POLICY_IMPL_H */

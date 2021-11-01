@@ -31,8 +31,6 @@
 #include <QHash>
 #include <algorithm>
 
-// TODO: translate country strings to Russian (qt doesn't have it)
-
 #define COUNTRY_CODE_NONE 0
 
 bool loaded_country_data = false;

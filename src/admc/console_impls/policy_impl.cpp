@@ -262,6 +262,7 @@ void PolicyImpl::add_link(const QList<QString> &policy_list, const QList<QString
 
 void PolicyImpl::on_add_link() {
     auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, console);
+    dialog->select_all_classes();
     dialog->setWindowTitle(tr("Add Link"));
 
     QObject::connect(
@@ -336,11 +337,15 @@ void PolicyImpl::on_rename_accepted() {
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
     QStandardItem *main_item = row[0];
+    console_policy_load_item(main_item, object);
+}
+
+void console_policy_load_item(QStandardItem *main_item, const AdObject &object) {
     main_item->setIcon(QIcon::fromTheme("folder-templates"));
     main_item->setData(object.get_dn(), PolicyRole_DN);
     
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
-    row[0]->setText(display_name);
+    main_item->setText(display_name);
 }
 
 QList<QString> console_policy_search_attributes() {

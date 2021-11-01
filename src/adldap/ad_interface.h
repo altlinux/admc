@@ -86,21 +86,15 @@ class AdInterface {
     Q_DECLARE_TR_FUNCTIONS(AdInterface)
 
 public:
-    /**
-     * Pass an loaded AdConfig instance to ctor to enable
-     * attribute display values in messages. Without an
-     * AdConfig instance AdInterface defaults to outputting
-     * raw attribute values. Note that AdInterface is not
-     * responsible for deleting AdConfig instance.
-     */
     AdInterface();
     ~AdInterface();
 
     /**
-     * If you wish to use the same AdConfig instance for all
-     * connections, you can setup a permanent one here. Note
-     * that if you pass another adconfig to ctor that will
-     * override the permanent adconfig.
+     * Set this config instance to be used for all
+     * adinterface's going forward. If adconfig is unset,
+     * AdInterface defaults to outputting raw attribute
+     * values. Note that AdInterface is not responsible for
+     * deleting AdConfig instance.
      */
     static void set_config(AdConfig *config);
 
@@ -130,9 +124,9 @@ public:
     // This is a more complicated version of search() which
     // separates the search process by pages as they arrive
     // from the server. In general you can use the simpler
-    // search(). This version is specifically for cases
-    // where you need to do something between pages, like
-    // processing UI events so it doesn't freeze.
+    // search(). This version is for cases where you want to
+    // display search results as they come in instead of all
+    // at once.
     bool search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl = false);
 
     // Simplest search f-n that only searches for attributes

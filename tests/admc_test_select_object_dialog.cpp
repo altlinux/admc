@@ -35,6 +35,7 @@ void ADMCTestSelectObjectDialog::init() {
     ADMCTest::init();
 
     dialog = new SelectObjectDialog({CLASS_USER}, SelectObjectDialogMultiSelection_Yes, parent_widget);
+    dialog->select_all_classes();
     dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 

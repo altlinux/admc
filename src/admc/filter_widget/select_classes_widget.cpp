@@ -82,6 +82,10 @@ void SelectClassesWidget::restore_state(const QVariant &state) {
     update_classes_display();
 }
 
+void SelectClassesWidget::select_all() {
+    dialog->filter_classes_widget()->select_all();
+}
+
 SelectClassesDialog::SelectClassesDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::SelectClassesDialog();

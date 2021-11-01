@@ -29,11 +29,6 @@
 #define FILTER_CUSTOM_DIALOG_STATE "FILTER_CUSTOM_DIALOG_STATE"
 #define FILTER_CLASSES_STATE "FILTER_CLASSES_STATE"
 
-// TODO: implement canceling. Need to be able to load/unload
-// filter widget state though. For example, one way to
-// implement would be to save old state on open, then reload
-// it when cancel is pressed.
-
 ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::ConsoleFilterDialog();

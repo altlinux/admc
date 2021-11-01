@@ -35,10 +35,6 @@ ConsoleDragModel::ConsoleDragModel(ConsoleWidget *console_arg)
     console = console_arg;
 }
 
-// TODO: when implementing console widget, this should be
-// removed. The replacement will be to store node id's in
-// mimedata so that objects can be obtained directly from
-// models
 QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
     const QList<QPersistentModelIndex> main_indexes = [&]() {
         QList<QPersistentModelIndex> out;

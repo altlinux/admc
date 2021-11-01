@@ -54,16 +54,6 @@ void FilterClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &
     for (const QString &object_class : class_list) {
         QCheckBox *checkbox = checkbox_map[object_class];
         ui->classes_layout->addWidget(checkbox);
-
-        // TODO: this is a hack to select all classes by
-        // default when class list is specific (only users
-        // or only users/groups for example). Normally, no
-        // classes are selected by default which currently
-        // (CURRENTLY) equates to filter accepting all
-        // classes.
-        if (class_list.size() < 5) {
-            checkbox->setChecked(true);
-        }
     }
 }
 

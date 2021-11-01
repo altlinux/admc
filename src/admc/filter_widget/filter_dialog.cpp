@@ -27,11 +27,6 @@
 
 #include <QVariant>
 
-// TODO: implement canceling. Need to be able to load/unload
-// filter widget state though. For example, one way to
-// implement would be to save old state on open, then reload
-// it when cancel is pressed.
-
 FilterDialog::FilterDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::FilterDialog();

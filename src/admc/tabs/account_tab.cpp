@@ -29,8 +29,6 @@
 #include "edits/logon_hours_edit.h"
 #include "edits/logon_computers_edit.h"
 
-// TODO: logon computers
-
 // NOTE: the "can't change password" checkbox does not
 // affect the permission in the security tab, even though
 // they control the same thing. And vice versa. Too

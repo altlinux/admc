@@ -53,6 +53,8 @@ public:
     QVariant save_state() const;
     void restore_state(const QVariant &state);
 
+    void select_all();
+
 private:
     SelectClassesDialog *dialog;
 

@@ -283,8 +283,10 @@ QString get_section_title(const QList<QString> &section) {
 QString get_section_path(const QList<QString> &section) {
     QString out = get_section_title(section);
 
-    // TODO: need to remove slashes so paths don't
-    // break but idk
+    // NOTE: section titles in wiki can contain forward
+    // slashes. Since we're converting them to paths, we
+    // need to replace with "|', because forward slashes are
+    // invalid chars for paths.
     out.replace("/", "|");
 
     return out;

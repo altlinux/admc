@@ -26,8 +26,6 @@
 
 #include <QButtonGroup>
 
-// TODO: do end of day by local time or UTC????
-
 const QTime END_OF_DAY(23, 59);
 
 ExpiryWidget::ExpiryWidget(QWidget *parent)

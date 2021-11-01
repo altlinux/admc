@@ -1287,8 +1287,6 @@ bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
     //
     // Generate UUID used for directory and object names
     //
-    // TODO: make sure endianess works fine on processors
-    // with weird endianess.
     const QString uuid = []() {
         uuid_t uuid_struct;
         uuid_generate_random(uuid_struct);
