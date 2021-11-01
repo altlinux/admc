@@ -39,6 +39,8 @@
 void Status::init(QStatusBar *statusbar, QTextEdit *message_log) {
     m_status_bar = statusbar;
     m_message_log = message_log;
+
+    
 }
 
 void Status::add_message(const QString &msg, const StatusType &type) {
