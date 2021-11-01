@@ -20,10 +20,23 @@
 
 #include "editors/attribute_editor.h"
 
+#include "ad_config.h"
+#include "globals.h"
+
 #include <QLabel>
 
 QString AttributeEditor::get_attribute() const {
     return m_attribute;
+}
+
+void AttributeEditor::accept() {
+    const bool is_read_only = g_adconfig->get_attribute_is_system_only(m_attribute);
+
+    if (is_read_only) {
+        QDialog::reject();
+    } else {
+        QDialog::accept();
+    }
 }
 
 void AttributeEditor::set_attribute_internal(const QString &attribute, QLabel *attribute_label) {

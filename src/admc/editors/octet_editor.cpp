@@ -73,7 +73,7 @@ void OctetEditor::accept() {
     const bool input_ok = check_input(current_format(ui->format_combo));
 
     if (input_ok) {
-        QDialog::accept();
+        AttributeEditor::accept();
     }
 }
 
