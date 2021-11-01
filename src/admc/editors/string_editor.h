@@ -37,7 +37,7 @@ public:
     ~StringEditor();
 
     void set_attribute(const QString &attribute) override;
-
+    void set_read_only(const bool read_only) override;
     void set_value_list(const QList<QByteArray> &value_list) override;
     QList<QByteArray> get_value_list() const override;
 };

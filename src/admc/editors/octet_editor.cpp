@@ -40,6 +40,8 @@ OctetEditor::OctetEditor(QWidget *parent)
     ui = new Ui::OctetEditor();
     ui->setupUi(this);
 
+    AttributeEditor::set_attribute_label(ui->attribute_label);
+
     prev_format = OctetDisplayFormat_Hexadecimal;
 
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -54,12 +56,8 @@ OctetEditor::~OctetEditor() {
     delete ui;
 }
 
-void OctetEditor::set_attribute(const QString &attribute) {
-    AttributeEditor::set_attribute_internal(attribute, ui->attribute_label);
-
-    if (g_adconfig->get_attribute_is_system_only(attribute)) {
-        ui->edit->setReadOnly(true);
-    }
+void OctetEditor::set_read_only(const bool read_only) {
+    ui->edit->setReadOnly(read_only);
 }
 
 QList<QByteArray> OctetEditor::get_value_list() const {

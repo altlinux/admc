@@ -28,20 +28,18 @@ BoolEditor::BoolEditor(QWidget *parent)
 : AttributeEditor(parent) {
     ui = new Ui::BoolEditor();
     ui->setupUi(this);
+
+    AttributeEditor::set_attribute_label(ui->attribute_label);
 }
 
 BoolEditor::~BoolEditor() {
     delete ui;
 }
 
-void BoolEditor::set_attribute(const QString &attribute) {
-    AttributeEditor::set_attribute_internal(attribute, ui->attribute_label);
-
-    if (g_adconfig->get_attribute_is_system_only(attribute)) {
-        ui->true_button->setEnabled(false);
-        ui->false_button->setEnabled(false);
-        ui->unset_button->setEnabled(false);
-    }
+void BoolEditor::set_read_only(const bool read_only) {
+    ui->true_button->setEnabled(!read_only);
+    ui->false_button->setEnabled(!read_only);
+    ui->unset_button->setEnabled(!read_only);
 }
 
 void BoolEditor::set_value_list(const QList<QByteArray> &values) {

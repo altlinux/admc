@@ -25,6 +25,10 @@
 
 #include <QLabel>
 
+void AttributeEditor::set_attribute_label(QLabel *attribute_label) {
+    m_attribute_label = attribute_label;
+}
+
 QString AttributeEditor::get_attribute() const {
     return m_attribute;
 }
@@ -39,9 +43,12 @@ void AttributeEditor::accept() {
     }
 }
 
-void AttributeEditor::set_attribute_internal(const QString &attribute, QLabel *attribute_label) {
+void AttributeEditor::set_attribute(const QString &attribute) {
     m_attribute = attribute;
 
     const QString text = QString(tr("Attribute: %1")).arg(m_attribute);
-    attribute_label->setText(text);
+    m_attribute_label->setText(text);
+
+    const bool system_only = g_adconfig->get_attribute_is_system_only(m_attribute);
+    set_read_only(system_only);
 }

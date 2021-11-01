@@ -28,19 +28,16 @@ DateTimeEditor::DateTimeEditor(QWidget *parent)
 : AttributeEditor(parent) {
     ui = new Ui::DateTimeEditor();
     ui->setupUi(this);
+
+    AttributeEditor::set_attribute_label(ui->attribute_label);
 }
 
 DateTimeEditor::~DateTimeEditor() {
     delete ui;
 }
 
-void DateTimeEditor::set_attribute(const QString &attribute) {
-    AttributeEditor::set_attribute_internal(attribute, ui->attribute_label);
-
-    const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
-    if (system_only) {
-        ui->edit->setReadOnly(true);
-    }
+void DateTimeEditor::set_read_only(const bool read_only) {
+    ui->edit->setReadOnly(read_only);
 }
 
 void DateTimeEditor::set_value_list(const QList<QByteArray> &values) {

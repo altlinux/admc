@@ -60,6 +60,7 @@ void StringOtherEdit::load_internal(AdInterface &ad, const AdObject &object) {
 void StringOtherEdit::set_read_only(const bool read_only) {
     main_edit->set_read_only(read_only);
     other_button->setDisabled(read_only);
+    other_editor->set_read_only(read_only);
 }
 
 bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {

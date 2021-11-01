@@ -43,8 +43,7 @@ public:
     OctetEditor(QWidget *parent);
     ~OctetEditor();
 
-    void set_attribute(const QString &attribute) override;
-
+    void set_read_only(const bool read_only) override;
     void set_value_list(const QList<QByteArray> &values) override;
     QList<QByteArray> get_value_list() const override;
     void accept() override;

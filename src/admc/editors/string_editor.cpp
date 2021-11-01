@@ -29,6 +29,8 @@ StringEditor::StringEditor(QWidget *parent)
 : AttributeEditor(parent) {
     ui = new Ui::StringEditor();
     ui->setupUi(this);
+
+    AttributeEditor::set_attribute_label(ui->attribute_label);
 }
 
 StringEditor::~StringEditor() {
@@ -36,7 +38,7 @@ StringEditor::~StringEditor() {
 }
 
 void StringEditor::set_attribute(const QString &attribute) {
-    AttributeEditor::set_attribute_internal(attribute, ui->attribute_label);
+    AttributeEditor::set_attribute(attribute);
 
     const QString title = [&]() {
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
@@ -58,11 +60,10 @@ void StringEditor::set_attribute(const QString &attribute) {
     }
 
     limit_edit(ui->edit, attribute);
+}
 
-    const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
-    if (system_only) {
-        ui->edit->setReadOnly(true);
-    }
+void StringEditor::set_read_only(const bool read_only) {
+    ui->edit->setReadOnly(read_only);
 }
 
 void StringEditor::set_value_list(const QList<QByteArray> &values) {

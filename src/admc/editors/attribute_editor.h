@@ -44,7 +44,12 @@ public:
 
     // Store attribute and also configure widget settings so
     // that they are appropriate for given attribute.
-    virtual void set_attribute(const QString &attribute) = 0;
+    virtual void set_attribute(const QString &attribute);
+    
+    // This is for cases where you need to make the editor
+    // read only even if attribute can be edited. Normally,
+    // this is automatically called in set_attribute().
+    virtual void set_read_only(const bool read_only) = 0;
 
     QString get_attribute() const;
 
@@ -55,12 +60,13 @@ public:
     virtual QList<QByteArray> get_value_list() const = 0;
 
 protected:
-    // Stores attribute variable and updates attribute label
-    // text
-    void set_attribute_internal(const QString &attribute, QLabel *attribute_label);
+    // The text of this label will be updated when attribute
+    // changes. Call this in ctor of subclass
+    void set_attribute_label(QLabel *attribute_label);
 
 private:
     QString m_attribute;
+    QLabel *m_attribute_label;
 };
 
 #endif /* ATTRIBUTE_EDITOR_H */

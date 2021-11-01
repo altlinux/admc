@@ -34,6 +34,8 @@ MultiEditor::MultiEditor(QWidget *parent)
     ui = new Ui::MultiEditor();
     ui->setupUi(this);
 
+    AttributeEditor::set_attribute_label(ui->attribute_label);
+
     // TODO: in read only case somehow disable this? maybe
     // disallow selection. but do want to allow copying of
     // values
@@ -60,7 +62,7 @@ MultiEditor::~MultiEditor() {
 }
 
 void MultiEditor::set_attribute(const QString &attribute) {
-    AttributeEditor::set_attribute_internal(attribute, ui->attribute_label);
+    AttributeEditor::set_attribute(attribute);
 
     const QString title = [&]() {
         const AttributeType type = g_adconfig->get_attribute_type(attribute);
@@ -86,12 +88,11 @@ void MultiEditor::set_attribute(const QString &attribute) {
         return tr("Edit Multi-Valued String");
     }();
     setWindowTitle(title);
+}
 
-    const bool read_only = g_adconfig->get_attribute_is_system_only(attribute);
-    if (read_only) {
-        ui->add_button->setEnabled(false);
-        ui->remove_button->setEnabled(false);
-    }
+void MultiEditor::set_read_only(const bool read_only) {
+    ui->add_button->setEnabled(!read_only);
+    ui->remove_button->setEnabled(!read_only);
 }
 
 void MultiEditor::add() {
