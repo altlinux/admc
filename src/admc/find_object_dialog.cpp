@@ -46,13 +46,13 @@ FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString d
 
     settings_setup_dialog_geometry(SETTING_find_object_dialog_geometry, this);
 
-    const QVariant state = settings_get_variant(SETTING_find_object_state);
-    ui->find_widget->restore_state(state);
+    const QVariant console_state = settings_get_variant(SETTING_find_object_dialog_console_state);
+    ui->find_widget->restore_console_state(console_state);
 }
 
 FindObjectDialog::~FindObjectDialog() {
-    const QVariant state = ui->find_widget->save_state();
-    settings_set_variant(SETTING_find_object_state, state);
+    const QVariant console_state = ui->find_widget->save_console_state();
+    settings_set_variant(SETTING_find_object_dialog_console_state, console_state);
 
     delete ui;
 }

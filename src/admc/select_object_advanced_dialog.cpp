@@ -41,13 +41,13 @@ SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> clas
     ui->find_widget->init(classes, g_adconfig->domain_head());
     ui->find_widget->setup_view_menu(view_menu);
 
-    const QVariant state = settings_get_variant(SETTING_select_object_advanced_state);
-    ui->find_widget->restore_state(state);
+    const QVariant console_state = settings_get_variant(SETTING_select_object_advanced_dialog_console_state);
+    ui->find_widget->restore_console_state(console_state);
 }
 
 SelectObjectAdvancedDialog::~SelectObjectAdvancedDialog() {
-    const QVariant state = ui->find_widget->save_state();
-    settings_set_variant(SETTING_select_object_advanced_state, state);
+    const QVariant console_state = ui->find_widget->save_console_state();
+    settings_set_variant(SETTING_select_object_advanced_dialog_console_state, console_state);
 
     delete ui;
 }

@@ -48,8 +48,8 @@ DEFINE_SETTING(SETTING_console_widget_state);
 DEFINE_SETTING(SETTING_policy_results_state);
 DEFINE_SETTING(SETTING_find_results_state);
 DEFINE_SETTING(SETTING_filter_dialog_state);
-DEFINE_SETTING(SETTING_select_object_advanced_state);
-DEFINE_SETTING(SETTING_find_object_state);
+DEFINE_SETTING(SETTING_select_object_advanced_dialog_console_state);
+DEFINE_SETTING(SETTING_find_object_dialog_console_state);
 
 // Widget geometry
 DEFINE_SETTING(SETTING_main_window_geometry);

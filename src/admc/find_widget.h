@@ -50,8 +50,10 @@ public:
 
     void init(const QList<QString> classes, const QString &default_base);
     
-    QVariant save_state() const;
-    void restore_state(const QVariant &state);
+    // NOTE: this is only for the console state, filter
+    // widget is untouched
+    QVariant save_console_state() const;
+    void restore_console_state(const QVariant &state);
 
     void setup_action_menu(QMenu *menu);
     void setup_view_menu(QMenu *menu);

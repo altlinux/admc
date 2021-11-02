@@ -128,13 +128,13 @@ void FindWidget::set_buddy_console(ConsoleWidget *buddy_console) {
     object_impl->set_buddy_console(buddy_console);
 }
 
-QVariant FindWidget::save_state() const {
+QVariant FindWidget::save_console_state() const {
     const QVariant state = ui->console->save_state();
 
     return state;
 }
 
-void FindWidget::restore_state(const QVariant &state) {
+void FindWidget::restore_console_state(const QVariant &state) {
     ui->console->restore_state(state);
 }
 
