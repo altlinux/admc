@@ -36,9 +36,7 @@ DateTimeEdit::DateTimeEdit(QDateTimeEdit *edit_arg, const QString &attribute_arg
 
     connect(
         edit, &QDateTimeEdit::dateTimeChanged,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 void DateTimeEdit::load_internal(AdInterface &ad, const AdObject &object) {

@@ -39,9 +39,7 @@ GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edi
 
     connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 

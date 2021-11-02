@@ -31,9 +31,7 @@ UnlockEdit::UnlockEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, 
 
     connect(
         check, &QCheckBox::stateChanged,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 QString UnlockEdit::label_text() {

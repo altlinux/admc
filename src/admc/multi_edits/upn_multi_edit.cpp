@@ -33,7 +33,7 @@ UpnMultiEdit::UpnMultiEdit(QComboBox *upn_suffix_combo_arg, QCheckBox *check, QL
 
     connect(
         upn_suffix_combo, &QComboBox::currentTextChanged,
-        this, &UpnMultiEdit::edited);
+        this, &AttributeMultiEdit::edited);
 
     set_enabled(false);
 }

@@ -47,9 +47,7 @@ LogonHoursEdit::LogonHoursEdit(QPushButton *button_arg, QList<AttributeEdit *> *
         dialog, &QDialog::open);
     connect(
         dialog, &LogonHoursDialog::accepted,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 void LogonHoursEdit::load_internal(AdInterface &ad, const AdObject &object) {

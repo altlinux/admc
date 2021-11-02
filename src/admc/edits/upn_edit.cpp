@@ -37,12 +37,10 @@ UpnEdit::UpnEdit(QLineEdit *prefix_edit_arg, QComboBox *upn_suffix_combo_arg, QL
 
     connect(
         prefix_edit, &QLineEdit::textChanged,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
     connect(
         upn_suffix_combo, &QComboBox::currentTextChanged,
-        this, &UpnEdit::edited);
+        this, &AttributeEdit::edited);
 }
 
 void UpnEdit::init_suffixes(AdInterface &ad) {

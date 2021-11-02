@@ -38,9 +38,7 @@ GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits
 
     connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 void GroupTypeEdit::load_internal(AdInterface &ad, const AdObject &object) {

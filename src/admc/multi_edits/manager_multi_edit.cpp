@@ -36,7 +36,7 @@ ManagerMultiEdit::ManagerMultiEdit(ManagerWidget *widget_arg, QCheckBox *check, 
 
     connect(
         widget, &ManagerWidget::edited,
-        this, &ManagerMultiEdit::edited);
+        this, &AttributeMultiEdit::edited);
 
     set_enabled(false);
 }

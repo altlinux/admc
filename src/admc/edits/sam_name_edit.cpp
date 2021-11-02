@@ -35,9 +35,7 @@ SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit_arg, QList<
 
     connect(
         edit, &QLineEdit::textChanged,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 void SamNameEdit::load_internal(AdInterface &ad, const AdObject &object) {

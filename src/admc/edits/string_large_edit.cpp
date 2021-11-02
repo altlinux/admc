@@ -49,9 +49,7 @@ StringLargeEdit::StringLargeEdit(QPlainTextEdit *edit_arg, const QString &attrib
 
     connect(
         edit, &QPlainTextEdit::textChanged,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 void StringLargeEdit::load_internal(AdInterface &ad, const AdObject &object) {

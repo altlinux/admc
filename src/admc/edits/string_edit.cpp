@@ -39,9 +39,7 @@ StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QList<
 
     connect(
         edit, &QLineEdit::textChanged,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {

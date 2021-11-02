@@ -36,9 +36,7 @@ LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QList<AttributeE
         dialog, &QDialog::open);
     connect(
         dialog, &LogonComputersDialog::accepted,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 void LogonComputersEdit::load_internal(AdInterface &ad, const AdObject &object) {

@@ -35,7 +35,7 @@ CountryEdit::CountryEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out
 
     connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &CountryEdit::edited);
+        this, &AttributeEdit::edited);
 }
 
 void CountryEdit::load_internal(AdInterface &ad, const AdObject &object) {

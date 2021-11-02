@@ -31,9 +31,7 @@ GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits
 
     connect(
         check, &QCheckBox::stateChanged,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 void GpoptionsEdit::load_internal(AdInterface &ad, const AdObject &object) {

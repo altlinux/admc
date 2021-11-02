@@ -37,9 +37,7 @@ PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QLi
 
     connect(
         edit, &QLineEdit::textChanged,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 void PasswordEdit::load_internal(AdInterface &ad, const AdObject &object) {

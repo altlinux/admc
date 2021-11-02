@@ -33,7 +33,7 @@ StringMultiEdit::StringMultiEdit(QLineEdit *edit_arg, QCheckBox *check, const QS
 
     connect(
         edit, &QLineEdit::textChanged,
-        this, &StringMultiEdit::edited);
+        this, &AttributeMultiEdit::edited);
 
     set_enabled(false);
 }

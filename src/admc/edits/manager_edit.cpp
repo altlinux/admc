@@ -34,7 +34,7 @@ ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attri
 
     connect(
         widget, &ManagerWidget::edited,
-        this, &ManagerEdit::edited);
+        this, &AttributeEdit::edited);
 }
 
 void ManagerEdit::load_internal(AdInterface &ad, const AdObject &object) {

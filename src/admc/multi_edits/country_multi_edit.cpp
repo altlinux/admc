@@ -33,7 +33,7 @@ CountryMultiEdit::CountryMultiEdit(QComboBox *country_combo_arg, QCheckBox *chec
 
     connect(
         country_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &CountryMultiEdit::edited);
+        this, &AttributeMultiEdit::edited);
 
     set_enabled(false);
 }

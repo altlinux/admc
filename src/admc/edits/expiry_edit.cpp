@@ -31,9 +31,7 @@ ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QList<AttributeEdit *> *ed
 
     connect(
         edit_widget, &ExpiryWidget::edited,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 }
 
 void ExpiryEdit::load_internal(AdInterface &ad, const AdObject &object) {

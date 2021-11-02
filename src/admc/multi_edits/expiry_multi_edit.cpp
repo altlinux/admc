@@ -36,7 +36,7 @@ ExpiryMultiEdit::ExpiryMultiEdit(ExpiryWidget *edit_widget_arg, QCheckBox *check
 
     connect(
         edit_widget, &ExpiryWidget::edited,
-        this, &ExpiryMultiEdit::edited);
+        this, &AttributeMultiEdit::edited);
 
     set_enabled(false);
 }

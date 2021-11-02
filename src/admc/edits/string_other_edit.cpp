@@ -35,9 +35,7 @@ StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_bu
     
     connect(
         main_edit, &AttributeEdit::edited,
-        [this]() {
-            emit edited();
-        });
+        this, &AttributeEdit::edited);
 
     other_button = other_button_arg;
 
