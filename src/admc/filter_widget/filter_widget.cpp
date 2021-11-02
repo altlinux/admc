@@ -72,3 +72,9 @@ void FilterWidget::restore_state(const QVariant &state_variant) {
     ui->normal_tab->restore_state(state["normal_state"]);
     ui->advanced_tab->restore_state(state["advanced_state"]);
 }
+
+void FilterWidget::clear() {
+    ui->simple_tab->clear();
+    ui->normal_tab->clear();
+    ui->advanced_tab->clear();
+}

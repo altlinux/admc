@@ -60,8 +60,6 @@ public:
 
     void set_buddy_console(ConsoleWidget *buddy_console);
 
-    void clear();
-
     // NOTE: returned items need to be re-parented or deleted!
     QList<QString> get_selected_dns() const;
 
@@ -80,6 +78,8 @@ private:
     QAction *action_toggle_description_bar;
 
     void on_thread_finished();
+    void on_clear_button();
+    void clear_results();
 };
 
 #endif /* FIND_WIDGET_H */

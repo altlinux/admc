@@ -53,6 +53,10 @@ QString FilterWidgetSimpleTab::get_filter() const {
     return filter_AND({name_filter, classes_filter});
 }
 
+void FilterWidgetSimpleTab::clear() {
+    ui->name_edit->clear();
+}
+
 QVariant FilterWidgetSimpleTab::save_state() const {
     QHash<QString, QVariant> state;
 

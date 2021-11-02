@@ -51,6 +51,8 @@ public:
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
+
+    void clear();
 };
 
 class FilterWidgetTab : public QWidget {
@@ -58,6 +60,7 @@ class FilterWidgetTab : public QWidget {
 
 public:
     virtual QString get_filter() const = 0;
+    virtual void clear() = 0;
 };
 
 #endif /* FILTER_WIDGET_H */

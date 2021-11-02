@@ -104,6 +104,9 @@ FindWidget::FindWidget(QWidget *parent)
     connect(
         ui->find_button, &QPushButton::clicked,
         this, &FindWidget::find);
+   connect(
+        ui->clear_button, &QPushButton::clicked,
+        this, &FindWidget::on_clear_button);
 
     // NOTE: need this for the case where dialog is closed
     // while a search is in progress. Without this busy
@@ -155,7 +158,7 @@ void FindWidget::setup_view_menu(QMenu *menu) {
     menu->addAction(action_toggle_description_bar);
 }
 
-void FindWidget::clear() {
+void FindWidget::clear_results() {
     const QModelIndex head_index = head_item->index();
     ui->console->delete_children(head_index);
 }
@@ -183,11 +186,13 @@ void FindWidget::find() {
 
     show_busy_indicator();
 
-    // NOTE: disable find button, otherwise another find
-    // process can start while this one isn't finished!
+    // NOTE: disable find and clear buttons, do not want
+    // those functions to be available while a search is in
+    // progress
     ui->find_button->setEnabled(false);
+    ui->clear_button->setEnabled(false);
 
-    clear();
+    clear_results();
 
     find_thread->start();
 }
@@ -204,6 +209,7 @@ void FindWidget::handle_find_thread_results(const QHash<QString, AdObject> &resu
 
 void FindWidget::on_thread_finished() {
     ui->find_button->setEnabled(true);
+    ui->clear_button->setEnabled(true);
 
     hide_busy_indicator();
 }
@@ -212,4 +218,9 @@ QList<QString> FindWidget::get_selected_dns() const {
     const QList<QString> out = get_selected_dn_list(ui->console, ItemType_Object, ObjectRole_DN);
 
     return out;
+}
+
+void FindWidget::on_clear_button() {
+    ui->filter_widget->clear();
+    clear_results();
 }

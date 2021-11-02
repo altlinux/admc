@@ -50,6 +50,7 @@ public:
     void add_classes(AdConfig *adconfig, const QList<QString> classes);
 
     QString get_filter() const;
+    void clear();
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);

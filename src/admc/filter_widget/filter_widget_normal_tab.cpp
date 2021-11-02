@@ -98,6 +98,13 @@ QString FilterWidgetNormalTab::get_filter() const {
     }
 }
 
+void FilterWidgetNormalTab::clear() {
+    ui->attribute_class_combo->setCurrentIndex(0);
+    ui->value_edit->clear();
+
+    clear_filters();
+}
+
 void FilterWidgetNormalTab::add_filter() {
     const QString filter = [&]() {
         const QString attribute = ui->attribute_combo->itemData(ui->attribute_combo->currentIndex()).toString();

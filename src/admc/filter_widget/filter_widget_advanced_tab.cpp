@@ -37,6 +37,10 @@ QString FilterWidgetAdvancedTab::get_filter() const {
     return filter;
 }
 
+void FilterWidgetAdvancedTab::clear() {
+    ui->ldap_filter_edit->clear();
+}
+
 QVariant FilterWidgetAdvancedTab::save_state() const {
     const QString filter = ui->ldap_filter_edit->toPlainText();
 

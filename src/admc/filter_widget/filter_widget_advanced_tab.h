@@ -41,6 +41,7 @@ public:
     ~FilterWidgetAdvancedTab();
 
     QString get_filter() const;
+    void clear();
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
