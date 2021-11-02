@@ -141,6 +141,7 @@ set(ADMC_SOURCES
     edits/manager_widget.cpp
     edits/delegation_edit.cpp
     edits/logon_hours_edit.cpp
+    edits/logon_hours_dialog.cpp
     edits/logon_computers_edit.cpp
     edits/protect_deletion_edit.cpp
 
