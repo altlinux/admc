@@ -18,14 +18,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SELECT_CLASSES_WIDGET_P_H
-#define SELECT_CLASSES_WIDGET_P_H
+#ifndef SELECT_CLASSES_DIALOG_H
+#define SELECT_CLASSES_DIALOG_H
+
+/**
+ * Dialog to select classes, opened from
+ * SelectClassesWidget. Wraps FilterClassesWidget inside.
+ */
 
 #include <QDialog>
 #include <QVariant>
 
 class FilterClassesWidget;
-class AdConfig;
 
 namespace Ui {
     class SelectClassesDialog;
@@ -39,13 +43,15 @@ public:
 
     SelectClassesDialog(QWidget *parent);
     ~SelectClassesDialog();
+
     void open() override;
     void reject() override;
-    void reset();
     FilterClassesWidget *filter_classes_widget() const;
 
 private:
     QVariant state_to_restore;
+
+    void reset();
 };
 
-#endif /* SELECT_CLASSES_WIDGET_P_H */
+#endif /* SELECT_CLASSES_DIALOG_H */

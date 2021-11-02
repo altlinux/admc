@@ -19,12 +19,11 @@
  */
 
 #include "filter_widget/select_classes_widget.h"
-#include "filter_widget/select_classes_widget_p.h"
 #include "filter_widget/ui_select_classes_widget.h"
-#include "filter_widget/ui_select_classes_dialog.h"
 
 #include "adldap.h"
 #include "filter_classes_widget.h"
+#include "filter_widget/select_classes_dialog.h"
 
 SelectClassesWidget::SelectClassesWidget(QWidget *parent)
 : QWidget(parent) {
@@ -84,40 +83,4 @@ void SelectClassesWidget::restore_state(const QVariant &state) {
 
 void SelectClassesWidget::select_all() {
     dialog->filter_classes_widget()->select_all();
-}
-
-SelectClassesDialog::SelectClassesDialog(QWidget *parent)
-: QDialog(parent) {
-    ui = new Ui::SelectClassesDialog();
-    ui->setupUi(this);
-
-    connect(
-        ui->button_box->button(QDialogButtonBox::Reset), &QPushButton::clicked,
-        this, &SelectClassesDialog::reset);
-}
-
-SelectClassesDialog::~SelectClassesDialog() {
-    delete ui;
-}
-
-void SelectClassesDialog::open() {
-    // Save state to later restore if dialog is dialog is
-    // rejected
-    state_to_restore = ui->filter_classes_widget->save_state();
-
-    QDialog::open();
-}
-
-void SelectClassesDialog::reject() {
-    reset();
-
-    QDialog::reject();
-}
-
-void SelectClassesDialog::reset() {
-    ui->filter_classes_widget->restore_state(state_to_restore);
-}
-
-FilterClassesWidget *SelectClassesDialog::filter_classes_widget() const {
-    return ui->filter_classes_widget;
 }
