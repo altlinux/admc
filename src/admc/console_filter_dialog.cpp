@@ -39,9 +39,9 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
     const QList<QString> noncontainer_classes = adconfig->get_noncontainer_classes();
 
     custom_dialog = new FilterDialog(this);
-    custom_dialog->add_classes(adconfig, noncontainer_classes);
+    custom_dialog->add_classes(adconfig, noncontainer_classes, noncontainer_classes);
 
-    ui->filter_classes_widget->add_classes(adconfig, noncontainer_classes);
+    ui->filter_classes_widget->add_classes(adconfig, noncontainer_classes, noncontainer_classes);
 
     settings_setup_dialog_geometry(SETTING_filter_dialog_geometry, this);
 

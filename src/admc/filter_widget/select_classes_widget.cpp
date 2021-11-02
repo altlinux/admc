@@ -44,8 +44,8 @@ SelectClassesWidget::~SelectClassesWidget() {
     delete ui;
 }
 
-void SelectClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list) {
-    dialog->filter_classes_widget()->add_classes(adconfig, class_list);
+void SelectClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
+    dialog->filter_classes_widget()->add_classes(adconfig, class_list, selected_list);
 
     update_classes_display();
 }
@@ -79,8 +79,4 @@ QVariant SelectClassesWidget::save_state() const {
 void SelectClassesWidget::restore_state(const QVariant &state) {
     dialog->filter_classes_widget()->restore_state(state);
     update_classes_display();
-}
-
-void SelectClassesWidget::select_all() {
-    dialog->filter_classes_widget()->select_all();
 }

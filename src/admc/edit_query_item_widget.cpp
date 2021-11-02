@@ -31,7 +31,7 @@ EditQueryItemWidget::EditQueryItemWidget(QWidget *parent)
     ui->setupUi(this);
 
     filter_dialog = new FilterDialog(this);
-    filter_dialog->add_classes(g_adconfig, filter_classes);
+    filter_dialog->add_classes(g_adconfig, filter_classes, filter_classes);
 
     ui->select_base_widget->init(g_adconfig);
 

@@ -42,7 +42,7 @@ FilterClassesWidget::~FilterClassesWidget() {
     delete ui;
 }
 
-void FilterClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list) {
+void FilterClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
     for (const QString &object_class : class_list) {
         const QString class_string = adconfig->get_class_display_name(object_class);
         auto checkbox = new QCheckBox(class_string);
@@ -54,6 +54,9 @@ void FilterClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &
     for (const QString &object_class : class_list) {
         QCheckBox *checkbox = checkbox_map[object_class];
         ui->classes_layout->addWidget(checkbox);
+
+        const bool is_selected = selected_list.contains(object_class);
+        checkbox->setChecked(is_selected);
     }
 }
 

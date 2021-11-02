@@ -22,13 +22,14 @@
 #include "ui_find_object_dialog.h"
 
 #include "ad_config.h"
+#include "ad_filter.h"
 #include "find_widget.h"
 #include "globals.h"
 #include "settings.h"
 
 #include <QMenuBar>
 
-FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString default_base, QWidget *parent)
+FindObjectDialog::FindObjectDialog(const QString &default_base, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::FindObjectDialog();
     ui->setupUi(this);
@@ -40,7 +41,14 @@ FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString d
     auto action_menu = menubar->addMenu(tr("&Action"));
     auto view_menu = menubar->addMenu(tr("&View"));
 
-    ui->find_widget->init(classes, default_base);
+    const QList<QString> class_list = filter_classes;
+    const QList<QString> selected_list = {
+        CLASS_USER,
+        CLASS_CONTACT,
+        CLASS_GROUP,
+    };
+
+    ui->find_widget->init(class_list, selected_list, default_base);
     ui->find_widget->setup_action_menu(action_menu);
     ui->find_widget->setup_view_menu(view_menu);
 

@@ -306,7 +306,6 @@ void MembershipTab::on_add_button() {
     }();
 
     auto dialog = new SelectObjectDialog(classes, SelectObjectDialogMultiSelection_Yes, this);
-    dialog->select_all_classes();
 
     const QString title = [&]() {
         switch (type) {

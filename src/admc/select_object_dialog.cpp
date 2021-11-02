@@ -59,7 +59,9 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    ui->select_classes->add_classes(g_adconfig, class_list);
+    const QList<QString> selected_list = class_list;
+
+    ui->select_classes->add_classes(g_adconfig, class_list, selected_list);
 
     ui->select_base_widget->init(g_adconfig);
 
@@ -110,10 +112,6 @@ QList<QString> SelectObjectDialog::get_selected() const {
     }
 
     return out;
-}
-
-void SelectObjectDialog::select_all_classes() {
-    ui->select_classes->select_all();
 }
 
 void SelectObjectDialog::accept() {

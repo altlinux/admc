@@ -37,9 +37,9 @@ FilterWidget::~FilterWidget() {
     delete ui;
 }
 
-void FilterWidget::add_classes(AdConfig *adconfig, const QList<QString> classes) {
-    ui->simple_tab->add_classes(adconfig, classes);
-    ui->normal_tab->add_classes(adconfig, classes);
+void FilterWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
+    ui->simple_tab->add_classes(adconfig, class_list, selected_list);
+    ui->normal_tab->add_classes(adconfig, class_list, selected_list);
 }
 
 QString FilterWidget::get_filter() const {

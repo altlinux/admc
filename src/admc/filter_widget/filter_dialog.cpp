@@ -49,8 +49,8 @@ void FilterDialog::reject() {
     QDialog::reject();
 }
 
-void FilterDialog::add_classes(AdConfig *adconfig, const QList<QString> &class_list) {
-    ui->filter_widget->add_classes(adconfig, class_list);
+void FilterDialog::add_classes(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
+    ui->filter_widget->add_classes(adconfig, class_list, selected_list);
 }
 
 QVariant FilterDialog::save_state() const {

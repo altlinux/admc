@@ -53,8 +53,6 @@ public:
 
     QList<QString> get_selected() const;
 
-    void select_all_classes();
-
 public slots:
     void accept() override;
 

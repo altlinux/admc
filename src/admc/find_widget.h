@@ -48,7 +48,7 @@ public:
     FindWidget(QWidget *parent = nullptr);
     ~FindWidget();
 
-    void init(const QList<QString> classes, const QString &default_base);
+    void init(const QList<QString> &class_list, const QList<QString> &selected_list, const QString &default_base);
     
     // NOTE: this is only for the console state, filter
     // widget is untouched

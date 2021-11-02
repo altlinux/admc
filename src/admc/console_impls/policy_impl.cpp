@@ -262,7 +262,6 @@ void PolicyImpl::add_link(const QList<QString> &policy_list, const QList<QString
 
 void PolicyImpl::on_add_link() {
     auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, console);
-    dialog->select_all_classes();
     dialog->setWindowTitle(tr("Add Link"));
 
     QObject::connect(

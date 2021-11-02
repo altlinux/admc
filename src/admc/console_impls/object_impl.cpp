@@ -682,7 +682,6 @@ void ObjectImpl::on_disable() {
 
 void ObjectImpl::on_add_to_group() {
     auto dialog = new SelectObjectDialog({CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, console);
-    dialog->select_all_classes();
     dialog->setWindowTitle(tr("Add to Group"));
 
     connect(
@@ -718,7 +717,7 @@ void ObjectImpl::on_find() {
 
     const QString dn = dn_list[0];
 
-    auto find_dialog = new FindObjectDialog(filter_classes, dn, console);
+    auto find_dialog = new FindObjectDialog(dn, console);
     find_dialog->set_buddy_console(console);
     find_dialog->open();
 }

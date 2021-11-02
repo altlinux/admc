@@ -47,7 +47,7 @@ public:
     void open() override;
     void reject() override;
 
-    void add_classes(AdConfig *adconfig, const QList<QString> &class_list);
+    void add_classes(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
