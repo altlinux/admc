@@ -84,11 +84,21 @@ AttributesTab::AttributesTab() {
         m_multi_editor,
     };
 
-    for (AttributeEditor *editor : editor_list) {
-        connect(
-            editor, &AttributeEditor::accepted,
-            this, &AttributesTab::on_editor_accepted);
-    }
+    connect(
+        m_octet_editor, &AttributeEditor::accepted,
+        this, &AttributesTab::on_octet_editor_accepted);
+    connect(
+        m_string_editor, &AttributeEditor::accepted,
+        this, &AttributesTab::on_string_editor_accepted);
+    connect(
+        m_bool_editor, &AttributeEditor::accepted,
+        this, &AttributesTab::on_bool_editor_accepted);
+    connect(
+        m_datetime_editor, &AttributeEditor::accepted,
+        this, &AttributesTab::on_datetime_editor_accepted);
+    connect(
+        m_multi_editor, &AttributeEditor::accepted,
+        this, &AttributesTab::on_multi_editor_accepted);
 
     connect(
         ui->view, &QAbstractItemView::doubleClicked,
@@ -131,6 +141,7 @@ QList<QStandardItem *> AttributesTab::get_selected_row() const {
     return row;
 }
 
+// Edit currently selected attribute
 void AttributesTab::edit_attribute() {
     const QList<QStandardItem *> row = get_selected_row();
 
@@ -286,9 +297,27 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
     row[AttributesColumn_Type]->setText(type_display);
 }
 
-void AttributesTab::on_editor_accepted() {
-    AttributeEditor *editor = qobject_cast<AttributeEditor *>(QObject::sender());
+void AttributesTab::on_octet_editor_accepted() {
+    on_editor_accepted(m_octet_editor);
+}
 
+void AttributesTab::on_string_editor_accepted() {
+    on_editor_accepted(m_string_editor);
+}
+
+void AttributesTab::on_bool_editor_accepted() {
+    on_editor_accepted(m_bool_editor);
+}
+
+void AttributesTab::on_datetime_editor_accepted() {
+    on_editor_accepted(m_datetime_editor);
+}
+
+void AttributesTab::on_multi_editor_accepted() {
+    on_editor_accepted(m_multi_editor);
+}
+
+void AttributesTab::on_editor_accepted(AttributeEditor *editor) {
     const QList<QStandardItem *> row = get_selected_row();
 
     if (row.isEmpty()) {
