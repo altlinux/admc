@@ -41,6 +41,10 @@ enum TrusteeItemRole {
     TrusteeItemRole_Sid = Qt::UserRole,
 };
 
+enum AcePermissionItemRole {
+    AcePermissionItemRole_Permission = Qt::UserRole,
+};
+
 QHash<AcePermission, QString> SecurityTab::ace_permission_to_name_map() {
     return {
         {AcePermission_FullControl, tr("Full control")},

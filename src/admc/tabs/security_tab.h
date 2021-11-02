@@ -28,7 +28,6 @@
 
 class QStandardItemModel;
 class QStandardItem;
-class QListWidget;
 class SelectWellKnownTrusteeDialog;
 
 enum AceColumn {
@@ -39,19 +38,8 @@ enum AceColumn {
     AceColumn_COUNT,
 };
 
-enum AcePermissionItemRole {
-    AcePermissionItemRole_Permission = Qt::UserRole,
-};
-
-extern const QList<AcePermission> all_permissions_list;
-extern const QSet<AcePermission> all_permissions;
-extern const QSet<AcePermission> access_permissions;
-extern const QSet<AcePermission> read_prop_permissions;
-extern const QSet<AcePermission> write_prop_permissions;
-
 namespace Ui {
     class SecurityTab;
-    class SelectWellKnownTrusteeDialog;
 }
 
 class SecurityTab final : public PropertiesTab {
