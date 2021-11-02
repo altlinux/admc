@@ -56,6 +56,8 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     class_list = class_list_arg;
     multi_selection = multi_selection_arg;
 
+    advanced_dialog = new SelectObjectAdvancedDialog(class_list, this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     const QList<QString> selected_list = class_list;
@@ -78,10 +80,13 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
         this, &SelectObjectDialog::on_add_button);
     connect(
         ui->advanced_button, &QPushButton::clicked,
-        this, &SelectObjectDialog::on_advanced_button);
+        advanced_dialog, &QDialog::open);
     connect(
         ui->remove_button, &QAbstractButton::clicked,
         this, &SelectObjectDialog::on_remove_button);
+    connect(
+        advanced_dialog, &QDialog::accepted,
+        this, &SelectObjectDialog::on_advanced_dialog_accepted);
 }
 
 SelectObjectDialog::~SelectObjectDialog() {
@@ -213,48 +218,40 @@ void SelectObjectDialog::on_remove_button() {
     }
 }
 
-void SelectObjectDialog::on_advanced_button() {
-    auto dialog = new SelectObjectAdvancedDialog(class_list, this);
+// TODO: can optimize if dialog returns objects
+// directly, but will need to keep them around
+void SelectObjectDialog::on_advanced_dialog_accepted() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
 
-    // TODO: can optimize if dialog returns objects
-    // directly, but will need to keep them around
-    connect(
-        dialog, &SelectObjectAdvancedDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
+    // NOTE: this is slightly inefficient because
+    // we're searching for objects again instead of
+    // using the existing data from find results
+    // (inside dialog). Using existing data will be
+    // more complex though, but if you need
+    // performance in the future, do it. Not that
+    // big of a deal at the moment because select
+    // object dialog is mostly used for small number
+    // of objects.
+    const QList<QString> selected = advanced_dialog->get_selected_dns();
 
-            // NOTE: this is slightly inefficient because
-            // we're searching for objects again instead of
-            // using the existing data from find results
-            // (inside dialog). Using existing data will be
-            // more complex though, but if you need
-            // performance in the future, do it. Not that
-            // big of a deal at the moment because select
-            // object dialog is mostly used for small number
-            // of objects.
-            const QList<QString> selected = dialog->get_selected_dns();
+    bool any_duplicates = false;
 
-            bool any_duplicates = false;
+    for (const QString &dn : selected) {
+        const AdObject object = ad.search_object(dn);
 
-            for (const QString &dn : selected) {
-                const AdObject object = ad.search_object(dn);
+        if (is_duplicate(object)) {
+            any_duplicates = true;
+        } else {
+            add_select_object_to_model(model, object);
+        }
+    }
 
-                if (is_duplicate(object)) {
-                    any_duplicates = true;
-                } else {
-                    add_select_object_to_model(model, object);
-                }
-            }
-
-            if (any_duplicates) {
-                duplicate_message_box();
-            }
-        });
-
-    dialog->open();
+    if (any_duplicates) {
+        duplicate_message_box();
+    }
 }
 
 bool SelectObjectDialog::is_duplicate(const AdObject &object) const {

@@ -29,6 +29,7 @@ class QStandardItemModel;
 class SelectClassesWidget;
 class AdObject;
 class SelectBaseWidget;
+class SelectObjectAdvancedDialog;
 
 namespace Ui {
 class SelectObjectDialog;
@@ -60,12 +61,13 @@ private:
     QStandardItemModel *model;
     QList<QString> class_list;
     SelectObjectDialogMultiSelection multi_selection;
+    SelectObjectAdvancedDialog *advanced_dialog;
 
     void on_add_button();
     void on_remove_button();
-    void on_advanced_button();
     bool is_duplicate(const AdObject &object) const;
     void duplicate_message_box();
+    void on_advanced_dialog_accepted();
 };
 
 class SelectObjectMatchDialog final : public QDialog {
