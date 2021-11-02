@@ -24,7 +24,7 @@
 #include "admc_test.h"
 
 #include "tabs/attributes_tab.h"
-#include "tabs/attributes_tab_p.h"
+#include "tabs/attributes_tab_filter_menu.h"
 #include "settings.h"
 
 class QStandardItemModel;
@@ -46,7 +46,7 @@ private slots:
 
 private:
     AttributesTab *attributes_tab;
-    AttributesFilterMenu *filter_menu;
+    AttributesTabFilterMenu *filter_menu;
     QTreeView *view;
     QStandardItemModel *model;
     QSortFilterProxyModel *proxy;

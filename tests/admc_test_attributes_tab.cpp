@@ -33,6 +33,7 @@
 #include <QString>
 #include <QTreeView>
 #include <QVBoxLayout>
+#include <QSortFilterProxyModel>
 
 Q_DECLARE_METATYPE(AttributeFilter)
 
@@ -54,7 +55,7 @@ void ADMCTestAttributesTab::init() {
     attributes_tab = new AttributesTab();
     add_widget(attributes_tab);
 
-    filter_menu = attributes_tab->findChild<AttributesFilterMenu *>();
+    filter_menu = attributes_tab->findChild<AttributesTabFilterMenu *>();
     QVERIFY(filter_menu);
 
     view = attributes_tab->ui->view;
