@@ -47,7 +47,7 @@ signals:
 
 protected:
     QCheckBox *apply_check;
-    
+
     virtual bool apply_internal(AdInterface &ad, const QString &target) = 0;
     virtual void set_enabled(const bool enabled) = 0;
 };

@@ -22,8 +22,8 @@
 
 #include "edits/group_type_edit.h"
 
-#include <QFormLayout>
 #include <QComboBox>
+#include <QFormLayout>
 
 void ADMCTestGroupTypeEdit::init() {
     ADMCTest::init();

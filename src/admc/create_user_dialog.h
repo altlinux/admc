@@ -27,7 +27,7 @@ class SamNameEdit;
 class UpnEdit;
 
 namespace Ui {
-    class CreateUserDialog;
+class CreateUserDialog;
 }
 
 class CreateUserDialog final : public CreateObjectDialog {

@@ -24,21 +24,20 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl.h"
-#include "globals.h"
-#include "utils.h"
-#include "settings.h"
-#include "console_impls/object_impl.h"
-#include "filter_widget/select_classes_widget.h"
 #include "filter_widget/select_base_widget.h"
+#include "filter_widget/select_classes_widget.h"
+#include "globals.h"
 #include "select_object_advanced_dialog.h"
+#include "settings.h"
+#include "utils.h"
 
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QTreeView>
-#include <QFormLayout>
-#include <QLineEdit>
-#include <QLabel>
-#include <QDialogButtonBox>
 
 enum SelectColumn {
     SelectColumn_Name,
@@ -86,7 +85,7 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 }
 
 SelectObjectDialog::~SelectObjectDialog() {
-    settings_save_header_state(SETTING_select_object_header_state, ui->view->header());   
+    settings_save_header_state(SETTING_select_object_header_state, ui->view->header());
 
     delete ui;
 }

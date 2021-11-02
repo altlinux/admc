@@ -24,10 +24,10 @@
 #include "adldap.h"
 #include "edits/manager_edit.h"
 #include "edits/string_edit.h"
-#include "properties_dialog.h"
-#include "utils.h"
-#include "settings.h"
 #include "globals.h"
+#include "properties_dialog.h"
+#include "settings.h"
+#include "utils.h"
 
 #include <QStandardItemModel>
 
@@ -68,7 +68,7 @@ OrganizationTab::OrganizationTab() {
 }
 
 OrganizationTab::~OrganizationTab() {
-    settings_save_header_state(SETTING_organization_tab_header_state, ui->reports_view->header());   
+    settings_save_header_state(SETTING_organization_tab_header_state, ui->reports_view->header());
 
     delete ui;
 }

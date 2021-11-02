@@ -27,8 +27,8 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QStandardItemModel>
 #include <QPushButton>
+#include <QStandardItemModel>
 
 SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 : QDialog(parent) {

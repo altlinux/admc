@@ -45,7 +45,7 @@ class QMenu;
 class ConsoleImpl;
 class ConsoleDragModel;
 
-#define UNUSED_ARG(x) (void)(x)
+#define UNUSED_ARG(x) (void) (x)
 
 enum ConsoleRolePublic {
     ConsoleRole_Type = Qt::UserRole + 19,

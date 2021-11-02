@@ -21,10 +21,10 @@
 #include "tabs/general_user_tab.h"
 #include "tabs/ui_general_user_tab.h"
 
-#include "tabs/general_other_tab.h"
 #include "adldap.h"
 #include "edits/string_edit.h"
 #include "edits/string_other_edit.h"
+#include "tabs/general_other_tab.h"
 
 GeneralUserTab::GeneralUserTab(const AdObject &object) {
     ui = new Ui::GeneralUserTab();

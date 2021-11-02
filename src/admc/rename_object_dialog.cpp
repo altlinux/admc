@@ -26,9 +26,9 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QPushButton>
 #include <QDialogButtonBox>
 #include <QLineEdit>
+#include <QPushButton>
 
 void RenameObjectDialog::success_msg(const QString &old_name) {
     const QString message = QString(tr("Object %1 was renamed.")).arg(old_name);

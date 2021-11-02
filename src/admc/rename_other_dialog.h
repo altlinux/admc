@@ -24,7 +24,7 @@
 #include "rename_object_dialog.h"
 
 namespace Ui {
-    class RenameOtherDialog;
+class RenameOtherDialog;
 }
 
 class RenameOtherDialog final : public RenameObjectDialog {

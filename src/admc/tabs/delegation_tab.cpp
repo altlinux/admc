@@ -22,8 +22,8 @@
 #include "tabs/ui_delegation_tab.h"
 
 #include "adldap.h"
-#include "globals.h"
 #include "edits/delegation_edit.h"
+#include "globals.h"
 
 DelegationTab::DelegationTab() {
     ui = new Ui::DelegationTab();

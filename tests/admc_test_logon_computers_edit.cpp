@@ -20,8 +20,8 @@
 
 #include "admc_test_logon_computers_edit.h"
 
-#include "edits/logon_computers_edit.h"
 #include "edits/logon_computers_dialog.h"
+#include "edits/logon_computers_edit.h"
 #include "edits/ui_logon_computers_dialog.h"
 
 #include <QFormLayout>

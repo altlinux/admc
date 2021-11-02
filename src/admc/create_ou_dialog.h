@@ -24,7 +24,7 @@
 #include "create_object_dialog.h"
 
 namespace Ui {
-    class CreateOUDialog;
+class CreateOUDialog;
 }
 
 class CreateOUDialog final : public CreateObjectDialog {

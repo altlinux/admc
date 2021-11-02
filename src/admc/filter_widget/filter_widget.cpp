@@ -55,7 +55,7 @@ QString FilterWidget::get_filter() const {
 
 QVariant FilterWidget::save_state() const {
     QHash<QString, QVariant> state;
-    
+
     state["current_tab_index"] = ui->tab_widget->currentIndex();
     state["simple_state"] = ui->simple_tab->save_state();
     state["normal_state"] = ui->normal_tab->save_state();
@@ -66,7 +66,7 @@ QVariant FilterWidget::save_state() const {
 
 void FilterWidget::restore_state(const QVariant &state_variant) {
     const QHash<QString, QVariant> state = state_variant.toHash();
-    
+
     ui->tab_widget->setCurrentIndex(state["current_tab_index"].toInt());
     ui->simple_tab->restore_state(state["simple_state"]);
     ui->normal_tab->restore_state(state["normal_state"]);

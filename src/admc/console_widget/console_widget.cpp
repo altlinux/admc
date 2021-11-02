@@ -22,10 +22,10 @@
 #include "console_widget/console_widget_p.h"
 
 #include "console_widget/console_drag_model.h"
+#include "console_widget/console_impl.h"
 #include "console_widget/customize_columns_dialog.h"
 #include "console_widget/results_view.h"
 #include "console_widget/scope_proxy_model.h"
-#include "console_widget/console_impl.h"
 
 #include <QAction>
 #include <QApplication>
@@ -36,9 +36,9 @@
 #include <QSplitter>
 #include <QStack>
 #include <QStackedWidget>
+#include <QToolBar>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QToolBar>
 
 #define SPLITTER_STATE "SPLITTER_STATE"
 const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
@@ -230,7 +230,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_item(const int type, const QMo
     // Make item row
     const QList<QStandardItem *> row = [&]() {
         QList<QStandardItem *> out;
-        
+
         const int column_count = [&]() {
             if (parent_item == d->model->invisibleRootItem()) {
                 return 1;
@@ -319,7 +319,7 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int ro
         // children
         const QModelIndex start_index = d->model->index(0, 0, parent);
         if (start_index.isValid()) {
-            const QList<QModelIndex> descendant_matches= d->model->match(start_index, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+            const QList<QModelIndex> descendant_matches = d->model->match(start_index, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
             out.append(descendant_matches);
         }
 
@@ -701,7 +701,7 @@ bool ConsoleWidgetPrivate::can_drop(const QModelIndex &target) {
 
 void ConsoleWidgetPrivate::drop(const QModelIndex &target) {
     const int target_type = target.data(ConsoleRole_Type).toInt();
-    
+
     ConsoleImpl *impl = get_impl(target);
     impl->drop(dropped_list, dropped_type_list, target, target_type);
 }
@@ -719,7 +719,7 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 
     if (!was_fetched) {
         model->setData(index, true, ConsoleRole_WasFetched);
-        
+
         ConsoleImpl *impl = get_impl(index);
         impl->fetch(index);
     }
@@ -794,7 +794,7 @@ QSet<int> ConsoleWidgetPrivate::get_selected_types() const {
     for (const QModelIndex &index : index_list) {
         const int type = index.data(ConsoleRole_Type).toInt();
         out.insert(type);
-    } 
+    }
 
     return out;
 }

@@ -21,12 +21,12 @@
 #include "admc_test_multi_editor.h"
 
 #include "editors/multi_editor.h"
-#include "editors/ui_multi_editor.h"
 #include "editors/string_editor.h"
+#include "editors/ui_multi_editor.h"
 #include "editors/ui_string_editor.h"
 
-#include <QListWidget>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QPushButton>
 
 const QList<QByteArray> test_value = {QByteArray("hello")};

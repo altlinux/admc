@@ -25,9 +25,9 @@
 #include "edits/ui_expiry_widget.h"
 #include "globals.h"
 
-#include <QFormLayout>
 #include <QCheckBox>
 #include <QDateEdit>
+#include <QFormLayout>
 
 void ADMCTestExpiryEdit::initTestCase_data() {
     QTest::addColumn<QString>("check_name");

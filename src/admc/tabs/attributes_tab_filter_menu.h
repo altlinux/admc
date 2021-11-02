@@ -21,8 +21,8 @@
 #ifndef ATTRIBUTES_TAB_FILTER_MENU_H
 #define ATTRIBUTES_TAB_FILTER_MENU_H
 
-#include <QMenu>
 #include <QHash>
+#include <QMenu>
 
 enum AttributeFilter {
     AttributeFilter_Unset,

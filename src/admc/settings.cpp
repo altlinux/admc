@@ -23,9 +23,9 @@
 #include "config.h"
 
 #include <QAction>
+#include <QDialog>
 #include <QHeaderView>
 #include <QLocale>
-#include <QDialog>
 #include <QSettings>
 
 const QHash<QString, bool> bool_setting_default_map = {
@@ -79,7 +79,7 @@ bool settings_restore_geometry(const QString setting, QWidget *widget) {
     const QByteArray geometry = settings_get_variant(setting).toByteArray();
     if (!geometry.isEmpty()) {
         widget->restoreGeometry(geometry);
-        
+
         return true;
     } else {
         return false;

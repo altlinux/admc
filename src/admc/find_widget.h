@@ -36,7 +36,7 @@ class ObjectImpl;
 class ConsoleWidget;
 
 namespace Ui {
-    class FindWidget;
+class FindWidget;
 }
 
 class FindWidget final : public QWidget {
@@ -49,7 +49,7 @@ public:
     ~FindWidget();
 
     void init(const QList<QString> &class_list, const QList<QString> &selected_list, const QString &default_base);
-    
+
     // NOTE: this is only for the console state, filter
     // widget is untouched
     QVariant save_console_state() const;

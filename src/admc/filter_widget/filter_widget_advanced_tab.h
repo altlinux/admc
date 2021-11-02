@@ -28,7 +28,7 @@
 #include "filter_widget/filter_widget.h"
 
 namespace Ui {
-    class FilterWidgetAdvancedTab;
+class FilterWidgetAdvancedTab;
 }
 
 class FilterWidgetAdvancedTab final : public FilterWidgetTab {

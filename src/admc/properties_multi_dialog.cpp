@@ -25,8 +25,8 @@
 #include "globals.h"
 #include "multi_tabs/account_multi_tab.h"
 #include "multi_tabs/address_multi_tab.h"
-#include "multi_tabs/general_user_multi_tab.h"
 #include "multi_tabs/general_other_multi_tab.h"
+#include "multi_tabs/general_user_multi_tab.h"
 #include "multi_tabs/organization_multi_tab.h"
 #include "multi_tabs/profile_multi_tab.h"
 #include "settings.h"
@@ -61,7 +61,6 @@ PropertiesMultiDialog::PropertiesMultiDialog(const QList<QString> &target_list_a
         ui->tab_widget->add_tab(tab, title);
         tab_list.append(tab);
     };
-
 
     if (class_list == QList<QString>({CLASS_USER})) {
         add_tab(new GeneralUserMultiTab(), tr("General"));

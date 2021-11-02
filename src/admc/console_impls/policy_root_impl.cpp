@@ -21,26 +21,26 @@
 #include "console_impls/policy_root_impl.h"
 
 #include "adldap.h"
+#include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
+#include "console_widget/results_view.h"
+#include "create_policy_dialog.h"
 #include "globals.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
+#include "rename_policy_dialog.h"
+#include "select_object_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "rename_policy_dialog.h"
-#include "select_object_dialog.h"
-#include "create_policy_dialog.h"
-#include "console_impls/item_type.h"
-#include "console_widget/results_view.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QList>
 #include <QMenu>
-#include <QStandardItem>
 #include <QProcess>
+#include <QStandardItem>
 
 PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {

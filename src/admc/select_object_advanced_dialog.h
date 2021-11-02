@@ -28,7 +28,7 @@
 #include <QDialog>
 
 namespace Ui {
-    class SelectObjectAdvancedDialog;
+class SelectObjectAdvancedDialog;
 }
 
 class SelectObjectAdvancedDialog final : public QDialog {

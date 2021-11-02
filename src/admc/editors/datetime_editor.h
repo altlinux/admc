@@ -30,7 +30,7 @@
 #include "editors/attribute_editor.h"
 
 namespace Ui {
-    class DateTimeEditor;
+class DateTimeEditor;
 }
 
 class DateTimeEditor final : public AttributeEditor {

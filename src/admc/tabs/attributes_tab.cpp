@@ -22,22 +22,22 @@
 #include "tabs/ui_attributes_tab.h"
 
 #include "adldap.h"
-#include "editors/string_editor.h"
-#include "editors/octet_editor.h"
 #include "editors/bool_editor.h"
 #include "editors/datetime_editor.h"
 #include "editors/multi_editor.h"
+#include "editors/octet_editor.h"
+#include "editors/string_editor.h"
 #include "globals.h"
 #include "settings.h"
-#include "utils.h"
-#include "tabs/attributes_tab_proxy.h"
 #include "tabs/attributes_tab_filter_menu.h"
+#include "tabs/attributes_tab_proxy.h"
+#include "utils.h"
 
-#include <QStandardItemModel>
-#include <QMenu>
 #include <QAction>
-#include <QHeaderView>
 #include <QDebug>
+#include <QHeaderView>
+#include <QMenu>
+#include <QStandardItemModel>
 
 QString attribute_type_display_string(const AttributeType type);
 
@@ -47,11 +47,11 @@ AttributesTab::AttributesTab() {
 
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
-    {
-        {AttributesColumn_Name, tr("Name")},
-        {AttributesColumn_Value, tr("Value")},
-        {AttributesColumn_Type, tr("Type")}
-    });
+        {
+            {AttributesColumn_Name, tr("Name")},
+            {AttributesColumn_Value, tr("Value")},
+            {AttributesColumn_Type, tr("Type")}
+        });
 
     auto filter_menu = new AttributesTabFilterMenu(this);
 
@@ -213,7 +213,7 @@ void AttributesTab::edit_attribute() {
 
     if (editor != nullptr) {
         editor->set_attribute(attribute);
-        
+
         const QList<QByteArray> value_list = current[attribute];
         editor->set_value_list(value_list);
 
@@ -294,7 +294,7 @@ void AttributesTab::on_editor_accepted() {
     if (row.isEmpty()) {
         return;
     }
-    
+
     const QString attribute = editor->get_attribute();
     const QList<QByteArray> value_list = editor->get_value_list();
 

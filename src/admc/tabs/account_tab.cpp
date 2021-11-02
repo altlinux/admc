@@ -23,11 +23,11 @@
 
 #include "edits/account_option_edit.h"
 #include "edits/expiry_edit.h"
+#include "edits/logon_computers_edit.h"
+#include "edits/logon_hours_edit.h"
 #include "edits/string_edit.h"
 #include "edits/unlock_edit.h"
 #include "edits/upn_edit.h"
-#include "edits/logon_hours_edit.h"
-#include "edits/logon_computers_edit.h"
 
 // NOTE: the "can't change password" checkbox does not
 // affect the permission in the security tab, even though
@@ -62,7 +62,7 @@ AccountTab::AccountTab(AdInterface &ad) {
         QCheckBox *check = check_map[option];
         new AccountOptionEdit(check, option, &edits, this);
     }
-    
+
     account_option_setup_conflicts(check_map);
 
     edits_connect_to_tab(edits, this);

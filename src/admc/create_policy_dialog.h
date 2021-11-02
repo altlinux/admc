@@ -30,7 +30,7 @@
 class QLineEdit;
 
 namespace Ui {
-    class CreatePolicyDialog;
+class CreatePolicyDialog;
 }
 
 class CreatePolicyDialog : public QDialog {

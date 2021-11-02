@@ -73,7 +73,7 @@ void CreatePolicyDialog::open() {
             return QString("New Group Policy Object (%1)").arg(n);
         };
 
-        while(existing_name_list.contains(get_name())) {
+        while (existing_name_list.contains(get_name())) {
             n++;
         }
 

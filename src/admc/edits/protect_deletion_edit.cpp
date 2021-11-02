@@ -21,8 +21,8 @@
 #include "edits/protect_deletion_edit.h"
 
 #include "adldap.h"
-#include "utils.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QCheckBox>
 

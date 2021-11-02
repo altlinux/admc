@@ -28,7 +28,7 @@ class ConsoleFilterDialog;
 class QLabel;
 
 namespace Ui {
-    class MainWindow;
+class MainWindow;
 }
 
 class MainWindow final : public QMainWindow {
@@ -47,7 +47,7 @@ private:
     ObjectImpl *object_impl;
     ConsoleFilterDialog *filter_dialog;
     QLabel *client_user_label;
-    
+
     void connect_to_server();
     void refresh_object_tree();
     void on_show_non_containers(bool checked);

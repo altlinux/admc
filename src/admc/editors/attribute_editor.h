@@ -45,7 +45,7 @@ public:
     // Store attribute and also configure widget settings so
     // that they are appropriate for given attribute.
     virtual void set_attribute(const QString &attribute);
-    
+
     // This is for cases where you need to make the editor
     // read only even if attribute can be edited. Normally,
     // this is automatically called in set_attribute().

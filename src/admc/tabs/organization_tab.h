@@ -26,7 +26,7 @@
 class QStandardItemModel;
 
 namespace Ui {
-    class OrganizationTab;
+class OrganizationTab;
 }
 
 class OrganizationTab final : public PropertiesTab {

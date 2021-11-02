@@ -80,7 +80,7 @@ void ADMCTestSecurityTab::load_data() {
     QTest::newRow("ENTERPRISE DOMAIN CONTROLLERS") << QSet<AcePermission>();
 
     QTest::newRow("Enterprise Admins") << all_permissions;
-    
+
     QTest::newRow("Everyone") << [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ChangePassword;

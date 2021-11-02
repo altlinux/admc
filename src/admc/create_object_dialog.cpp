@@ -26,9 +26,9 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QPushButton>
 #include <QDialogButtonBox>
 #include <QLineEdit>
+#include <QPushButton>
 
 void CreateObjectDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QList<QWidget *> &widget_list, const QString &object_class) {
     name_edit = name_edit_arg;

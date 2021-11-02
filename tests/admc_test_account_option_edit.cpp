@@ -39,7 +39,7 @@ void ADMCTestAccountOptionEdit::init() {
 
         return out;
     }();
-    
+
     QList<AttributeEdit *> edit_list;
 
     for (const AccountOption &option : option_list) {

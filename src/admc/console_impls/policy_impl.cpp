@@ -21,24 +21,24 @@
 #include "console_impls/policy_impl.h"
 
 #include "adldap.h"
+#include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
+#include "create_policy_dialog.h"
 #include "globals.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
+#include "properties_dialog.h"
+#include "rename_policy_dialog.h"
+#include "select_object_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "rename_policy_dialog.h"
-#include "select_object_dialog.h"
-#include "create_policy_dialog.h"
-#include "console_impls/item_type.h"
-#include "properties_dialog.h"
 
+#include <QAction>
 #include <QDebug>
 #include <QList>
-#include <QStandardItem>
 #include <QProcess>
-#include <QAction>
+#include <QStandardItem>
 
 PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -325,7 +325,7 @@ void PolicyImpl::on_rename_accepted() {
     if (ad_failed(ad)) {
         return;
     }
-    
+
     const QModelIndex index = console->get_selected_item(ItemType_Policy);
     const QString dn = index.data(PolicyRole_DN).toString();
     const AdObject object = ad.search_object(dn);
@@ -342,7 +342,7 @@ void console_policy_load(const QList<QStandardItem *> &row, const AdObject &obje
 void console_policy_load_item(QStandardItem *main_item, const AdObject &object) {
     main_item->setIcon(QIcon::fromTheme("folder-templates"));
     main_item->setData(object.get_dn(), PolicyRole_DN);
-    
+
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
     main_item->setText(display_name);
 }

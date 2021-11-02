@@ -26,7 +26,7 @@
 class AttributeEdit;
 
 namespace Ui {
-    class PasswordDialog;
+class PasswordDialog;
 }
 
 // Accepts input of new password and changes password when done

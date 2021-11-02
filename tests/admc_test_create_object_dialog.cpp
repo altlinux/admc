@@ -21,14 +21,14 @@
 #include "admc_test_create_object_dialog.h"
 
 #include "adldap.h"
-#include "create_user_dialog.h"
+#include "create_computer_dialog.h"
 #include "create_group_dialog.h"
 #include "create_ou_dialog.h"
-#include "create_computer_dialog.h"
-#include "ui_create_user_dialog.h"
+#include "create_user_dialog.h"
+#include "ui_create_computer_dialog.h"
 #include "ui_create_group_dialog.h"
 #include "ui_create_ou_dialog.h"
-#include "ui_create_computer_dialog.h"
+#include "ui_create_user_dialog.h"
 
 void ADMCTestCreateObjectDialog::create_user() {
     const QString name = TEST_USER;

@@ -21,20 +21,20 @@
 #include "tabs/attributes_tab_filter_menu.h"
 
 #include "adldap.h"
-#include "editors/string_editor.h"
-#include "editors/octet_editor.h"
 #include "editors/bool_editor.h"
 #include "editors/datetime_editor.h"
 #include "editors/multi_editor.h"
+#include "editors/octet_editor.h"
+#include "editors/string_editor.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
 
-#include <QStandardItemModel>
-#include <QMenu>
 #include <QAction>
-#include <QHeaderView>
 #include <QDebug>
+#include <QHeaderView>
+#include <QMenu>
+#include <QStandardItemModel>
 
 AttributesTabFilterMenu::AttributesTabFilterMenu(QWidget *parent)
 : QMenu(parent) {
@@ -111,7 +111,7 @@ void AttributesTabFilterMenu::on_read_only_changed() {
 
     for (const AttributeFilter &filter : read_only_sub_filters) {
         action_map[filter]->setEnabled(read_only_is_enabled);
-        
+
         // Turning off read only turns off the sub read only
         // filters. Note that turning ON read only doesn't do
         // the opposite.

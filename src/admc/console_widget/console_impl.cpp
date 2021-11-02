@@ -42,7 +42,7 @@ bool ConsoleImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, con
     UNUSED_ARG(dropped_type_list);
     UNUSED_ARG(target);
     UNUSED_ARG(target_type);
-    
+
     return false;
 }
 
@@ -55,7 +55,7 @@ void ConsoleImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const Q
 
 QString ConsoleImpl::get_description(const QModelIndex &index) const {
     UNUSED_ARG(index);
-    
+
     return QString();
 }
 
@@ -95,7 +95,7 @@ QSet<StandardAction> ConsoleImpl::get_standard_actions(const QModelIndex &index,
 QSet<StandardAction> ConsoleImpl::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
     UNUSED_ARG(index);
     UNUSED_ARG(single_selection);
-    
+
     return {};
 }
 
@@ -106,27 +106,27 @@ void ConsoleImpl::copy(const QList<QModelIndex> &index_list) {
 void ConsoleImpl::cut(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 }
-    
+
 void ConsoleImpl::rename(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 }
-    
+
 void ConsoleImpl::delete_action(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 }
-    
+
 void ConsoleImpl::paste(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 }
-    
+
 void ConsoleImpl::print(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 }
-    
+
 void ConsoleImpl::refresh(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 }
-    
+
 void ConsoleImpl::properties(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 }

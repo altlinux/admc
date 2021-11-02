@@ -21,10 +21,10 @@
 #include "tabs/general_ou_tab.h"
 #include "tabs/ui_general_ou_tab.h"
 
-#include "tabs/general_other_tab.h"
 #include "adldap.h"
-#include "edits/string_edit.h"
 #include "edits/country_edit.h"
+#include "edits/string_edit.h"
+#include "tabs/general_other_tab.h"
 
 GeneralOUTab::GeneralOUTab(const AdObject &object) {
     ui = new Ui::GeneralOUTab();

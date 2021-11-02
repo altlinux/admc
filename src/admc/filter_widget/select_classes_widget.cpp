@@ -31,7 +31,7 @@ SelectClassesWidget::SelectClassesWidget(QWidget *parent)
     ui->setupUi(this);
 
     dialog = new SelectClassesDialog(this);
-    
+
     connect(
         ui->select_button, &QAbstractButton::clicked,
         dialog, &QDialog::open);

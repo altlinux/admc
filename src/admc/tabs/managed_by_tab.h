@@ -26,7 +26,7 @@
 class ManagerEdit;
 
 namespace Ui {
-    class ManagedByTab;
+class ManagedByTab;
 }
 
 class ManagedByTab final : public PropertiesTab {

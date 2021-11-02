@@ -42,7 +42,7 @@ class AttributesFilterDialog;
 class AttributeEditor;
 
 namespace Ui {
-    class AttributesTab;
+class AttributesTab;
 }
 
 class AttributesTab final : public PropertiesTab {

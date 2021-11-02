@@ -20,25 +20,24 @@
 
 #include "admc_test_edit_query_item_widget.h"
 
-#include "edit_query_item_widget.h"
-#include "ui_edit_query_item_widget.h"
 #include "console_impls/query_item_impl.h"
-#include "filter_widget/select_base_widget.h"
-#include "filter_widget/ui_select_base_widget.h"
+#include "edit_query_item_widget.h"
 #include "filter_widget/filter_dialog.h"
-#include "ui_filter_dialog.h"
 #include "filter_widget/filter_widget.h"
-#include "filter_widget/ui_filter_widget.h"
 #include "filter_widget/filter_widget_simple_tab.h"
+#include "filter_widget/select_base_widget.h"
+#include "filter_widget/ui_filter_widget.h"
 #include "filter_widget/ui_filter_widget_simple_tab.h"
+#include "filter_widget/ui_select_base_widget.h"
 #include "tab_widget.h"
+#include "ui_edit_query_item_widget.h"
+#include "ui_filter_dialog.h"
 
+#include <QCheckBox>
+#include <QComboBox>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QStandardItem>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QPushButton>
 #include <QTextEdit>
 
 void ADMCTestEditQueryItemWidget::init() {
@@ -64,10 +63,10 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
     // Define and set correct values
     const QString correct_name = "name";
     name_edit->setText(correct_name);
-    
+
     const QString correct_description = "description";
     description_edit->setText(correct_description);
-    
+
     const bool correct_scope = true;
     scope_checkbox->setChecked(correct_scope);
 
@@ -101,7 +100,7 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
 
         return out;
     }();
-    
+
     // NOTE: need to insert into model so that indexes are valid
     auto model = new QStandardItemModel();
     model->appendRow(row);
@@ -118,7 +117,7 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
     }
 
     const QModelIndex index = row[0]->index();
-    
+
     {
         QString name;
         QString description;

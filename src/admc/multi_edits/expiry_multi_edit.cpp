@@ -24,8 +24,8 @@
 #include "edits/expiry_widget.h"
 #include "globals.h"
 
-#include <QFormLayout>
 #include <QCheckBox>
+#include <QFormLayout>
 
 ExpiryMultiEdit::ExpiryMultiEdit(ExpiryWidget *edit_widget_arg, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
 : AttributeMultiEdit(check, edits_out, parent) {

@@ -27,7 +27,7 @@ class QLabel;
 class AdObject;
 
 namespace Ui {
-    class GeneralOtherTab;
+class GeneralOtherTab;
 }
 
 class GeneralOtherTab final : public PropertiesTab {

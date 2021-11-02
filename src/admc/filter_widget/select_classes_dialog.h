@@ -32,7 +32,7 @@
 class FilterClassesWidget;
 
 namespace Ui {
-    class SelectClassesDialog;
+class SelectClassesDialog;
 }
 
 class SelectClassesDialog final : public QDialog {

@@ -24,7 +24,7 @@
 #include "tabs/properties_tab.h"
 
 namespace Ui {
-    class DelegationTab;
+class DelegationTab;
 }
 
 class DelegationTab final : public PropertiesTab {

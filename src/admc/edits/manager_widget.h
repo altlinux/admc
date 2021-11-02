@@ -27,7 +27,7 @@ class AdObject;
 class AdInterface;
 
 namespace Ui {
-    class ManagerWidget;
+class ManagerWidget;
 }
 
 class ManagerWidget final : public QWidget {

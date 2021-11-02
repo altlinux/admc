@@ -22,10 +22,10 @@
 #include "ui_create_ou_dialog.h"
 
 #include "adldap.h"
-#include "utils.h"
+#include "edits/protect_deletion_edit.h"
 #include "edits/string_edit.h"
 #include "edits/upn_edit.h"
-#include "edits/protect_deletion_edit.h"
+#include "utils.h"
 
 CreateOUDialog::CreateOUDialog(QWidget *parent)
 : CreateObjectDialog(parent) {

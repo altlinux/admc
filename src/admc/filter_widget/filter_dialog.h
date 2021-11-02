@@ -32,7 +32,7 @@
 class AdConfig;
 
 namespace Ui {
-    class FilterDialog;
+class FilterDialog;
 }
 
 class FilterDialog final : public QDialog {

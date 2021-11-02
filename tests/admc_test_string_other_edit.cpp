@@ -20,10 +20,10 @@
 
 #include "admc_test_string_other_edit.h"
 
-#include "edits/string_other_edit.h"
 #include "editors/multi_editor.h"
-#include "editors/ui_multi_editor.h"
 #include "editors/string_editor.h"
+#include "editors/ui_multi_editor.h"
+#include "edits/string_other_edit.h"
 
 #include <QFormLayout>
 #include <QLineEdit>
@@ -136,7 +136,7 @@ void ADMCTestStringOtherEdit::apply_modified_other_value() {
     QCOMPARE(current_value_main, main_value);
 
     const QList<QByteArray> current_value_other = object.get_values(TEST_ATTRIBUTE_OTHER);
-    QList<QByteArray> correct_value_other = other_value_list; 
+    QList<QByteArray> correct_value_other = other_value_list;
     correct_value_other.append(new_value);
 
     QCOMPARE(current_value_other, correct_value_other);

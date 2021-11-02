@@ -31,9 +31,9 @@ class AdObject;
 class SelectBaseWidget;
 
 namespace Ui {
-    class SelectObjectDialog;
-    class SelectObjectMatchDialog;
-}
+class SelectObjectDialog;
+class SelectObjectMatchDialog;
+} // namespace Ui
 
 enum SelectObjectDialogMultiSelection {
     SelectObjectDialogMultiSelection_Yes,
@@ -41,7 +41,7 @@ enum SelectObjectDialogMultiSelection {
 };
 
 class SelectObjectDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     Ui::SelectObjectDialog *ui;
@@ -69,7 +69,7 @@ private:
 };
 
 class SelectObjectMatchDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     Ui::SelectObjectMatchDialog *ui;

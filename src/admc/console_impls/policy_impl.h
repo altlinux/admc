@@ -21,8 +21,8 @@
 #ifndef POLICY_IMPL_H
 #define POLICY_IMPL_H
 
-#include "console_widget/console_widget.h"
 #include "console_widget/console_impl.h"
+#include "console_widget/console_widget.h"
 
 class QStandardItem;
 class AdObject;
@@ -75,7 +75,7 @@ private:
 };
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object);
-void console_policy_load_item(QStandardItem * item, const AdObject &object);
+void console_policy_load_item(QStandardItem *item, const AdObject &object);
 QList<QString> console_policy_search_attributes();
 
 #endif /* POLICY_IMPL_H */

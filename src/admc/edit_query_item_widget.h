@@ -31,7 +31,7 @@
 class FilterDialog;
 
 namespace Ui {
-    class EditQueryItemWidget;
+class EditQueryItemWidget;
 }
 
 class EditQueryItemWidget : public QWidget {

@@ -22,9 +22,9 @@
 #include "ui_create_computer_dialog.h"
 
 #include "adldap.h"
-#include "utils.h"
 #include "edits/sam_name_edit.h"
 #include "edits/upn_edit.h"
+#include "utils.h"
 
 CreateComputerDialog::CreateComputerDialog(QWidget *parent)
 : CreateObjectDialog(parent) {

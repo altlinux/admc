@@ -21,22 +21,22 @@
 #include "tabs/attributes_tab_proxy.h"
 
 #include "adldap.h"
-#include "editors/string_editor.h"
-#include "editors/octet_editor.h"
 #include "editors/bool_editor.h"
 #include "editors/datetime_editor.h"
 #include "editors/multi_editor.h"
+#include "editors/octet_editor.h"
+#include "editors/string_editor.h"
 #include "globals.h"
 #include "settings.h"
-#include "utils.h"
 #include "tabs/attributes_tab.h"
 #include "tabs/attributes_tab_filter_menu.h"
+#include "utils.h"
 
-#include <QStandardItemModel>
-#include <QMenu>
 #include <QAction>
-#include <QHeaderView>
 #include <QDebug>
+#include <QHeaderView>
+#include <QMenu>
+#include <QStandardItemModel>
 
 QString attribute_type_display_string(const AttributeType type);
 

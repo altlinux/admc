@@ -33,7 +33,7 @@
 class PropertiesMultiTab;
 
 namespace Ui {
-    class PropertiesMultiDialog;
+class PropertiesMultiDialog;
 }
 
 class PropertiesMultiDialog final : public QDialog {

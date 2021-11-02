@@ -47,7 +47,7 @@ ResultsView::ResultsView(QWidget *parent)
     views[ResultsViewType_Icons] = icons_view;
     views[ResultsViewType_List] = list_view;
     views[ResultsViewType_Detail] = m_detail_view;
-    
+
     proxy_model = new QSortFilterProxyModel(this);
     proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
 
@@ -156,7 +156,6 @@ QList<QModelIndex> ResultsView::get_selected_indexes() const {
 
     return source_indexes;
 }
-
 
 QVariant ResultsView::save_state() const {
     QHash<QString, QVariant> state;

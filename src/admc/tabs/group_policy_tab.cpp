@@ -25,8 +25,8 @@
 #include "edits/gpoptions_edit.h"
 #include "globals.h"
 #include "select_policy_dialog.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
 #include <QDebug>
 #include <QFormLayout>
@@ -97,7 +97,7 @@ GroupPolicyTab::GroupPolicyTab() {
 }
 
 GroupPolicyTab::~GroupPolicyTab() {
-    settings_save_header_state(SETTING_group_policy_tab_header_state, ui->view->header());   
+    settings_save_header_state(SETTING_group_policy_tab_header_state, ui->view->header());
 
     delete ui;
 }

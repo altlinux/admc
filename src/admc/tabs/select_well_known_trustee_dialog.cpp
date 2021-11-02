@@ -21,9 +21,9 @@
 #include "select_well_known_trustee_dialog.h"
 #include "ui_select_well_known_trustee_dialog.h"
 
-#include "settings.h"
 #include "ad_security.h"
 #include "ad_utils.h"
+#include "settings.h"
 
 SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
 : QDialog(parent) {
@@ -33,7 +33,7 @@ SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
     for (const QString &sid_string : well_known_sid_list) {
         auto item = new QListWidgetItem();
 
-        const QByteArray sid_bytes = sid_string_to_bytes(sid_string); 
+        const QByteArray sid_bytes = sid_string_to_bytes(sid_string);
         item->setData(Qt::UserRole, sid_bytes);
 
         const QString name = ad_security_get_well_known_trustee_name(sid_bytes);

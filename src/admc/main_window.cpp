@@ -23,27 +23,27 @@
 
 #include "about_dialog.h"
 #include "adldap.h"
-#include "globals.h"
-#include "manual_dialog.h"
 #include "changelog_dialog.h"
-#include "connection_options_dialog.h"
-#include "settings.h"
-#include "status.h"
-#include "utils.h"
 #include "config.h"
+#include "connection_options_dialog.h"
+#include "console_filter_dialog.h"
+#include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/policy_root_impl.h"
-#include "console_impls/query_item_impl.h"
 #include "console_impls/query_folder_impl.h"
+#include "console_impls/query_item_impl.h"
 #include "console_widget/console_widget.h"
-#include "console_filter_dialog.h"
-#include "console_impls/item_type.h"
 #include "edits/country_combo.h"
+#include "globals.h"
+#include "manual_dialog.h"
+#include "settings.h"
+#include "status.h"
+#include "utils.h"
 
 #include <QDebug>
-#include <QModelIndex>
 #include <QLabel>
+#include <QModelIndex>
 
 MainWindow::MainWindow()
 : QMainWindow() {
@@ -156,9 +156,9 @@ MainWindow::MainWindow()
     // console
     ui->console->add_actions(ui->menu_action);
 
-    #ifndef QT_DEBUG
-        ui->action_dev_mode->setVisible(false);
-    #endif
+#ifndef QT_DEBUG
+    ui->action_dev_mode->setVisible(false);
+#endif
 
     // NOTE: toolbar and message log(dock widget) have built
     // in toggle actions, but there's no way to add them
@@ -319,7 +319,7 @@ void MainWindow::on_filter_dialog_accepted() {
     } else {
         object_impl->disable_filtering();
     }
-    
+
     refresh_object_tree();
 }
 
@@ -404,7 +404,7 @@ void MainWindow::connect_to_server() {
         filter_dialog, &QDialog::accepted,
         this, &MainWindow::on_filter_dialog_accepted);
     on_filter_dialog_accepted();
-    
+
     // Disable connect action once connected because
     // it's not needed at that point
     ui->action_connect->setEnabled(false);

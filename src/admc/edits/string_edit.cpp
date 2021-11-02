@@ -30,7 +30,7 @@ StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QList<
 : AttributeEdit(edits_out, parent) {
     attribute = attribute_arg;
     edit = edit_arg;
-    
+
     if (g_adconfig->get_attribute_is_number(attribute)) {
         set_line_edit_to_numbers_only(edit);
     }

@@ -23,8 +23,8 @@
 
 #include "ad_utils.h"
 
-#include <QStandardItemModel>
 #include <QDateTime>
+#include <QStandardItemModel>
 #include <QTimeZone>
 
 QList<bool> shift_list(const QList<bool> &list, const int shift_amount);
@@ -114,7 +114,6 @@ QByteArray LogonHoursDialog::get() const {
 
 void LogonHoursDialog::accept() {
 
-
     QDialog::accept();
 }
 
@@ -178,7 +177,7 @@ QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list, const int t
             out_the.append(day_list);
         }
 
-        return out_the;        
+        return out_the;
     }();
 
     return out;

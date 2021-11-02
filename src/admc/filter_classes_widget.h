@@ -33,7 +33,7 @@ class QCheckBox;
 class AdConfig;
 
 namespace Ui {
-    class FilterClassesWidget;
+class FilterClassesWidget;
 }
 
 class FilterClassesWidget final : public QWidget {

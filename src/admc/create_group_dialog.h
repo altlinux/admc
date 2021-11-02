@@ -26,7 +26,7 @@
 class SamNameEdit;
 
 namespace Ui {
-    class CreateGroupDialog;
+class CreateGroupDialog;
 }
 
 class CreateGroupDialog final : public CreateObjectDialog {

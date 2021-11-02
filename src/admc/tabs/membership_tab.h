@@ -33,7 +33,7 @@ class QStandardItemModel;
 // MembersTab and MemberOfTab implement both of those
 
 namespace Ui {
-    class MembershipTab;
+class MembershipTab;
 }
 
 class MembershipTab : public PropertiesTab {

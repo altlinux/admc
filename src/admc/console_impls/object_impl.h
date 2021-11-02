@@ -22,9 +22,9 @@
 #define OBJECT_IMPL_H
 
 #include "adldap.h"
-#include "console_widget/console_widget.h"
-#include "console_widget/console_impl.h"
 #include "console_impls/my_console_role.h"
+#include "console_widget/console_impl.h"
+#include "console_widget/console_widget.h"
 
 class QStandardItem;
 class AdObject;
@@ -73,10 +73,10 @@ public:
     // this console, they will also get removed from the
     // buddy console.
     void set_buddy_console(ConsoleWidget *buddy_console);
-    
+
     void enable_filtering(const QString &filter);
     void disable_filtering();
-    
+
     void fetch(const QModelIndex &index) override;
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;

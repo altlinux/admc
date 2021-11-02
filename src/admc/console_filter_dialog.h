@@ -35,7 +35,7 @@ class AdConfig;
 class QRadioButton;
 
 namespace Ui {
-    class ConsoleFilterDialog;
+class ConsoleFilterDialog;
 };
 
 class ConsoleFilterDialog final : public QDialog {
@@ -60,7 +60,7 @@ private:
     FilterDialog *custom_dialog;
     QHash<QString, QRadioButton *> button_state_name_map;
     QVariant original_state;
-    
+
     void on_custom_button();
     void on_classes_button();
 };

@@ -74,7 +74,7 @@ void ADMCTestGplink::contains_data() {
 void ADMCTestGplink::contains() {
     QFETCH(QString, gpo);
     QFETCH(bool, contains_value);
-    
+
     Gplink gplink(test_gplink_string);
 
     QCOMPARE(gplink.contains(gpo), contains_value);

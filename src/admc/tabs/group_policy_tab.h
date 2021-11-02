@@ -38,7 +38,7 @@ class SelectPolicyDialog;
  */
 
 namespace Ui {
-    class GroupPolicyTab;
+class GroupPolicyTab;
 }
 
 class GroupPolicyTab final : public PropertiesTab {

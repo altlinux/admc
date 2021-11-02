@@ -22,13 +22,13 @@
 #include "ui_create_user_dialog.h"
 
 #include "adldap.h"
-#include "utils.h"
-#include "settings.h"
-#include "edits/string_edit.h"
-#include "edits/sam_name_edit.h"
-#include "edits/upn_edit.h"
-#include "edits/password_edit.h"
 #include "edits/account_option_edit.h"
+#include "edits/password_edit.h"
+#include "edits/sam_name_edit.h"
+#include "edits/string_edit.h"
+#include "edits/upn_edit.h"
+#include "settings.h"
+#include "utils.h"
 
 CreateUserDialog::CreateUserDialog(QWidget *parent)
 : CreateObjectDialog(parent) {
@@ -124,7 +124,7 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
         ui->disabled_check,
     };
 
-    init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list,  CLASS_USER);
+    init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_USER);
 }
 
 CreateUserDialog::~CreateUserDialog() {

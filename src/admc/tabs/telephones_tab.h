@@ -24,7 +24,7 @@
 #include "tabs/properties_tab.h"
 
 namespace Ui {
-    class TelephonesTab;
+class TelephonesTab;
 }
 
 class TelephonesTab final : public PropertiesTab {

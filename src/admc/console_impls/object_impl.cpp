@@ -21,34 +21,32 @@
 #include "console_impls/object_impl.h"
 
 #include "adldap.h"
+#include "change_dc_dialog.h"
+#include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
-#include "console_impls/policy_impl.h"
-#include "console_impls/query_item_impl.h"
 #include "console_impls/query_folder_impl.h"
+#include "console_impls/query_item_impl.h"
+#include "console_widget/results_view.h"
+#include "create_computer_dialog.h"
+#include "create_group_dialog.h"
+#include "create_ou_dialog.h"
+#include "create_user_dialog.h"
+#include "editors/multi_editor.h"
+#include "find_object_dialog.h"
 #include "globals.h"
+#include "password_dialog.h"
+#include "properties_dialog.h"
+#include "properties_multi_dialog.h"
+#include "rename_group_dialog.h"
+#include "rename_object_dialog.h"
+#include "rename_other_dialog.h"
+#include "rename_user_dialog.h"
 #include "search_thread.h"
+#include "select_container_dialog.h"
 #include "select_object_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "create_user_dialog.h"
-#include "create_group_dialog.h"
-#include "create_ou_dialog.h"
-#include "create_computer_dialog.h"
-#include "rename_object_dialog.h"
-#include "rename_other_dialog.h"
-#include "rename_user_dialog.h"
-#include "rename_group_dialog.h"
-#include "select_container_dialog.h"
-#include "change_dc_dialog.h"
-#include "find_object_dialog.h"
-#include "select_object_dialog.h"
-#include "properties_dialog.h"
-#include "properties_multi_dialog.h"
-#include "password_dialog.h"
-#include "editors/multi_editor.h"
-#include "console_impls/item_type.h"
-#include "console_widget/results_view.h"
 
 #include <QDebug>
 #include <QMenu>
@@ -202,7 +200,6 @@ void ObjectImpl::enable_filtering(const QString &filter) {
 void ObjectImpl::disable_filtering() {
     filtering_is_ON = false;
 }
-
 
 // Load children of this item in scope tree
 // and load results linked to this scope item
@@ -1238,7 +1235,7 @@ QList<QString> console_object_search_attributes() {
     // delete/move/rename for objects that can't do those
     // actions
     attributes += ATTRIBUTE_SYSTEM_FLAGS;
-    
+
     attributes += ATTRIBUTE_USER_ACCOUNT_CONTROL;
 
     return attributes;

@@ -24,7 +24,7 @@
 #include "tabs/properties_tab.h"
 
 namespace Ui {
-    class ObjectTab;
+class ObjectTab;
 }
 
 // Object attributes, same for all types

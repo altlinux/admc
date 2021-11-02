@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
 
         if (!open_wiki_success) {
             qCritical() << "Failed to open wiki file:" << wiki_file_path;
-            
+
             return QList<QString>();
         }
 
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
         wiki_file.close();
 
         const QList<QString> out = file_string.split("\n");
-        
+
         return out;
     }();
 
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
             if (section_start_i == -1) {
                 break;
             }
-            
+
             int section_end_i = find_next_section(section_start_i + 1);
             if (section_end_i == -1) {
                 // Last section case
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 
             out.append(section);
 
-            current_i = section_end_i;          
+            current_i = section_end_i;
         }
 
         return out;
@@ -171,11 +171,11 @@ int main(int argc, char **argv) {
 
         if (!open_section_success) {
             qCritical() << "Failed to open section file:" << section_file_path;
-            
+
             break;
         }
 
-        section_file.write(section_file_contents.join("\n").toUtf8());        
+        section_file.write(section_file_contents.join("\n").toUtf8());
         section_file.close();
     }
 
@@ -231,7 +231,7 @@ int main(int argc, char **argv) {
         out.append("</toc>");
 
         out.append("<keywords></keywords>");
-        
+
         out.append("<files>");
         for (const QList<QString> &section : section_list) {
             const QString path = get_section_path(section);
@@ -251,7 +251,7 @@ int main(int argc, char **argv) {
 
     if (!open_qhp_success) {
         qCritical() << "Failed to open qhp file:" << qhp_file_path;
-        
+
         return 1;
     }
 
@@ -311,7 +311,7 @@ LineType get_line_type(const QList<QString> &line_list) {
 // it
 QList<QString> generate_body(const QList<QString> &line_list_const) {
     QList<QString> out;
-    
+
     QList<QString> line_list = line_list_const;
 
     // Remove all file links
@@ -346,7 +346,7 @@ QList<QString> generate_body(const QList<QString> &line_list_const) {
 
     for (int i = 0; i < out.size(); i++) {
         QString line = out[i];
-        
+
         // Change quotations into bold text
         line.replace("«", "<b>");
         line.replace("»", "</b>");
@@ -431,7 +431,6 @@ QList<QString> generate_UL(QList<QString> &line_list) {
 
     return out;
 }
-
 
 QList<QString> generate_UL_2(QList<QString> &line_list) {
     QList<QString> out;

@@ -38,16 +38,16 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <dirent.h>
 #include <krb5.h>
 #include <lber.h>
 #include <ldap.h>
 #include <libsmbclient.h>
 #include <resolv.h>
 #include <sasl/sasl.h>
-#include <uuid/uuid.h>
-#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <uuid/uuid.h>
 
 #include <QDebug>
 #include <QTextCodec>
@@ -62,7 +62,7 @@
 #define UNUSED(x) x
 #endif
 
-#define UNUSED_ARG(x) (void)(x)
+#define UNUSED_ARG(x) (void) (x)
 
 #define MAX_DN_LENGTH 1024
 #define MAX_PASSWORD_LENGTH 255
@@ -224,7 +224,7 @@ AdInterface::AdInterface() {
 
         return (void *) LDAP_OPT_X_TLS_NEVER;
     }();
-    
+
     ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, cert_strategy);
     if (result != LDAP_SUCCESS) {
         option_error("LDAP_OPT_X_TLS_REQUIRE_CERT");
@@ -269,7 +269,7 @@ AdInterface::AdInterface() {
     }();
 
     // Initialize SMB context
-    
+
     // NOTE: initialize only once, because otherwise
     // wouldn't be able to have multiple active
     // AdInterface's instances at the same time
@@ -829,7 +829,7 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
         const QString error = [this, dn]() {
             const bool wrong_ou_parent = [&]() {
                 const int ldap_result = d->get_ldap_result();
-                
+
                 const bool is_ou = dn.startsWith("OU=");
                 const QString parent = dn_get_parent(dn);
                 const bool bad_parent = parent.startsWith("CN=");
@@ -1553,7 +1553,7 @@ bool AdInterface::gpo_delete(const QString &dn, bool *deleted_object) {
 
         attribute_replace_string(linked_object.get_dn(), ATTRIBUTE_GPLINK, gplink.to_string());
     }
-    
+
     const bool total_success = (delete_gpc_success && delete_gpt_success);
 
     if (total_success) {
@@ -1578,7 +1578,7 @@ QString AdInterface::filesys_path_to_smb_path(const QString &filesys_path) const
     // NOTE: sysvol paths created by windows have this weird
     // capitalization and smbclient does NOT like it
     out.replace("\\SysVol\\", "\\sysvol\\");
-    
+
     out.replace("\\", "/");
 
     const int sysvol_i = out.indexOf("/sysvol/");
@@ -1612,7 +1612,7 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
 
         if (out.isEmpty()) {
             d->error_message(error_context, tr("Failed to get GPT security descriptor."));
-            
+
             return QString();
         }
 
@@ -1642,7 +1642,7 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
                 break;
             } else {
                 const bool buffer_is_too_small = (errno == ERANGE);
-                
+
                 if (buffer_is_too_small) {
                     // Error occured, but it is due to
                     // insufficient buffer size, so try
@@ -1787,7 +1787,7 @@ bool AdInterface::gpo_get_sysvol_version(const AdObject &gpc_object, int *versio
             return -1;
         }
 
-        return out; 
+        return out;
     }();
 
     if (version >= 0) {
@@ -1912,7 +1912,7 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
         *ok = true;
 
         const bool is_dir = S_ISDIR(filestat.st_mode);
-        
+
         return is_dir;
     }
 }
@@ -1945,13 +1945,13 @@ bool AdInterface::logged_in_as_admin() {
     if (user_dn.isEmpty()) {
         return false;
     }
-    
+
     const bool user_is_admin = [&]() {
         const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(d->domain_head);
 
         const AdObject domain_admins_object = search_object(domain_admins_dn);
         const QList<QString> member_list = domain_admins_object.get_strings(ATTRIBUTE_MEMBER);
-        
+
         const bool out = member_list.contains(user_dn);
 
         return out;
@@ -2108,25 +2108,25 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
 
         switch (interact->id) {
             case SASL_CB_GETREALM:
-            if (defaults)
-                dflt = defaults->realm;
-            break;
+                if (defaults)
+                    dflt = defaults->realm;
+                break;
             case SASL_CB_AUTHNAME:
-            if (defaults)
-                dflt = defaults->authcid;
-            break;
+                if (defaults)
+                    dflt = defaults->authcid;
+                break;
             case SASL_CB_PASS:
-            if (defaults)
-                dflt = defaults->passwd;
-            break;
+                if (defaults)
+                    dflt = defaults->passwd;
+                break;
             case SASL_CB_USER:
-            if (defaults)
-                dflt = defaults->authzid;
-            break;
+                if (defaults)
+                    dflt = defaults->authzid;
+                break;
             case SASL_CB_NOECHOPROMPT:
-            break;
+                break;
             case SASL_CB_ECHOPROMPT:
-            break;
+                break;
         }
 
         if (dflt && !*dflt) {
@@ -2155,7 +2155,7 @@ QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format
 
     struct security_descriptor *gpt_sd;
     const NTSTATUS create_sd_status = gp_create_gpt_security_descriptor(mem_ctx, gpc_sd, &gpt_sd);
-    
+
     if (!NT_STATUS_IS_OK(create_sd_status)) {
         qDebug() << "Failed to create gpt sd";
         talloc_free(mem_ctx);
@@ -2164,7 +2164,7 @@ QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format
     }
 
     ad_security_sort_dacl(gpt_sd);
-    
+
     QList<QString> all_elements;
 
     all_elements.append(QString("REVISION:%1").arg(gpt_sd->revision));

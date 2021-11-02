@@ -39,7 +39,7 @@ class QObject;
 // setting names are unique
 // const QString SETTING = "SETTING";
 #define DEFINE_SETTING(SETTING) \
-const QString SETTING = #SETTING;
+    const QString SETTING = #SETTING;
 
 // Widget state
 DEFINE_SETTING(SETTING_main_window_state);

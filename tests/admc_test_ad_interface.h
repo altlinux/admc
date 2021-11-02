@@ -28,7 +28,7 @@ class ADMCTestAdInterface : public ADMCTest {
 
 private slots:
     void cleanup() override;
-    
+
     void create_and_gpo_delete();
     void gpo_check_perms();
 

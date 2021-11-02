@@ -47,7 +47,7 @@ class QMap;
 template <typename K, typename T>
 class QHash;
 
-#define UNUSED_ARG(x) (void)(x)
+#define UNUSED_ARG(x) (void) (x)
 
 #define debug_print(a, args...) printf("%s(%s:%d) " a, __func__, __FILE__, __LINE__, ##args)
 #define trace(a, args...) debug_print(a "\n", ##args)

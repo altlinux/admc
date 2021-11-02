@@ -22,8 +22,8 @@
 
 #include "edits/gpoptions_edit.h"
 
-#include <QFormLayout>
 #include <QCheckBox>
+#include <QFormLayout>
 
 #define TEST_ATTRIBUTE ATTRIBUTE_FIRST_NAME
 

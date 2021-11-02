@@ -31,7 +31,7 @@ enum OctetDisplayFormat {
 };
 
 namespace Ui {
-    class OctetEditor;
+class OctetEditor;
 }
 
 class OctetEditor final : public AttributeEditor {

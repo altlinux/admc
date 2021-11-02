@@ -33,7 +33,7 @@ class QStandardItemModel;
 class QSortFilterProxyModel;
 
 namespace Ui {
-    class SelectContainerDialog;
+class SelectContainerDialog;
 }
 
 enum ContainerRole {

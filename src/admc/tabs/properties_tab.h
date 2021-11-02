@@ -51,7 +51,6 @@ signals:
 
 protected:
     QList<AttributeEdit *> edits;
-
 };
 
 #endif /* PROPERTIES_TAB_H */

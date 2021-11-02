@@ -84,7 +84,7 @@ void ConnectionOptionsDialog::reject() {
 void ConnectionOptionsDialog::reset() {
     const int port = settings_get_variant(SETTING_port).toInt();
     ui->port_spinbox->setValue(port);
-    
+
     const bool sasl_nocanon = settings_get_bool(SETTING_sasl_nocanon);
     ui->canonize_check->setChecked(sasl_nocanon);
 

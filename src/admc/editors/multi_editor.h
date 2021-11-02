@@ -32,7 +32,7 @@ enum MultiEditorType {
 };
 
 namespace Ui {
-    class MultiEditor;
+class MultiEditor;
 }
 
 class MultiEditor final : public AttributeEditor {

@@ -26,7 +26,7 @@
 class QStandardItemModel;
 
 namespace Ui {
-    class SelectPolicyDialog;
+class SelectPolicyDialog;
 }
 
 class SelectPolicyDialog final : public QDialog {

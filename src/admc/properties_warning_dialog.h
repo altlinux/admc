@@ -36,7 +36,7 @@ enum PropertiesWarningType {
 };
 
 namespace Ui {
-    class PropertiesWarningDialog;
+class PropertiesWarningDialog;
 }
 
 class PropertiesWarningDialog final : public QDialog {

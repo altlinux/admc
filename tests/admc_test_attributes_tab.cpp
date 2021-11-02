@@ -29,11 +29,11 @@
 #include <QDialog>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 #include <QString>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QSortFilterProxyModel>
 
 Q_DECLARE_METATYPE(AttributeFilter)
 

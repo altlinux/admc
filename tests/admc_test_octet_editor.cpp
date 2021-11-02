@@ -23,8 +23,8 @@
 #include "editors/octet_editor.h"
 #include "editors/ui_octet_editor.h"
 
-#include <QPlainTextEdit>
 #include <QComboBox>
+#include <QPlainTextEdit>
 
 const QList<QByteArray> value_bytes = {QByteArray("12345")};
 
@@ -82,7 +82,7 @@ void ADMCTestOctetEditor::handle_empty_value() {
     QFETCH_GLOBAL(QString, value);
 
     edit->set_value_list({});
-    
+
     // Check that empty value correctly loads and is
     // displayed as empty string
     format_combo->setCurrentIndex(index);
@@ -102,7 +102,7 @@ void ADMCTestOctetEditor::handle_incorrect_input() {
     QFETCH_GLOBAL(QString, value);
 
     edit->set_value_list({});
-    
+
     text_edit->setPlainText("");
 
     format_combo->setCurrentIndex(index);

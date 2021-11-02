@@ -26,8 +26,8 @@
 
 #include <QCheckBox>
 #include <QFormLayout>
-#include <QMap>
 #include <QGroupBox>
+#include <QMap>
 
 AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {

@@ -22,24 +22,24 @@
 #include "ui_policy_results_widget.h"
 
 #include "adldap.h"
+#include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
 #include "gplink.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "settings.h"
-#include "console_impls/item_type.h"
 
 #include <QAction>
 #include <QHeaderView>
 #include <QMenu>
+#include <QMessageBox>
 #include <QModelIndex>
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QMessageBox>
 
 enum PolicyResultsColumn {
     PolicyResultsColumn_Name,
@@ -82,12 +82,12 @@ PolicyResultsWidget::PolicyResultsWidget(QWidget *parent)
 
     model = new QStandardItemModel(0, PolicyResultsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
-    {
-        {PolicyResultsColumn_Name, tr("Location")},
-        {PolicyResultsColumn_Enforced, tr("Enforced")},
-        {PolicyResultsColumn_Disabled, tr("Disabled")},
-        {PolicyResultsColumn_Path, tr("Path")},
-    });
+        {
+            {PolicyResultsColumn_Name, tr("Location")},
+            {PolicyResultsColumn_Enforced, tr("Enforced")},
+            {PolicyResultsColumn_Disabled, tr("Disabled")},
+            {PolicyResultsColumn_Path, tr("Path")},
+        });
 
     ui->view->set_model(model);
 
@@ -98,12 +98,12 @@ PolicyResultsWidget::PolicyResultsWidget(QWidget *parent)
 
     const QVariant state = settings_get_variant(SETTING_policy_results_state);
     ui->view->restore_state(state,
-    {
-        PolicyResultsColumn_Name,
-        PolicyResultsColumn_Enforced,
-        PolicyResultsColumn_Disabled,
-        PolicyResultsColumn_Path,
-    });
+        {
+            PolicyResultsColumn_Name,
+            PolicyResultsColumn_Enforced,
+            PolicyResultsColumn_Disabled,
+            PolicyResultsColumn_Path,
+        });
 
     connect(
         model, &QStandardItemModel::itemChanged,

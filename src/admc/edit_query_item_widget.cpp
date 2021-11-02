@@ -22,8 +22,8 @@
 #include "ui_edit_query_item_widget.h"
 
 #include "ad_filter.h"
-#include "globals.h"
 #include "filter_widget/filter_dialog.h"
+#include "globals.h"
 
 EditQueryItemWidget::EditQueryItemWidget(QWidget *parent)
 : QWidget(parent) {

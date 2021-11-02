@@ -22,14 +22,13 @@
 
 #include "utils.h"
 
+#include <QHelpContentModel>
 #include <QHelpContentWidget>
 #include <QHelpEngine>
 #include <QHelpIndexWidget>
-#include <QHelpContentModel>
 
 HelpBrowser::HelpBrowser(QWidget *parent)
 : QTextBrowser(parent) {
-    
 }
 
 void HelpBrowser::init(QHelpEngine *help_engine_arg) {
@@ -44,7 +43,7 @@ void HelpBrowser::init(QHelpEngine *help_engine_arg) {
     connect(
         selection_model, &QItemSelectionModel::currentChanged,
         this, &HelpBrowser::on_content_clicked);
-    
+
     connect(
         help_engine->indexWidget(), &QHelpIndexWidget::linkActivated,
         this, QOverload<const QUrl &>::of(&HelpBrowser::setSource));
@@ -67,7 +66,7 @@ void HelpBrowser::on_content_clicked(const QModelIndex &index) {
         return;
     }
 
-    const QHelpContentModel *contentModel = qobject_cast<QHelpContentModel*>(content_widget->model());
+    const QHelpContentModel *contentModel = qobject_cast<QHelpContentModel *>(content_widget->model());
     if (contentModel == nullptr) {
         return;
     }

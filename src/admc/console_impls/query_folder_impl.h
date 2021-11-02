@@ -47,7 +47,7 @@ public:
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
-    
+
 private:
     QAction *new_action;
     QAction *edit_action;

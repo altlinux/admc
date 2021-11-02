@@ -21,9 +21,9 @@
 #include "status.h"
 
 #include "adldap.h"
+#include "error_log_dialog.h"
 #include "globals.h"
 #include "settings.h"
-#include "error_log_dialog.h"
 
 #include <QCoreApplication>
 #include <QDateTime>

@@ -31,7 +31,7 @@ class AdConfig;
 class SelectContainerDialog;
 
 namespace Ui {
-    class SelectBaseWidget;
+class SelectBaseWidget;
 }
 
 class SelectBaseWidget final : public QWidget {

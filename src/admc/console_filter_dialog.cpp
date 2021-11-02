@@ -101,7 +101,7 @@ QVariant ConsoleFilterDialog::save_state() const {
 
     for (const QString &state_name : button_state_name_map.keys()) {
         QRadioButton *button = button_state_name_map[state_name];
-   
+
         state[state_name] = button->isChecked();
     }
 

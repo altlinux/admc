@@ -26,7 +26,7 @@
 class EditQueryItemWidget;
 
 namespace Ui {
-    class CreateQueryItemDialog;
+class CreateQueryItemDialog;
 }
 
 class CreateQueryItemDialog : public QDialog {

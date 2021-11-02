@@ -30,7 +30,7 @@
 #include <QWidget>
 
 namespace Ui {
-    class TabWidget;
+class TabWidget;
 }
 
 class TabWidget final : public QWidget {

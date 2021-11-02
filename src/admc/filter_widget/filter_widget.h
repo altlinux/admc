@@ -33,7 +33,7 @@ class FilterWidgetTab;
 class AdConfig;
 
 namespace Ui {
-    class FilterWidget;
+class FilterWidget;
 }
 
 class FilterWidget final : public QWidget {
@@ -41,7 +41,7 @@ class FilterWidget final : public QWidget {
 
 public:
     Ui::FilterWidget *ui;
-    
+
     FilterWidget(QWidget *parent = nullptr);
     ~FilterWidget();
 

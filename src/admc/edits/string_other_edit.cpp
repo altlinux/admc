@@ -32,7 +32,7 @@ StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_bu
 : AttributeEdit(edits_out, parent)
 , other_attribute(other_attribute_arg) {
     main_edit = new StringEdit(line_edit_arg, main_attribute, nullptr, parent);
-    
+
     connect(
         main_edit, &AttributeEdit::edited,
         this, &AttributeEdit::edited);

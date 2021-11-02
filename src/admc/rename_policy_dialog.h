@@ -32,7 +32,7 @@
 class QPushButton;
 
 namespace Ui {
-    class RenamePolicyDialog;
+class RenamePolicyDialog;
 }
 
 class RenamePolicyDialog final : public QDialog {
@@ -54,7 +54,7 @@ private:
     QString target_old_name;
     QPushButton *ok_button;
     QPushButton *reset_button;
-    
+
     void on_edited();
     void reset();
 };

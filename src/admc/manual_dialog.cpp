@@ -26,6 +26,8 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
+#include <QFileInfo>
 #include <QHelpContentWidget>
 #include <QHelpEngine>
 #include <QHelpIndexWidget>
@@ -33,8 +35,6 @@
 #include <QStandardPaths>
 #include <QTabWidget>
 #include <QVBoxLayout>
-#include <QFileInfo>
-#include <QDir>
 
 ManualDialog::ManualDialog(QWidget *parent)
 : QDialog(parent) {

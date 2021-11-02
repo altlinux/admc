@@ -24,7 +24,7 @@
 #include "tabs/properties_tab.h"
 
 namespace Ui {
-    class ProfileTab;
+class ProfileTab;
 }
 
 class ProfileTab final : public PropertiesTab {

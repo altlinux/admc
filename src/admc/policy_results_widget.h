@@ -33,7 +33,7 @@ class QMenu;
 class ResultsView;
 
 namespace Ui {
-    class PolicyResultsWidget;
+class PolicyResultsWidget;
 }
 
 class PolicyResultsWidget final : public QWidget {
@@ -48,7 +48,7 @@ public:
     // Loads links for this policy. Nothing is done if given
     // index is not a policy.
     void update(const QModelIndex &index);
-    
+
     void update(const QString &gpo);
 
     ResultsView *get_view() const;

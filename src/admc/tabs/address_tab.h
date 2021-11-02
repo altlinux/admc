@@ -24,7 +24,7 @@
 #include "tabs/properties_tab.h"
 
 namespace Ui {
-    class AddressTab;
+class AddressTab;
 }
 
 // Address related attributes

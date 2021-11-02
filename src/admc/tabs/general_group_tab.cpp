@@ -21,12 +21,12 @@
 #include "tabs/general_group_tab.h"
 #include "tabs/ui_general_group_tab.h"
 
-#include "tabs/general_other_tab.h"
 #include "adldap.h"
-#include "edits/string_edit.h"
-#include "edits/sam_name_edit.h"
 #include "edits/group_scope_edit.h"
 #include "edits/group_type_edit.h"
+#include "edits/sam_name_edit.h"
+#include "edits/string_edit.h"
+#include "tabs/general_other_tab.h"
 
 GeneralGroupTab::GeneralGroupTab(const AdObject &object) {
     ui = new Ui::GeneralGroupTab();

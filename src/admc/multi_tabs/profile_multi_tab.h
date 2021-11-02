@@ -24,7 +24,7 @@
 #include "multi_tabs/properties_multi_tab.h"
 
 namespace Ui {
-    class ProfileMultiTab;
+class ProfileMultiTab;
 }
 
 class ProfileMultiTab final : public PropertiesMultiTab {

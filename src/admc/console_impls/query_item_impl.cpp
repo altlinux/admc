@@ -21,16 +21,16 @@
 #include "console_impls/query_item_impl.h"
 
 #include "adldap.h"
+#include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/query_folder_impl.h"
+#include "console_widget/results_view.h"
+#include "create_query_item_dialog.h"
+#include "edit_query_item_dialog.h"
+#include "edit_query_item_widget.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
-#include "create_query_item_dialog.h"
-#include "edit_query_item_dialog.h"
-#include "console_impls/item_type.h"
-#include "console_widget/results_view.h"
-#include "edit_query_item_widget.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -134,7 +134,7 @@ QSet<StandardAction> QueryItemImpl::get_standard_actions(const QModelIndex &inde
     if (can_refresh && single_selection) {
         out.insert(StandardAction_Refresh);
     }
-    
+
     return out;
 }
 
@@ -259,7 +259,7 @@ void QueryItemImpl::on_edit_query_item() {
     const QModelIndex parent_index = index.parent();
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);
     edit_query_item_dialog->set_sibling_name_list(sibling_name_list);
-    
+
     EditQueryItemWidget *edit_widget = edit_query_item_dialog->edit_widget();
 
     QString name;

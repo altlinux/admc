@@ -21,17 +21,17 @@
 #include "console_impls/query_folder_impl.h"
 
 #include "adldap.h"
+#include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/query_item_impl.h"
-#include "globals.h"
-#include "settings.h"
-#include "utils.h"
+#include "console_widget/results_view.h"
 #include "create_query_folder_dialog.h"
 #include "create_query_item_dialog.h"
 #include "edit_query_folder_dialog.h"
-#include "console_impls/item_type.h"
-#include "console_widget/results_view.h"
 #include "edit_query_item_widget.h"
+#include "globals.h"
+#include "settings.h"
+#include "utils.h"
 
 #include <QFileDialog>
 #include <QJsonDocument>
@@ -49,7 +49,7 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
     copied_is_cut = false;
 
     set_results_view(new ResultsView(console_arg));
-    
+
     auto create_query_folder_action = new QAction(tr("Query folder"), this);
     auto create_query_item_action = new QAction(tr("Query item"), this);
 
@@ -170,7 +170,6 @@ void QueryFolderImpl::drop(const QList<QPersistentModelIndex> &dropped_list, con
     console_query_move(console, dropped_list, target);
 }
 
-
 QList<QAction *> QueryFolderImpl::get_all_custom_actions() const {
     QList<QAction *> out;
 
@@ -207,7 +206,7 @@ QSet<StandardAction> QueryFolderImpl::get_standard_actions(const QModelIndex &in
         out.insert(StandardAction_Copy);
         out.insert(StandardAction_Paste);
     }
-    
+
     return out;
 }
 

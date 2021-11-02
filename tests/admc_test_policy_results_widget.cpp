@@ -20,14 +20,14 @@
 
 #include "admc_test_policy_results_widget.h"
 
-#include "policy_results_widget.h"
-#include "console_widget/results_view.h"
 #include "ad_filter.h"
+#include "console_widget/results_view.h"
 #include "gplink.h"
+#include "policy_results_widget.h"
 #include "utils.h"
 
-#include <QTreeView>
 #include <QStandardItemModel>
+#include <QTreeView>
 
 // NOTE: unlike other tests, here we have to create the test
 // thing (gpo) once and reuse between tests because creating
@@ -107,7 +107,6 @@ void ADMCTestPolicyResultsWidget::load() {
     QCOMPARE(item_list[1]->checkState(), Qt::Checked);
     QCOMPARE(item_list[2]->checkState(), Qt::Unchecked);
     QCOMPARE(item_list[3]->text(), dn_get_parent_canonical(ou_dn));
-
 }
 
 QTEST_MAIN(ADMCTestPolicyResultsWidget)

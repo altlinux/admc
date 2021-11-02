@@ -21,8 +21,8 @@
 #ifndef ATTRIBUTES_TAB_PROXY_H
 #define ATTRIBUTES_TAB_PROXY_H
 
-#include <QSortFilterProxyModel>
 #include <QSet>
+#include <QSortFilterProxyModel>
 
 class AttributesTabFilterMenu;
 class AdObject;

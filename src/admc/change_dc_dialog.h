@@ -30,7 +30,7 @@
 #include "widget_state.h"
 
 namespace Ui {
-    class ChangeDCDialog;
+class ChangeDCDialog;
 }
 
 class ChangeDCDialog : public QDialog {

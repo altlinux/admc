@@ -28,7 +28,7 @@
 #include <QDialog>
 
 namespace Ui {
-    class ManualDialog;
+class ManualDialog;
 }
 
 class ManualDialog : public QDialog {
@@ -36,7 +36,7 @@ class ManualDialog : public QDialog {
 
 public:
     Ui::ManualDialog *ui;
-    
+
     ManualDialog(QWidget *parent);
     ~ManualDialog();
 };

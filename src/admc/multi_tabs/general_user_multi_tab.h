@@ -28,7 +28,7 @@
 #include "multi_tabs/properties_multi_tab.h"
 
 namespace Ui {
-    class GeneralUserMultiTab;
+class GeneralUserMultiTab;
 }
 
 class GeneralUserMultiTab final : public PropertiesMultiTab {

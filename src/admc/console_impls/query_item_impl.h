@@ -21,8 +21,8 @@
 #ifndef CONSOLE_QUERY_H
 #define CONSOLE_QUERY_H
 
-#include "console_widget/console_impl.h"
 #include "console_impls/my_console_role.h"
+#include "console_widget/console_impl.h"
 
 enum QueryItemRole {
     QueryItemRole_Description = MyConsoleRole_LAST + 1,
@@ -68,7 +68,7 @@ public:
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
-    
+
 private slots:
     void on_export();
 

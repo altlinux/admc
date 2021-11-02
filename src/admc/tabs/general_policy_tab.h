@@ -26,7 +26,7 @@
 class AdObject;
 
 namespace Ui {
-    class GeneralPolicyTab;
+class GeneralPolicyTab;
 }
 
 class GeneralPolicyTab final : public PropertiesTab {

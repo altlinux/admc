@@ -31,7 +31,7 @@
 #include <QDialog>
 
 namespace Ui {
-    class SelectWellKnownTrusteeDialog;
+class SelectWellKnownTrusteeDialog;
 }
 
 class SelectWellKnownTrusteeDialog final : public QDialog {

@@ -24,7 +24,7 @@
 #include <QDialog>
 
 namespace Ui {
-    class EditQueryFolderDialog;
+class EditQueryFolderDialog;
 }
 
 class EditQueryFolderDialog : public QDialog {

@@ -22,18 +22,18 @@
 #include "ui_find_widget.h"
 
 #include "adldap.h"
-#include "console_impls/object_impl.h"
 #include "console_impls/item_type.h"
-#include "console_impls/query_item_impl.h"
+#include "console_impls/object_impl.h"
 #include "console_impls/query_folder_impl.h"
+#include "console_impls/query_item_impl.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
 #include "search_thread.h"
 #include "settings.h"
 #include "utils.h"
 
-#include <QStandardItem>
 #include <QMenu>
+#include <QStandardItem>
 
 FindWidget::FindWidget(QWidget *parent)
 : QWidget(parent) {
@@ -97,14 +97,14 @@ FindWidget::FindWidget(QWidget *parent)
     head_item->setText(tr("Find results"));
 
     ui->console->set_scope_view_visible(false);
-    
+
     const QModelIndex head_index = head_item->index();
     ui->console->set_current_scope(head_index);
 
     connect(
         ui->find_button, &QPushButton::clicked,
         this, &FindWidget::find);
-   connect(
+    connect(
         ui->clear_button, &QPushButton::clicked,
         this, &FindWidget::on_clear_button);
 

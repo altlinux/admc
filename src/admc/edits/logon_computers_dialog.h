@@ -24,7 +24,7 @@
 #include <QDialog>
 
 namespace Ui {
-    class LogonComputersDialog;
+class LogonComputersDialog;
 }
 
 class LogonComputersDialog final : public QDialog {
@@ -40,8 +40,8 @@ public:
     QString get() const;
 
 private:
-    void on_add_button();  
-    void on_remove_button();  
+    void on_add_button();
+    void on_remove_button();
 };
 
 #endif /* LOGON_COMPUTERS_DIALOG_H */

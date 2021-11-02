@@ -23,8 +23,8 @@
 
 #include "adldap.h"
 #include "edits/datetime_edit.h"
-#include "edits/string_edit.h"
 #include "edits/protect_deletion_edit.h"
+#include "edits/string_edit.h"
 
 #include <QFormLayout>
 

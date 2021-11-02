@@ -29,7 +29,7 @@
 #include "multi_tabs/properties_multi_tab.h"
 
 namespace Ui {
-    class AccountMultiTab;
+class AccountMultiTab;
 }
 
 class AccountMultiTab final : public PropertiesMultiTab {

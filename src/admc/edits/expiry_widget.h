@@ -27,7 +27,7 @@ class AdInterface;
 class AdObject;
 
 namespace Ui {
-    class ExpiryWidget;
+class ExpiryWidget;
 }
 
 class ExpiryWidget final : public QWidget {

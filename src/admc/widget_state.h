@@ -26,7 +26,7 @@
  */
 
 class WidgetStatePrivate;
-template<typename>
+template <typename>
 class QList;
 class QWidget;
 

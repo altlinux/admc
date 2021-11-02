@@ -24,7 +24,7 @@
 #include "editors/attribute_editor.h"
 
 namespace Ui {
-    class BoolEditor;
+class BoolEditor;
 }
 
 class BoolEditor final : public AttributeEditor {

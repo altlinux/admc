@@ -26,7 +26,7 @@
 class SamNameEdit;
 
 namespace Ui {
-    class CreateComputerDialog;
+class CreateComputerDialog;
 }
 
 class CreateComputerDialog final : public CreateObjectDialog {

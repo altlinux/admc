@@ -20,8 +20,8 @@
 
 #include "edits/logon_hours_edit.h"
 
-#include "edits/logon_hours_dialog.h"
 #include "adldap.h"
+#include "edits/logon_hours_dialog.h"
 #include "utils.h"
 
 #include <QPushButton>

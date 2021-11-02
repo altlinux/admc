@@ -34,7 +34,7 @@ extern const QString CERT_STRATEGY_ALLOW;
 extern const QString CERT_STRATEGY_TRY;
 
 namespace Ui {
-    class ConnectionOptionsDialog;
+class ConnectionOptionsDialog;
 }
 
 class ConnectionOptionsDialog : public QDialog {
@@ -49,7 +49,7 @@ public:
     void accept() override;
     void reject() override;
 
-private:    
+private:
     void reset();
     void restore_defaults();
 };

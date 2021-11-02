@@ -24,8 +24,8 @@
 #include "adldap.h"
 #include "globals.h"
 #include "properties_dialog.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
 #include <algorithm>
 
@@ -58,7 +58,7 @@ GpoLinksTab::GpoLinksTab() {
 }
 
 GpoLinksTab::~GpoLinksTab() {
-    settings_save_header_state(SETTING_gpo_links_tab_header_state, ui->view->header());   
+    settings_save_header_state(SETTING_gpo_links_tab_header_state, ui->view->header());
 
     delete ui;
 }

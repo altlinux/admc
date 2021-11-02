@@ -20,11 +20,11 @@
 
 #include "widget_state.h"
 
-#include <QRadioButton>
-#include <QLineEdit>
-#include <QListWidget>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QRadioButton>
 
 class WidgetStatePrivate final {
 public:
@@ -51,11 +51,11 @@ void WidgetState::save() {
     d->state.clear();
 
     for (QWidget *widget : d->widget_list) {
-        QRadioButton *radio_button = qobject_cast<QRadioButton*>(widget);
-        QLineEdit *line_edit = qobject_cast<QLineEdit*>(widget);
-        QListWidget *list_widget = qobject_cast<QListWidget*>(widget);
-        QCheckBox *check_box = qobject_cast<QCheckBox*>(widget);
-        QComboBox *combo = qobject_cast<QComboBox*>(widget);
+        QRadioButton *radio_button = qobject_cast<QRadioButton *>(widget);
+        QLineEdit *line_edit = qobject_cast<QLineEdit *>(widget);
+        QListWidget *list_widget = qobject_cast<QListWidget *>(widget);
+        QCheckBox *check_box = qobject_cast<QCheckBox *>(widget);
+        QComboBox *combo = qobject_cast<QComboBox *>(widget);
 
         if (radio_button != nullptr) {
             d->state[widget] = radio_button->isChecked();
@@ -73,11 +73,11 @@ void WidgetState::save() {
 
 void WidgetState::restore() {
     for (QWidget *widget : d->widget_list) {
-        QRadioButton *radio_button = qobject_cast<QRadioButton*>(widget);
-        QLineEdit *line_edit = qobject_cast<QLineEdit*>(widget);
-        QListWidget *list_widget = qobject_cast<QListWidget*>(widget);
-        QCheckBox *check_box = qobject_cast<QCheckBox*>(widget);
-        QComboBox *combo = qobject_cast<QComboBox*>(widget);
+        QRadioButton *radio_button = qobject_cast<QRadioButton *>(widget);
+        QLineEdit *line_edit = qobject_cast<QLineEdit *>(widget);
+        QListWidget *list_widget = qobject_cast<QListWidget *>(widget);
+        QCheckBox *check_box = qobject_cast<QCheckBox *>(widget);
+        QComboBox *combo = qobject_cast<QComboBox *>(widget);
 
         if (radio_button != nullptr) {
             radio_button->setChecked(d->state[widget].toBool());

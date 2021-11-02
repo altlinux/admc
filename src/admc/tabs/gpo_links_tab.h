@@ -33,7 +33,7 @@ class QStandardItemModel;
  */
 
 namespace Ui {
-    class GpoLinksTab;
+class GpoLinksTab;
 }
 
 class GpoLinksTab final : public PropertiesTab {

@@ -24,7 +24,7 @@
 #include <QDialog>
 
 namespace Ui {
-    class CreateQueryFolderDialog;
+class CreateQueryFolderDialog;
 }
 
 class CreateQueryFolderDialog : public QDialog {
@@ -38,7 +38,7 @@ public:
 
     QString name() const;
     QString description() const;
-    
+
     void set_sibling_name_list(const QList<QString> &list);
 
     void open() override;

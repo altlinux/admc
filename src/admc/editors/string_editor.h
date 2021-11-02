@@ -24,7 +24,7 @@
 #include "editors/attribute_editor.h"
 
 namespace Ui {
-    class StringEditor;
+class StringEditor;
 }
 
 class StringEditor final : public AttributeEditor {

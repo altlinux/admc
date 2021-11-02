@@ -30,7 +30,7 @@
 class ConsoleWidget;
 
 namespace Ui {
-    class FindObjectDialog;
+class FindObjectDialog;
 }
 
 class FindObjectDialog final : public QDialog {

@@ -68,7 +68,7 @@ QString Gplink::to_string() const {
     for (auto gpo : gpo_list) {
         // Convert gpo dn from lower case to gplink case
         // format
-        const QString gpo_case = [&]() {            
+        const QString gpo_case = [&]() {
             const QList<QString> rdn_list = gpo.split(",");
 
             QList<QString> rdn_list_case;
@@ -76,7 +76,7 @@ QString Gplink::to_string() const {
             for (const QString &rdn : rdn_list) {
                 const QString rdn_case = [&]() {
                     const QList<QString> attribute_value = rdn.split("=");
-                    
+
                     // Do no processing if data is malformed
                     if (attribute_value.size() != 2) {
                         return rdn;
@@ -199,7 +199,7 @@ void Gplink::move_down(const QString &gpo_case) {
 
 bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) const {
     const QString gpo = gpo_case.toLower();
-    
+
     if (!contains(gpo)) {
         return false;
     }
@@ -212,7 +212,7 @@ bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) cons
 
 void Gplink::set_option(const QString &gpo_case, const GplinkOption option, const bool value) {
     const QString gpo = gpo_case.toLower();
-    
+
     if (!contains(gpo)) {
         return;
     }

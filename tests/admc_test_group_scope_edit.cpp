@@ -22,12 +22,12 @@
 
 #include "edits/group_scope_edit.h"
 
-#include <QFormLayout>
 #include <QComboBox>
+#include <QFormLayout>
 
 void ADMCTestGroupScopeEdit::init() {
     ADMCTest::init();
-    
+
     combo = new QComboBox(parent_widget);
 
     edit = new GroupScopeEdit(combo, &edits, parent_widget);

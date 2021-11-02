@@ -23,9 +23,9 @@
 #include "edits/logon_hours_dialog.h"
 #include "edits/ui_logon_hours_dialog.h"
 
-#include <QTableView>
-#include <QStandardItemModel>
 #include <QRadioButton>
+#include <QStandardItemModel>
+#include <QTableView>
 
 void ADMCTestLogonHoursDialog::init() {
     ADMCTest::init();
@@ -90,7 +90,7 @@ void ADMCTestLogonHoursDialog::conversion_funs() {
 
 void ADMCTestLogonHoursDialog::load() {
     utc_time_button->setChecked(true);
-    
+
     dialog->load(test_bytes);
 
     const QList<QModelIndex> selected = selection_model->selectedIndexes();
@@ -156,7 +156,7 @@ void ADMCTestLogonHoursDialog::handle_timezone() {
             col -= HOURS_IN_DAY;
             row++;
         }
-    
+
         return QList<QModelIndex>({model->index(row, col)});
     }();
     const QList<QModelIndex> local_selected = selection_model->selectedIndexes();

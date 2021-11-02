@@ -64,7 +64,7 @@ void PasswordDialog::set_target(const QString &target_arg) {
 
         return out;
     }();
-    
+
     if (expired_check_enabled) {
         ui->expired_check->setChecked(true);
 

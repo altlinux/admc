@@ -24,32 +24,32 @@
 #include "adldap.h"
 #include "console_impls/object_impl.h"
 #include "globals.h"
+#include "properties_warning_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "tab_widget.h"
 #include "tabs/account_tab.h"
 #include "tabs/address_tab.h"
 #include "tabs/attributes_tab.h"
-#include "tabs/general_user_tab.h"
-#include "tabs/general_group_tab.h"
-#include "tabs/general_ou_tab.h"
+#include "tabs/delegation_tab.h"
 #include "tabs/general_computer_tab.h"
-#include "tabs/general_policy_tab.h"
+#include "tabs/general_group_tab.h"
 #include "tabs/general_other_tab.h"
+#include "tabs/general_ou_tab.h"
+#include "tabs/general_policy_tab.h"
+#include "tabs/general_user_tab.h"
 #include "tabs/gpo_links_tab.h"
 #include "tabs/group_policy_tab.h"
 #include "tabs/managed_by_tab.h"
 #include "tabs/membership_tab.h"
 #include "tabs/object_tab.h"
 #include "tabs/organization_tab.h"
+#include "tabs/os_tab.h"
 #include "tabs/profile_tab.h"
 #include "tabs/properties_tab.h"
 #include "tabs/security_tab.h"
 #include "tabs/telephones_tab.h"
-#include "tabs/os_tab.h"
-#include "tabs/delegation_tab.h"
 #include "utils.h"
-#include "properties_warning_dialog.h"
 
 #include <QAbstractItemView>
 #include <QAction>
@@ -126,7 +126,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     const QString title = [&]() {
         const QString target_name = dn_get_name(target_arg);
-        
+
         if (!target_name.isEmpty()) {
             return QString(tr("%1 Properties")).arg(target_name);
         } else {
@@ -226,7 +226,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     }
 
     settings_setup_dialog_geometry(SETTING_properties_dialog_geometry, this);
-    
+
     connect(
         apply_button, &QPushButton::clicked,
         this, &PropertiesDialog::apply);
@@ -288,7 +288,7 @@ void PropertiesDialog::apply() {
     if (ad_failed(ad)) {
         return;
     }
-    
+
     const bool apply_success = apply_internal(ad);
 
     ad.clear_messages();

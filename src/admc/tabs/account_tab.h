@@ -26,7 +26,7 @@
 class AdInterface;
 
 namespace Ui {
-    class AccountTab;
+class AccountTab;
 }
 
 class AccountTab final : public PropertiesTab {

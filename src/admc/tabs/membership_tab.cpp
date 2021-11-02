@@ -26,8 +26,8 @@
 #include "globals.h"
 #include "properties_dialog.h"
 #include "select_object_dialog.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
 #include <QDebug>
 #include <QStandardItemModel>
@@ -105,7 +105,7 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
 }
 
 MembershipTab::~MembershipTab() {
-    settings_save_header_state(SETTING_membership_tab_header_state, ui->view->header());   
+    settings_save_header_state(SETTING_membership_tab_header_state, ui->view->header());
 
     delete ui;
 }

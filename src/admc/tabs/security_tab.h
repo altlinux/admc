@@ -39,7 +39,7 @@ enum AceColumn {
 };
 
 namespace Ui {
-    class SecurityTab;
+class SecurityTab;
 }
 
 class SecurityTab final : public PropertiesTab {

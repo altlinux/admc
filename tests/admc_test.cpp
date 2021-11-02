@@ -22,24 +22,25 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl.h"
+#include "edits/attribute_edit.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/filter_widget_simple_tab.h"
 #include "filter_widget/select_base_widget.h"
+#include "filter_widget/ui_filter_widget.h"
+#include "filter_widget/ui_filter_widget_simple_tab.h"
+#include "filter_widget/ui_select_base_widget.h"
+#include "find_widget.h"
 #include "globals.h"
 #include "select_container_dialog.h"
 #include "select_object_advanced_dialog.h"
 #include "select_object_dialog.h"
-#include "utils.h"
-#include "edits/attribute_edit.h"
-#include "find_widget.h"
-#include "ui_select_object_dialog.h"
 #include "ui_find_widget.h"
-#include "ui_select_object_advanced_dialog.h"
-#include "filter_widget/ui_filter_widget.h"
-#include "filter_widget/ui_filter_widget_simple_tab.h"
-#include "filter_widget/ui_select_base_widget.h"
 #include "ui_select_container_dialog.h"
+#include "ui_select_object_advanced_dialog.h"
+#include "ui_select_object_dialog.h"
+#include "utils.h"
 
+#include <QFormLayout>
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QModelIndex>
@@ -47,7 +48,6 @@
 #include <QTest>
 #include <QTimer>
 #include <QTreeView>
-#include <QFormLayout>
 
 #define PRINT_FOCUS_WIDGET_BEFORE_TAB false
 #define PRINT_FOCUS_WIDGET_AFTER_TAB false

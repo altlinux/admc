@@ -23,9 +23,9 @@
 
 #include "admc_test.h"
 
+#include "settings.h"
 #include "tabs/attributes_tab.h"
 #include "tabs/attributes_tab_filter_menu.h"
-#include "settings.h"
 
 class QStandardItemModel;
 class QSortFilterProxyModel;

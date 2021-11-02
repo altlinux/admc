@@ -47,7 +47,7 @@ enum Weekday {
 #define LOGON_HOURS_SIZE (7 * 3)
 
 namespace Ui {
-    class LogonHoursDialog;
+class LogonHoursDialog;
 }
 
 class LogonHoursDialog : public QDialog {

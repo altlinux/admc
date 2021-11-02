@@ -28,7 +28,7 @@
 #include <QDialog>
 
 namespace Ui {
-    class ChangelogDialog;
+class ChangelogDialog;
 }
 
 class ChangelogDialog : public QDialog {

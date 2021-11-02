@@ -26,8 +26,8 @@
 #include "globals.h"
 #include "properties_dialog.h"
 
-#include <QPushButton>
 #include <QLineEdit>
+#include <QPushButton>
 
 void ADMCTestManagerEdit::init() {
     ADMCTest::init();

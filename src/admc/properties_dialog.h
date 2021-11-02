@@ -38,7 +38,7 @@ class AdInterface;
 class PropertiesWarningDialog;
 
 namespace Ui {
-    class PropertiesDialog;
+class PropertiesDialog;
 }
 
 class PropertiesDialog final : public QDialog {

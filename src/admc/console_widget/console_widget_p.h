@@ -25,8 +25,8 @@
  * Private header for ConsoleWidget.
  */
 
-#include "console_widget/results_view.h"
 #include "console_widget/console_widget.h"
+#include "console_widget/results_view.h"
 
 #include <QCoreApplication>
 #include <QSet>
@@ -43,9 +43,9 @@ class ConsoleImpl;
 enum ConsoleRole {
     // Determines whether scope item was fetched
     ConsoleRole_WasFetched = Qt::UserRole + 1,
-    
+
     ConsoleRole_IsScope = Qt::UserRole + 3,
-    
+
     // NOTE: don't go above ConsoleRole_Type and
     // ConsoleRole_LAST (defined in public header)
 

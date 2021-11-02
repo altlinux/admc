@@ -20,13 +20,13 @@
 #include "tabs/security_tab.h"
 #include "tabs/ui_security_tab.h"
 
-#include "select_well_known_trustee_dialog.h"
 #include "ad_security.h"
 #include "adldap.h"
 #include "globals.h"
 #include "select_object_dialog.h"
-#include "utils.h"
+#include "select_well_known_trustee_dialog.h"
 #include "settings.h"
+#include "utils.h"
 
 #include "samba/ndr_security.h"
 
@@ -166,7 +166,7 @@ SecurityTab::SecurityTab() {
 }
 
 SecurityTab::~SecurityTab() {
-    settings_save_header_state(SETTING_security_tab_header_state, ui->ace_view->header());   
+    settings_save_header_state(SETTING_security_tab_header_state, ui->ace_view->header());
 
     delete ui;
 }
@@ -199,7 +199,7 @@ void SecurityTab::load_trustee_acl() {
     if (!current_index.isValid()) {
         return;
     }
-    
+
     apply_current_state_to_items();
 }
 
@@ -294,7 +294,7 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
     }
 
     bool total_success = true;
- 
+
     total_success &= attribute_replace_security_descriptor(&ad, target, permission_state_map);
 
     original_permission_state_map = permission_state_map;
@@ -428,7 +428,7 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
         item->setText(name);
         item->setData(sid, TrusteeItemRole_Sid);
         trustee_model->appendRow(item);
-        
+
         added_anything = true;
     }
 

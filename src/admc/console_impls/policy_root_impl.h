@@ -21,8 +21,8 @@
 #ifndef POLICY_ROOT_IMPL_H
 #define POLICY_ROOT_IMPL_H
 
-#include "console_widget/console_widget.h"
 #include "console_widget/console_impl.h"
+#include "console_widget/console_widget.h"
 
 class QStandardItem;
 class AdObject;
@@ -45,7 +45,7 @@ public:
     QList<QAction *> get_all_custom_actions() const override;
     QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
-    
+
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
 

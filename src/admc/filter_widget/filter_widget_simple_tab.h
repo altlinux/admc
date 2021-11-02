@@ -30,7 +30,7 @@
 class AdConfig;
 
 namespace Ui {
-    class FilterWidgetSimpleTab;
+class FilterWidgetSimpleTab;
 }
 
 class FilterWidgetSimpleTab final : public FilterWidgetTab {

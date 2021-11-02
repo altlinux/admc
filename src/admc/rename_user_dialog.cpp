@@ -22,10 +22,10 @@
 #include "ui_rename_user_dialog.h"
 
 #include "adldap.h"
-#include "utils.h"
-#include "edits/string_edit.h"
 #include "edits/sam_name_edit.h"
+#include "edits/string_edit.h"
 #include "edits/upn_edit.h"
+#include "utils.h"
 
 RenameUserDialog::RenameUserDialog(QWidget *parent)
 : RenameObjectDialog(parent) {
