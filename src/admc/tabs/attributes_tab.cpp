@@ -50,7 +50,7 @@ AttributesTab::AttributesTab() {
     {
         {AttributesColumn_Name, tr("Name")},
         {AttributesColumn_Value, tr("Value")},
-        {AttributesColumn_Type, tr("Type")},
+        {AttributesColumn_Type, tr("Type")}
     });
 
     auto filter_menu = new AttributesTabFilterMenu(this);

@@ -231,8 +231,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_item(const int type, const QMo
     const QList<QStandardItem *> row = [&]() {
         QList<QStandardItem *> out;
         
-        const int column_count =
-        [&]() {
+        const int column_count = [&]() {
             if (parent_item == d->model->invisibleRootItem()) {
                 return 1;
             } else {

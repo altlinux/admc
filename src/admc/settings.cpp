@@ -33,14 +33,15 @@ const QHash<QString, bool> bool_setting_default_map = {
     {SETTING_confirm_actions, true},
     {SETTING_dev_mode, false},
     {SETTING_show_non_containers_in_console_tree, false},
-    {SETTING_last_name_before_first_name, []() {
-        const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
-        if (locale_is_russian) {
-            return true;
-        } else {
-            return false;
-        }
-    }()},
+    {SETTING_last_name_before_first_name,
+        []() {
+            const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
+            if (locale_is_russian) {
+                return true;
+            } else {
+                return false;
+            }
+        }()},
     {SETTING_show_console_tree, true},
     {SETTING_show_results_header, true},
     {SETTING_log_searches, false},
