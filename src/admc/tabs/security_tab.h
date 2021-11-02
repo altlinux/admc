@@ -29,6 +29,7 @@
 class QStandardItemModel;
 class QStandardItem;
 class QListWidget;
+class SelectWellKnownTrusteeDialog;
 
 enum AceColumn {
     AceColumn_Name,
@@ -83,25 +84,14 @@ private:
     QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
     bool ignore_item_changed_signal;
     bool is_policy;
+    SelectWellKnownTrusteeDialog *select_well_known_trustee_dialog;
 
     void on_item_changed(QStandardItem *item);
     void on_add_trustee_button();
-    void on_add_well_known_trustee_button();
     void on_remove_trustee_button();
     void apply_current_state_to_items();
     void add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad);
-};
-
-class SelectWellKnownTrusteeDialog final : public QDialog {
-    Q_OBJECT
-
-public:
-    SelectWellKnownTrusteeDialog(QWidget *parent);
-
-    QList<QByteArray> get_selected() const;
-
-private:
-    Ui::SelectWellKnownTrusteeDialog *ui;
+    void on_select_well_known_trustee_dialog_accepted();
 };
 
 #endif /* SECURITY_TAB_H */

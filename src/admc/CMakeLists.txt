@@ -108,6 +108,7 @@ set(ADMC_SOURCES
     tabs/security_tab.cpp
     tabs/os_tab.cpp
     tabs/delegation_tab.cpp
+    tabs/select_well_known_trustee_dialog.cpp
 
     multi_tabs/properties_multi_tab.cpp
     multi_tabs/general_user_multi_tab.cpp

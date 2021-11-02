@@ -19,8 +19,8 @@
 
 #include "tabs/security_tab.h"
 #include "tabs/ui_security_tab.h"
-#include "tabs/ui_select_trustee_dialog.h"
 
+#include "select_well_known_trustee_dialog.h"
 #include "ad_security.h"
 #include "adldap.h"
 #include "globals.h"
@@ -82,6 +82,8 @@ QHash<AcePermission, QString> SecurityTab::ace_permission_to_name_map() {
 SecurityTab::SecurityTab() {
     ui = new Ui::SecurityTab();
     ui->setupUi(this);
+
+    select_well_known_trustee_dialog = new SelectWellKnownTrusteeDialog(this);
 
     ignore_item_changed_signal = false;
 
@@ -150,10 +152,13 @@ SecurityTab::SecurityTab() {
         this, &SecurityTab::on_add_trustee_button);
     connect(
         ui->add_well_known_trustee_button, &QAbstractButton::clicked,
-        this, &SecurityTab::on_add_well_known_trustee_button);
+        select_well_known_trustee_dialog, &QDialog::open);
     connect(
         ui->remove_trustee_button, &QAbstractButton::clicked,
         this, &SecurityTab::on_remove_trustee_button);
+    connect(
+        select_well_known_trustee_dialog, &QDialog::accepted,
+        this, &SecurityTab::on_select_well_known_trustee_dialog_accepted);
 }
 
 SecurityTab::~SecurityTab() {
@@ -331,25 +336,6 @@ void SecurityTab::on_add_trustee_button() {
     dialog->open();
 }
 
-void SecurityTab::on_add_well_known_trustee_button() {
-    auto dialog = new SelectWellKnownTrusteeDialog(this);
-
-    QObject::connect(
-        dialog, &QDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            const QList<QByteArray> selected_list = dialog->get_selected();
-
-            add_trustees(selected_list, ad);
-        });
-
-    dialog->open();
-}
-
 void SecurityTab::on_remove_trustee_button() {
     QItemSelectionModel *selection_model = ui->trustee_view->selectionModel();
     const QList<QPersistentModelIndex> selected_list = persistent_index_list(selection_model->selectedRows());
@@ -452,34 +438,13 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
     }
 }
 
-SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
-: QDialog(parent) {
-    ui = new Ui::SelectWellKnownTrusteeDialog();
-    ui->setupUi(this);
-
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    for (const QString &sid_string : well_known_sid_list) {
-        auto item = new QListWidgetItem();
-
-        const QByteArray sid_bytes = sid_string_to_bytes(sid_string); 
-        item->setData(Qt::UserRole, sid_bytes);
-
-        const QString name = ad_security_get_well_known_trustee_name(sid_bytes);
-        item->setText(name);
-
-        ui->list->addItem(item);
-    }
-}
-
-QList<QByteArray> SelectWellKnownTrusteeDialog::get_selected() const {
-    QList<QByteArray> out;
-
-    const QList<QListWidgetItem *> selected = ui->list->selectedItems();
-    for (QListWidgetItem *item : selected) {
-        const QByteArray sid = item->data(Qt::UserRole).toByteArray();
-        out.append(sid);
+void SecurityTab::on_select_well_known_trustee_dialog_accepted() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
     }
 
-    return out;
+    const QList<QByteArray> trustee_list = select_well_known_trustee_dialog->get_selected();
+
+    add_trustees(trustee_list, ad);
 }
