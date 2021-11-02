@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "globals.h"
 #include "settings.h"
+#include "error_log_dialog.h"
 
 #include <QCoreApplication>
 #include <QDateTime>
@@ -39,8 +40,6 @@
 void Status::init(QStatusBar *statusbar, QTextEdit *message_log) {
     m_status_bar = statusbar;
     m_message_log = message_log;
-
-    
 }
 
 void Status::add_message(const QString &msg, const StatusType &type) {
@@ -140,28 +139,10 @@ void error_log(const QList<QString> error_list, QWidget *parent) {
         return;
     }
 
-    auto dialog = new QDialog(parent);
-    dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors Occured"));
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->setMinimumWidth(600);
+    auto error_log_dialog = new ErrorLogDialog(parent);
 
     const QString errors_text = error_list.join("\n");
-
-    auto errors_display = new QPlainTextEdit();
-    errors_display->setPlainText(errors_text);
-    errors_display->setReadOnly(true);
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Close);
-
-    auto layout = new QVBoxLayout();
-    dialog->setLayout(layout);
-    layout->addWidget(errors_display);
-    layout->addWidget(button_box);
-
-    QObject::connect(
-        button_box, &QDialogButtonBox::rejected,
-        dialog, &QDialog::reject);
-
-    dialog->open();
+    error_log_dialog->set_text(errors_text);
+    error_log_dialog->setAttribute(Qt::WA_DeleteOnClose);
+    error_log_dialog->open();
 }

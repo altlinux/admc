@@ -62,6 +62,7 @@ DEFINE_SETTING(SETTING_object_multi_dialog_geometry);
 DEFINE_SETTING(SETTING_connection_options_dialog_geometry);
 DEFINE_SETTING(SETTING_manual_dialog_geometry);
 DEFINE_SETTING(SETTING_changelog_dialog_geometry);
+DEFINE_SETTING(SETTING_error_log_dialog_geometry);
 
 // Header state
 DEFINE_SETTING(SETTING_results_header);
