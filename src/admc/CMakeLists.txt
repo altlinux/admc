@@ -143,6 +143,7 @@ set(ADMC_SOURCES
     edits/logon_hours_edit.cpp
     edits/logon_hours_dialog.cpp
     edits/logon_computers_edit.cpp
+    edits/logon_computers_dialog.cpp
     edits/protect_deletion_edit.cpp
 
     multi_edits/attribute_multi_edit.cpp

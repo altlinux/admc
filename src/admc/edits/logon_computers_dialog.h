@@ -18,13 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LOGON_COMPUTERS_EDIT_P_H
-#define LOGON_COMPUTERS_EDIT_P_H
+#ifndef LOGON_COMPUTERS_DIALOG_H
+#define LOGON_COMPUTERS_DIALOG_H
 
 #include <QDialog>
-
-class QLineEdit;
-class QListWidget;
 
 namespace Ui {
     class LogonComputersDialog;
@@ -47,4 +44,4 @@ private:
     void on_remove_button();  
 };
 
-#endif /* LOGON_COMPUTERS_EDIT_P_H */
+#endif /* LOGON_COMPUTERS_DIALOG_H */
