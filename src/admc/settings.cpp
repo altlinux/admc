@@ -67,7 +67,7 @@ void settings_set_bool(const QString setting, const bool value) {
 void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
     settings_restore_geometry(setting, dialog);
 
-    QDialog::connect(
+    QObject::connect(
         dialog, &QDialog::finished,
         [=]() {
             const QByteArray geometry = dialog->saveGeometry();
