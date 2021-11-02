@@ -28,6 +28,13 @@
 
 #include "tabs/properties_tab.h"
 
+enum AttributesColumn {
+    AttributesColumn_Name,
+    AttributesColumn_Value,
+    AttributesColumn_Type,
+    AttributesColumn_COUNT,
+};
+
 class QStandardItemModel;
 class QStandardItem;
 class AttributesTabProxy;

@@ -97,6 +97,8 @@ set(ADMC_SOURCES
     tabs/general_other_tab.cpp
     tabs/object_tab.cpp
     tabs/attributes_tab.cpp
+    tabs/attributes_tab_proxy.cpp
+    tabs/attributes_tab_filter_menu.cpp
     tabs/account_tab.cpp
     tabs/membership_tab.cpp
     tabs/address_tab.cpp

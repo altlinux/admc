@@ -19,7 +19,6 @@
  */
 
 #include "tabs/attributes_tab.h"
-#include "tabs/attributes_tab_p.h"
 #include "tabs/ui_attributes_tab.h"
 
 #include "adldap.h"
@@ -31,19 +30,14 @@
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
+#include "tabs/attributes_tab_proxy.h"
+#include "tabs/attributes_tab_filter_menu.h"
 
 #include <QStandardItemModel>
 #include <QMenu>
 #include <QAction>
 #include <QHeaderView>
 #include <QDebug>
-
-enum AttributesColumn {
-    AttributesColumn_Name,
-    AttributesColumn_Value,
-    AttributesColumn_Type,
-    AttributesColumn_COUNT,
-};
 
 QString attribute_type_display_string(const AttributeType type);
 
@@ -59,7 +53,7 @@ AttributesTab::AttributesTab() {
         {AttributesColumn_Type, tr("Type")},
     });
 
-    auto filter_menu = new AttributesFilterMenu(this);
+    auto filter_menu = new AttributesTabFilterMenu(this);
 
     proxy = new AttributesTabProxy(filter_menu, this);
 
@@ -103,7 +97,7 @@ AttributesTab::AttributesTab() {
         ui->edit_button, &QAbstractButton::clicked,
         this, &AttributesTab::edit_attribute);
     connect(
-        filter_menu, &AttributesFilterMenu::filter_changed,
+        filter_menu, &AttributesTabFilterMenu::filter_changed,
         proxy, &AttributesTabProxy::invalidate);
 }
 
@@ -308,153 +302,6 @@ void AttributesTab::on_editor_accepted() {
     load_row(row, attribute, value_list);
 
     emit edited();
-}
-
-AttributesFilterMenu::AttributesFilterMenu(QWidget *parent)
-: QMenu(parent) {
-    const QList<QVariant> state = settings_get_variant(SETTING_attributes_tab_filter_state).toList();
-
-    auto add_filter_action = [&](const QString text, const AttributeFilter filter) {
-        QAction *action = addAction(text);
-        action->setText(text);
-        action->setObjectName(QString::number(filter));
-        action->setCheckable(true);
-
-        const bool is_checked = [&]() {
-            if (filter < state.size()) {
-                return state[filter].toBool();
-            } else {
-                return true;
-            }
-        }();
-        action->setChecked(is_checked);
-
-        action_map.insert(filter, action);
-
-        connect(
-            action, &QAction::toggled,
-            this, &AttributesFilterMenu::filter_changed);
-    };
-
-    add_filter_action(tr("Unset"), AttributeFilter_Unset);
-    add_filter_action(tr("Read-only"), AttributeFilter_ReadOnly);
-
-    addSeparator();
-
-    add_filter_action(tr("Mandatory"), AttributeFilter_Mandatory);
-    add_filter_action(tr("Optional"), AttributeFilter_Optional);
-
-    addSeparator();
-
-    add_filter_action(tr("System-only"), AttributeFilter_SystemOnly);
-    add_filter_action(tr("Constructed"), AttributeFilter_Constructed);
-    add_filter_action(tr("Backlink"), AttributeFilter_Backlink);
-
-    connect(
-        action_map[AttributeFilter_ReadOnly], &QAction::toggled,
-        this, &AttributesFilterMenu::on_read_only_changed);
-    on_read_only_changed();
-}
-
-AttributesFilterMenu::~AttributesFilterMenu() {
-    const QList<QVariant> state = [&]() {
-        QList<QVariant> out;
-
-        for (int fitler_i = 0; fitler_i < AttributeFilter_COUNT; fitler_i++) {
-            const AttributeFilter filter = (AttributeFilter) fitler_i;
-            const QAction *action = action_map[filter];
-            const QVariant filter_state = QVariant(action->isChecked());
-
-            out.append(filter_state);
-        }
-
-        return out;
-    }();
-
-    settings_set_variant(SETTING_attributes_tab_filter_state, state);
-}
-
-void AttributesFilterMenu::on_read_only_changed() {
-    const bool read_only_is_enabled = action_map[AttributeFilter_ReadOnly]->isChecked();
-
-    const QList<AttributeFilter> read_only_sub_filters = {
-        AttributeFilter_SystemOnly,
-        AttributeFilter_Constructed,
-        AttributeFilter_Backlink,
-    };
-
-    for (const AttributeFilter &filter : read_only_sub_filters) {
-        action_map[filter]->setEnabled(read_only_is_enabled);
-        
-        // Turning off read only turns off the sub read only
-        // filters. Note that turning ON read only doesn't do
-        // the opposite.
-        if (!read_only_is_enabled) {
-            action_map[filter]->setChecked(false);
-        }
-    }
-}
-
-bool AttributesFilterMenu::filter_is_enabled(const AttributeFilter filter) const {
-    return action_map[filter]->isChecked();
-}
-
-AttributesTabProxy::AttributesTabProxy(AttributesFilterMenu *filter_menu_arg, QObject *parent)
-: QSortFilterProxyModel(parent) {
-    filter_menu = filter_menu_arg;
-}
-
-void AttributesTabProxy::load(const AdObject &object) {
-    const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    mandatory_attributes = g_adconfig->get_mandatory_attributes(object_classes).toSet();
-    optional_attributes = g_adconfig->get_optional_attributes(object_classes).toSet();
-
-    set_attributes = object.attributes().toSet();
-}
-
-bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
-    auto source = sourceModel();
-    const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();
-
-    const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
-    const bool unset = !set_attributes.contains(attribute);
-    const bool mandatory = mandatory_attributes.contains(attribute);
-    const bool optional = optional_attributes.contains(attribute);
-
-    if (!filter_menu->filter_is_enabled(AttributeFilter_Unset) && unset) {
-        return false;
-    }
-
-    if (!filter_menu->filter_is_enabled(AttributeFilter_Mandatory) && mandatory) {
-        return false;
-    }
-
-    if (!filter_menu->filter_is_enabled(AttributeFilter_Optional) && optional) {
-        return false;
-    }
-
-    if (filter_menu->filter_is_enabled(AttributeFilter_ReadOnly) && system_only) {
-        const bool constructed = g_adconfig->get_attribute_is_constructed(attribute);
-        const bool backlink = g_adconfig->get_attribute_is_backlink(attribute);
-
-        if (!filter_menu->filter_is_enabled(AttributeFilter_SystemOnly) && !constructed && !backlink) {
-            return false;
-        }
-
-        if (!filter_menu->filter_is_enabled(AttributeFilter_Constructed) && constructed) {
-            return false;
-        }
-
-        if (!filter_menu->filter_is_enabled(AttributeFilter_Backlink) && backlink) {
-            return false;
-        }
-    }
-
-    if (!filter_menu->filter_is_enabled(AttributeFilter_ReadOnly) && system_only) {
-        return false;
-    }
-
-    return true;
 }
 
 QString attribute_type_display_string(const AttributeType type) {

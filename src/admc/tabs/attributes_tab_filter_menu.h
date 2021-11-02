@@ -18,14 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTES_TAB_P_H
-#define ATTRIBUTES_TAB_P_H
+#ifndef ATTRIBUTES_TAB_FILTER_MENU_H
+#define ATTRIBUTES_TAB_FILTER_MENU_H
 
-#include "settings.h"
-
-#include <QSortFilterProxyModel>
 #include <QMenu>
-#include <QSet>
 #include <QHash>
 
 enum AttributeFilter {
@@ -40,12 +36,12 @@ enum AttributeFilter {
     AttributeFilter_COUNT,
 };
 
-class AttributesFilterMenu final : public QMenu {
+class AttributesTabFilterMenu final : public QMenu {
     Q_OBJECT
 
 public:
-    AttributesFilterMenu(QWidget *parent);
-    ~AttributesFilterMenu();
+    AttributesTabFilterMenu(QWidget *parent);
+    ~AttributesTabFilterMenu();
 
     bool filter_is_enabled(const AttributeFilter filter) const;
 
@@ -58,20 +54,4 @@ private:
     void on_read_only_changed();
 };
 
-class AttributesTabProxy final : public QSortFilterProxyModel {
-
-public:
-    AttributesTabProxy(AttributesFilterMenu *filter_menu, QObject *parent);
-
-    void load(const AdObject &object);
-
-private:
-    AttributesFilterMenu *filter_menu;
-    QSet<QString> set_attributes;
-    QSet<QString> mandatory_attributes;
-    QSet<QString> optional_attributes;
-
-    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
-};
-
-#endif /* ATTRIBUTES_TAB_P_H */
+#endif /* ATTRIBUTES_TAB_FILTER_MENU_H */
