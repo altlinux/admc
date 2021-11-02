@@ -35,12 +35,12 @@ UpnEdit::UpnEdit(QLineEdit *prefix_edit_arg, QComboBox *upn_suffix_combo_arg, QL
 
     limit_edit(prefix_edit, ATTRIBUTE_USER_PRINCIPAL_NAME);
 
-    QObject::connect(
+    connect(
         prefix_edit, &QLineEdit::textChanged,
         [this]() {
             emit edited();
         });
-    QObject::connect(
+    connect(
         upn_suffix_combo, &QComboBox::currentTextChanged,
         this, &UpnEdit::edited);
 }

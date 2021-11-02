@@ -36,7 +36,7 @@ GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits
         combo->addItem(type_string, (int) type);
     }
 
-    QObject::connect(
+    connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         [this]() {
             emit edited();

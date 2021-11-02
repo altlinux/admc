@@ -29,7 +29,7 @@ GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits
 : AttributeEdit(edits_out, parent) {
     check = check_arg;
 
-    QObject::connect(
+    connect(
         check, &QCheckBox::stateChanged,
         [this]() {
             emit edited();

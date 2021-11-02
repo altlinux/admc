@@ -31,10 +31,10 @@ DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_bu
     off_button = off_button_arg;
     on_button = on_button_arg;
 
-    QObject::connect(
+    connect(
         off_button, &QAbstractButton::clicked,
         this, &AttributeEdit::edited);
-    QObject::connect(
+    connect(
         on_button, &QAbstractButton::clicked,
         this, &AttributeEdit::edited);
 }

@@ -310,7 +310,7 @@ void SecurityTab::on_add_trustee_button() {
     auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, this);
     dialog->setWindowTitle(tr("Add Trustee"));
 
-    QObject::connect(
+    connect(
         dialog, &SelectObjectDialog::accepted,
         [=]() {
             AdInterface ad;

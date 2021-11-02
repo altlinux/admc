@@ -37,7 +37,7 @@ GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edi
         combo->addItem(type_string, (int) type);
     }
 
-    QObject::connect(
+    connect(
         combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
         [this]() {
             emit edited();

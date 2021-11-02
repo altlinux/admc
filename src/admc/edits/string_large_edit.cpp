@@ -47,7 +47,7 @@ StringLargeEdit::StringLargeEdit(QPlainTextEdit *edit_arg, const QString &attrib
             });
     }
 
-    QObject::connect(
+    connect(
         edit, &QPlainTextEdit::textChanged,
         [this]() {
             emit edited();

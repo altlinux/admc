@@ -34,7 +34,7 @@ AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption o
     option = option_arg;
     check = check_arg;
 
-    QObject::connect(
+    connect(
         check, &QCheckBox::stateChanged,
         [this]() {
             emit edited();

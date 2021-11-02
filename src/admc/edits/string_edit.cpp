@@ -37,7 +37,7 @@ StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QList<
 
     limit_edit(edit, attribute);
 
-    QObject::connect(
+    connect(
         edit, &QLineEdit::textChanged,
         [this]() {
             emit edited();

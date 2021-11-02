@@ -264,7 +264,7 @@ void PolicyImpl::on_add_link() {
     auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, console);
     dialog->setWindowTitle(tr("Add Link"));
 
-    QObject::connect(
+    connect(
         dialog, &SelectObjectDialog::accepted,
         [=]() {
             const QList<QString> gpos = get_selected_dn_list(console, ItemType_Policy, PolicyRole_DN);
@@ -304,7 +304,7 @@ void PolicyImpl::on_edit() {
     };
     process->setArguments(args);
 
-    QObject::connect(
+    connect(
         process, &QProcess::errorOccurred,
         [this](QProcess::ProcessError error) {
             const bool failed_to_start = (error == QProcess::FailedToStart);

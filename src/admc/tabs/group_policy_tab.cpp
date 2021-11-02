@@ -88,7 +88,7 @@ GroupPolicyTab::GroupPolicyTab() {
     connect(
         ui->add_button, &QAbstractButton::clicked,
         add_dialog, &QDialog::open);
-    QObject::connect(
+    connect(
         ui->view, &QWidget::customContextMenuRequested,
         this, &GroupPolicyTab::on_context_menu);
     connect(

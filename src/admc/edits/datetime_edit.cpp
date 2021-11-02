@@ -34,7 +34,7 @@ DateTimeEdit::DateTimeEdit(QDateTimeEdit *edit_arg, const QString &attribute_arg
 
     edit->setDisplayFormat(DATETIME_DISPLAY_FORMAT);
 
-    QObject::connect(
+    connect(
         edit, &QDateTimeEdit::dateTimeChanged,
         [this]() {
             emit edited();

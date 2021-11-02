@@ -33,7 +33,7 @@ SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit_arg, QList<
 
     limit_edit(edit, ATTRIBUTE_SAM_ACCOUNT_NAME);
 
-    QObject::connect(
+    connect(
         edit, &QLineEdit::textChanged,
         [this]() {
             emit edited();
