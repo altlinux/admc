@@ -158,30 +158,28 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
         upn_suffixes_editor, &QDialog::accepted,
         this, &ObjectImpl::on_upn_suffixes_editor_accepted);
 
-    const QList<CreateObjectDialog *> create_dialog_list = {
-        create_user_dialog,
-        create_group_dialog,
-        create_ou_dialog,
-        create_computer_dialog,
-    };
+    connect(
+        create_user_dialog, &QDialog::accepted,
+        this, &ObjectImpl::on_create_user_dialog_accepted);
+    connect(
+        create_group_dialog, &QDialog::accepted,
+        this, &ObjectImpl::on_create_group_dialog_accepted);
+    connect(
+        create_ou_dialog, &QDialog::accepted,
+        this, &ObjectImpl::on_create_ou_dialog_accepted);
+    connect(
+        create_computer_dialog, &QDialog::accepted,
+        this, &ObjectImpl::on_create_computer_dialog_accepted);
 
-    for (CreateObjectDialog *dialog : create_dialog_list) {
-        connect(
-            dialog, &QDialog::accepted,
-            this, &ObjectImpl::on_create_dialog_accepted);
-    }
-
-    const QList<RenameObjectDialog *> rename_dialog_list = {
-        rename_user_dialog,
-        rename_group_dialog,
-        rename_other_dialog,
-    };
-
-    for (RenameObjectDialog *dialog : rename_dialog_list) {
-        connect(
-            dialog, &RenameObjectDialog::accepted,
-            this, &ObjectImpl::on_rename_dialog_accepted);
-    }
+    connect(
+        rename_user_dialog, &RenameObjectDialog::accepted,
+        this, &ObjectImpl::on_rename_user_dialog_accepted);
+    connect(
+        rename_group_dialog, &RenameObjectDialog::accepted,
+        this, &ObjectImpl::on_rename_group_dialog_accepted);
+    connect(
+        rename_other_dialog, &RenameObjectDialog::accepted,
+        this, &ObjectImpl::on_rename_other_dialog_accepted);
 }
 
 void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
@@ -999,13 +997,40 @@ void ObjectImpl::move(AdInterface &ad, const QList<QString> &old_dn_list, const 
     move_and_rename(ad, old_to_new_dn_map, new_parent_dn);
 }
 
-void ObjectImpl::on_rename_dialog_accepted() {
+void ObjectImpl::on_rename_user_dialog_accepted() {
+    on_rename_dialog_accepted(rename_user_dialog);
+}
+
+void ObjectImpl::on_rename_group_dialog_accepted() {
+    on_rename_dialog_accepted(rename_group_dialog);
+}
+
+void ObjectImpl::on_rename_other_dialog_accepted() {
+    on_rename_dialog_accepted(rename_other_dialog);
+}
+
+void ObjectImpl::on_create_user_dialog_accepted() {
+    on_create_dialog_accepted(create_user_dialog);
+}
+
+void ObjectImpl::on_create_group_dialog_accepted() {
+    on_create_dialog_accepted(create_group_dialog);
+}
+
+void ObjectImpl::on_create_ou_dialog_accepted() {
+    on_create_dialog_accepted(create_ou_dialog);
+}
+
+void ObjectImpl::on_create_computer_dialog_accepted() {
+    on_create_dialog_accepted(create_computer_dialog);
+}
+
+void ObjectImpl::on_rename_dialog_accepted(RenameObjectDialog *dialog) {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
     }
 
-    RenameObjectDialog *dialog = qobject_cast<RenameObjectDialog *>(QObject::sender());
     const QString old_dn = dialog->get_target();
     const QString new_dn = dialog->get_new_dn();
     const QString parent_dn = dn_get_parent(old_dn);
@@ -1013,7 +1038,7 @@ void ObjectImpl::on_rename_dialog_accepted() {
     move_and_rename(ad, {{old_dn, new_dn}}, parent_dn);
 }
 
-void ObjectImpl::on_create_dialog_accepted() {
+void ObjectImpl::on_create_dialog_accepted(CreateObjectDialog *dialog) {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -1021,7 +1046,6 @@ void ObjectImpl::on_create_dialog_accepted() {
 
     show_busy_indicator();
 
-    CreateObjectDialog *dialog = qobject_cast<CreateObjectDialog *>(QObject::sender());
     const QString created_dn = dialog->get_created_dn();
 
     // NOTE: we don't just use currently selected index as

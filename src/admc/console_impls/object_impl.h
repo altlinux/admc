@@ -114,8 +114,13 @@ private slots:
     void on_reset_password();
     void on_edit_upn_suffixes();
     void on_reset_account();
-    void on_create_dialog_accepted();
-    void on_rename_dialog_accepted();
+    void on_create_user_dialog_accepted();
+    void on_create_group_dialog_accepted();
+    void on_create_ou_dialog_accepted();
+    void on_create_computer_dialog_accepted();
+    void on_rename_user_dialog_accepted();
+    void on_rename_group_dialog_accepted();
+    void on_rename_other_dialog_accepted();
     void on_change_dc_accepted();
     void on_upn_suffixes_editor_accepted();
 
@@ -157,6 +162,8 @@ private:
     void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
     void move_and_rename(AdInterface &ad, const QHash<QString, QString> &old_dn_list, const QString &new_parent_dn);
     void move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
+    void on_rename_dialog_accepted(RenameObjectDialog *dialog);
+    void on_create_dialog_accepted(CreateObjectDialog *dialog);
 };
 
 void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
