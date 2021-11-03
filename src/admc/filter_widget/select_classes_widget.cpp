@@ -22,7 +22,6 @@
 #include "filter_widget/ui_select_classes_widget.h"
 
 #include "adldap.h"
-#include "filter_classes_widget.h"
 #include "filter_widget/select_classes_dialog.h"
 
 SelectClassesWidget::SelectClassesWidget(QWidget *parent)
@@ -45,17 +44,17 @@ SelectClassesWidget::~SelectClassesWidget() {
 }
 
 void SelectClassesWidget::init(AdConfig *adconfig) {
-    dialog->filter_classes_widget()->init(adconfig);
+    dialog->init(adconfig);
 }
 
 void SelectClassesWidget::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
-    dialog->filter_classes_widget()->set_classes(class_list, selected_list);
+    dialog->set_classes(class_list, selected_list);
 
     update_classes_display();
 }
 
 QString SelectClassesWidget::get_filter() const {
-    return dialog->filter_classes_widget()->get_filter();
+    return dialog->get_filter();
 }
 
 // Display selected classes in line edit as a sorted list of
@@ -63,7 +62,7 @@ QString SelectClassesWidget::get_filter() const {
 // "User, Organizational Unit, ..."
 void SelectClassesWidget::update_classes_display() {
     const QString classes_display_text = [this]() {
-        QList<QString> selected_classes = dialog->filter_classes_widget()->get_selected_classes_display();
+        QList<QString> selected_classes = dialog->get_selected_classes_display();
 
         std::sort(selected_classes.begin(), selected_classes.end());
 
@@ -77,10 +76,10 @@ void SelectClassesWidget::update_classes_display() {
 }
 
 QVariant SelectClassesWidget::save_state() const {
-    return dialog->filter_classes_widget()->save_state();
+    return dialog->save_state();
 }
 
 void SelectClassesWidget::restore_state(const QVariant &state) {
-    dialog->filter_classes_widget()->restore_state(state);
+    dialog->restore_state(state);
     update_classes_display();
 }
