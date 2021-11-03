@@ -23,7 +23,6 @@
 
 #include "ad_filter.h"
 #include "filter_widget/filter_dialog.h"
-#include "globals.h"
 
 EditQueryItemWidget::EditQueryItemWidget(QWidget *parent)
 : QWidget(parent) {
@@ -31,9 +30,6 @@ EditQueryItemWidget::EditQueryItemWidget(QWidget *parent)
     ui->setupUi(this);
 
     filter_dialog = new FilterDialog(this);
-    filter_dialog->add_classes(g_adconfig, filter_classes, filter_classes);
-
-    ui->select_base_widget->init(g_adconfig);
 
     connect(
         ui->edit_filter_button, &QPushButton::clicked,
@@ -46,6 +42,13 @@ EditQueryItemWidget::EditQueryItemWidget(QWidget *parent)
 
 EditQueryItemWidget::~EditQueryItemWidget() {
     delete ui;
+}
+
+void EditQueryItemWidget::init(AdConfig *adconfig) {
+    ui->select_base_widget->init(adconfig);
+
+    filter_dialog->init(adconfig);
+    filter_dialog->set_classes(filter_classes, filter_classes);
 }
 
 QString EditQueryItemWidget::name() const {

@@ -48,7 +48,7 @@ FindObjectDialog::FindObjectDialog(const QString &default_base, QWidget *parent)
         CLASS_GROUP,
     };
 
-    ui->find_widget->init(class_list, selected_list, default_base);
+    ui->find_widget->init(g_adconfig, class_list, selected_list, default_base);
     ui->find_widget->setup_action_menu(action_menu);
     ui->find_widget->setup_view_menu(view_menu);
 

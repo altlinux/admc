@@ -45,9 +45,16 @@ public:
     FilterClassesWidget(QWidget *parent = nullptr);
     ~FilterClassesWidget();
 
+    // Initializes by adding checkbox for all possible
+    // filter classes
+    void init(AdConfig *adconfig);
+
     // Sets available classes and default selected classes.
-    // Before this is called no classes are available.
-    void add_classes(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
+    // All given classes must be part of "filter_classes".
+    // TODO: above line is bad, not sure if should pass a
+    // class list to init as well?
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
+
     QString get_filter() const;
     QList<QString> get_selected_classes() const;
     QList<QString> get_selected_classes_display() const;

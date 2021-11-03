@@ -61,6 +61,12 @@ MainWindow::MainWindow()
     action_show_client_user->setCheckable(true);
     ui->statusbar->addAction(action_show_client_user);
 
+    filter_dialog = new ConsoleFilterDialog(this);
+
+    // NOTE: disable console filter until connection because
+    // connection is required to init the dialog
+    ui->action_filter_objects->setEnabled(false);
+
     //
     // Console
     //
@@ -73,10 +79,10 @@ MainWindow::MainWindow()
     auto policy_impl = new PolicyImpl(ui->console);
     ui->console->register_impl(ItemType_Policy, policy_impl);
 
-    auto query_item_impl = new QueryItemImpl(ui->console);
+    query_item_impl = new QueryItemImpl(ui->console);
     ui->console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    auto query_folder_impl = new QueryFolderImpl(ui->console);
+    query_folder_impl = new QueryFolderImpl(ui->console);
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
     object_impl->set_policy_impl(policy_impl);
@@ -239,6 +245,13 @@ MainWindow::MainWindow()
     load_connection_options();
 
     connect(
+        ui->action_filter_objects, &QAction::triggered,
+        filter_dialog, &QDialog::open);
+    connect(
+        filter_dialog, &QDialog::accepted,
+        this, &MainWindow::on_filter_dialog_accepted);
+
+    connect(
         ui->menu_action, &QMenu::aboutToShow,
         ui->console, &ConsoleWidget::update_actions);
 
@@ -393,21 +406,17 @@ void MainWindow::connect_to_server() {
     // console
     g_status()->display_ad_messages(ad, this);
 
-    // NOTE: have to create filter dialog here because it
-    // requires an AD connection
-    filter_dialog = new ConsoleFilterDialog(ad.adconfig(), this);
-
-    connect(
-        ui->action_filter_objects, &QAction::triggered,
-        filter_dialog, &QDialog::open);
-    connect(
-        filter_dialog, &QDialog::accepted,
-        this, &MainWindow::on_filter_dialog_accepted);
+    filter_dialog->init(ad.adconfig());
     on_filter_dialog_accepted();
+
+    query_item_impl->init(ad.adconfig());
+    query_folder_impl->init(ad.adconfig());
 
     // Disable connect action once connected because
     // it's not needed at that point
     ui->action_connect->setEnabled(false);
+
+    ui->action_filter_objects->setEnabled(true);
 
     // NOTE: need to restore console state again after
     // successful connection because some state like column

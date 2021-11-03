@@ -47,7 +47,8 @@ public:
     FilterWidgetNormalTab();
     ~FilterWidgetNormalTab();
 
-    void add_classes(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
+    void init(AdConfig *adconfig);
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QString get_filter() const;
     void clear();

@@ -66,6 +66,10 @@ QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
         this, &QueryItemImpl::on_export);
 }
 
+void QueryItemImpl::init(AdConfig *adconfig) {
+    edit_query_item_dialog->init(adconfig);
+}
+
 void QueryItemImpl::set_query_folder_impl(QueryFolderImpl *impl) {
     query_folder_impl = impl;
 }

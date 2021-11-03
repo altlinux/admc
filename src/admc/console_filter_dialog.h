@@ -44,8 +44,10 @@ class ConsoleFilterDialog final : public QDialog {
 public:
     Ui::ConsoleFilterDialog *ui;
 
-    ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent);
+    ConsoleFilterDialog(QWidget *parent);
     ~ConsoleFilterDialog();
+
+    void init(AdConfig *adconfig);
 
     void open() override;
     void reject() override;

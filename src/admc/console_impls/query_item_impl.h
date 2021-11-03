@@ -45,12 +45,15 @@ enum QueryColumn {
 class EditQueryItemDialog;
 class EditQueryItemWidget;
 class QueryFolderImpl;
+class AdConfig;
 
 class QueryItemImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
     QueryItemImpl(ConsoleWidget *console_arg);
+
+    void init(AdConfig *adconfig);
 
     void set_query_folder_impl(QueryFolderImpl *impl);
 

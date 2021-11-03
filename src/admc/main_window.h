@@ -26,6 +26,8 @@
 class ObjectImpl;
 class ConsoleFilterDialog;
 class QLabel;
+class QueryItemImpl;
+class QueryFolderImpl;
 
 namespace Ui {
 class MainWindow;
@@ -45,6 +47,8 @@ protected:
 
 private:
     ObjectImpl *object_impl;
+    QueryItemImpl *query_item_impl;
+    QueryFolderImpl *query_folder_impl;
     ConsoleFilterDialog *filter_dialog;
     QLabel *client_user_label;
 

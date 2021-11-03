@@ -26,12 +26,15 @@
 class CreateQueryFolderDialog;
 class CreateQueryItemDialog;
 class EditQueryFolderDialog;
+class AdConfig;
 
 class QueryFolderImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
     QueryFolderImpl(ConsoleWidget *console_arg);
+
+    void init(AdConfig *adconfig);
 
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;

@@ -33,6 +33,10 @@ EditQueryItemDialog::~EditQueryItemDialog() {
     delete ui;
 }
 
+void EditQueryItemDialog::init(AdConfig *adconfig) {
+    ui->edit_query_item_widget->init(adconfig);
+}
+
 EditQueryItemWidget *EditQueryItemDialog::edit_widget() const {
     return ui->edit_query_item_widget;
 }

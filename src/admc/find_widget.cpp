@@ -27,7 +27,6 @@
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_widget/results_view.h"
-#include "globals.h"
 #include "search_thread.h"
 #include "settings.h"
 #include "utils.h"
@@ -122,9 +121,11 @@ FindWidget::~FindWidget() {
     delete ui;
 }
 
-void FindWidget::init(const QList<QString> &class_list, const QList<QString> &selected_list, const QString &default_base) {
-    ui->filter_widget->add_classes(g_adconfig, class_list, selected_list);
-    ui->select_base_widget->init(g_adconfig, default_base);
+void FindWidget::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list, const QString &default_base) {
+    ui->filter_widget->init(adconfig);
+    ui->filter_widget->set_classes(class_list, selected_list);
+
+    ui->select_base_widget->init(adconfig, default_base);
 }
 
 void FindWidget::set_buddy_console(ConsoleWidget *buddy_console) {

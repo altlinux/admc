@@ -29,28 +29,12 @@
 #define FILTER_CUSTOM_DIALOG_STATE "FILTER_CUSTOM_DIALOG_STATE"
 #define FILTER_CLASSES_STATE "FILTER_CLASSES_STATE"
 
-ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
+ConsoleFilterDialog::ConsoleFilterDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::ConsoleFilterDialog();
     ui->setupUi(this);
 
-    // NOTE: Using only non-container classes for filtering
-    // because container classes need to always be visible
-    const QList<QString> noncontainer_classes = adconfig->get_noncontainer_classes();
-
     custom_dialog = new FilterDialog(this);
-    custom_dialog->add_classes(adconfig, noncontainer_classes, noncontainer_classes);
-
-    const QList<QString> class_list_for_widget = {
-        CLASS_USER,
-        CLASS_GROUP,
-        CLASS_CONTACT,
-        CLASS_COMPUTER,
-        CLASS_PRINTER,
-        CLASS_SHARED_FOLDER,
-    };
-
-    ui->filter_classes_widget->add_classes(adconfig, class_list_for_widget, class_list_for_widget);
 
     settings_setup_dialog_geometry(SETTING_filter_dialog_geometry, this);
 
@@ -59,9 +43,6 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
         {"CLASSES_BUTTON_STATE", ui->classes_button},
         {"CUSTOM_BUTTON_STATE", ui->custom_button},
     };
-
-    const QHash<QString, QVariant> settings_state = settings_get_variant(SETTING_filter_dialog_state).toHash();
-    restore_state(settings_state);
 
     connect(
         ui->custom_dialog_button, &QPushButton::clicked,
@@ -76,6 +57,30 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
         ui->classes_button, &QAbstractButton::toggled,
         this, &ConsoleFilterDialog::on_classes_button);
     on_classes_button();
+}
+
+void ConsoleFilterDialog::init(AdConfig *adconfig) {
+    // NOTE: Using only non-container classes for filtering
+    // because container classes need to always be visible
+    const QList<QString> noncontainer_classes = adconfig->get_noncontainer_classes();
+    custom_dialog->init(adconfig);
+    custom_dialog->set_classes(noncontainer_classes, noncontainer_classes);
+
+    const QList<QString> class_list_for_widget = {
+        CLASS_USER,
+        CLASS_GROUP,
+        CLASS_CONTACT,
+        CLASS_COMPUTER,
+        CLASS_PRINTER,
+        CLASS_SHARED_FOLDER,
+    };
+    ui->filter_classes_widget->init(adconfig);
+    ui->filter_classes_widget->set_classes(class_list_for_widget, class_list_for_widget);
+
+    // NOTE: need to restore state *after* sub widgets are
+    // initialized
+    const QHash<QString, QVariant> settings_state = settings_get_variant(SETTING_filter_dialog_state).toHash();
+    restore_state(settings_state);
 }
 
 bool ConsoleFilterDialog::filtering_ON() const {

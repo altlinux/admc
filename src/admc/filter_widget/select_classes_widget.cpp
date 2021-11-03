@@ -44,8 +44,12 @@ SelectClassesWidget::~SelectClassesWidget() {
     delete ui;
 }
 
-void SelectClassesWidget::add_classes(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
-    dialog->filter_classes_widget()->add_classes(adconfig, class_list, selected_list);
+void SelectClassesWidget::init(AdConfig *adconfig) {
+    dialog->filter_classes_widget()->init(adconfig);
+}
+
+void SelectClassesWidget::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
+    dialog->filter_classes_widget()->set_classes(class_list, selected_list);
 
     update_classes_display();
 }

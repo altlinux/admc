@@ -29,6 +29,7 @@
 #include <QWidget>
 
 class FilterDialog;
+class AdConfig;
 
 namespace Ui {
 class EditQueryItemWidget;
@@ -42,6 +43,8 @@ public:
 
     EditQueryItemWidget(QWidget *parent = nullptr);
     ~EditQueryItemWidget();
+
+    void init(AdConfig *adconfig);
 
     QString name() const;
     QString description() const;
