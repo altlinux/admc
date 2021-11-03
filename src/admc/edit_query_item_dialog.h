@@ -41,7 +41,14 @@ public:
 
     void init(AdConfig *adconfig);
 
-    EditQueryItemWidget *edit_widget() const;
+    void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state);
+
+    QString name() const;
+    QString description() const;
+    QString filter() const;
+    QString base() const;
+    bool scope_is_children() const;
+    QByteArray filter_state() const;
 
     void set_sibling_name_list(const QList<QString> &sibling_name_list_arg);
 

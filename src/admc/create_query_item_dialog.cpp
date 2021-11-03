@@ -37,8 +37,28 @@ void CreateQueryItemDialog::init(AdConfig *adconfig) {
     ui->edit_query_widget->init(adconfig);
 }
 
-EditQueryItemWidget *CreateQueryItemDialog::edit_widget() const {
-    return ui->edit_query_widget;
+QString CreateQueryItemDialog::name() const {
+    return ui->edit_query_widget->name();
+}
+
+QString CreateQueryItemDialog::description() const {
+    return ui->edit_query_widget->description();
+}
+
+QString CreateQueryItemDialog::filter() const {
+    return ui->edit_query_widget->filter();
+}
+
+QString CreateQueryItemDialog::base() const {
+    return ui->edit_query_widget->base();
+}
+
+bool CreateQueryItemDialog::scope_is_children() const {
+    return ui->edit_query_widget->scope_is_children();
+}
+
+QByteArray CreateQueryItemDialog::filter_state() const {
+    return ui->edit_query_widget->filter_state();
 }
 
 void CreateQueryItemDialog::set_sibling_name_list(const QList<QString> &list) {

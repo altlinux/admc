@@ -27,7 +27,6 @@
 #include "console_widget/results_view.h"
 #include "create_query_item_dialog.h"
 #include "edit_query_item_dialog.h"
-#include "edit_query_item_widget.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
@@ -264,27 +263,24 @@ void QueryItemImpl::on_edit_query_item() {
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);
     edit_query_item_dialog->set_sibling_name_list(sibling_name_list);
 
-    EditQueryItemWidget *edit_widget = edit_query_item_dialog->edit_widget();
-
     QString name;
     QString description;
     bool scope_is_children;
     QByteArray filter_state;
     get_query_item_data(index, &name, &description, &scope_is_children, &filter_state);
 
-    edit_widget->set_data(name, description, scope_is_children, filter_state);
+    edit_query_item_dialog->set_data(name, description, scope_is_children, filter_state);
 
     edit_query_item_dialog->open();
 }
 
 void QueryItemImpl::on_edit_query_item_accepted() {
-    EditQueryItemWidget *edit_widget = edit_query_item_dialog->edit_widget();
-    const QString name = edit_widget->name();
-    const QString description = edit_widget->description();
-    const QString filter = edit_widget->filter();
-    const QString base = edit_widget->base();
-    const QByteArray filter_state = edit_widget->filter_state();
-    const bool scope_is_children = edit_widget->scope_is_children();
+    const QString name = edit_query_item_dialog->name();
+    const QString description = edit_query_item_dialog->description();
+    const QString filter = edit_query_item_dialog->filter();
+    const QString base = edit_query_item_dialog->base();
+    const QByteArray filter_state = edit_query_item_dialog->filter_state();
+    const bool scope_is_children = edit_query_item_dialog->scope_is_children();
 
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
     const QList<QStandardItem *> row = console->get_row(index);

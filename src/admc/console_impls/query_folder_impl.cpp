@@ -28,7 +28,6 @@
 #include "create_query_folder_dialog.h"
 #include "create_query_item_dialog.h"
 #include "edit_query_folder_dialog.h"
-#include "edit_query_item_widget.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
@@ -121,13 +120,12 @@ void QueryFolderImpl::on_create_query_item() {
 }
 
 void QueryFolderImpl::on_create_query_item_accepted() {
-    EditQueryItemWidget *edit_widget = create_query_item_dialog->edit_widget();
-    const QString name = edit_widget->name();
-    const QString description = edit_widget->description();
-    const QString filter = edit_widget->filter();
-    const QString base = edit_widget->base();
-    const QByteArray filter_state = edit_widget->filter_state();
-    const bool scope_is_children = edit_widget->scope_is_children();
+    const QString name = create_query_item_dialog->name();
+    const QString description = create_query_item_dialog->description();
+    const QString filter = create_query_item_dialog->filter();
+    const QString base = create_query_item_dialog->base();
+    const QByteArray filter_state = create_query_item_dialog->filter_state();
+    const bool scope_is_children = create_query_item_dialog->scope_is_children();
     const QModelIndex parent_index = console->get_selected_item(ItemType_QueryItem);
 
     console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
