@@ -22,6 +22,7 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include <QLocale>
 
 class ObjectImpl;
 class ConsoleFilterDialog;
@@ -51,6 +52,7 @@ private:
     QueryFolderImpl *query_folder_impl;
     ConsoleFilterDialog *filter_dialog;
     QLabel *client_user_label;
+    QHash<QLocale::Language, QAction *> language_action_map;
 
     void connect_to_server();
     void refresh_object_tree();
@@ -61,6 +63,7 @@ private:
     void on_log_searches_changed();
     void on_show_client_user();
     void load_connection_options();
+    void on_language_action(bool checked);
 };
 
 #endif /* MAIN_WINDOW_H */

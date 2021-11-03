@@ -68,12 +68,7 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 
     connect(
         ui->view, &QTreeView::expanded,
-        [=](const QModelIndex &index) {
-            const bool fetched = index.data(ContainerRole_Fetched).toBool();
-            if (!fetched) {
-                fetch_node(index);
-            }
-        });
+        this, &SelectContainerDialog::on_item_expanded);
 }
 
 SelectContainerDialog::~SelectContainerDialog() {
@@ -149,6 +144,13 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
     parent->setData(true, ContainerRole_Fetched);
 
     hide_busy_indicator();
+}
+
+void SelectContainerDialog::on_item_expanded(const QModelIndex &index) {
+    const bool fetched = index.data(ContainerRole_Fetched).toBool();
+    if (!fetched) {
+        fetch_node(index);
+    }
 }
 
 QStandardItem *make_container_node(const AdObject &object) {

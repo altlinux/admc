@@ -42,6 +42,8 @@ public:
 
 private:
     SamNameEdit *sam_name_edit;
+
+    void autofill_sam_name();
 };
 
 #endif /* CREATE_COMPUTER_DIALOG_H */

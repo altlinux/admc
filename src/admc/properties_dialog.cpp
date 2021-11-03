@@ -57,6 +57,8 @@
 #include <QLabel>
 #include <QPushButton>
 
+QHash<QString, PropertiesDialog *> PropertiesDialog::instances;
+
 PropertiesDialog *PropertiesDialog::open_for_target(const QString &target, bool *dialog_is_new) {
     if (target.isEmpty()) {
         return nullptr;
@@ -64,29 +66,19 @@ PropertiesDialog *PropertiesDialog::open_for_target(const QString &target, bool 
 
     show_busy_indicator();
 
-    static QHash<QString, PropertiesDialog *> instances;
-
-    const bool dialog_already_open_for_this_target = instances.contains(target);
+    const bool dialog_already_open_for_this_target = PropertiesDialog::instances.contains(target);
 
     PropertiesDialog *dialog;
 
     if (dialog_already_open_for_this_target) {
         // Focus already open dialog
-        dialog = instances[target];
+        dialog = PropertiesDialog::instances[target];
         dialog->raise();
         dialog->setFocus();
     } else {
         // Make new dialog for this target
         dialog = new PropertiesDialog(target);
-
-        instances[target] = dialog;
-        connect(
-            dialog, &QDialog::finished,
-            [target]() {
-                instances.remove(target);
-            });
-
-        dialog->show();
+        dialog->open();
     }
 
     hide_busy_indicator();
@@ -115,6 +107,8 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     target = target_arg;
     is_modified = false;
+
+    PropertiesDialog::instances[target] = this;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -281,6 +275,12 @@ void PropertiesDialog::accept() {
     if (success) {
         QDialog::accept();
     }
+}
+
+void PropertiesDialog::done(int r) {
+    PropertiesDialog::instances.remove(target);
+
+    QDialog::done(r);
 }
 
 void PropertiesDialog::apply() {

@@ -306,16 +306,7 @@ void PolicyImpl::on_edit() {
 
     connect(
         process, &QProcess::errorOccurred,
-        [this](QProcess::ProcessError error) {
-            const bool failed_to_start = (error == QProcess::FailedToStart);
-
-            if (failed_to_start) {
-                const QString error_text = "Failed to start gpui. Check that it's installed.";
-                qDebug() << error_text;
-                g_status()->add_message(error_text, StatusType_Error);
-                error_log({error_text}, console);
-            }
-        });
+        this, &PolicyImpl::on_gpui_error);
 
     process->start(QIODevice::ReadOnly);
 }
@@ -332,6 +323,17 @@ void PolicyImpl::on_rename_accepted() {
 
     const QList<QStandardItem *> row = console->get_row(index);
     console_policy_load(row, object);
+}
+
+void PolicyImpl::on_gpui_error(QProcess::ProcessError error) {
+    const bool failed_to_start = (error == QProcess::FailedToStart);
+
+    if (failed_to_start) {
+        const QString error_text = "Failed to start gpui. Check that it's installed.";
+        qDebug() << error_text;
+        g_status()->add_message(error_text, StatusType_Error);
+        error_log({error_text}, console);
+    }
 }
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {

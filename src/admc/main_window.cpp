@@ -119,7 +119,7 @@ MainWindow::MainWindow()
         QLocale::English,
         QLocale::Russian,
     };
-    const QHash<QLocale::Language, QAction *> language_actions = [this, language_list]() {
+    language_action_map = [this, language_list]() {
         QHash<QLocale::Language, QAction *> out;
 
         auto language_group = new QActionGroup(this);
@@ -154,7 +154,7 @@ MainWindow::MainWindow()
     }();
 
     for (const auto language : language_list) {
-        QAction *language_action = language_actions[language];
+        QAction *language_action = language_action_map[language];
         ui->menu_language->addAction(language_action);
     }
 
@@ -215,18 +215,12 @@ MainWindow::MainWindow()
         ui->action_dev_mode, &QAction::toggled,
         this, &MainWindow::on_dev_mode);
 
-    for (const auto language : language_actions.keys()) {
-        QAction *action = language_actions[language];
+    for (const auto language : language_action_map.keys()) {
+        QAction *action = language_action_map[language];
 
         connect(
             action, &QAction::toggled,
-            [this, language](bool checked) {
-                if (checked) {
-                    settings_set_variant(SETTING_locale, QLocale(language));
-
-                    message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
-                }
-            });
+            this, &MainWindow::on_language_action);
     }
 
     connect(
@@ -372,6 +366,31 @@ void MainWindow::load_connection_options() {
     };
     const CertStrategy cert_strategy = cert_strategy_map.value(cert_strategy_string, CertStrategy_Never);
     AdInterface::set_cert_strategy(cert_strategy);
+}
+
+void MainWindow::on_language_action(bool checked) {
+    // NOTE: since language actions are part of action
+    // group, toggling one affects others, so to do this
+    // slot once do this check.
+    if (!checked) {
+        return;
+    }
+
+    const QLocale::Language selected_language = [&]() {
+        for (const QLocale::Language &language : language_action_map.keys()) {
+            QAction *action = language_action_map[language];
+
+            if (action->isChecked()) {
+                return language;
+            }
+        }
+
+        return QLocale::English;
+    }();
+
+    settings_set_variant(SETTING_locale, QLocale(selected_language));
+
+    message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
 }
 
 void MainWindow::connect_to_server() {

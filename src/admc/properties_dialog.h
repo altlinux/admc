@@ -47,6 +47,8 @@ class PropertiesDialog final : public QDialog {
 public:
     Ui::PropertiesDialog *ui;
 
+    static QHash<QString, PropertiesDialog *> instances;
+
     // "dialog_is_new" flag is set to true if this is a
     // newly created dialog and false if a dialog was
     // already open for given target and reused. Use to know
@@ -63,6 +65,7 @@ signals:
 
 private slots:
     void accept() override;
+    void done(int r) override;
     void apply();
     void reset();
     void on_edited();

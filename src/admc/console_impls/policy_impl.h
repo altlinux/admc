@@ -24,6 +24,8 @@
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"
 
+#include <QProcess>
+
 class QStandardItem;
 class AdObject;
 class AdInterface;
@@ -72,6 +74,8 @@ private:
     RenamePolicyDialog *rename_policy_dialog;
     QAction *add_link_action;
     QAction *edit_action;
+
+    void on_gpui_error(QProcess::ProcessError error);
 };
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object);

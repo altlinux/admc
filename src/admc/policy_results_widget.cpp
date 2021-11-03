@@ -96,6 +96,16 @@ PolicyResultsWidget::PolicyResultsWidget(QWidget *parent)
     ui->view->detail_view()->header()->resizeSection(2, 100);
     ui->view->detail_view()->header()->resizeSection(3, 500);
 
+    const QMessageBox::Icon icon = QMessageBox::Warning;
+    const QString title = tr("Incorrect permissions detected");
+    const QString text = tr("Permissions for this policy's GPT don't match the permissions for it's GPC object. Would you like to update GPT permissions?");
+    const QMessageBox::StandardButtons buttons = (QMessageBox::Yes | QMessageBox::No);
+    sync_warning_dialog = new QMessageBox(icon, title, text, buttons, this);
+
+    connect(
+        sync_warning_dialog, &QDialog::accepted,
+        this, &PolicyResultsWidget::on_sync_warning_dialog_accepted);
+
     const QVariant state = settings_get_variant(SETTING_policy_results_state);
     ui->view->restore_state(state,
         {
@@ -149,27 +159,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
     const bool perms_ok = ad.gpo_check_perms(new_gpo, &ok);
 
     if (!perms_ok && ok) {
-        const QMessageBox::Icon icon = QMessageBox::Warning;
-        const QString title = tr("Incorrect permissions detected");
-        const QString text = tr("Permissions for this policy's GPT don't match the permissions for it's GPC object. Would you like to update GPT permissions?");
-        const QMessageBox::StandardButtons buttons = (QMessageBox::Yes | QMessageBox::No);
-
-        auto message_box = new QMessageBox(icon, title, text, buttons, this);
-
-        connect(
-            message_box, &QDialog::accepted,
-            [this]() {
-                AdInterface ad_inner;
-                if (ad_failed(ad_inner)) {
-                    return;
-                }
-
-                ad_inner.gpo_sync_perms(gpo);
-
-                g_status()->display_ad_messages(ad_inner, this);
-            });
-
-        message_box->open();
+        sync_warning_dialog->open();
     }
 
     g_status()->display_ad_messages(ad, this);
@@ -331,4 +321,15 @@ void PolicyResultsWidget::delete_link() {
     g_status()->display_ad_messages(ad, this);
 
     hide_busy_indicator();
+}
+
+void PolicyResultsWidget::on_sync_warning_dialog_accepted() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    ad.gpo_sync_perms(gpo);
+
+    g_status()->display_ad_messages(ad, this);
 }

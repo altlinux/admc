@@ -79,6 +79,8 @@ private:
     QSortFilterProxyModel *proxy_model;
     ResultsViewType m_current_view_type;
     QTreeView *m_detail_view;
+
+    void on_item_activated(const QModelIndex &index);
 };
 
 #endif /* RESULTS_VIEW_H */

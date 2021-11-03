@@ -56,10 +56,7 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
     // Autofill name -> sam account name
     connect(
         ui->name_edit, &QLineEdit::textChanged,
-        [=]() {
-            const QString name_input = ui->name_edit->text();
-            ui->sam_name_edit->setText(name_input.toUpper());
-        });
+        this, &CreateComputerDialog::autofill_sam_name);
 
     init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_COMPUTER);
 }
@@ -72,4 +69,9 @@ void CreateComputerDialog::open() {
     sam_name_edit->load_domain();
 
     CreateObjectDialog::open();
+}
+
+void CreateComputerDialog::autofill_sam_name() {
+    const QString name_input = ui->name_edit->text();
+    ui->sam_name_edit->setText(name_input.toUpper());
 }

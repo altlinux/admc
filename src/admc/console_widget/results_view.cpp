@@ -83,11 +83,7 @@ ResultsView::ResultsView(QWidget *parent)
     for (auto view : views.values()) {
         connect(
             view, &QTreeView::activated,
-            [=](const QModelIndex &proxy_index) {
-                const QModelIndex &source_index = proxy_model->mapToSource(proxy_index);
-
-                emit activated(source_index);
-            });
+            this, &ResultsView::on_item_activated);
         connect(
             view, &QWidget::customContextMenuRequested,
             this, &ResultsView::context_menu);
@@ -183,6 +179,12 @@ void ResultsView::restore_state(const QVariant &state_variant, const QList<int> 
             header->setSectionHidden(i, hidden);
         }
     }
+}
+
+void ResultsView::on_item_activated(const QModelIndex &proxy_index) {
+    const QModelIndex &source_index = proxy_model->mapToSource(proxy_index);
+
+    emit activated(source_index);
 }
 
 void ResultsView::set_drag_drop_enabled(const bool enabled) {

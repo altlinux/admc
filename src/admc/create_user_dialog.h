@@ -44,6 +44,9 @@ public:
 private:
     SamNameEdit *sam_name_edit;
     UpnEdit *upn_edit;
+
+    void autofill_full_name();
+    void autofill_sam_name();
 };
 
 #endif /* CREATE_USER_DIALOG_H */

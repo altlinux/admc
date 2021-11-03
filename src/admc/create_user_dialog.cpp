@@ -59,45 +59,18 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
 
     account_option_setup_conflicts(check_map);
 
-    // Setup autofills
     // (first name + last name) -> full name
-    auto autofill_full_name = [=]() {
-        const QString full_name_value = [=]() {
-            const QString first_name = ui->first_name_edit->text();
-            const QString last_name = ui->last_name_edit->text();
-
-            const bool last_name_first = settings_get_bool(SETTING_last_name_before_first_name);
-            if (!first_name.isEmpty() && !last_name.isEmpty()) {
-                if (last_name_first) {
-                    return last_name + " " + first_name;
-                } else {
-                    return first_name + " " + last_name;
-                }
-            } else if (!first_name.isEmpty()) {
-                return first_name;
-            } else if (!last_name.isEmpty()) {
-                return last_name;
-            } else {
-                return QString();
-            }
-        }();
-
-        ui->name_edit->setText(full_name_value);
-    };
     connect(
         ui->first_name_edit, &QLineEdit::textChanged,
-        autofill_full_name);
+        this, &CreateUserDialog::autofill_full_name);
     connect(
         ui->last_name_edit, &QLineEdit::textChanged,
-        autofill_full_name);
+        this, &CreateUserDialog::autofill_full_name);
 
     // upn -> sam account name
     connect(
         ui->upn_prefix_edit, &QLineEdit::textChanged,
-        [=]() {
-            const QString upn_input = ui->upn_prefix_edit->text();
-            ui->sam_name_edit->setText(upn_input);
-        });
+        this, &CreateUserDialog::autofill_sam_name);
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
@@ -141,4 +114,33 @@ void CreateUserDialog::open() {
     sam_name_edit->load_domain();
 
     CreateObjectDialog::open();
+}
+
+void CreateUserDialog::autofill_full_name() {
+    const QString full_name_value = [=]() {
+        const QString first_name = ui->first_name_edit->text();
+        const QString last_name = ui->last_name_edit->text();
+
+        const bool last_name_first = settings_get_bool(SETTING_last_name_before_first_name);
+        if (!first_name.isEmpty() && !last_name.isEmpty()) {
+            if (last_name_first) {
+                return last_name + " " + first_name;
+            } else {
+                return first_name + " " + last_name;
+            }
+        } else if (!first_name.isEmpty()) {
+            return first_name;
+        } else if (!last_name.isEmpty()) {
+            return last_name;
+        } else {
+            return QString();
+        }
+    }();
+
+    ui->name_edit->setText(full_name_value);
+}
+
+void CreateUserDialog::autofill_sam_name() {
+    const QString upn_input = ui->upn_prefix_edit->text();
+    ui->sam_name_edit->setText(upn_input);
 }

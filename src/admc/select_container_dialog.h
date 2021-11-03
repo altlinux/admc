@@ -59,6 +59,7 @@ private:
     QSortFilterProxyModel *proxy_model;
 
     void fetch_node(const QModelIndex &proxy_index);
+    void on_item_expanded(const QModelIndex &index);
 };
 
 #endif /* SELECT_CONTAINER_DIALOG_H */

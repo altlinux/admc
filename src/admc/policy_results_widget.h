@@ -57,10 +57,12 @@ private:
     QStandardItemModel *model;
     QString gpo;
     QMenu *context_menu;
+    QDialog *sync_warning_dialog;
 
     void on_item_changed(QStandardItem *item);
     void open_context_menu(const QPoint &pos);
     void delete_link();
+    void on_sync_warning_dialog_accepted();
 };
 
 #endif /* POLICY_RESULTS_WIDGET_H */
