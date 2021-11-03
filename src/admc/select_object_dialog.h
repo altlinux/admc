@@ -23,18 +23,15 @@
 
 #include <QDialog>
 
-class QLineEdit;
-class QTreeView;
 class QStandardItemModel;
-class SelectClassesWidget;
 class AdObject;
-class SelectBaseWidget;
+class AdInterface;
+class SelectObjectMatchDialog;
 class SelectObjectAdvancedDialog;
 
 namespace Ui {
 class SelectObjectDialog;
-class SelectObjectMatchDialog;
-} // namespace Ui
+}
 
 enum SelectObjectDialogMultiSelection {
     SelectObjectDialogMultiSelection_Yes,
@@ -61,24 +58,17 @@ private:
     QStandardItemModel *model;
     QList<QString> class_list;
     SelectObjectDialogMultiSelection multi_selection;
+    SelectObjectMatchDialog *match_dialog;
     SelectObjectAdvancedDialog *advanced_dialog;
 
     void on_add_button();
     void on_remove_button();
-    bool is_duplicate(const AdObject &object) const;
-    void duplicate_message_box();
+    void add_objects_to_list(const QList<QString> &dn_list);
+    void add_objects_to_list(const QList<QString> &dn_list, AdInterface &ad);
+    void on_match_dialog_accepted();
     void on_advanced_dialog_accepted();
 };
 
-class SelectObjectMatchDialog final : public QDialog {
-    Q_OBJECT
-
-public:
-    Ui::SelectObjectMatchDialog *ui;
-
-    SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent);
-
-    QList<QString> get_selected() const;
-};
+void add_select_object_to_model(QStandardItemModel *model, const AdObject &object);
 
 #endif /* SELECT_OBJECT_DIALOG_H */

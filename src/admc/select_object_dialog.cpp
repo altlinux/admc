@@ -20,24 +20,16 @@
 
 #include "select_object_dialog.h"
 #include "ui_select_object_dialog.h"
-#include "ui_select_object_match_dialog.h"
 
 #include "adldap.h"
 #include "console_impls/object_impl.h"
-#include "filter_widget/select_base_widget.h"
-#include "filter_widget/select_classes_widget.h"
 #include "globals.h"
 #include "select_object_advanced_dialog.h"
+#include "select_object_match_dialog.h"
 #include "settings.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
 #include <QStandardItemModel>
-#include <QTreeView>
 
 enum SelectColumn {
     SelectColumn_Name,
@@ -45,8 +37,6 @@ enum SelectColumn {
     SelectColumn_Folder,
     SelectColumn_COUNT,
 };
-
-void add_select_object_to_model(QStandardItemModel *model, const AdObject &object);
 
 SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent) {
@@ -56,6 +46,7 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     class_list = class_list_arg;
     multi_selection = multi_selection_arg;
 
+    match_dialog = new SelectObjectMatchDialog(this);
     advanced_dialog = new SelectObjectAdvancedDialog(class_list, this);
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -87,6 +78,9 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     connect(
         advanced_dialog, &QDialog::accepted,
         this, &SelectObjectDialog::on_advanced_dialog_accepted);
+    connect(
+        match_dialog, &QDialog::accepted,
+        this, &SelectObjectDialog::on_match_dialog_accepted);
 }
 
 SelectObjectDialog::~SelectObjectDialog() {
@@ -164,46 +158,12 @@ void SelectObjectDialog::on_add_button() {
     const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, console_object_search_attributes());
 
     if (search_results.size() == 1) {
-        // Add to list
-        const AdObject object = search_results.values()[0];
-
-        if (is_duplicate(object)) {
-            duplicate_message_box();
-        } else {
-            add_select_object_to_model(model, object);
-
-            ui->name_edit->clear();
-        }
+        const QString dn = search_results.keys()[0];
+        add_objects_to_list({dn}, ad);
     } else if (search_results.size() > 1) {
         // Open dialog where you can select one of the matches
-        // TODO: probably make a separate file, decent sized dialog
-        auto dialog = new SelectObjectMatchDialog(search_results, this);
-        connect(
-            dialog, &QDialog::accepted,
-            [=]() {
-                const QList<QString> selected_list = dialog->get_selected();
-
-                bool any_duplicates = false;
-
-                // TODO: duplicating section above
-                for (const QString &dn : selected_list) {
-                    const AdObject object = search_results[dn];
-
-                    if (is_duplicate(object)) {
-                        any_duplicates = true;
-                    } else {
-                        add_select_object_to_model(model, object);
-                    }
-                }
-
-                if (any_duplicates) {
-                    duplicate_message_box();
-                }
-
-                ui->name_edit->clear();
-            });
-
-        dialog->open();
+        match_dialog->set_search_results(search_results);
+        match_dialog->open();
     } else if (search_results.size() == 0) {
         // Warn about failing to find any matches
         message_box_warning(this, tr("Error"), tr("Failed to find any matches."));
@@ -221,79 +181,59 @@ void SelectObjectDialog::on_remove_button() {
 // TODO: can optimize if dialog returns objects
 // directly, but will need to keep them around
 void SelectObjectDialog::on_advanced_dialog_accepted() {
+    const QList<QString> selected = advanced_dialog->get_selected_dns();
+
+    add_objects_to_list(selected);
+}
+
+void SelectObjectDialog::add_objects_to_list(const QList<QString> &dn_list) {
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
     }
 
-    // NOTE: this is slightly inefficient because
-    // we're searching for objects again instead of
-    // using the existing data from find results
-    // (inside dialog). Using existing data will be
-    // more complex though, but if you need
-    // performance in the future, do it. Not that
-    // big of a deal at the moment because select
-    // object dialog is mostly used for small number
-    // of objects.
-    const QList<QString> selected = advanced_dialog->get_selected_dns();
+    add_objects_to_list(dn_list, ad);
+}
+
+// Adds objects to the list of selected objects. If list
+// contains objects that are already in list, they won't be
+// added and a message box will open warning user about
+// that.
+// NOTE: this is slightly inefficient because we search for
+// objects again, when they already were searched for by
+// callers of this f-n, in other words we don't reuse search
+// results. For majority of cases this is fine. For rare
+// cases where user is selecting truly huge amounts of
+// objects, they can wait. The alternative of caching
+// objects everywhere adds too much complexity.
+void SelectObjectDialog::add_objects_to_list(const QList<QString> &dn_list, AdInterface &ad) {
+    const QList<QString> current_selected_list = get_selected();
 
     bool any_duplicates = false;
 
-    for (const QString &dn : selected) {
-        const AdObject object = ad.search_object(dn);
+    for (const QString &dn : dn_list) {
+        const bool is_duplicate = current_selected_list.contains(dn);
 
-        if (is_duplicate(object)) {
+        if (is_duplicate) {
             any_duplicates = true;
         } else {
+            const AdObject object = ad.search_object(dn);
+
             add_select_object_to_model(model, object);
         }
     }
 
     if (any_duplicates) {
-        duplicate_message_box();
-    }
-}
-
-bool SelectObjectDialog::is_duplicate(const AdObject &object) const {
-    const QList<QString> selected = get_selected();
-
-    return selected.contains(object.get_dn());
-}
-
-void SelectObjectDialog::duplicate_message_box() {
-    message_box_warning(this, tr("Error"), tr("Selected object is already in the list."));
-}
-
-SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
-: QDialog(parent) {
-    ui = new Ui::SelectObjectMatchDialog();
-    ui->setupUi(this);
-
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    auto model = new QStandardItemModel(this);
-
-    model->setHorizontalHeaderLabels(SelectObjectDialog::header_labels());
-
-    for (const AdObject &object : search_results) {
-        add_select_object_to_model(model, object);
+        message_box_warning(this, tr("Error"), tr("Selected object is already in the list."));
     }
 
-    ui->view->sortByColumn(0, Qt::AscendingOrder);
-    ui->view->setModel(model);
+    ui->name_edit->clear();
 }
 
-QList<QString> SelectObjectMatchDialog::get_selected() const {
-    QList<QString> out;
+void SelectObjectDialog::on_match_dialog_accepted() {
+    const QList<QString> selected_matches = match_dialog->get_selected();
 
-    const QList<QModelIndex> selected_indexes = ui->view->selectionModel()->selectedRows();
-
-    for (const QModelIndex &index : selected_indexes) {
-        const QString dn = index.data(ObjectRole_DN).toString();
-        out.append(dn);
-    }
-
-    return out;
+    add_objects_to_list(selected_matches);
 }
 
 void add_select_object_to_model(QStandardItemModel *model, const AdObject &object) {

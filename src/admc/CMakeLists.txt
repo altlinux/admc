@@ -64,6 +64,7 @@ set(ADMC_SOURCES
     create_query_folder_dialog.cpp
     find_object_dialog.cpp
     select_object_dialog.cpp
+    select_object_match_dialog.cpp
     select_object_advanced_dialog.cpp
     select_container_dialog.cpp
     select_policy_dialog.cpp
