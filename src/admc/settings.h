@@ -64,6 +64,7 @@ DEFINE_SETTING(SETTING_manual_dialog_geometry);
 DEFINE_SETTING(SETTING_changelog_dialog_geometry);
 DEFINE_SETTING(SETTING_error_log_dialog_geometry);
 DEFINE_SETTING(SETTING_select_well_known_trustee_dialog_geometry);
+DEFINE_SETTING(SETTING_select_object_match_dialog_geometry);
 
 // Header state
 DEFINE_SETTING(SETTING_results_header);
@@ -75,6 +76,7 @@ DEFINE_SETTING(SETTING_organization_tab_header_state);
 DEFINE_SETTING(SETTING_gpo_links_tab_header_state);
 DEFINE_SETTING(SETTING_group_policy_tab_header_state);
 DEFINE_SETTING(SETTING_security_tab_header_state);
+DEFINE_SETTING(SETTING_select_object_match_header_state);
 
 // Bool
 DEFINE_SETTING(SETTING_advanced_features);

@@ -23,10 +23,9 @@
 
 #include "console_impls/object_impl.h"
 #include "select_object_dialog.h"
+#include "settings.h"
 
 #include <QStandardItemModel>
-
-// TODO: geometry, state, header state
 
 SelectObjectMatchDialog::SelectObjectMatchDialog(QWidget *parent)
 : QDialog(parent) {
@@ -39,6 +38,15 @@ SelectObjectMatchDialog::SelectObjectMatchDialog(QWidget *parent)
 
     ui->view->sortByColumn(0, Qt::AscendingOrder);
     ui->view->setModel(model);
+
+    settings_setup_dialog_geometry(SETTING_select_object_match_dialog_geometry, this);
+    settings_restore_header_state(SETTING_select_object_match_header_state, ui->view->header());
+}
+
+SelectObjectMatchDialog::~SelectObjectMatchDialog() {
+    settings_save_header_state(SETTING_select_object_match_header_state, ui->view->header());
+
+    delete ui;
 }
 
 void SelectObjectMatchDialog::set_search_results(const QHash<QString, AdObject> &search_results) {
