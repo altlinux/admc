@@ -18,42 +18,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef MAIN_WINDOW_PRIVATE_H
+#define MAIN_WINDOW_PRIVATE_H
 
-#include <QMainWindow>
+#include <QLocale>
 
-class MainWindowPrivate;
+class ObjectImpl;
+class ConsoleFilterDialog;
+class QLabel;
+class QueryItemImpl;
+class QueryFolderImpl;
 
-namespace Ui {
-class MainWindow;
-}
-
-class MainWindow final : public QMainWindow {
-    Q_OBJECT
-
+class MainWindowPrivate final {
 public:
-    Ui::MainWindow *ui;
-
-    MainWindow();
-    ~MainWindow();
-
-protected:
-    void closeEvent(QCloseEvent *event);
-
-private:
-    MainWindowPrivate *d;
-
-    void connect_to_server();
-    void refresh_object_tree();
-    void on_show_non_containers(bool checked);
-    void on_dev_mode(bool checked);
-    void on_advanced_features(bool checked);
-    void on_filter_dialog_accepted();
-    void on_log_searches_changed();
-    void on_show_client_user();
-    void load_connection_options();
-    void on_language_action(bool checked);
+    ObjectImpl *object_impl;
+    QueryItemImpl *query_item_impl;
+    QueryFolderImpl *query_folder_impl;
+    ConsoleFilterDialog *filter_dialog;
+    QLabel *client_user_label;
+    QHash<QLocale::Language, QAction *> language_action_map;
 };
 
-#endif /* MAIN_WINDOW_H */
+#endif /* MAIN_WINDOW_PRIVATE_H */

@@ -19,6 +19,7 @@
  */
 
 #include "main_window.h"
+#include "main_window_p.h"
 #include "ui_main_window.h"
 
 #include "about_dialog.h"
@@ -50,18 +51,20 @@ MainWindow::MainWindow()
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
+    d = new MainWindowPrivate();
+
     country_combo_load_data();
 
     g_status()->init(ui->statusbar, ui->message_log_edit);
 
-    client_user_label = new QLabel();
-    ui->statusbar->addPermanentWidget(client_user_label);
+    d->client_user_label = new QLabel();
+    ui->statusbar->addPermanentWidget(d->client_user_label);
 
     auto action_show_client_user = new QAction("Show Client User", this);
     action_show_client_user->setCheckable(true);
     ui->statusbar->addAction(action_show_client_user);
 
-    filter_dialog = new ConsoleFilterDialog(this);
+    d->filter_dialog = new ConsoleFilterDialog(this);
 
     // NOTE: disable console filter until connection because
     // connection is required to init the dialog
@@ -70,8 +73,8 @@ MainWindow::MainWindow()
     //
     // Console
     //
-    object_impl = new ObjectImpl(ui->console);
-    ui->console->register_impl(ItemType_Object, object_impl);
+    d->object_impl = new ObjectImpl(ui->console);
+    ui->console->register_impl(ItemType_Object, d->object_impl);
 
     auto policy_root_impl = new PolicyRootImpl(ui->console);
     ui->console->register_impl(ItemType_PolicyRoot, policy_root_impl);
@@ -79,14 +82,14 @@ MainWindow::MainWindow()
     auto policy_impl = new PolicyImpl(ui->console);
     ui->console->register_impl(ItemType_Policy, policy_impl);
 
-    query_item_impl = new QueryItemImpl(ui->console);
-    ui->console->register_impl(ItemType_QueryItem, query_item_impl);
+    d->query_item_impl = new QueryItemImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryItem, d->query_item_impl);
 
-    query_folder_impl = new QueryFolderImpl(ui->console);
-    ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
+    d->query_folder_impl = new QueryFolderImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryFolder, d->query_folder_impl);
 
-    object_impl->set_policy_impl(policy_impl);
-    query_item_impl->set_query_folder_impl(query_folder_impl);
+    d->object_impl->set_policy_impl(policy_impl);
+    d->query_item_impl->set_query_folder_impl(d->query_folder_impl);
 
     // Create dialogs opened from menubar
     auto manual_dialog = new ManualDialog(this);
@@ -119,7 +122,7 @@ MainWindow::MainWindow()
         QLocale::English,
         QLocale::Russian,
     };
-    language_action_map = [this, language_list]() {
+    d->language_action_map = [this, language_list]() {
         QHash<QLocale::Language, QAction *> out;
 
         auto language_group = new QActionGroup(this);
@@ -154,7 +157,7 @@ MainWindow::MainWindow()
     }();
 
     for (const auto language : language_list) {
-        QAction *language_action = language_action_map[language];
+        QAction *language_action = d->language_action_map[language];
         ui->menu_language->addAction(language_action);
     }
 
@@ -215,8 +218,8 @@ MainWindow::MainWindow()
         ui->action_dev_mode, &QAction::toggled,
         this, &MainWindow::on_dev_mode);
 
-    for (const auto language : language_action_map.keys()) {
-        QAction *action = language_action_map[language];
+    for (const auto language : d->language_action_map.keys()) {
+        QAction *action = d->language_action_map[language];
 
         connect(
             action, &QAction::toggled,
@@ -240,9 +243,9 @@ MainWindow::MainWindow()
 
     connect(
         ui->action_filter_objects, &QAction::triggered,
-        filter_dialog, &QDialog::open);
+        d->filter_dialog, &QDialog::open);
     connect(
-        filter_dialog, &QDialog::accepted,
+        d->filter_dialog, &QDialog::accepted,
         this, &MainWindow::on_filter_dialog_accepted);
 
     connect(
@@ -280,6 +283,7 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow() {
     delete ui;
+    delete d;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -320,11 +324,11 @@ void MainWindow::on_advanced_features(bool checked) {
 }
 
 void MainWindow::on_filter_dialog_accepted() {
-    if (filter_dialog->filtering_ON()) {
-        const QString filter = filter_dialog->get_filter();
-        object_impl->enable_filtering(filter);
+    if (d->filter_dialog->filtering_ON()) {
+        const QString filter = d->filter_dialog->get_filter();
+        d->object_impl->enable_filtering(filter);
     } else {
-        object_impl->disable_filtering();
+        d->object_impl->disable_filtering();
     }
 
     refresh_object_tree();
@@ -338,7 +342,7 @@ void MainWindow::on_log_searches_changed() {
 
 void MainWindow::on_show_client_user() {
     const bool visible = settings_get_bool(SETTING_show_client_user);
-    client_user_label->setVisible(visible);
+    d->client_user_label->setVisible(visible);
 }
 
 void MainWindow::load_connection_options() {
@@ -377,8 +381,8 @@ void MainWindow::on_language_action(bool checked) {
     }
 
     const QLocale::Language selected_language = [&]() {
-        for (const QLocale::Language &language : language_action_map.keys()) {
-            QAction *action = language_action_map[language];
+        for (const QLocale::Language &language : d->language_action_map.keys()) {
+            QAction *action = d->language_action_map[language];
 
             if (action->isChecked()) {
                 return language;
@@ -402,7 +406,7 @@ void MainWindow::connect_to_server() {
         return;
     }
 
-    client_user_label->setText(ad.client_user());
+    d->client_user_label->setText(ad.client_user());
 
     const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
     g_adconfig->load(ad, locale);
@@ -425,11 +429,11 @@ void MainWindow::connect_to_server() {
     // console
     g_status()->display_ad_messages(ad, this);
 
-    filter_dialog->init(ad.adconfig());
+    d->filter_dialog->init(ad.adconfig());
     on_filter_dialog_accepted();
 
-    query_item_impl->init(ad.adconfig());
-    query_folder_impl->init(ad.adconfig());
+    d->query_item_impl->init(ad.adconfig());
+    d->query_folder_impl->init(ad.adconfig());
 
     // Disable connect action once connected because
     // it's not needed at that point
