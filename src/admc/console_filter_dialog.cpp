@@ -41,7 +41,16 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
     custom_dialog = new FilterDialog(this);
     custom_dialog->add_classes(adconfig, noncontainer_classes, noncontainer_classes);
 
-    ui->filter_classes_widget->add_classes(adconfig, noncontainer_classes, noncontainer_classes);
+    const QList<QString> class_list_for_widget = {
+        CLASS_USER,
+        CLASS_GROUP,
+        CLASS_CONTACT,
+        CLASS_COMPUTER,
+        CLASS_PRINTER,
+        CLASS_SHARED_FOLDER,
+    };
+
+    ui->filter_classes_widget->add_classes(adconfig, class_list_for_widget, class_list_for_widget);
 
     settings_setup_dialog_geometry(SETTING_filter_dialog_geometry, this);
 
