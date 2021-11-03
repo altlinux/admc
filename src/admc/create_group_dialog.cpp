@@ -28,6 +28,7 @@
 #include "edits/string_edit.h"
 #include "edits/upn_edit.h"
 #include "utils.h"
+#include "settings.h"
 
 CreateGroupDialog::CreateGroupDialog(QWidget *parent)
 : CreateObjectDialog(parent) {
@@ -51,6 +52,8 @@ CreateGroupDialog::CreateGroupDialog(QWidget *parent)
     };
 
     init(ui->name_edit, ui->button_box, edit_list, required_edits, widget_list, CLASS_GROUP);
+
+    settings_setup_dialog_geometry(SETTING_create_group_dialog_geometry, this);
 }
 
 CreateGroupDialog::~CreateGroupDialog() {

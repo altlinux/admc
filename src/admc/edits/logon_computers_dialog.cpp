@@ -23,11 +23,14 @@
 
 #include "adldap.h"
 #include "utils.h"
+#include "settings.h"
 
 LogonComputersDialog::LogonComputersDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::LogonComputersDialog();
     ui->setupUi(this);
+
+    settings_setup_dialog_geometry(SETTING_logon_computers_dialog_geometry, this);
 
     connect(
         ui->add_button, &QPushButton::clicked,

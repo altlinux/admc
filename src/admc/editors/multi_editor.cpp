@@ -28,6 +28,7 @@
 #include "editors/string_editor.h"
 #include "globals.h"
 #include "utils.h"
+#include "settings.h"
 
 MultiEditor::MultiEditor(QWidget *parent)
 : AttributeEditor(parent) {
@@ -49,6 +50,8 @@ MultiEditor::MultiEditor(QWidget *parent)
     edit_string_editor = new StringEditor(this);
     edit_octet_editor = new OctetEditor(this);
     edit_datetime_editor = new DateTimeEditor(this);
+
+    settings_setup_dialog_geometry(SETTING_multi_editor_geometry, this);
 
     connect(
         ui->add_button, &QAbstractButton::clicked,

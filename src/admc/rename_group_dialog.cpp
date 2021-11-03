@@ -22,6 +22,7 @@
 #include "ui_rename_group_dialog.h"
 
 #include "edits/sam_name_edit.h"
+#include "settings.h"
 
 RenameGroupDialog::RenameGroupDialog(QWidget *parent)
 : RenameObjectDialog(parent) {
@@ -32,6 +33,8 @@ RenameGroupDialog::RenameGroupDialog(QWidget *parent)
     sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
 
     init(ui->name_edit, ui->button_box, edit_list);
+
+    settings_setup_dialog_geometry(SETTING_rename_group_dialog_geometry, this);
 }
 
 RenameGroupDialog::~RenameGroupDialog() {

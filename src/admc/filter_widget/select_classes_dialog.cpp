@@ -21,6 +21,8 @@
 #include "filter_widget/select_classes_dialog.h"
 #include "filter_widget/ui_select_classes_dialog.h"
 
+#include "settings.h"
+
 #include <QPushButton>
 
 SelectClassesDialog::SelectClassesDialog(QWidget *parent)
@@ -31,6 +33,8 @@ SelectClassesDialog::SelectClassesDialog(QWidget *parent)
     connect(
         ui->button_box->button(QDialogButtonBox::Reset), &QPushButton::clicked,
         this, &SelectClassesDialog::reset);
+
+    settings_setup_dialog_geometry(SETTING_select_classes_dialog_geometry, this);
 }
 
 SelectClassesDialog::~SelectClassesDialog() {

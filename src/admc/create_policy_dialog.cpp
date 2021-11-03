@@ -25,6 +25,7 @@
 #include "console_impls/policy_impl.h"
 #include "console_widget/console_widget.h"
 #include "globals.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
@@ -32,6 +33,8 @@ CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::CreatePolicyDialog();
     ui->setupUi(this);
+
+    settings_setup_dialog_geometry(SETTING_create_policy_dialog_geometry, this);
 }
 
 CreatePolicyDialog::~CreatePolicyDialog() {

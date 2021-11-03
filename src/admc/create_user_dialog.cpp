@@ -98,6 +98,8 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
     };
 
     init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_USER);
+
+    settings_setup_dialog_geometry(SETTING_create_user_dialog_geometry, this);
 }
 
 CreateUserDialog::~CreateUserDialog() {

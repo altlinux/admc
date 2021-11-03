@@ -26,6 +26,7 @@
 #include "edits/string_edit.h"
 #include "edits/upn_edit.h"
 #include "utils.h"
+#include "settings.h"
 
 CreateOUDialog::CreateOUDialog(QWidget *parent)
 : CreateObjectDialog(parent) {
@@ -45,6 +46,8 @@ CreateOUDialog::CreateOUDialog(QWidget *parent)
     };
 
     init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_OU);
+
+    settings_setup_dialog_geometry(SETTING_create_ou_dialog_geometry, this);
 }
 
 CreateOUDialog::~CreateOUDialog() {

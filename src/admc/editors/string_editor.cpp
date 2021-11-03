@@ -24,6 +24,7 @@
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
+#include "settings.h"
 
 StringEditor::StringEditor(QWidget *parent)
 : AttributeEditor(parent) {
@@ -31,6 +32,8 @@ StringEditor::StringEditor(QWidget *parent)
     ui->setupUi(this);
 
     AttributeEditor::set_attribute_label(ui->attribute_label);
+
+    settings_setup_dialog_geometry(SETTING_multi_editor_geometry, this);
 }
 
 StringEditor::~StringEditor() {

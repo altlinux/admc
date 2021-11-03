@@ -24,6 +24,7 @@
 #include "adldap.h"
 #include "globals.h"
 #include "rename_object_dialog.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
@@ -44,6 +45,8 @@ RenamePolicyDialog::RenamePolicyDialog(QWidget *parent)
         ui->name_edit, &QLineEdit::textChanged,
         this, &RenamePolicyDialog::on_edited);
     on_edited();
+
+    settings_setup_dialog_geometry(SETTING_rename_policy_dialog_geometry, this);
 }
 
 RenamePolicyDialog::~RenamePolicyDialog() {

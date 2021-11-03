@@ -25,6 +25,7 @@
 #include "edits/sam_name_edit.h"
 #include "edits/upn_edit.h"
 #include "utils.h"
+#include "settings.h"
 
 CreateComputerDialog::CreateComputerDialog(QWidget *parent)
 : CreateObjectDialog(parent) {
@@ -59,6 +60,8 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
         this, &CreateComputerDialog::autofill_sam_name);
 
     init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_COMPUTER);
+
+    settings_setup_dialog_geometry(SETTING_create_computer_dialog_geometry, this);
 }
 
 CreateComputerDialog::~CreateComputerDialog() {

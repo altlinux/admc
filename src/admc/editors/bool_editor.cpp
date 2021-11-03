@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "settings.h"
 
 BoolEditor::BoolEditor(QWidget *parent)
 : AttributeEditor(parent) {
@@ -30,6 +31,8 @@ BoolEditor::BoolEditor(QWidget *parent)
     ui->setupUi(this);
 
     AttributeEditor::set_attribute_label(ui->attribute_label);
+
+    settings_setup_dialog_geometry(SETTING_bool_editor_geometry, this);
 }
 
 BoolEditor::~BoolEditor() {

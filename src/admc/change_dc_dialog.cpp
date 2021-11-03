@@ -40,6 +40,8 @@ ChangeDCDialog::ChangeDCDialog(QWidget *parent)
     };
 
     state.set_widget_list(widget_list);
+
+    settings_setup_dialog_geometry(SETTING_change_dc_dialog_geometry, this);
 }
 
 ChangeDCDialog::~ChangeDCDialog() {

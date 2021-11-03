@@ -26,6 +26,7 @@
 #include "edits/password_edit.h"
 #include "edits/unlock_edit.h"
 #include "globals.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
@@ -39,6 +40,8 @@ PasswordDialog::PasswordDialog(QWidget *parent)
     pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
 
     new UnlockEdit(ui->unlock_check, &edits, this);
+
+    settings_setup_dialog_geometry(SETTING_password_dialog_geometry, this);
 }
 
 PasswordDialog::~PasswordDialog() {

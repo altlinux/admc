@@ -24,6 +24,7 @@
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
+#include "settings.h"
 
 #include <QFont>
 #include <QFontDatabase>
@@ -46,6 +47,8 @@ OctetEditor::OctetEditor(QWidget *parent)
 
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     ui->edit->setFont(fixed_font);
+
+    settings_setup_dialog_geometry(SETTING_octet_editor_geometry, this);
 
     connect(
         ui->format_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),

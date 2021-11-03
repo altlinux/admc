@@ -22,11 +22,14 @@
 #include "ui_edit_query_folder_dialog.h"
 
 #include "console_impls/query_folder_impl.h"
+#include "settings.h"
 
 EditQueryFolderDialog::EditQueryFolderDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::EditQueryFolderDialog();
     ui->setupUi(this);
+
+    settings_setup_dialog_geometry(SETTING_edit_query_folder_dialog_geometry, this);
 }
 
 EditQueryFolderDialog::~EditQueryFolderDialog() {

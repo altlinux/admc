@@ -22,6 +22,7 @@
 #include "edits/ui_logon_hours_dialog.h"
 
 #include "ad_utils.h"
+#include "settings.h"
 
 #include <QDateTime>
 #include <QStandardItemModel>
@@ -55,6 +56,8 @@ LogonHoursDialog::LogonHoursDialog(QWidget *parent)
 
     ui->local_time_button->setChecked(true);
     is_local_time = true;
+
+    settings_setup_dialog_geometry(SETTING_logon_hours_dialog_geometry, this);
 
     connect(
         ui->local_time_button, &QRadioButton::toggled,

@@ -22,11 +22,14 @@
 #include "ui_create_query_item_dialog.h"
 
 #include "console_impls/query_folder_impl.h"
+#include "settings.h"
 
 CreateQueryItemDialog::CreateQueryItemDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::CreateQueryItemDialog();
     ui->setupUi(this);
+
+    settings_setup_dialog_geometry(SETTING_create_query_item_dialog_geometry, this);
 }
 
 CreateQueryItemDialog::~CreateQueryItemDialog() {

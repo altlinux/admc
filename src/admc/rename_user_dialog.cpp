@@ -26,6 +26,7 @@
 #include "edits/string_edit.h"
 #include "edits/upn_edit.h"
 #include "utils.h"
+#include "settings.h"
 
 RenameUserDialog::RenameUserDialog(QWidget *parent)
 : RenameObjectDialog(parent) {
@@ -40,6 +41,8 @@ RenameUserDialog::RenameUserDialog(QWidget *parent)
     sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
 
     init(ui->name_edit, ui->button_box, edit_list);
+
+    settings_setup_dialog_geometry(SETTING_rename_user_dialog_geometry, this);
 }
 
 RenameUserDialog::~RenameUserDialog() {

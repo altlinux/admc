@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "settings.h"
 
 DateTimeEditor::DateTimeEditor(QWidget *parent)
 : AttributeEditor(parent) {
@@ -30,6 +31,8 @@ DateTimeEditor::DateTimeEditor(QWidget *parent)
     ui->setupUi(this);
 
     AttributeEditor::set_attribute_label(ui->attribute_label);
+
+    settings_setup_dialog_geometry(SETTING_datetime_editor_geometry, this);
 }
 
 DateTimeEditor::~DateTimeEditor() {

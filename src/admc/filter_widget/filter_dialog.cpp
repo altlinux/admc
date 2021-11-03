@@ -22,8 +22,8 @@
 #include "ui_filter_dialog.h"
 
 #include "adldap.h"
-
 #include "filter_widget/filter_widget.h"
+#include "settings.h"
 
 #include <QVariant>
 
@@ -31,6 +31,8 @@ FilterDialog::FilterDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::FilterDialog();
     ui->setupUi(this);
+
+    settings_setup_dialog_geometry(SETTING_filter_dialog_geometry, this);
 }
 
 FilterDialog::~FilterDialog() {

@@ -41,6 +41,8 @@ SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> clas
 
     const QVariant console_state = settings_get_variant(SETTING_select_object_advanced_dialog_console_state);
     ui->find_widget->restore_console_state(console_state);
+
+    settings_setup_dialog_geometry(SETTING_select_object_advanced_dialog_geometry, this);
 }
 
 SelectObjectAdvancedDialog::~SelectObjectAdvancedDialog() {

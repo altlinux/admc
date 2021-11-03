@@ -22,11 +22,14 @@
 #include "ui_create_query_folder_dialog.h"
 
 #include "console_impls/query_folder_impl.h"
+#include "settings.h"
 
 CreateQueryFolderDialog::CreateQueryFolderDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::CreateQueryFolderDialog();
     ui->setupUi(this);
+
+    settings_setup_dialog_geometry(SETTING_create_query_folder_dialog_geometry, this);
 }
 
 CreateQueryFolderDialog::~CreateQueryFolderDialog() {

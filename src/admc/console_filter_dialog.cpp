@@ -36,7 +36,7 @@ ConsoleFilterDialog::ConsoleFilterDialog(QWidget *parent)
 
     custom_dialog = new FilterDialog(this);
 
-    settings_setup_dialog_geometry(SETTING_filter_dialog_geometry, this);
+    settings_setup_dialog_geometry(SETTING_console_filter_dialog_geometry, this);
 
     button_state_name_map = {
         {"ALL_BUTTON_STATE", ui->all_button},
@@ -79,7 +79,7 @@ void ConsoleFilterDialog::init(AdConfig *adconfig) {
 
     // NOTE: need to restore state *after* sub widgets are
     // initialized
-    const QHash<QString, QVariant> settings_state = settings_get_variant(SETTING_filter_dialog_state).toHash();
+    const QHash<QString, QVariant> settings_state = settings_get_variant(SETTING_console_filter_dialog_state).toHash();
     restore_state(settings_state);
 }
 
@@ -90,7 +90,7 @@ bool ConsoleFilterDialog::filtering_ON() const {
 ConsoleFilterDialog::~ConsoleFilterDialog() {
     const QVariant state = save_state();
 
-    settings_set_variant(SETTING_filter_dialog_state, state);
+    settings_set_variant(SETTING_console_filter_dialog_state, state);
 
     delete ui;
 }

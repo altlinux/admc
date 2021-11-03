@@ -24,6 +24,7 @@
 #include "adldap.h"
 #include "console_impls/policy_impl.h"
 #include "globals.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
@@ -42,6 +43,8 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 
     QPushButton *ok_button = ui->button_box->button(QDialogButtonBox::Ok);
     enable_widget_on_selection(ok_button, ui->view);
+
+    settings_setup_dialog_geometry(SETTING_select_policy_dialog_geometry, this);
 }
 
 SelectPolicyDialog::~SelectPolicyDialog() {
