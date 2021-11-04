@@ -59,6 +59,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     g_status()->init(ui->statusbar, ui->message_log_edit);
 
     d->client_user_label = new QLabel();
+    d->client_user_label->setText(ad.client_user());
     ui->statusbar->addPermanentWidget(d->client_user_label);
 
     auto action_show_client_user = new QAction("Show Client User", this);
@@ -66,10 +67,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     ui->statusbar->addAction(action_show_client_user);
 
     d->filter_dialog = new ConsoleFilterDialog(this);
-
-    // NOTE: disable console filter until connection because
-    // connection is required to init the dialog
-    ui->action_filter_objects->setEnabled(false);
 
     //
     // Console
@@ -83,14 +80,14 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     auto policy_impl = new PolicyImpl(ui->console);
     ui->console->register_impl(ItemType_Policy, policy_impl);
 
-    d->query_item_impl = new QueryItemImpl(ui->console);
-    ui->console->register_impl(ItemType_QueryItem, d->query_item_impl);
+    auto query_item_impl = new QueryItemImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    d->query_folder_impl = new QueryFolderImpl(ui->console);
-    ui->console->register_impl(ItemType_QueryFolder, d->query_folder_impl);
+    auto query_folder_impl = new QueryFolderImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
     d->object_impl->set_policy_impl(policy_impl);
-    d->query_item_impl->set_query_folder_impl(d->query_folder_impl);
+    query_item_impl->set_query_folder_impl(query_folder_impl);
 
     // Create dialogs opened from menubar
     auto manual_dialog = new ManualDialog(this);
@@ -178,8 +175,60 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     ui->menu_view->removeAction(ui->action_toggle_message_log);
     ui->menu_view->removeAction(ui->action_toggle_toolbar);
 
+    // Load console tree's
+    console_object_tree_init(ui->console, ad);
+    console_policy_tree_init(ui->console);
+    console_query_tree_init(ui->console);
+
+    // Set current scope to object head to load it
+    const QModelIndex object_tree_root = get_object_tree_root(ui->console);
+    if (object_tree_root.isValid()) {
+        ui->console->set_current_scope(object_tree_root);
+    }
+
+    d->filter_dialog->init(ad.adconfig());
+    on_filter_dialog_accepted();
+
+    query_item_impl->init(ad.adconfig());
+    query_folder_impl->init(ad.adconfig());
+
+    // Display any errors that happened when loading the
+    // console
+    g_status()->display_ad_messages(ad, this);
+
     //
-    // Connect actions
+    // Restore state
+    //
+
+    // NOTE: must restore state after everything is setup
+    const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
+    ui->console->restore_state(console_widget_state);
+
+    const bool restored_geometry = settings_restore_geometry(SETTING_main_window_geometry, this);
+    if (!restored_geometry) {
+        resize(1024, 768);
+    }
+
+    const QByteArray state = settings_get_variant(SETTING_main_window_state).toByteArray();
+    if (!state.isEmpty()) {
+        restoreState(state);
+    } else {
+        // Hide message log by default
+        ui->message_log->hide();
+    }
+
+    const bool first_time_opening_this_version = []() {
+        const QString last_version = settings_get_variant(SETTING_last_opened_version).toString();
+
+        return (last_version != ADMC_VERSION);
+    }();
+    if (first_time_opening_this_version) {
+        settings_set_variant(SETTING_last_opened_version, ADMC_VERSION);
+        changelog_dialog->show();
+    }
+
+    //
+    // Connect
     //
     connect(
         ui->action_connection_options, &QAction::triggered,
@@ -248,34 +297,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     connect(
         ui->menu_action, &QMenu::aboutToShow,
         ui->console, &ConsoleWidget::update_actions);
-
-    const bool restored_geometry = settings_restore_geometry(SETTING_main_window_geometry, this);
-    if (!restored_geometry) {
-        resize(1024, 768);
-    }
-
-    const QByteArray state = settings_get_variant(SETTING_main_window_state).toByteArray();
-    if (!state.isEmpty()) {
-        restoreState(state);
-    } else {
-        // Hide message log by default
-        ui->message_log->hide();
-    }
-
-    const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
-    ui->console->restore_state(console_widget_state);
-
-    connect_to_server(ad);
-
-    const bool first_time_opening_this_version = []() {
-        const QString last_version = settings_get_variant(SETTING_last_opened_version).toString();
-
-        return (last_version != ADMC_VERSION);
-    }();
-    if (first_time_opening_this_version) {
-        settings_set_variant(SETTING_last_opened_version, ADMC_VERSION);
-        changelog_dialog->show();
-    }
 }
 
 MainWindow::~MainWindow() {
@@ -395,41 +416,6 @@ void MainWindow::on_language_action(bool checked) {
     settings_set_variant(SETTING_locale, QLocale(selected_language));
 
     message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
-}
-
-void MainWindow::connect_to_server(AdInterface &ad) {
-    d->client_user_label->setText(ad.client_user());
-
-    // Load console tree's
-    console_object_tree_init(ui->console, ad);
-    console_policy_tree_init(ui->console);
-    console_query_tree_init(ui->console);
-
-    // Set current scope to object head to load it
-    const QModelIndex object_tree_root = get_object_tree_root(ui->console);
-    if (object_tree_root.isValid()) {
-        ui->console->set_current_scope(object_tree_root);
-    }
-
-    // Display any errors that happened when loading the
-    // console
-    g_status()->display_ad_messages(ad, this);
-
-    d->filter_dialog->init(ad.adconfig());
-    on_filter_dialog_accepted();
-
-    d->query_item_impl->init(ad.adconfig());
-    d->query_folder_impl->init(ad.adconfig());
-
-    ui->action_filter_objects->setEnabled(true);
-
-    // NOTE: need to restore console state again after
-    // successful connection because some state like column
-    // visibility requires models to be populated with
-    // items. Until connection to the domain, the object
-    // tree is empty.
-    const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
-    ui->console->restore_state(console_widget_state);
 }
 
 void MainWindow::refresh_object_tree() {

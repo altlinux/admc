@@ -45,7 +45,6 @@ protected:
 private:
     MainWindowPrivate *d;
 
-    void connect_to_server(AdInterface &ad);
     void refresh_object_tree();
     void on_show_non_containers(bool checked);
     void on_dev_mode(bool checked);
