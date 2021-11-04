@@ -18,16 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#ifndef MAIN_WINDOW_PRE_H
+#define MAIN_WINDOW_PRE_H
 
-class AdConfig;
-class AdInterface;
-class Status;
+#include <QMainWindow>
 
-extern AdConfig *g_adconfig;
-Status *g_status();
+namespace Ui {
+class MainWindowConnectionError;
+}
 
-void load_g_adconfig(AdInterface &ad);
+class MainWindowConnectionError final : public QMainWindow {
+    Q_OBJECT
 
-#endif /* GLOBALS_H */
+public:
+    Ui::MainWindowConnectionError *ui;
+
+    MainWindowConnectionError();
+    ~MainWindowConnectionError();
+
+private:
+    void on_retry_button();
+};
+
+#endif /* MAIN_WINDOW_PRE_H */

@@ -22,6 +22,7 @@
 #include "main_window_p.h"
 #include "ui_main_window.h"
 
+#include "main_window_connection_error.h"
 #include "about_dialog.h"
 #include "adldap.h"
 #include "changelog_dialog.h"
@@ -46,8 +47,8 @@
 #include <QLabel>
 #include <QModelIndex>
 
-MainWindow::MainWindow()
-: QMainWindow() {
+MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
+: QMainWindow(parent) {
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
@@ -181,9 +182,6 @@ MainWindow::MainWindow()
     // Connect actions
     //
     connect(
-        ui->action_connect, &QAction::triggered,
-        this, &MainWindow::connect_to_server);
-    connect(
         ui->action_connection_options, &QAction::triggered,
         connection_options_dialog, &QDialog::open);
     connect(
@@ -238,8 +236,7 @@ MainWindow::MainWindow()
 
     connect(
         connection_options_dialog, &QDialog::accepted,
-        this, &MainWindow::load_connection_options);
-    load_connection_options();
+        load_connection_options);
 
     connect(
         ui->action_filter_objects, &QAction::triggered,
@@ -268,7 +265,7 @@ MainWindow::MainWindow()
     const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
     ui->console->restore_state(console_widget_state);
 
-    connect_to_server();
+    connect_to_server(ad);
 
     const bool first_time_opening_this_version = []() {
         const QString last_version = settings_get_variant(SETTING_last_opened_version).toString();
@@ -345,7 +342,10 @@ void MainWindow::on_show_client_user() {
     d->client_user_label->setVisible(visible);
 }
 
-void MainWindow::load_connection_options() {
+void load_connection_options() {
+    const QString saved_dc = settings_get_variant(SETTING_dc).toString();
+    AdInterface::set_dc(saved_dc);
+
     const QVariant sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon);
     if (sasl_nocanon.isValid()) {
         AdInterface::set_sasl_nocanon(sasl_nocanon.toBool());
@@ -397,22 +397,8 @@ void MainWindow::on_language_action(bool checked) {
     message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
 }
 
-void MainWindow::connect_to_server() {
-    const QString saved_dc = settings_get_variant(SETTING_dc).toString();
-    AdInterface::set_dc(saved_dc);
-
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
+void MainWindow::connect_to_server(AdInterface &ad) {
     d->client_user_label->setText(ad.client_user());
-
-    const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
-    g_adconfig->load(ad, locale);
-    AdInterface::set_config(g_adconfig);
-
-    qDebug() << "domain =" << g_adconfig->domain();
 
     // Load console tree's
     console_object_tree_init(ui->console, ad);
@@ -434,10 +420,6 @@ void MainWindow::connect_to_server() {
 
     d->query_item_impl->init(ad.adconfig());
     d->query_folder_impl->init(ad.adconfig());
-
-    // Disable connect action once connected because
-    // it's not needed at that point
-    ui->action_connect->setEnabled(false);
 
     ui->action_filter_objects->setEnabled(true);
 

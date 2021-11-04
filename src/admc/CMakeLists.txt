@@ -40,6 +40,7 @@ set(ADMC_SOURCES
     widget_state.cpp
 
     main_window.cpp
+    main_window_connection_error.cpp
     find_widget.cpp
     tab_widget.cpp
     help_browser.cpp

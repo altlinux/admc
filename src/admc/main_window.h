@@ -24,6 +24,7 @@
 #include <QMainWindow>
 
 class MainWindowPrivate;
+class AdInterface;
 
 namespace Ui {
 class MainWindow;
@@ -35,7 +36,7 @@ class MainWindow final : public QMainWindow {
 public:
     Ui::MainWindow *ui;
 
-    MainWindow();
+    MainWindow(AdInterface &ad, QWidget *parent = nullptr);
     ~MainWindow();
 
 protected:
@@ -44,7 +45,7 @@ protected:
 private:
     MainWindowPrivate *d;
 
-    void connect_to_server();
+    void connect_to_server(AdInterface &ad);
     void refresh_object_tree();
     void on_show_non_containers(bool checked);
     void on_dev_mode(bool checked);
@@ -52,8 +53,9 @@ private:
     void on_filter_dialog_accepted();
     void on_log_searches_changed();
     void on_show_client_user();
-    void load_connection_options();
     void on_language_action(bool checked);
 };
+
+void load_connection_options();
 
 #endif /* MAIN_WINDOW_H */
