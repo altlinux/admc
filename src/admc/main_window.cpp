@@ -350,7 +350,7 @@ void MainWindow::on_show_login_changed() {
 }
 
 void load_connection_options() {
-    const QString saved_dc = settings_get_variant(SETTING_dc).toString();
+    const QString saved_dc = settings_get_variant(SETTING_host).toString();
     AdInterface::set_dc(saved_dc);
 
     const QVariant sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon);

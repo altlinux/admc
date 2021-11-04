@@ -21,7 +21,6 @@
 #include "console_impls/object_impl.h"
 
 #include "adldap.h"
-#include "change_dc_dialog.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/query_folder_impl.h"
@@ -72,7 +71,6 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     policy_impl = nullptr;
     filter_dialog = nullptr;
 
-    change_dc_dialog = new ChangeDCDialog(console);
     move_dialog = new SelectContainerDialog(console);
     rename_other_dialog = new RenameOtherDialog(console);
     rename_user_dialog = new RenameUserDialog(console);
@@ -101,7 +99,6 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     reset_password_action = new QAction(tr("Reset password"), this);
     reset_account_action = new QAction(tr("Reset account"), this);
     edit_upn_suffixes_action = new QAction(tr("Edit UPN suffixes"), this);
-    change_dc_action = new QAction(tr("Change domain controller"), this);
 
     auto new_menu = new QMenu(tr("New"), console_arg);
     new_action = new_menu->menuAction();
@@ -147,12 +144,6 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     connect(
         edit_upn_suffixes_action, &QAction::triggered,
         this, &ObjectImpl::on_edit_upn_suffixes);
-    connect(
-        change_dc_action, &QAction::triggered,
-        change_dc_dialog, &QDialog::open);
-    connect(
-        change_dc_dialog, &QDialog::accepted,
-        this, &ObjectImpl::on_change_dc_accepted);
     connect(
         upn_suffixes_editor, &QDialog::accepted,
         this, &ObjectImpl::on_upn_suffixes_editor_accepted);
@@ -313,7 +304,6 @@ QList<QAction *> ObjectImpl::get_all_custom_actions() const {
         reset_password_action,
         reset_account_action,
         edit_upn_suffixes_action,
-        change_dc_action,
         move_action,
     };
 
@@ -366,7 +356,6 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
 
         if (is_domain) {
             out.insert(edit_upn_suffixes_action);
-            out.insert(change_dc_action);
         }
 
     } else {
@@ -1091,14 +1080,6 @@ void ObjectImpl::on_create_dialog_accepted(CreateObjectDialog *dialog) {
     hide_busy_indicator();
 }
 
-void ObjectImpl::on_change_dc_accepted() {
-    const QModelIndex root = get_object_tree_root(console);
-    if (root.isValid()) {
-        QStandardItem *root_item = console->get_item(root);
-        console_object_load_root_text(root_item);
-    }
-}
-
 // When editor is accepted, update values of upn
 // suffixes
 void ObjectImpl::on_upn_suffixes_editor_accepted() {
@@ -1397,7 +1378,9 @@ void console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     const QString top_dn = g_adconfig->domain_head();
     const AdObject top_object = ad.search_object(top_dn);
     console_object_item_data_load(root, top_object);
-    console_object_load_root_text(root);
+
+    const QString domain_head = g_adconfig->domain().toLower();
+    root->setText(domain_head);
 }
 
 bool console_object_is_ou(const QModelIndex &index) {
@@ -1511,12 +1494,4 @@ void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list
             console->delete_item(index);
         }
     }
-}
-
-void console_object_load_root_text(QStandardItem *item) {
-    const QString domain_head = g_adconfig->domain().toLower();
-    const QString dc = AdInterface::get_dc();
-    const QString domain_text = QString("%1 [%2]").arg(domain_head, dc);
-
-    item->setText(domain_text);
 }

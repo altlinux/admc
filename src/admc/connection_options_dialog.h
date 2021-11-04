@@ -46,12 +46,14 @@ public:
     ConnectionOptionsDialog(QWidget *parent);
     ~ConnectionOptionsDialog();
 
+    void open() override;
     void accept() override;
     void reject() override;
 
 private:
     void reset();
     void restore_defaults();
+    QString get_selected_host() const;
 };
 
 #endif /* CONNECTION_OPTIONS_DIALOG_H */

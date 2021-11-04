@@ -76,7 +76,6 @@ set(ADMC_SOURCES
     properties_dialog.cpp
     properties_multi_dialog.cpp
     properties_warning_dialog.cpp
-    change_dc_dialog.cpp
     connection_options_dialog.cpp
     changelog_dialog.cpp
     error_log_dialog.cpp

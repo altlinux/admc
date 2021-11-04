@@ -34,7 +34,6 @@ class QMenu;
 template <typename T>
 class QList;
 class PolicyImpl;
-class ChangeDCDialog;
 class ConsoleWidget;
 class SelectContainerDialog;
 class RenameObjectDialog;
@@ -128,13 +127,11 @@ private slots:
     void on_rename_user_dialog_accepted();
     void on_rename_group_dialog_accepted();
     void on_rename_other_dialog_accepted();
-    void on_change_dc_accepted();
     void on_upn_suffixes_editor_accepted();
 
 private:
     ConsoleWidget *buddy_console;
     PolicyImpl *policy_impl;
-    ChangeDCDialog *change_dc_dialog;
     SelectContainerDialog *move_dialog;
     RenameObjectDialog *rename_other_dialog;
     RenameObjectDialog *rename_user_dialog;
@@ -155,7 +152,6 @@ private:
     QAction *reset_password_action;
     QAction *reset_account_action;
     QAction *edit_upn_suffixes_action;
-    QAction *change_dc_action;
     QAction *new_action;
 
     bool find_action_enabled;
@@ -185,6 +181,5 @@ bool console_object_is_ou(const QModelIndex &index);
 // of objects setup
 QModelIndex get_object_tree_root(ConsoleWidget *console);
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
-void console_object_load_root_text(QStandardItem *item);
 
 #endif /* OBJECT_IMPL_H */

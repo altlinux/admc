@@ -81,7 +81,6 @@ DEFINE_SETTING(SETTING_password_dialog_geometry);
 DEFINE_SETTING(SETTING_create_policy_dialog_geometry);
 DEFINE_SETTING(SETTING_select_object_advanced_dialog_geometry);
 DEFINE_SETTING(SETTING_select_policy_dialog_geometry);
-DEFINE_SETTING(SETTING_change_dc_dialog_geometry);
 DEFINE_SETTING(SETTING_filter_dialog_geometry);
 DEFINE_SETTING(SETTING_select_classes_dialog_geometry);
 DEFINE_SETTING(SETTING_logon_hours_dialog_geometry);
@@ -118,7 +117,7 @@ DEFINE_SETTING(SETTING_sasl_nocanon);
 DEFINE_SETTING(SETTING_show_login);
 
 // Other
-DEFINE_SETTING(SETTING_dc);
+DEFINE_SETTING(SETTING_host);
 DEFINE_SETTING(SETTING_locale);
 DEFINE_SETTING(SETTING_query_folders);
 DEFINE_SETTING(SETTING_query_items);

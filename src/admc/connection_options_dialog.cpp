@@ -58,11 +58,58 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     reset();
 }
 
+// Load hosts into list on open. Can't do this in ctor
+// because hosts lists can change between opens.
+void ConnectionOptionsDialog::open() {
+    const QString prev_host = get_selected_host();
+
+    const QString domain = get_default_domain_from_krb5();
+    const QList<QString> host_list = get_domain_hosts(domain, QString());
+
+    ui->host_select_list->clear();
+
+    for (const QString &host : host_list) {
+        ui->host_select_list->addItem(host);
+    }
+
+    // Restore previous host selection
+    const QList<QListWidgetItem *> item_list = ui->host_select_list->findItems(prev_host, Qt::MatchExactly);
+    if (ui->host_select_button->isChecked() && !item_list.isEmpty()) {
+        QListWidgetItem *item = item_list[0];
+        ui->host_select_list->setCurrentItem(item);
+    }
+
+    QDialog::open();
+}
+
 ConnectionOptionsDialog::~ConnectionOptionsDialog() {
     delete ui;
 }
 
 void ConnectionOptionsDialog::accept() {
+    const bool host_is_valid = [&]() {
+        if (ui->host_select_button->isChecked()) {
+            // Select case. Must select host, if any are available, if
+            // none available then no selection is ok
+            if (ui->host_select_list->count() > 0) {
+                const bool any_host_selected = !ui->host_select_list->selectedItems().isEmpty();
+
+                return any_host_selected;
+            } else {
+                return true;
+            }
+        } else {
+            // Custom case. Must enter non-empty string
+            return !ui->host_custom_edit->text().isEmpty();
+        }
+    }();
+
+    if (!host_is_valid) {
+        message_box_warning(this, tr("Error"), tr("Select or enter a host."));
+
+        return;
+    }
+
     const int port = ui->port_spinbox->value();
     settings_set_variant(SETTING_port, port);
 
@@ -71,6 +118,9 @@ void ConnectionOptionsDialog::accept() {
 
     const QString cert_strategy = ui->cert_combo->currentText();
     settings_set_variant(SETTING_cert_strategy, cert_strategy);
+
+    const QString selected_host = get_selected_host();
+    settings_set_variant(SETTING_host, selected_host);
 
     QDialog::accept();
 }
@@ -88,10 +138,12 @@ void ConnectionOptionsDialog::reset() {
     const bool sasl_nocanon = settings_get_bool(SETTING_sasl_nocanon);
     ui->canonize_check->setChecked(sasl_nocanon);
 
-    // TODO: verify that this is indeed the default value
     const QString cert_strategy = settings_get_variant(SETTING_cert_strategy, CERT_STRATEGY_NEVER).toString();
     const int cert_strategy_index = ui->cert_combo->findText(cert_strategy);
     ui->cert_combo->setCurrentIndex(cert_strategy_index);
+
+    ui->host_select_button->setChecked(true);
+    ui->host_select_list->setCurrentRow(0);
 }
 
 void ConnectionOptionsDialog::restore_defaults() {
@@ -101,4 +153,22 @@ void ConnectionOptionsDialog::restore_defaults() {
 
     const int never_index = ui->cert_combo->findText(CERT_STRATEGY_NEVER);
     ui->cert_combo->setCurrentIndex(never_index);
+
+    ui->host_select_button->setChecked(true);
+    ui->host_select_list->setCurrentRow(0);
+    ui->host_custom_edit->clear();
+}
+
+QString ConnectionOptionsDialog::get_selected_host() const {
+    if (ui->host_select_button->isChecked()) {
+        QListWidgetItem *current_item = ui->host_select_list->currentItem();
+
+        if (current_item == nullptr) {
+            return QString();
+        } else {
+            return current_item->text();
+        }
+    } else {
+        return ui->host_custom_edit->text();
+    }
 }
