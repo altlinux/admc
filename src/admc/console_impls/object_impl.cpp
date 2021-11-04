@@ -47,6 +47,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "console_filter_dialog.h"
 
 #include <QDebug>
 #include <QMenu>
@@ -69,6 +70,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     buddy_console = nullptr;
     policy_impl = nullptr;
+    filter_dialog = nullptr;
 
     change_dc_dialog = new ChangeDCDialog(console);
     move_dialog = new SelectContainerDialog(console);
@@ -81,9 +83,6 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     create_computer_dialog = new CreateComputerDialog(console);
     upn_suffixes_editor = new MultiEditor(console);
     password_dialog = new PasswordDialog(console);
-
-    current_filter = QString();
-    filtering_is_ON = false;
 
     set_results_view(new ResultsView(console_arg));
 
@@ -190,13 +189,12 @@ void ObjectImpl::set_buddy_console(ConsoleWidget *buddy_console_arg) {
     buddy_console = buddy_console_arg;
 }
 
-void ObjectImpl::enable_filtering(const QString &filter) {
-    current_filter = filter;
-    filtering_is_ON = true;
-}
+void ObjectImpl::set_filter_dialog(ConsoleFilterDialog *filter_dialog_arg) {
+    filter_dialog = filter_dialog_arg;
 
-void ObjectImpl::disable_filtering() {
-    filtering_is_ON = false;
+    connect(
+        filter_dialog, &QDialog::accepted,
+        this, &ObjectImpl::refresh_tree);
 }
 
 // Load children of this item in scope tree
@@ -215,9 +213,9 @@ void ObjectImpl::fetch(const QModelIndex &index) {
         // NOTE: OR user filter with containers filter so
         // that container objects are always shown, even if
         // they are filtered out by user filter
-        if (filtering_is_ON) {
+        if (filter_dialog != nullptr && filter_dialog->filtering_ON()) {
             out = filter_OR({is_container_filter(), out});
-            out = filter_OR({current_filter, out});
+            out = filter_OR({filter_dialog->get_filter(), out});
         }
 
         advanced_features_filter(out);
@@ -294,7 +292,7 @@ QString ObjectImpl::get_description(const QModelIndex &index) const {
 
     out += object_count_text;
 
-    if (filtering_is_ON) {
+    if (filter_dialog != nullptr && filter_dialog->filtering_ON()) {
         out += tr(" [Filtering enabled]");
     }
 
@@ -614,6 +612,19 @@ QList<QString> ObjectImpl::column_labels() const {
 
 QList<int> ObjectImpl::default_columns() const {
     return object_impl_default_columns();
+}
+
+void ObjectImpl::refresh_tree() {
+    const QModelIndex object_tree_root = get_object_tree_root(console);
+    if (!object_tree_root.isValid()) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    console->refresh_scope(object_tree_root);
+
+    hide_busy_indicator();
 }
 
 void ObjectImpl::on_new_user() {

@@ -41,6 +41,7 @@ class RenameObjectDialog;
 class CreateObjectDialog;
 class AttributeEditor;
 class PasswordDialog;
+class ConsoleFilterDialog;
 
 /**
  * Some f-ns used for models that store objects.
@@ -74,8 +75,12 @@ public:
     // buddy console.
     void set_buddy_console(ConsoleWidget *buddy_console);
 
-    void enable_filtering(const QString &filter);
-    void disable_filtering();
+    // Filter will be loaded from this dialog. If no dialog
+    // is set, no filter is applied.
+    //
+    // NOTE: filter dialog is optional because object impl
+    // used in find widget doesn't need it
+    void set_filter_dialog(ConsoleFilterDialog *filter_dialog);
 
     void fetch(const QModelIndex &index) override;
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
@@ -100,6 +105,8 @@ public:
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
+
+    void refresh_tree();
 
 private slots:
     void on_new_user();
@@ -138,9 +145,7 @@ private:
     CreateObjectDialog *create_computer_dialog;
     AttributeEditor *upn_suffixes_editor;
     PasswordDialog *password_dialog;
-
-    QString current_filter;
-    bool filtering_is_ON;
+    ConsoleFilterDialog *filter_dialog;
 
     QAction *find_action;
     QAction *move_action;

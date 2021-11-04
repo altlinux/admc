@@ -66,7 +66,8 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     action_show_client_user->setCheckable(true);
     ui->statusbar->addAction(action_show_client_user);
 
-    d->filter_dialog = new ConsoleFilterDialog(this);
+    auto filter_dialog = new ConsoleFilterDialog(this);
+    filter_dialog->init(ad.adconfig());
 
     //
     // Console
@@ -87,6 +88,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
     d->object_impl->set_policy_impl(policy_impl);
+    d->object_impl->set_filter_dialog(filter_dialog);
     query_item_impl->set_query_folder_impl(query_folder_impl);
 
     // Create dialogs opened from menubar
@@ -185,9 +187,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     if (object_tree_root.isValid()) {
         ui->console->set_current_scope(object_tree_root);
     }
-
-    d->filter_dialog->init(ad.adconfig());
-    on_filter_dialog_accepted();
 
     query_item_impl->init(ad.adconfig());
     query_folder_impl->init(ad.adconfig());
@@ -289,10 +288,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     connect(
         ui->action_filter_objects, &QAction::triggered,
-        d->filter_dialog, &QDialog::open);
-    connect(
-        d->filter_dialog, &QDialog::accepted,
-        this, &MainWindow::on_filter_dialog_accepted);
+        filter_dialog, &QDialog::open);
 
     connect(
         ui->menu_action, &QMenu::aboutToShow,
@@ -318,38 +314,27 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 }
 
 // NOTE: f-ns below need to manually change a setting and
-// then refresh_object_tree() because setting needs to be
-// changed before tree is refreshed. If you do this in a
-// more convenient way by connecting as a slot, call order
-// will be undefined.
+// then refresh_tree() because setting needs to be changed
+// before tree is refreshed. If you do this in a more
+// convenient way by connecting as a slot, call order will
+// be undefined.
 
 void MainWindow::on_show_non_containers(bool checked) {
     settings_set_bool(SETTING_show_non_containers_in_console_tree, checked);
 
-    refresh_object_tree();
+    d->object_impl->refresh_tree();
 }
 
 void MainWindow::on_dev_mode(bool checked) {
     settings_set_bool(SETTING_dev_mode, checked);
 
-    refresh_object_tree();
+    d->object_impl->refresh_tree();
 }
 
 void MainWindow::on_advanced_features(bool checked) {
     settings_set_bool(SETTING_advanced_features, checked);
 
-    refresh_object_tree();
-}
-
-void MainWindow::on_filter_dialog_accepted() {
-    if (d->filter_dialog->filtering_ON()) {
-        const QString filter = d->filter_dialog->get_filter();
-        d->object_impl->enable_filtering(filter);
-    } else {
-        d->object_impl->disable_filtering();
-    }
-
-    refresh_object_tree();
+    d->object_impl->refresh_tree();
 }
 
 void MainWindow::on_log_searches_changed() {
@@ -416,17 +401,4 @@ void MainWindow::on_language_action(bool checked) {
     settings_set_variant(SETTING_locale, QLocale(selected_language));
 
     message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
-}
-
-void MainWindow::refresh_object_tree() {
-    const QModelIndex object_tree_root = get_object_tree_root(ui->console);
-    if (!object_tree_root.isValid()) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    ui->console->refresh_scope(object_tree_root);
-
-    hide_busy_indicator();
 }
