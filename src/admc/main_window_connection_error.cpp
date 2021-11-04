@@ -33,6 +33,8 @@ MainWindowConnectionError::MainWindowConnectionError()
     ui = new Ui::MainWindowConnectionError();
     ui->setupUi(this);
 
+    center_widget(this);
+
     auto connection_options_dialog = new ConnectionOptionsDialog(this);
 
     connect(

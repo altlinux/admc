@@ -41,6 +41,7 @@
 #include <QModelIndex>
 #include <QPersistentModelIndex>
 #include <QPoint>
+#include <QScreen>
 #include <QSortFilterProxyModel>
 #include <QStandardItem>
 #include <QStandardItemModel>
@@ -301,5 +302,13 @@ QString get_selected_dn(ConsoleWidget *console, const int type, const int dn_rol
         return dn_list[0];
     } else {
         return QString();
+    }
+}
+
+void center_widget(QWidget *widget) {
+    QScreen *primary_screen = QGuiApplication::primaryScreen();
+
+    if (primary_screen != nullptr) {
+        widget->move(primary_screen->geometry().center() - widget->frameGeometry().center());
     }
 }

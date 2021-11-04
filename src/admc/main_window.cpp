@@ -157,6 +157,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     const bool restored_geometry = settings_restore_geometry(SETTING_main_window_geometry, this);
     if (!restored_geometry) {
         resize(1024, 768);
+        center_widget(this);
     }
 
     const QByteArray state = settings_get_variant(SETTING_main_window_state).toByteArray();

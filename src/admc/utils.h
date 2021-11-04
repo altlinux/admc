@@ -101,4 +101,6 @@ void message_box_warning(QWidget *parent, const QString &title, const QString &t
 QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role);
 QString get_selected_dn(ConsoleWidget *console, const int type, const int dn_role);
 
+void center_widget(QWidget *widget);
+
 #endif /* UTILS_H */
