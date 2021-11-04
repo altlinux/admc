@@ -24,6 +24,7 @@
 #include "console_impls/object_impl.h"
 #include "filter_widget/select_base_widget.h"
 #include "select_object_dialog.h"
+#include "select_object_match_dialog.h"
 #include "ui_select_object_dialog.h"
 #include "ui_select_object_match_dialog.h"
 
