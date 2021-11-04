@@ -23,8 +23,8 @@
 
 #include <QMainWindow>
 
-class MainWindowPrivate;
 class AdInterface;
+class QLabel;
 
 namespace Ui {
 class MainWindow;
@@ -43,15 +43,11 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    MainWindowPrivate *d;
+    QLabel *login_label;
+    QAction *action_show_client_user;
 
-    void on_show_non_containers(bool checked);
-    void on_dev_mode(bool checked);
-    void on_advanced_features(bool checked);
-    void on_filter_dialog_accepted();
     void on_log_searches_changed();
-    void on_show_client_user();
-    void on_language_action(bool checked);
+    void on_show_login_changed();
 };
 
 void load_connection_options();

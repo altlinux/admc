@@ -19,7 +19,6 @@
  */
 
 #include "main_window.h"
-#include "main_window_p.h"
 #include "ui_main_window.h"
 
 #include "main_window_connection_error.h"
@@ -52,19 +51,15 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
-    d = new MainWindowPrivate();
-
     country_combo_load_data();
 
     g_status()->init(ui->statusbar, ui->message_log_edit);
 
-    d->client_user_label = new QLabel();
-    d->client_user_label->setText(ad.client_user());
-    ui->statusbar->addPermanentWidget(d->client_user_label);
+    login_label = new QLabel();
+    login_label->setText(ad.client_user());
+    ui->statusbar->addPermanentWidget(login_label);
 
-    auto action_show_client_user = new QAction("Show Client User", this);
-    action_show_client_user->setCheckable(true);
-    ui->statusbar->addAction(action_show_client_user);
+    ui->statusbar->addAction(ui->action_show_login);
 
     auto filter_dialog = new ConsoleFilterDialog(this);
     filter_dialog->init(ad.adconfig());
@@ -72,8 +67,8 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     //
     // Console
     //
-    d->object_impl = new ObjectImpl(ui->console);
-    ui->console->register_impl(ItemType_Object, d->object_impl);
+    auto object_impl = new ObjectImpl(ui->console);
+    ui->console->register_impl(ItemType_Object, object_impl);
 
     auto policy_root_impl = new PolicyRootImpl(ui->console);
     ui->console->register_impl(ItemType_PolicyRoot, policy_root_impl);
@@ -87,8 +82,8 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     auto query_folder_impl = new QueryFolderImpl(ui->console);
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
-    d->object_impl->set_policy_impl(policy_impl);
-    d->object_impl->set_filter_dialog(filter_dialog);
+    object_impl->set_policy_impl(policy_impl);
+    object_impl->set_filter_dialog(filter_dialog);
     query_item_impl->set_query_folder_impl(query_folder_impl);
 
     // Create dialogs opened from menubar
@@ -116,50 +111,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     }();
 
     ui->console->set_actions(console_actions);
-
-    // Create language actions
-    const QList<QLocale::Language> language_list = {
-        QLocale::English,
-        QLocale::Russian,
-    };
-    d->language_action_map = [this, language_list]() {
-        QHash<QLocale::Language, QAction *> out;
-
-        auto language_group = new QActionGroup(this);
-        for (const auto language : language_list) {
-            QLocale locale(language);
-            const QString language_name = [locale]() {
-                // NOTE: Russian nativeLanguageName starts with lowercase letter for some reason
-                QString name_out = locale.nativeLanguageName();
-
-                const QChar first_letter_uppercased = name_out[0].toUpper();
-
-                name_out.replace(0, 1, first_letter_uppercased);
-
-                return name_out;
-            }();
-
-            const auto action = new QAction(language_name, language_group);
-            action->setCheckable(true);
-            language_group->addAction(action);
-
-            const bool is_checked = [=]() {
-                const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
-
-                return (current_locale == locale);
-            }();
-            action->setChecked(is_checked);
-
-            out[language] = action;
-        }
-
-        return out;
-    }();
-
-    for (const auto language : language_list) {
-        QAction *language_action = d->language_action_map[language];
-        ui->menu_language->addAction(language_action);
-    }
 
     // NOTE: "Action" menu actions need to be filled by the
     // console
@@ -227,6 +178,52 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     }
 
     //
+    // Setup language actions
+    //
+    const QList<QLocale::Language> language_list = {
+        QLocale::English,
+        QLocale::Russian,
+    };
+    auto language_group = new QActionGroup(this);
+    for (const QLocale::Language &language : language_list) {
+        const QLocale locale(language);
+
+        const QString language_name = [locale]() {
+            // NOTE: Russian nativeLanguageName starts with lowercase letter for some reason
+            QString name_out = locale.nativeLanguageName();
+
+            const QChar first_letter_uppercased = name_out[0].toUpper();
+
+            name_out.replace(0, 1, first_letter_uppercased);
+
+            return name_out;
+        }();
+
+        const auto action = new QAction(language_name, language_group);
+        action->setCheckable(true);
+        language_group->addAction(action);
+
+        const bool is_checked = [=]() {
+            const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
+
+            return (current_locale == locale);
+        }();
+        action->setChecked(is_checked);
+
+        ui->menu_language->addAction(action);
+
+        connect(
+            action, &QAction::triggered,
+            [this, language](bool checked) {
+                if (checked) {
+                    settings_set_variant(SETTING_locale, QLocale(language));
+
+                    message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
+                }
+            });
+    }
+
+    //
     // Connect
     //
     connect(
@@ -244,60 +241,89 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     connect(
         ui->action_about, &QAction::triggered,
         about_dialog, &QDialog::open);
-
-    settings_connect_action_to_bool_setting(ui->action_confirm_actions, SETTING_confirm_actions);
-    settings_connect_action_to_bool_setting(ui->action_last_name_order, SETTING_last_name_before_first_name);
-    settings_connect_action_to_bool_setting(ui->action_log_searches, SETTING_log_searches);
-    settings_connect_action_to_bool_setting(ui->action_timestamps, SETTING_timestamp_log);
-    settings_connect_action_to_bool_setting(action_show_client_user, SETTING_show_client_user);
-
-    // NOTE: not using
-    // settings_connect_action_to_bool_setting() for these
-    // actions because they need custom slots
     connect(
-        ui->action_show_noncontainers, &QAction::toggled,
-        this, &MainWindow::on_show_non_containers);
+        ui->action_filter_objects, &QAction::triggered,
+        filter_dialog, &QDialog::open);
     connect(
-        ui->action_advanced_features, &QAction::toggled,
-        this, &MainWindow::on_advanced_features);
-    connect(
-        ui->action_dev_mode, &QAction::toggled,
-        this, &MainWindow::on_dev_mode);
-
-    for (const auto language : d->language_action_map.keys()) {
-        QAction *action = d->language_action_map[language];
-
-        connect(
-            action, &QAction::toggled,
-            this, &MainWindow::on_language_action);
-    }
-
-    connect(
-        ui->action_log_searches, &QAction::triggered,
-        this, &MainWindow::on_log_searches_changed);
-    on_log_searches_changed();
-
-    connect(
-        action_show_client_user, &QAction::triggered,
-        this, &MainWindow::on_show_client_user);
-    on_show_client_user();
-
+        ui->menu_action, &QMenu::aboutToShow,
+        ui->console, &ConsoleWidget::update_actions);
     connect(
         connection_options_dialog, &QDialog::accepted,
         load_connection_options);
 
-    connect(
-        ui->action_filter_objects, &QAction::triggered,
-        filter_dialog, &QDialog::open);
+    const QHash<QString, QAction *> bool_action_map = {
+        {SETTING_confirm_actions, ui->action_confirm_actions},
+        {SETTING_last_name_before_first_name, ui->action_last_name_order},
+        {SETTING_log_searches, ui->action_log_searches},
+        {SETTING_timestamp_log, ui->action_timestamps},
+        {SETTING_show_login, ui->action_show_login},
+        {SETTING_show_non_containers_in_console_tree, ui->action_show_noncontainers},
+        {SETTING_advanced_features, ui->action_advanced_features},
+        {SETTING_dev_mode, ui->action_dev_mode},
+    };
 
+    const QList<QString> simple_setting_list = {
+        SETTING_confirm_actions,
+        SETTING_last_name_before_first_name,
+        SETTING_log_searches,
+        SETTING_timestamp_log,
+        SETTING_show_login,
+    };
+
+    for (const QString &setting : bool_action_map.keys()) {
+        QAction *action = bool_action_map[setting];
+
+        const bool setting_enabled = settings_get_bool(setting);
+        action->setChecked(setting_enabled);
+    }
+
+    // Connect setting actions so that they update setting
+    // values
+    for (const QString &setting : simple_setting_list) {
+        QAction *action = bool_action_map[setting];
+
+        connect(
+            action, &QAction::toggled,
+            [setting](bool checked) {
+                settings_set_bool(setting, checked);
+            });
+    }
+
+    // NOTE: For complex settings, we need to refresh object
+    // tree after setting changes. Because call order of
+    // slots is undefined we can't just make multiple slots,
+    // so need to use a custom slot.
+    const QList<QString> complex_setting_list = {
+        SETTING_show_non_containers_in_console_tree,
+        SETTING_advanced_features,
+        SETTING_dev_mode,
+    };
+
+    for (const QString &setting : complex_setting_list) {
+        QAction *action = bool_action_map[setting];
+
+        connect(
+            action, &QAction::toggled,
+            [setting, object_impl](bool checked) {
+                settings_set_bool(setting, checked);
+
+                object_impl->refresh_tree();
+            });
+    }
+
+    // NOTE: Call these slots now to load initial state
     connect(
-        ui->menu_action, &QMenu::aboutToShow,
-        ui->console, &ConsoleWidget::update_actions);
+        ui->action_log_searches, &QAction::triggered,
+        this, &MainWindow::on_log_searches_changed);
+    on_log_searches_changed();
+    connect(
+        ui->action_show_login, &QAction::triggered,
+        this, &MainWindow::on_show_login_changed);
+    on_show_login_changed();
 }
 
 MainWindow::~MainWindow() {
     delete ui;
-    delete d;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -313,39 +339,14 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     QMainWindow::closeEvent(event);
 }
 
-// NOTE: f-ns below need to manually change a setting and
-// then refresh_tree() because setting needs to be changed
-// before tree is refreshed. If you do this in a more
-// convenient way by connecting as a slot, call order will
-// be undefined.
-
-void MainWindow::on_show_non_containers(bool checked) {
-    settings_set_bool(SETTING_show_non_containers_in_console_tree, checked);
-
-    d->object_impl->refresh_tree();
-}
-
-void MainWindow::on_dev_mode(bool checked) {
-    settings_set_bool(SETTING_dev_mode, checked);
-
-    d->object_impl->refresh_tree();
-}
-
-void MainWindow::on_advanced_features(bool checked) {
-    settings_set_bool(SETTING_advanced_features, checked);
-
-    d->object_impl->refresh_tree();
-}
-
 void MainWindow::on_log_searches_changed() {
-    const bool log_searches_ON = settings_get_bool(SETTING_log_searches);
-
-    AdInterface::set_log_searches(log_searches_ON);
+    const bool enabled = ui->action_log_searches->isChecked();
+    AdInterface::set_log_searches(enabled);
 }
 
-void MainWindow::on_show_client_user() {
-    const bool visible = settings_get_bool(SETTING_show_client_user);
-    d->client_user_label->setVisible(visible);
+void MainWindow::on_show_login_changed() {
+    const bool enabled = ui->action_show_login->isChecked();
+    login_label->setVisible(enabled);
 }
 
 void load_connection_options() {
@@ -376,29 +377,4 @@ void load_connection_options() {
     };
     const CertStrategy cert_strategy = cert_strategy_map.value(cert_strategy_string, CertStrategy_Never);
     AdInterface::set_cert_strategy(cert_strategy);
-}
-
-void MainWindow::on_language_action(bool checked) {
-    // NOTE: since language actions are part of action
-    // group, toggling one affects others, so to do this
-    // slot once do this check.
-    if (!checked) {
-        return;
-    }
-
-    const QLocale::Language selected_language = [&]() {
-        for (const QLocale::Language &language : d->language_action_map.keys()) {
-            QAction *action = d->language_action_map[language];
-
-            if (action->isChecked()) {
-                return language;
-            }
-        }
-
-        return QLocale::English;
-    }();
-
-    settings_set_variant(SETTING_locale, QLocale(selected_language));
-
-    message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
 }

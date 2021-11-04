@@ -118,11 +118,6 @@
     </property>
    </widget>
   </widget>
-  <action name="action_connect">
-   <property name="text">
-    <string>Connect</string>
-   </property>
-  </action>
   <action name="action_connection_options">
    <property name="text">
     <string>Connection Options</string>
@@ -269,11 +264,6 @@
     <string>Show Non-Container Objects in Console Tree</string>
    </property>
   </action>
-  <action name="actionEnglish">
-   <property name="text">
-    <string>English</string>
-   </property>
-  </action>
   <action name="action_navigate_up">
    <property name="icon">
     <iconset theme="go-up">
@@ -322,6 +312,14 @@
   <action name="action_dev_mode">
    <property name="text">
     <string>Dev mode</string>
+   </property>
+  </action>
+  <action name="action_show_login">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Login</string>
    </property>
   </action>
  </widget>

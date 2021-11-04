@@ -47,6 +47,7 @@ const QHash<QString, bool> bool_setting_default_map = {
     {SETTING_log_searches, false},
     {SETTING_timestamp_log, true},
     {SETTING_sasl_nocanon, true},
+    {SETTING_show_login, true},
 };
 
 bool settings_get_bool(const QString setting) {
@@ -113,17 +114,4 @@ void settings_set_variant(const QString setting, const QVariant &value) {
     QSettings settings;
 
     settings.setValue(setting, value);
-}
-
-void settings_connect_action_to_bool_setting(QAction *action, const QString setting) {
-    // Init action state to saved value
-    const bool saved_value = settings_get_bool(setting);
-    action->setChecked(saved_value);
-
-    // Update saved value when action is toggled
-    QObject::connect(
-        action, &QAction::toggled,
-        [setting](bool checked) {
-            settings_set_bool(setting, checked);
-        });
 }

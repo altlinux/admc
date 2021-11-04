@@ -115,7 +115,7 @@ DEFINE_SETTING(SETTING_show_results_header);
 DEFINE_SETTING(SETTING_log_searches);
 DEFINE_SETTING(SETTING_timestamp_log);
 DEFINE_SETTING(SETTING_sasl_nocanon);
-DEFINE_SETTING(SETTING_show_client_user);
+DEFINE_SETTING(SETTING_show_login);
 
 // Other
 DEFINE_SETTING(SETTING_dc);
@@ -148,12 +148,5 @@ bool settings_restore_geometry(const QString setting, QWidget *widget);
 
 void settings_save_header_state(const QString setting, QHeaderView *header);
 bool settings_restore_header_state(const QString setting, QHeaderView *header);
-
-/** 
- * Connect a checkable QAction to a bool setting. Action
- * state will be initialized to the current setting value.
- * Toggling the action will modify the setting.
- */
-void settings_connect_action_to_bool_setting(QAction *action, const QString setting);
 
 #endif /* SETTINGS_H */
