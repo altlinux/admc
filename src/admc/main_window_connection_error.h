@@ -38,6 +38,7 @@ public:
 
 private:
     void on_retry_button();
+    void open_connection_options();
 };
 
 #endif /* MAIN_WINDOW_PRE_H */

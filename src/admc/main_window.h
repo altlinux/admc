@@ -49,6 +49,7 @@ private:
     void on_log_searches_changed();
     void on_show_login_changed();
     void open_manual();
+    void open_connection_options();
 };
 
 void load_connection_options();

@@ -46,14 +46,17 @@ public:
     ConnectionOptionsDialog(QWidget *parent);
     ~ConnectionOptionsDialog();
 
-    void open() override;
     void accept() override;
-    void reject() override;
 
 private:
-    void reset();
-    void restore_defaults();
-    QString get_selected_host() const;
+    bool any_hosts_available;
+
+    void load_saved_options();
+    void load_default_options();
 };
+
+// Load connection options from settings and apply to
+// AdInterface
+void load_connection_options();
 
 #endif /* CONNECTION_OPTIONS_DIALOG_H */

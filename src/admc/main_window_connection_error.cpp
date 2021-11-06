@@ -35,8 +35,6 @@ MainWindowConnectionError::MainWindowConnectionError()
 
     center_widget(this);
 
-    auto connection_options_dialog = new ConnectionOptionsDialog(this);
-
     connect(
         ui->retry_button, &QAbstractButton::clicked,
         this, &MainWindowConnectionError::on_retry_button);
@@ -45,10 +43,7 @@ MainWindowConnectionError::MainWindowConnectionError()
         this, &MainWindow::close);
     connect(
         ui->options_button, &QAbstractButton::clicked,
-        connection_options_dialog, &QDialog::open);
-    connect(
-        connection_options_dialog, &QDialog::accepted,
-        load_connection_options);
+        this, &MainWindowConnectionError::open_connection_options);
 }
 
 MainWindowConnectionError::~MainWindowConnectionError() {
@@ -66,4 +61,13 @@ void MainWindowConnectionError::on_retry_button() {
 
         QMainWindow::hide();
     }
+}
+
+void MainWindowConnectionError::open_connection_options() {
+    auto dialog = new ConnectionOptionsDialog(this);
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        load_connection_options);
 }

@@ -89,7 +89,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     // Create dialogs opened from menubar
     auto changelog_dialog = new ChangelogDialog(this);
     auto about_dialog = new AboutDialog(this);
-    auto connection_options_dialog = new ConnectionOptionsDialog(this);
 
     // Setup console
     const ConsoleWidgetActions console_actions = [&]() {
@@ -228,7 +227,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     //
     connect(
         ui->action_connection_options, &QAction::triggered,
-        connection_options_dialog, &QDialog::open);
+        this, &MainWindow::open_connection_options);
     connect(
         ui->action_quit, &QAction::triggered,
         this, &MainWindow::close);
@@ -247,9 +246,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     connect(
         ui->menu_action, &QMenu::aboutToShow,
         ui->console, &ConsoleWidget::update_actions);
-    connect(
-        connection_options_dialog, &QDialog::accepted,
-        load_connection_options);
 
     const QHash<QString, QAction *> bool_action_map = {
         {SETTING_confirm_actions, ui->action_confirm_actions},
@@ -352,6 +348,15 @@ void MainWindow::on_show_login_changed() {
 void MainWindow::open_manual() {
     const QUrl manual_url = QUrl("https://www.altlinux.org/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%BE%D0%B2%D1%8B%D0%B5_%D0%BF%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D0%BA%D0%B8/ADMC");
     QDesktopServices::openUrl(manual_url);
+}
+
+void MainWindow::open_connection_options() {
+    auto dialog = new ConnectionOptionsDialog(this);
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        load_connection_options);
 }
 
 void load_connection_options() {
