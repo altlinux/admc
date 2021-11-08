@@ -66,8 +66,8 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
         create_query_folder_action, &QAction::triggered,
         this, &QueryFolderImpl::on_create_query_folder);
     connect(
-        create_query_folder_action, &QAction::triggered,
-        this, &QueryFolderImpl::on_create_query_folder);
+        create_query_item_action, &QAction::triggered,
+        this, &QueryFolderImpl::on_create_query_item);
     connect(
         edit_action, &QAction::triggered,
         this, &QueryFolderImpl::on_edit_query_folder);
@@ -122,10 +122,6 @@ void QueryFolderImpl::on_create_query_item() {
 
             console_query_tree_save(console);
         });
-}
-
-void QueryFolderImpl::on_create_query_item_accepted() {
-    
 }
 
 void QueryFolderImpl::on_edit_query_folder() {

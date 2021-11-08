@@ -53,11 +53,8 @@ private:
 
     void on_import();
     void on_create_query_folder();
-    void on_create_query_folder_accepted();
     void on_create_query_item();
-    void on_create_query_item_accepted();
     void on_edit_query_folder();
-    void on_edit_query_folder_accepted();
 };
 
 void console_query_tree_init(ConsoleWidget *console);
