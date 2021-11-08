@@ -56,7 +56,7 @@ void ADMCTestFilterWidget::init() {
 void ADMCTestFilterWidget::test_simple_tab() {
     tab_widget->setCurrentWidget(simple_tab);
 
-    SelectClassesWidget *select_classes_widget = simple_tab->ui->select_classes;
+    SelectClassesWidget *select_classes_widget = simple_tab->ui->select_classes_widget;
 
     QPushButton *select_button = select_classes_widget->ui->select_button;
     select_button->click();
@@ -98,7 +98,7 @@ void ADMCTestFilterWidget::test_simple_tab() {
 void ADMCTestFilterWidget::test_normal_tab() {
     tab_widget->setCurrentWidget(normal_tab);
 
-    SelectClassesWidget *select_classes_widget = normal_tab->ui->select_classes;
+    SelectClassesWidget *select_classes_widget = normal_tab->ui->select_classes_widget;
 
     QPushButton *select_button = select_classes_widget->ui->select_button;
     select_button->click();

@@ -50,7 +50,7 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 
     const QList<QString> selected_list = class_list;
 
-    ui->select_classes->init(g_adconfig, class_list, selected_list);
+    ui->select_classes_widget->init(g_adconfig, class_list, selected_list);
 
     ui->select_base_widget->init(g_adconfig);
 
@@ -136,7 +136,7 @@ void SelectObjectDialog::on_add_button() {
             filter_CONDITION(Condition_StartsWith, ATTRIBUTE_USER_PRINCIPAL_NAME, entered_name),
         });
 
-        const QString classes_filter = ui->select_classes->get_filter();
+        const QString classes_filter = ui->select_classes_widget->get_filter();
 
         const QString out = filter_AND({
             name_filter,

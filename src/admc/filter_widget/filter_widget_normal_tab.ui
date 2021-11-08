@@ -27,7 +27,7 @@
       </widget>
      </item>
      <item>
-      <widget class="SelectClassesWidget" name="select_classes" native="true"/>
+      <widget class="SelectClassesWidget" name="select_classes_widget" native="true"/>
      </item>
     </layout>
    </item>

@@ -62,7 +62,7 @@ void FilterWidgetNormalTab::init(AdConfig *adconfig_arg, const QList<QString> &c
         ui->attribute_class_combo->addItem(display, object_class);
     }
 
-    ui->select_classes->init(adconfig, class_list, selected_list);
+    ui->select_classes_widget->init(adconfig, class_list, selected_list);
 
 }
 
@@ -79,7 +79,7 @@ QString FilterWidgetNormalTab::get_filter() const {
         return filter_AND(filters);
     }();
 
-    const QString class_filter = ui->select_classes->get_filter();
+    const QString class_filter = ui->select_classes_widget->get_filter();
 
     const bool classes = !class_filter.isEmpty();
     const bool attributes = !attribute_filter.isEmpty();
@@ -161,7 +161,7 @@ void FilterWidgetNormalTab::clear_filters() {
 QVariant FilterWidgetNormalTab::save_state() const {
     QHash<QString, QVariant> state;
 
-    state["select_classes"] = ui->select_classes->save_state();
+    state["select_classes_widget"] = ui->select_classes_widget->save_state();
 
     QList<QString> filter_display_list;
     QList<QString> filter_value_list;
@@ -183,7 +183,7 @@ QVariant FilterWidgetNormalTab::save_state() const {
 void FilterWidgetNormalTab::restore_state(const QVariant &state_variant) {
     const QHash<QString, QVariant> state = state_variant.toHash();
 
-    ui->select_classes->restore_state(state["select_classes"]);
+    ui->select_classes_widget->restore_state(state["select_classes_widget"]);
 
     const QList<QString> filter_display_list = state["filter_display_list"].toStringList();
     const QList<QString> filter_value_list = state["filter_value_list"].toStringList();
