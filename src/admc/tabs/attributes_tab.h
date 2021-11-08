@@ -65,7 +65,6 @@ private:
 
     void open_editor();
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
-    void on_editor_accepted();
     QList<QStandardItem *> get_selected_row() const;
 };
 
