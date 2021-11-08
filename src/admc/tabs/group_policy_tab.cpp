@@ -63,8 +63,6 @@ GroupPolicyTab::GroupPolicyTab() {
     ui = new Ui::GroupPolicyTab();
     ui->setupUi(this);
 
-    add_dialog = new SelectPolicyDialog(this);
-
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
         {
@@ -87,7 +85,7 @@ GroupPolicyTab::GroupPolicyTab() {
         this, &GroupPolicyTab::on_remove_button);
     connect(
         ui->add_button, &QAbstractButton::clicked,
-        add_dialog, &QDialog::open);
+        this, &GroupPolicyTab::on_add_button);
     connect(
         ui->view, &QWidget::customContextMenuRequested,
         this, &GroupPolicyTab::on_context_menu);
@@ -162,10 +160,17 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
     menu->popup(pos);
 }
 
-void GroupPolicyTab::on_add_dialog() {
-    const QList<QString> selected = add_dialog->get_selected_dns();
+void GroupPolicyTab::on_add_button() {
+    auto dialog = new SelectPolicyDialog(this);
+    dialog->open();
 
-    add_link(selected);
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            const QList<QString> selected = dialog->get_selected_dns();
+
+            add_link(selected);
+        });
 }
 
 void GroupPolicyTab::on_remove_button() {

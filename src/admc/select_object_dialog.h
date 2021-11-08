@@ -26,8 +26,6 @@
 class QStandardItemModel;
 class AdObject;
 class AdInterface;
-class SelectObjectMatchDialog;
-class SelectObjectAdvancedDialog;
 
 namespace Ui {
 class SelectObjectDialog;
@@ -58,15 +56,12 @@ private:
     QStandardItemModel *model;
     QList<QString> class_list;
     SelectObjectDialogMultiSelection multi_selection;
-    SelectObjectMatchDialog *match_dialog;
-    SelectObjectAdvancedDialog *advanced_dialog;
 
     void on_add_button();
     void on_remove_button();
     void add_objects_to_list(const QList<QString> &dn_list);
     void add_objects_to_list(const QList<QString> &dn_list, AdInterface &ad);
-    void on_match_dialog_accepted();
-    void on_advanced_dialog_accepted();
+    void open_advanced_dialog();
 };
 
 void add_select_object_to_model(QStandardItemModel *model, const AdObject &object);

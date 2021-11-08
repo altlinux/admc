@@ -24,14 +24,7 @@
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"
 
-class QStandardItem;
 class AdObject;
-class AdInterface;
-class ConsoleActions;
-class PolicyResultsWidget;
-class CreatePolicyDialog;
-template <typename T>
-class QList;
 
 class PolicyRootImpl final : public ConsoleImpl {
     Q_OBJECT
@@ -49,13 +42,10 @@ public:
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
 
-private slots:
-    void on_dialog_created_policy(const QString &dn);
-
 private:
     QAction *create_policy_action;
-    CreatePolicyDialog *create_policy_dialog;
 
+    void create_policy();
     void create_policy_in_console(const AdObject &object);
 };
 

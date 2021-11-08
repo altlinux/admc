@@ -35,6 +35,8 @@ CreateGroupDialog::CreateGroupDialog(QWidget *parent)
     ui = new Ui::CreateGroupDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     QList<AttributeEdit *> edit_list;
     sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
     new GroupScopeEdit(ui->scope_combo, &edit_list, this);

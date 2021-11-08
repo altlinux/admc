@@ -31,6 +31,8 @@ StringEditor::StringEditor(QWidget *parent)
     ui = new Ui::StringEditor();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     AttributeEditor::set_attribute_label(ui->attribute_label);
 
     settings_setup_dialog_geometry(SETTING_multi_editor_geometry, this);

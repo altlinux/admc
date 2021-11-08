@@ -87,8 +87,6 @@ SecurityTab::SecurityTab() {
     ui = new Ui::SecurityTab();
     ui->setupUi(this);
 
-    select_well_known_trustee_dialog = new SelectWellKnownTrusteeDialog(this);
-
     ignore_item_changed_signal = false;
 
     trustee_model = new QStandardItemModel(0, 1, this);
@@ -156,13 +154,10 @@ SecurityTab::SecurityTab() {
         this, &SecurityTab::on_add_trustee_button);
     connect(
         ui->add_well_known_trustee_button, &QAbstractButton::clicked,
-        select_well_known_trustee_dialog, &QDialog::open);
+        this, &SecurityTab::on_add_well_known_trustee);
     connect(
         ui->remove_trustee_button, &QAbstractButton::clicked,
         this, &SecurityTab::on_remove_trustee_button);
-    connect(
-        select_well_known_trustee_dialog, &QDialog::accepted,
-        this, &SecurityTab::on_select_well_known_trustee_dialog_accepted);
 }
 
 SecurityTab::~SecurityTab() {
@@ -309,6 +304,7 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
 void SecurityTab::on_add_trustee_button() {
     auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, this);
     dialog->setWindowTitle(tr("Add Trustee"));
+    dialog->open();
 
     connect(
         dialog, &SelectObjectDialog::accepted,
@@ -335,8 +331,6 @@ void SecurityTab::on_add_trustee_button() {
 
             add_trustees(sid_list, ad);
         });
-
-    dialog->open();
 }
 
 void SecurityTab::on_remove_trustee_button() {
@@ -441,13 +435,20 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
     }
 }
 
-void SecurityTab::on_select_well_known_trustee_dialog_accepted() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
+void SecurityTab::on_add_well_known_trustee() {
+    auto dialog = new SelectWellKnownTrusteeDialog(this);
+    dialog->open();
 
-    const QList<QByteArray> trustee_list = select_well_known_trustee_dialog->get_selected();
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
 
-    add_trustees(trustee_list, ad);
+            const QList<QByteArray> trustee_list = dialog->get_selected();
+
+            add_trustees(trustee_list, ad);
+        });
 }

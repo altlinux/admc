@@ -42,6 +42,8 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     ui = new Ui::SelectContainerDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     ui->view->sortByColumn(0, Qt::AscendingOrder);
 
     model = new QStandardItemModel(this);

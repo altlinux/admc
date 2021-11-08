@@ -33,21 +33,14 @@ StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_bu
 , other_attribute(other_attribute_arg) {
     main_edit = new StringEdit(line_edit_arg, main_attribute, nullptr, parent);
 
+    other_button = other_button_arg;
+
     connect(
         main_edit, &AttributeEdit::edited,
         this, &AttributeEdit::edited);
-
-    other_button = other_button_arg;
-
-    other_editor = new MultiEditor(other_button);
-    other_editor->set_attribute(other_attribute_arg);
-
     connect(
         other_button, &QPushButton::clicked,
         this, &StringOtherEdit::on_other_button);
-    connect(
-        other_editor, &QDialog::accepted,
-        this, &StringOtherEdit::on_other_editor_accepted);
 }
 
 void StringOtherEdit::load_internal(AdInterface &ad, const AdObject &object) {
@@ -56,9 +49,9 @@ void StringOtherEdit::load_internal(AdInterface &ad, const AdObject &object) {
     other_values = object.get_values(other_attribute);
 }
 
-void StringOtherEdit::set_read_only(const bool read_only) {
+void StringOtherEdit::set_read_only(const bool read_only_arg) {
+    read_only = read_only_arg;
     main_edit->set_read_only(read_only);
-    other_editor->set_read_only(read_only);
 }
 
 bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {
@@ -69,12 +62,18 @@ bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {
 }
 
 void StringOtherEdit::on_other_button() {
-    other_editor->set_value_list(other_values);
-    other_editor->open();
-}
+    auto editor = new MultiEditor(other_button);
+    editor->set_read_only(read_only);
+    editor->set_attribute(other_attribute);
+    editor->set_value_list(other_values);
 
-void StringOtherEdit::on_other_editor_accepted() {
-    other_values = other_editor->get_value_list();
+    editor->open();
 
-    emit edited();
+    connect(
+        editor, &QDialog::accepted,
+        [this, editor]() {
+            other_values = editor->get_value_list();
+
+            emit edited();
+        });
 }

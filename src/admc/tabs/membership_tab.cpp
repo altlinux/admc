@@ -316,6 +316,8 @@ void MembershipTab::on_add_button() {
     }();
     dialog->setWindowTitle(title);
 
+    dialog->open();
+
     connect(
         dialog, &SelectObjectDialog::accepted,
         [this, dialog]() {
@@ -323,8 +325,6 @@ void MembershipTab::on_add_button() {
 
             add_values(selected);
         });
-
-    dialog->open();
 }
 
 void MembershipTab::on_remove_button() {

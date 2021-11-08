@@ -143,6 +143,5 @@ void error_log(const QList<QString> error_list, QWidget *parent) {
 
     const QString errors_text = error_list.join("\n");
     error_log_dialog->set_text(errors_text);
-    error_log_dialog->setAttribute(Qt::WA_DeleteOnClose);
     error_log_dialog->open();
 }

@@ -42,8 +42,6 @@ enum QueryColumn {
     QueryColumn_COUNT,
 };
 
-class EditQueryItemDialog;
-class EditQueryItemWidget;
 class QueryFolderImpl;
 class AdConfig;
 
@@ -51,9 +49,7 @@ class QueryItemImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    QueryItemImpl(ConsoleWidget *console_arg);
-
-    void init(AdConfig *adconfig);
+    QueryItemImpl(AdConfig *adconfig, ConsoleWidget *console_arg);
 
     void set_query_folder_impl(QueryFolderImpl *impl);
 
@@ -76,13 +72,12 @@ private slots:
     void on_export();
 
 private:
+    AdConfig *adconfig;
     QAction *edit_action;
     QAction *export_action;
-    EditQueryItemDialog *edit_query_item_dialog;
     QueryFolderImpl *query_folder_impl;
 
     void on_edit_query_item();
-    void on_edit_query_item_accepted();
 };
 
 void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children);

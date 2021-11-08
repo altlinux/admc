@@ -46,16 +46,11 @@ PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));
 
-    create_policy_dialog = new CreatePolicyDialog(console);
-
     create_policy_action = new QAction(tr("Create policy"), this);
 
     connect(
         create_policy_action, &QAction::triggered,
-        create_policy_dialog, &QDialog::open);
-    connect(
-        create_policy_dialog, &CreatePolicyDialog::created_policy,
-        this, &PolicyRootImpl::on_dialog_created_policy);
+        this, &PolicyRootImpl::create_policy);
 }
 
 void PolicyRootImpl::fetch(const QModelIndex &index) {
@@ -122,23 +117,28 @@ QList<int> PolicyRootImpl::default_columns() const {
     return {0};
 }
 
-// NOTE: not adding policy object to the domain
-// tree, but i think it's ok?
-void PolicyRootImpl::on_dialog_created_policy(const QString &dn) {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
+void PolicyRootImpl::create_policy() {
+    auto dialog = new CreatePolicyDialog(console);
+    dialog->open();
 
-    const QString base = dn;
-    const SearchScope scope = SearchScope_Object;
-    const QString filter = QString();
-    const QList<QString> attributes = console_policy_search_attributes();
-    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
 
-    const AdObject object = results[dn];
+            const QString dn = dialog->get_created_dn();
+            const SearchScope scope = SearchScope_Object;
+            const QString filter = QString();
+            const QList<QString> attributes = console_policy_search_attributes();
+            const QHash<QString, AdObject> results = ad.search(dn, scope, filter, attributes);
 
-    create_policy_in_console(object);
+            const AdObject object = results[dn];
+
+            create_policy_in_console(object);
+        });
 }
 
 void PolicyRootImpl::create_policy_in_console(const AdObject &object) {

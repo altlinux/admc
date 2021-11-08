@@ -43,13 +43,12 @@
 
 const QString query_item_icon = "emblem-system";
 
-QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
+QueryItemImpl::QueryItemImpl(AdConfig *adconfig_arg, ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
+    adconfig = adconfig_arg;
     query_folder_impl = nullptr;
 
     set_results_view(new ResultsView(console_arg));
-
-    edit_query_item_dialog = new EditQueryItemDialog(console);
 
     edit_action = new QAction(tr("Edit..."), this);
     export_action = new QAction(tr("Export query..."), this);
@@ -58,15 +57,8 @@ QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
         edit_action, &QAction::triggered,
         this, &QueryItemImpl::on_edit_query_item);
     connect(
-        edit_query_item_dialog, &QDialog::accepted,
-        this, &QueryItemImpl::on_edit_query_item_accepted);
-    connect(
         export_action, &QAction::triggered,
         this, &QueryItemImpl::on_export);
-}
-
-void QueryItemImpl::init(AdConfig *adconfig) {
-    edit_query_item_dialog->init(adconfig);
 }
 
 void QueryItemImpl::set_query_folder_impl(QueryFolderImpl *impl) {
@@ -257,38 +249,42 @@ void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, Q
 }
 
 void QueryItemImpl::on_edit_query_item() {
+    auto dialog = new EditQueryItemDialog(adconfig, console);
+
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
     const QModelIndex parent_index = index.parent();
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);
-    edit_query_item_dialog->set_sibling_name_list(sibling_name_list);
+    dialog->set_sibling_name_list(sibling_name_list);
 
-    QString name;
-    QString description;
-    bool scope_is_children;
-    QByteArray filter_state;
-    get_query_item_data(index, &name, &description, &scope_is_children, &filter_state);
+    {
+        QString name;
+        QString description;
+        bool scope_is_children;
+        QByteArray filter_state;
+        get_query_item_data(index, &name, &description, &scope_is_children, &filter_state);
+        dialog->set_data(name, description, scope_is_children, filter_state);
+    }
 
-    edit_query_item_dialog->set_data(name, description, scope_is_children, filter_state);
+    dialog->open();
 
-    edit_query_item_dialog->open();
-}
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog, index]() {
+            const QString name = dialog->name();
+            const QString description = dialog->description();
+            const QString filter = dialog->filter();
+            const QString base = dialog->base();
+            const QByteArray filter_state = dialog->filter_state();
+            const bool scope_is_children = dialog->scope_is_children();
 
-void QueryItemImpl::on_edit_query_item_accepted() {
-    const QString name = edit_query_item_dialog->name();
-    const QString description = edit_query_item_dialog->description();
-    const QString filter = edit_query_item_dialog->filter();
-    const QString base = edit_query_item_dialog->base();
-    const QByteArray filter_state = edit_query_item_dialog->filter_state();
-    const bool scope_is_children = edit_query_item_dialog->scope_is_children();
+            const QList<QStandardItem *> row = console->get_row(index);
+            console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
 
-    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
-    const QList<QStandardItem *> row = console->get_row(index);
-    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+            console_query_tree_save(console);
 
-    console_query_tree_save(console);
-
-    console->refresh_scope(index);
+            console->refresh_scope(index);
+        });
 }
 
 void get_query_item_data(const QModelIndex &index, QString *name, QString *description, bool *scope_is_children, QByteArray *filter_state) {

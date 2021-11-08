@@ -32,6 +32,8 @@ SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> clas
     ui = new Ui::SelectObjectAdvancedDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     auto menubar = new QMenuBar();
     layout()->setMenuBar(menubar);
     auto view_menu = menubar->addMenu(tr("&View"));

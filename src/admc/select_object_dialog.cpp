@@ -43,13 +43,10 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
     ui = new Ui::SelectObjectDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     class_list = class_list_arg;
     multi_selection = multi_selection_arg;
-
-    match_dialog = new SelectObjectMatchDialog(this);
-    advanced_dialog = new SelectObjectAdvancedDialog(class_list, this);
-
-    setAttribute(Qt::WA_DeleteOnClose);
 
     const QList<QString> selected_list = class_list;
 
@@ -71,17 +68,11 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
         ui->add_button, &QPushButton::clicked,
         this, &SelectObjectDialog::on_add_button);
     connect(
-        ui->advanced_button, &QPushButton::clicked,
-        advanced_dialog, &QDialog::open);
-    connect(
         ui->remove_button, &QAbstractButton::clicked,
         this, &SelectObjectDialog::on_remove_button);
     connect(
-        advanced_dialog, &QDialog::accepted,
-        this, &SelectObjectDialog::on_advanced_dialog_accepted);
-    connect(
-        match_dialog, &QDialog::accepted,
-        this, &SelectObjectDialog::on_match_dialog_accepted);
+        ui->advanced_button, &QPushButton::clicked,
+        this, &SelectObjectDialog::open_advanced_dialog);
 }
 
 SelectObjectDialog::~SelectObjectDialog() {
@@ -163,8 +154,17 @@ void SelectObjectDialog::on_add_button() {
         add_objects_to_list({dn}, ad);
     } else if (search_results.size() > 1) {
         // Open dialog where you can select one of the matches
-        match_dialog->set_search_results(search_results);
-        match_dialog->open();
+        auto dialog = new SelectObjectMatchDialog(this);
+        dialog->set_search_results(search_results);
+        dialog->open();
+
+        connect(
+            dialog, &QDialog::accepted,
+            [this, dialog]() {
+                const QList<QString> selected_matches = dialog->get_selected();
+
+                add_objects_to_list(selected_matches);
+            });
     } else if (search_results.size() == 0) {
         // Warn about failing to find any matches
         message_box_warning(this, tr("Error"), tr("Failed to find any matches."));
@@ -181,10 +181,17 @@ void SelectObjectDialog::on_remove_button() {
 
 // TODO: can optimize if dialog returns objects
 // directly, but will need to keep them around
-void SelectObjectDialog::on_advanced_dialog_accepted() {
-    const QList<QString> selected = advanced_dialog->get_selected_dns();
+void SelectObjectDialog::open_advanced_dialog() {
+    auto dialog = new SelectObjectAdvancedDialog(class_list, this);
+    dialog->open();
 
-    add_objects_to_list(selected);
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            const QList<QString> selected = dialog->get_selected_dns();
+
+            add_objects_to_list(selected);
+        });
 }
 
 void SelectObjectDialog::add_objects_to_list(const QList<QString> &dn_list) {
@@ -229,12 +236,6 @@ void SelectObjectDialog::add_objects_to_list(const QList<QString> &dn_list, AdIn
     }
 
     ui->name_edit->clear();
-}
-
-void SelectObjectDialog::on_match_dialog_accepted() {
-    const QList<QString> selected_matches = match_dialog->get_selected();
-
-    add_objects_to_list(selected_matches);
 }
 
 void add_select_object_to_model(QStandardItemModel *model, const AdObject &object) {

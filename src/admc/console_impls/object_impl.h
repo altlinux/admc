@@ -29,17 +29,14 @@
 class QStandardItem;
 class AdObject;
 class AdInterface;
+class AdConfig;
 class ConsoleActions;
 class QMenu;
 template <typename T>
 class QList;
 class PolicyImpl;
 class ConsoleWidget;
-class SelectContainerDialog;
-class RenameObjectDialog;
 class CreateObjectDialog;
-class AttributeEditor;
-class PasswordDialog;
 class ConsoleFilterDialog;
 
 /**
@@ -63,7 +60,7 @@ class ObjectImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    ObjectImpl(ConsoleWidget *console_arg);
+    ObjectImpl(AdConfig *adconfig_arg, ConsoleWidget *console_arg);
 
     void set_policy_impl(PolicyImpl *policy_root_impl_arg);
 
@@ -73,13 +70,6 @@ public:
     // this console, they will also get removed from the
     // buddy console.
     void set_buddy_console(ConsoleWidget *buddy_console);
-
-    // Filter will be loaded from this dialog. If no dialog
-    // is set, no filter is applied.
-    //
-    // NOTE: filter dialog is optional because object impl
-    // used in find widget doesn't need it
-    void set_filter_dialog(ConsoleFilterDialog *filter_dialog);
 
     void fetch(const QModelIndex &index) override;
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
@@ -107,12 +97,14 @@ public:
 
     void refresh_tree();
 
+    void open_filter_dialog();
+
 private slots:
     void on_new_user();
     void on_new_computer();
     void on_new_ou();
     void on_new_group();
-    void on_move_dialog();
+    void on_move();
     void on_enable();
     void on_disable();
     void on_add_to_group();
@@ -120,28 +112,11 @@ private slots:
     void on_reset_password();
     void on_edit_upn_suffixes();
     void on_reset_account();
-    void on_create_user_dialog_accepted();
-    void on_create_group_dialog_accepted();
-    void on_create_ou_dialog_accepted();
-    void on_create_computer_dialog_accepted();
-    void on_rename_user_dialog_accepted();
-    void on_rename_group_dialog_accepted();
-    void on_rename_other_dialog_accepted();
-    void on_upn_suffixes_editor_accepted();
 
 private:
+    AdConfig *adconfig;
     ConsoleWidget *buddy_console;
     PolicyImpl *policy_impl;
-    SelectContainerDialog *move_dialog;
-    RenameObjectDialog *rename_other_dialog;
-    RenameObjectDialog *rename_user_dialog;
-    RenameObjectDialog *rename_group_dialog;
-    CreateObjectDialog *create_user_dialog;
-    CreateObjectDialog *create_group_dialog;
-    CreateObjectDialog *create_ou_dialog;
-    CreateObjectDialog *create_computer_dialog;
-    AttributeEditor *upn_suffixes_editor;
-    PasswordDialog *password_dialog;
     ConsoleFilterDialog *filter_dialog;
 
     QAction *find_action;
@@ -163,8 +138,6 @@ private:
     void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
     void move_and_rename(AdInterface &ad, const QHash<QString, QString> &old_dn_list, const QString &new_parent_dn);
     void move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
-    void on_rename_dialog_accepted(RenameObjectDialog *dialog);
-    void on_create_dialog_accepted(CreateObjectDialog *dialog);
 };
 
 void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);

@@ -35,6 +35,8 @@ PasswordDialog::PasswordDialog(QWidget *parent)
     ui = new Ui::PasswordDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edits, this);
 
     pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);

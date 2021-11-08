@@ -35,6 +35,8 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
     ui = new Ui::CreateUserDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     QList<AttributeEdit *> edit_list;
     new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
     new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);

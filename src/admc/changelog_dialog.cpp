@@ -33,6 +33,8 @@ ChangelogDialog::ChangelogDialog(QWidget *parent)
     ui = new Ui::ChangelogDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     const QString changelog_text = []() {
         const QString fail_text = tr("Failed to open changelog file.");
 

@@ -41,6 +41,8 @@ OctetEditor::OctetEditor(QWidget *parent)
     ui = new Ui::OctetEditor();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     AttributeEditor::set_attribute_label(ui->attribute_label);
 
     prev_format = OctetDisplayFormat_Hexadecimal;

@@ -28,6 +28,8 @@ ErrorLogDialog::ErrorLogDialog(QWidget *parent)
     ui = new Ui::ErrorLogDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     settings_setup_dialog_geometry(SETTING_error_log_dialog_geometry, this);
 }
 

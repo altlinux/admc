@@ -32,6 +32,8 @@ SelectObjectMatchDialog::SelectObjectMatchDialog(QWidget *parent)
     ui = new Ui::SelectObjectMatchDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     model = new QStandardItemModel(this);
 
     model->setHorizontalHeaderLabels(SelectObjectDialog::header_labels());

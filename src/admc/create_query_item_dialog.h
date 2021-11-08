@@ -36,10 +36,8 @@ class CreateQueryItemDialog : public QDialog {
 public:
     Ui::CreateQueryItemDialog *ui;
 
-    CreateQueryItemDialog(QWidget *parent);
+    CreateQueryItemDialog(AdConfig *adconfig, QWidget *parent);
     ~CreateQueryItemDialog();
-
-    void init(AdConfig *adconfig);
 
     QString name() const;
     QString description() const;

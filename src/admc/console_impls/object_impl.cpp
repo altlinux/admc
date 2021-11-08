@@ -65,22 +65,12 @@ QList<QString> get_selected_dn_list_object(ConsoleWidget *console);
 QString get_selected_dn_object(ConsoleWidget *console);
 void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root);
 
-ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
+ObjectImpl::ObjectImpl(AdConfig *adconfig_arg, ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
+    adconfig = adconfig_arg;
     buddy_console = nullptr;
     policy_impl = nullptr;
-    filter_dialog = nullptr;
-
-    move_dialog = new SelectContainerDialog(console);
-    rename_other_dialog = new RenameOtherDialog(console);
-    rename_user_dialog = new RenameUserDialog(console);
-    rename_group_dialog = new RenameGroupDialog(console);
-    create_user_dialog = new CreateUserDialog(console);
-    create_group_dialog = new CreateGroupDialog(console);
-    create_ou_dialog = new CreateOUDialog(console);
-    create_computer_dialog = new CreateComputerDialog(console);
-    upn_suffixes_editor = new MultiEditor(console);
-    password_dialog = new PasswordDialog(console);
+    filter_dialog = new ConsoleFilterDialog(adconfig, console);
 
     set_results_view(new ResultsView(console_arg));
 
@@ -122,7 +112,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
         this, &ObjectImpl::on_new_group);
     connect(
         move_action, &QAction::triggered,
-        move_dialog, &QDialog::open);
+        this, &ObjectImpl::on_move);
     connect(
         add_to_group_action, &QAction::triggered,
         this, &ObjectImpl::on_add_to_group);
@@ -145,31 +135,8 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
         edit_upn_suffixes_action, &QAction::triggered,
         this, &ObjectImpl::on_edit_upn_suffixes);
     connect(
-        upn_suffixes_editor, &QDialog::accepted,
-        this, &ObjectImpl::on_upn_suffixes_editor_accepted);
-
-    connect(
-        create_user_dialog, &QDialog::accepted,
-        this, &ObjectImpl::on_create_user_dialog_accepted);
-    connect(
-        create_group_dialog, &QDialog::accepted,
-        this, &ObjectImpl::on_create_group_dialog_accepted);
-    connect(
-        create_ou_dialog, &QDialog::accepted,
-        this, &ObjectImpl::on_create_ou_dialog_accepted);
-    connect(
-        create_computer_dialog, &QDialog::accepted,
-        this, &ObjectImpl::on_create_computer_dialog_accepted);
-
-    connect(
-        rename_user_dialog, &RenameObjectDialog::accepted,
-        this, &ObjectImpl::on_rename_user_dialog_accepted);
-    connect(
-        rename_group_dialog, &RenameObjectDialog::accepted,
-        this, &ObjectImpl::on_rename_group_dialog_accepted);
-    connect(
-        rename_other_dialog, &RenameObjectDialog::accepted,
-        this, &ObjectImpl::on_rename_other_dialog_accepted);
+        filter_dialog, &QDialog::accepted,
+        this, &ObjectImpl::refresh_tree);
 }
 
 void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
@@ -178,14 +145,6 @@ void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
 
 void ObjectImpl::set_buddy_console(ConsoleWidget *buddy_console_arg) {
     buddy_console = buddy_console_arg;
-}
-
-void ObjectImpl::set_filter_dialog(ConsoleFilterDialog *filter_dialog_arg) {
-    filter_dialog = filter_dialog_arg;
-
-    connect(
-        filter_dialog, &QDialog::accepted,
-        this, &ObjectImpl::refresh_tree);
 }
 
 // Load children of this item in scope tree
@@ -204,7 +163,7 @@ void ObjectImpl::fetch(const QModelIndex &index) {
         // NOTE: OR user filter with containers filter so
         // that container objects are always shown, even if
         // they are filtered out by user filter
-        if (filter_dialog != nullptr && filter_dialog->filtering_ON()) {
+        if (filter_dialog->filtering_ON()) {
             out = filter_OR({is_container_filter(), out});
             out = filter_OR({filter_dialog->get_filter(), out});
         }
@@ -283,7 +242,7 @@ QString ObjectImpl::get_description(const QModelIndex &index) const {
 
     out += object_count_text;
 
-    if (filter_dialog != nullptr && filter_dialog->filtering_ON()) {
+    if (filter_dialog->filtering_ON()) {
         out += tr(" [Filtering enabled]");
     }
 
@@ -443,18 +402,32 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
         const bool is_group = (object_class == CLASS_GROUP);
 
         if (is_user) {
-            return rename_user_dialog;
+            return new RenameUserDialog(console);
         } else if (is_group) {
-            return rename_group_dialog;
+            return new RenameGroupDialog(console);
         } else {
-            return rename_other_dialog;
+            return new RenameOtherDialog(console);
         }
     }();
 
-    const QString dn = get_selected_dn_object(console);
+    const QString old_dn = get_selected_dn_object(console);
 
-    dialog->set_target(dn);
+    dialog->set_target(old_dn);
     dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog, old_dn]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            const QString new_dn = dialog->get_new_dn();
+            const QString parent_dn = dn_get_parent(old_dn);
+
+            move_and_rename(ad, {{old_dn, new_dn}}, parent_dn);
+        });
 }
 
 void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
@@ -616,55 +589,66 @@ void ObjectImpl::refresh_tree() {
     hide_busy_indicator();
 }
 
+void ObjectImpl::open_filter_dialog() {
+    filter_dialog->open();
+}
+
 void ObjectImpl::on_new_user() {
-    new_object(create_user_dialog);
+    new_object(new CreateUserDialog(console));
 }
 
 void ObjectImpl::on_new_computer() {
-    new_object(create_computer_dialog);
+    new_object(new CreateComputerDialog(console));
 }
 
 void ObjectImpl::on_new_ou() {
-    new_object(create_ou_dialog);
+    new_object(new CreateOUDialog(console));
 }
 
 void ObjectImpl::on_new_group() {
-    new_object(create_group_dialog);
+    new_object(new CreateGroupDialog(console));
 }
 
-void ObjectImpl::on_move_dialog() {
-    const QList<QString> dn_list = get_selected_dn_list_object(console);
+void ObjectImpl::on_move() {
+    auto dialog = new SelectContainerDialog(console);
+    dialog->open();
 
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    const QString new_parent_dn = move_dialog->get_selected();
-
-    // First move in AD
-    const QList<QString> moved_objects = [&]() {
-        QList<QString> out;
-
-        for (const QString &dn : dn_list) {
-            const bool success = ad.object_move(dn, new_parent_dn);
-
-            if (success) {
-                out.append(dn);
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
             }
-        }
 
-        return out;
-    }();
+            const QList<QString> dn_list = get_selected_dn_list_object(console);
 
-    g_status()->display_ad_messages(ad, nullptr);
+            show_busy_indicator();
 
-    // Then move in console
-    move(ad, moved_objects, new_parent_dn);
+            const QString new_parent_dn = dialog->get_selected();
 
-    hide_busy_indicator();
+            // First move in AD
+            const QList<QString> moved_objects = [&]() {
+                QList<QString> out;
+
+                for (const QString &dn : dn_list) {
+                    const bool success = ad.object_move(dn, new_parent_dn);
+
+                    if (success) {
+                        out.append(dn);
+                    }
+                }
+
+                return out;
+            }();
+
+            g_status()->display_ad_messages(ad, nullptr);
+
+            // Then move in console
+            move(ad, moved_objects, new_parent_dn);
+
+            hide_busy_indicator();
+        });
 }
 
 void ObjectImpl::on_enable() {
@@ -678,6 +662,7 @@ void ObjectImpl::on_disable() {
 void ObjectImpl::on_add_to_group() {
     auto dialog = new SelectObjectDialog({CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, console);
     dialog->setWindowTitle(tr("Add to Group"));
+    dialog->open();
 
     connect(
         dialog, &SelectObjectDialog::accepted,
@@ -703,8 +688,6 @@ void ObjectImpl::on_add_to_group() {
 
             g_status()->display_ad_messages(ad, console);
         });
-
-    dialog->open();
 }
 
 void ObjectImpl::on_find() {
@@ -718,12 +701,16 @@ void ObjectImpl::on_find() {
 }
 
 void ObjectImpl::on_reset_password() {
+    auto dialog = new PasswordDialog(console);
+
     const QString dn = get_selected_dn_object(console);
-    password_dialog->set_target(dn);
-    password_dialog->open();
+    dialog->set_target(dn);
+    dialog->open();
 }
 
 void ObjectImpl::on_edit_upn_suffixes() {
+    auto dialog = new MultiEditor(console);
+
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -740,9 +727,23 @@ void ObjectImpl::on_edit_upn_suffixes() {
     // NOTE: setting attribute here because on creation
     // there's no access to adconfig which is needed by
     // attribute editor
-    upn_suffixes_editor->set_attribute(ATTRIBUTE_UPN_SUFFIXES);
-    upn_suffixes_editor->set_value_list(current_values);
-    upn_suffixes_editor->open();
+    dialog->set_attribute(ATTRIBUTE_UPN_SUFFIXES);
+    dialog->set_value_list(current_values);
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog, partitions_dn]() {
+            AdInterface ad_inner;
+            if (ad_failed(ad_inner)) {
+                return;
+            }
+
+            const QList<QByteArray> new_values = dialog->get_value_list();
+
+            ad_inner.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
+            g_status()->display_ad_messages(ad_inner, console);
+        });
 }
 
 void ObjectImpl::on_reset_account() {
@@ -763,6 +764,49 @@ void ObjectImpl::new_object(CreateObjectDialog *dialog) {
 
     dialog->set_parent_dn(parent_dn);
     dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog, parent_dn]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            show_busy_indicator();
+
+            const QString created_dn = dialog->get_created_dn();
+
+            // NOTE: we don't just use currently selected index as
+            // parent to add new object onto, because you can create
+            // an object in a query tree or find dialog. Therefore
+            // need to search for index of parent object in domain
+            // tree.
+            auto apply_changes = [&](ConsoleWidget *target_console) {
+                const QModelIndex root = get_object_tree_root(target_console);
+                if (!root.isValid()) {
+                    return;
+                }
+
+                const QList<QModelIndex> search_parent = target_console->search_items(root, ObjectRole_DN, parent_dn, ItemType_Object);
+
+                if (search_parent.isEmpty()) {
+                    hide_busy_indicator();
+                    return;
+                }
+
+                const QModelIndex scope_parent_index = search_parent[0];
+                object_impl_add_objects_to_console_from_dns(target_console, ad, {created_dn}, scope_parent_index);
+            };
+
+            apply_changes(console);
+
+            if (buddy_console != nullptr) {
+                apply_changes(buddy_console);
+            }
+
+            hide_busy_indicator();
+        });
 }
 
 void ObjectImpl::set_disabled(const bool disabled) {
@@ -995,105 +1039,6 @@ void ObjectImpl::move(AdInterface &ad, const QList<QString> &old_dn_list, const 
     }();
 
     move_and_rename(ad, old_to_new_dn_map, new_parent_dn);
-}
-
-void ObjectImpl::on_rename_user_dialog_accepted() {
-    on_rename_dialog_accepted(rename_user_dialog);
-}
-
-void ObjectImpl::on_rename_group_dialog_accepted() {
-    on_rename_dialog_accepted(rename_group_dialog);
-}
-
-void ObjectImpl::on_rename_other_dialog_accepted() {
-    on_rename_dialog_accepted(rename_other_dialog);
-}
-
-void ObjectImpl::on_create_user_dialog_accepted() {
-    on_create_dialog_accepted(create_user_dialog);
-}
-
-void ObjectImpl::on_create_group_dialog_accepted() {
-    on_create_dialog_accepted(create_group_dialog);
-}
-
-void ObjectImpl::on_create_ou_dialog_accepted() {
-    on_create_dialog_accepted(create_ou_dialog);
-}
-
-void ObjectImpl::on_create_computer_dialog_accepted() {
-    on_create_dialog_accepted(create_computer_dialog);
-}
-
-void ObjectImpl::on_rename_dialog_accepted(RenameObjectDialog *dialog) {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    const QString old_dn = dialog->get_target();
-    const QString new_dn = dialog->get_new_dn();
-    const QString parent_dn = dn_get_parent(old_dn);
-
-    move_and_rename(ad, {{old_dn, new_dn}}, parent_dn);
-}
-
-void ObjectImpl::on_create_dialog_accepted(CreateObjectDialog *dialog) {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    const QString created_dn = dialog->get_created_dn();
-
-    // NOTE: we don't just use currently selected index as
-    // parent to add new object onto, because you can create
-    // an object in a query tree or find dialog. Therefore
-    // need to search for index of parent object in domain
-    // tree.
-    auto apply_changes = [&](ConsoleWidget *target_console) {
-        const QModelIndex root = get_object_tree_root(target_console);
-        if (!root.isValid()) {
-            return;
-        }
-
-        const QString parent_dn = get_selected_dn_object(console);
-        const QList<QModelIndex> search_parent = target_console->search_items(root, ObjectRole_DN, parent_dn, ItemType_Object);
-
-        if (search_parent.isEmpty()) {
-            hide_busy_indicator();
-            return;
-        }
-
-        const QModelIndex scope_parent_index = search_parent[0];
-        object_impl_add_objects_to_console_from_dns(target_console, ad, {created_dn}, scope_parent_index);
-    };
-
-    apply_changes(console);
-
-    if (buddy_console != nullptr) {
-        apply_changes(buddy_console);
-    }
-
-    hide_busy_indicator();
-}
-
-// When editor is accepted, update values of upn
-// suffixes
-void ObjectImpl::on_upn_suffixes_editor_accepted() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    const QList<QByteArray> new_values = upn_suffixes_editor->get_value_list();
-
-    const QString partitions_dn = g_adconfig->partitions_dn();
-
-    ad.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
-    g_status()->display_ad_messages(ad, console);
 }
 
 void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {

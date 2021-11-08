@@ -23,18 +23,13 @@
 
 #include "console_widget/console_impl.h"
 
-class CreateQueryFolderDialog;
-class CreateQueryItemDialog;
-class EditQueryFolderDialog;
 class AdConfig;
 
 class QueryFolderImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    QueryFolderImpl(ConsoleWidget *console_arg);
-
-    void init(AdConfig *adconfig);
+    QueryFolderImpl(AdConfig *adconfig, ConsoleWidget *console_arg);
 
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
@@ -52,12 +47,10 @@ public:
     QList<int> default_columns() const override;
 
 private:
+    AdConfig *adconfig;
     QAction *new_action;
     QAction *edit_action;
     QAction *import_action;
-    CreateQueryFolderDialog *create_query_folder_dialog;
-    CreateQueryItemDialog *create_query_item_dialog;
-    EditQueryFolderDialog *edit_query_folder_dialog;
     bool copied_is_cut;
     QList<QPersistentModelIndex> copied_list;
 

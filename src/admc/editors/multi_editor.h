@@ -51,13 +51,6 @@ public:
     QList<QByteArray> get_value_list() const override;
 
 private:
-    AttributeEditor *add_string_editor;
-    AttributeEditor *add_bool_editor;
-    AttributeEditor *edit_string_editor;
-    AttributeEditor *edit_octet_editor;
-    AttributeEditor *edit_datetime_editor;
-    QListWidgetItem *edited_item;
-
     void on_add_button();
     void on_remove_button();
     void on_item_double_clicked(QListWidgetItem *item);
@@ -65,12 +58,7 @@ private:
     QString bytes_to_string(const QByteArray bytes) const;
     QByteArray string_to_bytes(const QString string) const;
     MultiEditorType get_editor_type() const;
-    void on_add_string_editor_accepted();
-    void on_add_bool_editor_accepted();
     void add_values_from_editor(AttributeEditor *editor);
-    void on_edit_string_editor_accepted();
-    void on_edit_octet_editor_accepted();
-    void on_edit_datetime_editor_accepted();
     void edit_values_from_editor(AttributeEditor *editor);
 };
 

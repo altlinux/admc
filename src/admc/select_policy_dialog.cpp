@@ -36,6 +36,8 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
     ui = new Ui::SelectPolicyDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     model = new QStandardItemModel(this);
     ui->view->setModel(model);
 

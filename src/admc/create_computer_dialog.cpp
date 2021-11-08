@@ -32,6 +32,8 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
     ui = new Ui::CreateComputerDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     QList<AttributeEdit *> edit_list;
 
     // TODO: "Assign this computer account as a pre-Windows 2000 computer". Is this needed?

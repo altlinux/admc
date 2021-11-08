@@ -27,7 +27,6 @@
 #include "changelog_dialog.h"
 #include "config.h"
 #include "connection_options_dialog.h"
-#include "console_filter_dialog.h"
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
@@ -61,13 +60,10 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     ui->statusbar->addAction(ui->action_show_login);
 
-    auto filter_dialog = new ConsoleFilterDialog(this);
-    filter_dialog->init(ad.adconfig());
-
     //
     // Console
     //
-    auto object_impl = new ObjectImpl(ui->console);
+    auto object_impl = new ObjectImpl(ad.adconfig(), ui->console);
     ui->console->register_impl(ItemType_Object, object_impl);
 
     auto policy_root_impl = new PolicyRootImpl(ui->console);
@@ -76,19 +72,14 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     auto policy_impl = new PolicyImpl(ui->console);
     ui->console->register_impl(ItemType_Policy, policy_impl);
 
-    auto query_item_impl = new QueryItemImpl(ui->console);
+    auto query_item_impl = new QueryItemImpl(ad.adconfig(), ui->console);
     ui->console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    auto query_folder_impl = new QueryFolderImpl(ui->console);
+    auto query_folder_impl = new QueryFolderImpl(ad.adconfig(), ui->console);
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
     object_impl->set_policy_impl(policy_impl);
-    object_impl->set_filter_dialog(filter_dialog);
     query_item_impl->set_query_folder_impl(query_folder_impl);
-
-    // Create dialogs opened from menubar
-    auto changelog_dialog = new ChangelogDialog(this);
-    auto about_dialog = new AboutDialog(this);
 
     // Setup console
     const ConsoleWidgetActions console_actions = [&]() {
@@ -137,9 +128,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         ui->console->set_current_scope(object_tree_root);
     }
 
-    query_item_impl->init(ad.adconfig());
-    query_folder_impl->init(ad.adconfig());
-
     // Display any errors that happened when loading the
     // console
     g_status()->display_ad_messages(ad, this);
@@ -173,7 +161,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     }();
     if (first_time_opening_this_version) {
         settings_set_variant(SETTING_last_opened_version, ADMC_VERSION);
-        changelog_dialog->show();
+        open_changelog();
     }
 
     //
@@ -236,13 +224,13 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         this, &MainWindow::open_manual);
     connect(
         ui->action_changelog, &QAction::triggered,
-        changelog_dialog, &QDialog::show);
+        this, &MainWindow::open_changelog);
     connect(
         ui->action_about, &QAction::triggered,
-        about_dialog, &QDialog::open);
+        this, &MainWindow::open_about);
     connect(
         ui->action_filter_objects, &QAction::triggered,
-        filter_dialog, &QDialog::open);
+        object_impl, &ObjectImpl::open_filter_dialog);
     connect(
         ui->menu_action, &QMenu::aboutToShow,
         ui->console, &ConsoleWidget::update_actions);
@@ -353,4 +341,14 @@ void MainWindow::open_manual() {
 void MainWindow::open_connection_options() {
     auto dialog = new ConnectionOptionsDialog(this);
     dialog->open();
+}
+
+void MainWindow::open_changelog() {
+    auto changelog_dialog = new ChangelogDialog(this);
+    changelog_dialog->open();
+}
+
+void MainWindow::open_about() {
+    auto about_dialog = new AboutDialog(this);
+    about_dialog->open();
 }

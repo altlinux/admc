@@ -43,8 +43,9 @@
 
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch = true);
 
-QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
+QueryFolderImpl::QueryFolderImpl(AdConfig *adconfig_arg, ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
+    adconfig = adconfig_arg;
     copied_is_cut = false;
 
     set_results_view(new ResultsView(console_arg));
@@ -62,97 +63,99 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 
     import_action = new QAction(tr("&Import query..."), this);
 
-    create_query_folder_dialog = new CreateQueryFolderDialog(console);
-    create_query_item_dialog = new CreateQueryItemDialog(console);
-    edit_query_folder_dialog = new EditQueryFolderDialog(console);
-
     connect(
         create_query_folder_action, &QAction::triggered,
         this, &QueryFolderImpl::on_create_query_folder);
     connect(
-        create_query_folder_dialog, &QDialog::accepted,
-        this, &QueryFolderImpl::on_create_query_folder_accepted);
-    connect(
         create_query_folder_action, &QAction::triggered,
         this, &QueryFolderImpl::on_create_query_folder);
-    connect(
-        create_query_item_dialog, &QDialog::accepted,
-        this, &QueryFolderImpl::on_create_query_item_accepted);
     connect(
         edit_action, &QAction::triggered,
         this, &QueryFolderImpl::on_edit_query_folder);
-    connect(
-        edit_query_folder_dialog, &QDialog::accepted,
-        this, &QueryFolderImpl::on_edit_query_folder_accepted);
     connect(
         import_action, &QAction::triggered,
         this, &QueryFolderImpl::on_import);
 }
 
-void QueryFolderImpl::init(AdConfig *adconfig) {
-    create_query_item_dialog->init(adconfig);
-}
-
 void QueryFolderImpl::on_create_query_folder() {
+    auto dialog = new CreateQueryFolderDialog(console);
+
     const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, QModelIndex());
 
-    create_query_folder_dialog->set_sibling_name_list(sibling_name_list);
-    create_query_folder_dialog->open();
-}
+    dialog->set_sibling_name_list(sibling_name_list);
 
-void QueryFolderImpl::on_create_query_folder_accepted() {
-    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
-    const QString name = create_query_folder_dialog->name();
-    const QString description = create_query_folder_dialog->description();
+    dialog->open();
 
-    console_query_folder_create(console, name, description, parent_index);
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog, parent_index]() {
+            const QString name = dialog->name();
+            const QString description = dialog->description();
 
-    console_query_tree_save(console);
+            console_query_folder_create(console, name, description, parent_index);
+
+            console_query_tree_save(console);
+        });
 }
 
 void QueryFolderImpl::on_create_query_item() {
+    auto dialog = new CreateQueryItemDialog(adconfig, console);
+
     const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, QModelIndex());
 
-    create_query_item_dialog->set_sibling_name_list(sibling_name_list);
-    create_query_item_dialog->open();
+    dialog->set_sibling_name_list(sibling_name_list);
+
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog, parent_index]() {
+            const QString name = dialog->name();
+            const QString description = dialog->description();
+            const QString filter = dialog->filter();
+            const QString base = dialog->base();
+            const QByteArray filter_state = dialog->filter_state();
+            const bool scope_is_children = dialog->scope_is_children();
+
+            console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
+
+            console_query_tree_save(console);
+        });
 }
 
 void QueryFolderImpl::on_create_query_item_accepted() {
-    const QString name = create_query_item_dialog->name();
-    const QString description = create_query_item_dialog->description();
-    const QString filter = create_query_item_dialog->filter();
-    const QString base = create_query_item_dialog->base();
-    const QByteArray filter_state = create_query_item_dialog->filter_state();
-    const bool scope_is_children = create_query_item_dialog->scope_is_children();
-    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryItem);
-
-    console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
-
-    console_query_tree_save(console);
+    
 }
 
 void QueryFolderImpl::on_edit_query_folder() {
-    const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
-    const QString name = index.data(Qt::DisplayRole).toString();
-    const QString description = index.data(QueryItemRole_Description).toString();
-    const QModelIndex parent_index = index.parent();
-    const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);
-
-    edit_query_folder_dialog->set_data(sibling_name_list, name, description);
-    edit_query_folder_dialog->open();
-}
-
-void QueryFolderImpl::on_edit_query_folder_accepted() {
-    const QString name = edit_query_folder_dialog->name();
-    const QString description = edit_query_folder_dialog->description();
+    auto dialog = new EditQueryFolderDialog(console);
 
     const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
-    const QList<QStandardItem *> row = console->get_row(index);
-    console_query_folder_load(row, name, description);
 
-    console_query_tree_save(console);
+    {
+        const QString name = index.data(Qt::DisplayRole).toString();
+        const QString description = index.data(QueryItemRole_Description).toString();
+        const QModelIndex parent_index = index.parent();
+        const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);
+
+        dialog->set_data(sibling_name_list, name, description);
+    }
+
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog, index]() {
+            const QString name = dialog->name();
+            const QString description = dialog->description();
+
+            const QList<QStandardItem *> row = console->get_row(index);
+            console_query_folder_load(row, name, description);
+
+            console_query_tree_save(console);
+        });
 }
 
 bool QueryFolderImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {

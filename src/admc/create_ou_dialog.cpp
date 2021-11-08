@@ -33,6 +33,8 @@ CreateOUDialog::CreateOUDialog(QWidget *parent)
     ui = new Ui::CreateOUDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     QList<AttributeEdit *> edit_list;
     new ProtectDeletionEdit(ui->deletion_check, &edit_list, this);
 

@@ -44,12 +44,13 @@ protected:
 
 private:
     QLabel *login_label;
-    QAction *action_show_client_user;
 
     void on_log_searches_changed();
     void on_show_login_changed();
     void open_manual();
     void open_connection_options();
+    void open_changelog();
+    void open_about();
 };
 
 #endif /* MAIN_WINDOW_H */

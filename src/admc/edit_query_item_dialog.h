@@ -36,10 +36,8 @@ class EditQueryItemDialog : public QDialog {
 public:
     Ui::EditQueryItemDialog *ui;
 
-    EditQueryItemDialog(QWidget *parent);
+    EditQueryItemDialog(AdConfig *adconfig, QWidget *parent);
     ~EditQueryItemDialog();
-
-    void init(AdConfig *adconfig);
 
     void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state);
 

@@ -30,6 +30,8 @@ DateTimeEditor::DateTimeEditor(QWidget *parent)
     ui = new Ui::DateTimeEditor();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     AttributeEditor::set_attribute_label(ui->attribute_label);
 
     settings_setup_dialog_geometry(SETTING_datetime_editor_geometry, this);

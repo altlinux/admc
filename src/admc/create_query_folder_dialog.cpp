@@ -29,6 +29,8 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(QWidget *parent)
     ui = new Ui::CreateQueryFolderDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     settings_setup_dialog_geometry(SETTING_create_query_folder_dialog_geometry, this);
 }
 

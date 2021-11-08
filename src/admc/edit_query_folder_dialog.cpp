@@ -29,6 +29,8 @@ EditQueryFolderDialog::EditQueryFolderDialog(QWidget *parent)
     ui = new Ui::EditQueryFolderDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     settings_setup_dialog_geometry(SETTING_edit_query_folder_dialog_geometry, this);
 }
 

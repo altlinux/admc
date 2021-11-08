@@ -42,12 +42,14 @@ public:
     CreatePolicyDialog(QWidget *parent);
     ~CreatePolicyDialog();
 
-signals:
-    void created_policy(const QString &dn);
+    QString get_created_dn() const;
 
 public slots:
     void open() override;
     void accept() override;
+
+private:
+    QString created_dn;
 };
 
 #endif /* CREATE_POLICY_DIALOG_H */

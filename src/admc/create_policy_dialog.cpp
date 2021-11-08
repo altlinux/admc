@@ -34,11 +34,17 @@ CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
     ui = new Ui::CreatePolicyDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     settings_setup_dialog_geometry(SETTING_create_policy_dialog_geometry, this);
 }
 
 CreatePolicyDialog::~CreatePolicyDialog() {
     delete ui;
+}
+
+QString CreatePolicyDialog::get_created_dn() const {
+    return created_dn;
 }
 
 void CreatePolicyDialog::open() {
@@ -118,7 +124,6 @@ void CreatePolicyDialog::accept() {
         return;
     }
 
-    QString created_dn;
     const bool success = ad.gpo_add(name, created_dn);
 
     hide_busy_indicator();
@@ -127,7 +132,5 @@ void CreatePolicyDialog::accept() {
 
     if (success) {
         QDialog::accept();
-
-        emit created_policy(created_dn);
     }
 }

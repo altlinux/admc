@@ -45,8 +45,6 @@ PropertiesMultiDialog::PropertiesMultiDialog(const QList<QString> &target_list_a
 
     target_list = target_list_arg;
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
     AdInterface ad;
     if (ad_failed(ad)) {
         close();

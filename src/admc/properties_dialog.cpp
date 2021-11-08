@@ -105,12 +105,12 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     ui = new Ui::PropertiesDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     target = target_arg;
     is_modified = false;
 
     PropertiesDialog::instances[target] = this;
-
-    setAttribute(Qt::WA_DeleteOnClose);
 
     warning_dialog = new PropertiesWarningDialog(this);
 

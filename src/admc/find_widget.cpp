@@ -30,6 +30,7 @@
 #include "search_thread.h"
 #include "settings.h"
 #include "utils.h"
+#include "globals.h"
 
 #include <QMenu>
 #include <QStandardItem>
@@ -70,7 +71,7 @@ FindWidget::FindWidget(QWidget *parent)
 
     ui->console->set_actions(console_actions);
 
-    object_impl = new ObjectImpl(ui->console);
+    object_impl = new ObjectImpl(g_adconfig, ui->console);
     ui->console->register_impl(ItemType_Object, object_impl);
 
     object_impl->set_find_action_enabled(false);
@@ -78,10 +79,12 @@ FindWidget::FindWidget(QWidget *parent)
 
     // NOTE: registering impl so that it supplies text to
     // the description bar
-    auto query_item_impl = new QueryItemImpl(ui->console);
+    // TODO: g_adconfig
+    auto query_item_impl = new QueryItemImpl(g_adconfig, ui->console);
     ui->console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    auto query_folder_impl = new QueryFolderImpl(ui->console);
+    // TODO: g_adconfig
+    auto query_folder_impl = new QueryFolderImpl(g_adconfig, ui->console);
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
     ResultsView *query_results = query_item_impl->view();

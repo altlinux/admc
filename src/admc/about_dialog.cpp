@@ -28,6 +28,8 @@ AboutDialog::AboutDialog(QWidget *parent)
     ui = new Ui::AboutDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     ui->version_label->setText(QString(tr("Version %1")).arg(ADMC_VERSION));
 }
 

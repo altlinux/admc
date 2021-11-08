@@ -31,14 +31,9 @@ SelectBaseWidget::SelectBaseWidget(QWidget *parent)
     ui = new Ui::SelectBaseWidget();
     ui->setupUi(this);
 
-    browse_dialog = new SelectContainerDialog(this);
-
     connect(
         ui->browse_button, &QAbstractButton::clicked,
-        browse_dialog, &QDialog::open);
-    connect(
-        browse_dialog, &QDialog::accepted,
-        this, &SelectBaseWidget::on_browse_dialog);
+        this, &SelectBaseWidget::open_browse_dialog);
 }
 
 SelectBaseWidget::~SelectBaseWidget() {
@@ -71,15 +66,22 @@ QString SelectBaseWidget::get_base() const {
     return item_data.toString();
 }
 
-void SelectBaseWidget::on_browse_dialog() {
-    const QString selected = browse_dialog->get_selected();
-    const QString name = dn_get_name(selected);
+void SelectBaseWidget::open_browse_dialog() {
+    auto browse_dialog = new SelectContainerDialog(this);
+    browse_dialog->open();
 
-    ui->combo->addItem(name, selected);
+    connect(
+        browse_dialog, &QDialog::accepted,
+        [this, browse_dialog]() {
+            const QString selected = browse_dialog->get_selected();
+            const QString name = dn_get_name(selected);
 
-    // Select newly added search base in combobox
-    const int new_base_index = ui->combo->count() - 1;
-    ui->combo->setCurrentIndex(new_base_index);
+            ui->combo->addItem(name, selected);
+
+            // Select newly added search base in combobox
+            const int new_base_index = ui->combo->count() - 1;
+            ui->combo->setCurrentIndex(new_base_index);
+        });
 }
 
 QVariant SelectBaseWidget::save_state() const {
