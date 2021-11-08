@@ -35,6 +35,8 @@ RenamePolicyDialog::RenamePolicyDialog(QWidget *parent)
     ui = new Ui::RenamePolicyDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     ok_button = ui->button_box->button(QDialogButtonBox::Ok);
     reset_button = ui->button_box->button(QDialogButtonBox::Reset);
 

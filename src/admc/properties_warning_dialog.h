@@ -45,10 +45,8 @@ class PropertiesWarningDialog final : public QDialog {
 public:
     Ui::PropertiesWarningDialog *ui;
 
-    PropertiesWarningDialog(QWidget *parent);
+    PropertiesWarningDialog(const PropertiesWarningType type, QWidget *parent);
     ~PropertiesWarningDialog();
-
-    void set_type(const PropertiesWarningType type);
 };
 
 #endif /* PROPERTIES_WARNING_DIALOG_H */

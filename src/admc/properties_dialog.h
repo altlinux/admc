@@ -85,8 +85,6 @@ private:
     void reset_internal(AdInterface &ad);
 
     void on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab);
-    void on_warning_dialog_accepted();
-    void on_warning_dialog_rejected();
 };
 
 #endif /* PROPERTIES_DIALOG_H */

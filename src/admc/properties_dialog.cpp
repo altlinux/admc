@@ -112,8 +112,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
 
     PropertiesDialog::instances[target] = this;
 
-    warning_dialog = new PropertiesWarningDialog(this);
-
     apply_button = ui->button_box->button(QDialogButtonBox::Apply);
     reset_button = ui->button_box->button(QDialogButtonBox::Reset);
     auto cancel_button = ui->button_box->button(QDialogButtonBox::Cancel);
@@ -233,12 +231,6 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     connect(
         ui->tab_widget, &TabWidget::current_changed,
         this, &PropertiesDialog::on_current_tab_changed);
-    connect(
-        warning_dialog, &QDialog::accepted,
-        this, &PropertiesDialog::on_warning_dialog_accepted);
-    connect(
-        warning_dialog, &QDialog::accepted,
-        this, &PropertiesDialog::on_warning_dialog_rejected);
 }
 
 PropertiesDialog::~PropertiesDialog() {
@@ -260,8 +252,29 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
         }
     }();
 
-    warning_dialog->set_type(warning_type);
-    warning_dialog->open();
+    auto dialog = new PropertiesWarningDialog(warning_type, this);
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
+
+            apply_internal(ad);
+
+            // NOTE: have to reset for attributes tab and other tabs
+            // to load updates
+            reset_internal(ad);
+        });
+
+    connect(
+        dialog, &QDialog::rejected,
+        [this]() {
+            reset();
+        });
 }
 
 void PropertiesDialog::accept() {
@@ -357,21 +370,4 @@ void PropertiesDialog::on_edited() {
     apply_button->setEnabled(true);
     reset_button->setEnabled(true);
     is_modified = true;
-}
-
-void PropertiesDialog::on_warning_dialog_accepted() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    apply_internal(ad);
-
-    // NOTE: have to reset for attributes tab and other tabs
-    // to load updates
-    reset_internal(ad);
-}
-
-void PropertiesDialog::on_warning_dialog_rejected() {
-    reset();
 }

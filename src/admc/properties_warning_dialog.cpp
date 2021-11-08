@@ -21,20 +21,13 @@
 #include "properties_warning_dialog.h"
 #include "ui_properties_warning_dialog.h"
 
-PropertiesWarningDialog::PropertiesWarningDialog(QWidget *parent)
+PropertiesWarningDialog::PropertiesWarningDialog(const PropertiesWarningType type, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::PropertiesWarningDialog();
     ui->setupUi(this);
 
-    ui->button_box->addButton(tr("Apply current changes"), QDialogButtonBox::AcceptRole);
-    ui->button_box->addButton(tr("Discard changes"), QDialogButtonBox::RejectRole);
-}
+    setAttribute(Qt::WA_DeleteOnClose);
 
-PropertiesWarningDialog::~PropertiesWarningDialog() {
-    delete ui;
-}
-
-void PropertiesWarningDialog::set_type(const PropertiesWarningType type) {
     const QString label_text = [&]() {
         switch (type) {
             case PropertiesWarningType_SwitchToAttributes: return tr("You're switching to attributes tab, while another tab has unapplied changes. Choose to apply or discard those changes.");
@@ -44,4 +37,11 @@ void PropertiesWarningDialog::set_type(const PropertiesWarningType type) {
     }();
 
     ui->label->setText(label_text);
+
+    ui->button_box->addButton(tr("Apply current changes"), QDialogButtonBox::AcceptRole);
+    ui->button_box->addButton(tr("Discard changes"), QDialogButtonBox::RejectRole);
+}
+
+PropertiesWarningDialog::~PropertiesWarningDialog() {
+    delete ui;
 }

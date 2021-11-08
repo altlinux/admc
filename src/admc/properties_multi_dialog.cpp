@@ -43,6 +43,8 @@ PropertiesMultiDialog::PropertiesMultiDialog(const QList<QString> &target_list_a
     ui = new Ui::PropertiesMultiDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     target_list = target_list_arg;
 
     AdInterface ad;

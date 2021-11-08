@@ -30,6 +30,8 @@ SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
     ui = new Ui::SelectWellKnownTrusteeDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     for (const QString &sid_string : well_known_sid_list) {
         auto item = new QListWidgetItem();
 
