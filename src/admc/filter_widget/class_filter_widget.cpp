@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "class_filter_widget.h"
-#include "ui_class_filter_widget.h"
+#include "filter_widget/class_filter_widget.h"
+#include "filter_widget/ui_class_filter_widget.h"
 
 #include "adldap.h"
 

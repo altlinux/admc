@@ -20,7 +20,7 @@
 
 #include "admc_test_filter_widget.h"
 
-#include "class_filter_widget.h"
+#include "filter_widget/class_filter_widget.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/filter_widget_advanced_tab.h"
 #include "filter_widget/filter_widget_normal_tab.h"

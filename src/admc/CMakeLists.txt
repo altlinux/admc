@@ -42,7 +42,6 @@ set(ADMC_SOURCES
     find_widget.cpp
     tab_widget.cpp
     policy_results_widget.cpp
-    class_filter_widget.cpp
     edit_query_item_widget.cpp
 
     console_filter_dialog.cpp
@@ -82,6 +81,7 @@ set(ADMC_SOURCES
     filter_widget/filter_widget_normal_tab.cpp
     filter_widget/filter_widget_advanced_tab.cpp
     filter_widget/select_classes_widget.cpp
+    filter_widget/class_filter_widget.cpp
     filter_widget/class_filter_dialog.cpp
     filter_widget/select_base_widget.cpp
     

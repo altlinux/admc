@@ -81,7 +81,7 @@
   <customwidget>
    <class>ClassFilterWidget</class>
    <extends>QWidget</extends>
-   <header>class_filter_widget.h</header>
+   <header>filter_widget/class_filter_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
