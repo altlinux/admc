@@ -24,9 +24,6 @@
 #include "ad_filter.h"
 #include "filter_widget/filter_dialog.h"
 
-// TODO: fix key of filter dialog state being
-// "filter_widget"
-
 EditQueryItemWidget::EditQueryItemWidget(QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::EditQueryItemWidget();
@@ -71,7 +68,7 @@ QByteArray EditQueryItemWidget::filter_state() const {
     QHash<QString, QVariant> state;
 
     state["select_base_widget"] = ui->select_base_widget->save_state();
-    state["filter_widget"] = filter_dialog_state;
+    state["filter_dialog_state"] = filter_dialog_state;
     state["filter"] = filter();
 
     QByteArray out;
@@ -98,7 +95,7 @@ void EditQueryItemWidget::set_data(const QString &name, const QString &descripti
 
     ui->select_base_widget->restore_state(state["select_base_widget"]);
 
-    filter_dialog_state = state["filter_widget"];
+    filter_dialog_state = state["filter_dialog_state"];
 
     ui->filter_display->setPlainText(filter);
 
