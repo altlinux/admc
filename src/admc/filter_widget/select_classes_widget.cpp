@@ -22,7 +22,7 @@
 #include "filter_widget/ui_select_classes_widget.h"
 
 #include "adldap.h"
-#include "filter_widget/select_classes_dialog.h"
+#include "filter_widget/class_filter_dialog.h"
 
 SelectClassesWidget::SelectClassesWidget(QWidget *parent)
 : QWidget(parent) {
@@ -73,7 +73,7 @@ void SelectClassesWidget::restore_state(const QVariant &state_variant) {
 }
 
 void SelectClassesWidget::open_dialog() {
-    auto dialog = new SelectClassesDialog(this);
+    auto dialog = new ClassFilterDialog(this);
     dialog->init(adconfig, class_list, selected_list);
     dialog->open();
 

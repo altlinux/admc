@@ -22,7 +22,7 @@
 #include "ui_console_filter_dialog.h"
 
 #include "adldap.h"
-#include "filter_classes_widget.h"
+#include "class_filter_widget.h"
 #include "filter_widget/filter_dialog.h"
 #include "settings.h"
 
@@ -46,7 +46,7 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig_arg, QWidget *parent
         CLASS_PRINTER,
         CLASS_SHARED_FOLDER,
     };
-    ui->filter_classes_widget->init(adconfig, class_list_for_widget, class_list_for_widget);
+    ui->class_filter_widget->init(adconfig, class_list_for_widget, class_list_for_widget);
 
     settings_setup_dialog_geometry(SETTING_console_filter_dialog_geometry, this);
 
@@ -83,7 +83,7 @@ QVariant ConsoleFilterDialog::save_state() const {
     QHash<QString, QVariant> state;
 
     state[FILTER_CUSTOM_DIALOG_STATE] = filter_dialog_state;
-    state[FILTER_CLASSES_STATE] = ui->filter_classes_widget->save_state();
+    state[FILTER_CLASSES_STATE] = ui->class_filter_widget->save_state();
 
     for (const QString &state_name : button_state_name_map.keys()) {
         QRadioButton *button = button_state_name_map[state_name];
@@ -98,7 +98,7 @@ void ConsoleFilterDialog::restore_state(const QVariant &state) {
     const QHash<QString, QVariant> state_hash = state.toHash();
 
     filter_dialog_state = state_hash[FILTER_CUSTOM_DIALOG_STATE];
-    ui->filter_classes_widget->restore_state(state_hash[FILTER_CLASSES_STATE]);
+    ui->class_filter_widget->restore_state(state_hash[FILTER_CLASSES_STATE]);
 
     for (const QString &state_name : button_state_name_map.keys()) {
         QRadioButton *button = button_state_name_map[state_name];
@@ -112,7 +112,7 @@ QString ConsoleFilterDialog::get_filter() const {
     if (ui->all_button->isChecked()) {
         return "(objectClass=*)";
     } else if (ui->classes_button->isChecked()) {
-        return ui->filter_classes_widget->get_filter();
+        return ui->class_filter_widget->get_filter();
     } else if (ui->custom_button->isChecked()) {
         return custom_filter;
     }
@@ -150,5 +150,5 @@ void ConsoleFilterDialog::on_custom_button() {
 void ConsoleFilterDialog::on_classes_button() {
     const bool checked = ui->classes_button->isChecked();
 
-    ui->filter_classes_widget->setEnabled(checked);
+    ui->class_filter_widget->setEnabled(checked);
 }

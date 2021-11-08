@@ -903,14 +903,14 @@
     </message>
 </context>
 <context>
-    <name>FilterClassesWidget</name>
+    <name>ClassFilterWidget</name>
     <message>
-        <location filename="filter_classes_widget.ui" line="40"/>
+        <location filename="class_filter_widget.ui" line="40"/>
         <source>Select all</source>
         <translation>Выбрать все</translation>
     </message>
     <message>
-        <location filename="filter_classes_widget.ui" line="47"/>
+        <location filename="class_filter_widget.ui" line="47"/>
         <source>Clear selection</source>
         <translation>Очистить выбор</translation>
     </message>
@@ -2850,9 +2850,9 @@
     </message>
 </context>
 <context>
-    <name>SelectClassesDialog</name>
+    <name>ClassFilterDialog</name>
     <message>
-        <location filename="filter_widget/select_classes_dialog.ui" line="14"/>
+        <location filename="filter_widget/class_filter_dialog.ui" line="14"/>
         <source>Select Classes</source>
         <translation>Выбор классов</translation>
     </message>

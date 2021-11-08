@@ -18,32 +18,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SELECT_CLASSES_DIALOG_H
-#define SELECT_CLASSES_DIALOG_H
+#ifndef CLASS_FILTER_DIALOG_H
+#define CLASS_FILTER_DIALOG_H
 
 /**
  * Dialog to select classes, opened from
- * SelectClassesWidget. Wraps FilterClassesWidget inside.
+ * SelectClassesWidget. Wraps ClassFilterWidget inside.
  */
 
 #include <QDialog>
 #include <QVariant>
 
-class FilterClassesWidget;
+class ClassFilterWidget;
 class AdConfig;
 
 namespace Ui {
-class SelectClassesDialog;
+class ClassFilterDialog;
 }
 
-class SelectClassesDialog final : public QDialog {
+class ClassFilterDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    Ui::SelectClassesDialog *ui;
+    Ui::ClassFilterDialog *ui;
 
-    SelectClassesDialog(QWidget *parent);
-    ~SelectClassesDialog();
+    ClassFilterDialog(QWidget *parent);
+    ~ClassFilterDialog();
 
     void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
     QString get_filter() const;
@@ -60,4 +60,4 @@ private:
     void reset();
 };
 
-#endif /* SELECT_CLASSES_DIALOG_H */
+#endif /* CLASS_FILTER_DIALOG_H */

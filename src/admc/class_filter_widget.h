@@ -18,11 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FILTER_CLASSES_WIDGET_H
-#define FILTER_CLASSES_WIDGET_H
+#ifndef CLASS_FILTER_WIDGET_H
+#define CLASS_FILTER_WIDGET_H
 
 /**
- * This widget is embedded in FilterDialog. Contains
+ * This widget is embedded in ConsoleFilterDialog. Contains
  * checkboxes of object classes. get_filter() returns a
  * filter which will filter out unselected classes.
  */
@@ -33,17 +33,17 @@ class QCheckBox;
 class AdConfig;
 
 namespace Ui {
-class FilterClassesWidget;
+class ClassFilterWidget;
 }
 
-class FilterClassesWidget final : public QWidget {
+class ClassFilterWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    Ui::FilterClassesWidget *ui;
+    Ui::ClassFilterWidget *ui;
 
-    FilterClassesWidget(QWidget *parent = nullptr);
-    ~FilterClassesWidget();
+    ClassFilterWidget(QWidget *parent = nullptr);
+    ~ClassFilterWidget();
 
     void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
 
@@ -59,4 +59,4 @@ private:
     void select_all();
 };
 
-#endif /* FILTER_CLASSES_WIDGET_H */
+#endif /* CLASS_FILTER_WIDGET_H */

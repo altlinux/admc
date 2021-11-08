@@ -20,7 +20,7 @@
 
 #include "admc_test_filter_widget.h"
 
-#include "filter_classes_widget.h"
+#include "class_filter_widget.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/filter_widget_advanced_tab.h"
 #include "filter_widget/filter_widget_normal_tab.h"
@@ -61,11 +61,11 @@ void ADMCTestFilterWidget::test_simple_tab() {
     QPushButton *select_button = select_classes_widget->ui->select_button;
     select_button->click();
 
-    auto select_classes_dialog = select_classes_widget->findChild<QDialog *>();
-    QVERIFY(select_classes_dialog);
-    QVERIFY(QTest::qWaitForWindowExposed(select_classes_dialog, 1000));
+    auto class_filter_dialog = select_classes_widget->findChild<QDialog *>();
+    QVERIFY(class_filter_dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(class_filter_dialog, 1000));
 
-    const QList<QCheckBox *> checkbox_list = select_classes_dialog->findChildren<QCheckBox *>();
+    const QList<QCheckBox *> checkbox_list = class_filter_dialog->findChildren<QCheckBox *>();
     QVERIFY(!checkbox_list.isEmpty());
 
     for (QCheckBox *checkbox : checkbox_list) {
@@ -73,7 +73,7 @@ void ADMCTestFilterWidget::test_simple_tab() {
         checkbox->setChecked(checked);
     }
 
-    select_classes_dialog->accept();
+    class_filter_dialog->accept();
 
     QLineEdit *name_edit = simple_tab->ui->name_edit;
     name_edit->setText("test");
@@ -103,11 +103,11 @@ void ADMCTestFilterWidget::test_normal_tab() {
     QPushButton *select_button = select_classes_widget->ui->select_button;
     select_button->click();
 
-    auto select_classes_dialog = select_classes_widget->findChild<QDialog *>();
-    QVERIFY(select_classes_dialog);
-    QVERIFY(QTest::qWaitForWindowExposed(select_classes_dialog, 1000));
+    auto class_filter_dialog = select_classes_widget->findChild<QDialog *>();
+    QVERIFY(class_filter_dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(class_filter_dialog, 1000));
 
-    const QList<QCheckBox *> checkbox_list = select_classes_dialog->findChildren<QCheckBox *>();
+    const QList<QCheckBox *> checkbox_list = class_filter_dialog->findChildren<QCheckBox *>();
     QVERIFY(!checkbox_list.isEmpty());
 
     for (QCheckBox *checkbox : checkbox_list) {
@@ -115,7 +115,7 @@ void ADMCTestFilterWidget::test_normal_tab() {
         checkbox->setChecked(checked);
     }
 
-    select_classes_dialog->accept();
+    class_filter_dialog->accept();
 
     QLineEdit *value_edit = normal_tab->ui->value_edit;
     value_edit->setText("value");

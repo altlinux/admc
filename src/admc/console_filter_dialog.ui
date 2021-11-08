@@ -32,7 +32,7 @@
     </widget>
    </item>
    <item>
-    <widget class="FilterClassesWidget" name="filter_classes_widget" native="true"/>
+    <widget class="ClassFilterWidget" name="class_filter_widget" native="true"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -79,9 +79,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FilterClassesWidget</class>
+   <class>ClassFilterWidget</class>
    <extends>QWidget</extends>
-   <header>filter_classes_widget.h</header>
+   <header>class_filter_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

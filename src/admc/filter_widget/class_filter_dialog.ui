@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SelectClassesDialog</class>
- <widget class="QDialog" name="SelectClassesDialog">
+ <class>ClassFilterDialog</class>
+ <widget class="QDialog" name="ClassFilterDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="FilterClassesWidget" name="filter_classes_widget" native="true"/>
+    <widget class="ClassFilterWidget" name="class_filter_widget" native="true"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="button_box">
@@ -31,9 +31,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FilterClassesWidget</class>
+   <class>ClassFilterWidget</class>
    <extends>QWidget</extends>
-   <header>filter_classes_widget.h</header>
+   <header>class_filter_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -42,7 +42,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>SelectClassesDialog</receiver>
+   <receiver>ClassFilterDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -58,7 +58,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>SelectClassesDialog</receiver>
+   <receiver>ClassFilterDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

@@ -18,31 +18,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_classes_widget.h"
-#include "ui_filter_classes_widget.h"
+#include "class_filter_widget.h"
+#include "ui_class_filter_widget.h"
 
 #include "adldap.h"
 
 #include <QCheckBox>
 
-FilterClassesWidget::FilterClassesWidget(QWidget *parent)
+ClassFilterWidget::ClassFilterWidget(QWidget *parent)
 : QWidget(parent) {
-    ui = new Ui::FilterClassesWidget();
+    ui = new Ui::ClassFilterWidget();
     ui->setupUi(this);
 
     connect(
         ui->select_all_button, &QPushButton::clicked,
-        this, &FilterClassesWidget::select_all);
+        this, &ClassFilterWidget::select_all);
     connect(
         ui->clear_selection_button, &QPushButton::clicked,
-        this, &FilterClassesWidget::clear_selection);
+        this, &ClassFilterWidget::clear_selection);
 }
 
-FilterClassesWidget::~FilterClassesWidget() {
+ClassFilterWidget::~ClassFilterWidget() {
     delete ui;
 }
 
-void FilterClassesWidget::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
+void ClassFilterWidget::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
     for (const QString &object_class : class_list) {
         const QString class_string = adconfig->get_class_display_name(object_class);
         auto checkbox = new QCheckBox(class_string);
@@ -56,7 +56,7 @@ void FilterClassesWidget::init(AdConfig *adconfig, const QList<QString> &class_l
     }
 }
 
-QString FilterClassesWidget::get_filter() const {
+QString ClassFilterWidget::get_filter() const {
     const QList<QString> class_filter_list = [&] {
         QList<QString> out;
 
@@ -77,7 +77,7 @@ QString FilterClassesWidget::get_filter() const {
     return filter;
 }
 
-QList<QString> FilterClassesWidget::get_selected_classes() const {
+QList<QString> ClassFilterWidget::get_selected_classes() const {
     QList<QString> out;
 
     for (const QString &object_class : checkbox_map.keys()) {
@@ -91,19 +91,19 @@ QList<QString> FilterClassesWidget::get_selected_classes() const {
     return out;
 }
 
-void FilterClassesWidget::select_all() {
+void ClassFilterWidget::select_all() {
     for (QCheckBox *checkbox : checkbox_map.values()) {
         checkbox->setChecked(true);
     }
 }
 
-void FilterClassesWidget::clear_selection() {
+void ClassFilterWidget::clear_selection() {
     for (QCheckBox *checkbox : checkbox_map.values()) {
         checkbox->setChecked(false);
     }
 }
 
-QVariant FilterClassesWidget::save_state() const {
+QVariant ClassFilterWidget::save_state() const {
     QHash<QString, QVariant> state;
 
     for (const QString &object_class : checkbox_map.keys()) {
@@ -116,7 +116,7 @@ QVariant FilterClassesWidget::save_state() const {
     return QVariant(state);
 }
 
-void FilterClassesWidget::restore_state(const QVariant &state_variant) {
+void ClassFilterWidget::restore_state(const QVariant &state_variant) {
     const QHash<QString, QVariant> state = state_variant.toHash();
 
     for (const QString &object_class : checkbox_map.keys()) {
