@@ -62,12 +62,8 @@ public:
     void load(const QByteArray &value);
     QByteArray get() const;
 
-    void accept() override;
-    void reject() override;
-
 private:
     QStandardItemModel *model;
-    QByteArray original_value;
 
     void switch_to_local_time();
     void on_local_time_button_toggled(bool checked);

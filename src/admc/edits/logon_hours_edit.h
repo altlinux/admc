@@ -24,7 +24,6 @@
 #include "edits/attribute_edit.h"
 
 class QPushButton;
-class LogonHoursDialog;
 
 class LogonHoursEdit final : public AttributeEdit {
     Q_OBJECT
@@ -34,7 +33,9 @@ public:
 
 private:
     QPushButton *button;
-    LogonHoursDialog *dialog;
+    QByteArray current_value;
+
+    void open_dialog();
 };
 
 #endif /* LOGON_HOURS_EDIT_H */

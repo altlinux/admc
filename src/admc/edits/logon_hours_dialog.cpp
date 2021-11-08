@@ -35,6 +35,8 @@ LogonHoursDialog::LogonHoursDialog(QWidget *parent)
     ui = new Ui::LogonHoursDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     model = new QStandardItemModel(DAYS_IN_WEEK, HOURS_IN_DAY, this);
     model->setVerticalHeaderLabels({
         tr("Sunday"),
@@ -69,8 +71,6 @@ LogonHoursDialog::~LogonHoursDialog() {
 }
 
 void LogonHoursDialog::load(const QByteArray &value) {
-    original_value = value;
-
     ui->view->clearSelection();
 
     // NOTE: value may be empty if it's undefined
@@ -113,17 +113,6 @@ QByteArray LogonHoursDialog::get() const {
     const QByteArray out = logon_hours_to_bytes(bools, get_offset());
 
     return out;
-}
-
-void LogonHoursDialog::accept() {
-
-    QDialog::accept();
-}
-
-void LogonHoursDialog::reject() {
-    load(original_value);
-
-    QDialog::reject();
 }
 
 // Get current value, change time state and reload value
