@@ -132,9 +132,6 @@ void ConsoleFilterDialog::open_custom_dialog() {
 
     dialog->restore_state(filter_dialog_state);
 
-    // TODO: remove when filter dialog ctor has this inside
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-
     dialog->open();
 
     connect(

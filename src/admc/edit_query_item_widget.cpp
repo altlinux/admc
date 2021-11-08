@@ -113,9 +113,6 @@ void EditQueryItemWidget::open_filter_dialog() {
     dialog->set_classes(filter_classes, filter_classes);
     dialog->restore_state(filter_dialog_state);
 
-    // TODO: remove when filter dialog ctor has this inside
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-
     dialog->open();
 
     connect(

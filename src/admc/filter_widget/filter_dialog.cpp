@@ -32,6 +32,8 @@ FilterDialog::FilterDialog(QWidget *parent)
     ui = new Ui::FilterDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     settings_setup_dialog_geometry(SETTING_filter_dialog_geometry, this);
 }
 
