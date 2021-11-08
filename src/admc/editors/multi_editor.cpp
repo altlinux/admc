@@ -39,11 +39,6 @@ MultiEditor::MultiEditor(QWidget *parent)
 
     AttributeEditor::set_attribute_label(ui->attribute_label);
 
-    // TODO: in read only case somehow disable this? maybe
-    // disallow selection. but do want to allow copying of
-    // values
-    enable_widget_on_selection(ui->remove_button, ui->list_widget);
-
     settings_setup_dialog_geometry(SETTING_multi_editor_geometry, this);
 
     connect(
