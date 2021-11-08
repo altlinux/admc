@@ -114,28 +114,26 @@ ConnectionOptionsDialog::~ConnectionOptionsDialog() {
 }
 
 void ConnectionOptionsDialog::accept() {
-    const bool host_is_valid = [&]() {
-        const bool host_is_custom = ui->host_custom_button->isChecked();
+    if (any_hosts_available) {
+        const bool host_is_valid = [&]() {
+            const bool host_is_custom = ui->host_custom_button->isChecked();
 
-        if (host_is_custom) {
-            const QString custom_host = ui->host_custom_edit->text();
+            if (host_is_custom) {
+                const QString custom_host = ui->host_custom_edit->text();
 
-            return !custom_host.isEmpty();
-        } else {
-            if (ui->host_select_list->count() > 0) {
+                return !custom_host.isEmpty();
+            } else {
                 const bool any_host_selected = !ui->host_select_list->selectedItems().isEmpty();
 
                 return any_host_selected;
-            } else {
-                return true;
             }
+        }();
+
+        if (!host_is_valid) {
+            message_box_warning(this, tr("Error"), tr("Select or enter a host."));
+
+            return;
         }
-    }();
-
-    if (!host_is_valid) {
-        message_box_warning(this, tr("Error"), tr("Select or enter a host."));
-
-        return;
     }
 
     const int port = ui->port_spinbox->value();
