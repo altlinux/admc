@@ -461,6 +461,27 @@
     </message>
 </context>
 <context>
+    <name>ClassFilterDialog</name>
+    <message>
+        <location filename="filter_widget/class_filter_dialog.ui" line="14"/>
+        <source>Select Classes</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>ClassFilterWidget</name>
+    <message>
+        <location filename="filter_widget/class_filter_widget.ui" line="40"/>
+        <source>Select all</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="filter_widget/class_filter_widget.ui" line="47"/>
+        <source>Clear selection</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>ConnectionOptionsDialog</name>
     <message>
         <location filename="connection_options_dialog.ui" line="14"/>
@@ -897,19 +918,6 @@
     <message>
         <location filename="edits/expiry_widget.ui" line="29"/>
         <source>End of:</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>ClassFilterWidget</name>
-    <message>
-        <location filename="class_filter_widget.ui" line="40"/>
-        <source>Select all</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="class_filter_widget.ui" line="47"/>
-        <source>Clear selection</source>
         <translation></translation>
     </message>
 </context>
@@ -2311,95 +2319,95 @@
     <name>PropertiesDialog</name>
     <message>
         <location filename="properties_dialog.ui" line="14"/>
-        <location filename="properties_dialog.cpp" line="127"/>
+        <location filename="properties_dialog.cpp" line="125"/>
         <source>Properties</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="125"/>
+        <location filename="properties_dialog.cpp" line="123"/>
         <source>%1 Properties</source>
         <oldsource>&quot;%1&quot; Properties</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="161"/>
+        <location filename="properties_dialog.cpp" line="159"/>
         <source>General</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="166"/>
+        <location filename="properties_dialog.cpp" line="164"/>
         <source>Object</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="169"/>
+        <location filename="properties_dialog.cpp" line="167"/>
         <source>Attributes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="175"/>
+        <location filename="properties_dialog.cpp" line="173"/>
         <source>Account</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="177"/>
+        <location filename="properties_dialog.cpp" line="175"/>
         <source>Organization</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="178"/>
+        <location filename="properties_dialog.cpp" line="176"/>
         <source>Telephones</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="179"/>
+        <location filename="properties_dialog.cpp" line="177"/>
         <source>Profile</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="209"/>
+        <location filename="properties_dialog.cpp" line="207"/>
         <source>Security</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="182"/>
+        <location filename="properties_dialog.cpp" line="180"/>
         <source>Members</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="185"/>
-        <location filename="properties_dialog.cpp" line="203"/>
+        <location filename="properties_dialog.cpp" line="183"/>
+        <location filename="properties_dialog.cpp" line="201"/>
         <source>Member of</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="189"/>
-        <location filename="properties_dialog.cpp" line="204"/>
+        <location filename="properties_dialog.cpp" line="187"/>
+        <location filename="properties_dialog.cpp" line="202"/>
         <source>Managed by</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="193"/>
+        <location filename="properties_dialog.cpp" line="191"/>
         <source>Group policy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="197"/>
+        <location filename="properties_dialog.cpp" line="195"/>
         <source>Links to</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="201"/>
+        <location filename="properties_dialog.cpp" line="199"/>
         <source>Operating System</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="202"/>
+        <location filename="properties_dialog.cpp" line="200"/>
         <source>Delegation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="176"/>
+        <location filename="properties_dialog.cpp" line="174"/>
         <source>Address</source>
         <translation></translation>
     </message>
@@ -2412,28 +2420,28 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_multi_dialog.cpp" line="64"/>
-        <location filename="properties_multi_dialog.cpp" line="70"/>
+        <location filename="properties_multi_dialog.cpp" line="66"/>
+        <location filename="properties_multi_dialog.cpp" line="72"/>
         <source>General</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_multi_dialog.cpp" line="65"/>
+        <location filename="properties_multi_dialog.cpp" line="67"/>
         <source>Account</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_multi_dialog.cpp" line="66"/>
+        <location filename="properties_multi_dialog.cpp" line="68"/>
         <source>Address</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_multi_dialog.cpp" line="67"/>
+        <location filename="properties_multi_dialog.cpp" line="69"/>
         <source>Profile</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_multi_dialog.cpp" line="68"/>
+        <location filename="properties_multi_dialog.cpp" line="70"/>
         <source>Organization</source>
         <translation></translation>
     </message>
@@ -2446,22 +2454,22 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_warning_dialog.cpp" line="29"/>
+        <location filename="properties_warning_dialog.cpp" line="41"/>
         <source>Apply current changes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_warning_dialog.cpp" line="30"/>
+        <location filename="properties_warning_dialog.cpp" line="42"/>
         <source>Discard changes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_warning_dialog.cpp" line="40"/>
+        <location filename="properties_warning_dialog.cpp" line="33"/>
         <source>You&apos;re switching to attributes tab, while another tab has unapplied changes. Choose to apply or discard those changes.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_warning_dialog.cpp" line="41"/>
+        <location filename="properties_warning_dialog.cpp" line="34"/>
         <source>You&apos;re switching from attributes tab, while it has unapplied changes. Choose to apply or discard those changes.</source>
         <translation></translation>
     </message>
@@ -2844,14 +2852,6 @@
     <message>
         <location filename="filter_widget/select_base_widget.ui" line="45"/>
         <source>Browse...</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>ClassFilterDialog</name>
-    <message>
-        <location filename="filter_widget/class_filter_dialog.ui" line="14"/>
-        <source>Select Classes</source>
         <translation></translation>
     </message>
 </context>
