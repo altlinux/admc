@@ -29,57 +29,58 @@ SelectClassesWidget::SelectClassesWidget(QWidget *parent)
     ui = new Ui::SelectClassesWidget();
     ui->setupUi(this);
 
-    dialog = new SelectClassesDialog(this);
-
     connect(
         ui->select_button, &QAbstractButton::clicked,
-        dialog, &QDialog::open);
-    connect(
-        dialog, &QDialog::finished,
-        this, &SelectClassesWidget::update_classes_display);
+        this, &SelectClassesWidget::open_dialog);
 }
 
 SelectClassesWidget::~SelectClassesWidget() {
     delete ui;
 }
 
-void SelectClassesWidget::init(AdConfig *adconfig) {
-    dialog->init(adconfig);
-}
-
-void SelectClassesWidget::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
-    dialog->set_classes(class_list, selected_list);
-
-    update_classes_display();
+void SelectClassesWidget::init(AdConfig *adconfig_arg, const QList<QString> &class_list_arg, const QList<QString> &selected_list_arg) {
+    adconfig = adconfig_arg;
+    class_list = class_list_arg;
+    selected_list = selected_list_arg;
 }
 
 QString SelectClassesWidget::get_filter() const {
-    return dialog->get_filter();
-}
-
-// Display selected classes in line edit as a sorted list of
-// class display strings separated by ","
-// "User, Organizational Unit, ..."
-void SelectClassesWidget::update_classes_display() {
-    const QString classes_display_text = [this]() {
-        QList<QString> selected_classes = dialog->get_selected_classes_display();
-
-        std::sort(selected_classes.begin(), selected_classes.end());
-
-        const QString joined = selected_classes.join(", ");
-
-        return joined;
-    }();
-
-    ui->classes_display->setText(classes_display_text);
-    ui->classes_display->setCursorPosition(0);
+    return filter;
 }
 
 QVariant SelectClassesWidget::save_state() const {
-    return dialog->save_state();
+    QHash<QString, QVariant> state;
+
+    state["dialog_state"] = dialog_state;
+
+    const QString classes_display_text = ui->classes_display->text();
+    state["classes_display_text"] = classes_display_text;
+
+    return state;
 }
 
-void SelectClassesWidget::restore_state(const QVariant &state) {
-    dialog->restore_state(state);
-    update_classes_display();
+void SelectClassesWidget::restore_state(const QVariant &state_variant) {
+    QHash<QString, QVariant> state = state_variant.toHash();
+
+    dialog_state = state["dialog_state"];
+
+    const QString classes_display_text = state["classes_display_text"].toString();
+    ui->classes_display->setText(classes_display_text);
+}
+
+void SelectClassesWidget::open_dialog() {
+    auto dialog = new SelectClassesDialog(this);
+    dialog->init(adconfig, class_list, selected_list);
+    dialog->restore_state(dialog_state);
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            const QString classes_display_text = dialog->get_selected_classes_display();
+            filter = dialog->get_filter();
+
+            ui->classes_display->setText(classes_display_text);
+            ui->classes_display->setCursorPosition(0);
+        });
 }

@@ -125,9 +125,7 @@ FindWidget::~FindWidget() {
 }
 
 void FindWidget::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list, const QString &default_base) {
-    ui->filter_widget->init(adconfig);
-    ui->filter_widget->set_classes(class_list, selected_list);
-
+    ui->filter_widget->init(adconfig, class_list, selected_list);
     ui->select_base_widget->init(adconfig, default_base);
 }
 

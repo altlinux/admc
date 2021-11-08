@@ -37,14 +37,9 @@ FilterWidget::~FilterWidget() {
     delete ui;
 }
 
-void FilterWidget::init(AdConfig *adconfig) {
-    ui->simple_tab->init(adconfig);
-    ui->normal_tab->init(adconfig);
-}
-
-void FilterWidget::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
-    ui->simple_tab->set_classes(class_list, selected_list);
-    ui->normal_tab->set_classes(class_list, selected_list);
+void FilterWidget::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
+    ui->simple_tab->init(adconfig, class_list, selected_list);
+    ui->normal_tab->init(adconfig, class_list, selected_list);
 }
 
 QString FilterWidget::get_filter() const {

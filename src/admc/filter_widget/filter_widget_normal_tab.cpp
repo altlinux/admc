@@ -54,7 +54,7 @@ FilterWidgetNormalTab::~FilterWidgetNormalTab() {
     delete ui;
 }
 
-void FilterWidgetNormalTab::init(AdConfig *adconfig_arg) {
+void FilterWidgetNormalTab::init(AdConfig *adconfig_arg, const QList<QString> &class_list, const QList<QString> &selected_list) {
     adconfig = adconfig_arg;
 
     for (const QString &object_class : filter_classes) {
@@ -62,11 +62,8 @@ void FilterWidgetNormalTab::init(AdConfig *adconfig_arg) {
         ui->attribute_class_combo->addItem(display, object_class);
     }
 
-    ui->select_classes->init(adconfig);
-}
+    ui->select_classes->init(adconfig, class_list, selected_list);
 
-void FilterWidgetNormalTab::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
-    ui->select_classes->set_classes(class_list, selected_list);
 }
 
 QString FilterWidgetNormalTab::get_filter() const {

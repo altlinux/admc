@@ -45,10 +45,9 @@ public:
     SelectClassesDialog(QWidget *parent);
     ~SelectClassesDialog();
 
-    void init(AdConfig *adconfig);
-    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
+    void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
     QString get_filter() const;
-    QList<QString> get_selected_classes_display() const;
+    QString get_selected_classes_display() const;
     QVariant save_state() const;
     void restore_state(const QVariant &state);
 

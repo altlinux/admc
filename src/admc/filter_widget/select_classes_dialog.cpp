@@ -30,6 +30,8 @@ SelectClassesDialog::SelectClassesDialog(QWidget *parent)
     ui = new Ui::SelectClassesDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     connect(
         ui->button_box->button(QDialogButtonBox::Reset), &QPushButton::clicked,
         this, &SelectClassesDialog::reset);
@@ -41,20 +43,24 @@ SelectClassesDialog::~SelectClassesDialog() {
     delete ui;
 }
 
-void SelectClassesDialog::init(AdConfig *adconfig) {
-    return ui->filter_classes_widget->init(adconfig);
-}
-
-void SelectClassesDialog::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
-    return ui->filter_classes_widget->set_classes(class_list, selected_list);
+void SelectClassesDialog::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
+    return ui->filter_classes_widget->init(adconfig, class_list, selected_list);
 }
 
 QString SelectClassesDialog::get_filter() const {
     return ui->filter_classes_widget->get_filter();
 }
 
-QList<QString> SelectClassesDialog::get_selected_classes_display() const {
-    return ui->filter_classes_widget->get_selected_classes_display();
+// Return selected classes as a sorted list of class display
+// strings separated by "," "User, Organizational Unit, ..."
+QString SelectClassesDialog::get_selected_classes_display() const {
+    QList<QString> selected_classes = ui->filter_classes_widget->get_selected_classes_display();
+
+    std::sort(selected_classes.begin(), selected_classes.end());
+
+    const QString joined = selected_classes.join(", ");
+
+    return joined;
 }
 
 QVariant SelectClassesDialog::save_state() const {

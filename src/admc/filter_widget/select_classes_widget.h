@@ -29,8 +29,8 @@
  */
 
 #include <QWidget>
+#include <QVariant>
 
-class SelectClassesDialog;
 class AdConfig;
 
 namespace Ui {
@@ -46,9 +46,7 @@ public:
     SelectClassesWidget(QWidget *parent = nullptr);
     ~SelectClassesWidget();
 
-    void init(AdConfig *adconfig);
-
-    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
+    void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QString get_filter() const;
 
@@ -56,9 +54,13 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    SelectClassesDialog *dialog;
+    AdConfig *adconfig;
+    QList<QString> class_list;
+    QList<QString> selected_list;
+    QString filter;
+    QVariant dialog_state;
 
-    void update_classes_display();
+    void open_dialog();
 };
 
 #endif /* SELECT_CLASSES_WIDGET_H */

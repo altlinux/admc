@@ -46,8 +46,7 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig_arg, QWidget *parent
         CLASS_PRINTER,
         CLASS_SHARED_FOLDER,
     };
-    ui->filter_classes_widget->init(adconfig);
-    ui->filter_classes_widget->set_classes(class_list_for_widget, class_list_for_widget);
+    ui->filter_classes_widget->init(adconfig, class_list_for_widget, class_list_for_widget);
 
     settings_setup_dialog_geometry(SETTING_console_filter_dialog_geometry, this);
 
@@ -123,12 +122,11 @@ QString ConsoleFilterDialog::get_filter() const {
 
 void ConsoleFilterDialog::open_custom_dialog() {
     auto dialog = new FilterDialog(this);
-    dialog->init(adconfig);
 
     // NOTE: Using only non-container classes for filtering
     // because container classes need to always be visible
     const QList<QString> noncontainer_classes = adconfig->get_noncontainer_classes();
-    dialog->set_classes(noncontainer_classes, noncontainer_classes);
+    dialog->init(adconfig, noncontainer_classes, noncontainer_classes);
 
     dialog->restore_state(filter_dialog_state);
 

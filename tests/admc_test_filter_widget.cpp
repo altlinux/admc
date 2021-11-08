@@ -44,8 +44,7 @@ void ADMCTestFilterWidget::init() {
     ADMCTest::init();
 
     filter_widget = new FilterWidget();
-    filter_widget->init(ad.adconfig());
-    filter_widget->set_classes(filter_classes, filter_classes);
+    filter_widget->init(ad.adconfig(), filter_classes, filter_classes);
     add_widget(filter_widget);
 
     tab_widget = filter_widget->ui->tab_widget;
