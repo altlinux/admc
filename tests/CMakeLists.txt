@@ -4,7 +4,6 @@ find_package(Qt5 REQUIRED
         Core
         Widgets
         Test
-        Help
 )
 
 set(CMAKE_AUTOMOC ON)
@@ -14,7 +13,6 @@ link_libraries(
     Qt5::Core
     Qt5::Widgets
     Qt5::Test
-    Qt5::Help
     adldap
     admctest
 )

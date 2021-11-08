@@ -2,7 +2,6 @@ find_package(Qt5 REQUIRED
     COMPONENTS
         Core
         Widgets
-        Help
         LinguistTools
 )
 
@@ -26,7 +25,6 @@ include_directories(
 link_libraries(
     Qt5::Core
     Qt5::Widgets
-    Qt5::Help
     adldap
     resolv
 )
@@ -43,7 +41,6 @@ set(ADMC_SOURCES
     main_window_connection_error.cpp
     find_widget.cpp
     tab_widget.cpp
-    help_browser.cpp
     policy_results_widget.cpp
     filter_classes_widget.cpp
     edit_query_item_widget.cpp
@@ -70,7 +67,6 @@ set(ADMC_SOURCES
     select_container_dialog.cpp
     select_policy_dialog.cpp
     about_dialog.cpp
-    manual_dialog.cpp
     edit_query_item_dialog.cpp
     edit_query_folder_dialog.cpp
     properties_dialog.cpp

@@ -66,7 +66,7 @@ ChangelogDialog::ChangelogDialog(QWidget *parent)
 
     ui->edit->setPlainText(changelog_text);
 
-    settings_setup_dialog_geometry(SETTING_manual_dialog_geometry, this);
+    settings_setup_dialog_geometry(SETTING_changelog_dialog_geometry, this);
 }
 
 ChangelogDialog::~ChangelogDialog() {

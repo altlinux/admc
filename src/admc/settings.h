@@ -60,7 +60,6 @@ DEFINE_SETTING(SETTING_select_object_dialog_geometry);
 DEFINE_SETTING(SETTING_select_container_dialog_geometry);
 DEFINE_SETTING(SETTING_object_multi_dialog_geometry);
 DEFINE_SETTING(SETTING_connection_options_dialog_geometry);
-DEFINE_SETTING(SETTING_manual_dialog_geometry);
 DEFINE_SETTING(SETTING_changelog_dialog_geometry);
 DEFINE_SETTING(SETTING_error_log_dialog_geometry);
 DEFINE_SETTING(SETTING_select_well_known_trustee_dialog_geometry);

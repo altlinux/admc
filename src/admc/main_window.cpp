@@ -37,7 +37,6 @@
 #include "console_widget/console_widget.h"
 #include "edits/country_combo.h"
 #include "globals.h"
-#include "manual_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
@@ -45,6 +44,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QModelIndex>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 : QMainWindow(parent) {
@@ -87,7 +87,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     query_item_impl->set_query_folder_impl(query_folder_impl);
 
     // Create dialogs opened from menubar
-    auto manual_dialog = new ManualDialog(this);
     auto changelog_dialog = new ChangelogDialog(this);
     auto about_dialog = new AboutDialog(this);
     auto connection_options_dialog = new ConnectionOptionsDialog(this);
@@ -235,7 +234,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         this, &MainWindow::close);
     connect(
         ui->action_manual, &QAction::triggered,
-        manual_dialog, &QDialog::show);
+        this, &MainWindow::open_manual);
     connect(
         ui->action_changelog, &QAction::triggered,
         changelog_dialog, &QDialog::show);
@@ -348,6 +347,11 @@ void MainWindow::on_log_searches_changed() {
 void MainWindow::on_show_login_changed() {
     const bool enabled = ui->action_show_login->isChecked();
     login_label->setVisible(enabled);
+}
+
+void MainWindow::open_manual() {
+    const QUrl manual_url = QUrl("https://www.altlinux.org/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%BE%D0%B2%D1%8B%D0%B5_%D0%BF%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D0%BA%D0%B8/ADMC");
+    QDesktopServices::openUrl(manual_url);
 }
 
 void load_connection_options() {

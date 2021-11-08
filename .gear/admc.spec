@@ -38,7 +38,6 @@ Requires: libsasl2
 Requires: libsmbclient
 Requires: libuuid
 Requires: qt5-base-common
-Requires: libqt5-help
 Requires: glib2
 Requires: libkrb5
 
@@ -67,7 +66,6 @@ Tests for ADMC
 %files
 %doc README.md
 %doc CHANGELOG.txt
-%_docdir/admc/admc.qch
 %_bindir/admc
 %_libdir/libadldap.so
 %_man1dir/admc*
