@@ -1124,10 +1124,6 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password, cons
     }
 }
 
-// TODO:
-// "User cannot change password" - CAN'T just set PASSWD_CANT_CHANGE. See: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
-// "This account supports 128bit encryption" (and for 256bit)
-// "Use Kerberos DES encryption types for this account"
 bool AdInterface::user_set_account_option(const QString &dn, AccountOption option, bool set) {
     if (dn.isEmpty()) {
         return false;
