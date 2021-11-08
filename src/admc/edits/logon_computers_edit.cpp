@@ -31,21 +31,15 @@ LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QList<AttributeE
 : AttributeEdit(edits_out, parent) {
     button = button_arg;
 
-    dialog = new LogonComputersDialog(button);
-
     connect(
         button, &QPushButton::clicked,
-        dialog, &QDialog::open);
-    connect(
-        dialog, &LogonComputersDialog::accepted,
-        this, &AttributeEdit::edited);
+        this, &LogonComputersEdit::open_dialog);
 }
 
 void LogonComputersEdit::load_internal(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
-    QString value = object.get_value(ATTRIBUTE_USER_WORKSTATIONS);
-    dialog->load(value);
+    current_value = object.get_value(ATTRIBUTE_USER_WORKSTATIONS);
 }
 
 void LogonComputersEdit::set_read_only(const bool read_only) {
@@ -53,8 +47,21 @@ void LogonComputersEdit::set_read_only(const bool read_only) {
 }
 
 bool LogonComputersEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value = dialog->get();
-    const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_USER_WORKSTATIONS, new_value);
+    const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_USER_WORKSTATIONS, current_value);
 
     return success;
+}
+
+void LogonComputersEdit::open_dialog() {
+    auto dialog = new LogonComputersDialog(button);
+    dialog->load(current_value);
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            current_value = dialog->get();
+
+            emit edited();
+        });
 }

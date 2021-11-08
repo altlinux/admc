@@ -32,17 +32,9 @@
 void ADMCTestLogonComputersEdit::init() {
     ADMCTest::init();
 
-    open_dialog_button = new QPushButton(parent_widget);
+    auto open_dialog_button = new QPushButton(parent_widget);
 
     edit = new LogonComputersEdit(open_dialog_button, &edits, parent_widget);
-
-    dialog = parent_widget->findChild<LogonComputersDialog *>();
-    QVERIFY(dialog);
-
-    list = dialog->ui->list;
-    value_edit = dialog->ui->edit;
-    add_button = dialog->ui->add_button;
-    remove_button = dialog->ui->remove_button;
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
@@ -54,12 +46,20 @@ void ADMCTestLogonComputersEdit::init() {
 
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
+
+    open_dialog_button->click();
+
+    dialog = parent_widget->findChild<LogonComputersDialog *>();
+    QVERIFY(dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    list = dialog->ui->list;
+    value_edit = dialog->ui->edit;
+    add_button = dialog->ui->add_button;
+    remove_button = dialog->ui->remove_button;
 }
 
 void ADMCTestLogonComputersEdit::load() {
-    open_dialog_button->click();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
     QCOMPARE(list->count(), 2);
     test_list_item(0, "test");
     test_list_item(1, "value");
@@ -73,18 +73,12 @@ void ADMCTestLogonComputersEdit::emit_edited_signal() {
             edited_signal_emitted = true;
         });
 
-    open_dialog_button->click();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
     dialog->accept();
 
     QVERIFY(edited_signal_emitted);
 }
 
 void ADMCTestLogonComputersEdit::add() {
-    open_dialog_button->click();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
     value_edit->setText("new");
 
     add_button->click();
@@ -96,9 +90,6 @@ void ADMCTestLogonComputersEdit::add() {
 }
 
 void ADMCTestLogonComputersEdit::remove() {
-    open_dialog_button->click();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
     list->setCurrentRow(0);
 
     remove_button->click();
@@ -118,9 +109,6 @@ void ADMCTestLogonComputersEdit::apply_unmodified() {
 }
 
 void ADMCTestLogonComputersEdit::apply() {
-    open_dialog_button->click();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
     value_edit->setText("new");
 
     add_button->click();

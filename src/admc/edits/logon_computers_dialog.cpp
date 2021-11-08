@@ -30,6 +30,8 @@ LogonComputersDialog::LogonComputersDialog(QWidget *parent)
     ui = new Ui::LogonComputersDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     settings_setup_dialog_geometry(SETTING_logon_computers_dialog_geometry, this);
 
     connect(
