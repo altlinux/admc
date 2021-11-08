@@ -113,7 +113,7 @@ bool PropertiesMultiDialog::apply() {
         }
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     hide_busy_indicator();
 

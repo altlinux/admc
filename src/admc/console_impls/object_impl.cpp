@@ -458,7 +458,7 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
             apply_changes(buddy_console);
         }
 
-        g_status()->display_ad_messages(ad, console);
+        g_status->display_ad_messages(ad, console);
     };
 
     if (dn_list.size() == 1) {
@@ -555,7 +555,7 @@ void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
 
     hide_busy_indicator();
 
-    g_status()->display_ad_messages(ad, console);
+    g_status->display_ad_messages(ad, console);
 }
 
 void ObjectImpl::set_find_action_enabled(const bool enabled) {
@@ -659,7 +659,7 @@ void ObjectImpl::on_move() {
                 return out;
             }();
 
-            g_status()->display_ad_messages(ad, nullptr);
+            g_status->display_ad_messages(ad, nullptr);
 
             // Then move in console
             move(ad, moved_objects, new_parent_dn);
@@ -703,7 +703,7 @@ void ObjectImpl::on_add_to_group() {
 
             hide_busy_indicator();
 
-            g_status()->display_ad_messages(ad, console);
+            g_status->display_ad_messages(ad, console);
         });
 }
 
@@ -739,7 +739,7 @@ void ObjectImpl::on_edit_upn_suffixes() {
     const AdObject partitions_object = ad.search_object(partitions_dn);
     const QList<QByteArray> current_values = partitions_object.get_values(ATTRIBUTE_UPN_SUFFIXES);
 
-    g_status()->display_ad_messages(ad, console);
+    g_status->display_ad_messages(ad, console);
 
     // NOTE: setting attribute here because on creation
     // there's no access to adconfig which is needed by
@@ -759,7 +759,7 @@ void ObjectImpl::on_edit_upn_suffixes() {
             const QList<QByteArray> new_values = dialog->get_value_list();
 
             ad_inner.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
-            g_status()->display_ad_messages(ad_inner, console);
+            g_status->display_ad_messages(ad_inner, console);
         });
 }
 
@@ -868,7 +868,7 @@ void ObjectImpl::set_disabled(const bool disabled) {
 
     hide_busy_indicator();
 
-    g_status()->display_ad_messages(ad, console);
+    g_status->display_ad_messages(ad, console);
 }
 
 void ObjectImpl::drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
@@ -909,7 +909,7 @@ void ObjectImpl::drop_objects(const QList<QPersistentModelIndex> &dropped_list, 
 
     hide_busy_indicator();
 
-    g_status()->display_ad_messages(ad, console);
+    g_status->display_ad_messages(ad, console);
 }
 
 void ObjectImpl::drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {

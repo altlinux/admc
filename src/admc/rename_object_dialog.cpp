@@ -32,12 +32,12 @@
 
 void RenameObjectDialog::success_msg(const QString &old_name) {
     const QString message = QString(tr("Object %1 was renamed.")).arg(old_name);
-    g_status()->add_message(message, StatusType_Success);
+    g_status->add_message(message, StatusType_Success);
 }
 
 void RenameObjectDialog::fail_msg(const QString &old_name) {
     const QString message = QString(tr("Failed to rename object %1")).arg(old_name);
-    g_status()->add_message(message, StatusType_Error);
+    g_status->add_message(message, StatusType_Error);
 }
 
 void RenameObjectDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_arg) {
@@ -106,7 +106,7 @@ void RenameObjectDialog::accept() {
 
     hide_busy_indicator();
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (final_success) {
         RenameObjectDialog::success_msg(old_name);

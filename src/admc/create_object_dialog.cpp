@@ -80,7 +80,7 @@ void CreateObjectDialog::accept() {
 
     auto fail_msg = [name]() {
         const QString message = QString(tr("Failed to create object %1")).arg(name);
-        g_status()->add_message(message, StatusType_Error);
+        g_status->add_message(message, StatusType_Error);
     };
 
     const bool add_success = ad.object_add(dn, m_object_class);
@@ -104,12 +104,12 @@ void CreateObjectDialog::accept() {
         }
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (final_success) {
         const QString message = QString(tr("Object %1 was created")).arg(name);
 
-        g_status()->add_message(message, StatusType_Success);
+        g_status->add_message(message, StatusType_Success);
 
         QDialog::accept();
     } else {

@@ -205,7 +205,7 @@ void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
 
     hide_busy_indicator();
 
-    g_status()->display_ad_messages(ad, console);
+    g_status->display_ad_messages(ad, console);
 }
 
 void PolicyImpl::refresh(const QList<QModelIndex> &index_list) {
@@ -267,7 +267,7 @@ void PolicyImpl::add_link(const QList<QString> &policy_list, const QList<QString
 
     hide_busy_indicator();
 
-    g_status()->display_ad_messages(ad, console);
+    g_status->display_ad_messages(ad, console);
 }
 
 void PolicyImpl::on_add_link() {
@@ -326,7 +326,7 @@ void PolicyImpl::on_gpui_error(QProcess::ProcessError error) {
     if (failed_to_start) {
         const QString error_text = "Failed to start gpui. Check that it's installed.";
         qDebug() << error_text;
-        g_status()->add_message(error_text, StatusType_Error);
+        g_status->add_message(error_text, StatusType_Error);
         error_log({error_text}, console);
     }
 }

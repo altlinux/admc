@@ -128,7 +128,7 @@ void CreatePolicyDialog::accept() {
 
     hide_busy_indicator();
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (success) {
         QDialog::accept();

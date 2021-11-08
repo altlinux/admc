@@ -27,14 +27,7 @@
 #include <QLocale>
 
 AdConfig *g_adconfig = new AdConfig();
-
-// NOTE: status has to be in a function because it creates a
-// widget so needs to be created after app is created
-Status *g_status() {
-    static Status instance;
-
-    return &instance;
-}
+Status *g_status = new Status();
 
 void load_g_adconfig(AdInterface &ad) {
     const QLocale locale = settings_get_variant(SETTING_locale).toLocale();

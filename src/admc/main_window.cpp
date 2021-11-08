@@ -52,7 +52,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     country_combo_load_data();
 
-    g_status()->init(ui->statusbar, ui->message_log_edit);
+    g_status->init(ui->statusbar, ui->message_log_edit);
 
     login_label = new QLabel();
     login_label->setText(ad.client_user());
@@ -130,7 +130,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     // Display any errors that happened when loading the
     // console
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     //
     // Restore state

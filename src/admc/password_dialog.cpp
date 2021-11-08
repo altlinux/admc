@@ -83,7 +83,7 @@ void PasswordDialog::set_target(const QString &target_arg) {
         ui->expired_check->setToolTip(tr("Option is unavailable because a conflicting account option is currently enabled."));
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 }
 
 void PasswordDialog::accept() {
@@ -103,7 +103,7 @@ void PasswordDialog::accept() {
 
     hide_busy_indicator();
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (apply_success) {
         QDialog::accept();

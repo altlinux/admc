@@ -93,7 +93,7 @@ void SelectContainerDialog::open() {
     auto item = make_container_node(head_object);
     model->appendRow(item);
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     QDialog::open();
 }

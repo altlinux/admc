@@ -76,7 +76,7 @@ void RenamePolicyDialog::accept() {
         RenameObjectDialog::fail_msg(target_old_name);
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (apply_success) {
         QDialog::accept();

@@ -337,7 +337,7 @@ bool PropertiesDialog::apply_internal(AdInterface &ad) {
         }
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (total_apply_success) {
         apply_button->setEnabled(false);
@@ -363,7 +363,7 @@ void PropertiesDialog::reset_internal(AdInterface &ad) {
     reset_button->setEnabled(false);
     is_modified = false;
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 }
 
 void PropertiesDialog::on_edited() {

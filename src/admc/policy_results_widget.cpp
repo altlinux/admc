@@ -162,7 +162,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
         sync_warning_dialog->open();
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     model->removeRows(0, model->rowCount());
 
@@ -267,7 +267,7 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
         item->setCheckState(undo_check_state);
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     hide_busy_indicator();
 }
@@ -318,7 +318,7 @@ void PolicyResultsWidget::delete_link() {
         model->removeRow(index.row());
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     hide_busy_indicator();
 }
@@ -331,5 +331,5 @@ void PolicyResultsWidget::on_sync_warning_dialog_accepted() {
 
     ad.gpo_sync_perms(gpo);
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 }
