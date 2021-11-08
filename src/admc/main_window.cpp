@@ -63,7 +63,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     //
     // Console
     //
-    auto object_impl = new ObjectImpl(ad.adconfig(), ui->console);
+    auto object_impl = new ObjectImpl(ui->console);
     ui->console->register_impl(ItemType_Object, object_impl);
 
     auto policy_root_impl = new PolicyRootImpl(ui->console);
@@ -72,10 +72,10 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     auto policy_impl = new PolicyImpl(ui->console);
     ui->console->register_impl(ItemType_Policy, policy_impl);
 
-    auto query_item_impl = new QueryItemImpl(ad.adconfig(), ui->console);
+    auto query_item_impl = new QueryItemImpl(ui->console);
     ui->console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    auto query_folder_impl = new QueryFolderImpl(ad.adconfig(), ui->console);
+    auto query_folder_impl = new QueryFolderImpl(ui->console);
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
     object_impl->set_policy_impl(policy_impl);

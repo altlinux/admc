@@ -71,7 +71,7 @@ FindWidget::FindWidget(QWidget *parent)
 
     ui->console->set_actions(console_actions);
 
-    object_impl = new ObjectImpl(g_adconfig, ui->console);
+    object_impl = new ObjectImpl(ui->console);
     ui->console->register_impl(ItemType_Object, object_impl);
 
     object_impl->set_find_action_enabled(false);
@@ -79,12 +79,10 @@ FindWidget::FindWidget(QWidget *parent)
 
     // NOTE: registering impl so that it supplies text to
     // the description bar
-    // TODO: g_adconfig
-    auto query_item_impl = new QueryItemImpl(g_adconfig, ui->console);
+    auto query_item_impl = new QueryItemImpl(ui->console);
     ui->console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    // TODO: g_adconfig
-    auto query_folder_impl = new QueryFolderImpl(g_adconfig, ui->console);
+    auto query_folder_impl = new QueryFolderImpl(ui->console);
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
     ResultsView *query_results = query_item_impl->view();
@@ -124,9 +122,12 @@ FindWidget::~FindWidget() {
     delete ui;
 }
 
-void FindWidget::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list, const QString &default_base) {
-    ui->filter_widget->init(adconfig, class_list, selected_list);
-    ui->select_base_widget->init(adconfig, default_base);
+void FindWidget::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
+    ui->filter_widget->set_classes(class_list, selected_list);
+}
+
+void FindWidget::set_default_base(const QString &default_base) {
+    ui->select_base_widget->set_default_base(default_base);
 }
 
 void FindWidget::set_buddy_console(ConsoleWidget *buddy_console) {

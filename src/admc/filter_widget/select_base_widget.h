@@ -27,8 +27,6 @@
 
 #include <QWidget>
 
-class AdConfig;
-
 namespace Ui {
 class SelectBaseWidget;
 }
@@ -42,7 +40,7 @@ public:
     SelectBaseWidget(QWidget *parent = nullptr);
     ~SelectBaseWidget();
 
-    void init(AdConfig *adconfig, const QString &default_base = QString());
+    void set_default_base(const QString &default_base);
 
     QString get_base() const;
 

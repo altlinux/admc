@@ -38,7 +38,7 @@ SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> clas
     layout()->setMenuBar(menubar);
     auto view_menu = menubar->addMenu(tr("&View"));
 
-    ui->find_widget->init(g_adconfig, classes, classes, g_adconfig->domain_head());
+    ui->find_widget->set_classes(classes, classes);
     ui->find_widget->setup_view_menu(view_menu);
 
     const QVariant console_state = settings_get_variant(SETTING_select_object_advanced_dialog_console_state);

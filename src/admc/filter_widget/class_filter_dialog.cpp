@@ -43,8 +43,8 @@ ClassFilterDialog::~ClassFilterDialog() {
     delete ui;
 }
 
-void ClassFilterDialog::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
-    return ui->class_filter_widget->init(adconfig, class_list, selected_list);
+void ClassFilterDialog::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
+    return ui->class_filter_widget->set_classes(class_list, selected_list);
 }
 
 QString ClassFilterDialog::get_filter() const {

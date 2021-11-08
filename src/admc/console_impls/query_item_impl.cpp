@@ -43,9 +43,8 @@
 
 const QString query_item_icon = "emblem-system";
 
-QueryItemImpl::QueryItemImpl(AdConfig *adconfig_arg, ConsoleWidget *console_arg)
+QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    adconfig = adconfig_arg;
     query_folder_impl = nullptr;
 
     set_results_view(new ResultsView(console_arg));
@@ -249,7 +248,7 @@ void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, Q
 }
 
 void QueryItemImpl::on_edit_query_item() {
-    auto dialog = new EditQueryItemDialog(adconfig, console);
+    auto dialog = new EditQueryItemDialog(console);
 
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 

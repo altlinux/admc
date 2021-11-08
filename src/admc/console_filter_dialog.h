@@ -30,7 +30,6 @@
 #include <QDialog>
 #include <QVariant>
 
-class AdConfig;
 class QRadioButton;
 
 namespace Ui {
@@ -43,7 +42,7 @@ class ConsoleFilterDialog final : public QDialog {
 public:
     Ui::ConsoleFilterDialog *ui;
 
-    ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent);
+    ConsoleFilterDialog(QWidget *parent);
     ~ConsoleFilterDialog();
 
     QVariant save_state() const;
@@ -53,7 +52,6 @@ public:
     bool get_filter_enabled() const;
 
 private:
-    AdConfig *adconfig;
     QHash<QString, QRadioButton *> button_state_name_map;
     QVariant original_state;
     QVariant filter_dialog_state;

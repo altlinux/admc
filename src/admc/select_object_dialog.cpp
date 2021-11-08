@@ -50,9 +50,7 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 
     const QList<QString> selected_list = class_list;
 
-    ui->select_classes_widget->init(g_adconfig, class_list, selected_list);
-
-    ui->select_base_widget->init(g_adconfig);
+    ui->select_classes_widget->set_classes(class_list, selected_list);
 
     model = new QStandardItemModel(this);
     model->setHorizontalHeaderLabels(header_labels());

@@ -65,9 +65,8 @@ QList<QString> get_selected_dn_list_object(ConsoleWidget *console);
 QString get_selected_dn_object(ConsoleWidget *console);
 void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root);
 
-ObjectImpl::ObjectImpl(AdConfig *adconfig_arg, ConsoleWidget *console_arg)
+ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    adconfig = adconfig_arg;
     buddy_console = nullptr;
     policy_impl = nullptr;
 
@@ -589,7 +588,7 @@ void ObjectImpl::refresh_tree() {
 }
 
 void ObjectImpl::open_console_filter_dialog() {
-    auto dialog = new ConsoleFilterDialog(adconfig, console);
+    auto dialog = new ConsoleFilterDialog(console);
 
     const QVariant dialog_state = settings_get_variant(SETTING_console_filter_dialog_state);
     dialog->restore_state(dialog_state);

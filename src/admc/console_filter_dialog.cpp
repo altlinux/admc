@@ -25,18 +25,17 @@
 #include "filter_widget/class_filter_widget.h"
 #include "filter_widget/filter_dialog.h"
 #include "settings.h"
+#include "globals.h"
 
 #define FILTER_CUSTOM_DIALOG_STATE "FILTER_CUSTOM_DIALOG_STATE"
 #define FILTER_CLASSES_STATE "FILTER_CLASSES_STATE"
 
-ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig_arg, QWidget *parent)
+ConsoleFilterDialog::ConsoleFilterDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::ConsoleFilterDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
-
-    adconfig = adconfig_arg;
 
     const QList<QString> class_list_for_widget = {
         CLASS_USER,
@@ -46,7 +45,7 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig_arg, QWidget *parent
         CLASS_PRINTER,
         CLASS_SHARED_FOLDER,
     };
-    ui->class_filter_widget->init(adconfig, class_list_for_widget, class_list_for_widget);
+    ui->class_filter_widget->set_classes(class_list_for_widget, class_list_for_widget);
 
     settings_setup_dialog_geometry(SETTING_console_filter_dialog_geometry, this);
 
@@ -125,8 +124,8 @@ void ConsoleFilterDialog::open_custom_dialog() {
 
     // NOTE: Using only non-container classes for filtering
     // because container classes need to always be visible
-    const QList<QString> noncontainer_classes = adconfig->get_noncontainer_classes();
-    dialog->init(adconfig, noncontainer_classes, noncontainer_classes);
+    const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();
+    dialog->set_classes(noncontainer_classes, noncontainer_classes);
 
     dialog->restore_state(filter_dialog_state);
 

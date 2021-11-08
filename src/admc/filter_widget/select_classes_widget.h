@@ -31,8 +31,6 @@
 #include <QWidget>
 #include <QVariant>
 
-class AdConfig;
-
 namespace Ui {
 class SelectClassesWidget;
 }
@@ -46,7 +44,7 @@ public:
     SelectClassesWidget(QWidget *parent = nullptr);
     ~SelectClassesWidget();
 
-    void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QString get_filter() const;
 
@@ -54,7 +52,6 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    AdConfig *adconfig;
     QList<QString> class_list;
     QList<QString> selected_list;
     QString filter;

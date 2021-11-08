@@ -22,6 +22,7 @@
 #include "filter_widget/ui_class_filter_widget.h"
 
 #include "adldap.h"
+#include "globals.h"
 
 #include <QCheckBox>
 
@@ -42,9 +43,9 @@ ClassFilterWidget::~ClassFilterWidget() {
     delete ui;
 }
 
-void ClassFilterWidget::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
+void ClassFilterWidget::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
     for (const QString &object_class : class_list) {
-        const QString class_string = adconfig->get_class_display_name(object_class);
+        const QString class_string = g_adconfig->get_class_display_name(object_class);
         auto checkbox = new QCheckBox(class_string);
 
         checkbox_map[object_class] = checkbox;

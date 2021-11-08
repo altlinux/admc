@@ -24,7 +24,6 @@
 #include <QDialog>
 
 class EditQueryItemWidget;
-class AdConfig;
 
 namespace Ui {
 class EditQueryItemDialog;
@@ -36,7 +35,7 @@ class EditQueryItemDialog : public QDialog {
 public:
     Ui::EditQueryItemDialog *ui;
 
-    EditQueryItemDialog(AdConfig *adconfig, QWidget *parent);
+    EditQueryItemDialog(QWidget *parent);
     ~EditQueryItemDialog();
 
     void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter);

@@ -38,12 +38,6 @@ EditQueryItemWidget::~EditQueryItemWidget() {
     delete ui;
 }
 
-void EditQueryItemWidget::init(AdConfig *adconfig_arg) {
-    adconfig = adconfig_arg;
-
-    ui->select_base_widget->init(adconfig);
-}
-
 QString EditQueryItemWidget::name() const {
     return ui->name_edit->text();
 }
@@ -106,7 +100,7 @@ void EditQueryItemWidget::set_data(const QString &name, const QString &descripti
 
 void EditQueryItemWidget::open_filter_dialog() {
     auto dialog = new FilterDialog(this);
-    dialog->init(adconfig, filter_classes, filter_classes);
+    dialog->set_classes(filter_classes, filter_classes);
     dialog->restore_state(filter_dialog_state);
 
     dialog->open();

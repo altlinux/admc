@@ -30,7 +30,6 @@
 #include <QWidget>
 
 class QStandardItem;
-class AdConfig;
 class AdObject;
 class QMenu;
 class ObjectImpl;
@@ -49,7 +48,8 @@ public:
     FindWidget(QWidget *parent = nullptr);
     ~FindWidget();
 
-    void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list, const QString &default_base);
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
+    void set_default_base(const QString &default_base);
 
     // NOTE: this is only for the console state, filter
     // widget is untouched

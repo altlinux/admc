@@ -30,7 +30,6 @@
 #include <QVariant>
 
 class ClassFilterWidget;
-class AdConfig;
 
 namespace Ui {
 class ClassFilterDialog;
@@ -45,7 +44,7 @@ public:
     ClassFilterDialog(QWidget *parent);
     ~ClassFilterDialog();
 
-    void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
     QString get_filter() const;
     QList<QString> get_selected_classes() const;
     QVariant save_state() const;

@@ -23,13 +23,11 @@
 
 #include "console_widget/console_impl.h"
 
-class AdConfig;
-
 class QueryFolderImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    QueryFolderImpl(AdConfig *adconfig, ConsoleWidget *console_arg);
+    QueryFolderImpl(ConsoleWidget *console_arg);
 
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
@@ -47,7 +45,6 @@ public:
     QList<int> default_columns() const override;
 
 private:
-    AdConfig *adconfig;
     QAction *new_action;
     QAction *edit_action;
     QAction *import_action;

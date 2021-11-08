@@ -43,9 +43,8 @@
 
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch = true);
 
-QueryFolderImpl::QueryFolderImpl(AdConfig *adconfig_arg, ConsoleWidget *console_arg)
+QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    adconfig = adconfig_arg;
     copied_is_cut = false;
 
     set_results_view(new ResultsView(console_arg));
@@ -100,7 +99,7 @@ void QueryFolderImpl::on_create_query_folder() {
 }
 
 void QueryFolderImpl::on_create_query_item() {
-    auto dialog = new CreateQueryItemDialog(adconfig, console);
+    auto dialog = new CreateQueryItemDialog(console);
 
     const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, QModelIndex());

@@ -29,8 +29,6 @@
 #include <QWidget>
 #include <QVariant>
 
-class AdConfig;
-
 namespace Ui {
 class EditQueryItemWidget;
 }
@@ -44,8 +42,6 @@ public:
     EditQueryItemWidget(QWidget *parent = nullptr);
     ~EditQueryItemWidget();
 
-    void init(AdConfig *adconfig);
-
     QString name() const;
     QString description() const;
     QString filter() const;
@@ -57,7 +53,6 @@ public:
     void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter);
 
 private:
-    AdConfig *adconfig;
     QVariant filter_dialog_state;
 
     void open_filter_dialog();

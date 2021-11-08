@@ -29,7 +29,6 @@
 class QStandardItem;
 class AdObject;
 class AdInterface;
-class AdConfig;
 class ConsoleActions;
 class QMenu;
 template <typename T>
@@ -60,7 +59,7 @@ class ObjectImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    ObjectImpl(AdConfig *adconfig_arg, ConsoleWidget *console_arg);
+    ObjectImpl(ConsoleWidget *console);
 
     void set_policy_impl(PolicyImpl *policy_root_impl_arg);
 
@@ -114,7 +113,6 @@ private slots:
     void on_reset_account();
 
 private:
-    AdConfig *adconfig;
     ConsoleWidget *buddy_console;
     PolicyImpl *policy_impl;
     QString object_filter;

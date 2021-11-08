@@ -33,8 +33,8 @@ FilterWidgetSimpleTab::~FilterWidgetSimpleTab() {
     delete ui;
 }
 
-void FilterWidgetSimpleTab::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
-    ui->select_classes_widget->init(adconfig, class_list, selected_list);
+void FilterWidgetSimpleTab::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
+    ui->select_classes_widget->set_classes(class_list, selected_list);
 }
 
 QString FilterWidgetSimpleTab::get_filter() const {

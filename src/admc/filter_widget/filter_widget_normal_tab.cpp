@@ -22,6 +22,7 @@
 #include "filter_widget/ui_filter_widget_normal_tab.h"
 
 #include "adldap.h"
+#include "globals.h"
 
 #include <algorithm>
 
@@ -54,15 +55,13 @@ FilterWidgetNormalTab::~FilterWidgetNormalTab() {
     delete ui;
 }
 
-void FilterWidgetNormalTab::init(AdConfig *adconfig_arg, const QList<QString> &class_list, const QList<QString> &selected_list) {
-    adconfig = adconfig_arg;
-
+void FilterWidgetNormalTab::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
     for (const QString &object_class : filter_classes) {
-        const QString display = adconfig->get_class_display_name(object_class);
+        const QString display = g_adconfig->get_class_display_name(object_class);
         ui->attribute_class_combo->addItem(display, object_class);
     }
 
-    ui->select_classes_widget->init(adconfig, class_list, selected_list);
+    ui->select_classes_widget->set_classes(class_list, selected_list);
 
 }
 
@@ -211,13 +210,13 @@ void FilterWidgetNormalTab::update_attributes_combo() {
         return item_data.toString();
     }();
 
-    const QList<QString> attributes = adconfig->get_find_attributes(object_class);
+    const QList<QString> attributes = g_adconfig->get_find_attributes(object_class);
 
     const QList<QString> display_attributes = [&]() {
         QList<QString> out;
 
         for (const QString &attribute : attributes) {
-            const QString display_name = adconfig->get_attribute_display_name(attribute, object_class);
+            const QString display_name = g_adconfig->get_attribute_display_name(attribute, object_class);
             out.append(display_name);
         }
 
@@ -230,7 +229,7 @@ void FilterWidgetNormalTab::update_attributes_combo() {
     const QHash<QString, QString> display_to_attribute = [&]() {
         QHash<QString, QString> out;
         for (const QString &attribute : attributes) {
-            const QString display_name = adconfig->get_attribute_display_name(attribute, object_class);
+            const QString display_name = g_adconfig->get_attribute_display_name(attribute, object_class);
 
             out[display_name] = attribute;
         }
@@ -252,7 +251,7 @@ void FilterWidgetNormalTab::update_conditions_combo() {
             const QVariant item_data = ui->attribute_combo->itemData(index);
             const QString attribute = item_data.toString();
 
-            return adconfig->get_attribute_type(attribute);
+            return g_adconfig->get_attribute_type(attribute);
         }();
 
         // NOTE: extra conditions don't work on DSDN type

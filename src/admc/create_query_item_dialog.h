@@ -24,7 +24,6 @@
 #include <QDialog>
 
 class EditQueryItemWidget;
-class AdConfig;
 
 namespace Ui {
 class CreateQueryItemDialog;
@@ -36,7 +35,7 @@ class CreateQueryItemDialog : public QDialog {
 public:
     Ui::CreateQueryItemDialog *ui;
 
-    CreateQueryItemDialog(AdConfig *adconfig, QWidget *parent);
+    CreateQueryItemDialog(QWidget *parent);
     ~CreateQueryItemDialog();
 
     QString name() const;

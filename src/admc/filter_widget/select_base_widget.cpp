@@ -22,6 +22,7 @@
 #include "filter_widget/ui_select_base_widget.h"
 
 #include "adldap.h"
+#include "globals.h"
 #include "select_container_dialog.h"
 
 // TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
@@ -30,6 +31,10 @@ SelectBaseWidget::SelectBaseWidget(QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::SelectBaseWidget();
     ui->setupUi(this);
+
+    const QString domain_dn = g_adconfig->domain_head();
+    const QString domain_name = dn_get_name(domain_dn);
+    ui->combo->addItem(domain_name, domain_dn);
 
     connect(
         ui->browse_button, &QAbstractButton::clicked,
@@ -40,21 +45,11 @@ SelectBaseWidget::~SelectBaseWidget() {
     delete ui;
 }
 
-void SelectBaseWidget::init(AdConfig *adconfig, const QString &default_base) {
-    const QString domain_head = adconfig->domain_head();
+void SelectBaseWidget::set_default_base(const QString &default_base) {
+    const QString name = dn_get_name(default_base);
+    ui->combo->addItem(name, default_base);
 
-    auto add_base_to_combo = [this](const QString dn) {
-        const QString name = dn_get_name(dn);
-        ui->combo->addItem(name, dn);
-    };
-
-    if (default_base == domain_head || default_base.isEmpty()) {
-        add_base_to_combo(domain_head);
-    } else {
-        add_base_to_combo(domain_head);
-        add_base_to_combo(default_base);
-    }
-
+    // Select default base in combo
     const int last_index = ui->combo->count() - 1;
     ui->combo->setCurrentIndex(last_index);
 }

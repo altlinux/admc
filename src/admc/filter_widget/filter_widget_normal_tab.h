@@ -32,8 +32,6 @@
 
 #include "filter_widget/filter_widget.h"
 
-class AdConfig;
-
 namespace Ui {
 class FilterWidgetNormalTab;
 }
@@ -47,7 +45,7 @@ public:
     FilterWidgetNormalTab();
     ~FilterWidgetNormalTab();
 
-    void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QString get_filter() const;
     void clear();
@@ -62,9 +60,6 @@ private slots:
     void update_attributes_combo();
     void update_conditions_combo();
     void update_value_edit();
-
-private:
-    AdConfig *adconfig;
 };
 
 #endif /* FILTER_WIDGET_NORMAL_TAB_H */

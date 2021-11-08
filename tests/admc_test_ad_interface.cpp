@@ -21,6 +21,7 @@
 #include "admc_test_ad_interface.h"
 
 #include "samba/dom_sid.h"
+#include "globals.h"
 
 #include <QTest>
 
@@ -28,7 +29,7 @@
 
 void ADMCTestAdInterface::cleanup() {
     // Delete test gpo, if it was leftover from previous test
-    const QString base = ad.adconfig()->domain_head();
+    const QString base = g_adconfig->domain_head();
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, TEST_GPO);
     const QList<QString> attributes = QList<QString>();
     const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, attributes);
@@ -101,7 +102,7 @@ void ADMCTestAdInterface::gpo_check_perms() {
     // Change GPC perms so they don't match with GPT perms
     {
         const AdObject gpc_object = ad.search_object(gpc_dn);
-        auto permission_state_map = gpc_object.get_security_state(ad.adconfig());
+        auto permission_state_map = gpc_object.get_security_state(g_adconfig);
         const QByteArray trustee = []() {
             // NOTE: S-1-1-0 is "WORLD"
             const char *sid_string = "S-1-1-0";
@@ -249,7 +250,7 @@ void ADMCTestAdInterface::user_set_account_option() {
         QVERIFY(success);
 
         const AdObject object = ad.search_object(user_dn);
-        const bool option_set = object.get_account_option(option, ad.adconfig());
+        const bool option_set = object.get_account_option(option, g_adconfig);
         QVERIFY(option_set);
     }
 }

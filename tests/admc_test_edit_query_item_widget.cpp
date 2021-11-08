@@ -44,7 +44,6 @@ void ADMCTestEditQueryItemWidget::init() {
     ADMCTest::init();
 
     widget = new EditQueryItemWidget();
-    widget->init(ad.adconfig());
     add_widget(widget);
 
     name_edit = widget->ui->name_edit;

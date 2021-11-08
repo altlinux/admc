@@ -24,14 +24,12 @@
 #include "console_impls/query_folder_impl.h"
 #include "settings.h"
 
-CreateQueryItemDialog::CreateQueryItemDialog(AdConfig *adconfig, QWidget *parent)
+CreateQueryItemDialog::CreateQueryItemDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::CreateQueryItemDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
-
-    ui->edit_query_widget->init(adconfig);
 
     settings_setup_dialog_geometry(SETTING_create_query_item_dialog_geometry, this);
 }

@@ -21,6 +21,7 @@
 #include "admc_test_account_option_edit.h"
 
 #include "edits/account_option_edit.h"
+#include "globals.h"
 
 #include <QCheckBox>
 
@@ -132,7 +133,7 @@ void ADMCTestAccountOptionEdit::apply() {
     QCOMPARE(check->isChecked(), new_value);
 
     const AdObject updated_object = ad.search_object(dn);
-    const bool value_in_object = updated_object.get_account_option(option, ad.adconfig());
+    const bool value_in_object = updated_object.get_account_option(option, g_adconfig);
     QCOMPARE(value_in_object, new_value);
 }
 

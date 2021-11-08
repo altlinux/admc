@@ -43,13 +43,12 @@ enum QueryColumn {
 };
 
 class QueryFolderImpl;
-class AdConfig;
 
 class QueryItemImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    QueryItemImpl(AdConfig *adconfig, ConsoleWidget *console_arg);
+    QueryItemImpl(ConsoleWidget *console_arg);
 
     void set_query_folder_impl(QueryFolderImpl *impl);
 
@@ -72,7 +71,6 @@ private slots:
     void on_export();
 
 private:
-    AdConfig *adconfig;
     QAction *edit_action;
     QAction *export_action;
     QueryFolderImpl *query_folder_impl;

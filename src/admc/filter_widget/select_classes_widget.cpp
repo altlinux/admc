@@ -22,6 +22,7 @@
 #include "filter_widget/ui_select_classes_widget.h"
 
 #include "adldap.h"
+#include "globals.h"
 #include "filter_widget/class_filter_dialog.h"
 
 SelectClassesWidget::SelectClassesWidget(QWidget *parent)
@@ -38,8 +39,7 @@ SelectClassesWidget::~SelectClassesWidget() {
     delete ui;
 }
 
-void SelectClassesWidget::init(AdConfig *adconfig_arg, const QList<QString> &class_list_arg, const QList<QString> &selected_list_arg) {
-    adconfig = adconfig_arg;
+void SelectClassesWidget::set_classes(const QList<QString> &class_list_arg, const QList<QString> &selected_list_arg) {
     class_list = class_list_arg;
 
     set_selected_list(selected_list_arg);
@@ -74,7 +74,7 @@ void SelectClassesWidget::restore_state(const QVariant &state_variant) {
 
 void SelectClassesWidget::open_dialog() {
     auto dialog = new ClassFilterDialog(this);
-    dialog->init(adconfig, class_list, selected_list);
+    dialog->set_classes(class_list, selected_list);
     dialog->open();
 
     connect(
@@ -96,7 +96,7 @@ void SelectClassesWidget::set_selected_list(const QList<QString> &new_selected_l
         QList<QString> class_display_list;
 
         for (const QString &object_class : selected_list) {
-            const QString class_display = adconfig->get_class_display_name(object_class);
+            const QString class_display = g_adconfig->get_class_display_name(object_class);
 
             class_display_list.append(class_display);
         }

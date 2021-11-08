@@ -30,7 +30,6 @@
 #include <QWidget>
 
 class QCheckBox;
-class AdConfig;
 
 namespace Ui {
 class ClassFilterWidget;
@@ -45,7 +44,7 @@ public:
     ClassFilterWidget(QWidget *parent = nullptr);
     ~ClassFilterWidget();
 
-    void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QString get_filter() const;
     QList<QString> get_selected_classes() const;
