@@ -123,6 +123,8 @@ DEFINE_SETTING(SETTING_query_items);
 DEFINE_SETTING(SETTING_port);
 DEFINE_SETTING(SETTING_cert_strategy);
 DEFINE_SETTING(SETTING_last_opened_version);
+DEFINE_SETTING(SETTING_object_filter);
+DEFINE_SETTING(SETTING_object_filter_enabled);
 
 QVariant settings_get_variant(const QString setting, const QVariant &default_value = QVariant());
 void settings_set_variant(const QString setting, const QVariant &value);

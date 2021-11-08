@@ -47,14 +47,11 @@ public:
     ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent);
     ~ConsoleFilterDialog();
 
-    void open() override;
-    void reject() override;
-
     QVariant save_state() const;
     void restore_state(const QVariant &state);
 
     QString get_filter() const;
-    bool filtering_ON() const;
+    bool get_filter_enabled() const;
 
 private:
     FilterDialog *custom_dialog;

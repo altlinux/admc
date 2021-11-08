@@ -97,7 +97,7 @@ public:
 
     void refresh_tree();
 
-    void open_filter_dialog();
+    void open_console_filter_dialog();
 
 private slots:
     void on_new_user();
@@ -117,7 +117,8 @@ private:
     AdConfig *adconfig;
     ConsoleWidget *buddy_console;
     PolicyImpl *policy_impl;
-    ConsoleFilterDialog *filter_dialog;
+    QString object_filter;
+    bool object_filter_enabled;
 
     QAction *find_action;
     QAction *move_action;

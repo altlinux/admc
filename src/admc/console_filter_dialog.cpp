@@ -34,6 +34,8 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
     ui = new Ui::ConsoleFilterDialog();
     ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     // NOTE: Using only non-container classes for filtering
     // because container classes need to always be visible
     const QList<QString> noncontainer_classes = adconfig->get_noncontainer_classes();
@@ -60,9 +62,6 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
         {"CUSTOM_BUTTON_STATE", ui->custom_button},
     };
 
-    const QHash<QString, QVariant> settings_state = settings_get_variant(SETTING_console_filter_dialog_state).toHash();
-    restore_state(settings_state);
-
     connect(
         ui->custom_dialog_button, &QPushButton::clicked,
         custom_dialog, &QDialog::open);
@@ -78,28 +77,12 @@ ConsoleFilterDialog::ConsoleFilterDialog(AdConfig *adconfig, QWidget *parent)
     on_classes_button();
 }
 
-bool ConsoleFilterDialog::filtering_ON() const {
+bool ConsoleFilterDialog::get_filter_enabled() const {
     return !ui->all_button->isChecked();
 }
 
 ConsoleFilterDialog::~ConsoleFilterDialog() {
-    const QVariant state = save_state();
-
-    settings_set_variant(SETTING_console_filter_dialog_state, state);
-
     delete ui;
-}
-
-void ConsoleFilterDialog::open() {
-    original_state = save_state();
-
-    QDialog::open();
-}
-
-void ConsoleFilterDialog::reject() {
-    restore_state(original_state);
-
-    QDialog::reject();
 }
 
 QVariant ConsoleFilterDialog::save_state() const {

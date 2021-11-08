@@ -230,7 +230,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         this, &MainWindow::open_about);
     connect(
         ui->action_filter_objects, &QAction::triggered,
-        object_impl, &ObjectImpl::open_filter_dialog);
+        object_impl, &ObjectImpl::open_console_filter_dialog);
     connect(
         ui->menu_action, &QMenu::aboutToShow,
         ui->console, &ConsoleWidget::update_actions);

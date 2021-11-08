@@ -70,12 +70,14 @@ ObjectImpl::ObjectImpl(AdConfig *adconfig_arg, ConsoleWidget *console_arg)
     adconfig = adconfig_arg;
     buddy_console = nullptr;
     policy_impl = nullptr;
-    filter_dialog = new ConsoleFilterDialog(adconfig, console);
 
     set_results_view(new ResultsView(console_arg));
 
     find_action_enabled = true;
     refresh_action_enabled = true;
+
+    object_filter = settings_get_variant(SETTING_object_filter, QString()).toString();
+    object_filter_enabled = settings_get_variant(SETTING_object_filter_enabled, false).toBool();
 
     auto new_user_action = new QAction(tr("User"), this);
     auto new_computer_action = new QAction(tr("Computer"), this);
@@ -134,9 +136,6 @@ ObjectImpl::ObjectImpl(AdConfig *adconfig_arg, ConsoleWidget *console_arg)
     connect(
         edit_upn_suffixes_action, &QAction::triggered,
         this, &ObjectImpl::on_edit_upn_suffixes);
-    connect(
-        filter_dialog, &QDialog::accepted,
-        this, &ObjectImpl::refresh_tree);
 }
 
 void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
@@ -163,9 +162,9 @@ void ObjectImpl::fetch(const QModelIndex &index) {
         // NOTE: OR user filter with containers filter so
         // that container objects are always shown, even if
         // they are filtered out by user filter
-        if (filter_dialog->filtering_ON()) {
+        if (object_filter_enabled) {
             out = filter_OR({is_container_filter(), out});
-            out = filter_OR({filter_dialog->get_filter(), out});
+            out = filter_OR({object_filter, out});
         }
 
         advanced_features_filter(out);
@@ -242,7 +241,7 @@ QString ObjectImpl::get_description(const QModelIndex &index) const {
 
     out += object_count_text;
 
-    if (filter_dialog->filtering_ON()) {
+    if (object_filter_enabled) {
         out += tr(" [Filtering enabled]");
     }
 
@@ -589,8 +588,27 @@ void ObjectImpl::refresh_tree() {
     hide_busy_indicator();
 }
 
-void ObjectImpl::open_filter_dialog() {
-    filter_dialog->open();
+void ObjectImpl::open_console_filter_dialog() {
+    auto dialog = new ConsoleFilterDialog(adconfig, console);
+
+    const QVariant dialog_state = settings_get_variant(SETTING_console_filter_dialog_state);
+    dialog->restore_state(dialog_state);
+
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            object_filter = dialog->get_filter();
+            object_filter_enabled = dialog->get_filter_enabled();
+
+            settings_set_variant(SETTING_object_filter, object_filter);
+            settings_set_variant(SETTING_object_filter_enabled, object_filter_enabled);
+
+            settings_set_variant(SETTING_console_filter_dialog_state, dialog->save_state());
+
+            refresh_tree();
+        });
 }
 
 void ObjectImpl::on_new_user() {
