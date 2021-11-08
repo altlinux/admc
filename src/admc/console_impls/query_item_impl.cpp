@@ -262,8 +262,9 @@ void QueryItemImpl::on_edit_query_item() {
         QString description;
         bool scope_is_children;
         QByteArray filter_state;
-        get_query_item_data(index, &name, &description, &scope_is_children, &filter_state);
-        dialog->set_data(name, description, scope_is_children, filter_state);
+        QString filter;
+        get_query_item_data(index, &name, &description, &scope_is_children, &filter_state, &filter);
+        dialog->set_data(name, description, scope_is_children, filter_state, filter);
     }
 
     dialog->open();
@@ -287,9 +288,10 @@ void QueryItemImpl::on_edit_query_item() {
         });
 }
 
-void get_query_item_data(const QModelIndex &index, QString *name, QString *description, bool *scope_is_children, QByteArray *filter_state) {
+void get_query_item_data(const QModelIndex &index, QString *name, QString *description, bool *scope_is_children, QByteArray *filter_state, QString *filter) {
     *name = index.data(Qt::DisplayRole).toString();
     *description = index.data(QueryItemRole_Description).toString();
     *scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
     *filter_state = index.data(QueryItemRole_FilterState).toByteArray();
+    *filter = index.data(QueryItemRole_Filter).toString();
 }

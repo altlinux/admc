@@ -124,9 +124,10 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
         QString description;
         bool scope_is_children;
         QByteArray filter_state;
-        get_query_item_data(index, &name, &description, &scope_is_children, &filter_state);
+        QString filter;
+        get_query_item_data(index, &name, &description, &scope_is_children, &filter_state, &filter);
 
-        widget->set_data(name, description, scope_is_children, filter_state);
+        widget->set_data(name, description, scope_is_children, filter_state, filter);
     }
 
     QCOMPARE(name_edit->text(), correct_name);

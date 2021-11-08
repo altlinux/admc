@@ -24,31 +24,27 @@
 #include "ad_filter.h"
 #include "filter_widget/filter_dialog.h"
 
+// TODO: fix key of filter dialog state being
+// "filter_widget"
+
 EditQueryItemWidget::EditQueryItemWidget(QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::EditQueryItemWidget();
     ui->setupUi(this);
 
-    filter_dialog = new FilterDialog(this);
-
     connect(
         ui->edit_filter_button, &QPushButton::clicked,
-        filter_dialog, &QDialog::open);
-    connect(
-        filter_dialog, &QDialog::accepted,
-        this, &EditQueryItemWidget::update_filter_display);
-    update_filter_display();
+        this, &EditQueryItemWidget::open_filter_dialog);
 }
 
 EditQueryItemWidget::~EditQueryItemWidget() {
     delete ui;
 }
 
-void EditQueryItemWidget::init(AdConfig *adconfig) {
-    ui->select_base_widget->init(adconfig);
+void EditQueryItemWidget::init(AdConfig *adconfig_arg) {
+    adconfig = adconfig_arg;
 
-    filter_dialog->init(adconfig);
-    filter_dialog->set_classes(filter_classes, filter_classes);
+    ui->select_base_widget->init(adconfig);
 }
 
 QString EditQueryItemWidget::name() const {
@@ -60,7 +56,7 @@ QString EditQueryItemWidget::description() const {
 }
 
 QString EditQueryItemWidget::filter() const {
-    return filter_dialog->get_filter();
+    return ui->filter_display->toPlainText();
 }
 
 QString EditQueryItemWidget::base() const {
@@ -75,7 +71,7 @@ QByteArray EditQueryItemWidget::filter_state() const {
     QHash<QString, QVariant> state;
 
     state["select_base_widget"] = ui->select_base_widget->save_state();
-    state["filter_widget"] = filter_dialog->save_state();
+    state["filter_widget"] = filter_dialog_state;
     state["filter"] = filter();
 
     QByteArray out;
@@ -90,26 +86,44 @@ void EditQueryItemWidget::clear() {
     const QString description = QString();
     const bool scope_is_children = false;
     const QByteArray filter_state = QByteArray();
+    const QString filter = QString();
 
-    set_data(name, description, scope_is_children, filter_state);
+    set_data(name, description, scope_is_children, filter_state, filter);
 }
 
-void EditQueryItemWidget::set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state) {
+void EditQueryItemWidget::set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter) {
     QDataStream filter_state_stream(filter_state);
     QHash<QString, QVariant> state;
     filter_state_stream >> state;
 
     ui->select_base_widget->restore_state(state["select_base_widget"]);
-    filter_dialog->restore_state(state["filter_widget"]);
 
-    update_filter_display();
+    filter_dialog_state = state["filter_widget"];
+
+    ui->filter_display->setPlainText(filter);
 
     ui->name_edit->setText(name);
     ui->description_edit->setText(description);
     ui->scope_checkbox->setChecked(!scope_is_children);
 }
 
-void EditQueryItemWidget::update_filter_display() {
-    const QString filter_in_dialog = filter_dialog->get_filter();
-    ui->filter_display->setPlainText(filter_in_dialog);
+void EditQueryItemWidget::open_filter_dialog() {
+    auto dialog = new FilterDialog(this);
+    dialog->init(adconfig);
+    dialog->set_classes(filter_classes, filter_classes);
+    dialog->restore_state(filter_dialog_state);
+
+    // TODO: remove when filter dialog ctor has this inside
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            filter_dialog_state = dialog->save_state();
+
+            const QString new_filter = dialog->get_filter();
+            ui->filter_display->setPlainText(new_filter);
+        });
 }

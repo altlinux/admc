@@ -39,7 +39,7 @@ public:
     EditQueryItemDialog(AdConfig *adconfig, QWidget *parent);
     ~EditQueryItemDialog();
 
-    void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state);
+    void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter);
 
     QString name() const;
     QString description() const;

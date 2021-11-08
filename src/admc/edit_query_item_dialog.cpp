@@ -40,8 +40,8 @@ EditQueryItemDialog::~EditQueryItemDialog() {
     delete ui;
 }
 
-void EditQueryItemDialog::set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state) {
-    return ui->edit_query_item_widget->set_data(name, description, scope_is_children, filter_state);
+void EditQueryItemDialog::set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter) {
+    return ui->edit_query_item_widget->set_data(name, description, scope_is_children, filter_state, filter);
 }
 
 QString EditQueryItemDialog::name() const {

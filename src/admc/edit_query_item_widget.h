@@ -27,8 +27,8 @@
  */
 
 #include <QWidget>
+#include <QVariant>
 
-class FilterDialog;
 class AdConfig;
 
 namespace Ui {
@@ -54,12 +54,13 @@ public:
     QByteArray filter_state() const;
 
     void clear();
-    void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state);
+    void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter);
 
 private:
-    FilterDialog *filter_dialog;
+    AdConfig *adconfig;
+    QVariant filter_dialog_state;
 
-    void update_filter_display();
+    void open_filter_dialog();
 };
 
 #endif /* EDIT_QUERY_ITEM_WIDGET_H */
