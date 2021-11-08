@@ -25,6 +25,7 @@
 #include "main_window_connection_error.h"
 #include "settings.h"
 #include "utils.h"
+#include "connection_options_dialog.h"
 
 #include <QApplication>
 #include <QDebug>

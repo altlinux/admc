@@ -66,8 +66,4 @@ void MainWindowConnectionError::on_retry_button() {
 void MainWindowConnectionError::open_connection_options() {
     auto dialog = new ConnectionOptionsDialog(this);
     dialog->open();
-
-    connect(
-        dialog, &QDialog::accepted,
-        load_connection_options);
 }

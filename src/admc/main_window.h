@@ -52,6 +52,4 @@ private:
     void open_connection_options();
 };
 
-void load_connection_options();
-
 #endif /* MAIN_WINDOW_H */

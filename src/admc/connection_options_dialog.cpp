@@ -165,6 +165,8 @@ void ConnectionOptionsDialog::accept() {
         settings_set_variant(SETTING_host, selected_host);
     }
 
+    load_connection_options();
+
     QDialog::accept();
 }
 
@@ -181,4 +183,34 @@ void ConnectionOptionsDialog::load_default_options() {
         ui->host_select_list->setCurrentRow(0);
         ui->host_custom_edit->clear();
     }
+}
+
+void load_connection_options() {
+    const QString saved_dc = settings_get_variant(SETTING_host).toString();
+    AdInterface::set_dc(saved_dc);
+
+    const QVariant sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon);
+    if (sasl_nocanon.isValid()) {
+        AdInterface::set_sasl_nocanon(sasl_nocanon.toBool());
+    } else {
+        AdInterface::set_sasl_nocanon(true);
+    }
+
+    const QVariant port = settings_get_variant(SETTING_port);
+    if (port.isValid()) {
+        AdInterface::set_port(port.toInt());
+    } else {
+        AdInterface::set_port(0);
+    }
+
+    const QString cert_strategy_string = settings_get_variant(SETTING_cert_strategy).toString();
+    const QHash<QString, CertStrategy> cert_strategy_map = {
+        {CERT_STRATEGY_NEVER, CertStrategy_Never},
+        {CERT_STRATEGY_HARD, CertStrategy_Hard},
+        {CERT_STRATEGY_DEMAND, CertStrategy_Demand},
+        {CERT_STRATEGY_ALLOW, CertStrategy_Allow},
+        {CERT_STRATEGY_TRY, CertStrategy_Try},
+    };
+    const CertStrategy cert_strategy = cert_strategy_map.value(cert_strategy_string, CertStrategy_Never);
+    AdInterface::set_cert_strategy(cert_strategy);
 }
