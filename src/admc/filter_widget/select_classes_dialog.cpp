@@ -51,16 +51,8 @@ QString SelectClassesDialog::get_filter() const {
     return ui->filter_classes_widget->get_filter();
 }
 
-// Return selected classes as a sorted list of class display
-// strings separated by "," "User, Organizational Unit, ..."
-QString SelectClassesDialog::get_selected_classes_display() const {
-    QList<QString> selected_classes = ui->filter_classes_widget->get_selected_classes_display();
-
-    std::sort(selected_classes.begin(), selected_classes.end());
-
-    const QString joined = selected_classes.join(", ");
-
-    return joined;
+QList<QString> SelectClassesDialog::get_selected_classes() const {
+    return ui->filter_classes_widget->get_selected_classes();
 }
 
 QVariant SelectClassesDialog::save_state() const {

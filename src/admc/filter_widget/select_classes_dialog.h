@@ -47,7 +47,7 @@ public:
 
     void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
     QString get_filter() const;
-    QString get_selected_classes_display() const;
+    QList<QString> get_selected_classes() const;
     QVariant save_state() const;
     void restore_state(const QVariant &state);
 

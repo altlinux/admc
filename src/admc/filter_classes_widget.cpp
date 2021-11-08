@@ -91,20 +91,6 @@ QList<QString> FilterClassesWidget::get_selected_classes() const {
     return out;
 }
 
-QList<QString> FilterClassesWidget::get_selected_classes_display() const {
-    QList<QString> out;
-
-    for (const QString &object_class : checkbox_map.keys()) {
-        const QCheckBox *check = checkbox_map[object_class];
-
-        if (check->isChecked()) {
-            out.append(check->text());
-        }
-    }
-
-    return out;
-}
-
 void FilterClassesWidget::select_all() {
     for (QCheckBox *checkbox : checkbox_map.values()) {
         checkbox->setChecked(true);

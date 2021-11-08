@@ -49,7 +49,6 @@ public:
 
     QString get_filter() const;
     QList<QString> get_selected_classes() const;
-    QList<QString> get_selected_classes_display() const;
     QVariant save_state() const;
     void restore_state(const QVariant &state);
 

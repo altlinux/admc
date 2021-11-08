@@ -61,6 +61,7 @@ private:
     QVariant dialog_state;
 
     void open_dialog();
+    void set_selected_list(const QList<QString> &new_selected_list);
 };
 
 #endif /* SELECT_CLASSES_WIDGET_H */
