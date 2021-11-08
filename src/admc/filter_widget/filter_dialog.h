@@ -44,9 +44,6 @@ public:
     FilterDialog(QWidget *parent);
     ~FilterDialog();
 
-    void open() override;
-    void reject() override;
-
     void init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QVariant save_state() const;

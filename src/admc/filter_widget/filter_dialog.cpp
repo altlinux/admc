@@ -41,18 +41,6 @@ FilterDialog::~FilterDialog() {
     delete ui;
 }
 
-void FilterDialog::open() {
-    original_state = save_state();
-
-    QDialog::open();
-}
-
-void FilterDialog::reject() {
-    restore_state(original_state);
-
-    QDialog::reject();
-}
-
 void FilterDialog::init(AdConfig *adconfig, const QList<QString> &class_list, const QList<QString> &selected_list) {
     ui->filter_widget->init(adconfig, class_list, selected_list);
 }
