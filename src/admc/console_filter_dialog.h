@@ -30,7 +30,6 @@
 #include <QDialog>
 #include <QVariant>
 
-class FilterDialog;
 class AdConfig;
 class QRadioButton;
 
@@ -54,10 +53,13 @@ public:
     bool get_filter_enabled() const;
 
 private:
-    FilterDialog *custom_dialog;
+    AdConfig *adconfig;
     QHash<QString, QRadioButton *> button_state_name_map;
     QVariant original_state;
+    QVariant filter_dialog_state;
+    QString custom_filter;
 
+    void open_custom_dialog();
     void on_custom_button();
     void on_classes_button();
 };
