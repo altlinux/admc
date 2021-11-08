@@ -71,22 +71,9 @@ void CreatePolicyDialog::open() {
             return out;
         }();
 
-        const QString first = "New Group Policy Object";
-        if (!existing_name_list.contains(first)) {
-            return first;
-        }
+        const QString out = generate_new_name(existing_name_list, tr("New Group Policy Object"));
 
-        int n = 2;
-
-        auto get_name = [&]() {
-            return QString("New Group Policy Object (%1)").arg(n);
-        };
-
-        while (existing_name_list.contains(get_name())) {
-            n++;
-        }
-
-        return get_name();
+        return out;
     }();
 
     ui->name_edit->setText(default_name);

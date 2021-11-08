@@ -103,4 +103,9 @@ QString get_selected_dn(ConsoleWidget *console, const int type, const int dn_rol
 
 void center_widget(QWidget *widget);
 
+// If base name is "New X", then this will generate a name
+// "New X (n)" where this name won't conflict with any
+// existing names. For example "New Folder (7)"
+QString generate_new_name(const QList<QString> &existing_name_list, const QString &base_name);
+
 #endif /* UTILS_H */

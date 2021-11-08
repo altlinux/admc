@@ -23,6 +23,7 @@
 
 #include "console_impls/query_folder_impl.h"
 #include "settings.h"
+#include "utils.h"
 
 CreateQueryFolderDialog::CreateQueryFolderDialog(QWidget *parent)
 : QDialog(parent) {
@@ -51,10 +52,13 @@ void CreateQueryFolderDialog::set_sibling_name_list(const QList<QString> &list) 
 }
 
 void CreateQueryFolderDialog::open() {
-    // TODO: suggest unique "New folder (N)" name? Can reuse
-    // algorithm for policy name, just make a f-n that takes
-    // a list of names
-    ui->name_edit->setText(tr("New folder"));
+    const QString default_name = [&]() {
+        const QString out = generate_new_name(sibling_name_list, tr("New Folder"));
+
+        return out;
+    }();
+
+    ui->name_edit->setText(default_name);
     ui->description_edit->setText("");
 
     QDialog::open();

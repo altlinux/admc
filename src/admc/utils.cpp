@@ -312,3 +312,28 @@ void center_widget(QWidget *widget) {
         widget->move(primary_screen->geometry().center() - widget->frameGeometry().center());
     }
 }
+
+QString generate_new_name(const QList<QString> &existing_name_list, const QString &name_base) {
+    const QString first = name_base;
+    if (!existing_name_list.contains(first)) {
+        return first;
+    }
+
+    int n = 2;
+
+    auto get_name = [&]() {
+        return QString("%1 (%2)").arg(name_base).arg(n);
+    };
+
+    while (existing_name_list.contains(get_name())) {
+        n++;
+
+        // NOTE: new name caps out at 1000 as a reasonable
+        // limit, not a bug
+        if (n > 1000) {
+            break;
+        }
+    }
+
+    return get_name();
+}
