@@ -40,6 +40,7 @@ class AdInterface;
 class AdObject;
 class QPersistentModelIndex;
 class ConsoleWidget;
+class QMessageBox;
 template <typename T>
 class QList;
 template <typename K, typename T>
@@ -93,10 +94,10 @@ void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad,
 // NOTE: these f-ns replace QMessageBox static f-ns. The
 // static f-ns use exec(), which block execution and makes
 // testing a hassle. These f-ns use open().
-void message_box_critical(QWidget *parent, const QString &title, const QString &text);
-void message_box_information(QWidget *parent, const QString &title, const QString &text);
-void message_box_question(QWidget *parent, const QString &title, const QString &text);
-void message_box_warning(QWidget *parent, const QString &title, const QString &text);
+QMessageBox *message_box_critical(QWidget *parent, const QString &title, const QString &text);
+QMessageBox *message_box_information(QWidget *parent, const QString &title, const QString &text);
+QMessageBox *message_box_question(QWidget *parent, const QString &title, const QString &text);
+QMessageBox *message_box_warning(QWidget *parent, const QString &title, const QString &text);
 
 QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role);
 QString get_selected_dn(ConsoleWidget *console, const int type, const int dn_role);

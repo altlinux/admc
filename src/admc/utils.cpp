@@ -47,7 +47,7 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 
-void message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
+QMessageBox *message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
 
 QList<QStandardItem *> make_item_row(const int count) {
     QList<QStandardItem *> row;
@@ -256,7 +256,7 @@ void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad,
     }
 }
 
-void message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent) {
+QMessageBox *message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent) {
     auto message_box = new QMessageBox(parent);
     message_box->setAttribute(Qt::WA_DeleteOnClose);
     message_box->setStandardButtons(QMessageBox::Ok);
@@ -265,22 +265,24 @@ void message_box_generic(const QMessageBox::Icon icon, const QString &title, con
     message_box->setIcon(icon);
 
     message_box->open();
+
+    return message_box;
 }
 
-void message_box_critical(QWidget *parent, const QString &title, const QString &text) {
-    message_box_generic(QMessageBox::Critical, title, text, parent);
+QMessageBox *message_box_critical(QWidget *parent, const QString &title, const QString &text) {
+    return message_box_generic(QMessageBox::Critical, title, text, parent);
 }
 
-void message_box_information(QWidget *parent, const QString &title, const QString &text) {
-    message_box_generic(QMessageBox::Information, title, text, parent);
+QMessageBox *message_box_information(QWidget *parent, const QString &title, const QString &text) {
+    return message_box_generic(QMessageBox::Information, title, text, parent);
 }
 
-void message_box_question(QWidget *parent, const QString &title, const QString &text) {
-    message_box_generic(QMessageBox::Question, title, text, parent);
+QMessageBox *message_box_question(QWidget *parent, const QString &title, const QString &text) {
+    return message_box_generic(QMessageBox::Question, title, text, parent);
 }
 
-void message_box_warning(QWidget *parent, const QString &title, const QString &text) {
-    message_box_generic(QMessageBox::Warning, title, text, parent);
+QMessageBox *message_box_warning(QWidget *parent, const QString &title, const QString &text) {
+    return message_box_generic(QMessageBox::Warning, title, text, parent);
 }
 
 QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role) {
