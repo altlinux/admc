@@ -40,7 +40,7 @@ MainWindowConnectionError::MainWindowConnectionError()
         this, &MainWindowConnectionError::on_retry_button);
     connect(
         ui->quit_button, &QAbstractButton::clicked,
-        this, &MainWindow::close);
+        this, &MainWindowConnectionError::close);
     connect(
         ui->options_button, &QAbstractButton::clicked,
         this, &MainWindowConnectionError::open_connection_options);
