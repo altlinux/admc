@@ -53,7 +53,6 @@ public:
 private:
     void on_add_button();
     void on_remove_button();
-    void on_item_double_clicked(QListWidgetItem *item);
     void add_value(const QByteArray value);
     QString bytes_to_string(const QByteArray bytes) const;
     QByteArray string_to_bytes(const QString string) const;

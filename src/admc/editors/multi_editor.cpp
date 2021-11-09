@@ -47,9 +47,6 @@ MultiEditor::MultiEditor(QWidget *parent)
     connect(
         ui->remove_button, &QAbstractButton::clicked,
         this, &MultiEditor::on_remove_button);
-    connect(
-        ui->list_widget, &QListWidget::itemDoubleClicked,
-        this, &MultiEditor::on_item_double_clicked);
 }
 
 MultiEditor::~MultiEditor() {
@@ -144,45 +141,6 @@ QList<QByteArray> MultiEditor::get_value_list() const {
     }
 
     return new_values;
-}
-
-void MultiEditor::on_item_double_clicked(QListWidgetItem *item) {
-    const QString text = item->text();
-    const QByteArray bytes = string_to_bytes(text);
-
-    auto editor = [this]() -> AttributeEditor * {
-        const MultiEditorType editor_type = get_editor_type();
-
-        switch (editor_type) {
-            case MultiEditorType_String: return new StringEditor(this);
-            case MultiEditorType_Octet: return new OctetEditor(this);
-            case MultiEditorType_Datetime: return new DateTimeEditor(this);
-        }
-
-        return nullptr;
-    }();
-
-    if (editor == nullptr) {
-        return;
-    }
-
-    editor->set_attribute(get_attribute());
-    editor->set_value_list({bytes});
-
-    editor->open();
-
-    connect(
-        editor, &QDialog::accepted,
-        [this, editor, item]() {
-            const QList<QByteArray> new_values = editor->get_value_list();
-
-            if (!new_values.isEmpty()) {
-                const QByteArray new_bytes = new_values[0];
-                const QString new_text = bytes_to_string(new_bytes);
-
-                item->setText(new_text);
-            }
-        });
 }
 
 void MultiEditor::add_value(const QByteArray value) {
