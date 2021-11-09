@@ -174,7 +174,7 @@ void AttributesTab::view_attribute() {
 
     AttributeDialog *dialog = get_attribute_dialog(attribute);
 
-    if (dialog != nullptr) {
+    if (dialog == nullptr) {
         return;
     }
 
