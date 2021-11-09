@@ -39,6 +39,7 @@ class QStandardItemModel;
 class QStandardItem;
 class AttributesTabProxy;
 class AttributesFilterDialog;
+class AttributeEditor;
 
 namespace Ui {
 class AttributesTab;
@@ -63,9 +64,13 @@ private:
     QHash<QString, QList<QByteArray>> original;
     QHash<QString, QList<QByteArray>> current;
 
-    void open_editor();
+    void update_edit_and_view_buttons();
+    void on_double_click();
+    void edit_attribute();
+    void view_attribute();
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
     QList<QStandardItem *> get_selected_row() const;
+    AttributeEditor *get_editor(const QString &attribute);
 };
 
 #endif /* ATTRIBUTES_TAB_H */

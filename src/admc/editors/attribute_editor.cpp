@@ -33,16 +33,6 @@ QString AttributeEditor::get_attribute() const {
     return m_attribute;
 }
 
-void AttributeEditor::accept() {
-    const bool is_read_only = g_adconfig->get_attribute_is_system_only(m_attribute);
-
-    if (is_read_only) {
-        QDialog::reject();
-    } else {
-        QDialog::accept();
-    }
-}
-
 void AttributeEditor::set_attribute(const QString &attribute) {
     m_attribute = attribute;
 
@@ -50,7 +40,4 @@ void AttributeEditor::set_attribute(const QString &attribute) {
     if (m_attribute_label != nullptr) {
         m_attribute_label->setText(text);
     }
-
-    const bool system_only = g_adconfig->get_attribute_is_system_only(m_attribute);
-    set_read_only(system_only);
 }

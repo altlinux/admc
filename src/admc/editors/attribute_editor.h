@@ -29,9 +29,7 @@ class QLabel;
  * Gets input from user, which can be obtained through
  * get_value_list(). Different from AttributeEdit because it
  * is opened as a separate dialog and parent object is
- * responsible for actually applying the changes. If the
- * given attribute is read only, then "OK" button is
- * equivalent to "Cancel", both trigger the rejected() signal.
+ * responsible for actually applying the changes.
  */
 
 class AttributeEditor : public QDialog {
@@ -40,15 +38,10 @@ class AttributeEditor : public QDialog {
 public:
     using QDialog::QDialog;
 
-    void accept() override;
-
     // Store attribute and also configure widget settings so
     // that they are appropriate for given attribute.
     virtual void set_attribute(const QString &attribute);
 
-    // This is for cases where you need to make the editor
-    // read only even if attribute can be edited. Normally,
-    // this is automatically called in set_attribute().
     virtual void set_read_only(const bool read_only) = 0;
 
     QString get_attribute() const;

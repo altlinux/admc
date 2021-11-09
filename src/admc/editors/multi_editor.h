@@ -51,6 +51,8 @@ public:
     QList<QByteArray> get_value_list() const override;
 
 private:
+    bool read_only;
+
     void on_add_button();
     void on_remove_button();
     void add_value(const QByteArray value);

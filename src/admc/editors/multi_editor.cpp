@@ -82,7 +82,9 @@ void MultiEditor::set_attribute(const QString &attribute) {
     setWindowTitle(title);
 }
 
-void MultiEditor::set_read_only(const bool read_only) {
+void MultiEditor::set_read_only(const bool read_only_arg) {
+    read_only = read_only_arg;
+
     ui->add_button->setEnabled(!read_only);
     ui->remove_button->setEnabled(!read_only);
 }
@@ -100,6 +102,7 @@ void MultiEditor::on_add_button() {
 
     editor->set_attribute(get_attribute());
     editor->set_value_list({});
+    editor->set_read_only(read_only);
     
     editor->open();
 

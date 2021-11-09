@@ -70,12 +70,22 @@ AttributesTab::AttributesTab() {
 
     ui->view->header()->restoreState(state["header"].toByteArray());
 
+    QItemSelectionModel *selection_model = ui->view->selectionModel();
+
+    connect(
+        selection_model, &QItemSelectionModel::selectionChanged,
+        this, &AttributesTab::update_edit_and_view_buttons);
+    update_edit_and_view_buttons();
+
     connect(
         ui->view, &QAbstractItemView::doubleClicked,
-        this, &AttributesTab::open_editor);
+        this, &AttributesTab::on_double_click);
     connect(
         ui->edit_button, &QAbstractButton::clicked,
-        this, &AttributesTab::open_editor);
+        this, &AttributesTab::edit_attribute);
+    connect(
+        ui->view_button, &QAbstractButton::clicked,
+        this, &AttributesTab::view_attribute);
     connect(
         filter_menu, &AttributesTabFilterMenu::filter_changed,
         proxy, &AttributesTabProxy::invalidate);
@@ -111,8 +121,49 @@ QList<QStandardItem *> AttributesTab::get_selected_row() const {
     return row;
 }
 
-// Edit currently selected attribute
-void AttributesTab::open_editor() {
+void AttributesTab::update_edit_and_view_buttons() {
+    const QList<QStandardItem *> selected_row = get_selected_row();
+
+    const bool no_selection = selected_row.isEmpty();
+    if (no_selection) {
+        ui->edit_button->setVisible(true);
+        ui->edit_button->setEnabled(false);
+
+        ui->view_button->setVisible(false);
+        ui->view_button->setEnabled(false);
+    } else {
+        const QString attribute = selected_row[AttributesColumn_Name]->text();
+        const bool read_only = g_adconfig->get_attribute_is_system_only(attribute);
+
+        if (read_only) {
+            ui->edit_button->setVisible(false);
+            ui->edit_button->setEnabled(false);
+
+            ui->view_button->setVisible(true);
+            ui->view_button->setEnabled(true);
+        } else {
+            ui->edit_button->setVisible(true);
+            ui->edit_button->setEnabled(true);
+
+            ui->view_button->setVisible(false);
+            ui->view_button->setEnabled(false);
+        }
+    }
+}
+
+void AttributesTab::on_double_click() {
+    const QList<QStandardItem *> selected_row = get_selected_row();
+    const QString attribute = selected_row[AttributesColumn_Name]->text();
+    const bool read_only = g_adconfig->get_attribute_is_system_only(attribute);
+
+    if (read_only) {
+        view_attribute();
+    } else {
+        edit_attribute();
+    }
+}
+
+void AttributesTab::view_attribute() {
     const QList<QStandardItem *> row = get_selected_row();
 
     if (row.isEmpty()) {
@@ -121,97 +172,52 @@ void AttributesTab::open_editor() {
 
     const QString attribute = row[AttributesColumn_Name]->text();
 
-    // Select an appropriate editor by attribute type and by
-    // whether attribute is single or multi valued
-    AttributeEditor *editor = [&]() -> AttributeEditor * {
-        const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
-
-        // Single/multi valued logic is separated out of the
-        // switch statement for better flow
-        auto octet_editor = [&]() -> AttributeEditor * {
-            if (single_valued) {
-                return new OctetEditor(this);
-            } else {
-                return new MultiEditor(this);
-            }
-        };
-
-        auto string_editor = [&]() -> AttributeEditor * {
-            if (single_valued) {
-                return new StringEditor(this);
-            } else {
-                return new MultiEditor(this);
-            }
-        };
-
-        auto bool_editor = [&]() -> AttributeEditor * {
-            if (single_valued) {
-                return new BoolEditor(this);
-            } else {
-                return new MultiEditor(this);
-            }
-        };
-
-        auto datetime_editor = [&]() -> AttributeEditor * {
-            if (single_valued) {
-                return new DateTimeEditor(this);
-            } else {
-                return nullptr;
-            }
-        };
-
-        const AttributeType type = g_adconfig->get_attribute_type(attribute);
-
-        switch (type) {
-            case AttributeType_Octet: return octet_editor();
-            case AttributeType_Sid: return octet_editor();
-
-            case AttributeType_Boolean: return bool_editor();
-
-            case AttributeType_Unicode: return string_editor();
-            case AttributeType_StringCase: return string_editor();
-            case AttributeType_DSDN: return string_editor();
-            case AttributeType_IA5: return string_editor();
-            case AttributeType_Teletex: return string_editor();
-            case AttributeType_ObjectIdentifier: return string_editor();
-            case AttributeType_Integer: return string_editor();
-            case AttributeType_Enumeration: return string_editor();
-            case AttributeType_LargeInteger: return string_editor();
-            case AttributeType_UTCTime: return datetime_editor();
-            case AttributeType_GeneralizedTime: return datetime_editor();
-            case AttributeType_NTSecDesc: return string_editor();
-            case AttributeType_Numeric: return string_editor();
-            case AttributeType_Printable: return string_editor();
-            case AttributeType_DNString: return string_editor();
-
-            // NOTE: putting these here as confirmed to be unsupported
-            case AttributeType_ReplicaLink: return nullptr;
-            case AttributeType_DNBinary: return nullptr;
-        }
-
-        return nullptr;
-    }();
+    AttributeEditor *editor = get_editor(attribute);
 
     if (editor != nullptr) {
-        const QList<QByteArray> value_list = current[attribute];
-
-        editor->set_attribute(attribute);
-        editor->set_value_list(value_list);
-        editor->open();
-
-        connect(
-            editor, &QDialog::accepted,
-            [this, editor, row, attribute]() {
-                const QList<QByteArray> new_value_list = editor->get_value_list();
-
-                current[attribute] = new_value_list;
-                load_row(row, attribute, new_value_list);
-
-                emit edited();
-            });
-    } else {
-        message_box_critical(this, tr("Error"), tr("No editor is available for this attribute type."));
+        return;
     }
+
+    const QList<QByteArray> value_list = current[attribute];
+
+    editor->set_attribute(attribute);
+    editor->set_value_list(value_list);
+    editor->set_read_only(true);
+    editor->open();
+}
+
+void AttributesTab::edit_attribute() {
+    const QList<QStandardItem *> row = get_selected_row();
+
+    if (row.isEmpty()) {
+        return;
+    }
+
+    const QString attribute = row[AttributesColumn_Name]->text();
+
+    AttributeEditor *editor = get_editor(attribute);
+
+    if (editor != nullptr) {
+        return;
+    }
+
+    const QList<QByteArray> value_list = current[attribute];
+
+    editor->set_attribute(attribute);
+    editor->set_value_list(value_list);
+    editor->set_read_only(false);
+    editor->open();
+
+    connect(
+        editor, &QDialog::accepted,
+        [this, editor, row, attribute]() {
+            const QList<QByteArray> new_value_list = editor->get_value_list();
+
+            current[attribute] = new_value_list;
+            load_row(row, attribute, new_value_list);
+
+            emit edited();
+        });
 }
 
 void AttributesTab::load(AdInterface &ad, const AdObject &object) {
@@ -275,6 +281,77 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
     row[AttributesColumn_Name]->setText(attribute);
     row[AttributesColumn_Value]->setText(display_values);
     row[AttributesColumn_Type]->setText(type_display);
+}
+
+// Select an appropriate editor by attribute type and by
+// whether attribute is single or multi valued
+AttributeEditor *AttributesTab::get_editor(const QString &attribute) {
+    const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
+
+    // Single/multi valued logic is separated out of the
+    // switch statement for better flow
+    auto octet_editor = [&]() -> AttributeEditor * {
+        if (single_valued) {
+            return new OctetEditor(this);
+        } else {
+            return new MultiEditor(this);
+        }
+    };
+
+    auto string_editor = [&]() -> AttributeEditor * {
+        if (single_valued) {
+            return new StringEditor(this);
+        } else {
+            return new MultiEditor(this);
+        }
+    };
+
+    auto bool_editor = [&]() -> AttributeEditor * {
+        if (single_valued) {
+            return new BoolEditor(this);
+        } else {
+            return new MultiEditor(this);
+        }
+    };
+
+    auto datetime_editor = [&]() -> AttributeEditor * {
+        if (single_valued) {
+            return new DateTimeEditor(this);
+        } else {
+            return nullptr;
+        }
+    };
+
+    const AttributeType type = g_adconfig->get_attribute_type(attribute);
+
+    switch (type) {
+        case AttributeType_Octet: return octet_editor();
+        case AttributeType_Sid: return octet_editor();
+
+        case AttributeType_Boolean: return bool_editor();
+
+        case AttributeType_Unicode: return string_editor();
+        case AttributeType_StringCase: return string_editor();
+        case AttributeType_DSDN: return string_editor();
+        case AttributeType_IA5: return string_editor();
+        case AttributeType_Teletex: return string_editor();
+        case AttributeType_ObjectIdentifier: return string_editor();
+        case AttributeType_Integer: return string_editor();
+        case AttributeType_Enumeration: return string_editor();
+        case AttributeType_LargeInteger: return string_editor();
+        case AttributeType_UTCTime: return datetime_editor();
+        case AttributeType_GeneralizedTime: return datetime_editor();
+        case AttributeType_NTSecDesc: return string_editor();
+        case AttributeType_Numeric: return string_editor();
+        case AttributeType_Printable: return string_editor();
+        case AttributeType_DNString: return string_editor();
+
+        // NOTE: putting these here as confirmed to be unsupported
+        case AttributeType_ReplicaLink: return nullptr;
+        case AttributeType_DNBinary: return nullptr;
+    }
+
+    return nullptr;
 }
 
 QString attribute_type_display_string(const AttributeType type) {
