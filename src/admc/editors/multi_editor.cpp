@@ -85,8 +85,8 @@ void MultiEditor::set_attribute(const QString &attribute) {
 void MultiEditor::set_read_only(const bool read_only_arg) {
     read_only = read_only_arg;
 
-    ui->add_button->setEnabled(!read_only);
-    ui->remove_button->setEnabled(!read_only);
+    ui->add_button->setVisible(!read_only);
+    ui->remove_button->setVisible(!read_only);
 }
 
 void MultiEditor::on_add_button() {
