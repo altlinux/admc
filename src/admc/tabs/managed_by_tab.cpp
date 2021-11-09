@@ -22,12 +22,12 @@
 #include "tabs/ui_managed_by_tab.h"
 
 #include "adldap.h"
-#include "edits/country_edit.h"
-#include "edits/group_scope_edit.h"
-#include "edits/group_type_edit.h"
-#include "edits/manager_edit.h"
-#include "edits/string_edit.h"
-#include "edits/string_other_edit.h"
+#include "attribute_edits/country_edit.h"
+#include "attribute_edits/group_scope_edit.h"
+#include "attribute_edits/group_type_edit.h"
+#include "attribute_edits/manager_edit.h"
+#include "attribute_edits/string_edit.h"
+#include "attribute_edits/string_other_edit.h"
 #include "utils.h"
 
 // NOTE: store manager's edits in separate list because they

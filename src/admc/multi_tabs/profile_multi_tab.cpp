@@ -22,7 +22,7 @@
 #include "ui_profile_multi_tab.h"
 
 #include "adldap.h"
-#include "multi_edits/string_multi_edit.h"
+#include "attribute_multi_edits/string_multi_edit.h"
 
 ProfileMultiTab::ProfileMultiTab() {
     ui = new Ui::ProfileMultiTab();

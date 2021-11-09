@@ -34,7 +34,7 @@
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_widget/console_widget.h"
-#include "edits/country_combo.h"
+#include "attribute_edits/country_combo.h"
 #include "globals.h"
 #include "settings.h"
 #include "status.h"

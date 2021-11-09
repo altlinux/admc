@@ -22,8 +22,8 @@
 #include "ui_create_computer_dialog.h"
 
 #include "adldap.h"
-#include "edits/sam_name_edit.h"
-#include "edits/upn_edit.h"
+#include "attribute_edits/sam_name_edit.h"
+#include "attribute_edits/upn_edit.h"
 #include "utils.h"
 #include "settings.h"
 

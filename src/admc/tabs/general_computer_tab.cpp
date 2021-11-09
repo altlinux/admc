@@ -22,8 +22,8 @@
 #include "tabs/ui_general_computer_tab.h"
 
 #include "adldap.h"
-#include "edits/sam_name_edit.h"
-#include "edits/string_edit.h"
+#include "attribute_edits/sam_name_edit.h"
+#include "attribute_edits/string_edit.h"
 #include "tabs/general_other_tab.h"
 
 GeneralComputerTab::GeneralComputerTab(const AdObject &object) {

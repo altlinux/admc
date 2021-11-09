@@ -20,7 +20,7 @@
 
 #include "admc_test_gpoptions_edit.h"
 
-#include "edits/gpoptions_edit.h"
+#include "attribute_edits/gpoptions_edit.h"
 
 #include <QCheckBox>
 #include <QFormLayout>

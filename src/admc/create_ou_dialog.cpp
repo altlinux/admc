@@ -22,9 +22,9 @@
 #include "ui_create_ou_dialog.h"
 
 #include "adldap.h"
-#include "edits/protect_deletion_edit.h"
-#include "edits/string_edit.h"
-#include "edits/upn_edit.h"
+#include "attribute_edits/protect_deletion_edit.h"
+#include "attribute_edits/string_edit.h"
+#include "attribute_edits/upn_edit.h"
 #include "utils.h"
 #include "settings.h"
 

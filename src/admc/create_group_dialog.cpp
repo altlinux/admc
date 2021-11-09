@@ -22,11 +22,11 @@
 #include "ui_create_group_dialog.h"
 
 #include "adldap.h"
-#include "edits/group_scope_edit.h"
-#include "edits/group_type_edit.h"
-#include "edits/sam_name_edit.h"
-#include "edits/string_edit.h"
-#include "edits/upn_edit.h"
+#include "attribute_edits/group_scope_edit.h"
+#include "attribute_edits/group_type_edit.h"
+#include "attribute_edits/sam_name_edit.h"
+#include "attribute_edits/string_edit.h"
+#include "attribute_edits/upn_edit.h"
 #include "utils.h"
 #include "settings.h"
 

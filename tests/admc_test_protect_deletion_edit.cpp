@@ -20,7 +20,7 @@
 
 #include "admc_test_protect_deletion_edit.h"
 
-#include "edits/protect_deletion_edit.h"
+#include "attribute_edits/protect_deletion_edit.h"
 
 #include <QCheckBox>
 #include <QFormLayout>

@@ -22,7 +22,7 @@
 #include "tabs/ui_group_policy_tab.h"
 
 #include "adldap.h"
-#include "edits/gpoptions_edit.h"
+#include "attribute_edits/gpoptions_edit.h"
 #include "globals.h"
 #include "select_policy_dialog.h"
 #include "settings.h"

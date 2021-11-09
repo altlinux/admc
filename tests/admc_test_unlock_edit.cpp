@@ -20,7 +20,7 @@
 
 #include "admc_test_unlock_edit.h"
 
-#include "edits/unlock_edit.h"
+#include "attribute_edits/unlock_edit.h"
 
 #include <QCheckBox>
 #include <QFormLayout>

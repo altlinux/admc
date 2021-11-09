@@ -21,13 +21,13 @@
 #include "tabs/account_tab.h"
 #include "tabs/ui_account_tab.h"
 
-#include "edits/account_option_edit.h"
-#include "edits/expiry_edit.h"
-#include "edits/logon_computers_edit.h"
-#include "edits/logon_hours_edit.h"
-#include "edits/string_edit.h"
-#include "edits/unlock_edit.h"
-#include "edits/upn_edit.h"
+#include "attribute_edits/account_option_edit.h"
+#include "attribute_edits/expiry_edit.h"
+#include "attribute_edits/logon_computers_edit.h"
+#include "attribute_edits/logon_hours_edit.h"
+#include "attribute_edits/string_edit.h"
+#include "attribute_edits/unlock_edit.h"
+#include "attribute_edits/upn_edit.h"
 
 // NOTE: the "can't change password" checkbox does not
 // affect the permission in the security tab, even though

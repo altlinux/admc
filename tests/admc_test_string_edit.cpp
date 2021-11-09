@@ -20,7 +20,7 @@
 
 #include "admc_test_string_edit.h"
 
-#include "edits/string_edit.h"
+#include "attribute_edits/string_edit.h"
 
 #include <QFormLayout>
 #include <QLineEdit>

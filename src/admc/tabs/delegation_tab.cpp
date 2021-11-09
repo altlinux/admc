@@ -22,7 +22,7 @@
 #include "tabs/ui_delegation_tab.h"
 
 #include "adldap.h"
-#include "edits/delegation_edit.h"
+#include "attribute_edits/delegation_edit.h"
 #include "globals.h"
 
 DelegationTab::DelegationTab() {

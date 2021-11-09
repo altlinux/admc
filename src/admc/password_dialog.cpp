@@ -22,9 +22,9 @@
 #include "ui_password_dialog.h"
 
 #include "adldap.h"
-#include "edits/account_option_edit.h"
-#include "edits/password_edit.h"
-#include "edits/unlock_edit.h"
+#include "attribute_edits/account_option_edit.h"
+#include "attribute_edits/password_edit.h"
+#include "attribute_edits/unlock_edit.h"
 #include "globals.h"
 #include "settings.h"
 #include "status.h"

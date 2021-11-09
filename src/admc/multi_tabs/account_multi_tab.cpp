@@ -22,10 +22,10 @@
 #include "multi_tabs/ui_account_multi_tab.h"
 
 #include "adldap.h"
-#include "multi_edits/account_option_multi_edit.h"
-#include "multi_edits/expiry_multi_edit.h"
-#include "multi_edits/string_multi_edit.h"
-#include "multi_edits/upn_multi_edit.h"
+#include "attribute_multi_edits/account_option_multi_edit.h"
+#include "attribute_multi_edits/expiry_multi_edit.h"
+#include "attribute_multi_edits/string_multi_edit.h"
+#include "attribute_multi_edits/upn_multi_edit.h"
 
 AccountMultiTab::AccountMultiTab(AdInterface &ad) {
     ui = new Ui::AccountMultiTab();

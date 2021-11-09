@@ -126,7 +126,7 @@
   <customwidget>
    <class>ExpiryWidget</class>
    <extends>QWidget</extends>
-   <header>edits/expiry_widget.h</header>
+   <header>attribute_edits/expiry_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

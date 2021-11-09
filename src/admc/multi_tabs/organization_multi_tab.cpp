@@ -22,8 +22,8 @@
 #include "multi_tabs/ui_organization_multi_tab.h"
 
 #include "adldap.h"
-#include "multi_edits/manager_multi_edit.h"
-#include "multi_edits/string_multi_edit.h"
+#include "attribute_multi_edits/manager_multi_edit.h"
+#include "attribute_multi_edits/string_multi_edit.h"
 
 OrganizationMultiTab::OrganizationMultiTab() {
     ui = new Ui::OrganizationMultiTab();

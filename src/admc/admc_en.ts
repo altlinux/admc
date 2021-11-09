@@ -818,12 +818,12 @@
 <context>
     <name>ExpiryWidget</name>
     <message>
-        <location filename="edits/expiry_widget.ui" line="20"/>
+        <location filename="attribute_edits/expiry_widget.ui" line="20"/>
         <source>Never</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/expiry_widget.ui" line="29"/>
+        <location filename="attribute_edits/expiry_widget.ui" line="29"/>
         <source>End of:</source>
         <translation></translation>
     </message>
@@ -1310,27 +1310,27 @@
 <context>
     <name>LogonComputersDialog</name>
     <message>
-        <location filename="edits/logon_computers_dialog.ui" line="14"/>
+        <location filename="attribute_edits/logon_computers_dialog.ui" line="14"/>
         <source>Edit Logon Computers</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_computers_dialog.ui" line="22"/>
+        <location filename="attribute_edits/logon_computers_dialog.ui" line="22"/>
         <source>New value:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_computers_dialog.ui" line="55"/>
+        <location filename="attribute_edits/logon_computers_dialog.ui" line="55"/>
         <source>Add</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_computers_dialog.ui" line="62"/>
+        <location filename="attribute_edits/logon_computers_dialog.ui" line="62"/>
         <source>Remove</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_computers_dialog.ui" line="34"/>
+        <location filename="attribute_edits/logon_computers_dialog.ui" line="34"/>
         <source>Values:</source>
         <translation></translation>
     </message>
@@ -1338,52 +1338,52 @@
 <context>
     <name>LogonHoursDialog</name>
     <message>
-        <location filename="edits/logon_hours_dialog.ui" line="14"/>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="14"/>
         <source>Edit Logon Hours</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_hours_dialog.cpp" line="42"/>
+        <location filename="attribute_edits/logon_hours_dialog.cpp" line="42"/>
         <source>Sunday</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_hours_dialog.cpp" line="43"/>
+        <location filename="attribute_edits/logon_hours_dialog.cpp" line="43"/>
         <source>Monday</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_hours_dialog.cpp" line="44"/>
+        <location filename="attribute_edits/logon_hours_dialog.cpp" line="44"/>
         <source>Tuesday</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_hours_dialog.cpp" line="45"/>
+        <location filename="attribute_edits/logon_hours_dialog.cpp" line="45"/>
         <source>Wednesday</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_hours_dialog.cpp" line="46"/>
+        <location filename="attribute_edits/logon_hours_dialog.cpp" line="46"/>
         <source>Thursday</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_hours_dialog.cpp" line="47"/>
+        <location filename="attribute_edits/logon_hours_dialog.cpp" line="47"/>
         <source>Friday</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_hours_dialog.cpp" line="48"/>
+        <location filename="attribute_edits/logon_hours_dialog.cpp" line="48"/>
         <source>Saturday</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_hours_dialog.ui" line="23"/>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="23"/>
         <source>Local time</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/logon_hours_dialog.ui" line="30"/>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="30"/>
         <source>UTC time</source>
         <translation></translation>
     </message>
@@ -1656,22 +1656,22 @@
 <context>
     <name>ManagerWidget</name>
     <message>
-        <location filename="edits/manager_widget.ui" line="25"/>
+        <location filename="attribute_edits/manager_widget.ui" line="25"/>
         <source>Change...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/manager_widget.ui" line="32"/>
+        <location filename="attribute_edits/manager_widget.ui" line="32"/>
         <source>Properties</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/manager_widget.ui" line="39"/>
+        <location filename="attribute_edits/manager_widget.ui" line="39"/>
         <source>Clear</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/manager_widget.cpp" line="75"/>
+        <location filename="attribute_edits/manager_widget.cpp" line="75"/>
         <source>Select Manager</source>
         <translation></translation>
     </message>
@@ -2047,18 +2047,18 @@
 <context>
     <name>PasswordEdit</name>
     <message>
-        <location filename="edits/password_edit.cpp" line="62"/>
+        <location filename="attribute_edits/password_edit.cpp" line="62"/>
         <source>Passwords don&apos;t match!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/password_edit.cpp" line="63"/>
-        <location filename="edits/password_edit.cpp" line="72"/>
+        <location filename="attribute_edits/password_edit.cpp" line="63"/>
+        <location filename="attribute_edits/password_edit.cpp" line="72"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/password_edit.cpp" line="71"/>
+        <location filename="attribute_edits/password_edit.cpp" line="71"/>
         <source>Password contains invalid characters</source>
         <translation></translation>
     </message>
@@ -2340,12 +2340,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/account_option_edit.cpp" line="84"/>
+        <location filename="attribute_edits/account_option_edit.cpp" line="84"/>
         <source>Can&apos;t set &quot;%1&quot; when &quot;%2&quot; is set.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/account_option_edit.cpp" line="85"/>
+        <location filename="attribute_edits/account_option_edit.cpp" line="85"/>
         <source>Error</source>
         <translation></translation>
     </message>
@@ -2898,7 +2898,7 @@
 <context>
     <name>UnlockEdit</name>
     <message>
-        <location filename="edits/unlock_edit.cpp" line="38"/>
+        <location filename="attribute_edits/unlock_edit.cpp" line="38"/>
         <source>Unlock account</source>
         <translation></translation>
     </message>
@@ -2906,18 +2906,18 @@
 <context>
     <name>UpnEdit</name>
     <message>
-        <location filename="edits/upn_edit.cpp" line="67"/>
+        <location filename="attribute_edits/upn_edit.cpp" line="67"/>
         <source>UPN may not be empty.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/upn_edit.cpp" line="68"/>
-        <location filename="edits/upn_edit.cpp" line="91"/>
+        <location filename="attribute_edits/upn_edit.cpp" line="68"/>
+        <location filename="attribute_edits/upn_edit.cpp" line="91"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="edits/upn_edit.cpp" line="90"/>
+        <location filename="attribute_edits/upn_edit.cpp" line="90"/>
         <source>The specified user logon name already exists.</source>
         <translation></translation>
     </message>
@@ -2925,7 +2925,7 @@
 <context>
     <name>country_widget</name>
     <message>
-        <location filename="edits/country_combo.cpp" line="90"/>
+        <location filename="attribute_edits/country_combo.cpp" line="90"/>
         <source>None</source>
         <translation></translation>
     </message>

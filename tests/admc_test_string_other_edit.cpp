@@ -23,7 +23,7 @@
 #include "attribute_dialogs/list_attribute_dialog.h"
 #include "attribute_dialogs/string_attribute_dialog.h"
 #include "attribute_dialogs/ui_list_attribute_dialog.h"
-#include "edits/string_other_edit.h"
+#include "attribute_edits/string_other_edit.h"
 
 #include <QFormLayout>
 #include <QLineEdit>

@@ -118,40 +118,40 @@ set(ADMC_SOURCES
     multi_tabs/profile_multi_tab.cpp
     multi_tabs/organization_multi_tab.cpp
 
-    edits/attribute_edit.cpp
-    edits/string_edit.cpp
-    edits/string_other_edit.cpp
-    edits/string_large_edit.cpp
-    edits/sam_name_edit.cpp
-    edits/country_edit.cpp
-    edits/expiry_edit.cpp
-    edits/expiry_widget.cpp
-    edits/unlock_edit.cpp
-    edits/group_scope_edit.cpp
-    edits/group_type_edit.cpp
-    edits/account_option_edit.cpp
-    edits/password_edit.cpp
-    edits/datetime_edit.cpp
-    edits/gpoptions_edit.cpp
-    edits/manager_edit.cpp
-    edits/upn_edit.cpp
-    edits/upn_suffix_combo.cpp
-    edits/country_combo.cpp
-    edits/manager_widget.cpp
-    edits/delegation_edit.cpp
-    edits/logon_hours_edit.cpp
-    edits/logon_hours_dialog.cpp
-    edits/logon_computers_edit.cpp
-    edits/logon_computers_dialog.cpp
-    edits/protect_deletion_edit.cpp
+    attribute_edits/attribute_edit.cpp
+    attribute_edits/string_edit.cpp
+    attribute_edits/string_other_edit.cpp
+    attribute_edits/string_large_edit.cpp
+    attribute_edits/sam_name_edit.cpp
+    attribute_edits/country_edit.cpp
+    attribute_edits/expiry_edit.cpp
+    attribute_edits/expiry_widget.cpp
+    attribute_edits/unlock_edit.cpp
+    attribute_edits/group_scope_edit.cpp
+    attribute_edits/group_type_edit.cpp
+    attribute_edits/account_option_edit.cpp
+    attribute_edits/password_edit.cpp
+    attribute_edits/datetime_edit.cpp
+    attribute_edits/gpoptions_edit.cpp
+    attribute_edits/manager_edit.cpp
+    attribute_edits/upn_edit.cpp
+    attribute_edits/upn_suffix_combo.cpp
+    attribute_edits/country_combo.cpp
+    attribute_edits/manager_widget.cpp
+    attribute_edits/delegation_edit.cpp
+    attribute_edits/logon_hours_edit.cpp
+    attribute_edits/logon_hours_dialog.cpp
+    attribute_edits/logon_computers_edit.cpp
+    attribute_edits/logon_computers_dialog.cpp
+    attribute_edits/protect_deletion_edit.cpp
 
-    multi_edits/attribute_multi_edit.cpp
-    multi_edits/string_multi_edit.cpp
-    multi_edits/expiry_multi_edit.cpp
-    multi_edits/upn_multi_edit.cpp
-    multi_edits/account_option_multi_edit.cpp
-    multi_edits/country_multi_edit.cpp
-    multi_edits/manager_multi_edit.cpp
+    attribute_multi_edits/attribute_multi_edit.cpp
+    attribute_multi_edits/string_multi_edit.cpp
+    attribute_multi_edits/expiry_multi_edit.cpp
+    attribute_multi_edits/upn_multi_edit.cpp
+    attribute_multi_edits/account_option_multi_edit.cpp
+    attribute_multi_edits/country_multi_edit.cpp
+    attribute_multi_edits/manager_multi_edit.cpp
 
     attribute_dialogs/attribute_dialog.cpp
     attribute_dialogs/list_attribute_dialog.cpp

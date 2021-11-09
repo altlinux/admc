@@ -22,9 +22,9 @@
 #include "tabs/ui_address_tab.h"
 
 #include "adldap.h"
-#include "edits/country_edit.h"
-#include "edits/string_edit.h"
-#include "edits/string_large_edit.h"
+#include "attribute_edits/country_edit.h"
+#include "attribute_edits/string_edit.h"
+#include "attribute_edits/string_large_edit.h"
 
 AddressTab::AddressTab() {
     ui = new Ui::AddressTab();

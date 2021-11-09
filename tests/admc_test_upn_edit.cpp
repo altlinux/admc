@@ -20,7 +20,7 @@
 
 #include "admc_test_upn_edit.h"
 
-#include "edits/upn_edit.h"
+#include "attribute_edits/upn_edit.h"
 
 #include <QComboBox>
 #include <QFormLayout>

@@ -20,7 +20,7 @@
 
 #include "admc_test_account_option_edit.h"
 
-#include "edits/account_option_edit.h"
+#include "attribute_edits/account_option_edit.h"
 #include "globals.h"
 
 #include <QCheckBox>

@@ -20,7 +20,7 @@
 
 #include "admc_test_group_scope_edit.h"
 
-#include "edits/group_scope_edit.h"
+#include "attribute_edits/group_scope_edit.h"
 
 #include <QComboBox>
 #include <QFormLayout>

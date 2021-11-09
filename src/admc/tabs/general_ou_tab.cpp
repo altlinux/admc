@@ -22,8 +22,8 @@
 #include "tabs/ui_general_ou_tab.h"
 
 #include "adldap.h"
-#include "edits/country_edit.h"
-#include "edits/string_edit.h"
+#include "attribute_edits/country_edit.h"
+#include "attribute_edits/string_edit.h"
 #include "tabs/general_other_tab.h"
 
 GeneralOUTab::GeneralOUTab(const AdObject &object) {

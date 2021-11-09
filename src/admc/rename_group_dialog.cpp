@@ -21,7 +21,7 @@
 #include "rename_group_dialog.h"
 #include "ui_rename_group_dialog.h"
 
-#include "edits/sam_name_edit.h"
+#include "attribute_edits/sam_name_edit.h"
 #include "settings.h"
 
 RenameGroupDialog::RenameGroupDialog(QWidget *parent)

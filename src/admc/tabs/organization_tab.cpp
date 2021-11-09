@@ -22,8 +22,8 @@
 #include "tabs/ui_organization_tab.h"
 
 #include "adldap.h"
-#include "edits/manager_edit.h"
-#include "edits/string_edit.h"
+#include "attribute_edits/manager_edit.h"
+#include "attribute_edits/string_edit.h"
 #include "globals.h"
 #include "properties_dialog.h"
 #include "settings.h"

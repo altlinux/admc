@@ -20,9 +20,9 @@
 
 #include "admc_test_expiry_edit.h"
 
-#include "edits/expiry_edit.h"
-#include "edits/expiry_widget.h"
-#include "edits/ui_expiry_widget.h"
+#include "attribute_edits/expiry_edit.h"
+#include "attribute_edits/expiry_widget.h"
+#include "attribute_edits/ui_expiry_widget.h"
 #include "globals.h"
 
 #include <QCheckBox>

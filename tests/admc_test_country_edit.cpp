@@ -20,8 +20,8 @@
 
 #include "admc_test_country_edit.h"
 
-#include "edits/country_combo.h"
-#include "edits/country_edit.h"
+#include "attribute_edits/country_combo.h"
+#include "attribute_edits/country_edit.h"
 
 #include <QComboBox>
 #include <QFormLayout>

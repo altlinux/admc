@@ -20,7 +20,7 @@
 
 #include "admc_test_datetime_edit.h"
 
-#include "edits/datetime_edit.h"
+#include "attribute_edits/datetime_edit.h"
 #include "globals.h"
 
 #include <QDateTimeEdit>

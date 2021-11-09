@@ -22,7 +22,7 @@
 #include "tabs/ui_profile_tab.h"
 
 #include "adldap.h"
-#include "edits/string_edit.h"
+#include "attribute_edits/string_edit.h"
 
 ProfileTab::ProfileTab() {
     ui = new Ui::ProfileTab();

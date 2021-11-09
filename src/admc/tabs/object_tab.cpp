@@ -22,9 +22,9 @@
 #include "tabs/ui_object_tab.h"
 
 #include "adldap.h"
-#include "edits/datetime_edit.h"
-#include "edits/protect_deletion_edit.h"
-#include "edits/string_edit.h"
+#include "attribute_edits/datetime_edit.h"
+#include "attribute_edits/protect_deletion_edit.h"
+#include "attribute_edits/string_edit.h"
 
 #include <QFormLayout>
 

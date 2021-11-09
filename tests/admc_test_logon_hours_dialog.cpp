@@ -20,8 +20,8 @@
 
 #include "admc_test_logon_hours_dialog.h"
 
-#include "edits/logon_hours_dialog.h"
-#include "edits/ui_logon_hours_dialog.h"
+#include "attribute_edits/logon_hours_dialog.h"
+#include "attribute_edits/ui_logon_hours_dialog.h"
 
 #include <QRadioButton>
 #include <QStandardItemModel>

@@ -22,7 +22,7 @@
 #include "multi_tabs/ui_general_user_multi_tab.h"
 
 #include "adldap.h"
-#include "multi_edits/string_multi_edit.h"
+#include "attribute_multi_edits/string_multi_edit.h"
 
 GeneralUserMultiTab::GeneralUserMultiTab() {
     ui = new Ui::GeneralUserMultiTab();

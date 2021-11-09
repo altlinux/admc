@@ -20,7 +20,7 @@
 
 #include "admc_test_password_edit.h"
 
-#include "edits/password_edit.h"
+#include "attribute_edits/password_edit.h"
 
 #include <QDateEdit>
 #include <QFormLayout>

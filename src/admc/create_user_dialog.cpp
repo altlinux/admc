@@ -22,11 +22,11 @@
 #include "ui_create_user_dialog.h"
 
 #include "adldap.h"
-#include "edits/account_option_edit.h"
-#include "edits/password_edit.h"
-#include "edits/sam_name_edit.h"
-#include "edits/string_edit.h"
-#include "edits/upn_edit.h"
+#include "attribute_edits/account_option_edit.h"
+#include "attribute_edits/password_edit.h"
+#include "attribute_edits/sam_name_edit.h"
+#include "attribute_edits/string_edit.h"
+#include "attribute_edits/upn_edit.h"
 #include "settings.h"
 #include "utils.h"
 
