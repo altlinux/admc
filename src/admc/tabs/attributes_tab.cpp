@@ -197,7 +197,7 @@ void AttributesTab::edit_attribute() {
 
     AttributeEditor *editor = get_editor(attribute);
 
-    if (editor != nullptr) {
+    if (editor == nullptr) {
         return;
     }
 
