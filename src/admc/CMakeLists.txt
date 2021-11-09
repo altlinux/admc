@@ -153,12 +153,12 @@ set(ADMC_SOURCES
     multi_edits/country_multi_edit.cpp
     multi_edits/manager_multi_edit.cpp
 
-    editors/attribute_editor.cpp
-    editors/multi_editor.cpp
-    editors/string_editor.cpp
-    editors/octet_editor.cpp
-    editors/bool_editor.cpp
-    editors/datetime_editor.cpp
+    attribute_dialogs/attribute_dialog.cpp
+    attribute_dialogs/list_attribute_dialog.cpp
+    attribute_dialogs/string_attribute_dialog.cpp
+    attribute_dialogs/octet_attribute_dialog.cpp
+    attribute_dialogs/bool_attribute_dialog.cpp
+    attribute_dialogs/datetime_attribute_dialog.cpp
 
     console_widget/console_widget.cpp
     console_widget/scope_proxy_model.cpp

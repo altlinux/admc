@@ -23,10 +23,10 @@
 
 #include "admc_test.h"
 
-class StringEditor;
+class StringAttributeDialog;
 class QLineEdit;
 
-class ADMCTestStringEditor : public ADMCTest {
+class ADMCTestStringAttributeDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
@@ -37,7 +37,7 @@ private slots:
     void get_value_list();
 
 private:
-    StringEditor *edit;
+    StringAttributeDialog *edit;
     QLineEdit *line_edit;
 };
 

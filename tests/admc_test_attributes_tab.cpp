@@ -20,10 +20,10 @@
 
 #include "admc_test_attributes_tab.h"
 
-#include "editors/multi_editor.h"
-#include "editors/string_editor.h"
-#include "editors/ui_multi_editor.h"
-#include "editors/ui_string_editor.h"
+#include "attribute_dialogs/list_attribute_dialog.h"
+#include "attribute_dialogs/string_attribute_dialog.h"
+#include "attribute_dialogs/ui_list_attribute_dialog.h"
+#include "attribute_dialogs/ui_string_attribute_dialog.h"
 #include "tabs/ui_attributes_tab.h"
 
 #include <QDialog>
@@ -166,22 +166,22 @@ void ADMCTestAttributesTab::apply() {
     navigate_until_object(view, "description", Qt::DisplayRole);
     edit_button->click();
 
-    auto multi_editor = attributes_tab->findChild<MultiEditor *>();
-    QVERIFY(multi_editor);
-    QVERIFY(QTest::qWaitForWindowExposed(multi_editor, 1000));
+    auto list_attribute_dialog = attributes_tab->findChild<ListAttributeDialog *>();
+    QVERIFY(list_attribute_dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(list_attribute_dialog, 1000));
 
-    QPushButton *add_button = multi_editor->ui->add_button;
+    QPushButton *add_button = list_attribute_dialog->ui->add_button;
     add_button->click();
 
-    auto string_editor = multi_editor->findChild<StringEditor *>();
-    QVERIFY(string_editor);
-    QVERIFY(QTest::qWaitForWindowExposed(string_editor, 1000));
+    auto string_attribute_dialog = list_attribute_dialog->findChild<StringAttributeDialog *>();
+    QVERIFY(string_attribute_dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(string_attribute_dialog, 1000));
 
-    QLineEdit *string_editor_edit = string_editor->ui->edit;
-    string_editor_edit->setText(correct_value);
+    QLineEdit *string_attribute_dialog_edit = string_attribute_dialog->ui->edit;
+    string_attribute_dialog_edit->setText(correct_value);
 
-    string_editor->accept();
-    multi_editor->accept();
+    string_attribute_dialog->accept();
+    list_attribute_dialog->accept();
 
     attributes_tab->apply(ad, dn);
 

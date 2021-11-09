@@ -18,17 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "admc_test_datetime_editor.h"
+#include "admc_test_datetime_attribute_dialog.h"
 
-#include "editors/datetime_editor.h"
-#include "editors/ui_datetime_editor.h"
+#include "attribute_dialogs/datetime_attribute_dialog.h"
+#include "attribute_dialogs/ui_datetime_attribute_dialog.h"
 
 #include <QDateTimeEdit>
 
-void ADMCTestDateTimeEditor::init() {
+void ADMCTestDatetimeAttributeDialog::init() {
     ADMCTest::init();
 
-    edit = new DateTimeEditor(parent_widget);
+    edit = new DatetimeAttributeDialog(parent_widget);
     edit->set_attribute(ATTRIBUTE_WHEN_CHANGED);
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
@@ -36,7 +36,7 @@ void ADMCTestDateTimeEditor::init() {
     datetime_edit = edit->ui->edit;
 }
 
-void ADMCTestDateTimeEditor::set_value_list() {
+void ADMCTestDatetimeAttributeDialog::set_value_list() {
     edit->set_value_list({QByteArray("20210706131457.0Z")});
     const QDateTime correct_datetime = QDateTime(QDate(2021, 7, 6), QTime(13, 14, 57));
     QCOMPARE(datetime_edit->dateTime(), correct_datetime);
@@ -44,10 +44,10 @@ void ADMCTestDateTimeEditor::set_value_list() {
 
 // NOTE: datetime edit always returns empty list, see
 // comment in it's source
-void ADMCTestDateTimeEditor::get_value_list() {
+void ADMCTestDatetimeAttributeDialog::get_value_list() {
     edit->set_value_list({QByteArray("20210706131457.0Z")});
     const QList<QByteArray> value_list = edit->get_value_list();
     QVERIFY(value_list.isEmpty());
 }
 
-QTEST_MAIN(ADMCTestDateTimeEditor)
+QTEST_MAIN(ADMCTestDatetimeAttributeDialog)

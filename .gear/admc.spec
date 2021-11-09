@@ -100,11 +100,11 @@ Tests for ADMC
 %_bindir/admc_test_account_option_edit
 %_bindir/admc_test_protect_deletion_edit
 %_bindir/admc_test_gpoptions_edit
-%_bindir/admc_test_octet_editor
-%_bindir/admc_test_bool_editor
-%_bindir/admc_test_string_editor
-%_bindir/admc_test_multi_editor
-%_bindir/admc_test_datetime_editor
+%_bindir/admc_test_octet_attribute_dialog
+%_bindir/admc_test_bool_attribute_dialog
+%_bindir/admc_test_string_attribute_dialog
+%_bindir/admc_test_list_attribute_dialog
+%_bindir/admc_test_datetime_attribute_dialog
 %_bindir/admc_test_edit_query_item_widget
 %_bindir/admc_test_policy_results_widget
 %_bindir/admc_test_find_object_dialog

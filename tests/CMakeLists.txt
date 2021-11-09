@@ -60,11 +60,11 @@ set(TEST_TARGETS
     admc_test_account_option_edit
     admc_test_gpoptions_edit
     admc_test_protect_deletion_edit
-    admc_test_octet_editor
-    admc_test_bool_editor
-    admc_test_datetime_editor
-    admc_test_string_editor
-    admc_test_multi_editor
+    admc_test_octet_attribute_dialog
+    admc_test_bool_attribute_dialog
+    admc_test_datetime_attribute_dialog
+    admc_test_string_attribute_dialog
+    admc_test_list_attribute_dialog
     admc_test_edit_query_item_widget
     admc_test_policy_results_widget
     admc_test_find_object_dialog

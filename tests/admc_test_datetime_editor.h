@@ -23,10 +23,10 @@
 
 #include "admc_test.h"
 
-class DateTimeEditor;
+class DatetimeAttributeDialog;
 class QDateTimeEdit;
 
-class ADMCTestDateTimeEditor : public ADMCTest {
+class ADMCTestDatetimeAttributeDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
@@ -36,7 +36,7 @@ private slots:
     void get_value_list();
 
 private:
-    DateTimeEditor *edit;
+    DatetimeAttributeDialog *edit;
     QDateTimeEdit *datetime_edit;
 };
 

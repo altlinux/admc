@@ -18,12 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "admc_test_multi_editor.h"
+#include "admc_test_list_attribute_dialog.h"
 
-#include "editors/multi_editor.h"
-#include "editors/string_editor.h"
-#include "editors/ui_multi_editor.h"
-#include "editors/ui_string_editor.h"
+#include "attribute_dialogs/list_attribute_dialog.h"
+#include "attribute_dialogs/string_attribute_dialog.h"
+#include "attribute_dialogs/ui_list_attribute_dialog.h"
+#include "attribute_dialogs/ui_string_attribute_dialog.h"
 
 #include <QLineEdit>
 #include <QListWidget>
@@ -31,10 +31,10 @@
 
 const QList<QByteArray> test_value = {QByteArray("hello")};
 
-void ADMCTestMultiEditor::init() {
+void ADMCTestListAttributeDialog::init() {
     ADMCTest::init();
 
-    edit = new MultiEditor(parent_widget);
+    edit = new ListAttributeDialog(parent_widget);
     edit->set_attribute(ATTRIBUTE_DESCRIPTION);
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
@@ -44,39 +44,39 @@ void ADMCTestMultiEditor::init() {
     remove_button = edit->ui->remove_button;
 }
 
-void ADMCTestMultiEditor::set_value_list_empty() {
+void ADMCTestListAttributeDialog::set_value_list_empty() {
     edit->set_value_list({});
     QCOMPARE(list_widget->count(), 0);
 }
 
-void ADMCTestMultiEditor::set_value_list() {
+void ADMCTestListAttributeDialog::set_value_list() {
     edit->set_value_list(test_value);
     QListWidgetItem *item = list_widget->item(0);
     QVERIFY(item);
     QCOMPARE(item->text(), "hello");
 }
 
-void ADMCTestMultiEditor::get_value_list() {
+void ADMCTestListAttributeDialog::get_value_list() {
     edit->set_value_list(test_value);
     const QList<QByteArray> current = edit->get_value_list();
     QCOMPARE(current, test_value);
 }
 
-void ADMCTestMultiEditor::add() {
+void ADMCTestListAttributeDialog::add() {
     edit->set_value_list(test_value);
 
     add_button->click();
 
-    auto string_editor = edit->findChild<StringEditor *>();
-    QVERIFY(string_editor);
+    auto string_attribute_dialog = edit->findChild<StringAttributeDialog *>();
+    QVERIFY(string_attribute_dialog);
 
-    QLineEdit *line_edit = string_editor->ui->edit;
+    QLineEdit *line_edit = string_attribute_dialog->ui->edit;
 
     const QString new_value = "new value";
 
     line_edit->setText(new_value);
 
-    string_editor->accept();
+    string_attribute_dialog->accept();
 
     QCOMPARE(list_widget->count(), 2);
 
@@ -85,7 +85,7 @@ void ADMCTestMultiEditor::add() {
     QCOMPARE(added_item->text(), new_value);
 }
 
-void ADMCTestMultiEditor::remove() {
+void ADMCTestListAttributeDialog::remove() {
     edit->set_value_list({
         QByteArray("first"),
         QByteArray("second"),
@@ -100,4 +100,4 @@ void ADMCTestMultiEditor::remove() {
     QCOMPARE(list_widget->item(1)->text(), "third");
 }
 
-QTEST_MAIN(ADMCTestMultiEditor)
+QTEST_MAIN(ADMCTestListAttributeDialog)

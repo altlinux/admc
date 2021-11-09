@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>BoolEditor</class>
- <widget class="QDialog" name="BoolEditor">
+ <class>OctetAttributeDialog</class>
+ <widget class="QDialog" name="OctetAttributeDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>185</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,25 +22,31 @@
     </widget>
    </item>
    <item>
-    <widget class="QRadioButton" name="true_button">
-     <property name="text">
-      <string>True</string>
-     </property>
+    <widget class="QComboBox" name="format_combo">
+     <item>
+      <property name="text">
+       <string>Hexadecimal</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Binary</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Decimal</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Octal</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item>
-    <widget class="QRadioButton" name="false_button">
-     <property name="text">
-      <string>False</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QRadioButton" name="unset_button">
-     <property name="text">
-      <string>Unset</string>
-     </property>
-    </widget>
+    <widget class="QPlainTextEdit" name="edit"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="button_box">
@@ -59,7 +65,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>BoolEditor</receiver>
+   <receiver>OctetAttributeDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -75,7 +81,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>BoolEditor</receiver>
+   <receiver>OctetAttributeDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

@@ -23,11 +23,11 @@
 
 #include "admc_test.h"
 
-class OctetEditor;
+class OctetAttributeDialog;
 class QComboBox;
 class QPlainTextEdit;
 
-class ADMCTestOctetEditor : public ADMCTest {
+class ADMCTestOctetAttributeDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
@@ -40,7 +40,7 @@ private slots:
     void handle_incorrect_input();
 
 private:
-    OctetEditor *edit;
+    OctetAttributeDialog *edit;
     QComboBox *format_combo;
     QPlainTextEdit *text_edit;
 };

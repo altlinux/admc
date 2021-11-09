@@ -30,7 +30,7 @@
 #include "create_group_dialog.h"
 #include "create_ou_dialog.h"
 #include "create_user_dialog.h"
-#include "editors/multi_editor.h"
+#include "attribute_dialogs/list_attribute_dialog.h"
 #include "find_object_dialog.h"
 #include "globals.h"
 #include "password_dialog.h"
@@ -726,15 +726,15 @@ void ObjectImpl::on_reset_password() {
 }
 
 void ObjectImpl::on_edit_upn_suffixes() {
-    auto dialog = new MultiEditor(console);
+    auto dialog = new ListAttributeDialog(console);
 
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
     }
 
-    // Open editor for upn suffixes attribute of partitions
-    // object
+    // Open attribute dialog for upn suffixes attribute of
+    // partitions object
     const QString partitions_dn = g_adconfig->partitions_dn();
     const AdObject partitions_object = ad.search_object(partitions_dn);
     const QList<QByteArray> current_values = partitions_object.get_values(ATTRIBUTE_UPN_SUFFIXES);

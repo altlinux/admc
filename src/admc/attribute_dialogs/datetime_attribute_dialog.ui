@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>StringEditor</class>
- <widget class="QDialog" name="StringEditor">
+ <class>DatetimeAttributeDialog</class>
+ <widget class="QDialog" name="DatetimeAttributeDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>117</height>
+    <height>118</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="edit"/>
+    <widget class="QDateTimeEdit" name="edit"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="button_box">
@@ -41,7 +41,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>StringEditor</receiver>
+   <receiver>DatetimeAttributeDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -57,7 +57,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>StringEditor</receiver>
+   <receiver>DatetimeAttributeDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

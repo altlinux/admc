@@ -23,7 +23,7 @@
 
 /** 
  * Show attributes of target in a list. Allows
- * viewing/editing if possible via attribute editor dialogs.
+ * viewing/editing if possible via attribute dialogs.
  */
 
 #include "tabs/properties_tab.h"
@@ -39,7 +39,7 @@ class QStandardItemModel;
 class QStandardItem;
 class AttributesTabProxy;
 class AttributesFilterDialog;
-class AttributeEditor;
+class AttributeDialog;
 
 namespace Ui {
 class AttributesTab;
@@ -70,7 +70,7 @@ private:
     void view_attribute();
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
     QList<QStandardItem *> get_selected_row() const;
-    AttributeEditor *get_editor(const QString &attribute);
+    AttributeDialog *get_attribute_dialog(const QString &attribute);
 };
 
 #endif /* ATTRIBUTES_TAB_H */

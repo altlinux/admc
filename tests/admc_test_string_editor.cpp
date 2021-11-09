@@ -18,17 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "admc_test_string_editor.h"
+#include "admc_test_string_attribute_dialog.h"
 
-#include "editors/string_editor.h"
-#include "editors/ui_string_editor.h"
+#include "attribute_dialogs/string_attribute_dialog.h"
+#include "attribute_dialogs/ui_string_attribute_dialog.h"
 
 #include <QLineEdit>
 
-void ADMCTestStringEditor::init() {
+void ADMCTestStringAttributeDialog::init() {
     ADMCTest::init();
 
-    edit = new StringEditor(parent_widget);
+    edit = new StringAttributeDialog(parent_widget);
     edit->set_attribute(ATTRIBUTE_NAME);
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
@@ -36,21 +36,21 @@ void ADMCTestStringEditor::init() {
     line_edit = edit->ui->edit;
 }
 
-void ADMCTestStringEditor::set_value_list_empty() {
+void ADMCTestStringAttributeDialog::set_value_list_empty() {
     edit->set_value_list({});
     QVERIFY(line_edit->text().isEmpty());
 }
 
-void ADMCTestStringEditor::set_value_list() {
+void ADMCTestStringAttributeDialog::set_value_list() {
     edit->set_value_list({QByteArray("hello")});
     QCOMPARE(line_edit->text(), "hello");
 }
 
-void ADMCTestStringEditor::get_value_list() {
+void ADMCTestStringAttributeDialog::get_value_list() {
     const QList<QByteArray> correct_value_list = {QByteArray("hello")};
     edit->set_value_list(correct_value_list);
     const QList<QByteArray> value_list = edit->get_value_list();
     QCOMPARE(correct_value_list, value_list);
 }
 
-QTEST_MAIN(ADMCTestStringEditor)
+QTEST_MAIN(ADMCTestStringAttributeDialog)

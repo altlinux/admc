@@ -18,21 +18,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ATTRIBUTE_EDITOR_H
-#define ATTRIBUTE_EDITOR_H
+#ifndef ATTRIBUTE_DIALOG_H
+#define ATTRIBUTE_DIALOG_H
 
 #include <QDialog>
 
 class QLabel;
 
 /**
- * Gets input from user, which can be obtained through
- * get_value_list(). Different from AttributeEdit because it
- * is opened as a separate dialog and parent object is
- * responsible for actually applying the changes.
+ * Dialog for viewing and editing attribute values.
  */
 
-class AttributeEditor : public QDialog {
+class AttributeDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -43,7 +40,7 @@ public:
     virtual void set_attribute(const QString &attribute);
 
     // NOTE: this exists so that it's possible to make a
-    // read only editor for writable attributes
+    // read only dialog even for writable attributes
     virtual void set_read_only(const bool read_only);
 
     QString get_attribute() const;
@@ -66,4 +63,4 @@ private:
     QLabel *m_attribute_label;
 };
 
-#endif /* ATTRIBUTE_EDITOR_H */
+#endif /* ATTRIBUTE_DIALOG_H */

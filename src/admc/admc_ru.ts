@@ -217,24 +217,24 @@
     </message>
 </context>
 <context>
-    <name>AttributeEditor</name>
+    <name>AttributeDialog</name>
     <message>
-        <location filename="editors/attribute_editor.cpp" line="44"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="44"/>
         <source>Attribute: %1</source>
         <translation>Атрибут: %1</translation>
     </message>
     <message>
-        <location filename="editors/attribute_editor.cpp" line="55"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="55"/>
         <source>Edit</source>
         <translation>Редактировать</translation>
     </message>
     <message>
-        <location filename="editors/attribute_editor.cpp" line="57"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="57"/>
         <source>View</source>
         <translation>Просмотреть</translation>
     </message>
     <message>
-        <location filename="editors/attribute_editor.cpp" line="66"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="66"/>
         <source>%1 Multi-Valued %2</source>
         <comment>This is a dialog title for attribute editors. Example: &quot;Edit Multi-Valued String&quot;</comment>
         <translation>%1 %2 (Многозначный)</translation>
@@ -312,19 +312,19 @@
     </message>
 </context>
 <context>
-    <name>BoolEditor</name>
+    <name>BoolAttributeDialog</name>
     <message>
-        <location filename="editors/bool_editor.ui" line="27"/>
+        <location filename="attribute_dialogs/bool_attribute_dialog.ui" line="27"/>
         <source>True</source>
         <translation>Истина</translation>
     </message>
     <message>
-        <location filename="editors/bool_editor.ui" line="34"/>
+        <location filename="attribute_dialogs/bool_attribute_dialog.ui" line="34"/>
         <source>False</source>
         <translation>Ложь</translation>
     </message>
     <message>
-        <location filename="editors/bool_editor.ui" line="41"/>
+        <location filename="attribute_dialogs/bool_attribute_dialog.ui" line="41"/>
         <source>Unset</source>
         <translation>Без значения</translation>
     </message>
@@ -1740,19 +1740,19 @@
     </message>
 </context>
 <context>
-    <name>MultiEditor</name>
+    <name>ListAttributeDialog</name>
     <message>
-        <location filename="editors/multi_editor.ui" line="44"/>
+        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="44"/>
         <source>Add...</source>
         <translation>Добавить...</translation>
     </message>
     <message>
-        <location filename="editors/multi_editor.ui" line="27"/>
+        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="27"/>
         <source>Values:</source>
         <translation>Значения:</translation>
     </message>
     <message>
-        <location filename="editors/multi_editor.ui" line="51"/>
+        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="51"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
@@ -1903,49 +1903,49 @@
     </message>
 </context>
 <context>
-    <name>OctetEditor</name>
+    <name>OctetAttributeDialog</name>
     <message>
-        <location filename="editors/octet_editor.ui" line="28"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.ui" line="28"/>
         <source>Hexadecimal</source>
         <translation>Шестнадцатеричный</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.ui" line="33"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.ui" line="33"/>
         <source>Binary</source>
         <translation>Двоичный</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.ui" line="38"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.ui" line="38"/>
         <source>Decimal</source>
         <translation>Десятичный</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.ui" line="43"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.ui" line="43"/>
         <source>Octal</source>
         <translation>Восьмеричный</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="182"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="182"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="186"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="186"/>
         <source>Input must be strings of 2 hexadecimal digits separated by spaces. Example: &quot;0a 00 b5 ff&quot;</source>
         <translation>Ввод должен состоять из строки, содержащей две шестнадцатеричные цифры, разделённые пробелами. Пример: &quot;0a 00 b5 ff&quot;</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="187"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="187"/>
         <source>Input must be strings of 8 binary digits separated by spaces. Example: &quot;01010010 01000010 01000010&quot;</source>
         <translation>Ввод должен состоять из строки, содержащей восемь двоичных цифр, разделённых пробелами. Пример: &quot;01010010 01000010 01000010&quot;</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="188"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="188"/>
         <source>Input must be strings of 3 decimal digits (0-255) separated by spaces. Example: &quot;010 000 191&quot;</source>
         <translation>Ввод должен состоять из строки, содержащей три десятичные цифры (0–255), разделённые пробелами. Пример: &quot;010 000 191&quot;</translation>
     </message>
     <message>
-        <location filename="editors/octet_editor.cpp" line="189"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="189"/>
         <source>Input must be strings of 3 octal digits (0-377) separated by spaces.. Example: &quot;070 343 301&quot;</source>
         <translation>Ввод должен состоять из строки, содержащей три восьмеричные цифры (0–377), разделённые пробелами. Пример: &quot;070 343 301&quot;</translation>
     </message>

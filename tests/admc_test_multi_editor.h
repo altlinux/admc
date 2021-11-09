@@ -23,11 +23,11 @@
 
 #include "admc_test.h"
 
-class MultiEditor;
+class ListAttributeDialog;
 class QListWidget;
 class QPushButton;
 
-class ADMCTestMultiEditor : public ADMCTest {
+class ADMCTestListAttributeDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
@@ -40,7 +40,7 @@ private slots:
     void remove();
 
 private:
-    MultiEditor *edit;
+    ListAttributeDialog *edit;
     QListWidget *list_widget;
     QPushButton *add_button;
     QPushButton *remove_button;

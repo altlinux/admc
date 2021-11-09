@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "editors/attribute_editor.h"
+#include "attribute_dialogs/attribute_dialog.h"
 
 #include "ad_config.h"
 #include "ad_utils.h"
@@ -26,19 +26,19 @@
 
 #include <QLabel>
 
-void AttributeEditor::set_attribute_label(QLabel *attribute_label) {
+void AttributeDialog::set_attribute_label(QLabel *attribute_label) {
     m_attribute_label = attribute_label;
 }
 
-QString AttributeEditor::get_attribute() const {
+QString AttributeDialog::get_attribute() const {
     return m_attribute;
 }
 
-bool AttributeEditor::get_read_only() const {
+bool AttributeDialog::get_read_only() const {
     return m_read_only;
 }
 
-void AttributeEditor::set_attribute(const QString &attribute) {
+void AttributeDialog::set_attribute(const QString &attribute) {
     m_attribute = attribute;
 
     const QString text = QString(tr("Attribute: %1")).arg(m_attribute);
@@ -70,6 +70,6 @@ void AttributeEditor::set_attribute(const QString &attribute) {
     setWindowTitle(title);
 }
 
-void AttributeEditor::set_read_only(const bool read_only) {
+void AttributeDialog::set_read_only(const bool read_only) {
     m_read_only = read_only;
 }

@@ -18,19 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_BOOL_EDITOR_H
-#define ADMC_TEST_BOOL_EDITOR_H
+#ifndef ADMC_TEST_BOOL_ATTRIBUTE_DIALOG_H
+#define ADMC_TEST_BOOL_ATTRIBUTE_DIALOG_H
 
 #include "admc_test.h"
 
-class BoolEditor;
+class BoolAttributeDialog;
 class QRadioButton;
 
-enum ADMCTestBoolEditorButton {
-    ADMCTestBoolEditorButton_True
+enum ADMCTestBoolAttributeDialogButton {
+    ADMCTestBoolAttributeDialogButton_True
 };
 
-class ADMCTestBoolEditor : public ADMCTest {
+class ADMCTestBoolAttributeDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
@@ -41,8 +41,8 @@ private slots:
     void get_value_list();
 
 private:
-    BoolEditor *edit;
+    BoolAttributeDialog *edit;
     QRadioButton *button;
 };
 
-#endif /* ADMC_TEST_BOOL_EDITOR_H */
+#endif /* ADMC_TEST_BOOL_ATTRIBUTE_DIALOG_H */

@@ -22,11 +22,11 @@
 #include "tabs/ui_attributes_tab.h"
 
 #include "adldap.h"
-#include "editors/bool_editor.h"
-#include "editors/datetime_editor.h"
-#include "editors/multi_editor.h"
-#include "editors/octet_editor.h"
-#include "editors/string_editor.h"
+#include "attribute_dialogs/bool_attribute_dialog.h"
+#include "attribute_dialogs/datetime_attribute_dialog.h"
+#include "attribute_dialogs/list_attribute_dialog.h"
+#include "attribute_dialogs/octet_attribute_dialog.h"
+#include "attribute_dialogs/string_attribute_dialog.h"
 #include "globals.h"
 #include "settings.h"
 #include "tabs/attributes_tab_filter_menu.h"
@@ -172,18 +172,18 @@ void AttributesTab::view_attribute() {
 
     const QString attribute = row[AttributesColumn_Name]->text();
 
-    AttributeEditor *editor = get_editor(attribute);
+    AttributeDialog *dialog = get_attribute_dialog(attribute);
 
-    if (editor != nullptr) {
+    if (dialog != nullptr) {
         return;
     }
 
     const QList<QByteArray> value_list = current[attribute];
 
-    editor->set_attribute(attribute);
-    editor->set_value_list(value_list);
-    editor->set_read_only(true);
-    editor->open();
+    dialog->set_attribute(attribute);
+    dialog->set_value_list(value_list);
+    dialog->set_read_only(true);
+    dialog->open();
 }
 
 void AttributesTab::edit_attribute() {
@@ -195,23 +195,23 @@ void AttributesTab::edit_attribute() {
 
     const QString attribute = row[AttributesColumn_Name]->text();
 
-    AttributeEditor *editor = get_editor(attribute);
+    AttributeDialog *dialog = get_attribute_dialog(attribute);
 
-    if (editor == nullptr) {
+    if (dialog == nullptr) {
         return;
     }
 
     const QList<QByteArray> value_list = current[attribute];
 
-    editor->set_attribute(attribute);
-    editor->set_value_list(value_list);
-    editor->set_read_only(false);
-    editor->open();
+    dialog->set_attribute(attribute);
+    dialog->set_value_list(value_list);
+    dialog->set_read_only(false);
+    dialog->open();
 
     connect(
-        editor, &QDialog::accepted,
-        [this, editor, row, attribute]() {
-            const QList<QByteArray> new_value_list = editor->get_value_list();
+        dialog, &QDialog::accepted,
+        [this, dialog, row, attribute]() {
+            const QList<QByteArray> new_value_list = dialog->get_value_list();
 
             current[attribute] = new_value_list;
             load_row(row, attribute, new_value_list);
@@ -283,40 +283,40 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
     row[AttributesColumn_Type]->setText(type_display);
 }
 
-// Select an appropriate editor by attribute type and by
-// whether attribute is single or multi valued
-AttributeEditor *AttributesTab::get_editor(const QString &attribute) {
+// Select an appropriate attribute dialog by attribute type
+// and by whether attribute is single or multi valued
+AttributeDialog *AttributesTab::get_attribute_dialog(const QString &attribute) {
     const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
 
     // Single/multi valued logic is separated out of the
     // switch statement for better flow
-    auto octet_editor = [&]() -> AttributeEditor * {
+    auto octet_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new OctetEditor(this);
+            return new OctetAttributeDialog(this);
         } else {
-            return new MultiEditor(this);
+            return new ListAttributeDialog(this);
         }
     };
 
-    auto string_editor = [&]() -> AttributeEditor * {
+    auto string_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new StringEditor(this);
+            return new StringAttributeDialog(this);
         } else {
-            return new MultiEditor(this);
+            return new ListAttributeDialog(this);
         }
     };
 
-    auto bool_editor = [&]() -> AttributeEditor * {
+    auto bool_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new BoolEditor(this);
+            return new BoolAttributeDialog(this);
         } else {
-            return new MultiEditor(this);
+            return new ListAttributeDialog(this);
         }
     };
 
-    auto datetime_editor = [&]() -> AttributeEditor * {
+    auto datetime_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new DateTimeEditor(this);
+            return new DatetimeAttributeDialog(this);
         } else {
             return nullptr;
         }
@@ -325,26 +325,26 @@ AttributeEditor *AttributesTab::get_editor(const QString &attribute) {
     const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
     switch (type) {
-        case AttributeType_Octet: return octet_editor();
-        case AttributeType_Sid: return octet_editor();
+        case AttributeType_Octet: return octet_attribute_dialog();
+        case AttributeType_Sid: return octet_attribute_dialog();
 
-        case AttributeType_Boolean: return bool_editor();
+        case AttributeType_Boolean: return bool_attribute_dialog();
 
-        case AttributeType_Unicode: return string_editor();
-        case AttributeType_StringCase: return string_editor();
-        case AttributeType_DSDN: return string_editor();
-        case AttributeType_IA5: return string_editor();
-        case AttributeType_Teletex: return string_editor();
-        case AttributeType_ObjectIdentifier: return string_editor();
-        case AttributeType_Integer: return string_editor();
-        case AttributeType_Enumeration: return string_editor();
-        case AttributeType_LargeInteger: return string_editor();
-        case AttributeType_UTCTime: return datetime_editor();
-        case AttributeType_GeneralizedTime: return datetime_editor();
-        case AttributeType_NTSecDesc: return string_editor();
-        case AttributeType_Numeric: return string_editor();
-        case AttributeType_Printable: return string_editor();
-        case AttributeType_DNString: return string_editor();
+        case AttributeType_Unicode: return string_attribute_dialog();
+        case AttributeType_StringCase: return string_attribute_dialog();
+        case AttributeType_DSDN: return string_attribute_dialog();
+        case AttributeType_IA5: return string_attribute_dialog();
+        case AttributeType_Teletex: return string_attribute_dialog();
+        case AttributeType_ObjectIdentifier: return string_attribute_dialog();
+        case AttributeType_Integer: return string_attribute_dialog();
+        case AttributeType_Enumeration: return string_attribute_dialog();
+        case AttributeType_LargeInteger: return string_attribute_dialog();
+        case AttributeType_UTCTime: return datetime_attribute_dialog();
+        case AttributeType_GeneralizedTime: return datetime_attribute_dialog();
+        case AttributeType_NTSecDesc: return string_attribute_dialog();
+        case AttributeType_Numeric: return string_attribute_dialog();
+        case AttributeType_Printable: return string_attribute_dialog();
+        case AttributeType_DNString: return string_attribute_dialog();
 
         // NOTE: putting these here as confirmed to be unsupported
         case AttributeType_ReplicaLink: return nullptr;

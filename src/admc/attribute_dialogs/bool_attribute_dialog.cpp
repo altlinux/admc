@@ -18,38 +18,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "editors/bool_editor.h"
-#include "editors/ui_bool_editor.h"
+#include "attribute_dialogs/bool_attribute_dialog.h"
+#include "attribute_dialogs/ui_bool_attribute_dialog.h"
 
 #include "adldap.h"
 #include "globals.h"
 #include "settings.h"
 
-BoolEditor::BoolEditor(QWidget *parent)
-: AttributeEditor(parent) {
-    ui = new Ui::BoolEditor();
+BoolAttributeDialog::BoolAttributeDialog(QWidget *parent)
+: AttributeDialog(parent) {
+    ui = new Ui::BoolAttributeDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    AttributeEditor::set_attribute_label(ui->attribute_label);
+    AttributeDialog::set_attribute_label(ui->attribute_label);
 
-    settings_setup_dialog_geometry(SETTING_bool_editor_geometry, this);
+    settings_setup_dialog_geometry(SETTING_bool_attribute_dialog_geometry, this);
 }
 
-BoolEditor::~BoolEditor() {
+BoolAttributeDialog::~BoolAttributeDialog() {
     delete ui;
 }
 
-void BoolEditor::set_read_only(const bool read_only) {
-    AttributeEditor::set_read_only(read_only);
+void BoolAttributeDialog::set_read_only(const bool read_only) {
+    AttributeDialog::set_read_only(read_only);
 
     ui->true_button->setEnabled(!read_only);
     ui->false_button->setEnabled(!read_only);
     ui->unset_button->setEnabled(!read_only);
 }
 
-void BoolEditor::set_value_list(const QList<QByteArray> &values) {
+void BoolAttributeDialog::set_value_list(const QList<QByteArray> &values) {
     if (values.isEmpty()) {
         ui->unset_button->setChecked(true);
     } else {
@@ -65,7 +65,7 @@ void BoolEditor::set_value_list(const QList<QByteArray> &values) {
     }
 }
 
-QList<QByteArray> BoolEditor::get_value_list() const {
+QList<QByteArray> BoolAttributeDialog::get_value_list() const {
     if (ui->unset_button->isChecked()) {
         return QList<QByteArray>();
     } else if (ui->true_button->isChecked()) {

@@ -20,9 +20,9 @@
 
 #include "admc_test_string_other_edit.h"
 
-#include "editors/multi_editor.h"
-#include "editors/string_editor.h"
-#include "editors/ui_multi_editor.h"
+#include "attribute_dialogs/list_attribute_dialog.h"
+#include "attribute_dialogs/string_attribute_dialog.h"
+#include "attribute_dialogs/ui_list_attribute_dialog.h"
 #include "edits/string_other_edit.h"
 
 #include <QFormLayout>
@@ -92,10 +92,10 @@ void ADMCTestStringOtherEdit::load() {
 
     other_button->click();
 
-    auto multi_editor = parent_widget->findChild<MultiEditor *>();
-    QVERIFY(multi_editor);
+    auto list_attribute_dialog = parent_widget->findChild<ListAttributeDialog *>();
+    QVERIFY(list_attribute_dialog);
 
-    auto list_widget = multi_editor->findChild<QListWidget *>();
+    auto list_widget = list_attribute_dialog->findChild<QListWidget *>();
     QVERIFY(list_widget);
 
     QCOMPARE(line_edit->text(), main_value);
@@ -145,23 +145,23 @@ void ADMCTestStringOtherEdit::apply_modified_other_value() {
 void ADMCTestStringOtherEdit::add_new_other_value() {
     other_button->click();
 
-    auto multi_editor = parent_widget->findChild<MultiEditor *>();
-    QVERIFY(multi_editor);
+    auto list_attribute_dialog = parent_widget->findChild<ListAttributeDialog *>();
+    QVERIFY(list_attribute_dialog);
 
-    QPushButton *add_button = multi_editor->ui->add_button;
+    QPushButton *add_button = list_attribute_dialog->ui->add_button;
     add_button->click();
 
-    auto string_editor = multi_editor->findChild<StringEditor *>();
-    QVERIFY(string_editor);
+    auto string_attribute_dialog = list_attribute_dialog->findChild<StringAttributeDialog *>();
+    QVERIFY(string_attribute_dialog);
 
-    auto string_editor_line_edit = string_editor->findChild<QLineEdit *>();
-    QVERIFY(string_editor_line_edit);
+    auto string_attribute_dialog_line_edit = string_attribute_dialog->findChild<QLineEdit *>();
+    QVERIFY(string_attribute_dialog_line_edit);
 
-    string_editor_line_edit->setText(new_value);
+    string_attribute_dialog_line_edit->setText(new_value);
 
-    string_editor->accept();
+    string_attribute_dialog->accept();
 
-    multi_editor->accept();
+    list_attribute_dialog->accept();
 }
 
 QTEST_MAIN(ADMCTestStringOtherEdit)

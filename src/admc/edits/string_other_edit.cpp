@@ -21,7 +21,7 @@
 #include "edits/string_other_edit.h"
 
 #include "adldap.h"
-#include "editors/multi_editor.h"
+#include "attribute_dialogs/list_attribute_dialog.h"
 #include "edits/string_edit.h"
 #include "globals.h"
 
@@ -62,17 +62,17 @@ bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {
 }
 
 void StringOtherEdit::on_other_button() {
-    auto editor = new MultiEditor(other_button);
-    editor->set_read_only(read_only);
-    editor->set_attribute(other_attribute);
-    editor->set_value_list(other_values);
+    auto dialog = new ListAttributeDialog(other_button);
+    dialog->set_read_only(read_only);
+    dialog->set_attribute(other_attribute);
+    dialog->set_value_list(other_values);
 
-    editor->open();
+    dialog->open();
 
     connect(
-        editor, &QDialog::accepted,
-        [this, editor]() {
-            other_values = editor->get_value_list();
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            other_values = dialog->get_value_list();
 
             emit edited();
         });

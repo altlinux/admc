@@ -18,10 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef OCTET_EDITOR_H
-#define OCTET_EDITOR_H
+#ifndef OCTET_ATTRIBUTE_DIALOG_H
+#define OCTET_ATTRIBUTE_DIALOG_H
 
-#include "editors/attribute_editor.h"
+#include "attribute_dialogs/attribute_dialog.h"
 
 enum OctetDisplayFormat {
     OctetDisplayFormat_Hexadecimal = 0,
@@ -31,17 +31,17 @@ enum OctetDisplayFormat {
 };
 
 namespace Ui {
-class OctetEditor;
+class OctetAttributeDialog;
 }
 
-class OctetEditor final : public AttributeEditor {
+class OctetAttributeDialog final : public AttributeDialog {
     Q_OBJECT
 
 public:
-    Ui::OctetEditor *ui;
+    Ui::OctetAttributeDialog *ui;
 
-    OctetEditor(QWidget *parent);
-    ~OctetEditor();
+    OctetAttributeDialog(QWidget *parent);
+    ~OctetAttributeDialog();
 
     void set_read_only(const bool read_only) override;
     void set_value_list(const QList<QByteArray> &values) override;
@@ -58,4 +58,4 @@ private:
 QString octet_bytes_to_string(const QByteArray bytes, const OctetDisplayFormat format);
 QByteArray octet_string_to_bytes(const QString string, const OctetDisplayFormat format);
 
-#endif /* OCTET_EDITOR_H */
+#endif /* OCTET_ATTRIBUTE_DIALOG_H */

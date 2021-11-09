@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "editors/octet_editor.h"
-#include "editors/ui_octet_editor.h"
+#include "attribute_dialogs/octet_attribute_dialog.h"
+#include "attribute_dialogs/ui_octet_attribute_dialog.h"
 
 #include "adldap.h"
 #include "globals.h"
@@ -36,59 +36,59 @@ OctetDisplayFormat current_format(QComboBox *format_combo);
 int format_base(const OctetDisplayFormat format);
 char *itoa(int value, char *result, int base);
 
-OctetEditor::OctetEditor(QWidget *parent)
-: AttributeEditor(parent) {
-    ui = new Ui::OctetEditor();
+OctetAttributeDialog::OctetAttributeDialog(QWidget *parent)
+: AttributeDialog(parent) {
+    ui = new Ui::OctetAttributeDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    AttributeEditor::set_attribute_label(ui->attribute_label);
+    AttributeDialog::set_attribute_label(ui->attribute_label);
 
     prev_format = OctetDisplayFormat_Hexadecimal;
 
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     ui->edit->setFont(fixed_font);
 
-    settings_setup_dialog_geometry(SETTING_octet_editor_geometry, this);
+    settings_setup_dialog_geometry(SETTING_octet_attribute_dialog_geometry, this);
 
     connect(
         ui->format_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &OctetEditor::on_format_combo);
+        this, &OctetAttributeDialog::on_format_combo);
 }
 
-OctetEditor::~OctetEditor() {
+OctetAttributeDialog::~OctetAttributeDialog() {
     delete ui;
 }
 
-void OctetEditor::set_read_only(const bool read_only) {
-    AttributeEditor::set_read_only(read_only);
+void OctetAttributeDialog::set_read_only(const bool read_only) {
+    AttributeDialog::set_read_only(read_only);
 
     ui->edit->setReadOnly(read_only);
 }
 
-QList<QByteArray> OctetEditor::get_value_list() const {
+QList<QByteArray> OctetAttributeDialog::get_value_list() const {
     const QString text = ui->edit->toPlainText();
     const QByteArray bytes = octet_string_to_bytes(text, current_format(ui->format_combo));
 
     return {bytes};
 }
 
-void OctetEditor::accept() {
+void OctetAttributeDialog::accept() {
     const bool input_ok = check_input(current_format(ui->format_combo));
 
     if (input_ok) {
-        AttributeEditor::accept();
+        AttributeDialog::accept();
     }
 }
 
-void OctetEditor::set_value_list(const QList<QByteArray> &values) {
+void OctetAttributeDialog::set_value_list(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = octet_bytes_to_string(value, current_format(ui->format_combo));
     ui->edit->setPlainText(value_string);
 }
 
-void OctetEditor::on_format_combo() {
+void OctetAttributeDialog::on_format_combo() {
     // Check that input is ok for previous format, otherwise
     // won't be able to convert it to new format
     const bool input_ok_for_prev_format = check_input(prev_format);
@@ -112,7 +112,7 @@ void OctetEditor::on_format_combo() {
     }
 }
 
-bool OctetEditor::check_input(const OctetDisplayFormat format) {
+bool OctetAttributeDialog::check_input(const OctetDisplayFormat format) {
     const bool ok = [=]() {
         const QString text = ui->edit->toPlainText();
 

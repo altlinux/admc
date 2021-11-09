@@ -18,14 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "admc_test_bool_editor.h"
+#include "admc_test_bool_attribute_dialog.h"
 
-#include "editors/bool_editor.h"
-#include "editors/ui_bool_editor.h"
+#include "attribute_dialogs/bool_attribute_dialog.h"
+#include "attribute_dialogs/ui_bool_attribute_dialog.h"
 
 #include <QRadioButton>
 
-void ADMCTestBoolEditor::initTestCase_data() {
+void ADMCTestBoolAttributeDialog::initTestCase_data() {
     QTest::addColumn<QString>("button_name");
     QTest::addColumn<QList<QByteArray>>("value");
 
@@ -34,10 +34,10 @@ void ADMCTestBoolEditor::initTestCase_data() {
     QTest::newRow("unset") << "unset_button" << QList<QByteArray>();
 }
 
-void ADMCTestBoolEditor::init() {
+void ADMCTestBoolAttributeDialog::init() {
     ADMCTest::init();
 
-    edit = new BoolEditor(parent_widget);
+    edit = new BoolAttributeDialog(parent_widget);
     edit->set_attribute(ATTRIBUTE_DESCRIPTION);
     edit->set_value_list(QList<QByteArray>());
     edit->open();
@@ -54,18 +54,18 @@ void ADMCTestBoolEditor::init() {
     button = button_map[button_name];
 }
 
-void ADMCTestBoolEditor::set_value_list() {
+void ADMCTestBoolAttributeDialog::set_value_list() {
     QFETCH_GLOBAL(QList<QByteArray>, value);
 
     edit->set_value_list(value);
     QVERIFY(button->isChecked());
 }
 
-void ADMCTestBoolEditor::get_value_list() {
+void ADMCTestBoolAttributeDialog::get_value_list() {
     QFETCH_GLOBAL(QList<QByteArray>, value);
 
     button->click();
     QCOMPARE(edit->get_value_list(), value);
 }
 
-QTEST_MAIN(ADMCTestBoolEditor)
+QTEST_MAIN(ADMCTestBoolAttributeDialog)

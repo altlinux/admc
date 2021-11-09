@@ -18,32 +18,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "editors/string_editor.h"
-#include "editors/ui_string_editor.h"
+#include "attribute_dialogs/string_attribute_dialog.h"
+#include "attribute_dialogs/ui_string_attribute_dialog.h"
 
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
 #include "settings.h"
 
-StringEditor::StringEditor(QWidget *parent)
-: AttributeEditor(parent) {
-    ui = new Ui::StringEditor();
+StringAttributeDialog::StringAttributeDialog(QWidget *parent)
+: AttributeDialog(parent) {
+    ui = new Ui::StringAttributeDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    AttributeEditor::set_attribute_label(ui->attribute_label);
+    AttributeDialog::set_attribute_label(ui->attribute_label);
 
-    settings_setup_dialog_geometry(SETTING_multi_editor_geometry, this);
+    settings_setup_dialog_geometry(SETTING_list_attribute_dialog_geometry, this);
 }
 
-StringEditor::~StringEditor() {
+StringAttributeDialog::~StringAttributeDialog() {
     delete ui;
 }
 
-void StringEditor::set_attribute(const QString &attribute) {
-    AttributeEditor::set_attribute(attribute);
+void StringAttributeDialog::set_attribute(const QString &attribute) {
+    AttributeDialog::set_attribute(attribute);
 
     // Configure line edit based on attribute type
     if (g_adconfig->get_attribute_is_number(attribute)) {
@@ -53,19 +53,19 @@ void StringEditor::set_attribute(const QString &attribute) {
     limit_edit(ui->edit, attribute);
 }
 
-void StringEditor::set_read_only(const bool read_only) {
-    AttributeEditor::set_read_only(read_only);
+void StringAttributeDialog::set_read_only(const bool read_only) {
+    AttributeDialog::set_read_only(read_only);
 
     ui->edit->setReadOnly(read_only);
 }
 
-void StringEditor::set_value_list(const QList<QByteArray> &values) {
+void StringAttributeDialog::set_value_list(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);
     ui->edit->setText(value_string);
 }
 
-QList<QByteArray> StringEditor::get_value_list() const {
+QList<QByteArray> StringAttributeDialog::get_value_list() const {
     const QString new_value_string = ui->edit->text();
 
     if (new_value_string.isEmpty()) {

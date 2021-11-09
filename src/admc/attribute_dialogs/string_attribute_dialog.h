@@ -18,33 +18,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATETIME_EDITOR_H
-#define DATETIME_EDITOR_H
+#ifndef STRING_ATTRIBUTE_DIALOG_H
+#define STRING_ATTRIBUTE_DIALOG_H
 
-/**
- * Editor for datetimes. Note that this is read-only and get
- * f-nd always returns an empty list because all datetime
- * attributes are read-only.
- */
-
-#include "editors/attribute_editor.h"
+#include "attribute_dialogs/attribute_dialog.h"
 
 namespace Ui {
-class DateTimeEditor;
+class StringAttributeDialog;
 }
 
-class DateTimeEditor final : public AttributeEditor {
+class StringAttributeDialog final : public AttributeDialog {
     Q_OBJECT
 
 public:
-    Ui::DateTimeEditor *ui;
+    Ui::StringAttributeDialog *ui;
 
-    DateTimeEditor(QWidget *parent);
-    ~DateTimeEditor();
+    StringAttributeDialog(QWidget *parent);
+    ~StringAttributeDialog();
 
+    void set_attribute(const QString &attribute) override;
     void set_read_only(const bool read_only) override;
-    void set_value_list(const QList<QByteArray> &values) override;
+    void set_value_list(const QList<QByteArray> &value_list) override;
     QList<QByteArray> get_value_list() const override;
 };
 
-#endif /* DATETIME_EDITOR_H */
+#endif /* STRING_ATTRIBUTE_DIALOG_H */

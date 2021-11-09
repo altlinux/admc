@@ -84,11 +84,11 @@ DEFINE_SETTING(SETTING_filter_dialog_geometry);
 DEFINE_SETTING(SETTING_class_filter_dialog_geometry);
 DEFINE_SETTING(SETTING_logon_hours_dialog_geometry);
 DEFINE_SETTING(SETTING_logon_computers_dialog_geometry);
-DEFINE_SETTING(SETTING_bool_editor_geometry);
-DEFINE_SETTING(SETTING_datetime_editor_geometry);
-DEFINE_SETTING(SETTING_multi_editor_geometry);
-DEFINE_SETTING(SETTING_octet_editor_geometry);
-DEFINE_SETTING(SETTING_string_editor_geometry);
+DEFINE_SETTING(SETTING_bool_attribute_dialog_geometry);
+DEFINE_SETTING(SETTING_datetime_attribute_dialog_geometry);
+DEFINE_SETTING(SETTING_list_attribute_dialog_geometry);
+DEFINE_SETTING(SETTING_octet_attribute_dialog_geometry);
+DEFINE_SETTING(SETTING_string_attribute_dialog_geometry);
 
 // Header state
 DEFINE_SETTING(SETTING_results_header);

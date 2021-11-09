@@ -18,28 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STRING_EDITOR_H
-#define STRING_EDITOR_H
+#ifndef BOOL_EDITOR_H
+#define BOOL_EDITOR_H
 
-#include "editors/attribute_editor.h"
+#include "attribute_dialogs/attribute_dialog.h"
 
 namespace Ui {
-class StringEditor;
+class BoolAttributeDialog;
 }
 
-class StringEditor final : public AttributeEditor {
+class BoolAttributeDialog final : public AttributeDialog {
     Q_OBJECT
 
 public:
-    Ui::StringEditor *ui;
+    Ui::BoolAttributeDialog *ui;
 
-    StringEditor(QWidget *parent);
-    ~StringEditor();
+    BoolAttributeDialog(QWidget *parent);
+    ~BoolAttributeDialog();
 
-    void set_attribute(const QString &attribute) override;
     void set_read_only(const bool read_only) override;
-    void set_value_list(const QList<QByteArray> &value_list) override;
+    void set_value_list(const QList<QByteArray> &values) override;
     QList<QByteArray> get_value_list() const override;
 };
 
-#endif /* STRING_EDITOR_H */
+#endif /* BOOL_EDITOR_H */

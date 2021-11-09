@@ -18,31 +18,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MULTI_EDITOR_H
-#define MULTI_EDITOR_H
+#ifndef LIST_ATTRIBUTE_DIALOG_H
+#define LIST_ATTRIBUTE_DIALOG_H
 
-#include "editors/attribute_editor.h"
+#include "attribute_dialogs/attribute_dialog.h"
 
 class QListWidgetItem;
 
-enum MultiEditorType {
-    MultiEditorType_String,
-    MultiEditorType_Octet,
-    MultiEditorType_Datetime,
+enum ListAttributeDialogType {
+    ListAttributeDialogType_String,
+    ListAttributeDialogType_Octet,
+    ListAttributeDialogType_Datetime,
 };
 
 namespace Ui {
-class MultiEditor;
+class ListAttributeDialog;
 }
 
-class MultiEditor final : public AttributeEditor {
+class ListAttributeDialog final : public AttributeDialog {
     Q_OBJECT
 
 public:
-    Ui::MultiEditor *ui;
+    Ui::ListAttributeDialog *ui;
 
-    MultiEditor(QWidget *parent);
-    ~MultiEditor();
+    ListAttributeDialog(QWidget *parent);
+    ~ListAttributeDialog();
 
     void set_read_only(const bool read_only) override;
 
@@ -55,9 +55,9 @@ private:
     void add_value(const QByteArray value);
     QString bytes_to_string(const QByteArray bytes) const;
     QByteArray string_to_bytes(const QString string) const;
-    MultiEditorType get_editor_type() const;
-    void add_values_from_editor(AttributeEditor *editor);
-    void edit_values_from_editor(AttributeEditor *editor);
+    ListAttributeDialogType get_type() const;
+    void add_values_from_editor(AttributeDialog *editor);
+    void edit_values_from_editor(AttributeDialog *editor);
 };
 
-#endif /* MULTI_EDITOR_H */
+#endif /* LIST_ATTRIBUTE_DIALOG_H */

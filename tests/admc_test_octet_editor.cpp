@@ -18,17 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "admc_test_octet_editor.h"
+#include "admc_test_octet_attribute_dialog.h"
 
-#include "editors/octet_editor.h"
-#include "editors/ui_octet_editor.h"
+#include "attribute_dialogs/octet_attribute_dialog.h"
+#include "attribute_dialogs/ui_octet_attribute_dialog.h"
 
 #include <QComboBox>
 #include <QPlainTextEdit>
 
 const QList<QByteArray> value_bytes = {QByteArray("12345")};
 
-void ADMCTestOctetEditor::initTestCase_data() {
+void ADMCTestOctetAttributeDialog::initTestCase_data() {
     QTest::addColumn<int>("index");
     QTest::addColumn<int>("other_index");
     QTest::addColumn<QString>("value");
@@ -40,10 +40,10 @@ void ADMCTestOctetEditor::initTestCase_data() {
     ;
 }
 
-void ADMCTestOctetEditor::init() {
+void ADMCTestOctetAttributeDialog::init() {
     ADMCTest::init();
 
-    edit = new OctetEditor(parent_widget);
+    edit = new OctetAttributeDialog(parent_widget);
     edit->set_attribute(ATTRIBUTE_DESCRIPTION);
     edit->open();
     QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
@@ -52,7 +52,7 @@ void ADMCTestOctetEditor::init() {
     text_edit = edit->ui->edit;
 }
 
-void ADMCTestOctetEditor::display() {
+void ADMCTestOctetAttributeDialog::display() {
     QFETCH_GLOBAL(int, index);
     QFETCH_GLOBAL(QString, value);
 
@@ -64,7 +64,7 @@ void ADMCTestOctetEditor::display() {
 
 // Check that edit correctly converts formatted strings back
 // to bytes for each format
-void ADMCTestOctetEditor::get_value_list() {
+void ADMCTestOctetAttributeDialog::get_value_list() {
     QFETCH_GLOBAL(int, index);
     QFETCH_GLOBAL(QString, value);
 
@@ -76,7 +76,7 @@ void ADMCTestOctetEditor::get_value_list() {
     QCOMPARE(edit->get_value_list(), value_bytes);
 }
 
-void ADMCTestOctetEditor::handle_empty_value() {
+void ADMCTestOctetAttributeDialog::handle_empty_value() {
     QFETCH_GLOBAL(int, index);
     QFETCH_GLOBAL(int, other_index);
     QFETCH_GLOBAL(QString, value);
@@ -96,7 +96,7 @@ void ADMCTestOctetEditor::handle_empty_value() {
 
 // Check that when incorrectly formatted value is entered,
 // edit fails to switch to different format
-void ADMCTestOctetEditor::handle_incorrect_input() {
+void ADMCTestOctetAttributeDialog::handle_incorrect_input() {
     QFETCH_GLOBAL(int, index);
     QFETCH_GLOBAL(int, other_index);
     QFETCH_GLOBAL(QString, value);
@@ -114,4 +114,4 @@ void ADMCTestOctetEditor::handle_incorrect_input() {
     QCOMPARE(format_combo->currentIndex(), index);
 }
 
-QTEST_MAIN(ADMCTestOctetEditor)
+QTEST_MAIN(ADMCTestOctetAttributeDialog)

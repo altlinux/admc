@@ -18,42 +18,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "editors/datetime_editor.h"
-#include "editors/ui_datetime_editor.h"
+#include "attribute_dialogs/datetime_attribute_dialog.h"
+#include "attribute_dialogs/ui_datetime_attribute_dialog.h"
 
 #include "adldap.h"
 #include "globals.h"
 #include "settings.h"
 
-DateTimeEditor::DateTimeEditor(QWidget *parent)
-: AttributeEditor(parent) {
-    ui = new Ui::DateTimeEditor();
+DatetimeAttributeDialog::DatetimeAttributeDialog(QWidget *parent)
+: AttributeDialog(parent) {
+    ui = new Ui::DatetimeAttributeDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    AttributeEditor::set_attribute_label(ui->attribute_label);
+    AttributeDialog::set_attribute_label(ui->attribute_label);
 
-    settings_setup_dialog_geometry(SETTING_datetime_editor_geometry, this);
+    settings_setup_dialog_geometry(SETTING_datetime_attribute_dialog_geometry, this);
 }
 
-DateTimeEditor::~DateTimeEditor() {
+DatetimeAttributeDialog::~DatetimeAttributeDialog() {
     delete ui;
 }
 
-void DateTimeEditor::set_read_only(const bool read_only) {
-    AttributeEditor::set_read_only(read_only);
+void DatetimeAttributeDialog::set_read_only(const bool read_only) {
+    AttributeDialog::set_read_only(read_only);
 
     ui->edit->setReadOnly(read_only);
 }
 
-void DateTimeEditor::set_value_list(const QList<QByteArray> &values) {
+void DatetimeAttributeDialog::set_value_list(const QList<QByteArray> &values) {
     const QByteArray value = values.value(0, QByteArray());
     const QString value_string = QString(value);
     const QDateTime value_datetime = datetime_string_to_qdatetime(get_attribute(), value_string, g_adconfig);
     ui->edit->setDateTime(value_datetime);
 }
 
-QList<QByteArray> DateTimeEditor::get_value_list() const {
+QList<QByteArray> DatetimeAttributeDialog::get_value_list() const {
     return QList<QByteArray>();
 }

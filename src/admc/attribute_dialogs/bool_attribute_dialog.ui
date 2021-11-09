@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DateTimeEditor</class>
- <widget class="QDialog" name="DateTimeEditor">
+ <class>BoolAttributeDialog</class>
+ <widget class="QDialog" name="BoolAttributeDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>118</height>
+    <height>185</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,25 @@
     </widget>
    </item>
    <item>
-    <widget class="QDateTimeEdit" name="edit"/>
+    <widget class="QRadioButton" name="true_button">
+     <property name="text">
+      <string>True</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="false_button">
+     <property name="text">
+      <string>False</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="unset_button">
+     <property name="text">
+      <string>Unset</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="button_box">
@@ -41,7 +59,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>DateTimeEditor</receiver>
+   <receiver>BoolAttributeDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -57,7 +75,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>DateTimeEditor</receiver>
+   <receiver>BoolAttributeDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
