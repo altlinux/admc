@@ -62,6 +62,8 @@ OctetEditor::~OctetEditor() {
 }
 
 void OctetEditor::set_read_only(const bool read_only) {
+    AttributeEditor::set_read_only(read_only);
+
     ui->edit->setReadOnly(read_only);
 }
 

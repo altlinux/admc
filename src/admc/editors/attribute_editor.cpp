@@ -21,6 +21,7 @@
 #include "editors/attribute_editor.h"
 
 #include "ad_config.h"
+#include "ad_utils.h"
 #include "globals.h"
 
 #include <QLabel>
@@ -33,6 +34,10 @@ QString AttributeEditor::get_attribute() const {
     return m_attribute;
 }
 
+bool AttributeEditor::get_read_only() const {
+    return m_read_only;
+}
+
 void AttributeEditor::set_attribute(const QString &attribute) {
     m_attribute = attribute;
 
@@ -40,4 +45,31 @@ void AttributeEditor::set_attribute(const QString &attribute) {
     if (m_attribute_label != nullptr) {
         m_attribute_label->setText(text);
     }
+
+    const QString title = [&]() {
+        const AttributeType type = g_adconfig->get_attribute_type(m_attribute);
+        const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
+
+        const QString title_action = [&]() {
+            if (m_read_only) {
+                return tr("Edit");
+            } else {
+                return tr("View");
+            }
+        }();
+
+        const QString title_attribute = attribute_type_display_string(type);
+
+        if (single_valued) {
+            return QString("%1 %2").arg(title_action, title_attribute);
+        } else {
+            return QString(tr("%1 Multi-Valued %2", "This is a dialog title for attribute editors. Example: \"Edit Multi-Valued String\"")).arg(title_action, title_attribute);
+        }
+    }();
+
+    setWindowTitle(title);
+}
+
+void AttributeEditor::set_read_only(const bool read_only) {
+    m_read_only = read_only;
 }

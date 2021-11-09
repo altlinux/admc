@@ -42,9 +42,12 @@ public:
     // that they are appropriate for given attribute.
     virtual void set_attribute(const QString &attribute);
 
-    virtual void set_read_only(const bool read_only) = 0;
+    // NOTE: this exists so that it's possible to make a
+    // read only editor for writable attributes
+    virtual void set_read_only(const bool read_only);
 
     QString get_attribute() const;
+    bool get_read_only() const;
 
     virtual void set_value_list(const QList<QByteArray> &value_list) = 0;
 
@@ -59,6 +62,7 @@ protected:
 
 private:
     QString m_attribute;
+    bool m_read_only;
     QLabel *m_attribute_label;
 };
 

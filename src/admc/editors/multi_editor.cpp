@@ -53,37 +53,8 @@ MultiEditor::~MultiEditor() {
     delete ui;
 }
 
-void MultiEditor::set_attribute(const QString &attribute) {
-    AttributeEditor::set_attribute(attribute);
-
-    const QString title = [&]() {
-        const AttributeType type = g_adconfig->get_attribute_type(attribute);
-
-        const QString octet_title = tr("Edit Multi-Valued Octet");
-        const QString datetime_title = tr("Edit Multi-Valued Datetime");
-
-        switch (type) {
-            case AttributeType_Integer: return tr("Edit Multi-Valued Integer");
-            case AttributeType_LargeInteger: return tr("Edit Multi-Valued Large Integer");
-            case AttributeType_Enumeration: return tr("Edit Multi-Valued Enumeration");
-            case AttributeType_Boolean: return tr("Edit Multi-Valued Boolean");
-
-            case AttributeType_Octet: return octet_title;
-            case AttributeType_Sid: return octet_title;
-
-            case AttributeType_UTCTime: return datetime_title;
-            case AttributeType_GeneralizedTime: return datetime_title;
-
-            default: break;
-        };
-
-        return tr("Edit Multi-Valued String");
-    }();
-    setWindowTitle(title);
-}
-
-void MultiEditor::set_read_only(const bool read_only_arg) {
-    read_only = read_only_arg;
+void MultiEditor::set_read_only(const bool read_only) {
+    AttributeEditor::set_read_only(read_only);
 
     ui->add_button->setVisible(!read_only);
     ui->remove_button->setVisible(!read_only);
@@ -102,7 +73,7 @@ void MultiEditor::on_add_button() {
 
     editor->set_attribute(get_attribute());
     editor->set_value_list({});
-    editor->set_read_only(read_only);
+    editor->set_read_only(get_read_only());
     
     editor->open();
 

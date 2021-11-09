@@ -42,6 +42,8 @@ BoolEditor::~BoolEditor() {
 }
 
 void BoolEditor::set_read_only(const bool read_only) {
+    AttributeEditor::set_read_only(read_only);
+
     ui->true_button->setEnabled(!read_only);
     ui->false_button->setEnabled(!read_only);
     ui->unset_button->setEnabled(!read_only);

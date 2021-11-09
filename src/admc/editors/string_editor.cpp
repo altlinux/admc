@@ -45,20 +45,6 @@ StringEditor::~StringEditor() {
 void StringEditor::set_attribute(const QString &attribute) {
     AttributeEditor::set_attribute(attribute);
 
-    const QString title = [&]() {
-        const AttributeType type = g_adconfig->get_attribute_type(attribute);
-
-        switch (type) {
-            case AttributeType_Integer: return tr("Edit Integer");
-            case AttributeType_LargeInteger: return tr("Edit Large Integer");
-            case AttributeType_Enumeration: return tr("Edit Enumeration");
-            default: break;
-        };
-
-        return tr("Edit String");
-    }();
-    setWindowTitle(title);
-
     // Configure line edit based on attribute type
     if (g_adconfig->get_attribute_is_number(attribute)) {
         set_line_edit_to_numbers_only(ui->edit);
@@ -68,6 +54,8 @@ void StringEditor::set_attribute(const QString &attribute) {
 }
 
 void StringEditor::set_read_only(const bool read_only) {
+    AttributeEditor::set_read_only(read_only);
+
     ui->edit->setReadOnly(read_only);
 }
 

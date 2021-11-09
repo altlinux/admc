@@ -82,4 +82,6 @@ bool load_adldap_translation(QTranslator &translator, const QLocale &locale);
 QByteArray guid_string_to_bytes(const QString &guid_string);
 QByteArray sid_string_to_bytes(const QString &sid_string);
 
+QString attribute_type_display_string(const AttributeType type);
+
 #endif /* AD_UTILS_H */

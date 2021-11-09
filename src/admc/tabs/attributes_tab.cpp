@@ -353,29 +353,3 @@ AttributeEditor *AttributesTab::get_editor(const QString &attribute) {
 
     return nullptr;
 }
-
-QString attribute_type_display_string(const AttributeType type) {
-    switch (type) {
-        case AttributeType_Boolean: return AttributesTab::tr("Boolean");
-        case AttributeType_Enumeration: return AttributesTab::tr("Enumeration");
-        case AttributeType_Integer: return AttributesTab::tr("Integer");
-        case AttributeType_LargeInteger: return AttributesTab::tr("Large Integer");
-        case AttributeType_StringCase: return AttributesTab::tr("String Case");
-        case AttributeType_IA5: return AttributesTab::tr("IA5");
-        case AttributeType_NTSecDesc: return AttributesTab::tr("NT Security Descriptor");
-        case AttributeType_Numeric: return AttributesTab::tr("Numeric");
-        case AttributeType_ObjectIdentifier: return AttributesTab::tr("Object Identifier");
-        case AttributeType_Octet: return AttributesTab::tr("Octet");
-        case AttributeType_ReplicaLink: return AttributesTab::tr("Replica Link");
-        case AttributeType_Printable: return AttributesTab::tr("Printable");
-        case AttributeType_Sid: return AttributesTab::tr("SID");
-        case AttributeType_Teletex: return AttributesTab::tr("Teletex");
-        case AttributeType_Unicode: return AttributesTab::tr("Unicode");
-        case AttributeType_UTCTime: return AttributesTab::tr("UTC Time");
-        case AttributeType_GeneralizedTime: return AttributesTab::tr("Generalized Time");
-        case AttributeType_DNString: return AttributesTab::tr("DN String");
-        case AttributeType_DNBinary: return AttributesTab::tr("DN Binary");
-        case AttributeType_DSDN: return AttributesTab::tr("Distinguished Name");
-    }
-    return QString();
-}

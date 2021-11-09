@@ -44,15 +44,12 @@ public:
     MultiEditor(QWidget *parent);
     ~MultiEditor();
 
-    void set_attribute(const QString &attribute) override;
     void set_read_only(const bool read_only) override;
 
     void set_value_list(const QList<QByteArray> &values) override;
     QList<QByteArray> get_value_list() const override;
 
 private:
-    bool read_only;
-
     void on_add_button();
     void on_remove_button();
     void add_value(const QByteArray value);

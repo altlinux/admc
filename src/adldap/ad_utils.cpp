@@ -426,3 +426,29 @@ QByteArray sid_string_to_bytes(const QString &sid_string) {
 
     return sid_bytes;
 }
+
+QString attribute_type_display_string(const AttributeType type) {
+    switch (type) {
+        case AttributeType_Boolean: return QCoreApplication::translate("ad_utils.cpp", "Boolean");
+        case AttributeType_Enumeration: return QCoreApplication::translate("ad_utils.cpp", "Enumeration");
+        case AttributeType_Integer: return QCoreApplication::translate("ad_utils.cpp", "Integer");
+        case AttributeType_LargeInteger: return QCoreApplication::translate("ad_utils.cpp", "Large Integer");
+        case AttributeType_StringCase: return QCoreApplication::translate("ad_utils.cpp", "String Case");
+        case AttributeType_IA5: return QCoreApplication::translate("ad_utils.cpp", "IA5");
+        case AttributeType_NTSecDesc: return QCoreApplication::translate("ad_utils.cpp", "NT Security Descriptor");
+        case AttributeType_Numeric: return QCoreApplication::translate("ad_utils.cpp", "Numeric");
+        case AttributeType_ObjectIdentifier: return QCoreApplication::translate("ad_utils.cpp", "Object Identifier");
+        case AttributeType_Octet: return QCoreApplication::translate("ad_utils.cpp", "Octet");
+        case AttributeType_ReplicaLink: return QCoreApplication::translate("ad_utils.cpp", "Replica Link");
+        case AttributeType_Printable: return QCoreApplication::translate("ad_utils.cpp", "Printable");
+        case AttributeType_Sid: return QCoreApplication::translate("ad_utils.cpp", "SID");
+        case AttributeType_Teletex: return QCoreApplication::translate("ad_utils.cpp", "Teletex");
+        case AttributeType_Unicode: return QCoreApplication::translate("ad_utils.cpp", "Unicode String");
+        case AttributeType_UTCTime: return QCoreApplication::translate("ad_utils.cpp", "UTC Time");
+        case AttributeType_GeneralizedTime: return QCoreApplication::translate("ad_utils.cpp", "Generalized Time");
+        case AttributeType_DNString: return QCoreApplication::translate("ad_utils.cpp", "DN String");
+        case AttributeType_DNBinary: return QCoreApplication::translate("ad_utils.cpp", "DN Binary");
+        case AttributeType_DSDN: return QCoreApplication::translate("ad_utils.cpp", "Distinguished Name");
+    }
+    return QString();
+}
