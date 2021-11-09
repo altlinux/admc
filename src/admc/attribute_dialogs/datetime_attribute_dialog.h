@@ -21,12 +21,6 @@
 #ifndef DATETIME_ATTRIBUTE_DIALOG_H
 #define DATETIME_ATTRIBUTE_DIALOG_H
 
-/**
- * Editor for datetimes. Note that this is read-only and get
- * f-nd always returns an empty list because all datetime
- * attributes are read-only.
- */
-
 #include "attribute_dialogs/attribute_dialog.h"
 
 namespace Ui {

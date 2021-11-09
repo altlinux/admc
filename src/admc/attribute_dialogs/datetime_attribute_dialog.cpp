@@ -55,5 +55,10 @@ void DatetimeAttributeDialog::set_value_list(const QList<QByteArray> &values) {
 }
 
 QList<QByteArray> DatetimeAttributeDialog::get_value_list() const {
-    return QList<QByteArray>();
+    const QDateTime value_datetime = ui->edit->dateTime();
+    const QString value_string = datetime_qdatetime_to_string(get_attribute(), value_datetime, g_adconfig);
+    const QByteArray value = value_string.toUtf8();
+    const QList<QByteArray> value_list = {value};
+
+    return value_list;
 }
