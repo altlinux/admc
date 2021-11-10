@@ -69,9 +69,14 @@ OctetAttributeDialog::~OctetAttributeDialog() {
 
 QList<QByteArray> OctetAttributeDialog::get_value_list() const {
     const QString text = ui->edit->toPlainText();
-    const QByteArray bytes = octet_string_to_bytes(text, current_format(ui->format_combo));
 
-    return {bytes};
+    if (!text.isEmpty()) {
+        const QByteArray bytes = octet_string_to_bytes(text, current_format(ui->format_combo));
+
+        return {bytes};
+    } else {
+        return {};
+    }
 }
 
 void OctetAttributeDialog::accept() {
