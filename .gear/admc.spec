@@ -1,5 +1,5 @@
 %define _unpackaged_files_terminate_build 1
-%define _development 1
+%define _development 0
 %if %_development
 %define _git_commit %(git rev-parse --short HEAD)
 %define _development_release (development release %_git_commit)
