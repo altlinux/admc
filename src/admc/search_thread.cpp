@@ -22,6 +22,7 @@
 
 #include "adldap.h"
 #include "utils.h"
+#include "status.h"
 
 #include <QHash>
 
@@ -31,6 +32,7 @@ SearchThread::SearchThread(const QString base_arg, const SearchScope scope_arg, 
     scope = scope_arg;
     filter = filter_arg;
     attributes = attributes_arg;
+    m_failed_to_connect = false;
 
     static int id_max = 0;
     id = id_max;
@@ -46,9 +48,10 @@ void SearchThread::stop() {
 }
 
 void SearchThread::run() {
-    // TODO: handle search/connect failure
     AdInterface ad;
     if (!ad.is_connected()) {
+        m_failed_to_connect = true;
+
         return;
     }
 
@@ -74,4 +77,12 @@ void SearchThread::run() {
 
 int SearchThread::get_id() const {
     return id;
+}
+
+bool SearchThread::failed_to_connect() const {
+    return m_failed_to_connect;
+}
+
+void search_thread_error_log(QWidget *parent) {
+    error_log({QCoreApplication::translate("object_impl.cpp", "Failed to connect to server while searching for objects.")}, parent);
 }

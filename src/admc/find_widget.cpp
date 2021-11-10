@@ -185,7 +185,16 @@ void FindWidget::find() {
         find_thread, &SearchThread::stop);
     connect(
         find_thread, &SearchThread::finished,
-        this, &FindWidget::on_thread_finished);
+        [this, find_thread]() {
+            if (find_thread->failed_to_connect()) {
+                search_thread_error_log(this);
+            }
+                    
+            ui->find_button->setEnabled(true);
+            ui->clear_button->setEnabled(true);
+
+            hide_busy_indicator();
+        });
 
     show_busy_indicator();
 
@@ -208,13 +217,6 @@ void FindWidget::handle_find_thread_results(const QHash<QString, AdObject> &resu
 
         console_object_load(row, object);
     }
-}
-
-void FindWidget::on_thread_finished() {
-    ui->find_button->setEnabled(true);
-    ui->clear_button->setEnabled(true);
-
-    hide_busy_indicator();
 }
 
 QList<QString> FindWidget::get_selected_dns() const {

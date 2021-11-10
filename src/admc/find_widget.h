@@ -78,7 +78,6 @@ private:
     QAction *action_customize_columns;
     QAction *action_toggle_description_bar;
 
-    void on_thread_finished();
     void on_clear_button();
     void clear_results();
 };

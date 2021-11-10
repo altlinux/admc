@@ -47,6 +47,7 @@ public:
 
     void stop();
     int get_id() const;
+    bool failed_to_connect() const;
 
 signals:
     void results_ready(const QHash<QString, AdObject> &results);
@@ -58,8 +59,11 @@ private:
     QString filter;
     QList<QString> attributes;
     int id;
+    bool m_failed_to_connect;
 
     void run() override;
 };
+
+void search_thread_error_log(QWidget *parent);
 
 #endif /* SEARCH_THREAD_H */
