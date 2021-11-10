@@ -27,7 +27,7 @@
 
 #include <QDebug>
 
-// TODO: missing "comment" and "owner" field, BUT not sure
+// NOTE: missing "comment" and "owner" field, BUT not sure
 // about their inclusion. They straddle the boundary between
 // admc/gpui. On windows they are displayed/editable in both
 // GPM(admc equivalent) and GPME(gpui equivalent). Comment

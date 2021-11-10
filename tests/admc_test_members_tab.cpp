@@ -29,8 +29,6 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-// TODO: test primary functionality
-
 void ADMCTestMembersTab::init() {
     ADMCTest::init();
 

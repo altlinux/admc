@@ -377,8 +377,11 @@ bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, c
                         return SEC_ACE_TYPE_ACCESS_ALLOWED;
                     }();
 
-                    // TODO: these flags should be set to something
-                    // in some cases, for now just 0
+                    // NOTE: in the future, probably when
+                    // adding advanced security dialog,
+                    // these flags will need to be set to
+                    // something in some cases, but for now
+                    // just 0
                     ace->flags = 0x00;
                     ace->access_mask = ace_permission_to_mask_map[permission];
                     ace->object.object.flags = [&]() {

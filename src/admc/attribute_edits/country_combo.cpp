@@ -86,7 +86,6 @@ void country_combo_load_data() {
     std::sort(all_countries.begin(), all_countries.end());
 
     // Special case for "None" country
-    // TODO: this seems really easy to break
     const QString none_string = QCoreApplication::translate("country_widget", "None");
     string_to_code[none_string] = COUNTRY_CODE_NONE;
     all_countries.insert(0, none_string);

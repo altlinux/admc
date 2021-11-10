@@ -35,8 +35,6 @@
 // and deleting gpo's takes too much time. If we did that
 // for every test they would take forever.
 
-// TODO: test modify operations
-
 const QString gpo_name = "test_policy_for_admc_test_results_widget";
 
 void ADMCTestPolicyResultsWidget::initTestCase() {

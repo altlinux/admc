@@ -29,8 +29,6 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-// TODO: test primary functionality
-
 // NOTE: there's a primary group by default hence the offset
 // by 1 of all row values
 

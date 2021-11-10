@@ -176,8 +176,6 @@ void SelectObjectDialog::on_remove_button() {
     }
 }
 
-// TODO: can optimize if dialog returns objects
-// directly, but will need to keep them around
 void SelectObjectDialog::open_advanced_dialog() {
     auto dialog = new SelectObjectAdvancedDialog(class_list, this);
     dialog->open();

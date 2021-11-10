@@ -290,8 +290,6 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
 }
 
 void MembershipTab::on_add_button() {
-    // TODO: aduc has "other objects" section in class selection for adding members to groups. No idea what "other objects" are. No results come up when searching for other objects in current test domain.
-    // TODO: there's also "service account", no idea what that is either.
     const QList<QString> classes = [this]() -> QList<QString> {
         switch (type) {
             case MembershipTabType_Members: return {

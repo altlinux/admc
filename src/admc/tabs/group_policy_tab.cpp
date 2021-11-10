@@ -231,7 +231,6 @@ void GroupPolicyTab::reload_gplink() {
         return;
     }
 
-    // TODO: use filter to search only for needed gpo's, not all of them (dn=dn1 or dn=dn2 or ...)
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);

@@ -25,8 +25,6 @@
 #include "globals.h"
 #include "select_container_dialog.h"
 
-// TODO: missing "Entire directory" in search base combo. Not 100% sure what it's supposed to be, the tippy-top domain? Definitely need it for work with multiple domains.
-
 SelectBaseWidget::SelectBaseWidget(QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::SelectBaseWidget();

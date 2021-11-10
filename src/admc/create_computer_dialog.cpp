@@ -36,11 +36,10 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
 
     QList<AttributeEdit *> edit_list;
 
-    // TODO: "Assign this computer account as a pre-Windows 2000 computer". Is this needed?
-
-    // TODO: "The following user or group may join this computer to a domain". Tried to figure out how this is implemented and couldn't see any easy ways via attributes, so probably something to do with setting ACL'S.
-
-    // TODO: "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
+    // NOTE: some obscure missing features:
+    // "Assign this computer account as a pre-Windows 2000 computer". Is this needed?
+    // "The following user or group may join this computer to a domain". Tried to figure out how this is implemented and couldn't see any easy ways via attributes, so probably something to do with setting ACL'S.
+    // "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
 
     sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
 

@@ -106,8 +106,6 @@ void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup,
 AdInterface::AdInterface() {
     d = new AdInterfacePrivate(this);
 
-    // TODO: this is very bug-prone, error returns should
-    // set this to false or return false
     d->is_connected = false;
 
     d->ld = NULL;
@@ -1391,7 +1389,7 @@ bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
     const QHash<QString, QString> attribute_value_map = {
         {ATTRIBUTE_DISPLAY_NAME, display_name},
         {ATTRIBUTE_GPC_FILE_SYS_PATH, filesys_path},
-        // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
+        // NOTE: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
         {ATTRIBUTE_FLAGS, "1"},
         {ATTRIBUTE_VERSION_NUMBER, "0"},
         {ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE"},
@@ -1581,9 +1579,6 @@ QString AdInterface::filesys_path_to_smb_path(const QString &filesys_path) const
 
     out.remove(0, sysvol_i);
 
-    // TODO: currently using dc that was used for ldap
-    // connection, but maybe there's some specific dc that's
-    // supposed to be used for smb connection?
     out = QString("smb://%1%2").arg(d->dc, out);
 
     return out;
@@ -1958,8 +1953,6 @@ bool AdInterface::logged_in_as_admin() {
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
     QList<QString> hosts;
-
-    // TODO: confirm site query is formatted properly, currently getting no answer back (might be working as intended, since tested on domain without sites?)
 
     // Query site hosts
     if (!site.isEmpty()) {
