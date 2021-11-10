@@ -1298,12 +1298,12 @@
         <translation>Переместить вниз</translation>
     </message>
     <message>
-        <location filename="tabs/group_policy_tab.cpp" line="269"/>
+        <location filename="tabs/group_policy_tab.cpp" line="268"/>
         <source>Not found</source>
         <translation>Не найдено</translation>
     </message>
     <message>
-        <location filename="tabs/group_policy_tab.cpp" line="297"/>
+        <location filename="tabs/group_policy_tab.cpp" line="296"/>
         <source>The GPO for this link could not be found. It maybe have been recently created and is being replicated or it could have been deleted.</source>
         <translation>Не удалось найти объект групповой политики для этой связи. Возможно, он был недавно создан и реплицируется, а может быть, был удалён.</translation>
     </message>
@@ -1724,22 +1724,22 @@
         <translation>Задать основную группу...</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="312"/>
+        <location filename="tabs/membership_tab.cpp" line="310"/>
         <source>Add Member</source>
         <translation>Добавить участника</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="313"/>
+        <location filename="tabs/membership_tab.cpp" line="311"/>
         <source>Add to Group</source>
         <translation>Добавить в группу</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="426"/>
+        <location filename="tabs/membership_tab.cpp" line="424"/>
         <source>Primary group: </source>
         <translation>Основная группа: </translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="354"/>
+        <location filename="tabs/membership_tab.cpp" line="352"/>
         <source>Can&apos;t remove because this group is a primary group to selected user.</source>
         <translation>Не удалось удалить группу, так как она является основной для выбранного пользователя.</translation>
     </message>
@@ -1749,12 +1749,12 @@
         <translation>Добавить...</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="355"/>
+        <location filename="tabs/membership_tab.cpp" line="353"/>
         <source>Can&apos;t remove because selected group is a primary group to this user.</source>
         <translation>Не удалось удалить выбранную группу, так как она является основной для этого пользователя.</translation>
     </message>
     <message>
-        <location filename="tabs/membership_tab.cpp" line="360"/>
+        <location filename="tabs/membership_tab.cpp" line="358"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -2092,37 +2092,37 @@
 <context>
     <name>PolicyResultsWidget</name>
     <message>
-        <location filename="policy_results_widget.cpp" line="78"/>
+        <location filename="policy_results_widget.cpp" line="75"/>
         <source>Delete link</source>
         <translation>Удалить связь</translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="86"/>
+        <location filename="policy_results_widget.cpp" line="83"/>
         <source>Location</source>
         <translation>Местонахождение</translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="87"/>
+        <location filename="policy_results_widget.cpp" line="84"/>
         <source>Enforced</source>
         <translation>Принудительно</translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="88"/>
+        <location filename="policy_results_widget.cpp" line="85"/>
         <source>Disabled</source>
         <translation>Отключено</translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="89"/>
+        <location filename="policy_results_widget.cpp" line="86"/>
         <source>Path</source>
         <translation>Путь</translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="152"/>
+        <location filename="policy_results_widget.cpp" line="149"/>
         <source>Incorrect permissions detected</source>
         <translation>Обнаружены неверные разрешения</translation>
     </message>
     <message>
-        <location filename="policy_results_widget.cpp" line="153"/>
+        <location filename="policy_results_widget.cpp" line="150"/>
         <source>Permissions for this policy&apos;s GPT don&apos;t match the permissions for it&apos;s GPC object. Would you like to update GPT permissions?</source>
         <translation>Разрешения шаблона групповой политики у данной политики не совпадают с разрешениями её объекта контейнера групповой политики. Обновить разрешения шаблона групповой политики?</translation>
     </message>
@@ -2807,7 +2807,7 @@
     <message>
         <location filename="select_object_dialog.cpp" line="109"/>
         <location filename="select_object_dialog.cpp" line="167"/>
-        <location filename="select_object_dialog.cpp" line="232"/>
+        <location filename="select_object_dialog.cpp" line="230"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -2817,7 +2817,7 @@
         <translation>Совпадений не найдено.</translation>
     </message>
     <message>
-        <location filename="select_object_dialog.cpp" line="232"/>
+        <location filename="select_object_dialog.cpp" line="230"/>
         <source>Selected object is already in the list.</source>
         <translation>Выбранный объект уже имеется в списке.</translation>
     </message>
@@ -2928,7 +2928,7 @@
 <context>
     <name>country_widget</name>
     <message>
-        <location filename="attribute_edits/country_combo.cpp" line="90"/>
+        <location filename="attribute_edits/country_combo.cpp" line="89"/>
         <source>None</source>
         <translation>Нет</translation>
     </message>
@@ -2944,13 +2944,21 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1377"/>
+        <location filename="console_impls/object_impl.cpp" line="1381"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
             <numerusform>%n объекта</numerusform>
             <numerusform>%n объектов</numerusform>
         </translation>
+    </message>
+</context>
+<context>
+    <name>object_impl.cpp</name>
+    <message>
+        <location filename="search_thread.cpp" line="87"/>
+        <source>Failed to connect to server while searching for objects.</source>
+        <translation>Не удалось подключиться к серверу во время поиска объектов.</translation>
     </message>
 </context>
 <context>
