@@ -18,24 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "fsmo_dialog.h"
-#include "ui_fsmo_dialog.h"
-
 #include "fsmo_tab.h"
-#include "settings.h"
+#include "ui_fsmo_tab.h"
 
-FSMODialog::FSMODialog(QWidget *parent)
-: QDialog(parent) {
-    ui = new Ui::FSMODialog();
+FSMOTab::FSMOTab(const QString &text) {
+    ui = new Ui::FSMOTab();
     ui->setupUi(this);
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    ui->tab_widget->add_tab(new FSMOTab("test"), "test");
-
-    settings_setup_dialog_geometry(SETTING_fsmo_dialog_geometry, this);
+    ui->explanation_label->setText(text);
 }
 
-FSMODialog::~FSMODialog() {
+FSMOTab::~FSMOTab() {
     delete ui;
 }
