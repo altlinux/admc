@@ -52,17 +52,16 @@ public:
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;
 
-private slots:
-    void on_context_menu(const QPoint pos);
-    void on_remove_button();
-    void on_item_changed(QStandardItem *item);
-
 private:
     QStandardItemModel *model;
     Gplink gplink;
     QString original_gplink_string;
 
+    void on_context_menu(const QPoint pos);
+    void on_remove_button();
+    void on_item_changed(QStandardItem *item);
     void on_add_button();
+
     void add_link(QList<QString> gpos);
     void remove_link(QList<QString> gpos);
     void move_link_up(const QString &gpo);
