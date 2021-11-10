@@ -40,11 +40,9 @@ class OctetAttributeDialog final : public AttributeDialog {
 public:
     Ui::OctetAttributeDialog *ui;
 
-    OctetAttributeDialog(QWidget *parent);
+    OctetAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent);
     ~OctetAttributeDialog();
 
-    void set_read_only(const bool read_only) override;
-    void set_value_list(const QList<QByteArray> &values) override;
     QList<QByteArray> get_value_list() const override;
     void accept() override;
 

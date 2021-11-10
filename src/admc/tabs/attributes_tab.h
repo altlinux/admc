@@ -70,7 +70,7 @@ private:
     void view_attribute();
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
     QList<QStandardItem *> get_selected_row() const;
-    AttributeDialog *get_attribute_dialog(const QString &attribute);
+    AttributeDialog *get_attribute_dialog(const bool read_only);
 };
 
 #endif /* ATTRIBUTES_TAB_H */

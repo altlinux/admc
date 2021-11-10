@@ -164,54 +164,35 @@ void AttributesTab::on_double_click() {
 }
 
 void AttributesTab::view_attribute() {
-    const QList<QStandardItem *> row = get_selected_row();
-
-    if (row.isEmpty()) {
-        return;
-    }
-
-    const QString attribute = row[AttributesColumn_Name]->text();
-
-    AttributeDialog *dialog = get_attribute_dialog(attribute);
-
+    const bool read_only = true;
+    AttributeDialog *dialog = get_attribute_dialog(read_only);
     if (dialog == nullptr) {
         return;
     }
 
-    const QList<QByteArray> value_list = current[attribute];
-
-    dialog->set_attribute(attribute);
-    dialog->set_value_list(value_list);
-    dialog->set_read_only(true);
     dialog->open();
 }
 
 void AttributesTab::edit_attribute() {
-    const QList<QStandardItem *> row = get_selected_row();
-
-    if (row.isEmpty()) {
-        return;
-    }
-
-    const QString attribute = row[AttributesColumn_Name]->text();
-
-    AttributeDialog *dialog = get_attribute_dialog(attribute);
-
+    const bool read_only = false;
+    AttributeDialog *dialog = get_attribute_dialog(read_only);
     if (dialog == nullptr) {
         return;
     }
-
-    const QList<QByteArray> value_list = current[attribute];
-
-    dialog->set_attribute(attribute);
-    dialog->set_value_list(value_list);
-    dialog->set_read_only(false);
+    
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
-        [this, dialog, row, attribute]() {
+        [this, dialog]() {
+            const QList<QStandardItem *> row = get_selected_row();
+
+            if (row.isEmpty()) {
+                return;
+            }
+
             const QList<QByteArray> new_value_list = dialog->get_value_list();
+            const QString attribute = dialog->get_attribute();
 
             current[attribute] = new_value_list;
             load_row(row, attribute, new_value_list);
@@ -283,40 +264,48 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
     row[AttributesColumn_Type]->setText(type_display);
 }
 
-// Select an appropriate attribute dialog by attribute type
-// and by whether attribute is single or multi valued
-AttributeDialog *AttributesTab::get_attribute_dialog(const QString &attribute) {
+// Return an appropriate attribute dialog for currently
+// selected attribute row.
+AttributeDialog *AttributesTab::get_attribute_dialog(const bool read_only) {
+    const QList<QStandardItem *> row = get_selected_row();
+
+    if (row.isEmpty()) {
+        return nullptr;
+    }
+
+    const QString attribute = row[AttributesColumn_Name]->text();
+    const QList<QByteArray> value_list = current[attribute];
     const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
 
     // Single/multi valued logic is separated out of the
     // switch statement for better flow
     auto octet_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new OctetAttributeDialog(this);
+            return new OctetAttributeDialog(value_list, attribute, read_only, this);
         } else {
-            return new ListAttributeDialog(this);
+            return new ListAttributeDialog(value_list, attribute, read_only, this);
         }
     };
 
     auto string_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new StringAttributeDialog(this);
+            return new StringAttributeDialog(value_list, attribute, read_only, this);
         } else {
-            return new ListAttributeDialog(this);
+            return new ListAttributeDialog(value_list, attribute, read_only, this);
         }
     };
 
     auto bool_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new BoolAttributeDialog(this);
+            return new BoolAttributeDialog(value_list, attribute, read_only, this);
         } else {
-            return new ListAttributeDialog(this);
+            return new ListAttributeDialog(value_list, attribute, read_only, this);
         }
     };
 
     auto datetime_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new DatetimeAttributeDialog(this);
+            return new DatetimeAttributeDialog(value_list, attribute, read_only, this);
         } else {
             return nullptr;
         }

@@ -30,14 +30,21 @@
 #include "utils.h"
 #include "settings.h"
 
-ListAttributeDialog::ListAttributeDialog(QWidget *parent)
-: AttributeDialog(parent) {
+ListAttributeDialog::ListAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
+: AttributeDialog(attribute, read_only, parent) {
     ui = new Ui::ListAttributeDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    AttributeDialog::set_attribute_label(ui->attribute_label);
+    AttributeDialog::load_attribute_label(ui->attribute_label);
+
+    ui->add_button->setVisible(!read_only);
+    ui->remove_button->setVisible(!read_only);
+
+    for (const QByteArray &value : value_list) {
+        add_value(value);
+    }
 
     settings_setup_dialog_geometry(SETTING_list_attribute_dialog_geometry, this);
 
@@ -53,28 +60,20 @@ ListAttributeDialog::~ListAttributeDialog() {
     delete ui;
 }
 
-void ListAttributeDialog::set_read_only(const bool read_only) {
-    AttributeDialog::set_read_only(read_only);
-
-    ui->add_button->setVisible(!read_only);
-    ui->remove_button->setVisible(!read_only);
-}
-
 void ListAttributeDialog::on_add_button() {
     AttributeDialog *dialog = [this]() -> AttributeDialog * {
         const bool is_bool = (g_adconfig->get_attribute_type(get_attribute()) == AttributeType_Boolean);
+        const QList<QByteArray> value_list = {};
+        const QString attribute = get_attribute();
+        const bool read_only = false;
 
         if (is_bool) {
-            return new BoolAttributeDialog(this);
+            return new BoolAttributeDialog(value_list, attribute, read_only, this);
         } else {
-            return new StringAttributeDialog(this);
+            return new StringAttributeDialog(value_list, attribute, read_only, this);
         }
     }();
 
-    dialog->set_attribute(get_attribute());
-    dialog->set_value_list({});
-    dialog->set_read_only(get_read_only());
-    
     dialog->open();
 
     connect(
@@ -94,12 +93,6 @@ void ListAttributeDialog::on_remove_button() {
 
     for (const auto item : selected) {
         delete item;
-    }
-}
-
-void ListAttributeDialog::set_value_list(const QList<QByteArray> &values) {
-    for (const QByteArray &value : values) {
-        add_value(value);
     }
 }
 

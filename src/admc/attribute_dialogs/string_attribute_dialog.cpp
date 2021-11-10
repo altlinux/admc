@@ -26,43 +26,32 @@
 #include "utils.h"
 #include "settings.h"
 
-StringAttributeDialog::StringAttributeDialog(QWidget *parent)
-: AttributeDialog(parent) {
+StringAttributeDialog::StringAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
+: AttributeDialog(attribute, read_only, parent) {
     ui = new Ui::StringAttributeDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    AttributeDialog::set_attribute_label(ui->attribute_label);
+    AttributeDialog::load_attribute_label(ui->attribute_label);
+
+    if (g_adconfig->get_attribute_is_number(attribute)) {
+        set_line_edit_to_numbers_only(ui->edit);
+    }
+
+    limit_edit(ui->edit, attribute);
+
+    ui->edit->setReadOnly(read_only);
+    
+    const QByteArray value = value_list.value(0, QByteArray());
+    const QString value_string = QString(value);
+    ui->edit->setText(value_string);
 
     settings_setup_dialog_geometry(SETTING_list_attribute_dialog_geometry, this);
 }
 
 StringAttributeDialog::~StringAttributeDialog() {
     delete ui;
-}
-
-void StringAttributeDialog::set_attribute(const QString &attribute) {
-    AttributeDialog::set_attribute(attribute);
-
-    // Configure line edit based on attribute type
-    if (g_adconfig->get_attribute_is_number(attribute)) {
-        set_line_edit_to_numbers_only(ui->edit);
-    }
-
-    limit_edit(ui->edit, attribute);
-}
-
-void StringAttributeDialog::set_read_only(const bool read_only) {
-    AttributeDialog::set_read_only(read_only);
-
-    ui->edit->setReadOnly(read_only);
-}
-
-void StringAttributeDialog::set_value_list(const QList<QByteArray> &values) {
-    const QByteArray value = values.value(0, QByteArray());
-    const QString value_string = QString(value);
-    ui->edit->setText(value_string);
 }
 
 QList<QByteArray> StringAttributeDialog::get_value_list() const {

@@ -36,19 +36,25 @@ OctetDisplayFormat current_format(QComboBox *format_combo);
 int format_base(const OctetDisplayFormat format);
 char *itoa(int value, char *result, int base);
 
-OctetAttributeDialog::OctetAttributeDialog(QWidget *parent)
-: AttributeDialog(parent) {
+OctetAttributeDialog::OctetAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
+: AttributeDialog(attribute, read_only, parent) {
     ui = new Ui::OctetAttributeDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    AttributeDialog::set_attribute_label(ui->attribute_label);
+    AttributeDialog::load_attribute_label(ui->attribute_label);
 
     prev_format = OctetDisplayFormat_Hexadecimal;
 
     const QFont fixed_font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     ui->edit->setFont(fixed_font);
+
+    ui->edit->setReadOnly(read_only);
+    
+    const QByteArray value = value_list.value(0, QByteArray());
+    const QString value_string = octet_bytes_to_string(value, current_format(ui->format_combo));
+    ui->edit->setPlainText(value_string);
 
     settings_setup_dialog_geometry(SETTING_octet_attribute_dialog_geometry, this);
 
@@ -59,12 +65,6 @@ OctetAttributeDialog::OctetAttributeDialog(QWidget *parent)
 
 OctetAttributeDialog::~OctetAttributeDialog() {
     delete ui;
-}
-
-void OctetAttributeDialog::set_read_only(const bool read_only) {
-    AttributeDialog::set_read_only(read_only);
-
-    ui->edit->setReadOnly(read_only);
 }
 
 QList<QByteArray> OctetAttributeDialog::get_value_list() const {
@@ -80,12 +80,6 @@ void OctetAttributeDialog::accept() {
     if (input_ok) {
         AttributeDialog::accept();
     }
-}
-
-void OctetAttributeDialog::set_value_list(const QList<QByteArray> &values) {
-    const QByteArray value = values.value(0, QByteArray());
-    const QString value_string = octet_bytes_to_string(value, current_format(ui->format_combo));
-    ui->edit->setPlainText(value_string);
 }
 
 void OctetAttributeDialog::on_format_combo() {

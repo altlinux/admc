@@ -25,35 +25,23 @@
 #include "globals.h"
 #include "settings.h"
 
-BoolAttributeDialog::BoolAttributeDialog(QWidget *parent)
-: AttributeDialog(parent) {
+BoolAttributeDialog::BoolAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
+: AttributeDialog(attribute, read_only, parent) {
     ui = new Ui::BoolAttributeDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    AttributeDialog::set_attribute_label(ui->attribute_label);
-
-    settings_setup_dialog_geometry(SETTING_bool_attribute_dialog_geometry, this);
-}
-
-BoolAttributeDialog::~BoolAttributeDialog() {
-    delete ui;
-}
-
-void BoolAttributeDialog::set_read_only(const bool read_only) {
-    AttributeDialog::set_read_only(read_only);
+    AttributeDialog::load_attribute_label(ui->attribute_label);
 
     ui->true_button->setEnabled(!read_only);
     ui->false_button->setEnabled(!read_only);
     ui->unset_button->setEnabled(!read_only);
-}
 
-void BoolAttributeDialog::set_value_list(const QList<QByteArray> &values) {
-    if (values.isEmpty()) {
+    if (value_list.isEmpty()) {
         ui->unset_button->setChecked(true);
     } else {
-        const QByteArray value = values[0];
+        const QByteArray value = value_list[0];
         const QString value_string = QString(value);
         const bool value_bool = ad_string_to_bool(value_string);
 
@@ -63,6 +51,12 @@ void BoolAttributeDialog::set_value_list(const QList<QByteArray> &values) {
             ui->false_button->setChecked(true);
         }
     }
+
+    settings_setup_dialog_geometry(SETTING_bool_attribute_dialog_geometry, this);
+}
+
+BoolAttributeDialog::~BoolAttributeDialog() {
+    delete ui;
 }
 
 QList<QByteArray> BoolAttributeDialog::get_value_list() const {

@@ -62,11 +62,7 @@ bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {
 }
 
 void StringOtherEdit::on_other_button() {
-    auto dialog = new ListAttributeDialog(other_button);
-    dialog->set_read_only(read_only);
-    dialog->set_attribute(other_attribute);
-    dialog->set_value_list(other_values);
-
+    auto dialog = new ListAttributeDialog(other_values, other_attribute, read_only, other_button);
     dialog->open();
 
     connect(

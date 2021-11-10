@@ -26,25 +26,10 @@
 
 #include <QLabel>
 
-void AttributeDialog::set_attribute_label(QLabel *attribute_label) {
-    m_attribute_label = attribute_label;
-}
-
-QString AttributeDialog::get_attribute() const {
-    return m_attribute;
-}
-
-bool AttributeDialog::get_read_only() const {
-    return m_read_only;
-}
-
-void AttributeDialog::set_attribute(const QString &attribute) {
+AttributeDialog::AttributeDialog(const QString &attribute, const bool read_only, QWidget *parent)
+: QDialog(parent) {
     m_attribute = attribute;
-
-    const QString text = QString(tr("Attribute: %1")).arg(m_attribute);
-    if (m_attribute_label != nullptr) {
-        m_attribute_label->setText(text);
-    }
+    m_read_only = read_only;
 
     const QString title = [&]() {
         const AttributeType type = g_adconfig->get_attribute_type(m_attribute);
@@ -70,6 +55,15 @@ void AttributeDialog::set_attribute(const QString &attribute) {
     setWindowTitle(title);
 }
 
-void AttributeDialog::set_read_only(const bool read_only) {
-    m_read_only = read_only;
+QString AttributeDialog::get_attribute() const {
+    return m_attribute;
+}
+
+bool AttributeDialog::get_read_only() const {
+    return m_read_only;
+}
+
+void AttributeDialog::load_attribute_label(QLabel *attribute_label) {
+    const QString text = QString(tr("Attribute: %1")).arg(m_attribute);
+    attribute_label->setText(text);
 }

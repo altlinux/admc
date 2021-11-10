@@ -33,34 +33,22 @@ class AttributeDialog : public QDialog {
     Q_OBJECT
 
 public:
-    using QDialog::QDialog;
-
-    // Store attribute and also configure widget settings so
-    // that they are appropriate for given attribute.
-    virtual void set_attribute(const QString &attribute);
-
-    // NOTE: this exists so that it's possible to make a
-    // read only dialog even for writable attributes
-    virtual void set_read_only(const bool read_only);
+    AttributeDialog(const QString &attribute, const bool read_only, QWidget *parent);
 
     QString get_attribute() const;
     bool get_read_only() const;
-
-    virtual void set_value_list(const QList<QByteArray> &value_list) = 0;
 
     // Returns current value list, which includes
     // modifications made by the user
     virtual QList<QByteArray> get_value_list() const = 0;
 
 protected:
-    // The text of this label will be updated when attribute
-    // changes. Call this in ctor of subclass
-    void set_attribute_label(QLabel *attribute_label);
+    // Load text of attribute label based on attribute
+    void load_attribute_label(QLabel *attribute_label);
 
 private:
     QString m_attribute;
     bool m_read_only;
-    QLabel *m_attribute_label;
 };
 
 #endif /* ATTRIBUTE_DIALOG_H */

@@ -726,8 +726,6 @@ void ObjectImpl::on_reset_password() {
 }
 
 void ObjectImpl::on_edit_upn_suffixes() {
-    auto dialog = new ListAttributeDialog(console);
-
     AdInterface ad;
     if (ad_failed(ad)) {
         return;
@@ -741,11 +739,10 @@ void ObjectImpl::on_edit_upn_suffixes() {
 
     g_status->display_ad_messages(ad, console);
 
-    // NOTE: setting attribute here because on creation
-    // there's no access to adconfig which is needed by
-    // attribute editor
-    dialog->set_attribute(ATTRIBUTE_UPN_SUFFIXES);
-    dialog->set_value_list(current_values);
+    const QString attribute = ATTRIBUTE_UPN_SUFFIXES;
+    const bool read_only = false;
+    auto dialog = new ListAttributeDialog(current_values, attribute, read_only, console);
+
     dialog->open();
 
     connect(

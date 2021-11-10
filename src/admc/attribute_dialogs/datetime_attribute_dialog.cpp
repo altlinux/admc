@@ -25,33 +25,27 @@
 #include "globals.h"
 #include "settings.h"
 
-DatetimeAttributeDialog::DatetimeAttributeDialog(QWidget *parent)
-: AttributeDialog(parent) {
+DatetimeAttributeDialog::DatetimeAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
+: AttributeDialog(attribute, read_only, parent) {
     ui = new Ui::DatetimeAttributeDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    AttributeDialog::set_attribute_label(ui->attribute_label);
+    AttributeDialog::load_attribute_label(ui->attribute_label);
+
+    ui->edit->setReadOnly(read_only);
+
+    const QByteArray value = value_list.value(0, QByteArray());
+    const QString value_string = QString(value);
+    const QDateTime value_datetime = datetime_string_to_qdatetime(get_attribute(), value_string, g_adconfig);
+    ui->edit->setDateTime(value_datetime);
 
     settings_setup_dialog_geometry(SETTING_datetime_attribute_dialog_geometry, this);
 }
 
 DatetimeAttributeDialog::~DatetimeAttributeDialog() {
     delete ui;
-}
-
-void DatetimeAttributeDialog::set_read_only(const bool read_only) {
-    AttributeDialog::set_read_only(read_only);
-
-    ui->edit->setReadOnly(read_only);
-}
-
-void DatetimeAttributeDialog::set_value_list(const QList<QByteArray> &values) {
-    const QByteArray value = values.value(0, QByteArray());
-    const QString value_string = QString(value);
-    const QDateTime value_datetime = datetime_string_to_qdatetime(get_attribute(), value_string, g_adconfig);
-    ui->edit->setDateTime(value_datetime);
 }
 
 QList<QByteArray> DatetimeAttributeDialog::get_value_list() const {

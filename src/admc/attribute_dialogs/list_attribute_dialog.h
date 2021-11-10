@@ -41,12 +41,9 @@ class ListAttributeDialog final : public AttributeDialog {
 public:
     Ui::ListAttributeDialog *ui;
 
-    ListAttributeDialog(QWidget *parent);
+    ListAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent);
     ~ListAttributeDialog();
 
-    void set_read_only(const bool read_only) override;
-
-    void set_value_list(const QList<QByteArray> &values) override;
     QList<QByteArray> get_value_list() const override;
 
 private:
