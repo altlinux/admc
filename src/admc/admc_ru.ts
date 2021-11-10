@@ -219,22 +219,22 @@
 <context>
     <name>AttributeDialog</name>
     <message>
-        <location filename="attribute_dialogs/attribute_dialog.cpp" line="44"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="67"/>
         <source>Attribute: %1</source>
         <translation>Атрибут: %1</translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/attribute_dialog.cpp" line="55"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="40"/>
         <source>Edit</source>
-        <translation>Редактировать</translation>
+        <translation>Изменить</translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/attribute_dialog.cpp" line="57"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="42"/>
         <source>View</source>
         <translation>Просмотреть</translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/attribute_dialog.cpp" line="66"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="51"/>
         <source>%1 Multi-Valued %2</source>
         <comment>This is a dialog title for attribute editors. Example: &quot;Edit Multi-Valued String&quot;</comment>
         <translation>%1 %2 (Многозначный)</translation>
@@ -260,7 +260,7 @@
     <message>
         <location filename="tabs/attributes_tab.ui" line="38"/>
         <source>Edit...</source>
-        <translation>Редактировать...</translation>
+        <translation>Изменить...</translation>
     </message>
     <message>
         <location filename="tabs/attributes_tab.ui" line="45"/>
@@ -444,8 +444,8 @@
     <name>ConsoleFilterDialog</name>
     <message>
         <location filename="console_filter_dialog.ui" line="14"/>
-        <source>Edit Console Filter</source>
-        <translation>Изменить фильтр консоли</translation>
+        <source>Filter Objects</source>
+        <translation>Фильтровать объекты</translation>
     </message>
     <message>
         <location filename="console_filter_dialog.ui" line="20"/>
@@ -562,7 +562,7 @@
     <message>
         <location filename="create_ou_dialog.ui" line="14"/>
         <source>Create OU</source>
-        <translation>Создание подразделения</translation>
+        <translation>Создать подразделение</translation>
     </message>
     <message>
         <location filename="create_ou_dialog.ui" line="22"/>
@@ -592,8 +592,9 @@
     <name>CreatePolicyDialog</name>
     <message>
         <location filename="create_policy_dialog.ui" line="26"/>
-        <source>Create GPO</source>
-        <translation>Создание объекта групповой политики</translation>
+        <source>Create Policy</source>
+        <oldsource>Create GPO</oldsource>
+        <translation>Создать групповую политику</translation>
     </message>
     <message>
         <location filename="create_policy_dialog.ui" line="34"/>
@@ -658,7 +659,7 @@
     <message>
         <location filename="create_user_dialog.ui" line="14"/>
         <source>Create User</source>
-        <translation>Создание пользователя</translation>
+        <translation>Создать пользователя</translation>
     </message>
     <message>
         <location filename="create_user_dialog.ui" line="22"/>
@@ -753,7 +754,7 @@
         <location filename="edit_query_folder_dialog.ui" line="14"/>
         <source>Edit Query Folder</source>
         <oldsource>Edit query folder</oldsource>
-        <translation>Изменение папки запроса</translation>
+        <translation>Изменить папку запроса</translation>
     </message>
     <message>
         <location filename="edit_query_folder_dialog.ui" line="22"/>
@@ -771,7 +772,7 @@
     <message>
         <location filename="edit_query_item_dialog.ui" line="14"/>
         <source>Edit Query</source>
-        <translation>Изменение запроса</translation>
+        <translation>Изменить запрос</translation>
     </message>
 </context>
 <context>
@@ -1308,6 +1309,24 @@
     </message>
 </context>
 <context>
+    <name>ListAttributeDialog</name>
+    <message>
+        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="44"/>
+        <source>Add...</source>
+        <translation>Добавить...</translation>
+    </message>
+    <message>
+        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="27"/>
+        <source>Values:</source>
+        <translation>Значения:</translation>
+    </message>
+    <message>
+        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="51"/>
+        <source>Remove</source>
+        <translation>Удалить</translation>
+    </message>
+</context>
+<context>
     <name>LogonComputersDialog</name>
     <message>
         <location filename="attribute_edits/logon_computers_dialog.ui" line="14"/>
@@ -1340,7 +1359,7 @@
     <message>
         <location filename="attribute_edits/logon_hours_dialog.ui" line="14"/>
         <source>Edit Logon Hours</source>
-        <translation>Изменение времени входа</translation>
+        <translation>Изменить время входа</translation>
     </message>
     <message>
         <location filename="attribute_edits/logon_hours_dialog.cpp" line="42"/>
@@ -1493,7 +1512,7 @@
     <message>
         <location filename="main_window.ui" line="216"/>
         <source>Filter Objects...</source>
-        <translation>Фильтр объектов...</translation>
+        <translation>Фильтровать объекты...</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="224"/>
@@ -1672,8 +1691,9 @@
     </message>
     <message>
         <location filename="attribute_edits/manager_widget.cpp" line="75"/>
-        <source>Select Manager</source>
-        <translation>Выбор руководителя</translation>
+        <source>Change Manager</source>
+        <oldsource>Select Manager</oldsource>
+        <translation>Изменить руководителя</translation>
     </message>
 </context>
 <context>
@@ -1737,24 +1757,6 @@
         <location filename="tabs/membership_tab.cpp" line="360"/>
         <source>Error</source>
         <translation>Ошибка</translation>
-    </message>
-</context>
-<context>
-    <name>ListAttributeDialog</name>
-    <message>
-        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="44"/>
-        <source>Add...</source>
-        <translation>Добавить...</translation>
-    </message>
-    <message>
-        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="27"/>
-        <source>Values:</source>
-        <translation>Значения:</translation>
-    </message>
-    <message>
-        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="51"/>
-        <source>Remove</source>
-        <translation>Удалить</translation>
     </message>
 </context>
 <context>
@@ -1835,7 +1837,7 @@
     <message>
         <location filename="console_impls/object_impl.cpp" line="92"/>
         <source>Edit UPN suffixes</source>
-        <translation>Редактировать суффиксы UPN</translation>
+        <translation>Изменить суффиксы UPN</translation>
     </message>
     <message>
         <location filename="console_impls/object_impl.cpp" line="94"/>
@@ -1858,7 +1860,7 @@
         <translation>Добавить в группу</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="1025"/>
+        <location filename="console_impls/object_impl.cpp" line="1022"/>
         <source>Query may be out of date</source>
         <translation>Запрос может быть устаревшим</translation>
     </message>
@@ -1925,27 +1927,27 @@
         <translation>Восьмеричный</translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="182"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="181"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="186"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="185"/>
         <source>Input must be strings of 2 hexadecimal digits separated by spaces. Example: &quot;0a 00 b5 ff&quot;</source>
         <translation>Ввод должен состоять из строки, содержащей две шестнадцатеричные цифры, разделённые пробелами. Пример: &quot;0a 00 b5 ff&quot;</translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="187"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="186"/>
         <source>Input must be strings of 8 binary digits separated by spaces. Example: &quot;01010010 01000010 01000010&quot;</source>
         <translation>Ввод должен состоять из строки, содержащей восемь двоичных цифр, разделённых пробелами. Пример: &quot;01010010 01000010 01000010&quot;</translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="188"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="187"/>
         <source>Input must be strings of 3 decimal digits (0-255) separated by spaces. Example: &quot;010 000 191&quot;</source>
         <translation>Ввод должен состоять из строки, содержащей три десятичные цифры (0–255), разделённые пробелами. Пример: &quot;010 000 191&quot;</translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="189"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="188"/>
         <source>Input must be strings of 3 octal digits (0-377) separated by spaces.. Example: &quot;070 343 301&quot;</source>
         <translation>Ввод должен состоять из строки, содержащей три восьмеричные цифры (0–377), разделённые пробелами. Пример: &quot;070 343 301&quot;</translation>
     </message>
@@ -2015,8 +2017,9 @@
     <name>PasswordDialog</name>
     <message>
         <location filename="password_dialog.ui" line="14"/>
-        <source>Change Password</source>
-        <translation>Изменение пароля</translation>
+        <source>Reset Password</source>
+        <oldsource>Change Password</oldsource>
+        <translation>Сбросить пароль</translation>
     </message>
     <message>
         <location filename="password_dialog.ui" line="22"/>
@@ -2073,7 +2076,7 @@
     <message>
         <location filename="console_impls/policy_impl.cpp" line="49"/>
         <source>Edit...</source>
-        <translation>Редактировать...</translation>
+        <translation>Изменить...</translation>
     </message>
     <message>
         <location filename="console_impls/policy_impl.cpp" line="177"/>
@@ -2370,7 +2373,7 @@
     <message>
         <location filename="console_impls/query_folder_impl.cpp" line="61"/>
         <source>Edit</source>
-        <translation>Редактировать</translation>
+        <translation>Изменить</translation>
     </message>
     <message>
         <location filename="console_impls/query_folder_impl.cpp" line="63"/>
@@ -2383,7 +2386,7 @@
     <message>
         <location filename="console_impls/query_item_impl.cpp" line="52"/>
         <source>Edit...</source>
-        <translation>Редактировать...</translation>
+        <translation>Изменить...</translation>
     </message>
     <message>
         <location filename="console_impls/query_item_impl.cpp" line="53"/>
@@ -2396,7 +2399,7 @@
     <message>
         <location filename="rename_group_dialog.ui" line="14"/>
         <source>Rename Group</source>
-        <translation>Переименование группы</translation>
+        <translation>Переименовать группу</translation>
     </message>
     <message>
         <location filename="rename_group_dialog.ui" line="22"/>
@@ -2427,7 +2430,7 @@
     <message>
         <location filename="rename_other_dialog.ui" line="14"/>
         <source>Rename Object</source>
-        <translation>Переименование объекта</translation>
+        <translation>Переименовать объект</translation>
     </message>
     <message>
         <location filename="rename_other_dialog.ui" line="22"/>
@@ -2440,7 +2443,7 @@
     <message>
         <location filename="rename_policy_dialog.ui" line="14"/>
         <source>Rename Policy</source>
-        <translation>Переименование политики</translation>
+        <translation>Переименовать политику</translation>
     </message>
     <message>
         <location filename="rename_policy_dialog.ui" line="22"/>
@@ -2453,7 +2456,7 @@
     <message>
         <location filename="rename_user_dialog.ui" line="14"/>
         <source>Rename User</source>
-        <translation>Переименование пользователя</translation>
+        <translation>Переименовать пользователя</translation>
     </message>
     <message>
         <location filename="rename_user_dialog.ui" line="22"/>
@@ -2941,7 +2944,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1380"/>
+        <location filename="console_impls/object_impl.cpp" line="1377"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>

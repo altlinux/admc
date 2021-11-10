@@ -219,22 +219,22 @@
 <context>
     <name>AttributeDialog</name>
     <message>
-        <location filename="attribute_dialogs/attribute_dialog.cpp" line="44"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="67"/>
         <source>Attribute: %1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/attribute_dialog.cpp" line="55"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="40"/>
         <source>Edit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/attribute_dialog.cpp" line="57"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="42"/>
         <source>View</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/attribute_dialog.cpp" line="66"/>
+        <location filename="attribute_dialogs/attribute_dialog.cpp" line="51"/>
         <source>%1 Multi-Valued %2</source>
         <comment>This is a dialog title for attribute editors. Example: &quot;Edit Multi-Valued String&quot;</comment>
         <translation></translation>
@@ -444,7 +444,7 @@
     <name>ConsoleFilterDialog</name>
     <message>
         <location filename="console_filter_dialog.ui" line="14"/>
-        <source>Edit Console Filter</source>
+        <source>Filter Objects</source>
         <translation></translation>
     </message>
     <message>
@@ -592,7 +592,8 @@
     <name>CreatePolicyDialog</name>
     <message>
         <location filename="create_policy_dialog.ui" line="26"/>
-        <source>Create GPO</source>
+        <source>Create Policy</source>
+        <oldsource>Create GPO</oldsource>
         <translation></translation>
     </message>
     <message>
@@ -1308,6 +1309,24 @@
     </message>
 </context>
 <context>
+    <name>ListAttributeDialog</name>
+    <message>
+        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="44"/>
+        <source>Add...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="27"/>
+        <source>Values:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="51"/>
+        <source>Remove</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>LogonComputersDialog</name>
     <message>
         <location filename="attribute_edits/logon_computers_dialog.ui" line="14"/>
@@ -1672,7 +1691,8 @@
     </message>
     <message>
         <location filename="attribute_edits/manager_widget.cpp" line="75"/>
-        <source>Select Manager</source>
+        <source>Change Manager</source>
+        <oldsource>Select Manager</oldsource>
         <translation></translation>
     </message>
 </context>
@@ -1736,24 +1756,6 @@
     <message>
         <location filename="tabs/membership_tab.cpp" line="360"/>
         <source>Error</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>ListAttributeDialog</name>
-    <message>
-        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="44"/>
-        <source>Add...</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="27"/>
-        <source>Values:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="attribute_dialogs/list_attribute_dialog.ui" line="51"/>
-        <source>Remove</source>
         <translation></translation>
     </message>
 </context>
@@ -1858,7 +1860,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="1025"/>
+        <location filename="console_impls/object_impl.cpp" line="1022"/>
         <source>Query may be out of date</source>
         <translation></translation>
     </message>
@@ -1925,27 +1927,27 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="182"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="181"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="186"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="185"/>
         <source>Input must be strings of 2 hexadecimal digits separated by spaces. Example: &quot;0a 00 b5 ff&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="187"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="186"/>
         <source>Input must be strings of 8 binary digits separated by spaces. Example: &quot;01010010 01000010 01000010&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="188"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="187"/>
         <source>Input must be strings of 3 decimal digits (0-255) separated by spaces. Example: &quot;010 000 191&quot;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="189"/>
+        <location filename="attribute_dialogs/octet_attribute_dialog.cpp" line="188"/>
         <source>Input must be strings of 3 octal digits (0-377) separated by spaces.. Example: &quot;070 343 301&quot;</source>
         <translation></translation>
     </message>
@@ -2015,7 +2017,8 @@
     <name>PasswordDialog</name>
     <message>
         <location filename="password_dialog.ui" line="14"/>
-        <source>Change Password</source>
+        <source>Reset Password</source>
+        <oldsource>Change Password</oldsource>
         <translation></translation>
     </message>
     <message>
@@ -2941,7 +2944,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1380"/>
+        <location filename="console_impls/object_impl.cpp" line="1377"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
