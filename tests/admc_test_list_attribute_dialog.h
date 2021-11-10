@@ -31,16 +31,16 @@ class ADMCTestListAttributeDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
-    void init() override;
+    void initTestCase_data();
+    void init();
 
-    void set_value_list_empty();
-    void set_value_list();
+    void display_value();
     void get_value_list();
     void add();
     void remove();
 
 private:
-    ListAttributeDialog *edit;
+    ListAttributeDialog *dialog;
     QListWidget *list_widget;
     QPushButton *add_button;
     QPushButton *remove_button;

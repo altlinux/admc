@@ -35,13 +35,13 @@ class ADMCTestBoolAttributeDialog : public ADMCTest {
 
 private slots:
     void initTestCase_data();
-    void init() override;
+    void init();
 
-    void set_value_list();
+    void display_value();
     void get_value_list();
 
 private:
-    BoolAttributeDialog *edit;
+    BoolAttributeDialog *dialog;
     QRadioButton *button;
 };
 

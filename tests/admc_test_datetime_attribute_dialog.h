@@ -30,13 +30,14 @@ class ADMCTestDatetimeAttributeDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
-    void init() override;
+    void initTestCase_data();
+    void init();
 
-    void set_value_list();
+    void display_value();
     void get_value_list();
 
 private:
-    DatetimeAttributeDialog *edit;
+    DatetimeAttributeDialog *dialog;
     QDateTimeEdit *datetime_edit;
 };
 

@@ -25,32 +25,38 @@
 
 #include <QLineEdit>
 
+void ADMCTestStringAttributeDialog::initTestCase_data() {
+    QTest::addColumn<QList<QByteArray>>("value_list");
+    QTest::addColumn<QString>("display_value");
+
+    QTest::newRow("empty") << QList<QByteArray>() << "";
+    QTest::newRow("non-empty") << QList<QByteArray>({"hello"}) << "hello";
+}
+
 void ADMCTestStringAttributeDialog::init() {
     ADMCTest::init();
 
-    edit = new StringAttributeDialog(parent_widget);
-    edit->set_attribute(ATTRIBUTE_NAME);
-    edit->open();
-    QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
 
-    line_edit = edit->ui->edit;
+    dialog = new StringAttributeDialog(value_list, ATTRIBUTE_NAME, false, parent_widget);
+    dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    line_edit = dialog->ui->edit;
 }
 
-void ADMCTestStringAttributeDialog::set_value_list_empty() {
-    edit->set_value_list({});
-    QVERIFY(line_edit->text().isEmpty());
-}
+void ADMCTestStringAttributeDialog::display_value() {
+    QFETCH_GLOBAL(QString, display_value);
 
-void ADMCTestStringAttributeDialog::set_value_list() {
-    edit->set_value_list({QByteArray("hello")});
-    QCOMPARE(line_edit->text(), "hello");
+    const QString actual_display_value = line_edit->text();
+    QCOMPARE(actual_display_value, display_value);
 }
 
 void ADMCTestStringAttributeDialog::get_value_list() {
-    const QList<QByteArray> correct_value_list = {QByteArray("hello")};
-    edit->set_value_list(correct_value_list);
-    const QList<QByteArray> value_list = edit->get_value_list();
-    QCOMPARE(correct_value_list, value_list);
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
+
+    const QList<QByteArray> value_list_from_dialog = dialog->get_value_list();
+    QCOMPARE(value_list_from_dialog, value_list);
 }
 
 QTEST_MAIN(ADMCTestStringAttributeDialog)

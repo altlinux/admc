@@ -30,14 +30,14 @@ class ADMCTestStringAttributeDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
-    void init() override;
+    void initTestCase_data();
+    void init();
 
-    void set_value_list_empty();
-    void set_value_list();
+    void display_value();
     void get_value_list();
 
 private:
-    StringAttributeDialog *edit;
+    StringAttributeDialog *dialog;
     QLineEdit *line_edit;
 };
 

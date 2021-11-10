@@ -32,15 +32,14 @@ class ADMCTestOctetAttributeDialog : public ADMCTest {
 
 private slots:
     void initTestCase_data();
-    void init() override;
+    void init();
 
-    void display();
+    void display_value();
     void get_value_list();
-    void handle_empty_value();
     void handle_incorrect_input();
 
 private:
-    OctetAttributeDialog *edit;
+    OctetAttributeDialog *dialog;
     QComboBox *format_combo;
     QPlainTextEdit *text_edit;
 };

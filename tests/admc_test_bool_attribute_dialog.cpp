@@ -27,7 +27,7 @@
 
 void ADMCTestBoolAttributeDialog::initTestCase_data() {
     QTest::addColumn<QString>("button_name");
-    QTest::addColumn<QList<QByteArray>>("value");
+    QTest::addColumn<QList<QByteArray>>("value_list");
 
     QTest::newRow("true") << "true_button" << QList<QByteArray>({"TRUE"});
     QTest::newRow("false") << "false_button" << QList<QByteArray>({"FALSE"});
@@ -37,35 +37,32 @@ void ADMCTestBoolAttributeDialog::initTestCase_data() {
 void ADMCTestBoolAttributeDialog::init() {
     ADMCTest::init();
 
-    edit = new BoolAttributeDialog(parent_widget);
-    edit->set_attribute(ATTRIBUTE_DESCRIPTION);
-    edit->set_value_list(QList<QByteArray>());
-    edit->open();
-    QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
 
+    dialog = new BoolAttributeDialog(value_list, ATTRIBUTE_DESCRIPTION, false, parent_widget);
+    dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+}
+
+void ADMCTestBoolAttributeDialog::display_value() {
     const QHash<QString, QRadioButton *> button_map = {
-        {"true_button", edit->ui->true_button},
-        {"false_button", edit->ui->false_button},
-        {"unset_button", edit->ui->unset_button},
+        {"true_button", dialog->ui->true_button},
+        {"false_button", dialog->ui->false_button},
+        {"unset_button", dialog->ui->unset_button},
     };
 
     QFETCH_GLOBAL(QString, button_name);
 
     button = button_map[button_name];
-}
 
-void ADMCTestBoolAttributeDialog::set_value_list() {
-    QFETCH_GLOBAL(QList<QByteArray>, value);
-
-    edit->set_value_list(value);
     QVERIFY(button->isChecked());
 }
 
 void ADMCTestBoolAttributeDialog::get_value_list() {
-    QFETCH_GLOBAL(QList<QByteArray>, value);
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
 
-    button->click();
-    QCOMPARE(edit->get_value_list(), value);
+    const QList<QByteArray> actual_value_list = dialog->get_value_list();
+    QCOMPARE(actual_value_list, value_list);
 }
 
 QTEST_MAIN(ADMCTestBoolAttributeDialog)

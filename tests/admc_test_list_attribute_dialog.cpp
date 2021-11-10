@@ -29,45 +29,52 @@
 #include <QListWidget>
 #include <QPushButton>
 
-const QList<QByteArray> test_value = {QByteArray("hello")};
+void ADMCTestListAttributeDialog::initTestCase_data() {
+    QTest::addColumn<QList<QByteArray>>("value_list");
+    QTest::addColumn<QString>("display_value");
+
+    const QList<QByteArray> test_value = {
+        QByteArray("first"),
+        QByteArray("second"),
+        QByteArray("third"),
+    };
+
+    QTest::newRow("list") << test_value << "first";
+}
 
 void ADMCTestListAttributeDialog::init() {
     ADMCTest::init();
 
-    edit = new ListAttributeDialog(parent_widget);
-    edit->set_attribute(ATTRIBUTE_DESCRIPTION);
-    edit->open();
-    QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
 
-    list_widget = edit->ui->list_widget;
-    add_button = edit->ui->add_button;
-    remove_button = edit->ui->remove_button;
+    dialog = new ListAttributeDialog(value_list, ATTRIBUTE_DESCRIPTION, false, parent_widget);
+    dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    list_widget = dialog->ui->list_widget;
+    add_button = dialog->ui->add_button;
+    remove_button = dialog->ui->remove_button;
 }
 
-void ADMCTestListAttributeDialog::set_value_list_empty() {
-    edit->set_value_list({});
-    QCOMPARE(list_widget->count(), 0);
-}
+void ADMCTestListAttributeDialog::display_value() {
+    QFETCH_GLOBAL(QString, display_value);
 
-void ADMCTestListAttributeDialog::set_value_list() {
-    edit->set_value_list(test_value);
     QListWidgetItem *item = list_widget->item(0);
     QVERIFY(item);
-    QCOMPARE(item->text(), "hello");
+    QCOMPARE(item->text(), display_value);
 }
 
 void ADMCTestListAttributeDialog::get_value_list() {
-    edit->set_value_list(test_value);
-    const QList<QByteArray> current = edit->get_value_list();
-    QCOMPARE(current, test_value);
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
+
+    const QList<QByteArray> actual_value_list = dialog->get_value_list();
+    QCOMPARE(actual_value_list, value_list);
 }
 
 void ADMCTestListAttributeDialog::add() {
-    edit->set_value_list(test_value);
-
     add_button->click();
 
-    auto string_attribute_dialog = edit->findChild<StringAttributeDialog *>();
+    auto string_attribute_dialog = dialog->findChild<StringAttributeDialog *>();
     QVERIFY(string_attribute_dialog);
 
     QLineEdit *line_edit = string_attribute_dialog->ui->edit;
@@ -78,26 +85,28 @@ void ADMCTestListAttributeDialog::add() {
 
     string_attribute_dialog->accept();
 
-    QCOMPARE(list_widget->count(), 2);
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
+    const int expected_new_size = value_list.size() + 1;
+    const int actual_new_size = list_widget->count();
 
-    auto added_item = list_widget->item(1);
+    QCOMPARE(actual_new_size, expected_new_size);
+
+    auto added_item = list_widget->item(list_widget->count() - 1);
     QVERIFY(added_item);
     QCOMPARE(added_item->text(), new_value);
 }
 
 void ADMCTestListAttributeDialog::remove() {
-    edit->set_value_list({
-        QByteArray("first"),
-        QByteArray("second"),
-        QByteArray("third"),
-    });
-
     list_widget->setCurrentRow(1);
     remove_button->click();
 
-    QCOMPARE(list_widget->count(), 2);
-    QCOMPARE(list_widget->item(0)->text(), "first");
-    QCOMPARE(list_widget->item(1)->text(), "third");
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
+    const int expected_new_size = value_list.size() - 1;
+    const int actual_new_size = list_widget->count();
+
+    QCOMPARE(actual_new_size, expected_new_size);
+    QCOMPARE(list_widget->item(0)->text(), value_list[0]);
+    QCOMPARE(list_widget->item(1)->text(), value_list[2]);
 }
 
 QTEST_MAIN(ADMCTestListAttributeDialog)

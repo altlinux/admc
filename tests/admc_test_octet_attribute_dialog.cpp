@@ -26,72 +26,52 @@
 #include <QComboBox>
 #include <QPlainTextEdit>
 
-const QList<QByteArray> value_bytes = {QByteArray("12345")};
-
 void ADMCTestOctetAttributeDialog::initTestCase_data() {
+    QTest::addColumn<QList<QByteArray>>("value_list");
     QTest::addColumn<int>("index");
     QTest::addColumn<int>("other_index");
-    QTest::addColumn<QString>("value");
+    QTest::addColumn<QString>("display_value");
 
-    QTest::newRow("hex") << 0 << 1 << "31 32 33 34 35";
-    QTest::newRow("bin") << 1 << 2 << "00110001 00110010 00110011 00110100 00110101";
-    QTest::newRow("dec") << 2 << 3 << "049 050 051 052 053";
-    QTest::newRow("oct") << 3 << 0 << "061 062 063 064 065";
+    const QList<QByteArray> test_value_list = {QByteArray("12345")};
+
+    QTest::newRow("hex") << test_value_list << 0 << 1 << "31 32 33 34 35";
+    QTest::newRow("bin") << test_value_list << 1 << 2 << "00110001 00110010 00110011 00110100 00110101";
+    QTest::newRow("dec") << test_value_list << 2 << 3 << "049 050 051 052 053";
+    QTest::newRow("oct") << test_value_list << 3 << 0 << "061 062 063 064 065";
+    QTest::newRow("empty") << QList<QByteArray>() << 0 << 1 << "";
     ;
 }
 
 void ADMCTestOctetAttributeDialog::init() {
     ADMCTest::init();
 
-    edit = new OctetAttributeDialog(parent_widget);
-    edit->set_attribute(ATTRIBUTE_DESCRIPTION);
-    edit->open();
-    QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
 
-    format_combo = edit->ui->format_combo;
-    text_edit = edit->ui->edit;
+    dialog = new OctetAttributeDialog(value_list, ATTRIBUTE_DESCRIPTION, false, parent_widget);
+    dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    format_combo = dialog->ui->format_combo;
+    text_edit = dialog->ui->edit;
 }
 
-void ADMCTestOctetAttributeDialog::display() {
+void ADMCTestOctetAttributeDialog::display_value() {
+    QFETCH_GLOBAL(QString, display_value);
     QFETCH_GLOBAL(int, index);
-    QFETCH_GLOBAL(QString, value);
-
-    edit->set_value_list(value_bytes);
 
     format_combo->setCurrentIndex(index);
-    QCOMPARE(text_edit->toPlainText(), value);
+
+    const QString actual_display_value = text_edit->toPlainText();
+    QCOMPARE(actual_display_value, display_value);
 }
 
 // Check that edit correctly converts formatted strings back
 // to bytes for each format
 void ADMCTestOctetAttributeDialog::get_value_list() {
-    QFETCH_GLOBAL(int, index);
-    QFETCH_GLOBAL(QString, value);
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
 
-    edit->set_value_list({});
-
-    format_combo->setCurrentIndex(index);
-    text_edit->setPlainText(value);
-
-    QCOMPARE(edit->get_value_list(), value_bytes);
-}
-
-void ADMCTestOctetAttributeDialog::handle_empty_value() {
-    QFETCH_GLOBAL(int, index);
-    QFETCH_GLOBAL(int, other_index);
-    QFETCH_GLOBAL(QString, value);
-
-    edit->set_value_list({});
-
-    // Check that empty value correctly loads and is
-    // displayed as empty string
-    format_combo->setCurrentIndex(index);
-    QCOMPARE(text_edit->toPlainText(), "");
-
-    // Check that edit correctly switches formats when
-    // value is empty
-    format_combo->setCurrentIndex(other_index);
-    QCOMPARE(format_combo->currentIndex(), other_index);
+    const QList<QByteArray> actual_value_list = dialog->get_value_list();
+    QCOMPARE(actual_value_list, value_list);
 }
 
 // Check that when incorrectly formatted value is entered,
@@ -99,11 +79,6 @@ void ADMCTestOctetAttributeDialog::handle_empty_value() {
 void ADMCTestOctetAttributeDialog::handle_incorrect_input() {
     QFETCH_GLOBAL(int, index);
     QFETCH_GLOBAL(int, other_index);
-    QFETCH_GLOBAL(QString, value);
-
-    edit->set_value_list({});
-
-    text_edit->setPlainText("");
 
     format_combo->setCurrentIndex(index);
     text_edit->setPlainText("incorrect format");

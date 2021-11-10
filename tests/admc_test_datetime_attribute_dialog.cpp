@@ -25,29 +25,37 @@
 
 #include <QDateTimeEdit>
 
+void ADMCTestDatetimeAttributeDialog::initTestCase_data() {
+    QTest::addColumn<QList<QByteArray>>("value_list");
+    QTest::addColumn<QDateTime>("display_value");
+
+    QTest::newRow("non-empty") << QList<QByteArray>({"20210706131457.0Z"}) << QDateTime(QDate(2021, 7, 6), QTime(13, 14, 57));
+}
+
 void ADMCTestDatetimeAttributeDialog::init() {
     ADMCTest::init();
 
-    edit = new DatetimeAttributeDialog(parent_widget);
-    edit->set_attribute(ATTRIBUTE_WHEN_CHANGED);
-    edit->open();
-    QVERIFY(QTest::qWaitForWindowExposed(edit, 1000));
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
 
-    datetime_edit = edit->ui->edit;
+    dialog = new DatetimeAttributeDialog(value_list, ATTRIBUTE_WHEN_CHANGED, false, parent_widget);
+    dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    datetime_edit = dialog->ui->edit;
 }
 
-void ADMCTestDatetimeAttributeDialog::set_value_list() {
-    edit->set_value_list({QByteArray("20210706131457.0Z")});
-    const QDateTime correct_datetime = QDateTime(QDate(2021, 7, 6), QTime(13, 14, 57));
-    QCOMPARE(datetime_edit->dateTime(), correct_datetime);
+void ADMCTestDatetimeAttributeDialog::display_value() {
+    QFETCH_GLOBAL(QDateTime, display_value);
+
+    const QDateTime actual_display_value = datetime_edit->dateTime();
+    QCOMPARE(actual_display_value, display_value);
 }
 
-// NOTE: datetime edit always returns empty list, see
-// comment in it's source
 void ADMCTestDatetimeAttributeDialog::get_value_list() {
-    edit->set_value_list({QByteArray("20210706131457.0Z")});
-    const QList<QByteArray> value_list = edit->get_value_list();
-    QVERIFY(value_list.isEmpty());
+    QFETCH_GLOBAL(QList<QByteArray>, value_list);
+
+    const QList<QByteArray> actualy_value_list = dialog->get_value_list();
+    QCOMPARE(actualy_value_list, value_list);
 }
 
 QTEST_MAIN(ADMCTestDatetimeAttributeDialog)
