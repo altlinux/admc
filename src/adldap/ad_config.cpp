@@ -71,7 +71,7 @@ AdConfig::~AdConfig() {
 
 void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->domain = get_default_domain_from_krb5();
-    d->domain_head = domain_to_domain_dn(d->domain);
+    d->domain_dn = domain_to_domain_dn(d->domain);
 
     d->filter_containers.clear();
     d->columns.clear();
@@ -306,12 +306,12 @@ QString AdConfig::domain() const {
     return d->domain;
 }
 
-QString AdConfig::domain_head() const {
-    return d->domain_head;
+QString AdConfig::domain_dn() const {
+    return d->domain_dn;
 }
 
 QString AdConfig::configuration_dn() const {
-    return QString("CN=Configuration,%1").arg(domain_head());
+    return QString("CN=Configuration,%1").arg(domain_dn());
 }
 
 QString AdConfig::schema_dn() const {
@@ -319,7 +319,7 @@ QString AdConfig::schema_dn() const {
 }
 
 QString AdConfig::partitions_dn() const {
-    return QString("CN=Partitions,CN=Configuration,%1").arg(domain_head());
+    return QString("CN=Partitions,CN=Configuration,%1").arg(domain_dn());
 }
 
 QString AdConfig::extended_rights_dn() const {

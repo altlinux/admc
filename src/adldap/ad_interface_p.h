@@ -41,7 +41,7 @@ public:
     LDAP *ld;
     bool is_connected;
     QString domain;
-    QString domain_head;
+    QString domain_dn;
     QString dc;
     QString client_user;
     QList<AdMessage> messages;

@@ -269,7 +269,7 @@ QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee)
             ATTRIBUTE_DISPLAY_NAME,
             ATTRIBUTE_SAM_ACCOUNT_NAME,
         };
-        const auto trustee_search = ad.search(ad.adconfig()->domain_head(), SearchScope_All, filter, QList<QString>());
+        const auto trustee_search = ad.search(ad.adconfig()->domain_dn(), SearchScope_All, filter, QList<QString>());
         if (!trustee_search.isEmpty()) {
             // NOTE: this is some weird name selection logic
             // but that's how microsoft does it. Maybe need

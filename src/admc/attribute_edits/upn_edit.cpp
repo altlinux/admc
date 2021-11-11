@@ -72,7 +72,7 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
 
     // Check that new upn is unique
     // NOTE: filter has to also check that it's not the same object because of attribute edit weirdness. If user edits logon name, then retypes original, then applies, the edit will apply because it was modified by the user, even if the value didn't change. Without "not_object_itself", this check would determine that object's logon name conflicts with itself.
-    const QString base = g_adconfig->domain_head();
+    const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QString filter = [=]() {
         const QString not_object_itself = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_DN, dn);

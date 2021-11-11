@@ -38,7 +38,7 @@ public:
     AdConfigPrivate();
 
     QString domain;
-    QString domain_head;
+    QString domain_dn;
 
     QList<ObjectClass> filter_containers;
 

@@ -29,7 +29,7 @@
 
 void ADMCTestAdInterface::cleanup() {
     // Delete test gpo, if it was leftover from previous test
-    const QString base = g_adconfig->domain_head();
+    const QString base = g_adconfig->domain_dn();
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, TEST_GPO);
     const QList<QString> attributes = QList<QString>();
     const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, attributes);

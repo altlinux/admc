@@ -88,7 +88,7 @@ void SelectContainerDialog::open() {
     model->removeRows(0, model->rowCount());
 
     // Load head object
-    const QString head_dn = g_adconfig->domain_head();
+    const QString head_dn = g_adconfig->domain_dn();
     const AdObject head_object = ad.search_object(head_dn);
     auto item = make_container_node(head_object);
     model->appendRow(item);

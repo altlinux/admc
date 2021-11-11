@@ -245,11 +245,11 @@ void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad,
         return;
     }
 
-    const QString domain_head = g_adconfig->domain_head();
+    const QString domain_dn = g_adconfig->domain_dn();
     const QString configuration_dn = g_adconfig->configuration_dn();
     const QString schema_dn = g_adconfig->schema_dn();
 
-    if (base == domain_head) {
+    if (base == domain_dn) {
         results[configuration_dn] = ad.search_object(configuration_dn);
     } else if (base == configuration_dn) {
         results[schema_dn] = ad.search_object(schema_dn);

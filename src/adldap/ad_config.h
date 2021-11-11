@@ -50,7 +50,7 @@ public:
     void load(AdInterface &ad, const QLocale &locale);
 
     QString domain() const;
-    QString domain_head() const;
+    QString domain_dn() const;
     QString configuration_dn() const;
     QString schema_dn() const;
     QString partitions_dn() const;

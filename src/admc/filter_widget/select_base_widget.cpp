@@ -30,7 +30,7 @@ SelectBaseWidget::SelectBaseWidget(QWidget *parent)
     ui = new Ui::SelectBaseWidget();
     ui->setupUi(this);
 
-    const QString domain_dn = g_adconfig->domain_head();
+    const QString domain_dn = g_adconfig->domain_dn();
     const QString domain_name = dn_get_name(domain_dn);
     ui->combo->addItem(domain_name, domain_dn);
 

@@ -1338,12 +1338,12 @@ void console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     const QList<QStandardItem *> row = console->add_scope_item(ItemType_Object, QModelIndex());
     auto root = row[0];
 
-    const QString top_dn = g_adconfig->domain_head();
+    const QString top_dn = g_adconfig->domain_dn();
     const AdObject top_object = ad.search_object(top_dn);
     console_object_item_data_load(root, top_object);
 
-    const QString domain_head = g_adconfig->domain().toLower();
-    root->setText(domain_head);
+    const QString domain = g_adconfig->domain().toLower();
+    root->setText(domain);
 }
 
 bool console_object_is_ou(const QModelIndex &index) {
@@ -1354,7 +1354,7 @@ bool console_object_is_ou(const QModelIndex &index) {
 }
 
 QModelIndex get_object_tree_root(ConsoleWidget *console) {
-    const QString head_dn = g_adconfig->domain_head();
+    const QString head_dn = g_adconfig->domain_dn();
     const QList<QModelIndex> search_results = console->search_items(QModelIndex(), ObjectRole_DN, head_dn, ItemType_Object);
 
     if (!search_results.isEmpty()) {

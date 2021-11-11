@@ -64,7 +64,7 @@ GpoLinksTab::~GpoLinksTab() {
 }
 
 void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {
-    const QString base = g_adconfig->domain_head();
+    const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QList<QString> attributes = {ATTRIBUTE_NAME};
     const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, object.get_dn());

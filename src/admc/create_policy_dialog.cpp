@@ -55,7 +55,7 @@ void CreatePolicyDialog::open() {
 
     const QString default_name = [&]() {
         const QList<QString> existing_name_list = [&]() {
-            const QString base = g_adconfig->domain_head();
+            const QString base = g_adconfig->domain_dn();
             const SearchScope scope = SearchScope_All;
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
             const QList<QString> attributes = {ATTRIBUTE_DISPLAY_NAME};
@@ -96,7 +96,7 @@ void CreatePolicyDialog::accept() {
     // have to manually check for conflict. Server wouldn't
     // catch this.
     const bool name_conflict = [&]() {
-        const QString base = g_adconfig->domain_head();
+        const QString base = g_adconfig->domain_dn();
         const SearchScope scope = SearchScope_All;
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, name);
         const QList<QString> attributes = QList<QString>();
