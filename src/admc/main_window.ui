@@ -28,7 +28,10 @@
      <string>File</string>
     </property>
     <addaction name="action_connection_options"/>
+    <addaction name="action_edit_fsmo_roles"/>
+    <addaction name="separator"/>
     <addaction name="action_quit"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menu_action">
     <property name="title">
@@ -320,6 +323,11 @@
    </property>
    <property name="text">
     <string>Show Login</string>
+   </property>
+  </action>
+  <action name="action_edit_fsmo_roles">
+   <property name="text">
+    <string>Edit FSMO roles</string>
    </property>
   </action>
  </widget>

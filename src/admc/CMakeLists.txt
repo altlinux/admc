@@ -74,6 +74,7 @@ set(ADMC_SOURCES
     connection_options_dialog.cpp
     changelog_dialog.cpp
     error_log_dialog.cpp
+    fsmo_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_dialog.cpp

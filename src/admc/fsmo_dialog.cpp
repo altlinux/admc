@@ -18,40 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#include "fsmo_dialog.h"
+#include "ui_fsmo_dialog.h"
 
-#include <QMainWindow>
+#include "settings.h"
 
-class AdInterface;
-class QLabel;
+FSMODialog::FSMODialog(QWidget *parent)
+: QDialog(parent) {
+    ui = new Ui::FSMODialog();
+    ui->setupUi(this);
 
-namespace Ui {
-class MainWindow;
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    settings_setup_dialog_geometry(SETTING_fsmo_dialog_geometry, this);
 }
 
-class MainWindow final : public QMainWindow {
-    Q_OBJECT
-
-public:
-    Ui::MainWindow *ui;
-
-    MainWindow(AdInterface &ad, QWidget *parent = nullptr);
-    ~MainWindow();
-
-protected:
-    void closeEvent(QCloseEvent *event);
-
-private:
-    QLabel *login_label;
-
-    void on_log_searches_changed();
-    void on_show_login_changed();
-    void open_manual();
-    void open_connection_options();
-    void open_changelog();
-    void open_about();
-    void edit_fsmo_roles();
-};
-
-#endif /* MAIN_WINDOW_H */
+FSMODialog::~FSMODialog() {
+    delete ui;
+}
