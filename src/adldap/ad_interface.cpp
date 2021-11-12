@@ -862,14 +862,6 @@ bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {
     const QString error_context = QString(tr("Failed to delete object %1.")).arg(name);
 
     // Use a tree delete control to enable recursive delete
-    tree_delete_control = (LDAPControl *) malloc(sizeof(LDAPControl));
-    if (tree_delete_control == NULL) {
-        d->error_message(error_context, tr("LDAP Operation error - Failed to allocate tree delete control."));
-        cleanup();
-
-        return false;
-    }
-
     result = ldap_control_create(LDAP_CONTROL_X_TREE_DELETE, 1, NULL, 0, &tree_delete_control);
     if (result != LDAP_SUCCESS) {
         d->error_message(error_context, tr("LDAP Operation error - Failed to create tree delete control."));
