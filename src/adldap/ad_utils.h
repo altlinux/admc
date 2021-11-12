@@ -64,7 +64,6 @@ QString dn_canonical(const QString &dn);
 QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class);
 
 QString get_default_domain_from_krb5();
-QString domain_to_domain_dn(const QString &domain);
 
 int bit_set(int bitmask, int bit, bool set);
 bool bit_is_set(int bitmask, int bit);

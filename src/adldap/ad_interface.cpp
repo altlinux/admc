@@ -83,6 +83,7 @@ enum AceMaskFormat {
 QList<QString> query_server_for_hosts(const char *dname);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format);
+int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp);
 
 AdConfig *AdInterfacePrivate::adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
@@ -117,8 +118,6 @@ AdInterface::AdInterface() {
         d->error_message(connect_error_context, tr("Failed to get a domain."));
         return;
     }
-
-    d->domain_dn = domain_to_domain_dn(d->domain);
 
     //
     // Connect via LDAP
@@ -374,52 +373,32 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     int result;
     LDAPMessage *res = NULL;
     LDAPControl *page_control = NULL;
+    LDAPControl *sd_control = NULL;
     LDAPControl **returned_controls = NULL;
     struct berval *prev_cookie = cookie->cookie;
     struct berval *new_cookie = NULL;
-    BerElement *sd_control_value_be = NULL;
-    berval *sd_control_value_bv = NULL;
 
     auto cleanup = [&]() {
         ldap_msgfree(res);
         ldap_control_free(page_control);
+        ldap_control_free(sd_control);
         ldap_controls_free(returned_controls);
         ber_bvfree(prev_cookie);
         ber_bvfree(new_cookie);
-        ber_free(sd_control_value_be, 1);
-        ber_bvfree(sd_control_value_bv);
     };
 
-    // NOTE: this control is needed so that ldap returns
-    // security descriptor attribute when we ask for all
-    // attributes. Otherwise it won't includ the descriptor
-    // in attributes. This might break something when the
-    // app is used by a client with not enough rights to get
-    // some/all parts of the descriptor. Investigate.
-    LDAPControl sd_control;
-    const char *sd_control_oid = LDAP_SERVER_SD_FLAGS_OID;
-    sd_control.ldctl_oid = (char *) sd_control_oid;
-    // NOTE: sacl part of the sd can only be obtained by
-    // administrators, so for normal operations we omit it.
-    // For some operations sacl is required so there's an
-    // option to get it.
-    const int sd_control_value_int = [&]() {
-        if (get_sacl) {
-            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
-        } else {
-            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
-        }
-    }();
-    sd_control_value_be = ber_alloc_t(LBER_USE_DER);
-    ber_printf(sd_control_value_be, "{i}", sd_control_value_int);
-    ber_flatten(sd_control_value_be, &sd_control_value_bv);
-    sd_control.ldctl_value.bv_len = sd_control_value_bv->bv_len;
-    sd_control.ldctl_value.bv_val = sd_control_value_bv->bv_val;
-    sd_control.ldctl_iscritical = (char) 1;
+    const int is_critical = 1;
+
+    result = create_sd_control(get_sacl, is_critical, &sd_control);
+    if (result != LDAP_SUCCESS) {
+        qDebug() << "Failed to create sd control: " << ldap_err2string(result);
+
+        cleanup();
+        return false;
+    }
 
     // Create page control
     const ber_int_t page_size = 1000;
-    const int is_critical = 1;
     result = ldap_create_page_control(ld, page_size, prev_cookie, is_critical, &page_control);
     if (result != LDAP_SUCCESS) {
         qDebug() << "Failed to create page control: " << ldap_err2string(result);
@@ -427,7 +406,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         cleanup();
         return false;
     }
-    LDAPControl *server_controls[3] = {page_control, &sd_control, NULL};
+    LDAPControl *server_controls[3] = {page_control, sd_control, NULL};
 
     // Perform search
     const int attrsonly = 0;
@@ -500,32 +479,33 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     }
 
     // Get page response control
+    //
+    // NOTE: not sure if absence of page response control is
+    // an error. Decided to not treat it as error because
+    // searching the rootDSE doesn't return this control.
     LDAPControl *pageresponse_control = ldap_control_find(LDAP_CONTROL_PAGEDRESULTS, returned_controls, NULL);
-    if (pageresponse_control == NULL) {
-        qDebug() << "Failed to find PAGEDRESULTS control";
+    if (pageresponse_control != NULL) {
+        // Parse page response control to determine whether
+        // there are more pages
+        ber_int_t total_count;
+        new_cookie = (struct berval *) malloc(sizeof(struct berval));
+        result = ldap_parse_pageresponse_control(ld, pageresponse_control, &total_count, new_cookie);
+        if (result != LDAP_SUCCESS) {
+            qDebug() << "Failed to parse pageresponse control: " << ldap_err2string(result);
 
-        cleanup();
-        return false;
-    }
+            cleanup();
+            return false;
+        }
 
-    // Parse page response control to determine whether
-    // there are more pages
-    ber_int_t total_count;
-    new_cookie = (struct berval *) malloc(sizeof(struct berval));
-    result = ldap_parse_pageresponse_control(ld, pageresponse_control, &total_count, new_cookie);
-    if (result != LDAP_SUCCESS) {
-        qDebug() << "Failed to parse pageresponse control: " << ldap_err2string(result);
-
-        cleanup();
-        return false;
-    }
-
-    // Switch to new cookie if there are more pages
-    // NOTE: there are more pages if the cookie isn't
-    // empty
-    const bool more_pages = (new_cookie->bv_len > 0);
-    if (more_pages) {
-        cookie->cookie = ber_bvdup(new_cookie);
+        // Switch to new cookie if there are more pages
+        // NOTE: there are more pages if the cookie isn't
+        // empty
+        const bool more_pages = (new_cookie->bv_len > 0);
+        if (more_pages) {
+            cookie->cookie = ber_bvdup(new_cookie);
+        } else {
+            cookie->cookie = NULL;
+        }
     } else {
         cookie->cookie = NULL;
     }
@@ -863,14 +843,6 @@ bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {
     const QString error_context = QString(tr("Failed to delete object %1.")).arg(name);
 
     // Use a tree delete control to enable recursive delete
-    tree_delete_control = (LDAPControl *) malloc(sizeof(LDAPControl));
-    if (tree_delete_control == NULL) {
-        d->error_message(error_context, tr("LDAP Operation error - Failed to allocate tree delete control."));
-        cleanup();
-
-        return false;
-    }
-
     result = ldap_control_create(LDAP_CONTROL_X_TREE_DELETE, 1, NULL, 0, &tree_delete_control);
     if (result != LDAP_SUCCESS) {
         d->error_message(error_context, tr("LDAP Operation error - Failed to create tree delete control."));
@@ -879,7 +851,12 @@ bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {
         return false;
     }
 
-    LDAPControl *server_controls[2] = {tree_delete_control, NULL};
+    LDAPControl *server_controls[2] = {NULL, NULL};
+
+    const bool tree_delete_is_supported = adconfig()->control_is_supported(LDAP_CONTROL_X_TREE_DELETE);
+    if (tree_delete_is_supported) {
+        server_controls[0] = tree_delete_control;
+    }
 
     result = ldap_delete_ext_s(d->ld, cstr(dn), server_controls, NULL);
 
@@ -1296,7 +1273,7 @@ bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
     // Ex: "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
     const QString filesys_path = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
     const QString gpt_path = filesys_path_to_smb_path(filesys_path);
-    const QString gpc_dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_dn);
+    const QString gpc_dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, adconfig()->domain_dn());
 
     // After each error case we need to clean up whatever we
     // have created successfully so far. Don't just use
@@ -1534,7 +1511,7 @@ bool AdInterface::gpo_delete(const QString &dn, bool *deleted_object) {
     }
 
     // Unlink policy
-    const QString base = d->domain_dn;
+    const QString base = adconfig()->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QList<QString> attributes = {ATTRIBUTE_GPLINK};
     const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, dn);
@@ -1908,6 +1885,45 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
     }
 }
 
+// NOTE: this f-n is analogous to
+// ldap_create_page_control() and others. See pagectl.c
+// in ldap sources for examples. Extracted to contain
+// the C madness.
+int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp) {
+    BerElement *value_be = NULL;
+    struct berval value;
+
+    // Create berval to load into control
+    //
+    // NOTE: SACL part of the sd can only be obtained
+    // by administrators. For most operations we don't
+    // need SACL. Some operations, like creating a GPO,
+    // do require SACL, so for those operations we turn
+    // on the "get_sacl" options.
+    const int value_int = [&]() {
+        if (get_sacl) {
+            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
+        } else {
+            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
+        }
+    }();
+    value_be = ber_alloc_t(LBER_USE_DER);
+    ber_printf(value_be, "{i}", value_int);
+    ber_flatten2(value_be, &value, 1);
+
+    // Create control
+    const int result = ldap_control_create( LDAP_SERVER_SD_FLAGS_OID,
+        iscritical, &value, 0, ctrlp);
+
+    if (result != LDAP_SUCCESS) {
+        ber_memfree(value.bv_val);
+    }
+
+    ber_free(value_be, 1);
+
+    return result;
+}
+
 bool AdInterface::logged_in_as_admin() {
     const QString user_dn = [&]() {
         const QString sam_account_name = [&]() {
@@ -1922,7 +1938,7 @@ bool AdInterface::logged_in_as_admin() {
         }
 
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_SAM_ACCOUNT_NAME, sam_account_name);
-        const QHash<QString, AdObject> results = search(d->domain_dn, SearchScope_All, filter, QList<QString>());
+        const QHash<QString, AdObject> results = search(adconfig()->domain_dn(), SearchScope_All, filter, QList<QString>());
 
         if (results.isEmpty()) {
             return QString();
@@ -1938,7 +1954,7 @@ bool AdInterface::logged_in_as_admin() {
     }
 
     const bool user_is_admin = [&]() {
-        const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(d->domain_dn);
+        const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(adconfig()->domain_dn());
 
         const AdObject domain_admins_object = search_object(domain_admins_dn);
         const QList<QString> member_list = domain_admins_object.get_strings(ATTRIBUTE_MEMBER);
