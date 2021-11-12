@@ -71,7 +71,6 @@ AdConfig::~AdConfig() {
 
 void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->domain = get_default_domain_from_krb5();
-    d->domain_dn = domain_to_domain_dn(d->domain);
 
     d->filter_containers.clear();
     d->columns.clear();
@@ -81,6 +80,12 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->attribute_display_names.clear();
     d->attribute_schemas.clear();
     d->class_schemas.clear();
+
+    const AdObject rootDSE_object = ad.search_object(ROOT_DSE);
+    d->domain_dn = rootDSE_object.get_string(ATTRIBUTE_ROOT_DOMAIN_NAMING_CONTEXT);
+    d->schema_dn = rootDSE_object.get_string(ATTRIBUTE_SCHEMA_NAMING_CONTEXT);
+    d->configuration_dn = rootDSE_object.get_string(ATTRIBUTE_CONFIGURATION_NAMING_CONTEXT);
+    d->supported_control_list = rootDSE_object.get_strings(ATTRIBUTE_SUPPORTED_CONTROL);
 
     const QString locale_dir = [this, locale]() {
         const QString locale_code = [locale]() {
@@ -311,11 +316,11 @@ QString AdConfig::domain_dn() const {
 }
 
 QString AdConfig::configuration_dn() const {
-    return QString("CN=Configuration,%1").arg(domain_dn());
+    return d->configuration_dn;
 }
 
 QString AdConfig::schema_dn() const {
-    return QString("CN=Schema,%1").arg(configuration_dn());
+    return d->schema_dn;
 }
 
 QString AdConfig::partitions_dn() const {
@@ -324,6 +329,12 @@ QString AdConfig::partitions_dn() const {
 
 QString AdConfig::extended_rights_dn() const {
     return QString("CN=Extended-Rights,%1").arg(configuration_dn());
+}
+
+bool AdConfig::control_is_supported(const QString &control_oid) const {
+    const bool supported = d->supported_control_list.contains(control_oid);
+
+    return supported;
 }
 
 QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {

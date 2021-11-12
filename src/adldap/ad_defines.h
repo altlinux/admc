@@ -89,6 +89,8 @@ enum SystemFlagsBit {
     SystemFlagsBit_CannotDelete = 0x80000000
 };
 
+#define ROOT_DSE ""
+
 #define ATTRIBUTE_CN "cn"
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL "userAccountControl"
 #define ATTRIBUTE_LOCKOUT_TIME "lockoutTime"
@@ -179,6 +181,11 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_LOGON_HOURS "logonHours"
 #define ATTRIBUTE_USER_WORKSTATIONS "userWorkstations"
 #define ATTRIBUTE_VERSION_NUMBER "versionNumber"
+#define ATTRIBUTE_SUPPORTED_CONTROL "supportedControl"
+#define ATTRIBUTE_DS_SERVICE_NAME "dsServiceName"
+#define ATTRIBUTE_SCHEMA_NAMING_CONTEXT "schemaNamingContext"
+#define ATTRIBUTE_CONFIGURATION_NAMING_CONTEXT "configurationNamingContext"
+#define ATTRIBUTE_ROOT_DOMAIN_NAMING_CONTEXT "rootDomainNamingContext"
 
 #define CLASS_GROUP "group"
 #define CLASS_USER "user"

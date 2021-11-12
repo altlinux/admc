@@ -39,6 +39,8 @@ public:
 
     QString domain;
     QString domain_dn;
+    QString configuration_dn;
+    QString schema_dn;
 
     QList<ObjectClass> filter_containers;
 
@@ -55,6 +57,8 @@ public:
     QList<ObjectClass> add_auxiliary_classes(const QList<QString> &object_classes) const;
 
     QHash<QString, QString> right_to_guid_map;
+
+    QList<QString> supported_control_list;
 };
 
 #endif /* AD_CONFIG_P_H */

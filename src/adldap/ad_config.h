@@ -55,6 +55,7 @@ public:
     QString schema_dn() const;
     QString partitions_dn() const;
     QString extended_rights_dn() const;
+    bool control_is_supported(const QString &control_oid) const;
 
     QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
 
