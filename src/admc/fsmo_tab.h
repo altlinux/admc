@@ -33,8 +33,13 @@ class FSMOTab final : public QWidget {
 public:
     Ui::FSMOTab *ui;
 
-    FSMOTab(const QString &current_value, const QString &new_value);
+    FSMOTab(const QString &role_dn);
     ~FSMOTab();
+
+    void load(AdInterface &ad);
+
+private:
+    QString role_dn;
 };
 
 #endif /* FSMO_TAB_H */
