@@ -358,6 +358,11 @@ void MainWindow::open_about() {
 }
 
 void MainWindow::edit_fsmo_roles() {
-    auto dialog = new FSMODialog(this);
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    auto dialog = new FSMODialog(ad, this);
     dialog->open();
 }

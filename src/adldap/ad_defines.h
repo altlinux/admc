@@ -186,6 +186,8 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_SCHEMA_NAMING_CONTEXT "schemaNamingContext"
 #define ATTRIBUTE_CONFIGURATION_NAMING_CONTEXT "configurationNamingContext"
 #define ATTRIBUTE_ROOT_DOMAIN_NAMING_CONTEXT "rootDomainNamingContext"
+#define ATTRIBUTE_FSMO_ROLE_OWNER "fSMORoleOwner"
+#define ATTRIBUTE_SERVER_NAME "serverName"
 
 #define CLASS_GROUP "group"
 #define CLASS_USER "user"

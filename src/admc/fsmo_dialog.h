@@ -27,6 +27,8 @@
 
 #include <QDialog>
 
+class AdInterface;
+
 namespace Ui {
 class FSMODialog;
 }
@@ -37,7 +39,7 @@ class FSMODialog : public QDialog {
 public:
     Ui::FSMODialog *ui;
 
-    FSMODialog(QWidget *parent);
+    FSMODialog(AdInterface &ad, QWidget *parent);
     ~FSMODialog();
 };
 

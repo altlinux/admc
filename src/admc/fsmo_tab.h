@@ -33,7 +33,7 @@ class FSMOTab final : public QWidget {
 public:
     Ui::FSMOTab *ui;
 
-    FSMOTab(const QString &text);
+    FSMOTab(const QString &explanation, const QString &current_value, const QString &new_value);
     ~FSMOTab();
 };
 
