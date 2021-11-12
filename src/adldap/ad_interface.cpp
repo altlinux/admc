@@ -83,6 +83,7 @@ enum AceMaskFormat {
 QList<QString> query_server_for_hosts(const char *dname);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format);
+int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp);
 
 AdConfig *AdInterfacePrivate::adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
@@ -372,52 +373,32 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     int result;
     LDAPMessage *res = NULL;
     LDAPControl *page_control = NULL;
+    LDAPControl *sd_control = NULL;
     LDAPControl **returned_controls = NULL;
     struct berval *prev_cookie = cookie->cookie;
     struct berval *new_cookie = NULL;
-    BerElement *sd_control_value_be = NULL;
-    berval *sd_control_value_bv = NULL;
 
     auto cleanup = [&]() {
         ldap_msgfree(res);
         ldap_control_free(page_control);
+        ldap_control_free(sd_control);
         ldap_controls_free(returned_controls);
         ber_bvfree(prev_cookie);
         ber_bvfree(new_cookie);
-        ber_free(sd_control_value_be, 1);
-        ber_bvfree(sd_control_value_bv);
     };
 
-    // NOTE: this control is needed so that ldap returns
-    // security descriptor attribute when we ask for all
-    // attributes. Otherwise it won't includ the descriptor
-    // in attributes. This might break something when the
-    // app is used by a client with not enough rights to get
-    // some/all parts of the descriptor. Investigate.
-    LDAPControl sd_control;
-    const char *sd_control_oid = LDAP_SERVER_SD_FLAGS_OID;
-    sd_control.ldctl_oid = (char *) sd_control_oid;
-    // NOTE: sacl part of the sd can only be obtained by
-    // administrators, so for normal operations we omit it.
-    // For some operations sacl is required so there's an
-    // option to get it.
-    const int sd_control_value_int = [&]() {
-        if (get_sacl) {
-            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
-        } else {
-            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
-        }
-    }();
-    sd_control_value_be = ber_alloc_t(LBER_USE_DER);
-    ber_printf(sd_control_value_be, "{i}", sd_control_value_int);
-    ber_flatten(sd_control_value_be, &sd_control_value_bv);
-    sd_control.ldctl_value.bv_len = sd_control_value_bv->bv_len;
-    sd_control.ldctl_value.bv_val = sd_control_value_bv->bv_val;
-    sd_control.ldctl_iscritical = (char) 1;
+    const int is_critical = 1;
+
+    result = create_sd_control(get_sacl, is_critical, &sd_control);
+    if (result != LDAP_SUCCESS) {
+        qDebug() << "Failed to create sd control: " << ldap_err2string(result);
+
+        cleanup();
+        return false;
+    }
 
     // Create page control
     const ber_int_t page_size = 1000;
-    const int is_critical = 1;
     result = ldap_create_page_control(ld, page_size, prev_cookie, is_critical, &page_control);
     if (result != LDAP_SUCCESS) {
         qDebug() << "Failed to create page control: " << ldap_err2string(result);
@@ -425,7 +406,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         cleanup();
         return false;
     }
-    LDAPControl *server_controls[3] = {page_control, &sd_control, NULL};
+    LDAPControl *server_controls[3] = {page_control, sd_control, NULL};
 
     // Perform search
     const int attrsonly = 0;
@@ -1897,6 +1878,45 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
 
         return is_dir;
     }
+}
+
+// NOTE: this f-n is analogous to
+// ldap_create_page_control() and others. See pagectl.c
+// in ldap sources for examples. Extracted to contain
+// the C madness.
+int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp) {
+    BerElement *value_be = NULL;
+    struct berval value;
+
+    // Create berval to load into control
+    //
+    // NOTE: SACL part of the sd can only be obtained
+    // by administrators. For most operations we don't
+    // need SACL. Some operations, like creating a GPO,
+    // do require SACL, so for those operations we turn
+    // on the "get_sacl" options.
+    const int value_int = [&]() {
+        if (get_sacl) {
+            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
+        } else {
+            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
+        }
+    }();
+    value_be = ber_alloc_t(LBER_USE_DER);
+    ber_printf(value_be, "{i}", value_int);
+    ber_flatten2(value_be, &value, 1);
+
+    // Create control
+    const int result = ldap_control_create( LDAP_SERVER_SD_FLAGS_OID,
+        iscritical, &value, 0, ctrlp);
+
+    if (result != LDAP_SUCCESS) {
+        ber_memfree(value.bv_val);
+    }
+
+    ber_free(value_be, 1);
+
+    return result;
 }
 
 bool AdInterface::logged_in_as_admin() {
