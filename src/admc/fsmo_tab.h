@@ -40,6 +40,8 @@ public:
 
 private:
     QString role_dn;
+
+    void change_master();
 };
 
 #endif /* FSMO_TAB_H */

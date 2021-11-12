@@ -31,6 +31,10 @@ FSMOTab::FSMOTab(const QString &role_dn_arg) {
     ui->setupUi(this);
 
     role_dn = role_dn_arg;
+
+    connect(
+        ui->change_button, &QPushButton::clicked,
+        this, &FSMOTab::change_master);
 }
 
 FSMOTab::~FSMOTab() {
@@ -59,4 +63,34 @@ void FSMOTab::load(AdInterface &ad) {
 
     ui->current_edit->setText(current_master);
     ui->new_edit->setText(new_master);
+}
+
+void FSMOTab::change_master() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QString current_master = ui->current_edit->text();
+    const QString new_master = ui->new_edit->text();
+
+    if (current_master == new_master) {
+        message_box_warning(this, tr("Error"), tr("This machine is already a master for this role. Switch to a different machine in Connection Options to change master."));
+        return;
+    }
+
+    const QString new_master_service = [&]() {
+        const AdObject rootDSE = ad.search_object("");
+        const QString out = rootDSE.get_string(ATTRIBUTE_DS_SERVICE_NAME);
+
+        return out;
+    }();
+
+    const bool success = ad.attribute_replace_string(role_dn, ATTRIBUTE_FSMO_ROLE_OWNER, new_master_service);
+
+    g_status->display_ad_messages(ad, this);
+
+    if (success) {
+        load(ad);
+    }
 }
