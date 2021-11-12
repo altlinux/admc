@@ -34,7 +34,7 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     auto add_tab = [&](const QString &title, const QString &dn) {
-        auto tab = new FSMOTab(dn);
+        auto tab = new FSMOTab(title, dn);
         ui->tab_widget->add_tab(tab, title);
         tab->load(ad);
     };

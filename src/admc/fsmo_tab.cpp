@@ -26,9 +26,11 @@
 #include "globals.h"
 #include "status.h"
 
-FSMOTab::FSMOTab(const QString &role_dn_arg) {
+FSMOTab::FSMOTab(const QString &title, const QString &role_dn_arg) {
     ui = new Ui::FSMOTab();
     ui->setupUi(this);
+
+    ui->title_label->setText(title);
 
     role_dn = role_dn_arg;
 
