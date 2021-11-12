@@ -327,7 +327,7 @@
   </action>
   <action name="action_edit_fsmo_roles">
    <property name="text">
-    <string>Edit FSMO roles</string>
+    <string>Operations Masters</string>
    </property>
   </action>
  </widget>
