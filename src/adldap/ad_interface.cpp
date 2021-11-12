@@ -851,7 +851,12 @@ bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {
         return false;
     }
 
-    LDAPControl *server_controls[2] = {tree_delete_control, NULL};
+    LDAPControl *server_controls[2] = {NULL, NULL};
+
+    const bool tree_delete_is_supported = adconfig()->control_is_supported(LDAP_CONTROL_X_TREE_DELETE);
+    if (tree_delete_is_supported) {
+        server_controls[0] = tree_delete_control;
+    }
 
     result = ldap_delete_ext_s(d->ld, cstr(dn), server_controls, NULL);
 
