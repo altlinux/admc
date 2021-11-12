@@ -500,32 +500,33 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     }
 
     // Get page response control
+    //
+    // NOTE: not sure if absence of page response control is
+    // an error. Decided to not treat it as error because
+    // searching the rootDSE doesn't return this control.
     LDAPControl *pageresponse_control = ldap_control_find(LDAP_CONTROL_PAGEDRESULTS, returned_controls, NULL);
-    if (pageresponse_control == NULL) {
-        qDebug() << "Failed to find PAGEDRESULTS control";
+    if (pageresponse_control != NULL) {
+        // Parse page response control to determine whether
+        // there are more pages
+        ber_int_t total_count;
+        new_cookie = (struct berval *) malloc(sizeof(struct berval));
+        result = ldap_parse_pageresponse_control(ld, pageresponse_control, &total_count, new_cookie);
+        if (result != LDAP_SUCCESS) {
+            qDebug() << "Failed to parse pageresponse control: " << ldap_err2string(result);
 
-        cleanup();
-        return false;
-    }
+            cleanup();
+            return false;
+        }
 
-    // Parse page response control to determine whether
-    // there are more pages
-    ber_int_t total_count;
-    new_cookie = (struct berval *) malloc(sizeof(struct berval));
-    result = ldap_parse_pageresponse_control(ld, pageresponse_control, &total_count, new_cookie);
-    if (result != LDAP_SUCCESS) {
-        qDebug() << "Failed to parse pageresponse control: " << ldap_err2string(result);
-
-        cleanup();
-        return false;
-    }
-
-    // Switch to new cookie if there are more pages
-    // NOTE: there are more pages if the cookie isn't
-    // empty
-    const bool more_pages = (new_cookie->bv_len > 0);
-    if (more_pages) {
-        cookie->cookie = ber_bvdup(new_cookie);
+        // Switch to new cookie if there are more pages
+        // NOTE: there are more pages if the cookie isn't
+        // empty
+        const bool more_pages = (new_cookie->bv_len > 0);
+        if (more_pages) {
+            cookie->cookie = ber_bvdup(new_cookie);
+        } else {
+            cookie->cookie = NULL;
+        }
     } else {
         cookie->cookie = NULL;
     }
