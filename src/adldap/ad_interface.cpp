@@ -118,8 +118,6 @@ AdInterface::AdInterface() {
         return;
     }
 
-    d->domain_dn = domain_to_domain_dn(d->domain);
-
     //
     // Connect via LDAP
     //
@@ -1297,7 +1295,7 @@ bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
     // Ex: "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
     const QString filesys_path = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
     const QString gpt_path = filesys_path_to_smb_path(filesys_path);
-    const QString gpc_dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_dn);
+    const QString gpc_dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, adconfig()->domain_dn());
 
     // After each error case we need to clean up whatever we
     // have created successfully so far. Don't just use
@@ -1535,7 +1533,7 @@ bool AdInterface::gpo_delete(const QString &dn, bool *deleted_object) {
     }
 
     // Unlink policy
-    const QString base = d->domain_dn;
+    const QString base = adconfig()->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QList<QString> attributes = {ATTRIBUTE_GPLINK};
     const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, dn);
@@ -1923,7 +1921,7 @@ bool AdInterface::logged_in_as_admin() {
         }
 
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_SAM_ACCOUNT_NAME, sam_account_name);
-        const QHash<QString, AdObject> results = search(d->domain_dn, SearchScope_All, filter, QList<QString>());
+        const QHash<QString, AdObject> results = search(adconfig()->domain_dn(), SearchScope_All, filter, QList<QString>());
 
         if (results.isEmpty()) {
             return QString();
@@ -1939,7 +1937,7 @@ bool AdInterface::logged_in_as_admin() {
     }
 
     const bool user_is_admin = [&]() {
-        const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(d->domain_dn);
+        const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(adconfig()->domain_dn());
 
         const AdObject domain_admins_object = search_object(domain_admins_dn);
         const QList<QString> member_list = domain_admins_object.get_strings(ATTRIBUTE_MEMBER);

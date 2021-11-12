@@ -324,7 +324,7 @@ QString AdConfig::schema_dn() const {
 }
 
 QString AdConfig::partitions_dn() const {
-    return QString("CN=Partitions,CN=Configuration,%1").arg(domain_dn());
+    return QString("CN=Partitions,%1").arg(configuration_dn());
 }
 
 QString AdConfig::extended_rights_dn() const {

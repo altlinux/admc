@@ -344,18 +344,6 @@ QString get_default_domain_from_krb5() {
     return out;
 }
 
-// Transform domain to domain DN
-// "DOMAIN.COM" => "DC=domain,DC=com"
-QString domain_to_domain_dn(const QString &domain) {
-    QString domain_dn = domain;
-
-    domain_dn = domain_dn.toLower();
-    domain_dn = "DC=" + domain_dn;
-    domain_dn = domain_dn.replace(".", ",DC=");
-
-    return domain_dn;
-}
-
 int bit_set(int bitmask, int bit, bool set) {
     if (set) {
         return bitmask | bit;
