@@ -21,11 +21,10 @@
 #include "fsmo_tab.h"
 #include "ui_fsmo_tab.h"
 
-FSMOTab::FSMOTab(const QString &explanation, const QString &current_value, const QString &new_value) {
+FSMOTab::FSMOTab(const QString &current_value, const QString &new_value) {
     ui = new Ui::FSMOTab();
     ui->setupUi(this);
 
-    ui->explanation_label->setText(explanation);
     ui->current_edit->setText(current_value);
     ui->new_edit->setText(new_value);
 }

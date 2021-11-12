@@ -15,16 +15,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="explanation_label">
-     <property name="text">
-      <string notr="true">PLACEHOLDER</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Current:</string>
+      <string>Current master:</string>
      </property>
     </widget>
    </item>

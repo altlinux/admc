@@ -42,26 +42,27 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
     const AdObject rootDSE = ad.search_object("");
     const QString current_service_name = rootDSE.get_string(ATTRIBUTE_DS_SERVICE_NAME);
 
+    // New value of master roles is equal to current host
     const QString server_name = rootDSE.get_string(ATTRIBUTE_SERVER_NAME);
     const AdObject server = ad.search_object(server_name);
-    const QString current_host = server.get_string(ATTRIBUTE_DNS_HOST_NAME);
+    const QString new_value = server.get_string(ATTRIBUTE_DNS_HOST_NAME);
     
-    auto add_tab = [&](const QString &dn, const QString &name, const QString &explanation) {
+    auto add_tab = [&](const QString &dn, const QString &name) {
         const AdObject object = ad.search_object(dn);
         const QString master_settings_dn = object.get_string(ATTRIBUTE_FSMO_ROLE_OWNER);
         const QString master_dn = dn_get_parent(master_settings_dn);
 
         const AdObject master_object = ad.search_object(master_dn);
-        const QString host_name = master_object.get_string(ATTRIBUTE_DNS_HOST_NAME);
+        const QString current_value = master_object.get_string(ATTRIBUTE_DNS_HOST_NAME);
 
-        ui->tab_widget->add_tab(new FSMOTab(explanation, host_name, current_host), name);
+        ui->tab_widget->add_tab(new FSMOTab(current_value, new_value), name);
     };
 
-    add_tab(domain_dn, tr("Pdc Emulation"), tr("domain"));
-    add_tab(schema_dn, tr("Schema"), tr("schema"));
-    add_tab(naming_dn, tr("Domain Naming"), tr("partitions"));
-    add_tab(infrastructure_dn, tr("Infrastructure"), tr("infrastructure"));
-    add_tab(rid_dn, tr("Rid Allocation"), tr("rid"));
+    add_tab(domain_dn, tr("Pdc Emulation"));
+    add_tab(schema_dn, tr("Schema"));
+    add_tab(naming_dn, tr("Domain Naming"));
+    add_tab(infrastructure_dn, tr("Infrastructure"));
+    add_tab(rid_dn, tr("Rid Allocation"));
 
     settings_setup_dialog_geometry(SETTING_fsmo_dialog_geometry, this);
 }
