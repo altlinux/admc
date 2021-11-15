@@ -31,11 +31,8 @@ public:
     SamNameEdit(QLineEdit *edit, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
-    void load_domain();
-
 private:
     QLineEdit *edit;
-    QLineEdit *domain_edit;
 };
 
 #endif /* SAM_NAME_EDIT_H */

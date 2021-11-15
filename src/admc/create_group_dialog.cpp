@@ -39,9 +39,7 @@ CreateGroupDialog::CreateGroupDialog(QWidget *parent)
 
     QList<AttributeEdit *> edit_list;
     
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
-    sam_name_edit->load_domain();
-
+    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
     new GroupScopeEdit(ui->scope_combo, &edit_list, this);
     new GroupTypeEdit(ui->type_combo, &edit_list, this);
 

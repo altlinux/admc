@@ -41,10 +41,7 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, QWidget *parent)
     new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
     new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);
     new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, &edit_list, this);
-
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
-    sam_name_edit->load_domain();
-
+    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
     new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edit_list, this);
 
     auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);

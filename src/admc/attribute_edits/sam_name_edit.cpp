@@ -26,12 +26,20 @@
 
 #include <QLineEdit>
 
-SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
+SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QList<AttributeEdit *> *edits_out, QObject *parent)
 : AttributeEdit(edits_out, parent) {
     edit = edit_arg;
-    domain_edit = domain_edit_arg;
-
     limit_edit(edit, ATTRIBUTE_SAM_ACCOUNT_NAME);
+
+    const QString domain_text = []() {
+        const QString domain = g_adconfig->domain();
+        const QString domain_name = domain.split(".")[0];
+        const QString out = domain_name + "\\";
+
+        return out;
+    }();
+
+    domain_edit->setText(domain_text);
 
     connect(
         edit, &QLineEdit::textChanged,
@@ -43,8 +51,6 @@ void SamNameEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
     const QString value = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
     edit->setText(value);
-
-    load_domain();
 }
 
 void SamNameEdit::set_read_only(const bool read_only) {
@@ -56,16 +62,4 @@ bool SamNameEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
 
     return success;
-}
-
-void SamNameEdit::load_domain() {
-    const QString domain_text = []() {
-        const QString domain = g_adconfig->domain();
-        const QString domain_name = domain.split(".")[0];
-        const QString out = domain_name + "\\";
-
-        return out;
-    }();
-
-    domain_edit->setText(domain_text);
 }
