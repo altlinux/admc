@@ -160,7 +160,8 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_PROFILE_PATH "profilePath"
 #define ATTRIBUTE_SCRIPT_PATH "scriptPath"
 #define ATTRIBUTE_HOME_DIRECTORY "homeDirectory"
-
+#define ATTRIBUTE_LAPS_PASSWORD "ms-Mcs-AdmPwd"
+#define ATTRIBUTE_LAPS_EXPIRATION "ms-Mcs-AdmPwdExpirationTime"
 #define ATTRIBUTE_HOME_PHONE "homePhone"
 #define ATTRIBUTE_OTHER_HOME_PHONE "otherHomePhone"
 #define ATTRIBUTE_PAGER "pager"

@@ -109,6 +109,7 @@ set(ADMC_SOURCES
     tabs/os_tab.cpp
     tabs/delegation_tab.cpp
     tabs/select_well_known_trustee_dialog.cpp
+    tabs/laps_tab.cpp
 
     multi_tabs/properties_multi_tab.cpp
     multi_tabs/general_user_multi_tab.cpp
@@ -144,6 +145,7 @@ set(ADMC_SOURCES
     attribute_edits/logon_computers_edit.cpp
     attribute_edits/logon_computers_dialog.cpp
     attribute_edits/protect_deletion_edit.cpp
+    attribute_edits/laps_expiry_edit.cpp
 
     attribute_multi_edits/attribute_multi_edit.cpp
     attribute_multi_edits/string_multi_edit.cpp
