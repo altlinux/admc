@@ -44,7 +44,11 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
     const QString naming_dn = g_adconfig->partitions_dn();
     const QString infrastructure_dn = QString("CN=Infrastructure,%1").arg(domain_dn);
     const QString rid_dn = QString("CN=RID Manager$,CN=System,%1").arg(domain_dn);
+    const QString domain_dns_dn = QString("CN=Infrastructure,DC=DomainDnsZones,%1").arg(domain_dn);
+    const QString forest_dns_dn = QString("CN=Infrastructure,DC=ForestDnsZones,%1").arg(domain_dn);
 
+    add_tab(tr("Domain DNS"), domain_dns_dn);
+    add_tab(tr("Forest DNS"), forest_dns_dn);
     add_tab(tr("Pdc Emulation"), domain_dn);
     add_tab(tr("Schema"), schema_dn);
     add_tab(tr("Domain Naming"), naming_dn);
