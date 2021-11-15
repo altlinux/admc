@@ -2,7 +2,7 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
- VERSION 0.8.0 (Released 09-11-2021)
+ VERSION 0.8.0
 -----------------------------------------------------------------------
 - Connection: Added a new window for case where app fails to
   connect to domain on startup. This window contains
@@ -88,7 +88,7 @@ CHANGELOG
   connection options.
 
 -----------------------------------------------------------------------
- VERSION 0.7.0 (Released 20-08-2021)
+ VERSION 0.7.0
 -----------------------------------------------------------------------
 - Manual: Fixed manual not opening when app is installed
   fresh. (#267)
@@ -122,7 +122,7 @@ CHANGELOG
 - Misc: Added a toolbar. (#257)
 
 -----------------------------------------------------------------------
- VERSION 0.6.4 (Released 05-08-2021)
+ VERSION 0.6.4
 -----------------------------------------------------------------------
 - Queries: Fixed query edit dialog not loading state
   correctly. Was loading some fields as blank. (#255)
@@ -146,12 +146,12 @@ CHANGELOG
   (#262)
 
 -----------------------------------------------------------------------
- VERSION 0.6.3 (Released 02-08-2021)
+ VERSION 0.6.3
 -----------------------------------------------------------------------
 - Misc: Added manual generated from the wiki page. (#218)
 
 -----------------------------------------------------------------------
- VERSION 0.6.2 (Released 29-07-2021)
+ VERSION 0.6.2
 -----------------------------------------------------------------------
 - Console: Added "Reset account" action for computer objects.
   (#245)
@@ -176,7 +176,7 @@ CHANGELOG
   (#253)
 
 -----------------------------------------------------------------------
- VERSION 0.6.1 (Released 20-07-2021)
+ VERSION 0.6.1
 -----------------------------------------------------------------------
 - Action menu: Added "Enable account" and "Disable account"
   actions for computer objects. (#236)
@@ -199,7 +199,7 @@ CHANGELOG
   list. (#231)
 
 -----------------------------------------------------------------------
- VERSION 0.6.0 (Released 08-07-2021)
+ VERSION 0.6.0
 -----------------------------------------------------------------------
 - Properties dialog: Improved how connection failure is
   handled. Dialog stays open and displays informative error
@@ -238,7 +238,7 @@ CHANGELOG
 - Security tab: Implemented addition of well-known trustee's.
 
 -----------------------------------------------------------------------
- VERSION 0.5.3 (Released 21-06-2021)
+ VERSION 0.5.3
 -----------------------------------------------------------------------
 - Properties dialog: Added new "Security" tab for User objects.
 - Properties dialog: Added new tabs for Computer objects:
@@ -267,7 +267,7 @@ CHANGELOG
   connection process.
 
 -----------------------------------------------------------------------
- VERSION 0.5.2 (Released 12-05-2021)
+ VERSION 0.5.2
 -----------------------------------------------------------------------
 - Translation: Fix translation of "Action" menu not loading.
 - Properties: Added new properties dialog for multiple
@@ -277,7 +277,7 @@ CHANGELOG
 - Message Log: Add option to show timestamps next to messages.
 
 -----------------------------------------------------------------------
- VERSION 0.5.1 (Released 23-04-2021)
+ VERSION 0.5.1
 -----------------------------------------------------------------------
 - Console: Fixed a bug where when moving or deleting items,
   some of the items were skipped.
@@ -285,7 +285,7 @@ CHANGELOG
   dialog. Pressing return now presses "Find" button.
 
 -----------------------------------------------------------------------
- VERSION 0.5.0 (Released 22-04-2021)
+ VERSION 0.5.0
 -----------------------------------------------------------------------
 - Console: Added new tree called "Group Policy Objects".
   Lists all of the policies in the domain. Selecting a
@@ -345,7 +345,7 @@ CHANGELOG
   which is confusing.
 
 -----------------------------------------------------------------------
- VERSION 0.4.1 (Released 02-03-2021)
+ VERSION 0.4.1
 -----------------------------------------------------------------------
 - Properties: Fixed "Apply"/"Reset" buttons being
   incorrectly disabled after apply failure. They now stay
@@ -377,7 +377,7 @@ CHANGELOG
   require a connection.
 
 -----------------------------------------------------------------------
- VERSION 0.4.0 (Released 15-02-2021)
+ VERSION 0.4.0
 -----------------------------------------------------------------------
 - Properties: Added more tabs to Properties dialog:
     - general 
