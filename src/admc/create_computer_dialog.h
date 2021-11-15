@@ -23,8 +23,6 @@
 
 #include "create_object_dialog.h"
 
-class SamNameEdit;
-
 namespace Ui {
 class CreateComputerDialog;
 }
@@ -38,11 +36,7 @@ public:
     CreateComputerDialog(QWidget *parent);
     ~CreateComputerDialog();
 
-    void open() override;
-
 private:
-    SamNameEdit *sam_name_edit;
-
     void autofill_sam_name();
 };
 

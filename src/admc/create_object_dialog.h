@@ -46,7 +46,6 @@ public:
     void init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QString &object_class);
 
     void set_parent_dn(const QString &dn);
-    void open() override;
     void accept() override;
     void on_edited();
     QString get_created_name() const;

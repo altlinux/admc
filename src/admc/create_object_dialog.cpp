@@ -50,10 +50,6 @@ void CreateObjectDialog::set_parent_dn(const QString &dn) {
     parent_dn = dn;
 }
 
-void CreateObjectDialog::open() {
-    QDialog::open();
-}
-
 void CreateObjectDialog::accept() {
     AdInterface ad;
     if (ad_failed(ad)) {

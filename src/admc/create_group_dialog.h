@@ -23,8 +23,6 @@
 
 #include "create_object_dialog.h"
 
-class SamNameEdit;
-
 namespace Ui {
 class CreateGroupDialog;
 }
@@ -37,11 +35,6 @@ public:
 
     CreateGroupDialog(QWidget *parent);
     ~CreateGroupDialog();
-
-    void open() override;
-
-private:
-    SamNameEdit *sam_name_edit;
 };
 
 #endif /* CREATE_GROUP_DIALOG_H */

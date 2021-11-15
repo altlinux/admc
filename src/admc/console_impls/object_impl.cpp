@@ -611,7 +611,12 @@ void ObjectImpl::open_console_filter_dialog() {
 }
 
 void ObjectImpl::on_new_user() {
-    new_object(new CreateUserDialog(console));
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    new_object(new CreateUserDialog(ad, console));
 }
 
 void ObjectImpl::on_new_computer() {

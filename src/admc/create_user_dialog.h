@@ -23,8 +23,7 @@
 
 #include "create_object_dialog.h"
 
-class SamNameEdit;
-class UpnEdit;
+class AdInterface;
 
 namespace Ui {
 class CreateUserDialog;
@@ -36,15 +35,10 @@ class CreateUserDialog final : public CreateObjectDialog {
 public:
     Ui::CreateUserDialog *ui;
 
-    CreateUserDialog(QWidget *parent);
+    CreateUserDialog(AdInterface &ad, QWidget *parent);
     ~CreateUserDialog();
 
-    void open() override;
-
 private:
-    SamNameEdit *sam_name_edit;
-    UpnEdit *upn_edit;
-
     void autofill_full_name();
     void autofill_sam_name();
 };
