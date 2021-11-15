@@ -26,6 +26,18 @@
 #include "adldap.h"
 #include "globals.h"
 
+enum FSMORole {
+    FSMORole_DomainDNS,
+    FSMORole_ForestDNS,
+    FSMORole_PDCEmulation,
+    FSMORole_Schema,
+    FSMORole_DomainNaming,
+    FSMORole_Infrastructure,
+    FSMORole_RidAllocation,
+
+    FSMORole_COUNT,
+};
+
 FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::FSMODialog();
@@ -33,27 +45,49 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    auto add_tab = [&](const QString &title, const QString &dn) {
-        auto tab = new FSMOTab(title, dn);
+    for (int role_i = 0; role_i < FSMORole_COUNT; role_i++) {
+        const FSMORole role = (FSMORole) role_i;
+
+        const QString title = [&]() {
+            switch (role) {
+                case FSMORole_DomainDNS: return tr("Domain DNS");
+                case FSMORole_ForestDNS: return tr("Forest DNS");
+                case FSMORole_PDCEmulation: return tr("PDC Emulation");
+                case FSMORole_Schema: return tr("Schema");
+                case FSMORole_DomainNaming: return tr("Domain Naming");
+                case FSMORole_Infrastructure: return tr("Infrastructure");
+                case FSMORole_RidAllocation: return tr("Rid Allocation");
+
+                case FSMORole_COUNT: break;
+            };
+
+            return QString();
+        }();
+
+        // NOTE: this is the DN of the object that
+        // store's role's master in it's attributes
+        const QString role_dn = [&]() {
+            const QString domain_dn = g_adconfig->domain_dn();
+
+            switch (role) {
+                case FSMORole_DomainDNS: return QString("CN=Infrastructure,DC=DomainDnsZones,%1").arg(domain_dn);
+                case FSMORole_ForestDNS: return QString("CN=Infrastructure,DC=DomainDnsZones,%1").arg(domain_dn);
+                case FSMORole_PDCEmulation: return domain_dn;
+                case FSMORole_Schema: return g_adconfig->schema_dn();
+                case FSMORole_DomainNaming: return g_adconfig->partitions_dn();
+                case FSMORole_Infrastructure: return QString("CN=Infrastructure,DC=DomainDnsZones,%1").arg(domain_dn);
+                case FSMORole_RidAllocation: return QString("CN=RID Manager$,CN=System,%1").arg(domain_dn);
+
+                case FSMORole_COUNT: break;
+            };
+
+            return QString();
+        }();
+
+        auto tab = new FSMOTab(title, role_dn);
         ui->tab_widget->add_tab(tab, title);
         tab->load(ad);
-    };
-
-    const QString domain_dn = g_adconfig->domain_dn();
-    const QString schema_dn = g_adconfig->schema_dn();
-    const QString naming_dn = g_adconfig->partitions_dn();
-    const QString infrastructure_dn = QString("CN=Infrastructure,%1").arg(domain_dn);
-    const QString rid_dn = QString("CN=RID Manager$,CN=System,%1").arg(domain_dn);
-    const QString domain_dns_dn = QString("CN=Infrastructure,DC=DomainDnsZones,%1").arg(domain_dn);
-    const QString forest_dns_dn = QString("CN=Infrastructure,DC=ForestDnsZones,%1").arg(domain_dn);
-
-    add_tab(tr("Domain DNS"), domain_dns_dn);
-    add_tab(tr("Forest DNS"), forest_dns_dn);
-    add_tab(tr("Pdc Emulation"), domain_dn);
-    add_tab(tr("Schema"), schema_dn);
-    add_tab(tr("Domain Naming"), naming_dn);
-    add_tab(tr("Infrastructure"), infrastructure_dn);
-    add_tab(tr("Rid Allocation"), rid_dn);
+    }
 
     settings_setup_dialog_geometry(SETTING_fsmo_dialog_geometry, this);
 }
