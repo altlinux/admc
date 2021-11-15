@@ -40,7 +40,7 @@ RenameUserDialog::RenameUserDialog(QWidget *parent)
     upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
     sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
 
-    init(ui->name_edit, ui->button_box, edit_list);
+    init(ui->name_edit, edit_list);
 
     settings_setup_dialog_geometry(SETTING_rename_user_dialog_geometry, this);
 }

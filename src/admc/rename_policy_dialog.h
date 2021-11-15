@@ -53,7 +53,6 @@ private:
     QString target_dn;
     QString target_old_name;
     QPushButton *ok_button;
-    QPushButton *reset_button;
 
     void on_edited();
     void reset();

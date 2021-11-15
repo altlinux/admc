@@ -24,7 +24,6 @@
 #include <QDialog>
 
 class QLineEdit;
-class QDialogButtonBox;
 class AttributeEdit;
 class AdInterface;
 
@@ -37,7 +36,7 @@ public:
     static void success_msg(const QString &old_name);
     static void fail_msg(const QString &old_name);
 
-    void init(QLineEdit *name_edit, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits);
+    void init(QLineEdit *name_edit, const QList<AttributeEdit *> &edits);
 
     void set_target(const QString &dn);
     void reset();

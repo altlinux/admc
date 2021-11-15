@@ -38,11 +38,7 @@ RenamePolicyDialog::RenamePolicyDialog(QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     ok_button = ui->button_box->button(QDialogButtonBox::Ok);
-    reset_button = ui->button_box->button(QDialogButtonBox::Reset);
 
-    connect(
-        reset_button, &QPushButton::clicked,
-        this, &RenamePolicyDialog::reset);
     connect(
         ui->name_edit, &QLineEdit::textChanged,
         this, &RenamePolicyDialog::on_edited);
@@ -99,12 +95,10 @@ void RenamePolicyDialog::set_target(const QString &dn) {
 }
 
 void RenamePolicyDialog::on_edited() {
-    reset_button->setEnabled(true);
     ok_button->setEnabled(true);
 }
 
 void RenamePolicyDialog::reset() {
-    reset_button->setEnabled(false);
     ok_button->setEnabled(false);
 
     ui->name_edit->setText(target_old_name);

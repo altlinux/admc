@@ -26,9 +26,7 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
 #include <QLineEdit>
-#include <QPushButton>
 
 void RenameObjectDialog::success_msg(const QString &old_name) {
     const QString message = QString(tr("Object %1 was renamed.")).arg(old_name);
@@ -40,15 +38,9 @@ void RenameObjectDialog::fail_msg(const QString &old_name) {
     g_status->add_message(message, StatusType_Error);
 }
 
-void RenameObjectDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_arg) {
+void RenameObjectDialog::init(QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg) {
     name_edit = name_edit_arg;
     edits = edits_arg;
-
-    QPushButton *reset_button = button_box->button(QDialogButtonBox::Reset);
-
-    connect(
-        reset_button, &QPushButton::clicked,
-        this, &RenameObjectDialog::reset);
 }
 
 void RenameObjectDialog::set_target(const QString &dn) {

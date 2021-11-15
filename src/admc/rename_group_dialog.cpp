@@ -32,7 +32,7 @@ RenameGroupDialog::RenameGroupDialog(QWidget *parent)
     QList<AttributeEdit *> edit_list;
     sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
 
-    init(ui->name_edit, ui->button_box, edit_list);
+    init(ui->name_edit, edit_list);
 
     settings_setup_dialog_geometry(SETTING_rename_group_dialog_geometry, this);
 }

@@ -28,7 +28,7 @@ RenameOtherDialog::RenameOtherDialog(QWidget *parent)
     ui = new Ui::RenameOtherDialog();
     ui->setupUi(this);
 
-    init(ui->name_edit, ui->button_box, {});
+    init(ui->name_edit, {});
 
     settings_setup_dialog_geometry(SETTING_rename_other_dialog_geometry, this);
 }
