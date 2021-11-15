@@ -393,6 +393,13 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex
 }
 
 void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QString old_dn = get_selected_dn_object(console);
+
     RenameObjectDialog *dialog = [&]() -> RenameObjectDialog * {
         const QModelIndex index = index_list[0];
         const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
@@ -400,31 +407,28 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
         const bool is_group = (object_class == CLASS_GROUP);
 
         if (is_user) {
-            return new RenameUserDialog(console);
+            return new RenameUserDialog(ad, old_dn, console);
         } else if (is_group) {
-            return new RenameGroupDialog(console);
+            return new RenameGroupDialog(ad, old_dn, console);
         } else {
-            return new RenameOtherDialog(console);
+            return new RenameOtherDialog(ad, old_dn, console);
         }
     }();
 
-    const QString old_dn = get_selected_dn_object(console);
-
-    dialog->set_target(old_dn);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
         [this, dialog, old_dn]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
+            AdInterface ad_inner;
+            if (ad_failed(ad_inner)) {
                 return;
             }
 
             const QString new_dn = dialog->get_new_dn();
             const QString parent_dn = dn_get_parent(old_dn);
 
-            move_and_rename(ad, {{old_dn, new_dn}}, parent_dn);
+            move_and_rename(ad_inner, {{old_dn, new_dn}}, parent_dn);
         });
 }
 

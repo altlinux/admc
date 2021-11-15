@@ -33,7 +33,7 @@ class RenameOtherDialog final : public RenameObjectDialog {
 public:
     Ui::RenameOtherDialog *ui;
 
-    RenameOtherDialog(QWidget *parent);
+    RenameOtherDialog(AdInterface &ad, const QString &target, QWidget *parent);
     ~RenameOtherDialog();
 };
 

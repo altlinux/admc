@@ -36,14 +36,10 @@ public:
     static void success_msg(const QString &old_name);
     static void fail_msg(const QString &old_name);
 
-    void init(QLineEdit *name_edit, const QList<AttributeEdit *> &edits);
+    void init(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg);
 
-    void set_target(const QString &dn);
-    void reset();
-    void open() override;
     void accept() override;
 
-    QString get_target() const;
     QString get_new_name() const;
     QString get_new_dn() const;
 

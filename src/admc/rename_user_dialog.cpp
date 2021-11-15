@@ -28,7 +28,7 @@
 #include "utils.h"
 #include "settings.h"
 
-RenameUserDialog::RenameUserDialog(QWidget *parent)
+RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {
     ui = new Ui::RenameUserDialog();
     ui->setupUi(this);
@@ -37,26 +37,18 @@ RenameUserDialog::RenameUserDialog(QWidget *parent)
     new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
     new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);
     new StringEdit(ui->full_name_edit, ATTRIBUTE_DISPLAY_NAME, &edit_list, this);
-    upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
-    sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
 
-    init(ui->name_edit, edit_list);
+    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
+    upn_edit->init_suffixes(ad);
+
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
+    sam_name_edit->load_domain();
+
+    init(ad, target_arg, ui->name_edit, edit_list);
 
     settings_setup_dialog_geometry(SETTING_rename_user_dialog_geometry, this);
 }
 
 RenameUserDialog::~RenameUserDialog() {
     delete ui;
-}
-
-void RenameUserDialog::open() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    upn_edit->init_suffixes(ad);
-    sam_name_edit->load_domain();
-
-    RenameObjectDialog::open();
 }

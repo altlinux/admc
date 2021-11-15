@@ -23,9 +23,6 @@
 
 #include "rename_object_dialog.h"
 
-class UpnEdit;
-class SamNameEdit;
-
 namespace Ui {
 class RenameUserDialog;
 }
@@ -36,15 +33,8 @@ class RenameUserDialog final : public RenameObjectDialog {
 public:
     Ui::RenameUserDialog *ui;
 
-    RenameUserDialog(QWidget *parent);
+    RenameUserDialog(AdInterface &ad, const QString &target, QWidget *parent);
     ~RenameUserDialog();
-
-public slots:
-    void open() override;
-
-private:
-    UpnEdit *upn_edit;
-    SamNameEdit *sam_name_edit;
 };
 
 #endif /* RENAME_USER_DIALOG_H */

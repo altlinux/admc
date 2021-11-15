@@ -23,12 +23,12 @@
 
 #include "settings.h"
 
-RenameOtherDialog::RenameOtherDialog(QWidget *parent)
+RenameOtherDialog::RenameOtherDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {
     ui = new Ui::RenameOtherDialog();
     ui->setupUi(this);
 
-    init(ui->name_edit, {});
+    init(ad, target_arg, ui->name_edit, {});
 
     settings_setup_dialog_geometry(SETTING_rename_other_dialog_geometry, this);
 }

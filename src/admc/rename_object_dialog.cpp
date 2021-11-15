@@ -38,32 +38,16 @@ void RenameObjectDialog::fail_msg(const QString &old_name) {
     g_status->add_message(message, StatusType_Error);
 }
 
-void RenameObjectDialog::init(QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg) {
+void RenameObjectDialog::init(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg) {
     name_edit = name_edit_arg;
     edits = edits_arg;
-}
-
-void RenameObjectDialog::set_target(const QString &dn) {
-    target = dn;
-}
-
-void RenameObjectDialog::reset() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
+    target = target_arg;
 
     const QString name = dn_get_name(target);
     name_edit->setText(name);
 
     const AdObject object = ad.search_object(target);
     edits_load(edits, ad, object);
-}
-
-void RenameObjectDialog::open() {
-    reset();
-
-    QDialog::open();
 }
 
 void RenameObjectDialog::accept() {
@@ -107,10 +91,6 @@ void RenameObjectDialog::accept() {
     } else {
         RenameObjectDialog::fail_msg(old_name);
     }
-}
-
-QString RenameObjectDialog::get_target() const {
-    return target;
 }
 
 QString RenameObjectDialog::get_new_name() const {
