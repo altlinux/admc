@@ -151,22 +151,26 @@ QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, 
 void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
     const QModelIndex index = console->get_selected_item(ItemType_Policy);
     const QString dn = index.data(PolicyRole_DN).toString();
 
-    auto dialog = new RenamePolicyDialog(console);
-    dialog->set_target(dn);
+    auto dialog = new RenamePolicyDialog(ad, dn, console);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
         [this, index, dn]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
+            AdInterface ad_inner;
+            if (ad_failed(ad_inner)) {
                 return;
             }
 
-            const AdObject object = ad.search_object(dn);
+            const AdObject object = ad_inner.search_object(dn);
 
             const QList<QStandardItem *> row = console->get_row(index);
             console_policy_load(row, object);

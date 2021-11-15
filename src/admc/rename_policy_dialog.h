@@ -30,6 +30,7 @@
 #include <QDialog>
 
 class QPushButton;
+class AdInterface;
 
 namespace Ui {
 class RenamePolicyDialog;
@@ -41,21 +42,14 @@ class RenamePolicyDialog final : public QDialog {
 public:
     Ui::RenamePolicyDialog *ui;
 
-    RenamePolicyDialog(QWidget *parent);
+    RenamePolicyDialog(AdInterface &ad, const QString &target_dn, QWidget *parent);
     ~RenamePolicyDialog();
 
-    void open() override;
     void accept() override;
-
-    void set_target(const QString &dn);
 
 private:
     QString target_dn;
-    QString target_old_name;
-    QPushButton *ok_button;
-
-    void on_edited();
-    void reset();
+    QString target_name;
 };
 
 #endif /* RENAME_DIALOG_POLICY_H */
