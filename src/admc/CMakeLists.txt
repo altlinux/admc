@@ -35,7 +35,6 @@ set(ADMC_SOURCES
     globals.cpp
     utils.cpp
     settings.cpp
-    widget_state.cpp
 
     main_window.cpp
     main_window_connection_error.cpp

@@ -46,14 +46,7 @@ CreateGroupDialog::CreateGroupDialog(QWidget *parent)
         ui->sam_name_edit,
     };
 
-    const QList<QWidget *> widget_list = {
-        ui->name_edit,
-        ui->sam_name_edit,
-        ui->scope_combo,
-        ui->type_combo,
-    };
-
-    init(ui->name_edit, ui->button_box, edit_list, required_edits, widget_list, CLASS_GROUP);
+    init(ui->name_edit, ui->button_box, edit_list, required_edits, CLASS_GROUP);
 
     settings_setup_dialog_geometry(SETTING_create_group_dialog_geometry, this);
 }

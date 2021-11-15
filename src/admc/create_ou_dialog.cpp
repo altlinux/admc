@@ -42,12 +42,7 @@ CreateOUDialog::CreateOUDialog(QWidget *parent)
         ui->name_edit,
     };
 
-    const QList<QWidget *> widget_list = {
-        ui->name_edit,
-        ui->deletion_check,
-    };
-
-    init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_OU);
+    init(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_OU);
 
     settings_setup_dialog_geometry(SETTING_create_ou_dialog_geometry, this);
 }

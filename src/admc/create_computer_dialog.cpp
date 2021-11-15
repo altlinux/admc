@@ -48,19 +48,12 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
         ui->sam_name_edit,
     };
 
-    const QList<QWidget *> widget_list = {
-        ui->name_edit,
-        ui->sam_name_edit,
-        // NOTE: not restoring sam domain state is intended
-        // ui->sam_name_domain_edit,
-    };
-
     // Autofill name -> sam account name
     connect(
         ui->name_edit, &QLineEdit::textChanged,
         this, &CreateComputerDialog::autofill_sam_name);
 
-    init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_COMPUTER);
+    init(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_COMPUTER);
 
     settings_setup_dialog_geometry(SETTING_create_computer_dialog_geometry, this);
 }

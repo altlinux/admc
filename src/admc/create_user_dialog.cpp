@@ -80,26 +80,7 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
         ui->sam_name_edit,
     };
 
-    const QList<QWidget *> widget_list = {
-        ui->name_edit,
-        ui->first_name_edit,
-        ui->last_name_edit,
-        ui->initials_edit,
-        ui->sam_name_edit,
-        // NOTE: not restoring sam account name domain state
-        // is intended
-        // ui->sam_name_domain_edit,
-        ui->password_confirm_edit,
-        ui->upn_prefix_edit,
-        // NOTE: not restoring upn suffix state is intended
-        // ui->upn_suffix_edit,
-        ui->must_change_pass_check,
-        ui->cant_change_pass_check,
-        ui->dont_expire_pass_check,
-        ui->disabled_check,
-    };
-
-    init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_USER);
+    init(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_USER);
 
     settings_setup_dialog_geometry(SETTING_create_user_dialog_geometry, this);
 }

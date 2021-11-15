@@ -27,8 +27,6 @@
 
 #include <QDialog>
 
-#include "widget_state.h"
-
 class QLineEdit;
 class QDialogButtonBox;
 class AttributeEdit;
@@ -45,7 +43,7 @@ public:
     // Required widgets will be use to determine when dialog
     // can be accepted. Widget list will be used to
     // save/restore their state.
-    void init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QList<QWidget *> &widget_list, const QString &object_class);
+    void init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QString &object_class);
 
     void set_parent_dn(const QString &dn);
     void open() override;
@@ -61,7 +59,6 @@ private:
     QList<QLineEdit *> m_required_list;
     QPushButton *ok_button;
     QString m_object_class;
-    WidgetState m_state;
 };
 
 #endif /* CREATE_OBJECT_DIALOG_H */
