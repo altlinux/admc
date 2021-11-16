@@ -122,20 +122,20 @@ void set_data_for_row(const QList<QStandardItem *> &row, const QVariant &data, c
     }
 }
 
-bool ad_connected_base(const AdInterface &ad) {
+bool ad_connected_base(const AdInterface &ad, QWidget *parent) {
     if (!ad.is_connected()) {
-        ad_error_log(ad, nullptr);
+        ad_error_log(ad, parent);
     }
 
     return ad.is_connected();
 }
 
-bool ad_connected(const AdInterface &ad) {
-    return ad_connected_base(ad);
+bool ad_connected(const AdInterface &ad, QWidget *parent) {
+    return ad_connected_base(ad, parent);
 }
 
-bool ad_failed(const AdInterface &ad) {
-    return !ad_connected_base(ad);
+bool ad_failed(const AdInterface &ad, QWidget *parent) {
+    return !ad_connected_base(ad, parent);
 }
 
 QString is_container_filter() {
