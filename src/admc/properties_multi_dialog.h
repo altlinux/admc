@@ -31,6 +31,7 @@
 #include <QDialog>
 
 class PropertiesMultiTab;
+class AdInterface;
 
 namespace Ui {
 class PropertiesMultiDialog;
@@ -42,7 +43,7 @@ class PropertiesMultiDialog final : public QDialog {
 public:
     Ui::PropertiesMultiDialog *ui;
 
-    PropertiesMultiDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list);
+    PropertiesMultiDialog(AdInterface &ad, const QList<QString> &target_list_arg, const QList<QString> &class_list);
     ~PropertiesMultiDialog();
 
 signals:

@@ -433,17 +433,22 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
 }
 
 void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
     const QList<QString> dn_list = index_list_to_dn_list(index_list);
 
     auto on_object_properties_applied = [=]() {
-        AdInterface ad;
-        if (ad_failed(ad, console)) {
+        AdInterface ad2;
+        if (ad_failed(ad2, console)) {
             return;
         }
 
-        auto apply_changes = [&ad, &dn_list](ConsoleWidget *target_console) {
+        auto apply_changes = [&ad2, &dn_list](ConsoleWidget *target_console) {
             for (const QString &dn : dn_list) {
-                const AdObject object = ad.search_object(dn);
+                const AdObject object = ad2.search_object(dn);
 
                 // NOTE: search for indexes instead of using the
                 // list given to f-n because we want to update
@@ -469,7 +474,7 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
         const QString dn = dn_list[0];
 
         bool dialog_is_new;
-        PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn, &dialog_is_new);
+        PropertiesDialog *dialog = PropertiesDialog::open_for_target(ad, dn, &dialog_is_new);
 
         if (dialog_is_new) {
             connect(
@@ -489,7 +494,7 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
             return out.toList();
         }();
 
-        auto dialog = new PropertiesMultiDialog(dn_list, class_list);
+        auto dialog = new PropertiesMultiDialog(ad, dn_list, class_list);
         dialog->open();
 
         connect(

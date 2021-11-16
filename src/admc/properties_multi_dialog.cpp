@@ -38,7 +38,7 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
-PropertiesMultiDialog::PropertiesMultiDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list)
+PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QString> &target_list_arg, const QList<QString> &class_list)
 : QDialog() {
     ui = new Ui::PropertiesMultiDialog();
     ui->setupUi(this);
@@ -46,13 +46,6 @@ PropertiesMultiDialog::PropertiesMultiDialog(const QList<QString> &target_list_a
     setAttribute(Qt::WA_DeleteOnClose);
 
     target_list = target_list_arg;
-
-    AdInterface ad;
-    if (ad_failed(ad, this)) {
-        close();
-
-        return;
-    }
 
     auto apply_button = ui->button_box->button(QDialogButtonBox::Apply);
     auto reset_button = ui->button_box->button(QDialogButtonBox::Reset);

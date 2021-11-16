@@ -219,11 +219,16 @@ void PolicyImpl::refresh(const QList<QModelIndex> &index_list) {
 }
 
 void PolicyImpl::properties(const QList<QModelIndex> &index_list) {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
     const QModelIndex index = index_list[0];
     const QString dn = index.data(PolicyRole_DN).toString();
 
     bool dialog_is_new;
-    PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn, &dialog_is_new);
+    PropertiesDialog *dialog = PropertiesDialog::open_for_target(ad, dn, &dialog_is_new);
 
     // Need to update results when properties are applied,
     // in case links were modified in links tab

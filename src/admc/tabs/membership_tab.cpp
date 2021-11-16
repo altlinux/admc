@@ -381,10 +381,15 @@ void MembershipTab::on_primary_button() {
 }
 
 void MembershipTab::on_properties_button() {
+    AdInterface ad;
+    if (ad_failed(ad, this)) {
+        return;
+    }
+
     const QModelIndex current = ui->view->selectionModel()->currentIndex();
     const QString dn = current.data(MembersRole_DN).toString();
 
-    PropertiesDialog::open_for_target(dn);
+    PropertiesDialog::open_for_target(ad, dn);
 }
 
 void MembershipTab::enable_primary_button_on_valid_selection() {

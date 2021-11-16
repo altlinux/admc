@@ -60,7 +60,7 @@
 
 QHash<QString, PropertiesDialog *> PropertiesDialog::instances;
 
-PropertiesDialog *PropertiesDialog::open_for_target(const QString &target, bool *dialog_is_new) {
+PropertiesDialog *PropertiesDialog::open_for_target(AdInterface &ad, const QString &target, bool *dialog_is_new) {
     if (target.isEmpty()) {
         return nullptr;
     }
@@ -78,7 +78,7 @@ PropertiesDialog *PropertiesDialog::open_for_target(const QString &target, bool 
         dialog->setFocus();
     } else {
         // Make new dialog for this target
-        dialog = new PropertiesDialog(target);
+        dialog = new PropertiesDialog(ad, target);
         dialog->open();
     }
 
@@ -94,14 +94,19 @@ PropertiesDialog *PropertiesDialog::open_for_target(const QString &target, bool 
 void PropertiesDialog::open_when_view_item_activated(QAbstractItemView *view, const int dn_role) {
     connect(
         view, &QAbstractItemView::doubleClicked,
-        [dn_role](const QModelIndex &index) {
+        [view, dn_role](const QModelIndex &index) {
+            AdInterface ad;
+            if (ad_failed(ad, view)) {
+                return;
+            }
+
             const QString dn = index.data(dn_role).toString();
 
-            open_for_target(dn);
+            open_for_target(ad, dn);
         });
 }
 
-PropertiesDialog::PropertiesDialog(const QString &target_arg)
+PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
 : QDialog() {
     ui = new Ui::PropertiesDialog();
     ui->setupUi(this);
@@ -128,12 +133,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     }();
     setWindowTitle(title);
 
-    AdObject object;
-
-    AdInterface ad;
-    if (!ad_failed(ad, this)) {
-        object = ad.search_object(target);
-    }
+    const AdObject object = ad.search_object(target);
 
     // Create new tabs
     const auto add_tab = [this](PropertiesTab *tab, const QString &tab_title) {
@@ -216,9 +216,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
             this, &PropertiesDialog::on_edited);
     }
 
-    if (ad.is_connected()) {
-        reset_internal(ad);
-    }
+    reset_internal(ad);
 
     settings_setup_dialog_geometry(SETTING_properties_dialog_geometry, this);
 

@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 #include "properties_dialog.h"
 #include "select_object_dialog.h"
 
@@ -88,7 +89,12 @@ void ManagerWidget::on_change() {
 }
 
 void ManagerWidget::on_properties() {
-    PropertiesDialog::open_for_target(current_value);
+    AdInterface ad;
+    if (ad_failed(ad, this)) {
+        return;
+    }
+
+    PropertiesDialog::open_for_target(ad, current_value);
 }
 
 void ManagerWidget::on_clear() {
