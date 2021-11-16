@@ -69,7 +69,7 @@ void FSMOTab::load(AdInterface &ad) {
 
 void FSMOTab::change_master() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

@@ -359,7 +359,7 @@ void MainWindow::open_about() {
 
 void MainWindow::edit_fsmo_roles() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
