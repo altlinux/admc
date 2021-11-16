@@ -25,12 +25,16 @@
 
 #include <QPushButton>
 
-ClassFilterDialog::ClassFilterDialog(QWidget *parent)
+ClassFilterDialog::ClassFilterDialog(const QList<QString> &class_list, const QList<QString> &selected_list, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::ClassFilterDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
+
+    ui->class_filter_widget->set_classes(class_list, selected_list);
+
+    original_state = ui->class_filter_widget->save_state();
 
     connect(
         ui->button_box->button(QDialogButtonBox::Reset), &QPushButton::clicked,
@@ -41,10 +45,6 @@ ClassFilterDialog::ClassFilterDialog(QWidget *parent)
 
 ClassFilterDialog::~ClassFilterDialog() {
     delete ui;
-}
-
-void ClassFilterDialog::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
-    return ui->class_filter_widget->set_classes(class_list, selected_list);
 }
 
 QString ClassFilterDialog::get_filter() const {
@@ -63,21 +63,6 @@ void ClassFilterDialog::restore_state(const QVariant &state) {
     ui->class_filter_widget->restore_state(state);
 }
 
-
-void ClassFilterDialog::open() {
-    // Save state to later restore if dialog is is
-    // rejected
-    state_to_restore = ui->class_filter_widget->save_state();
-
-    QDialog::open();
-}
-
-void ClassFilterDialog::reject() {
-    reset();
-
-    QDialog::reject();
-}
-
 void ClassFilterDialog::reset() {
-    ui->class_filter_widget->restore_state(state_to_restore);
+    ui->class_filter_widget->restore_state(original_state);
 }

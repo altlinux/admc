@@ -43,8 +43,8 @@ SelectClassesWidget::~SelectClassesWidget() {
 void SelectClassesWidget::set_classes(const QList<QString> &class_list_arg, const QList<QString> &selected_list_arg) {
     class_list = class_list_arg;
 
-    selected_list = selected_list_arg;
-    update_class_display();
+    m_selected_list = selected_list_arg;
+    update_class_display(m_selected_list);
 }
 
 QString SelectClassesWidget::get_filter() const {
@@ -54,7 +54,7 @@ QString SelectClassesWidget::get_filter() const {
 QVariant SelectClassesWidget::save_state() const {
     QHash<QString, QVariant> state;
 
-    const QList<QVariant> selected_list_variant = string_list_to_variant_list(selected_list);
+    const QList<QVariant> selected_list_variant = string_list_to_variant_list(m_selected_list);
     state["selected_list"] = selected_list_variant;
 
     return state;
@@ -66,27 +66,26 @@ void SelectClassesWidget::restore_state(const QVariant &state_variant) {
     const QList<QVariant> saved_selected_list_variant = state["selected_list"].toList();
     const QList<QString> saved_selected_list = variant_list_to_string_list(saved_selected_list_variant);
 
-    selected_list = saved_selected_list;
-    update_class_display();
+    m_selected_list = saved_selected_list;
+    update_class_display(m_selected_list);
 }
 
 void SelectClassesWidget::open_dialog() {
-    auto dialog = new ClassFilterDialog(this);
-    dialog->set_classes(class_list, selected_list);
+    auto dialog = new ClassFilterDialog(class_list, m_selected_list, this);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
         [this, dialog]() {
             const QList<QString> new_selected_list = dialog->get_selected_classes();
-            selected_list = new_selected_list;
-            update_class_display();
+            m_selected_list = new_selected_list;
+            update_class_display(m_selected_list);
 
             filter = dialog->get_filter();
         });
 }
 
-void SelectClassesWidget::update_class_display() {
+void SelectClassesWidget::update_class_display(const QList<QString> &selected_list) {
     // Convert class list to list of class display strings,
     // then sort it and finally join by comma's
     const QString display_string = [&]() {

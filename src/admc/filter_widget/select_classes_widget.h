@@ -53,11 +53,11 @@ public:
 
 private:
     QList<QString> class_list;
-    QList<QString> selected_list;
+    QList<QString> m_selected_list;
     QString filter;
 
     void open_dialog();
-    void update_class_display();
+    void update_class_display(const QList<QString> &selected_list);
 };
 
 #endif /* SELECT_CLASSES_WIDGET_H */
