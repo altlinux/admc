@@ -314,7 +314,7 @@ void PropertiesDialog::apply() {
 
 void PropertiesDialog::reset() {
     AdInterface ad;
-    if (ad_connected(ad)) {
+    if (ad_connected(ad, this)) {
         reset_internal(ad);
     }
 }

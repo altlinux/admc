@@ -75,8 +75,8 @@ void set_data_for_row(const QList<QStandardItem *> &row, const QVariant &data, c
 // Wrappers over is_connected() that also open an error
 // messagebox if failed to connect. You should generally use
 // these in GUI code instead of is_connected().
-bool ad_connected(const AdInterface &ad, QWidget *parent = nullptr);
-bool ad_failed(const AdInterface &ad, QWidget *parent = nullptr);
+bool ad_connected(const AdInterface &ad, QWidget *parent);
+bool ad_failed(const AdInterface &ad, QWidget *parent);
 
 QString is_container_filter();
 

@@ -179,7 +179,7 @@ void ObjectImpl::fetch(const QModelIndex &index) {
     const bool dev_mode = settings_get_bool(SETTING_dev_mode);
     if (dev_mode) {
         AdInterface ad;
-        if (ad_connected(ad)) {
+        if (ad_connected(ad, console)) {
             QHash<QString, AdObject> results;
             dev_mode_search_results(results, ad, base);
 
