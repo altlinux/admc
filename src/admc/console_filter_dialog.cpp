@@ -120,12 +120,11 @@ QString ConsoleFilterDialog::get_filter() const {
 }
 
 void ConsoleFilterDialog::open_custom_dialog() {
-    auto dialog = new FilterDialog(this);
-
     // NOTE: Using only non-container classes for filtering
     // because container classes need to always be visible
     const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();
-    dialog->set_classes(noncontainer_classes, noncontainer_classes);
+
+    auto dialog = new FilterDialog(noncontainer_classes, noncontainer_classes, this);
 
     dialog->restore_state(filter_dialog_state);
 

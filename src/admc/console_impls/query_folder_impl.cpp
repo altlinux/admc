@@ -99,13 +99,10 @@ void QueryFolderImpl::on_create_query_folder() {
 }
 
 void QueryFolderImpl::on_create_query_item() {
-    auto dialog = new CreateQueryItemDialog(console);
-
     const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, QModelIndex());
 
-    dialog->set_sibling_name_list(sibling_name_list);
-
+    auto dialog = new CreateQueryItemDialog(sibling_name_list, console);
     dialog->open();
 
     connect(

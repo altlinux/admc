@@ -30,7 +30,7 @@
 
 QList<bool> shift_list(const QList<bool> &list, const int shift_amount);
 
-LogonHoursDialog::LogonHoursDialog(QWidget *parent)
+LogonHoursDialog::LogonHoursDialog(const QByteArray &value, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::LogonHoursDialog();
     ui->setupUi(this);
@@ -58,6 +58,8 @@ LogonHoursDialog::LogonHoursDialog(QWidget *parent)
 
     ui->local_time_button->setChecked(true);
     is_local_time = true;
+
+    load(value);
 
     settings_setup_dialog_geometry(SETTING_logon_hours_dialog_geometry, this);
 

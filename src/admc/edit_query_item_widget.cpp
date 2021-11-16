@@ -72,16 +72,6 @@ QByteArray EditQueryItemWidget::filter_state() const {
     return out;
 }
 
-void EditQueryItemWidget::clear() {
-    const QString name = QString();
-    const QString description = QString();
-    const bool scope_is_children = false;
-    const QByteArray filter_state = QByteArray();
-    const QString filter = QString();
-
-    set_data(name, description, scope_is_children, filter_state, filter);
-}
-
 void EditQueryItemWidget::set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter) {
     QDataStream filter_state_stream(filter_state);
     QHash<QString, QVariant> state;
@@ -99,8 +89,7 @@ void EditQueryItemWidget::set_data(const QString &name, const QString &descripti
 }
 
 void EditQueryItemWidget::open_filter_dialog() {
-    auto dialog = new FilterDialog(this);
-    dialog->set_classes(filter_classes, filter_classes);
+    auto dialog = new FilterDialog(filter_classes, filter_classes, this);
     dialog->restore_state(filter_dialog_state);
 
     dialog->open();

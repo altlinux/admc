@@ -248,13 +248,12 @@ void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, Q
 }
 
 void QueryItemImpl::on_edit_query_item() {
-    auto dialog = new EditQueryItemDialog(console);
-
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
     const QModelIndex parent_index = index.parent();
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);
-    dialog->set_sibling_name_list(sibling_name_list);
+
+    auto dialog = new EditQueryItemDialog(sibling_name_list, console);
 
     {
         QString name;

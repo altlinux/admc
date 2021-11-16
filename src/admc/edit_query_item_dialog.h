@@ -35,7 +35,7 @@ class EditQueryItemDialog : public QDialog {
 public:
     Ui::EditQueryItemDialog *ui;
 
-    EditQueryItemDialog(QWidget *parent);
+    EditQueryItemDialog(const QList<QString> &sibling_name_list, QWidget *parent);
     ~EditQueryItemDialog();
 
     void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter);
@@ -47,9 +47,6 @@ public:
     bool scope_is_children() const;
     QByteArray filter_state() const;
 
-    void set_sibling_name_list(const QList<QString> &sibling_name_list_arg);
-
-    void open() override;
     void accept() override;
 
 private:

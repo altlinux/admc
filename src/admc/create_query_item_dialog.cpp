@@ -24,12 +24,14 @@
 #include "console_impls/query_folder_impl.h"
 #include "settings.h"
 
-CreateQueryItemDialog::CreateQueryItemDialog(QWidget *parent)
+CreateQueryItemDialog::CreateQueryItemDialog(const QList<QString> &sibling_name_list_arg, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::CreateQueryItemDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
+
+    sibling_name_list = sibling_name_list_arg;
 
     settings_setup_dialog_geometry(SETTING_create_query_item_dialog_geometry, this);
 }
@@ -60,16 +62,6 @@ bool CreateQueryItemDialog::scope_is_children() const {
 
 QByteArray CreateQueryItemDialog::filter_state() const {
     return ui->edit_query_widget->filter_state();
-}
-
-void CreateQueryItemDialog::set_sibling_name_list(const QList<QString> &list) {
-    sibling_name_list = list;
-}
-
-void CreateQueryItemDialog::open() {
-    ui->edit_query_widget->clear();
-
-    QDialog::open();
 }
 
 void CreateQueryItemDialog::accept() {

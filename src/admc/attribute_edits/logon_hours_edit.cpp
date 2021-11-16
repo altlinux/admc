@@ -52,8 +52,7 @@ bool LogonHoursEdit::apply(AdInterface &ad, const QString &dn) const {
 }
 
 void LogonHoursEdit::open_dialog() {
-    auto dialog = new LogonHoursDialog(button);
-    dialog->load(current_value);
+    auto dialog = new LogonHoursDialog(current_value, button);
     dialog->open();
 
     connect(

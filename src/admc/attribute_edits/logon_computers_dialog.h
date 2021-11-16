@@ -33,10 +33,9 @@ class LogonComputersDialog final : public QDialog {
 public:
     Ui::LogonComputersDialog *ui;
 
-    LogonComputersDialog(QWidget *parent);
+    LogonComputersDialog(const QString &value, QWidget *parent);
     ~LogonComputersDialog();
 
-    void load(const QString &value);
     QString get() const;
 
 private:

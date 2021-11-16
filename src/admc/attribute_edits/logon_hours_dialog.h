@@ -56,15 +56,15 @@ class LogonHoursDialog : public QDialog {
 public:
     Ui::LogonHoursDialog *ui;
 
-    LogonHoursDialog(QWidget *parent);
+    LogonHoursDialog(const QByteArray &value, QWidget *parent);
     ~LogonHoursDialog();
 
-    void load(const QByteArray &value);
     QByteArray get() const;
 
 private:
     QStandardItemModel *model;
 
+    void load(const QByteArray &value);
     void switch_to_local_time();
     void on_local_time_button_toggled(bool checked);
     int get_offset() const;

@@ -53,8 +53,7 @@ bool LogonComputersEdit::apply(AdInterface &ad, const QString &dn) const {
 }
 
 void LogonComputersEdit::open_dialog() {
-    auto dialog = new LogonComputersDialog(button);
-    dialog->load(current_value);
+    auto dialog = new LogonComputersDialog(current_value, button);
     dialog->open();
 
     connect(

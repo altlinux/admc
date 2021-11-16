@@ -30,7 +30,7 @@
 #include "status.h"
 #include "utils.h"
 
-PasswordDialog::PasswordDialog(QWidget *parent)
+PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::PasswordDialog();
     ui->setupUi(this);
@@ -42,21 +42,8 @@ PasswordDialog::PasswordDialog(QWidget *parent)
     pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
 
     new UnlockEdit(ui->unlock_check, &edits, this);
-
-    settings_setup_dialog_geometry(SETTING_password_dialog_geometry, this);
-}
-
-PasswordDialog::~PasswordDialog() {
-    delete ui;
-}
-
-void PasswordDialog::set_target(const QString &target_arg) {
+    
     target = target_arg;
-
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
 
     const AdObject object = ad.search_object(target);
 
@@ -83,7 +70,11 @@ void PasswordDialog::set_target(const QString &target_arg) {
         ui->expired_check->setToolTip(tr("Option is unavailable because a conflicting account option is currently enabled."));
     }
 
-    g_status->display_ad_messages(ad, this);
+    settings_setup_dialog_geometry(SETTING_password_dialog_geometry, this);
+}
+
+PasswordDialog::~PasswordDialog() {
+    delete ui;
 }
 
 void PasswordDialog::accept() {

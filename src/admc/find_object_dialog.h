@@ -39,10 +39,8 @@ class FindObjectDialog final : public QDialog {
 public:
     Ui::FindObjectDialog *ui;
 
-    FindObjectDialog(const QString &default_base, QWidget *parent);
+    FindObjectDialog(ConsoleWidget *buddy_console, const QString &default_base, QWidget *parent);
     ~FindObjectDialog();
-
-    void set_buddy_console(ConsoleWidget *buddy_console);
 };
 
 #endif /* FIND_OBJECT_DIALOG_H */

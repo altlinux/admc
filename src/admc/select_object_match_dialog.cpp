@@ -27,7 +27,7 @@
 
 #include <QStandardItemModel>
 
-SelectObjectMatchDialog::SelectObjectMatchDialog(QWidget *parent)
+SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::SelectObjectMatchDialog();
     ui->setupUi(this);
@@ -41,6 +41,10 @@ SelectObjectMatchDialog::SelectObjectMatchDialog(QWidget *parent)
     ui->view->sortByColumn(0, Qt::AscendingOrder);
     ui->view->setModel(model);
 
+    for (const AdObject &object : search_results) {
+        add_select_object_to_model(model, object);
+    }
+
     settings_setup_dialog_geometry(SETTING_select_object_match_dialog_geometry, this);
     settings_restore_header_state(SETTING_select_object_match_header_state, ui->view->header());
 }
@@ -49,14 +53,6 @@ SelectObjectMatchDialog::~SelectObjectMatchDialog() {
     settings_save_header_state(SETTING_select_object_match_header_state, ui->view->header());
 
     delete ui;
-}
-
-void SelectObjectMatchDialog::set_search_results(const QHash<QString, AdObject> &search_results) {
-    model->removeRows(0, model->rowCount());
-
-    for (const AdObject &object : search_results) {
-        add_select_object_to_model(model, object);
-    }
 }
 
 QList<QString> SelectObjectMatchDialog::get_selected() const {

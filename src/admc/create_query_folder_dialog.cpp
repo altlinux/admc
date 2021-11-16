@@ -31,6 +31,14 @@ CreateQueryFolderDialog::CreateQueryFolderDialog(QWidget *parent)
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
+    
+    const QString default_name = [&]() {
+        const QString out = generate_new_name(sibling_name_list, tr("New Folder"));
+
+        return out;
+    }();
+
+    ui->name_edit->setText(default_name);
 
     settings_setup_dialog_geometry(SETTING_create_query_folder_dialog_geometry, this);
 }
@@ -49,19 +57,6 @@ QString CreateQueryFolderDialog::description() const {
 
 void CreateQueryFolderDialog::set_sibling_name_list(const QList<QString> &list) {
     sibling_name_list = list;
-}
-
-void CreateQueryFolderDialog::open() {
-    const QString default_name = [&]() {
-        const QString out = generate_new_name(sibling_name_list, tr("New Folder"));
-
-        return out;
-    }();
-
-    ui->name_edit->setText(default_name);
-    ui->description_edit->setText("");
-
-    QDialog::open();
 }
 
 void CreateQueryFolderDialog::accept() {

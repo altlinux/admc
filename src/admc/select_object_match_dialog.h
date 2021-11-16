@@ -41,10 +41,9 @@ class SelectObjectMatchDialog final : public QDialog {
 public:
     Ui::SelectObjectMatchDialog *ui;
 
-    SelectObjectMatchDialog(QWidget *parent);
+    SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent);
     ~SelectObjectMatchDialog();
 
-    void set_search_results(const QHash<QString, AdObject> &search_results);
     QList<QString> get_selected() const;
 
 private:

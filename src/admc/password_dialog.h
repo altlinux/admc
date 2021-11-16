@@ -24,6 +24,7 @@
 #include <QDialog>
 
 class AttributeEdit;
+class AdInterface;
 
 namespace Ui {
 class PasswordDialog;
@@ -36,10 +37,8 @@ class PasswordDialog final : public QDialog {
 public:
     Ui::PasswordDialog *ui;
 
-    PasswordDialog(QWidget *parent);
+    PasswordDialog(AdInterface &ad, const QString &dn, QWidget *parent);
     ~PasswordDialog();
-
-    void set_target(const QString &dn);
 
 public slots:
     void accept();

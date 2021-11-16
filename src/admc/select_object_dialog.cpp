@@ -151,8 +151,7 @@ void SelectObjectDialog::on_add_button() {
         add_objects_to_list({dn}, ad);
     } else if (search_results.size() > 1) {
         // Open dialog where you can select one of the matches
-        auto dialog = new SelectObjectMatchDialog(this);
-        dialog->set_search_results(search_results);
+        auto dialog = new SelectObjectMatchDialog(search_results, this);
         dialog->open();
 
         connect(

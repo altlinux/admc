@@ -726,16 +726,19 @@ void ObjectImpl::on_find() {
 
     const QString dn = dn_list[0];
 
-    auto find_dialog = new FindObjectDialog(dn, console);
-    find_dialog->set_buddy_console(console);
+    auto find_dialog = new FindObjectDialog(console, dn, console);
     find_dialog->open();
 }
 
 void ObjectImpl::on_reset_password() {
-    auto dialog = new PasswordDialog(console);
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
 
     const QString dn = get_selected_dn_object(console);
-    dialog->set_target(dn);
+
+    auto dialog = new PasswordDialog(ad, dn, console);
     dialog->open();
 }
 

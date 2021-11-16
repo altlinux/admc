@@ -49,7 +49,6 @@ public:
     bool scope_is_children() const;
     QByteArray filter_state() const;
 
-    void clear();
     void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter);
 
 private:

@@ -29,7 +29,7 @@
 
 #include <QMenuBar>
 
-FindObjectDialog::FindObjectDialog(const QString &default_base, QWidget *parent)
+FindObjectDialog::FindObjectDialog(ConsoleWidget *buddy_console, const QString &default_base, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::FindObjectDialog();
     ui->setupUi(this);
@@ -48,6 +48,7 @@ FindObjectDialog::FindObjectDialog(const QString &default_base, QWidget *parent)
         CLASS_GROUP,
     };
 
+    ui->find_widget->set_buddy_console(buddy_console);
     ui->find_widget->set_classes(class_list, selected_list);
     ui->find_widget->set_default_base(default_base);
     ui->find_widget->setup_action_menu(action_menu);
@@ -64,8 +65,4 @@ FindObjectDialog::~FindObjectDialog() {
     settings_set_variant(SETTING_find_object_dialog_console_state, console_state);
 
     delete ui;
-}
-
-void FindObjectDialog::set_buddy_console(ConsoleWidget *buddy_console) {
-    ui->find_widget->set_buddy_console(buddy_console);
 }
