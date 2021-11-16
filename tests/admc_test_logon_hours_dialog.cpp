@@ -27,10 +27,8 @@
 #include <QStandardItemModel>
 #include <QTableView>
 
-void ADMCTestLogonHoursDialog::init() {
-    ADMCTest::init();
-
-    dialog = new LogonHoursDialog(parent_widget);
+void ADMCTestLogonHoursDialog::open_dialog(const QByteArray &value) {
+    dialog = new LogonHoursDialog(value, parent_widget);
     dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
@@ -88,10 +86,28 @@ void ADMCTestLogonHoursDialog::conversion_funs() {
     QCOMPARE(converted_bytes, test_bytes);
 }
 
+void ADMCTestLogonHoursDialog::load_data() {
+    QTest::addColumn<QByteArray>("value");
+
+    QTest::newRow("empty") << empty_bytes;
+    QTest::newRow("non-empty") << test_bytes;
+}
+
 void ADMCTestLogonHoursDialog::load() {
+    QFETCH(QByteArray, value);
+
+    open_dialog(value);
+    
     utc_time_button->setChecked(true);
 
-    dialog->load(test_bytes);
+    const QByteArray actual_value = dialog->get();
+    QCOMPARE(actual_value, value);
+}
+
+void ADMCTestLogonHoursDialog::select() {
+    open_dialog(test_bytes);
+    
+    utc_time_button->setChecked(true);
 
     const QList<QModelIndex> selected = selection_model->selectedIndexes();
     const QSet<QModelIndex> selected_set = selected.toSet();
@@ -108,16 +124,10 @@ void ADMCTestLogonHoursDialog::load() {
 // Dialog should handle loading undefined value, where
 // bytearray is empty
 void ADMCTestLogonHoursDialog::load_undefined() {
-    dialog->load(QByteArray());
-
-    const QByteArray out = dialog->get();
-    QCOMPARE(out, empty_bytes);
-}
-
-void ADMCTestLogonHoursDialog::get_unchanged() {
-    dialog->load(test_bytes);
-    const QByteArray returned_bytes = dialog->get();
-    QCOMPARE(returned_bytes, test_bytes);
+    open_dialog(QByteArray());
+    
+    const QByteArray actual_value = dialog->get();
+    QCOMPARE(actual_value, empty_bytes);
 }
 
 void ADMCTestLogonHoursDialog::handle_timezone() {
@@ -127,7 +137,8 @@ void ADMCTestLogonHoursDialog::handle_timezone() {
 
         return out;
     }();
-    dialog->load(bytes);
+
+    open_dialog(bytes);
 
     // First do UTC
     utc_time_button->setChecked(true);
