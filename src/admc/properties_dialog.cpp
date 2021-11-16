@@ -50,6 +50,7 @@
 #include "tabs/properties_tab.h"
 #include "tabs/security_tab.h"
 #include "tabs/telephones_tab.h"
+#include "tabs/laps_tab.h"
 #include "utils.h"
 
 #include <QAbstractItemView>
@@ -203,6 +204,17 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         add_tab(new DelegationTab(), tr("Delegation"));
         add_tab(new MemberOfTab(), tr("Member of"));
         add_tab(new ManagedByTab(), tr("Managed by"));
+
+        const bool laps_enabled = [&]() {
+            const QList<QString> attribute_list = object.attributes();
+            const bool out = (attribute_list.contains(ATTRIBUTE_LAPS_PASSWORD) && attribute_list.contains(ATTRIBUTE_LAPS_EXPIRATION));
+
+            return out;
+        }();
+
+        if (laps_enabled) {
+            add_tab(new LAPSTab(), tr("LAPS"));
+        }
     }
 
     const bool need_security_tab = object.attributes().contains(ATTRIBUTE_SECURITY_DESCRIPTOR);
