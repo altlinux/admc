@@ -57,7 +57,7 @@ private:
     QString filter;
 
     void open_dialog();
-    void set_selected_list(const QList<QString> &new_selected_list);
+    void update_class_display();
 };
 
 #endif /* SELECT_CLASSES_WIDGET_H */

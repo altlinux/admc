@@ -43,7 +43,8 @@ SelectClassesWidget::~SelectClassesWidget() {
 void SelectClassesWidget::set_classes(const QList<QString> &class_list_arg, const QList<QString> &selected_list_arg) {
     class_list = class_list_arg;
 
-    set_selected_list(selected_list_arg);
+    selected_list = selected_list_arg;
+    update_class_display();
 }
 
 QString SelectClassesWidget::get_filter() const {
@@ -64,7 +65,9 @@ void SelectClassesWidget::restore_state(const QVariant &state_variant) {
 
     const QList<QVariant> saved_selected_list_variant = state["selected_list"].toList();
     const QList<QString> saved_selected_list = variant_list_to_string_list(saved_selected_list_variant);
-    set_selected_list(saved_selected_list);
+
+    selected_list = saved_selected_list;
+    update_class_display();
 }
 
 void SelectClassesWidget::open_dialog() {
@@ -76,15 +79,14 @@ void SelectClassesWidget::open_dialog() {
         dialog, &QDialog::accepted,
         [this, dialog]() {
             const QList<QString> new_selected_list = dialog->get_selected_classes();
-            set_selected_list(new_selected_list);
+            selected_list = new_selected_list;
+            update_class_display();
 
             filter = dialog->get_filter();
         });
 }
 
-void SelectClassesWidget::set_selected_list(const QList<QString> &new_selected_list) {
-    selected_list = new_selected_list;
-
+void SelectClassesWidget::update_class_display() {
     // Convert class list to list of class display strings,
     // then sort it and finally join by comma's
     const QString display_string = [&]() {
