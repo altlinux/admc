@@ -185,6 +185,7 @@ void FindWidget::find() {
         find_thread, &SearchThread::stop);
     connect(
         find_thread, &SearchThread::finished,
+        this,
         [this, find_thread]() {
             if (find_thread->failed_to_connect()) {
                 search_thread_error_log(this);
