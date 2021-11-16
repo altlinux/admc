@@ -109,4 +109,7 @@ void center_widget(QWidget *widget);
 // existing names. For example "New Folder (7)"
 QString generate_new_name(const QList<QString> &existing_name_list, const QString &base_name);
 
+QList<QString> variant_list_to_string_list(const QList<QVariant> &variant_list);
+QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list);
+
 #endif /* UTILS_H */

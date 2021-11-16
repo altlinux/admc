@@ -339,3 +339,25 @@ QString generate_new_name(const QList<QString> &existing_name_list, const QStrin
 
     return get_name();
 }
+
+QList<QString> variant_list_to_string_list(const QList<QVariant> &variant_list) {
+    QList<QString> out;
+
+    for (const QVariant &variant : variant_list) {
+        const QString string = variant.toString();
+        out.append(string);
+    }
+
+    return out;
+}
+
+QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list) {
+    QList<QVariant> out;
+
+    for (const QString &string : string_list) {
+        const QVariant variant = QVariant(string);
+        out.append(variant);
+    }
+
+    return out;
+}

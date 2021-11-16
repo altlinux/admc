@@ -55,7 +55,6 @@ private:
     QList<QString> class_list;
     QList<QString> selected_list;
     QString filter;
-    QVariant dialog_state;
 
     void open_dialog();
     void set_selected_list(const QList<QString> &new_selected_list);

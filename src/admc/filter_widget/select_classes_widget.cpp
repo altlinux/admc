@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 #include "filter_widget/class_filter_dialog.h"
 
 SelectClassesWidget::SelectClassesWidget(QWidget *parent)
@@ -52,10 +53,8 @@ QString SelectClassesWidget::get_filter() const {
 QVariant SelectClassesWidget::save_state() const {
     QHash<QString, QVariant> state;
 
-    state["dialog_state"] = dialog_state;
-
-    const QString classes_display_text = ui->classes_display->text();
-    state["classes_display_text"] = classes_display_text;
+    const QList<QVariant> selected_list_variant = string_list_to_variant_list(selected_list);
+    state["selected_list"] = selected_list_variant;
 
     return state;
 }
@@ -64,11 +63,7 @@ void SelectClassesWidget::restore_state(const QVariant &state_variant) {
     QHash<QString, QVariant> state = state_variant.toHash();
 
     const QList<QVariant> saved_selected_list_variant = state["selected_list"].toList();
-    QList<QString> saved_selected_list;
-    for (const QVariant &v : saved_selected_list_variant) {
-        saved_selected_list.append(v.toString());
-    }
-
+    const QList<QString> saved_selected_list = variant_list_to_string_list(saved_selected_list_variant);
     set_selected_list(saved_selected_list);
 }
 
