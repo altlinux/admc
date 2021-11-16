@@ -42,6 +42,7 @@ set(ADMC_SOURCES
     tab_widget.cpp
     policy_results_widget.cpp
     edit_query_item_widget.cpp
+    fsmo_tab.cpp
 
     console_filter_dialog.cpp
     password_dialog.cpp
@@ -73,6 +74,7 @@ set(ADMC_SOURCES
     connection_options_dialog.cpp
     changelog_dialog.cpp
     error_log_dialog.cpp
+    fsmo_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_dialog.cpp

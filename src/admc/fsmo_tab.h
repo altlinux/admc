@@ -18,40 +18,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef FSMO_TAB_H
+#define FSMO_TAB_H
 
-#include <QMainWindow>
-
-class AdInterface;
-class QLabel;
+#include "tabs/properties_tab.h"
 
 namespace Ui {
-class MainWindow;
+class FSMOTab;
 }
 
-class MainWindow final : public QMainWindow {
+class FSMOTab final : public QWidget {
     Q_OBJECT
 
 public:
-    Ui::MainWindow *ui;
+    Ui::FSMOTab *ui;
 
-    MainWindow(AdInterface &ad, QWidget *parent = nullptr);
-    ~MainWindow();
+    FSMOTab(const QString &title, const QString &role_dn);
+    ~FSMOTab();
 
-protected:
-    void closeEvent(QCloseEvent *event);
+    void load(AdInterface &ad);
 
 private:
-    QLabel *login_label;
+    QString role_dn;
 
-    void on_log_searches_changed();
-    void on_show_login_changed();
-    void open_manual();
-    void open_connection_options();
-    void open_changelog();
-    void open_about();
-    void edit_fsmo_roles();
+    void change_master();
 };
 
-#endif /* MAIN_WINDOW_H */
+#endif /* FSMO_TAB_H */

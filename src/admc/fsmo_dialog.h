@@ -18,40 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef FSMO_DIALOG_H
+#define FSMO_DIALOG_H
 
-#include <QMainWindow>
+/**
+ * Dialog for viewing and editing FSMO roles.
+ */
+
+#include <QDialog>
 
 class AdInterface;
-class QLabel;
 
 namespace Ui {
-class MainWindow;
+class FSMODialog;
 }
 
-class MainWindow final : public QMainWindow {
+class FSMODialog : public QDialog {
     Q_OBJECT
 
 public:
-    Ui::MainWindow *ui;
+    Ui::FSMODialog *ui;
 
-    MainWindow(AdInterface &ad, QWidget *parent = nullptr);
-    ~MainWindow();
-
-protected:
-    void closeEvent(QCloseEvent *event);
-
-private:
-    QLabel *login_label;
-
-    void on_log_searches_changed();
-    void on_show_login_changed();
-    void open_manual();
-    void open_connection_options();
-    void open_changelog();
-    void open_about();
-    void edit_fsmo_roles();
+    FSMODialog(AdInterface &ad, QWidget *parent);
+    ~FSMODialog();
 };
 
-#endif /* MAIN_WINDOW_H */
+#endif /* FSMO_DIALOG_H */

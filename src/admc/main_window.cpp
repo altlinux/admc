@@ -39,6 +39,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "fsmo_dialog.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -217,6 +218,9 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         ui->action_connection_options, &QAction::triggered,
         this, &MainWindow::open_connection_options);
     connect(
+        ui->action_edit_fsmo_roles, &QAction::triggered,
+        this, &MainWindow::edit_fsmo_roles);
+    connect(
         ui->action_quit, &QAction::triggered,
         this, &MainWindow::close);
     connect(
@@ -351,4 +355,14 @@ void MainWindow::open_changelog() {
 void MainWindow::open_about() {
     auto about_dialog = new AboutDialog(this);
     about_dialog->open();
+}
+
+void MainWindow::edit_fsmo_roles() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    auto dialog = new FSMODialog(ad, this);
+    dialog->open();
 }
