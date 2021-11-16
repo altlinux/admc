@@ -24,6 +24,7 @@
 #include <QDialog>
 
 class QStandardItemModel;
+class AdInterface;
 
 namespace Ui {
 class SelectPolicyDialog;
@@ -35,10 +36,8 @@ class SelectPolicyDialog final : public QDialog {
 public:
     Ui::SelectPolicyDialog *ui;
 
-    SelectPolicyDialog(QWidget *parent);
+    SelectPolicyDialog(AdInterface &ad, QWidget *parent);
     ~SelectPolicyDialog();
-
-    void open() override;
 
     QList<QString> get_selected_dns() const;
 

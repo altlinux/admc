@@ -636,14 +636,19 @@ void ObjectImpl::on_new_group() {
 }
 
 void ObjectImpl::on_move() {
-    auto dialog = new SelectContainerDialog(console);
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    auto dialog = new SelectContainerDialog(ad, console);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
         [this, dialog]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
+            AdInterface ad2;
+            if (ad_failed(ad2)) {
                 return;
             }
 
@@ -658,7 +663,7 @@ void ObjectImpl::on_move() {
                 QList<QString> out;
 
                 for (const QString &dn : dn_list) {
-                    const bool success = ad.object_move(dn, new_parent_dn);
+                    const bool success = ad2.object_move(dn, new_parent_dn);
 
                     if (success) {
                         out.append(dn);
@@ -668,10 +673,10 @@ void ObjectImpl::on_move() {
                 return out;
             }();
 
-            g_status->display_ad_messages(ad, nullptr);
+            g_status->display_ad_messages(ad2, nullptr);
 
             // Then move in console
-            move(ad, moved_objects, new_parent_dn);
+            move(ad2, moved_objects, new_parent_dn);
 
             hide_busy_indicator();
         });

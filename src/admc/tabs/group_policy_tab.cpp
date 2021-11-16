@@ -161,7 +161,12 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
 }
 
 void GroupPolicyTab::on_add_button() {
-    auto dialog = new SelectPolicyDialog(this);
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    auto dialog = new SelectPolicyDialog(ad, this);
     dialog->open();
 
     connect(

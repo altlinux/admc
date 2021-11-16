@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 #include "select_container_dialog.h"
 
 SelectBaseWidget::SelectBaseWidget(QWidget *parent)
@@ -60,7 +61,12 @@ QString SelectBaseWidget::get_base() const {
 }
 
 void SelectBaseWidget::open_browse_dialog() {
-    auto browse_dialog = new SelectContainerDialog(this);
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    auto browse_dialog = new SelectContainerDialog(ad, this);
     browse_dialog->open();
 
     connect(

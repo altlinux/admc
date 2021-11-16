@@ -29,29 +29,12 @@
 #include "status.h"
 #include "utils.h"
 
-CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
+CreatePolicyDialog::CreatePolicyDialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::CreatePolicyDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
-
-    settings_setup_dialog_geometry(SETTING_create_policy_dialog_geometry, this);
-}
-
-CreatePolicyDialog::~CreatePolicyDialog() {
-    delete ui;
-}
-
-QString CreatePolicyDialog::get_created_dn() const {
-    return created_dn;
-}
-
-void CreatePolicyDialog::open() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
 
     const QString default_name = [&]() {
         const QList<QString> existing_name_list = [&]() {
@@ -79,7 +62,15 @@ void CreatePolicyDialog::open() {
     ui->name_edit->setText(default_name);
     ui->name_edit->selectAll();
 
-    QDialog::open();
+    settings_setup_dialog_geometry(SETTING_create_policy_dialog_geometry, this);
+}
+
+CreatePolicyDialog::~CreatePolicyDialog() {
+    delete ui;
+}
+
+QString CreatePolicyDialog::get_created_dn() const {
+    return created_dn;
 }
 
 void CreatePolicyDialog::accept() {

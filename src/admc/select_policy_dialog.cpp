@@ -31,7 +31,7 @@
 #include <QPushButton>
 #include <QStandardItemModel>
 
-SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
+SelectPolicyDialog::SelectPolicyDialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::SelectPolicyDialog();
     ui->setupUi(this);
@@ -45,22 +45,6 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 
     QPushButton *ok_button = ui->button_box->button(QDialogButtonBox::Ok);
     enable_widget_on_selection(ok_button, ui->view);
-
-    settings_setup_dialog_geometry(SETTING_select_policy_dialog_geometry, this);
-}
-
-SelectPolicyDialog::~SelectPolicyDialog() {
-    delete ui;
-}
-
-void SelectPolicyDialog::open() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        close();
-        return;
-    }
-
-    model->removeRows(0, model->rowCount());
 
     const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
@@ -76,7 +60,11 @@ void SelectPolicyDialog::open() {
         console_policy_load_item(item, object);
     }
 
-    QDialog::open();
+    settings_setup_dialog_geometry(SETTING_select_policy_dialog_geometry, this);
+}
+
+SelectPolicyDialog::~SelectPolicyDialog() {
+    delete ui;
 }
 
 QList<QString> SelectPolicyDialog::get_selected_dns() const {
