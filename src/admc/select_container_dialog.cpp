@@ -94,7 +94,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
     const QModelIndex index = proxy_model->mapToSource(proxy_index);
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

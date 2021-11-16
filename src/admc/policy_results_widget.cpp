@@ -135,7 +135,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
     gpo = new_gpo;
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
@@ -154,7 +154,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
             sync_warning_dialog, &QDialog::accepted,
             [this]() {
                 AdInterface ad_inner;
-                if (ad_failed(ad_inner)) {
+                if (ad_failed(ad_inner, this)) {
                     return;
                 }
 
@@ -248,7 +248,7 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
     }
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
@@ -286,7 +286,7 @@ void PolicyResultsWidget::open_context_menu(const QPoint &pos) {
 
 void PolicyResultsWidget::delete_link() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

@@ -54,7 +54,7 @@ RenamePolicyDialog::~RenamePolicyDialog() {
 
 void RenamePolicyDialog::accept() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

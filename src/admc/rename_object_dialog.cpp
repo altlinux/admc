@@ -52,7 +52,7 @@ void RenameObjectDialog::init(AdInterface &ad, const QString &target_arg, QLineE
 
 void RenameObjectDialog::accept() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

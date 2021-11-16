@@ -57,7 +57,7 @@ void PolicyRootImpl::fetch(const QModelIndex &index) {
     UNUSED_ARG(index);
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -119,7 +119,7 @@ QList<int> PolicyRootImpl::default_columns() const {
 
 void PolicyRootImpl::create_policy() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -130,7 +130,7 @@ void PolicyRootImpl::create_policy() {
         dialog, &QDialog::accepted,
         [this, dialog]() {
             AdInterface ad2;
-            if (ad_failed(ad2)) {
+            if (ad_failed(ad2, console)) {
                 return;
             }
 

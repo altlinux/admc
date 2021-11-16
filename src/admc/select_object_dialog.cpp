@@ -118,7 +118,7 @@ void SelectObjectDialog::on_add_button() {
     }
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
@@ -190,7 +190,7 @@ void SelectObjectDialog::open_advanced_dialog() {
 
 void SelectObjectDialog::add_objects_to_list(const QList<QString> &dn_list) {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

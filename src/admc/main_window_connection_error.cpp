@@ -53,7 +53,7 @@ MainWindowConnectionError::~MainWindowConnectionError() {
 void MainWindowConnectionError::on_retry_button() {
     AdInterface ad;
 
-    if (ad_connected(ad)) {
+    if (ad_connected(ad, this)) {
         load_g_adconfig(ad);
 
         MainWindow *real_main_window = new MainWindow(ad, this);

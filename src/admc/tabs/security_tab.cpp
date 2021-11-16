@@ -310,7 +310,7 @@ void SecurityTab::on_add_trustee_button() {
         dialog, &SelectObjectDialog::accepted,
         [=]() {
             AdInterface ad;
-            if (ad_failed(ad)) {
+            if (ad_failed(ad, this)) {
                 return;
             }
 
@@ -443,7 +443,7 @@ void SecurityTab::on_add_well_known_trustee() {
         dialog, &QDialog::accepted,
         [this, dialog]() {
             AdInterface ad;
-            if (ad_failed(ad)) {
+            if (ad_failed(ad, this)) {
                 return;
             }
 

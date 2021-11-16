@@ -394,7 +394,7 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex
 
 void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -421,7 +421,7 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
         dialog, &QDialog::accepted,
         [this, dialog, old_dn]() {
             AdInterface ad_inner;
-            if (ad_failed(ad_inner)) {
+            if (ad_failed(ad_inner, console)) {
                 return;
             }
 
@@ -437,7 +437,7 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
 
     auto on_object_properties_applied = [=]() {
         AdInterface ad;
-        if (ad_failed(ad)) {
+        if (ad_failed(ad, console)) {
             return;
         }
 
@@ -516,7 +516,7 @@ void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
     }
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -616,7 +616,7 @@ void ObjectImpl::open_console_filter_dialog() {
 
 void ObjectImpl::on_new_user() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -637,7 +637,7 @@ void ObjectImpl::on_new_group() {
 
 void ObjectImpl::on_move() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -648,7 +648,7 @@ void ObjectImpl::on_move() {
         dialog, &QDialog::accepted,
         [this, dialog]() {
             AdInterface ad2;
-            if (ad_failed(ad2)) {
+            if (ad_failed(ad2, console)) {
                 return;
             }
 
@@ -699,7 +699,7 @@ void ObjectImpl::on_add_to_group() {
         dialog, &SelectObjectDialog::accepted,
         [=]() {
             AdInterface ad;
-            if (ad_failed(ad)) {
+            if (ad_failed(ad, console)) {
                 return;
             }
 
@@ -732,7 +732,7 @@ void ObjectImpl::on_find() {
 
 void ObjectImpl::on_reset_password() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -744,7 +744,7 @@ void ObjectImpl::on_reset_password() {
 
 void ObjectImpl::on_edit_upn_suffixes() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -766,7 +766,7 @@ void ObjectImpl::on_edit_upn_suffixes() {
         dialog, &QDialog::accepted,
         [this, dialog, partitions_dn]() {
             AdInterface ad_inner;
-            if (ad_failed(ad_inner)) {
+            if (ad_failed(ad_inner, console)) {
                 return;
             }
 
@@ -779,7 +779,7 @@ void ObjectImpl::on_edit_upn_suffixes() {
 
 void ObjectImpl::on_reset_account() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -800,7 +800,7 @@ void ObjectImpl::new_object(CreateObjectDialog *dialog) {
         dialog, &QDialog::accepted,
         [this, dialog, parent_dn]() {
             AdInterface ad;
-            if (ad_failed(ad)) {
+            if (ad_failed(ad, console)) {
                 return;
             }
 
@@ -842,7 +842,7 @@ void ObjectImpl::new_object(CreateObjectDialog *dialog) {
 
 void ObjectImpl::set_disabled(const bool disabled) {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -889,7 +889,7 @@ void ObjectImpl::drop_objects(const QList<QPersistentModelIndex> &dropped_list, 
     const QString target_dn = target.data(ObjectRole_DN).toString();
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 

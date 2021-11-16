@@ -62,7 +62,7 @@ QString SelectBaseWidget::get_base() const {
 
 void SelectBaseWidget::open_browse_dialog() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

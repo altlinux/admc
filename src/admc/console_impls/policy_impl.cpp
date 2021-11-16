@@ -152,7 +152,7 @@ void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -166,7 +166,7 @@ void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
         dialog, &QDialog::accepted,
         [this, index, dn]() {
             AdInterface ad_inner;
-            if (ad_failed(ad_inner)) {
+            if (ad_failed(ad_inner, console)) {
                 return;
             }
 
@@ -184,7 +184,7 @@ void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
     }
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -241,7 +241,7 @@ void PolicyImpl::properties(const QList<QModelIndex> &index_list) {
 
 void PolicyImpl::add_link(const QList<QString> &policy_list, const QList<QString> &ou_list) {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -298,7 +298,7 @@ void PolicyImpl::on_edit() {
 
     const QString filesys_path = [&]() {
         AdInterface ad;
-        if (ad_failed(ad)) {
+        if (ad_failed(ad, console)) {
             return QString();
         }
 

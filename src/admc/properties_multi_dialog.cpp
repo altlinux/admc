@@ -48,7 +48,7 @@ PropertiesMultiDialog::PropertiesMultiDialog(const QList<QString> &target_list_a
     target_list = target_list_arg;
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         close();
 
         return;
@@ -98,7 +98,7 @@ void PropertiesMultiDialog::accept() {
 
 bool PropertiesMultiDialog::apply() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return false;
     }
 

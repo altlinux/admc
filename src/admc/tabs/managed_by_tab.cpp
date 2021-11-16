@@ -65,7 +65,7 @@ ManagedByTab::~ManagedByTab() {
 
 void ManagedByTab::on_manager_edited() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

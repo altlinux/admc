@@ -52,7 +52,7 @@ void CreateObjectDialog::set_parent_dn(const QString &dn) {
 
 void CreateObjectDialog::accept() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

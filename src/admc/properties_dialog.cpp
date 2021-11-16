@@ -131,7 +131,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     AdObject object;
 
     AdInterface ad;
-    if (!ad_failed(ad)) {
+    if (!ad_failed(ad, this)) {
         object = ad.search_object(target);
     }
 
@@ -262,7 +262,7 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
         dialog, &QDialog::accepted,
         [this]() {
             AdInterface ad;
-            if (ad_failed(ad)) {
+            if (ad_failed(ad, this)) {
                 return;
             }
 
@@ -282,7 +282,7 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
 
 void PropertiesDialog::accept() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
@@ -301,7 +301,7 @@ void PropertiesDialog::done(int r) {
 
 void PropertiesDialog::apply() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

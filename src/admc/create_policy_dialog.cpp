@@ -75,7 +75,7 @@ QString CreatePolicyDialog::get_created_dn() const {
 
 void CreatePolicyDialog::accept() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

@@ -79,7 +79,7 @@ PasswordDialog::~PasswordDialog() {
 
 void PasswordDialog::accept() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
