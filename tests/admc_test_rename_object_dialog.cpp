@@ -37,8 +37,7 @@ void ADMCTestRenameObjectDialog::rename() {
     QVERIFY(object_exists(old_dn));
 
     // Open rename dialog
-    auto rename_object_dialog = new RenameUserDialog(parent_widget);
-    rename_object_dialog->set_target(old_dn);
+    auto rename_object_dialog = new RenameUserDialog(ad, old_dn, parent_widget);
     rename_object_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(rename_object_dialog, 1000));
 

@@ -38,7 +38,7 @@ void ADMCTestCreateObjectDialog::create_user() {
     const QString dn = test_object_dn(name, CLASS_USER);
 
     // Create user
-    auto create_dialog = new CreateUserDialog(parent_widget);
+    auto create_dialog = new CreateUserDialog(ad, parent_widget);
     create_dialog->set_parent_dn(parent);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
