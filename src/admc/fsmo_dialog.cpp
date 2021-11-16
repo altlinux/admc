@@ -71,11 +71,11 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
 
             switch (role) {
                 case FSMORole_DomainDNS: return QString("CN=Infrastructure,DC=DomainDnsZones,%1").arg(domain_dn);
-                case FSMORole_ForestDNS: return QString("CN=Infrastructure,DC=DomainDnsZones,%1").arg(domain_dn);
+                case FSMORole_ForestDNS: return QString("CN=Infrastructure,DC=ForestDnsZones,%1").arg(domain_dn);
                 case FSMORole_PDCEmulation: return domain_dn;
                 case FSMORole_Schema: return g_adconfig->schema_dn();
                 case FSMORole_DomainNaming: return g_adconfig->partitions_dn();
-                case FSMORole_Infrastructure: return QString("CN=Infrastructure,DC=DomainDnsZones,%1").arg(domain_dn);
+                case FSMORole_Infrastructure: return QString("CN=Infrastructure,%1").arg(domain_dn);
                 case FSMORole_RidAllocation: return QString("CN=RID Manager$,CN=System,%1").arg(domain_dn);
 
                 case FSMORole_COUNT: break;
