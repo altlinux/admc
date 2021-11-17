@@ -398,7 +398,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     }
 
     // Create page control
-    const ber_int_t page_size = 1000;
+    const ber_int_t page_size = 100;
     result = ldap_create_page_control(ld, page_size, prev_cookie, is_critical, &page_control);
     if (result != LDAP_SUCCESS) {
         qDebug() << "Failed to create page control: " << ldap_err2string(result);
