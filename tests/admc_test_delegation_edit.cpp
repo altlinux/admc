@@ -20,28 +20,35 @@
 
 #include "admc_test_delegation_edit.h"
 
-#include "edits/delegation_edit.h"
+#include "attribute_edits/delegation_edit.h"
 #include "globals.h"
 
 #include <QRadioButton>
 
 void ADMCTestDelegationEdit::initTestCase_data() {
-    QTest::addColumn<QString>("button_name");
+    QTest::addColumn<bool>("use_on_button");
     QTest::addColumn<bool>("is_on");
 
-    QTest::newRow("on") << "on_button" << true;
-    QTest::newRow("off") << "off_button" << false;
+    QTest::newRow("on") << true << true;
+    QTest::newRow("off") << false << false;
 }
 
 void ADMCTestDelegationEdit::init() {
     ADMCTest::init();
 
-    edit = new DelegationEdit(&edits, parent_widget);
-    add_attribute_edit(edit);
+    auto on_button = new QRadioButton(parent_widget);
+    auto off_button = new QRadioButton(parent_widget);
 
-    QFETCH_GLOBAL(QString, button_name);
-    button = parent_widget->findChild<QRadioButton *>(button_name);
-    QVERIFY(button != nullptr);
+    edit = new DelegationEdit(off_button, on_button, &edits, parent_widget);
+
+    QFETCH_GLOBAL(bool, use_on_button);
+    button = [&]() {
+        if (use_on_button) {
+            return on_button;
+        } else {
+            return off_button;
+        }
+    }();
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);

@@ -2,12 +2,12 @@ find_package(Qt5 REQUIRED
     COMPONENTS
         Core
         Widgets
-        Help
         LinguistTools
 )
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 set(ADMC_APPLICATION_NAME "ADMC")
 set(ADMC_APPLICATION_DISPLAY_NAME "ADMC")
@@ -25,68 +25,77 @@ include_directories(
 link_libraries(
     Qt5::Core
     Qt5::Widgets
-    Qt5::Help
     adldap
     resolv
 )
 
 set(ADMC_SOURCES
-    properties_dialog.cpp
-    main_window.cpp
     status.cpp
-    select_object_dialog.cpp
-    console_actions.cpp
-    password_dialog.cpp
-    find_results.cpp
-    filter_dialog.cpp
-    filter_custom_dialog.cpp
-    find_widget.cpp
-    tab_widget.cpp
-    central_widget.cpp
     search_thread.cpp
-    help_browser.cpp
     globals.cpp
     utils.cpp
     settings.cpp
-    policy_results_widget.cpp
-    filter_classes_widget.cpp
-    edit_query_item_widget.cpp
-    
-    console_types/console_object.cpp
-    console_types/console_policy.cpp
-    console_types/console_query.cpp
+    widget_state.cpp
 
-    move_object_dialog.cpp
+    main_window.cpp
+    main_window_connection_error.cpp
+    find_widget.cpp
+    tab_widget.cpp
+    policy_results_widget.cpp
+    edit_query_item_widget.cpp
+
+    console_filter_dialog.cpp
+    password_dialog.cpp
     rename_object_dialog.cpp
+    rename_other_dialog.cpp
     rename_policy_dialog.cpp
+    rename_user_dialog.cpp
+    rename_group_dialog.cpp
     create_object_dialog.cpp
-    find_object_dialog.cpp
-    select_object_advanced_dialog.cpp
-    select_container_dialog.cpp
-    about_dialog.cpp
-    manual_dialog.cpp
-    select_policy_dialog.cpp
+    create_user_dialog.cpp
+    create_group_dialog.cpp
+    create_computer_dialog.cpp
+    create_ou_dialog.cpp
     create_policy_dialog.cpp
     create_query_item_dialog.cpp
     create_query_folder_dialog.cpp
+    find_object_dialog.cpp
+    select_object_dialog.cpp
+    select_object_match_dialog.cpp
+    select_object_advanced_dialog.cpp
+    select_container_dialog.cpp
+    select_policy_dialog.cpp
+    about_dialog.cpp
     edit_query_item_dialog.cpp
     edit_query_folder_dialog.cpp
-    object_multi_properties_dialog.cpp
-    change_dc_dialog.cpp
+    properties_dialog.cpp
+    properties_multi_dialog.cpp
+    properties_warning_dialog.cpp
     connection_options_dialog.cpp
+    changelog_dialog.cpp
+    error_log_dialog.cpp
 
     filter_widget/filter_widget.cpp
+    filter_widget/filter_dialog.cpp
     filter_widget/filter_widget_simple_tab.cpp
     filter_widget/filter_widget_normal_tab.cpp
     filter_widget/filter_widget_advanced_tab.cpp
     filter_widget/select_classes_widget.cpp
-    filter_widget/filter_builder.cpp
+    filter_widget/class_filter_widget.cpp
+    filter_widget/class_filter_dialog.cpp
     filter_widget/select_base_widget.cpp
     
     tabs/properties_tab.cpp
-    tabs/general_tab.cpp
+    tabs/general_user_tab.cpp
+    tabs/general_group_tab.cpp
+    tabs/general_ou_tab.cpp
+    tabs/general_computer_tab.cpp
+    tabs/general_policy_tab.cpp
+    tabs/general_other_tab.cpp
     tabs/object_tab.cpp
     tabs/attributes_tab.cpp
+    tabs/attributes_tab_proxy.cpp
+    tabs/attributes_tab_filter_menu.cpp
     tabs/account_tab.cpp
     tabs/membership_tab.cpp
     tabs/address_tab.cpp
@@ -99,59 +108,70 @@ set(ADMC_SOURCES
     tabs/security_tab.cpp
     tabs/os_tab.cpp
     tabs/delegation_tab.cpp
+    tabs/select_well_known_trustee_dialog.cpp
 
     multi_tabs/properties_multi_tab.cpp
-    multi_tabs/general_multi_tab.cpp
+    multi_tabs/general_user_multi_tab.cpp
+    multi_tabs/general_other_multi_tab.cpp
     multi_tabs/account_multi_tab.cpp
     multi_tabs/address_multi_tab.cpp
     multi_tabs/profile_multi_tab.cpp
     multi_tabs/organization_multi_tab.cpp
 
-    multi_edits/attribute_multi_edit.cpp
-    multi_edits/string_multi_edit.cpp
-    multi_edits/expiry_multi_edit.cpp
-    multi_edits/upn_multi_edit.cpp
-    multi_edits/account_option_multi_edit.cpp
-    multi_edits/country_multi_edit.cpp
-    multi_edits/manager_multi_edit.cpp
+    attribute_edits/attribute_edit.cpp
+    attribute_edits/string_edit.cpp
+    attribute_edits/string_other_edit.cpp
+    attribute_edits/string_large_edit.cpp
+    attribute_edits/sam_name_edit.cpp
+    attribute_edits/country_edit.cpp
+    attribute_edits/expiry_edit.cpp
+    attribute_edits/expiry_widget.cpp
+    attribute_edits/unlock_edit.cpp
+    attribute_edits/group_scope_edit.cpp
+    attribute_edits/group_type_edit.cpp
+    attribute_edits/account_option_edit.cpp
+    attribute_edits/password_edit.cpp
+    attribute_edits/datetime_edit.cpp
+    attribute_edits/gpoptions_edit.cpp
+    attribute_edits/manager_edit.cpp
+    attribute_edits/upn_edit.cpp
+    attribute_edits/upn_suffix_combo.cpp
+    attribute_edits/country_combo.cpp
+    attribute_edits/manager_widget.cpp
+    attribute_edits/delegation_edit.cpp
+    attribute_edits/logon_hours_edit.cpp
+    attribute_edits/logon_hours_dialog.cpp
+    attribute_edits/logon_computers_edit.cpp
+    attribute_edits/logon_computers_dialog.cpp
+    attribute_edits/protect_deletion_edit.cpp
 
-    editors/attribute_editor.cpp
-    editors/multi_editor.cpp
-    editors/string_editor.cpp
-    editors/octet_editor.cpp
-    editors/bool_editor.cpp
-    editors/datetime_editor.cpp
+    attribute_multi_edits/attribute_multi_edit.cpp
+    attribute_multi_edits/string_multi_edit.cpp
+    attribute_multi_edits/expiry_multi_edit.cpp
+    attribute_multi_edits/upn_multi_edit.cpp
+    attribute_multi_edits/account_option_multi_edit.cpp
+    attribute_multi_edits/country_multi_edit.cpp
+    attribute_multi_edits/manager_multi_edit.cpp
 
-    edits/attribute_edit.cpp
-    edits/string_edit.cpp
-    edits/string_other_edit.cpp
-    edits/string_large_edit.cpp
-    edits/country_edit.cpp
-    edits/expiry_edit.cpp
-    edits/expiry_widget.cpp
-    edits/unlock_edit.cpp
-    edits/group_scope_edit.cpp
-    edits/group_type_edit.cpp
-    edits/account_option_edit.cpp
-    edits/password_edit.cpp
-    edits/datetime_edit.cpp
-    edits/gpoptions_edit.cpp
-    edits/manager_edit.cpp
-    edits/upn_edit.cpp
-    edits/upn_suffix_widget.cpp
-    edits/country_widget.cpp
-    edits/manager_widget.cpp
-    edits/delegation_edit.cpp
-    edits/logon_hours_edit.cpp
-    edits/logon_computers_edit.cpp
-    edits/protect_deletion_edit.cpp
+    attribute_dialogs/attribute_dialog.cpp
+    attribute_dialogs/list_attribute_dialog.cpp
+    attribute_dialogs/string_attribute_dialog.cpp
+    attribute_dialogs/octet_attribute_dialog.cpp
+    attribute_dialogs/bool_attribute_dialog.cpp
+    attribute_dialogs/datetime_attribute_dialog.cpp
 
     console_widget/console_widget.cpp
     console_widget/scope_proxy_model.cpp
     console_widget/customize_columns_dialog.cpp
-    console_widget/results_description.cpp
     console_widget/results_view.cpp
     console_widget/console_drag_model.cpp
+    console_widget/console_impl.cpp
+
+    console_impls/object_impl.cpp
+    console_impls/policy_impl.cpp
+    console_impls/query_item_impl.cpp
+    console_impls/query_folder_impl.cpp
+    console_impls/policy_root_impl.cpp
 
     admc.qrc
 )

@@ -19,57 +19,40 @@
  */
 
 #include "rename_policy_dialog.h"
+#include "ui_rename_policy_dialog.h"
 
 #include "adldap.h"
-#include "console_types/console_policy.h"
 #include "globals.h"
 #include "rename_object_dialog.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QLineEdit>
-#include <QModelIndex>
 #include <QPushButton>
-#include <QVBoxLayout>
 
-RenamePolicyDialog::RenamePolicyDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
-    console = console_arg;
+RenamePolicyDialog::RenamePolicyDialog(QWidget *parent)
+: QDialog(parent) {
+    ui = new Ui::RenamePolicyDialog();
+    ui->setupUi(this);
 
-    setWindowTitle(tr("Rename Policy"));
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    name_edit = new QLineEdit();
+    ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    reset_button = ui->button_box->button(QDialogButtonBox::Reset);
 
-    auto button_box = new QDialogButtonBox();
-    ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    const auto edits_layout = new QFormLayout();
-    // NOTE: label name edit as "Name" even though it edits
-    // display name attribute
-    edits_layout->addRow(tr("Name:"), name_edit);
-
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edits_layout);
-    top_layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
     connect(
         reset_button, &QPushButton::clicked,
         this, &RenamePolicyDialog::reset);
     connect(
-        name_edit, &QLineEdit::textChanged,
+        ui->name_edit, &QLineEdit::textChanged,
         this, &RenamePolicyDialog::on_edited);
     on_edited();
+
+    settings_setup_dialog_geometry(SETTING_rename_policy_dialog_geometry, this);
+}
+
+RenamePolicyDialog::~RenamePolicyDialog() {
+    delete ui;
 }
 
 void RenamePolicyDialog::open() {
@@ -84,26 +67,35 @@ void RenamePolicyDialog::accept() {
         return;
     }
 
-    const QModelIndex index = console->get_selected_item();
-    const QString old_name = index.data(Qt::DisplayRole).toString();
-
-    const QString new_name = name_edit->text();
-    const bool apply_success = ad.attribute_replace_string(target, ATTRIBUTE_DISPLAY_NAME, new_name);
+    const QString new_name = ui->name_edit->text();
+    const bool apply_success = ad.attribute_replace_string(target_dn, ATTRIBUTE_DISPLAY_NAME, new_name);
 
     if (apply_success) {
-        RenameObjectDialog::success_msg(old_name);
-        QDialog::accept();
+        RenameObjectDialog::success_msg(target_old_name);
     } else {
-        RenameObjectDialog::fail_msg(old_name);
+        RenameObjectDialog::fail_msg(target_old_name);
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
-    const QString dn = index.data(PolicyRole_DN).toString();
-    const AdObject object = ad.search_object(dn);
+    if (apply_success) {
+        QDialog::accept();
+    }
+}
 
-    const QList<QStandardItem *> row = console->get_row(index);
-    console_policy_load(row, object);
+void RenamePolicyDialog::set_target(const QString &dn) {
+    target_dn = dn;
+
+    target_old_name = [&]() {
+        AdInterface ad;
+        if (ad_failed(ad)) {
+            return QString();
+        }
+
+        const AdObject object = ad.search_object(target_dn);
+
+        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    }();
 }
 
 void RenamePolicyDialog::on_edited() {
@@ -112,20 +104,8 @@ void RenamePolicyDialog::on_edited() {
 }
 
 void RenamePolicyDialog::reset() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    const QString name = [&]() {
-        const QModelIndex index = console->get_selected_item();
-        const QString dn = index.data(PolicyRole_DN).toString();
-        const AdObject object = ad.search_object(dn);
-
-        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
-    }();
-    name_edit->setText(name);
-
     reset_button->setEnabled(false);
     ok_button->setEnabled(false);
+
+    ui->name_edit->setText(target_old_name);
 }

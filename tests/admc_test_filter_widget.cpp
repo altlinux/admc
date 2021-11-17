@@ -20,10 +20,17 @@
 
 #include "admc_test_filter_widget.h"
 
-#include "filter_classes_widget.h"
-#include "filter_widget/filter_builder.h"
+#include "filter_widget/class_filter_widget.h"
 #include "filter_widget/filter_widget.h"
+#include "filter_widget/filter_widget_advanced_tab.h"
+#include "filter_widget/filter_widget_normal_tab.h"
+#include "filter_widget/filter_widget_simple_tab.h"
 #include "filter_widget/select_classes_widget.h"
+#include "filter_widget/ui_filter_widget.h"
+#include "filter_widget/ui_filter_widget_advanced_tab.h"
+#include "filter_widget/ui_filter_widget_normal_tab.h"
+#include "filter_widget/ui_filter_widget_simple_tab.h"
+#include "filter_widget/ui_select_classes_widget.h"
 
 #include <QCheckBox>
 #include <QDialog>
@@ -33,44 +40,32 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 
-#define SIMPLE_TAB_INDEX 0
-#define NORMAL_TAB_INDEX 1
-#define ADVANCED_TAB_INDEX 2
-
 void ADMCTestFilterWidget::init() {
     ADMCTest::init();
 
-    filter_widget = new FilterWidget(filter_classes);
+    filter_widget = new FilterWidget();
+    filter_widget->set_classes(filter_classes, filter_classes);
     add_widget(filter_widget);
 
-    tab_widget = filter_widget->findChild<QTabWidget *>();
-    QVERIFY(tab_widget != nullptr);
-
-    simple_tab = tab_widget->widget(SIMPLE_TAB_INDEX);
-    QVERIFY(simple_tab != nullptr);
-
-    normal_tab = tab_widget->widget(NORMAL_TAB_INDEX);
-    QVERIFY(normal_tab != nullptr);
-
-    advanced_tab = tab_widget->widget(ADVANCED_TAB_INDEX);
-    QVERIFY(advanced_tab != nullptr);
+    tab_widget = filter_widget->ui->tab_widget;
+    simple_tab = filter_widget->ui->simple_tab;
+    normal_tab = filter_widget->ui->normal_tab;
+    advanced_tab = filter_widget->ui->advanced_tab;
 }
 
 void ADMCTestFilterWidget::test_simple_tab() {
-    tab_widget->setCurrentIndex(SIMPLE_TAB_INDEX);
+    tab_widget->setCurrentWidget(simple_tab);
 
-    auto select_classes_widget = simple_tab->findChild<SelectClassesWidget *>();
-    QVERIFY(select_classes_widget != nullptr);
+    SelectClassesWidget *select_classes_widget = simple_tab->ui->select_classes_widget;
 
-    auto select_button = select_classes_widget->findChild<QPushButton *>();
-    QVERIFY(select_button != nullptr);
+    QPushButton *select_button = select_classes_widget->ui->select_button;
     select_button->click();
 
-    auto select_classes_dialog = select_classes_widget->findChild<QDialog *>();
-    QVERIFY(select_classes_dialog != nullptr);
-    QVERIFY(QTest::qWaitForWindowExposed(select_classes_dialog, 1000));
+    auto class_filter_dialog = select_classes_widget->findChild<QDialog *>();
+    QVERIFY(class_filter_dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(class_filter_dialog, 1000));
 
-    const QList<QCheckBox *> checkbox_list = select_classes_dialog->findChildren<QCheckBox *>();
+    const QList<QCheckBox *> checkbox_list = class_filter_dialog->findChildren<QCheckBox *>();
     QVERIFY(!checkbox_list.isEmpty());
 
     for (QCheckBox *checkbox : checkbox_list) {
@@ -78,14 +73,14 @@ void ADMCTestFilterWidget::test_simple_tab() {
         checkbox->setChecked(checked);
     }
 
-    select_classes_dialog->accept();
+    class_filter_dialog->accept();
 
-    QLineEdit *name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
+    QLineEdit *name_edit = simple_tab->ui->name_edit;
     name_edit->setText("test");
 
     const QString correct_filter = "(&(name=*test*)(objectClass=user))";
     const QString filter = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter);
+    QCOMPARE(correct_filter, filter);
 
     // Serialize
     const QVariant state = filter_widget->save_state();
@@ -97,24 +92,22 @@ void ADMCTestFilterWidget::test_simple_tab() {
     filter_widget->restore_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter_deserialized);
+    QCOMPARE(correct_filter, filter_deserialized);
 }
 
 void ADMCTestFilterWidget::test_normal_tab() {
-    tab_widget->setCurrentIndex(NORMAL_TAB_INDEX);
+    tab_widget->setCurrentWidget(normal_tab);
 
-    auto select_classes_widget = normal_tab->findChild<SelectClassesWidget *>();
-    QVERIFY(select_classes_widget != nullptr);
+    SelectClassesWidget *select_classes_widget = normal_tab->ui->select_classes_widget;
 
-    auto select_button = select_classes_widget->findChild<QPushButton *>();
-    QVERIFY(select_button != nullptr);
+    QPushButton *select_button = select_classes_widget->ui->select_button;
     select_button->click();
 
-    auto select_classes_dialog = select_classes_widget->findChild<QDialog *>();
-    QVERIFY(select_classes_dialog != nullptr);
-    QVERIFY(QTest::qWaitForWindowExposed(select_classes_dialog, 1000));
+    auto class_filter_dialog = select_classes_widget->findChild<QDialog *>();
+    QVERIFY(class_filter_dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(class_filter_dialog, 1000));
 
-    const QList<QCheckBox *> checkbox_list = select_classes_dialog->findChildren<QCheckBox *>();
+    const QList<QCheckBox *> checkbox_list = class_filter_dialog->findChildren<QCheckBox *>();
     QVERIFY(!checkbox_list.isEmpty());
 
     for (QCheckBox *checkbox : checkbox_list) {
@@ -122,22 +115,17 @@ void ADMCTestFilterWidget::test_normal_tab() {
         checkbox->setChecked(checked);
     }
 
-    select_classes_dialog->accept();
+    class_filter_dialog->accept();
 
-    auto filter_builder = normal_tab->findChild<FilterBuilder *>();
-    QVERIFY(filter_builder != nullptr);
-
-    QLineEdit *value_edit = filter_builder->findChild<QLineEdit *>("value_edit");
-    QVERIFY(value_edit != nullptr);
+    QLineEdit *value_edit = normal_tab->ui->value_edit;
     value_edit->setText("value");
 
-    QPushButton *add_button = normal_tab->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button != nullptr);
+    QPushButton *add_button = normal_tab->ui->add_button;
     add_button->click();
 
     const QString correct_filter = "(&(objectClass=user)(assistant=value))";
     const QString filter = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter);
+    QCOMPARE(correct_filter, filter);
 
     // Serialize
     const QVariant state = filter_widget->save_state();
@@ -150,20 +138,19 @@ void ADMCTestFilterWidget::test_normal_tab() {
     filter_widget->restore_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter_deserialized);
+    QCOMPARE(correct_filter, filter_deserialized);
 }
 
 void ADMCTestFilterWidget::test_advanced_tab() {
-    tab_widget->setCurrentIndex(ADVANCED_TAB_INDEX);
+    tab_widget->setCurrentWidget(advanced_tab);
 
-    auto edit = advanced_tab->findChild<QPlainTextEdit *>();
-    QVERIFY(edit != nullptr);
+    QPlainTextEdit *edit = advanced_tab->ui->ldap_filter_edit;
 
     edit->setPlainText("test");
 
     const QString correct_filter = "test";
     const QString filter = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter);
+    QCOMPARE(correct_filter, filter);
 
     // Serialize
     const QVariant state = filter_widget->save_state();
@@ -175,7 +162,7 @@ void ADMCTestFilterWidget::test_advanced_tab() {
     filter_widget->restore_state(state);
 
     const QString filter_deserialized = filter_widget->get_filter();
-    QVERIFY(correct_filter == filter_deserialized);
+    QCOMPARE(correct_filter, filter_deserialized);
 }
 
 QTEST_MAIN(ADMCTestFilterWidget)

@@ -23,18 +23,27 @@
 
 #include <QDialog>
 
-class QTreeView;
+class QStandardItemModel;
+
+namespace Ui {
+class SelectPolicyDialog;
+}
 
 class SelectPolicyDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::SelectPolicyDialog *ui;
+
     SelectPolicyDialog(QWidget *parent);
+    ~SelectPolicyDialog();
+
+    void open() override;
 
     QList<QString> get_selected_dns() const;
 
 private:
-    QTreeView *view;
+    QStandardItemModel *model;
 };
 
 #endif /* SELECT_POLICY_DIALOG_H */

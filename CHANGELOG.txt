@@ -2,12 +2,98 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
- VERSION 0.7.1 (Released 23-09-2021)
+ VERSION 0.8.0
+-----------------------------------------------------------------------
+- Connection: Added a new window for case where app fails to
+  connect to domain on startup. This window contains
+  connection options and a way to retry connection. Removed
+  "Connect" action from main window's menubar.
+- Console: Removed display of current domain controller in
+  domain item. It can now be seen in connection options.
+- Console: Fixed bug with overlapping object
+  fetches/refreshes. Happened when refreshing an object
+  while it's children are still being loaded. (#290)
+- Console: Fixed restoration of results state. State was
+  saved but then sometimes restoration failed. Includes
+  things like visible columns and sorting. (#299)
+- Menubar: Fixed custom filter in "Filter objects" dialog
+  not being saved.
+- Menubar: Removed "Navigation" menu because it's not
+  useful. Navigation actions can still be accessed from the
+  toolbar in a much more convenient manner.
+- Menubar: Added a way to view changelog in the app. Opened
+  from "Help" menu.
+- Menubar: Manual is now opened as an online version on the
+  wiki.
+- Action menu: Improved order of actions.
+- Find dialog: Fixed object action effects in find results,
+  for example objects not getting removed after being
+  deleted in find results. (#296)
+- Find dialog: Added missing "View" actions to find dialog
+  ("Icon", "List", "Detail").
+- Find dialog: Added "View" menu to find dialog opened from
+  select object dialog.
+- Find dialog: Implemented propagation of changes from Find
+  dialog to the main window. For example, deleting an object
+  in Find dialog will also remove it from the console in
+  Main window. (#298)
+- Find dialog: Added "Clear" button which clears filter
+  input and all results. (#314)
+- Find dialog: Implemented updating of objects in find
+  dialog after move/rename.
+- Select object dialog: Added "Clear" button which clears
+  filter input and all results. (#314)
+- Queries: Added "out of date" state to queries. In that
+  state query icon and tooltip change to indicate that the
+  query is in that state. Queries become out of date when
+  their child objects are renamed or moved.
+- Queries: Fixed query tree saving objects into settings
+  file, which can make the file unnecessarily big. This also
+  speeds up app shutdown. (#300)
+- Queries: Added ability to cut/copy/paste multiple query
+  item and/or folders.
+- Policies: Added Properties for policies in the policy
+  tree. Contains policy-specific information as well as a security tab. (#278)
+- Properties: Fixed changes not propagating from other tabs
+  to Attributes tab after apply. For example, changing
+  "description" in general tab now also updates it in
+  Attributes tab. (#306)
+- Managed by tab: Fixed unaccessible "Other" fields. Button
+  is now enabled and opens a read only sub-dialog. (#311)
+- Account tab: Fixed incorrect behavior of the "Cannot
+  delegate" account option. It was turning on "Trusted for
+  delegation option". Also fixed display of status for those
+  options. (#305)
+- Misc: Added expanded default names when creating policies
+  and query folders, before had just one default, now will
+  offer a numbered default depending on what already
+  exist. (#302)
+- Misc: Moved UI element toggle actions from "Preferences"
+  to "View" menu.
+- Misc: Fixed hanging/crashing when logged in as
+  non-privileged user. (#301)
+- Misc: Added display of currently login to status bar
+  (username@domain.com for example).
+- Misc: Fixed incorrect display of "Enable"/"Disable"
+  actions for user objects. Before, "Disable" was shown for
+  already disabled users. (#297)
+- Misc: Fixed password dialog sometimes not applying the
+  "Password expired" option. (#304)
+- Misc: Fixed stack smashing on 32 bit systems. (#294)
+- Misc: Fixed crash when creating a user with name
+  containing leading or trailing whitespace and enabling
+  "Must change pass" option. This also fixes a similar issue
+  when creating OU's and renaming users. (#308)
+- Misc: Moved "Change domain controller" functionality to
+  connection options.
+
+-----------------------------------------------------------------------
+ VERSION 0.7.1
 -----------------------------------------------------------------------
 - Misc: Fix stack smashing on 32 bit systems. (#294)
 
 -----------------------------------------------------------------------
- VERSION 0.7.0 (Released 20-08-2021)
+ VERSION 0.7.0
 -----------------------------------------------------------------------
 - Manual: Fixed manual not opening when app is installed
   fresh. (#267)
@@ -41,7 +127,7 @@ CHANGELOG
 - Misc: Added a toolbar. (#257)
 
 -----------------------------------------------------------------------
- VERSION 0.6.4 (Released 05-08-2021)
+ VERSION 0.6.4
 -----------------------------------------------------------------------
 - Queries: Fixed query edit dialog not loading state
   correctly. Was loading some fields as blank. (#255)
@@ -65,12 +151,12 @@ CHANGELOG
   (#262)
 
 -----------------------------------------------------------------------
- VERSION 0.6.3 (Released 02-08-2021)
+ VERSION 0.6.3
 -----------------------------------------------------------------------
 - Misc: Added manual generated from the wiki page. (#218)
 
 -----------------------------------------------------------------------
- VERSION 0.6.2 (Released 29-07-2021)
+ VERSION 0.6.2
 -----------------------------------------------------------------------
 - Console: Added "Reset account" action for computer objects.
   (#245)
@@ -95,7 +181,7 @@ CHANGELOG
   (#253)
 
 -----------------------------------------------------------------------
- VERSION 0.6.1 (Released 20-07-2021)
+ VERSION 0.6.1
 -----------------------------------------------------------------------
 - Action menu: Added "Enable account" and "Disable account"
   actions for computer objects. (#236)
@@ -118,7 +204,7 @@ CHANGELOG
   list. (#231)
 
 -----------------------------------------------------------------------
- VERSION 0.6.0 (Released 08-07-2021)
+ VERSION 0.6.0
 -----------------------------------------------------------------------
 - Properties dialog: Improved how connection failure is
   handled. Dialog stays open and displays informative error
@@ -157,7 +243,7 @@ CHANGELOG
 - Security tab: Implemented addition of well-known trustee's.
 
 -----------------------------------------------------------------------
- VERSION 0.5.3 (Released 21-06-2021)
+ VERSION 0.5.3
 -----------------------------------------------------------------------
 - Properties dialog: Added new "Security" tab for User objects.
 - Properties dialog: Added new tabs for Computer objects:
@@ -186,7 +272,7 @@ CHANGELOG
   connection process.
 
 -----------------------------------------------------------------------
- VERSION 0.5.2 (Released 12-05-2021)
+ VERSION 0.5.2
 -----------------------------------------------------------------------
 - Translation: Fix translation of "Action" menu not loading.
 - Properties: Added new properties dialog for multiple
@@ -196,7 +282,7 @@ CHANGELOG
 - Message Log: Add option to show timestamps next to messages.
 
 -----------------------------------------------------------------------
- VERSION 0.5.1 (Released 23-04-2021)
+ VERSION 0.5.1
 -----------------------------------------------------------------------
 - Console: Fixed a bug where when moving or deleting items,
   some of the items were skipped.
@@ -204,7 +290,7 @@ CHANGELOG
   dialog. Pressing return now presses "Find" button.
 
 -----------------------------------------------------------------------
- VERSION 0.5.0 (Released 22-04-2021)
+ VERSION 0.5.0
 -----------------------------------------------------------------------
 - Console: Added new tree called "Group Policy Objects".
   Lists all of the policies in the domain. Selecting a
@@ -264,7 +350,7 @@ CHANGELOG
   which is confusing.
 
 -----------------------------------------------------------------------
- VERSION 0.4.1 (Released 02-03-2021)
+ VERSION 0.4.1
 -----------------------------------------------------------------------
 - Properties: Fixed "Apply"/"Reset" buttons being
   incorrectly disabled after apply failure. They now stay
@@ -296,7 +382,7 @@ CHANGELOG
   require a connection.
 
 -----------------------------------------------------------------------
- VERSION 0.4.0 (Released 15-02-2021)
+ VERSION 0.4.0
 -----------------------------------------------------------------------
 - Properties: Added more tabs to Properties dialog:
     - general 

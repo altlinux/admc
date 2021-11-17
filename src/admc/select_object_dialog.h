@@ -23,12 +23,13 @@
 
 #include <QDialog>
 
-class QLineEdit;
-class QTreeView;
 class QStandardItemModel;
-class SelectClassesWidget;
 class AdObject;
-class SelectBaseWidget;
+class AdInterface;
+
+namespace Ui {
+class SelectObjectDialog;
+}
 
 enum SelectObjectDialogMultiSelection {
     SelectObjectDialogMultiSelection_Yes,
@@ -36,11 +37,15 @@ enum SelectObjectDialogMultiSelection {
 };
 
 class SelectObjectDialog final : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
+    Ui::SelectObjectDialog *ui;
+
     SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent);
     ~SelectObjectDialog();
+
+    static QList<QString> header_labels();
 
     QList<QString> get_selected() const;
 
@@ -49,30 +54,16 @@ public slots:
 
 private:
     QStandardItemModel *model;
-    QTreeView *view;
-    QLineEdit *edit;
-    SelectClassesWidget *select_classes;
-    SelectBaseWidget *select_base_widget;
     QList<QString> class_list;
     SelectObjectDialogMultiSelection multi_selection;
 
     void on_add_button();
     void on_remove_button();
-    void on_advanced_button();
-    bool is_duplicate(const AdObject &object) const;
-    void duplicate_message_box();
+    void add_objects_to_list(const QList<QString> &dn_list);
+    void add_objects_to_list(const QList<QString> &dn_list, AdInterface &ad);
+    void open_advanced_dialog();
 };
 
-class SelectObjectMatchDialog final : public QDialog {
-Q_OBJECT
-
-public:
-    SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent);
-
-    QList<QString> get_selected() const;
-
-private:
-    QTreeView *view;
-};
+void add_select_object_to_model(QStandardItemModel *model, const AdObject &object);
 
 #endif /* SELECT_OBJECT_DIALOG_H */

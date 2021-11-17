@@ -20,11 +20,11 @@
 
 #include "admc_test_password_edit.h"
 
-#include "edits/password_edit.h"
+#include "attribute_edits/password_edit.h"
 
+#include <QDateEdit>
 #include <QFormLayout>
 #include <QLineEdit>
-#include <QDateEdit>
 
 // NOTE: no apply_unmodified() test because password edit
 // always changes object when applying
@@ -32,11 +32,10 @@
 void ADMCTestPasswordEdit::init() {
     ADMCTest::init();
 
-    edit = new PasswordEdit(&edits, parent_widget);
-    add_attribute_edit(edit);
+    main_edit = new QLineEdit(parent_widget);
+    confirm_edit = new QLineEdit(parent_widget);
 
-    main_edit = parent_widget->findChild<QLineEdit *>("password_main_edit");
-    confirm_edit = parent_widget->findChild<QLineEdit *>("password_confirm_edit");
+    edit = new PasswordEdit(main_edit, confirm_edit, &edits, parent_widget);
 
     // Create test user
     const QString name = TEST_USER;

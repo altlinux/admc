@@ -35,13 +35,28 @@ class QAbstractItemView;
 class QPushButton;
 class AttributesTab;
 class AdInterface;
+class PropertiesWarningDialog;
+
+namespace Ui {
+class PropertiesDialog;
+}
 
 class PropertiesDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    static PropertiesDialog *open_for_target(const QString &target);
+    Ui::PropertiesDialog *ui;
+
+    static QHash<QString, PropertiesDialog *> instances;
+
+    // "dialog_is_new" flag is set to true if this is a
+    // newly created dialog and false if a dialog was
+    // already open for given target and reused. Use to know
+    // whether to connect to applied() signal
+    static PropertiesDialog *open_for_target(const QString &target, bool *dialog_is_new = nullptr);
     static void open_when_view_item_activated(QAbstractItemView *view, const int dn_role);
+
+    ~PropertiesDialog();
 
 signals:
     // Emitted when changes are applide via apply or ok
@@ -49,11 +64,11 @@ signals:
     void applied();
 
 private slots:
-    void ok();
-    bool apply();
+    void accept() override;
+    void done(int r) override;
+    void apply();
     void reset();
     void on_edited();
-    void on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab);
 
 private:
     QList<PropertiesTab *> tabs;
@@ -61,12 +76,15 @@ private:
     QPushButton *apply_button;
     QPushButton *reset_button;
     AttributesTab *attributes_tab;
+    PropertiesWarningDialog *warning_dialog;
     bool is_modified;
 
     // NOTE: ctor is private, use open_for_target() instead
     PropertiesDialog(const QString &target_arg);
     bool apply_internal(AdInterface &ad);
     void reset_internal(AdInterface &ad);
+
+    void on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab);
 };
 
 #endif /* PROPERTIES_DIALOG_H */

@@ -20,7 +20,7 @@
 
 #include "admc_test_protect_deletion_edit.h"
 
-#include "edits/protect_deletion_edit.h"
+#include "attribute_edits/protect_deletion_edit.h"
 
 #include <QCheckBox>
 #include <QFormLayout>
@@ -34,11 +34,9 @@
 void ADMCTestProtectDeletionEdit::init() {
     ADMCTest::init();
 
-    edit = new ProtectDeletionEdit(&edits, parent_widget);
-    add_attribute_edit(edit);
+    checkbox = new QCheckBox(parent_widget);
 
-    checkbox = parent_widget->findChild<QCheckBox *>();
-    QVERIFY(checkbox != nullptr);
+    edit = new ProtectDeletionEdit(checkbox, &edits, parent_widget);
 
     dn = test_object_dn(TEST_OU, CLASS_OU);
     const bool create_success = ad.object_add(dn, CLASS_OU);
@@ -85,7 +83,7 @@ void ADMCTestProtectDeletionEdit::apply() {
     QVERIFY(apply_2_success);
 
     const bool delete_2_success = ad.object_delete(dn);
-    QCOMPARE(delete_2_success, true);
+    QVERIFY(delete_2_success);
 }
 
 QTEST_MAIN(ADMCTestProtectDeletionEdit)

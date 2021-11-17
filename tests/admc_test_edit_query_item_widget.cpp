@@ -20,18 +20,24 @@
 
 #include "admc_test_edit_query_item_widget.h"
 
+#include "console_impls/query_item_impl.h"
 #include "edit_query_item_widget.h"
-#include "edit_query_item_widget_p.h"
-#include "console_types/console_query.h"
+#include "filter_widget/filter_dialog.h"
+#include "filter_widget/filter_widget.h"
+#include "filter_widget/filter_widget_simple_tab.h"
 #include "filter_widget/select_base_widget.h"
+#include "filter_widget/ui_filter_widget.h"
+#include "filter_widget/ui_filter_widget_simple_tab.h"
+#include "filter_widget/ui_select_base_widget.h"
 #include "tab_widget.h"
+#include "ui_edit_query_item_widget.h"
+#include "ui_filter_dialog.h"
 
+#include <QCheckBox>
+#include <QComboBox>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QStandardItem>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QPushButton>
 #include <QTextEdit>
 
 void ADMCTestEditQueryItemWidget::init() {
@@ -40,35 +46,27 @@ void ADMCTestEditQueryItemWidget::init() {
     widget = new EditQueryItemWidget();
     add_widget(widget);
 
-    name_edit = widget->findChild<QLineEdit *>("name_edit");
-    QVERIFY(name_edit != nullptr);
+    name_edit = widget->ui->name_edit;
+    description_edit = widget->ui->description_edit;
+    scope_checkbox = widget->ui->scope_checkbox;
 
-    description_edit = widget->findChild<QLineEdit *>("description_edit");
-    QVERIFY(description_edit != nullptr);
+    SelectBaseWidget *select_base_widget = widget->ui->select_base_widget;
 
-    scope_checkbox = widget->findChild<QCheckBox *>();
-    QVERIFY(scope_checkbox != nullptr);
+    base_combo = select_base_widget->ui->combo;
 
-    SelectBaseWidget *select_base_widget = widget->findChild<SelectBaseWidget *>();
-    QVERIFY(select_base_widget != nullptr);
-    
-    base_combo = select_base_widget->findChild<QComboBox *>();
-    QVERIFY(base_combo != nullptr);
+    edit_filter_button = widget->ui->edit_filter_button;
 
-    edit_filter_button = widget->findChild<QPushButton *>("edit_filter_button");
-    QVERIFY(edit_filter_button != nullptr);
-
-    filter_display = widget->findChild<QTextEdit *>("filter_display");
+    filter_display = widget->ui->filter_display;
 }
 
 void ADMCTestEditQueryItemWidget::save_and_load() {
     // Define and set correct values
     const QString correct_name = "name";
     name_edit->setText(correct_name);
-    
+
     const QString correct_description = "description";
     description_edit->setText(correct_description);
-    
+
     const bool correct_scope = true;
     scope_checkbox->setChecked(correct_scope);
 
@@ -80,31 +78,18 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
     // Set correct filter filter (a bit complicated!)
     edit_filter_button->click();
 
-    EditQueryItemFilterDialog *dialog = widget->findChild<EditQueryItemFilterDialog *>();
-    QVERIFY(dialog != nullptr);
+    FilterDialog *dialog = widget->findChild<FilterDialog *>();
+    QVERIFY(dialog);
 
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
-    QTabWidget *tab_widget = dialog->findChild<QTabWidget *>();
-    QVERIFY(tab_widget != nullptr);
-
-    QWidget *simple_tab = tab_widget->widget(0);
-    QVERIFY(simple_tab != nullptr);
-
-    QLineEdit *filter_name_edit = simple_tab->findChild<QLineEdit *>("name_edit");
+    FilterWidgetSimpleTab *simple_tab = dialog->ui->filter_widget->ui->simple_tab;
+    QLineEdit *filter_name_edit = simple_tab->ui->name_edit;
     filter_name_edit->setText("test");
 
     dialog->accept();
 
     const QString correct_filter = filter_display->toPlainText();
-
-    QString name;
-    QString description;
-    QString filter;
-    QString base;
-    QByteArray filter_state;
-    bool scope_is_children;
-    widget->save(name, description, filter, base, scope_is_children, filter_state);
 
     const QList<QStandardItem *> row = [=]() {
         QList<QStandardItem *> out;
@@ -115,14 +100,34 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
 
         return out;
     }();
-    
+
     // NOTE: need to insert into model so that indexes are valid
     auto model = new QStandardItemModel();
     model->appendRow(row);
 
-    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+    {
+        const QString name = widget->name();
+        const QString description = widget->description();
+        const QString filter = widget->filter();
+        const QString base = widget->base();
+        const QByteArray filter_state = widget->filter_state();
+        const bool scope_is_children = widget->scope_is_children();
 
-    widget->load(row[0]->index());
+        console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+    }
+
+    const QModelIndex index = row[0]->index();
+
+    {
+        QString name;
+        QString description;
+        bool scope_is_children;
+        QByteArray filter_state;
+        QString filter;
+        get_query_item_data(index, &name, &description, &scope_is_children, &filter_state, &filter);
+
+        widget->set_data(name, description, scope_is_children, filter_state, filter);
+    }
 
     QCOMPARE(name_edit->text(), correct_name);
     QCOMPARE(description_edit->text(), correct_description);

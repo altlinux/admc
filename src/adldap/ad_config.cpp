@@ -247,7 +247,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         const QString ui_settings_dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
         const AdObject object = ad.search_object(ui_settings_dn, {ATTRIBUTE_FILTER_CONTAINERS});
 
-        // TODO: dns-Zone category is mispelled in
+        // NOTE: dns-Zone category is mispelled in
         // ATTRIBUTE_FILTER_CONTAINERS, no idea why, might
         // just be on this domain version
         const QList<QString> categories = [object]() {
@@ -346,7 +346,7 @@ QString AdConfig::get_attribute_display_name(const Attribute &attribute, const O
         {ATTRIBUTE_OBJECT_CATEGORY, QCoreApplication::translate("AdConfig", "Type")},
         {ATTRIBUTE_PROFILE_PATH, QCoreApplication::translate("AdConfig", "Profile path")},
         {ATTRIBUTE_SCRIPT_PATH, QCoreApplication::translate("AdConfig", "Logon script")},
-        {ATTRIBUTE_SAMACCOUNT_NAME, QCoreApplication::translate("AdConfig", "Logon name (pre-Windows 2000)")},
+        {ATTRIBUTE_SAM_ACCOUNT_NAME, QCoreApplication::translate("AdConfig", "Logon name (pre-Windows 2000)")},
         {ATTRIBUTE_MAIL, QCoreApplication::translate("AdConfig", "E-mail")},
         {ATTRIBUTE_LOCATION, QCoreApplication::translate("AdConfig", "Location")},
         {ATTRIBUTE_MANAGED_BY, QCoreApplication::translate("managedBy", "Managed by")},

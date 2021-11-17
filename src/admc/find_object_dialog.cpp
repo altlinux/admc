@@ -19,34 +19,53 @@
  */
 
 #include "find_object_dialog.h"
+#include "ui_find_object_dialog.h"
 
 #include "ad_config.h"
-#include "find_results.h"
+#include "ad_filter.h"
 #include "find_widget.h"
 #include "globals.h"
 #include "settings.h"
 
 #include <QMenuBar>
-#include <QVBoxLayout>
 
-FindObjectDialog::FindObjectDialog(const QList<QString> classes, const QString default_base, QWidget *parent)
+FindObjectDialog::FindObjectDialog(const QString &default_base, QWidget *parent)
 : QDialog(parent) {
+    ui = new Ui::FindObjectDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(tr("Find Objects"));
-
     auto menubar = new QMenuBar();
+    layout()->setMenuBar(menubar);
     auto action_menu = menubar->addMenu(tr("&Action"));
     auto view_menu = menubar->addMenu(tr("&View"));
 
-    auto find_widget = new FindWidget(classes, default_base);
+    const QList<QString> class_list = filter_classes;
+    const QList<QString> selected_list = {
+        CLASS_USER,
+        CLASS_CONTACT,
+        CLASS_GROUP,
+    };
 
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->setMenuBar(menubar);
-    layout->addWidget(find_widget);
-
-    find_widget->find_results->add_actions(action_menu, view_menu);
+    ui->find_widget->set_classes(class_list, selected_list);
+    ui->find_widget->set_default_base(default_base);
+    ui->find_widget->setup_action_menu(action_menu);
+    ui->find_widget->setup_view_menu(view_menu);
 
     settings_setup_dialog_geometry(SETTING_find_object_dialog_geometry, this);
+
+    const QVariant console_state = settings_get_variant(SETTING_find_object_dialog_console_state);
+    ui->find_widget->restore_console_state(console_state);
+}
+
+FindObjectDialog::~FindObjectDialog() {
+    const QVariant console_state = ui->find_widget->save_console_state();
+    settings_set_variant(SETTING_find_object_dialog_console_state, console_state);
+
+    delete ui;
+}
+
+void FindObjectDialog::set_buddy_console(ConsoleWidget *buddy_console) {
+    ui->find_widget->set_buddy_console(buddy_console);
 }

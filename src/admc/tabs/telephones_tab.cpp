@@ -19,25 +19,27 @@
  */
 
 #include "tabs/telephones_tab.h"
+#include "tabs/ui_telephones_tab.h"
 
 #include "adldap.h"
-#include "edits/string_large_edit.h"
-#include "edits/string_other_edit.h"
-
-#include <QFormLayout>
+#include "attribute_edits/string_large_edit.h"
+#include "attribute_edits/string_other_edit.h"
 
 TelephonesTab::TelephonesTab() {
-    new StringOtherEdit(ATTRIBUTE_HOME_PHONE, ATTRIBUTE_OTHER_HOME_PHONE, CLASS_USER, &edits, this);
-    new StringOtherEdit(ATTRIBUTE_PAGER, ATTRIBUTE_OTHER_PAGER, CLASS_USER, &edits, this);
-    new StringOtherEdit(ATTRIBUTE_MOBILE, ATTRIBUTE_OTHER_MOBILE, CLASS_USER, &edits, this);
-    new StringOtherEdit(ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, CLASS_USER, &edits, this);
-    new StringOtherEdit(ATTRIBUTE_IP_PHONE, ATTRIBUTE_OTHER_IP_PHONE, CLASS_USER, &edits, this);
+    ui = new Ui::TelephonesTab();
+    ui->setupUi(this);
 
-    new StringLargeEdit(ATTRIBUTE_INFO, CLASS_USER, &edits, this);
+    new StringOtherEdit(ui->home_phone_edit, ui->home_phone_button, ATTRIBUTE_HOME_PHONE, ATTRIBUTE_OTHER_HOME_PHONE, &edits, this);
+    new StringOtherEdit(ui->pager_edit, ui->pager_button, ATTRIBUTE_PAGER, ATTRIBUTE_OTHER_PAGER, &edits, this);
+    new StringOtherEdit(ui->mobile_edit, ui->mobile_button, ATTRIBUTE_MOBILE, ATTRIBUTE_OTHER_MOBILE, &edits, this);
+    new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, &edits, this);
+    new StringOtherEdit(ui->ip_phone_edit, ui->ip_phone_button, ATTRIBUTE_IP_PHONE, ATTRIBUTE_OTHER_IP_PHONE, &edits, this);
+
+    new StringLargeEdit(ui->notes_edit, ATTRIBUTE_INFO, &edits, this);
 
     edits_connect_to_tab(edits, this);
+}
 
-    const auto layout = new QFormLayout();
-    setLayout(layout);
-    edits_add_to_layout(edits, layout);
+TelephonesTab::~TelephonesTab() {
+    delete ui;
 }

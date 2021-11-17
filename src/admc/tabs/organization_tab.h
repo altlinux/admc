@@ -24,12 +24,17 @@
 #include "tabs/properties_tab.h"
 
 class QStandardItemModel;
-class QTreeView;
+
+namespace Ui {
+class OrganizationTab;
+}
 
 class OrganizationTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::OrganizationTab *ui;
+
     OrganizationTab();
     ~OrganizationTab();
 
@@ -37,7 +42,6 @@ public:
 
 private:
     QStandardItemModel *reports_model;
-    QTreeView *reports_view;
 };
 
 #endif /* ORGANIZATION_TAB_H */

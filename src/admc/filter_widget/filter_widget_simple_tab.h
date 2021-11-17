@@ -27,23 +27,26 @@
 
 #include "filter_widget/filter_widget.h"
 
-class QLineEdit;
-class SelectClassesWidget;
+namespace Ui {
+class FilterWidgetSimpleTab;
+}
 
 class FilterWidgetSimpleTab final : public FilterWidgetTab {
     Q_OBJECT
 
 public:
-    FilterWidgetSimpleTab(const QList<QString> classes);
+    Ui::FilterWidgetSimpleTab *ui;
+
+    FilterWidgetSimpleTab();
+    ~FilterWidgetSimpleTab();
+
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QString get_filter() const;
+    void clear();
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
-
-private:
-    SelectClassesWidget *select_classes;
-    QLineEdit *name_edit;
 };
 
 #endif /* FILTER_WIDGET_SIMPLE_TAB_H */

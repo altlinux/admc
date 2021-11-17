@@ -20,7 +20,7 @@
 
 #include "admc_test_datetime_edit.h"
 
-#include "edits/datetime_edit.h"
+#include "attribute_edits/datetime_edit.h"
 #include "globals.h"
 
 #include <QDateTimeEdit>
@@ -31,10 +31,9 @@
 void ADMCTestDateTimeEdit::init() {
     ADMCTest::init();
 
-    edit = new DateTimeEdit(ATTRIBUTE_WHEN_CHANGED, &edits, parent_widget);
-    add_attribute_edit(edit);
+    qedit = new QDateTimeEdit(parent_widget);
 
-    qedit = parent_widget->findChild<QDateTimeEdit *>();
+    edit = new DateTimeEdit(qedit, ATTRIBUTE_WHEN_CHANGED, &edits, parent_widget);
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
@@ -49,7 +48,7 @@ void ADMCTestDateTimeEdit::load() {
     const QDateTime correct_datetime = object.get_datetime(ATTRIBUTE_WHEN_CHANGED, g_adconfig);
     const QDateTime datetime = qedit->dateTime();
 
-    QVERIFY(datetime == correct_datetime);
+    QCOMPARE(datetime, correct_datetime);
 }
 
 QTEST_MAIN(ADMCTestDateTimeEdit)

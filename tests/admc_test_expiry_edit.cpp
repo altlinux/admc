@@ -20,12 +20,14 @@
 
 #include "admc_test_expiry_edit.h"
 
-#include "edits/expiry_edit.h"
+#include "attribute_edits/expiry_edit.h"
+#include "attribute_edits/expiry_widget.h"
+#include "attribute_edits/ui_expiry_widget.h"
 #include "globals.h"
 
-#include <QFormLayout>
 #include <QCheckBox>
 #include <QDateEdit>
+#include <QFormLayout>
 
 void ADMCTestExpiryEdit::initTestCase_data() {
     QTest::addColumn<QString>("check_name");
@@ -40,14 +42,18 @@ void ADMCTestExpiryEdit::initTestCase_data() {
 void ADMCTestExpiryEdit::init() {
     ADMCTest::init();
 
-    edit = new ExpiryEdit(&edits, parent_widget);
-    add_attribute_edit(edit);
+    auto widget = new ExpiryWidget(parent_widget);
 
-    date_edit = parent_widget->findChild<QDateEdit *>("date_edit");
+    edit = new ExpiryEdit(widget, &edits, parent_widget);
+
+    date_edit = widget->ui->date_edit;
 
     QFETCH_GLOBAL(QString, check_name);
-    check = parent_widget->findChild<QCheckBox *>(check_name);
-    QVERIFY(check != nullptr);
+    const QHash<QString, QCheckBox *> check_map = {
+        {"end_of_check", widget->ui->end_of_check},
+        {"never_check", widget->ui->never_check},
+    };
+    check = check_map[check_name];
 
     // Create test user
     const QString name = TEST_USER;

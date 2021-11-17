@@ -19,19 +19,17 @@
  */
 
 #include "tabs/organization_tab.h"
+#include "tabs/ui_organization_tab.h"
 
 #include "adldap.h"
-#include "edits/manager_edit.h"
-#include "edits/string_edit.h"
-#include "properties_dialog.h"
-#include "utils.h"
-#include "settings.h"
+#include "attribute_edits/manager_edit.h"
+#include "attribute_edits/string_edit.h"
 #include "globals.h"
+#include "properties_dialog.h"
+#include "settings.h"
+#include "utils.h"
 
-#include <QFormLayout>
-#include <QLabel>
 #include <QStandardItemModel>
-#include <QTreeView>
 
 enum ReportsColumn {
     ReportsColumn_Name,
@@ -44,14 +42,14 @@ enum ReportsRole {
 };
 
 OrganizationTab::OrganizationTab() {
-    const QList<QString> attributes = {
-        ATTRIBUTE_TITLE,
-        ATTRIBUTE_DEPARTMENT,
-        ATTRIBUTE_COMPANY,
-    };
-    StringEdit::make_many(attributes, CLASS_USER, &edits, this);
+    ui = new Ui::OrganizationTab();
+    ui->setupUi(this);
 
-    new ManagerEdit(ATTRIBUTE_MANAGER, &edits, this);
+    new StringEdit(ui->job_title_edit, ATTRIBUTE_TITLE, &edits, this);
+    new StringEdit(ui->department_edit, ATTRIBUTE_DEPARTMENT, &edits, this);
+    new StringEdit(ui->company_edit, ATTRIBUTE_COMPANY, &edits, this);
+
+    new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGER, &edits, this);
 
     edits_connect_to_tab(edits, this);
 
@@ -62,27 +60,17 @@ OrganizationTab::OrganizationTab() {
             {ReportsColumn_Folder, tr("Folder")},
         });
 
-    auto reports_label = new QLabel(tr("Reports:"));
+    ui->reports_view->setModel(reports_model);
 
-    reports_view = new QTreeView(this);
-    reports_view->setModel(reports_model);
-    reports_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    reports_view->setAllColumnsShowFocus(true);
-    reports_view->setSortingEnabled(true);
+    PropertiesDialog::open_when_view_item_activated(ui->reports_view, ReportsRole_DN);
 
-    PropertiesDialog::open_when_view_item_activated(reports_view, ReportsRole_DN);
-
-    auto layout = new QFormLayout();
-    setLayout(layout);
-    edits_add_to_layout(edits, layout);
-    layout->addRow(reports_label);
-    layout->addRow(reports_view);
-
-    settings_restore_header_state(SETTING_organization_tab_header_state, reports_view->header());
+    settings_restore_header_state(SETTING_organization_tab_header_state, ui->reports_view->header());
 }
 
 OrganizationTab::~OrganizationTab() {
-    settings_save_header_state(SETTING_organization_tab_header_state, reports_view->header());   
+    settings_save_header_state(SETTING_organization_tab_header_state, ui->reports_view->header());
+
+    delete ui;
 }
 
 void OrganizationTab::load(AdInterface &ad, const AdObject &object) {

@@ -32,6 +32,8 @@ class QStatusBar;
 class QString;
 class QWidget;
 class AdInterface;
+template <typename T>
+class QList;
 
 enum StatusType {
     StatusType_Success,
@@ -41,10 +43,7 @@ enum StatusType {
 class Status {
 
 public:
-    Status();
-
-    QStatusBar *status_bar() const;
-    QTextEdit *message_log() const;
+    void init(QStatusBar *statusbar, QTextEdit *message_log);
 
     void add_message(const QString &msg, const StatusType &type);
 
@@ -58,5 +57,6 @@ private:
 // Opens a dialog containing ad error messages in a
 // scrollable list. Nothing is done if no errors occured.
 void ad_error_log(const AdInterface &ad, QWidget *parent);
+void error_log(const QList<QString> error_list, QWidget *parent);
 
 #endif /* STATUS_BAR_H */

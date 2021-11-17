@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # NOTE: neeed largefile options to prevent problems with
 # smbclient on 32bit systems
-add_compile_options(-Wall -Wshadow -Werror=switch -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
+add_compile_options(-Wall -Wextra -Werror=unused-parameter -Werror=unused-variable -Werror=shadow -Werror=switch -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
 
 # You can get version from spec by first finding Versions keyword.
 # After that you can use awk to split line by : and then select second part of it.
@@ -45,6 +45,9 @@ if(NOT ADMC_BUILD_DEB)
     add_subdirectory(tests)
 endif(NOT ADMC_BUILD_DEB)
 add_subdirectory(doc)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CHANGELOG.txt
+    ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 if (ADMC_BUILD_DEB)
     SET(CPACK_GENERATOR "DEB")

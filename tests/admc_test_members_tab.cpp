@@ -22,13 +22,12 @@
 
 #include "select_object_dialog.h"
 #include "tabs/membership_tab.h"
+#include "tabs/ui_membership_tab.h"
 
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
-
-// TODO: test primary functionality
 
 void ADMCTestMembersTab::init() {
     ADMCTest::init();
@@ -36,17 +35,11 @@ void ADMCTestMembersTab::init() {
     members_tab = new MembersTab();
     add_widget(members_tab);
 
-    view = members_tab->findChild<QTreeView *>();
-    QVERIFY(view != nullptr);
-
+    view = members_tab->ui->view;
     model = members_tab->findChild<QStandardItemModel *>();
-    QVERIFY(model != nullptr);
-
-    add_button = members_tab->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button != nullptr);
-
-    remove_button = members_tab->findChild<QPushButton *>("remove_button");
-    QVERIFY(remove_button != nullptr);
+    QVERIFY(model);
+    add_button = members_tab->ui->add_button;
+    remove_button = members_tab->ui->remove_button;
 
     // Create test user
     const QString user_name = TEST_USER;
@@ -68,7 +61,7 @@ void ADMCTestMembersTab::init() {
 // Loading a group without members should result in empty
 // model
 void ADMCTestMembersTab::load_empty() {
-    QVERIFY(model->rowCount() == 0);
+    QCOMPARE(model->rowCount(), 0);
 }
 
 // Loading a group with members should put members in the
@@ -80,10 +73,10 @@ void ADMCTestMembersTab::load() {
     const AdObject object = ad.search_object(group_dn);
     members_tab->load(ad, object);
 
-    QVERIFY(model->rowCount() == 1);
+    QCOMPARE(model->rowCount(), 1);
 
     auto item = model->item(0, 0);
-    QVERIFY(item->text() == dn_get_name(user_dn));
+    QCOMPARE(item->text(), dn_get_name(user_dn));
 }
 
 // Removing members should remove members from model and group
@@ -100,7 +93,7 @@ void ADMCTestMembersTab::remove() {
     const AdObject updated_object = ad.search_object(group_dn);
     const QList<QString> member_list = updated_object.get_strings(ATTRIBUTE_MEMBER);
 
-    QVERIFY(model->rowCount() == 0);
+    QCOMPARE(model->rowCount(), 0);
     QVERIFY(member_list.isEmpty());
 }
 
@@ -110,18 +103,18 @@ void ADMCTestMembersTab::add() {
     select_object_dialog_select(user_dn);
 
     // Check ui state before applying
-    QVERIFY(model->rowCount() == 1);
-    QVERIFY(model->item(0, 0)->text() == dn_get_name(user_dn));
+    QCOMPARE(model->rowCount(), 1);
+    QCOMPARE(model->item(0, 0)->text(), dn_get_name(user_dn));
 
     // Apply and check object state
     members_tab->apply(ad, group_dn);
     const AdObject object = ad.search_object(group_dn);
     const QList<QString> member_list = object.get_strings(ATTRIBUTE_MEMBER);
-    QVERIFY(member_list == QList<QString>({user_dn}));
+    QCOMPARE(member_list, QList<QString>({user_dn}));
 
     // Check ui state after applying (just in case)
-    QVERIFY(model->rowCount() == 1);
-    QVERIFY(model->item(0, 0)->text() == dn_get_name(user_dn));
+    QCOMPARE(model->rowCount(), 1);
+    QCOMPARE(model->item(0, 0)->text(), dn_get_name(user_dn));
 }
 
 QTEST_MAIN(ADMCTestMembersTab)

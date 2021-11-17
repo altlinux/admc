@@ -19,120 +19,98 @@
  */
 
 #include "filter_widget/select_classes_widget.h"
-#include "filter_widget/select_classes_widget_p.h"
+#include "filter_widget/ui_select_classes_widget.h"
 
 #include "adldap.h"
-#include "filter_classes_widget.h"
 #include "globals.h"
+#include "filter_widget/class_filter_dialog.h"
 
-#include <QDialogButtonBox>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QVBoxLayout>
-
-SelectClassesWidget::SelectClassesWidget(const QList<QString> class_list)
-: QWidget() {
-    dialog = new SelectClassesDialog(class_list, this);
-    
-    classes_display = new QLineEdit();
-    classes_display->setReadOnly(true);
-
-    auto select_classes_button = new QPushButton(tr("Select..."));
-    select_classes_button->setAutoDefault(false);
-
-    auto layout = new QHBoxLayout();
-    setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(classes_display);
-    layout->addWidget(select_classes_button);
+SelectClassesWidget::SelectClassesWidget(QWidget *parent)
+: QWidget(parent) {
+    ui = new Ui::SelectClassesWidget();
+    ui->setupUi(this);
 
     connect(
-        select_classes_button, &QAbstractButton::clicked,
-        dialog, &QDialog::open);
-    connect(
-        dialog, &QDialog::finished,
-        this, &SelectClassesWidget::update_classes_display);
-    update_classes_display();
+        ui->select_button, &QAbstractButton::clicked,
+        this, &SelectClassesWidget::open_dialog);
+}
+
+SelectClassesWidget::~SelectClassesWidget() {
+    delete ui;
+}
+
+void SelectClassesWidget::set_classes(const QList<QString> &class_list_arg, const QList<QString> &selected_list_arg) {
+    class_list = class_list_arg;
+
+    set_selected_list(selected_list_arg);
 }
 
 QString SelectClassesWidget::get_filter() const {
-    return dialog->filter_classes_widget->get_filter();
+    return filter;
 }
 
-// Display selected classes in line edit as a sorted list of
-// class display strings separated by ","
-// "User, Organizational Unit, ..."
-void SelectClassesWidget::update_classes_display() {
-    const QString classes_display_text = [this]() {
-        const QList<QString> selected_classes = dialog->filter_classes_widget->get_selected_classes();
+QVariant SelectClassesWidget::save_state() const {
+    QHash<QString, QVariant> state;
 
-        QList<QString> classes_display_strings;
-        for (const QString &object_class : selected_classes) {
+    state["dialog_state"] = dialog_state;
+
+    const QString classes_display_text = ui->classes_display->text();
+    state["classes_display_text"] = classes_display_text;
+
+    return state;
+}
+
+void SelectClassesWidget::restore_state(const QVariant &state_variant) {
+    QHash<QString, QVariant> state = state_variant.toHash();
+
+    const QList<QVariant> saved_selected_list_variant = state["selected_list"].toList();
+    QList<QString> saved_selected_list;
+    for (const QVariant &v : saved_selected_list_variant) {
+        saved_selected_list.append(v.toString());
+    }
+
+    set_selected_list(saved_selected_list);
+}
+
+void SelectClassesWidget::open_dialog() {
+    auto dialog = new ClassFilterDialog(this);
+    dialog->set_classes(class_list, selected_list);
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            const QList<QString> new_selected_list = dialog->get_selected_classes();
+            set_selected_list(new_selected_list);
+
+            filter = dialog->get_filter();
+        });
+}
+
+void SelectClassesWidget::set_selected_list(const QList<QString> &new_selected_list) {
+    selected_list = new_selected_list;
+
+    // Convert class list to list of class display strings,
+    // then sort it and finally join by comma's
+    const QString display_string = [&]() {
+        QList<QString> class_display_list;
+
+        for (const QString &object_class : selected_list) {
             const QString class_display = g_adconfig->get_class_display_name(object_class);
-            classes_display_strings.append(class_display);
+
+            class_display_list.append(class_display);
         }
 
-        std::sort(classes_display_strings.begin(), classes_display_strings.end());
+        std::sort(class_display_list.begin(), class_display_list.end());
 
-        const QString joined = classes_display_strings.join(", ");
+        const QString joined = class_display_list.join(", ");
 
         return joined;
     }();
 
-    classes_display->setText(classes_display_text);
-    classes_display->setCursorPosition(0);
-}
+    ui->classes_display->setText(display_string);
 
-QVariant SelectClassesWidget::save_state() const {
-    return dialog->filter_classes_widget->save_state();
-}
-
-void SelectClassesWidget::restore_state(const QVariant &state) {
-    dialog->filter_classes_widget->restore_state(state);
-    update_classes_display();
-}
-
-SelectClassesDialog::SelectClassesDialog(const QList<QString> class_list, QWidget *parent)
-: QDialog(parent) {
-    setWindowTitle(tr("Select Classes"));
-
-    filter_classes_widget = new FilterClassesWidget(class_list);
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-    auto reset_button = button_box->addButton(QDialogButtonBox::Reset);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(filter_classes_widget);
-    layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-    connect(
-        reset_button, &QPushButton::clicked,
-        this, &SelectClassesDialog::reset);
-}
-
-void SelectClassesDialog::open() {
-    // Save state to later restore if dialog is dialog is
-    // rejected
-    state_to_restore = filter_classes_widget->save_state();
-
-    QDialog::open();
-}
-
-void SelectClassesDialog::reject() {
-    reset();
-
-    QDialog::reject();
-}
-
-void SelectClassesDialog::reset() {
-    filter_classes_widget->restore_state(state_to_restore);
+    // NOTE: set cursor to start because by default,
+    // changing text causes line edit to scroll to the end
+    ui->classes_display->setCursorPosition(0);
 }

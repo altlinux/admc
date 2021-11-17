@@ -20,8 +20,9 @@
 
 #include "admc_test_logon_computers_edit.h"
 
-#include "edits/logon_computers_edit.h"
-#include "edits/logon_computers_edit_p.h"
+#include "attribute_edits/logon_computers_dialog.h"
+#include "attribute_edits/logon_computers_edit.h"
+#include "attribute_edits/ui_logon_computers_dialog.h"
 
 #include <QFormLayout>
 #include <QLineEdit>
@@ -31,25 +32,9 @@
 void ADMCTestLogonComputersEdit::init() {
     ADMCTest::init();
 
-    edit = new LogonComputersEdit(&edits, parent_widget);
-    add_attribute_edit(edit);
+    auto open_dialog_button = new QPushButton(parent_widget);
 
-    dialog = parent_widget->findChild<LogonComputersDialog *>();
-    QVERIFY(dialog != nullptr);
-
-    open_dialog_button = parent_widget->findChild<QPushButton *>("logon_computers_edit_button");
-
-    list = dialog->findChild<QListWidget *>("list");
-    QVERIFY(list != nullptr);
-
-    value_edit = dialog->findChild<QLineEdit *>("edit");
-    QVERIFY(value_edit != nullptr);
-
-    add_button = dialog->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button != nullptr);
-
-    remove_button = dialog->findChild<QPushButton *>("remove_button");
-    QVERIFY(remove_button != nullptr);
+    edit = new LogonComputersEdit(open_dialog_button, &edits, parent_widget);
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
@@ -61,13 +46,21 @@ void ADMCTestLogonComputersEdit::init() {
 
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
+
+    open_dialog_button->click();
+
+    dialog = parent_widget->findChild<LogonComputersDialog *>();
+    QVERIFY(dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    list = dialog->ui->list;
+    value_edit = dialog->ui->edit;
+    add_button = dialog->ui->add_button;
+    remove_button = dialog->ui->remove_button;
 }
 
 void ADMCTestLogonComputersEdit::load() {
-    open_dialog_button->click();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
-    QVERIFY(list->count() == 2);
+    QCOMPARE(list->count(), 2);
     test_list_item(0, "test");
     test_list_item(1, "value");
 }
@@ -80,44 +73,35 @@ void ADMCTestLogonComputersEdit::emit_edited_signal() {
             edited_signal_emitted = true;
         });
 
-    open_dialog_button->click();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
     dialog->accept();
 
     QVERIFY(edited_signal_emitted);
 }
 
 void ADMCTestLogonComputersEdit::add() {
-    open_dialog_button->click();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
     value_edit->setText("new");
 
     add_button->click();
 
-    QVERIFY(list->count() == 3);
+    QCOMPARE(list->count(), 3);
     test_list_item(0, "test");
     test_list_item(1, "value");
     test_list_item(2, "new");
 }
 
 void ADMCTestLogonComputersEdit::remove() {
-    open_dialog_button->click();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
     list->setCurrentRow(0);
 
     remove_button->click();
 
-    QVERIFY(list->count() == 1);
+    QCOMPARE(list->count(), 1);
     test_list_item(0, "value");
 }
 
 void ADMCTestLogonComputersEdit::test_list_item(const int row, const QString &text) {
     auto item = list->item(row);
-    QVERIFY(item != nullptr);
-    QVERIFY(item->text() == text);
+    QVERIFY(item);
+    QCOMPARE(item->text(), text);
 }
 
 void ADMCTestLogonComputersEdit::apply_unmodified() {
@@ -125,9 +109,6 @@ void ADMCTestLogonComputersEdit::apply_unmodified() {
 }
 
 void ADMCTestLogonComputersEdit::apply() {
-    open_dialog_button->click();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
     value_edit->setText("new");
 
     add_button->click();
@@ -138,7 +119,7 @@ void ADMCTestLogonComputersEdit::apply() {
 
     const AdObject updated_object = ad.search_object(dn);
     const QString updated_value = updated_object.get_string(ATTRIBUTE_USER_WORKSTATIONS);
-    QVERIFY(updated_value == "test,value,new");
+    QCOMPARE(updated_value, "test,value,new");
 }
 
 QTEST_MAIN(ADMCTestLogonComputersEdit)

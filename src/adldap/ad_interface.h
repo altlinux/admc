@@ -86,30 +86,23 @@ class AdInterface {
     Q_DECLARE_TR_FUNCTIONS(AdInterface)
 
 public:
-    /**
-     * Pass an loaded AdConfig instance to ctor to enable
-     * attribute display values in messages. Without an
-     * AdConfig instance AdInterface defaults to outputting
-     * raw attribute values. Note that AdInterface is not
-     * responsible for deleting AdConfig instance.
-     */
-    AdInterface(AdConfig *adconfig = nullptr);
+    AdInterface();
     ~AdInterface();
 
     /**
-     * If you wish to use the same AdConfig instance for all
-     * connections, you can setup a permanent one here. Note
-     * that if you pass another adconfig to ctor that will
-     * override the permanent adconfig.
+     * Set this config instance to be used for all
+     * adinterface's going forward. If adconfig is unset,
+     * AdInterface defaults to outputting raw attribute
+     * values. Note that AdInterface is not responsible for
+     * deleting AdConfig instance.
      */
-    static void set_permanent_adconfig(AdConfig *adconfig);
-    void set_adconfig(AdConfig *adconfig);
+    static void set_config(AdConfig *config);
 
     static void set_log_searches(const bool enabled);
 
     static void set_dc(const QString &dc);
     static void set_sasl_nocanon(const bool is_on);
-    static void set_port(const QString &port);
+    static void set_port(const int port);
     static void set_cert_strategy(const CertStrategy strategy);
     static QString get_dc();
 
@@ -118,24 +111,27 @@ public:
     bool any_error_messages() const;
     void clear_messages();
     AdConfig *adconfig() const;
+    QString client_user() const;
+    bool logged_in_as_admin();
 
-    // NOTE: If request attributes list is empty, all attributes are returned
+    // NOTE: If request attributes list is empty, all
+    // attributes are returned
 
     // This is a simplified version that searches all pages
     // in one go
-    QHash<QString, AdObject> search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
+    QHash<QString, AdObject> search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, const bool get_sacl = false);
 
     // This is a more complicated version of search() which
     // separates the search process by pages as they arrive
     // from the server. In general you can use the simpler
-    // search(). This version is specifically for cases
-    // where you need to do something between pages, like
-    // processing UI events so it doesn't freeze.
-    bool search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie);
+    // search(). This version is for cases where you want to
+    // display search results as they come in instead of all
+    // at once.
+    bool search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl = false);
 
     // Simplest search f-n that only searches for attributes
     // of one object
-    AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>());
+    AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>(), const bool get_sacl = false);
 
     bool attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg = DoStatusMsg_Yes);
 
@@ -165,13 +161,13 @@ public:
     bool computer_reset_account(const QString &dn);
 
     // "dn_out" is set to the dn of created gpo
-    bool create_gpo(const QString &name, QString &dn_out);
-    bool delete_gpo(const QString &dn);
-
-    QString sysvol_path_to_smb(const QString &sysvol_path) const;
-
-    bool check_gpo_perms(const QString &gpo, bool *ok);
+    bool gpo_add(const QString &name, QString &dn_out);
+    bool gpo_delete(const QString &dn, bool *deleted_object);
+    bool gpo_check_perms(const QString &gpo, bool *ok);
     bool gpo_sync_perms(const QString &gpo);
+    bool gpo_get_sysvol_version(const AdObject &gpc_object, int *version);
+
+    QString filesys_path_to_smb_path(const QString &filesys_path) const;
 
 private:
     AdInterfacePrivate *d;

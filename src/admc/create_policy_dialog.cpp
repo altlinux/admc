@@ -19,52 +19,65 @@
  */
 
 #include "create_policy_dialog.h"
+#include "ui_create_policy_dialog.h"
 
 #include "adldap.h"
-#include "console_types/console_policy.h"
+#include "console_impls/policy_impl.h"
 #include "console_widget/console_widget.h"
 #include "globals.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QLineEdit>
-#include <QPushButton>
+CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
+: QDialog(parent) {
+    ui = new Ui::CreatePolicyDialog();
+    ui->setupUi(this);
 
-CreatePolicyDialog::CreatePolicyDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
-    console = console_arg;
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    setMinimumWidth(400);
+    settings_setup_dialog_geometry(SETTING_create_policy_dialog_geometry, this);
+}
 
-    setWindowTitle(tr("Create GPO"));
+CreatePolicyDialog::~CreatePolicyDialog() {
+    delete ui;
+}
 
-    name_edit = new QLineEdit();
-
-    const auto edits_layout = new QFormLayout();
-    edits_layout->addRow(tr("Name"), name_edit);
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(tr("Create"), QDialogButtonBox::AcceptRole);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(edits_layout);
-    layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
+QString CreatePolicyDialog::get_created_dn() const {
+    return created_dn;
 }
 
 void CreatePolicyDialog::open() {
-    name_edit->setText("New Group Policy Object");
-    name_edit->selectAll();
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QString default_name = [&]() {
+        const QList<QString> existing_name_list = [&]() {
+            const QString base = g_adconfig->domain_head();
+            const SearchScope scope = SearchScope_All;
+            const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
+            const QList<QString> attributes = {ATTRIBUTE_DISPLAY_NAME};
+            const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+            QList<QString> out;
+
+            for (const AdObject &object : results.values()) {
+                const QString name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+                out.append(name);
+            }
+
+            return out;
+        }();
+
+        const QString out = generate_new_name(existing_name_list, tr("New Group Policy Object"));
+
+        return out;
+    }();
+
+    ui->name_edit->setText(default_name);
+    ui->name_edit->selectAll();
 
     QDialog::open();
 }
@@ -77,7 +90,7 @@ void CreatePolicyDialog::accept() {
 
     show_busy_indicator();
 
-    const QString name = name_edit->text();
+    const QString name = ui->name_edit->text();
 
     // NOTE: since this is *display name*, not just name,
     // have to manually check for conflict. Server wouldn't
@@ -98,28 +111,13 @@ void CreatePolicyDialog::accept() {
         return;
     }
 
-    QString created_dn;
-    const bool success = ad.create_gpo(name, created_dn);
+    const bool success = ad.gpo_add(name, created_dn);
 
     hide_busy_indicator();
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (success) {
-        // Create policy in console
-        const QString base = created_dn;
-        const SearchScope scope = SearchScope_Object;
-        const QString filter = QString();
-        const QList<QString> attributes = console_policy_search_attributes();
-        const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
-
-        const AdObject object = results[created_dn];
-
-        console_policy_create(console, object);
-
-        // NOTE: not adding policy object to the domain
-        // tree, but i think it's ok?
-
         QDialog::accept();
     }
 }

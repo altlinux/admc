@@ -29,25 +29,31 @@
 
 #include <QDialog>
 
-class QLineEdit;
 class QPushButton;
-class ConsoleWidget;
+
+namespace Ui {
+class RenamePolicyDialog;
+}
 
 class RenamePolicyDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    RenamePolicyDialog(ConsoleWidget *console_arg);
+    Ui::RenamePolicyDialog *ui;
+
+    RenamePolicyDialog(QWidget *parent);
+    ~RenamePolicyDialog();
 
     void open() override;
     void accept() override;
 
+    void set_target(const QString &dn);
+
 private:
-    QString target;
-    QLineEdit *name_edit;
+    QString target_dn;
+    QString target_old_name;
     QPushButton *ok_button;
     QPushButton *reset_button;
-    ConsoleWidget *console;
 
     void on_edited();
     void reset();

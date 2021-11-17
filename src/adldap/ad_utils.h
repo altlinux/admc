@@ -48,7 +48,7 @@ QString group_scope_string(GroupScope scope);
 QString group_type_string(GroupType type);
 QString group_type_string_adjective(GroupType type);
 
-QString sysvol_path_to_smb(const QString &sysvol_path);
+QString filesys_path_to_smb_path(const QString &sysvol_path);
 
 QString extract_rid_from_sid(const QByteArray &sid, AdConfig *adconfig);
 
@@ -81,5 +81,7 @@ bool load_adldap_translation(QTranslator &translator, const QLocale &locale);
 
 QByteArray guid_string_to_bytes(const QString &guid_string);
 QByteArray sid_string_to_bytes(const QString &sid_string);
+
+QString attribute_type_display_string(const AttributeType type);
 
 #endif /* AD_UTILS_H */

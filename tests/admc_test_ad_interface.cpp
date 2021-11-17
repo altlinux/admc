@@ -21,6 +21,7 @@
 #include "admc_test_ad_interface.h"
 
 #include "samba/dom_sid.h"
+#include "globals.h"
 
 #include <QTest>
 
@@ -28,30 +29,31 @@
 
 void ADMCTestAdInterface::cleanup() {
     // Delete test gpo, if it was leftover from previous test
-    const QString base = ad.adconfig()->domain_head();
+    const QString base = g_adconfig->domain_head();
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, TEST_GPO);
     const QList<QString> attributes = QList<QString>();
     const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, attributes);
 
     if (!search_results.isEmpty()) {
         const QString dn = search_results.keys()[0];
-        ad.delete_gpo(dn);
+        bool deleted_object;
+        ad.gpo_delete(dn, &deleted_object);
     }
 
     ADMCTest::cleanup();
 }
 
-void ADMCTestAdInterface::create_and_delete_gpo() {
+void ADMCTestAdInterface::create_and_gpo_delete() {
     // Create new gpo
     QString gpo_dn;
-    const bool create_success = ad.create_gpo(TEST_GPO, gpo_dn);
+    const bool create_success = ad.gpo_add(TEST_GPO, gpo_dn);
     QVERIFY(create_success);
     QVERIFY(!gpo_dn.isEmpty());
 
     // Check perms
-    bool check_gpo_perms_ok = true;
-    const bool perms_are_ok = ad.check_gpo_perms(gpo_dn, &check_gpo_perms_ok);
-    QVERIFY(check_gpo_perms_ok);
+    bool gpo_check_perms_ok = true;
+    const bool perms_are_ok = ad.gpo_check_perms(gpo_dn, &gpo_check_perms_ok);
+    QVERIFY(gpo_check_perms_ok);
     QVERIFY(perms_are_ok);
 
     // Create test ou
@@ -78,28 +80,29 @@ void ADMCTestAdInterface::create_and_delete_gpo() {
     QCOMPARE(linked_before, true);
 
     // Delete again;
-    const bool delete_created_success = ad.delete_gpo(gpo_dn);
+    bool deleted_object;
+    const bool delete_created_success = ad.gpo_delete(gpo_dn, &deleted_object);
     QVERIFY(delete_created_success);
 
     const bool linked_after = ou_is_linked_to_gpo();
     QCOMPARE(linked_after, false);
 }
 
-void ADMCTestAdInterface::check_gpo_perms() {
+void ADMCTestAdInterface::gpo_check_perms() {
     QString gpc_dn;
-    const bool create_success = ad.create_gpo(TEST_GPO, gpc_dn);
+    const bool create_success = ad.gpo_add(TEST_GPO, gpc_dn);
     QVERIFY(create_success);
     QVERIFY(!gpc_dn.isEmpty());
 
-    bool check_gpo_perms_ok_1 = true;
-    const bool perms_before = ad.check_gpo_perms(gpc_dn, &check_gpo_perms_ok_1);
-    QVERIFY(check_gpo_perms_ok_1);
+    bool gpo_check_perms_ok_1 = true;
+    const bool perms_before = ad.gpo_check_perms(gpc_dn, &gpo_check_perms_ok_1);
+    QVERIFY(gpo_check_perms_ok_1);
     QCOMPARE(perms_before, true);
 
     // Change GPC perms so they don't match with GPT perms
     {
         const AdObject gpc_object = ad.search_object(gpc_dn);
-        auto permission_state_map = gpc_object.get_security_state(ad.adconfig());
+        auto permission_state_map = gpc_object.get_security_state(g_adconfig);
         const QByteArray trustee = []() {
             // NOTE: S-1-1-0 is "WORLD"
             const char *sid_string = "S-1-1-0";
@@ -113,12 +116,13 @@ void ADMCTestAdInterface::check_gpo_perms() {
         attribute_replace_security_descriptor(&ad, gpc_dn, permission_state_map);
     }
 
-    bool check_gpo_perms_ok_2 = true;
-    const bool perms_after = ad.check_gpo_perms(gpc_dn, &check_gpo_perms_ok_2);
-    QVERIFY(check_gpo_perms_ok_2);
+    bool gpo_check_perms_ok_2 = true;
+    const bool perms_after = ad.gpo_check_perms(gpc_dn, &gpo_check_perms_ok_2);
+    QVERIFY(gpo_check_perms_ok_2);
     QCOMPARE(perms_after, false);
 
-    const bool delete_success = ad.delete_gpo(gpc_dn);
+    bool deleted_object;
+    const bool delete_success = ad.gpo_delete(gpc_dn, &deleted_object);
     QVERIFY(delete_success);
 }
 
@@ -186,7 +190,7 @@ void ADMCTestAdInterface::group_add_member() {
 
     const AdObject group_object = ad.search_object(group_dn);
     const QList<QString> member_list = group_object.get_strings(ATTRIBUTE_MEMBER);
-    QVERIFY(member_list == QList<QString>({user_dn}));
+    QCOMPARE(member_list, QList<QString>({user_dn}));
 }
 
 void ADMCTestAdInterface::group_remove_member() {
@@ -215,7 +219,7 @@ void ADMCTestAdInterface::group_set_scope() {
 
         const AdObject group_object = ad.search_object(group_dn);
         const GroupScope current_scope = group_object.get_group_scope();
-        QVERIFY(current_scope == scope);
+        QCOMPARE(current_scope, scope);
     }
 }
 
@@ -231,7 +235,7 @@ void ADMCTestAdInterface::group_set_type() {
 
         const AdObject group_object = ad.search_object(group_dn);
         const GroupType current_type = group_object.get_group_type();
-        QVERIFY(current_type == type);
+        QCOMPARE(current_type, type);
     }
 }
 
@@ -246,7 +250,7 @@ void ADMCTestAdInterface::user_set_account_option() {
         QVERIFY(success);
 
         const AdObject object = ad.search_object(user_dn);
-        const bool option_set = object.get_account_option(option, ad.adconfig());
+        const bool option_set = object.get_account_option(option, g_adconfig);
         QVERIFY(option_set);
     }
 }

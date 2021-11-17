@@ -19,13 +19,14 @@
  */
 
 #include "tabs/group_policy_tab.h"
+#include "tabs/ui_group_policy_tab.h"
 
 #include "adldap.h"
-#include "edits/gpoptions_edit.h"
+#include "attribute_edits/gpoptions_edit.h"
 #include "globals.h"
 #include "select_policy_dialog.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
 #include <QDebug>
 #include <QFormLayout>
@@ -59,11 +60,8 @@ const QHash<GplinkColumn, GplinkOption> column_to_option = {
 QString gplink_option_to_display_string(const QString &option);
 
 GroupPolicyTab::GroupPolicyTab() {
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setContextMenuPolicy(Qt::CustomContextMenu);
-    view->setAllColumnsShowFocus(true);
-    view->setSortingEnabled(true);
+    ui = new Ui::GroupPolicyTab();
+    ui->setupUi(this);
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -73,39 +71,23 @@ GroupPolicyTab::GroupPolicyTab() {
             {GplinkColumn_Enforced, tr("Enforced")},
         });
 
-    view->setModel(model);
+    ui->view->setModel(model);
 
-    const auto edits_layout = new QFormLayout();
-
-    new GpoptionsEdit(&edits, this);
-    edits_add_to_layout(edits, edits_layout);
+    new GpoptionsEdit(ui->gpo_options_check, &edits, this);
     edits_connect_to_tab(edits, this);
 
-    auto add_button = new QPushButton(tr("Add..."));
-    auto remove_button = new QPushButton(tr("Remove"));
-    auto button_layout = new QHBoxLayout();
-    button_layout->addWidget(add_button);
-    button_layout->addWidget(remove_button);
-    button_layout->addStretch();
+    settings_restore_header_state(SETTING_group_policy_tab_header_state, ui->view->header());
 
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(view);
-    layout->addLayout(button_layout);
-    layout->addLayout(edits_layout);
-
-    settings_restore_header_state(SETTING_group_policy_tab_header_state, view->header());
-
-    enable_widget_on_selection(remove_button, view);
+    enable_widget_on_selection(ui->remove_button, ui->view);
 
     connect(
-        remove_button, &QAbstractButton::clicked,
+        ui->remove_button, &QAbstractButton::clicked,
         this, &GroupPolicyTab::on_remove_button);
     connect(
-        add_button, &QAbstractButton::clicked,
+        ui->add_button, &QAbstractButton::clicked,
         this, &GroupPolicyTab::on_add_button);
-    QObject::connect(
-        view, &QWidget::customContextMenuRequested,
+    connect(
+        ui->view, &QWidget::customContextMenuRequested,
         this, &GroupPolicyTab::on_context_menu);
     connect(
         model, &QStandardItemModel::itemChanged,
@@ -113,7 +95,9 @@ GroupPolicyTab::GroupPolicyTab() {
 }
 
 GroupPolicyTab::~GroupPolicyTab() {
-    settings_save_header_state(SETTING_group_policy_tab_header_state, view->header());   
+    settings_save_header_state(SETTING_group_policy_tab_header_state, ui->view->header());
+
+    delete ui;
 }
 
 void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {
@@ -153,43 +137,44 @@ bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
 }
 
 void GroupPolicyTab::on_context_menu(const QPoint pos) {
-    const QModelIndex index = view->indexAt(pos);
+    const QModelIndex index = ui->view->indexAt(pos);
     const QString gpo = index.data(GplinkRole_DN).toString();
     if (gpo.isEmpty()) {
         return;
     }
 
-    QMenu menu(this);
-    menu.addAction(tr("Remove link"), [this, gpo]() {
+    auto menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+
+    menu->addAction(tr("Remove link"), [this, gpo]() {
         const QList<QString> removed = {gpo};
         remove_link(removed);
     });
-    menu.addAction(tr("Move up"), [this, gpo]() {
+    menu->addAction(tr("Move up"), [this, gpo]() {
         move_link_up(gpo);
     });
-    menu.addAction(tr("Move down"), [this, gpo]() {
+    menu->addAction(tr("Move down"), [this, gpo]() {
         move_link_down(gpo);
     });
 
-    exec_menu_from_view(&menu, view, pos);
+    menu->popup(pos);
 }
 
 void GroupPolicyTab::on_add_button() {
     auto dialog = new SelectPolicyDialog(this);
+    dialog->open();
 
     connect(
-        dialog, &SelectPolicyDialog::accepted,
+        dialog, &QDialog::accepted,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected_dns();
 
             add_link(selected);
         });
-
-    dialog->open();
 }
 
 void GroupPolicyTab::on_remove_button() {
-    const QItemSelectionModel *selection_model = view->selectionModel();
+    const QItemSelectionModel *selection_model = ui->view->selectionModel();
     const QList<QModelIndex> selected_raw = selection_model->selectedRows();
 
     QList<QString> selected;
@@ -246,7 +231,6 @@ void GroupPolicyTab::reload_gplink() {
         return;
     }
 
-    // TODO: use filter to search only for needed gpo's, not all of them (dn=dn1 or dn=dn2 or ...)
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);

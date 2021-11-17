@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AddressMultiTab</class>
+ <widget class="QWidget" name="AddressMultiTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>200</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">Form</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="po_check">
+     <property name="text">
+      <string>Post Office Box:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="po_edit"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="city_check">
+     <property name="text">
+      <string>City:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="city_edit"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="state_check">
+     <property name="text">
+      <string>State/Province:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="state_edit"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QCheckBox" name="postal_check">
+     <property name="text">
+      <string>ZIP/Postal Code:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="postal_edit"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="country_check">
+     <property name="text">
+      <string>Country:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QComboBox" name="country_combo"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -20,12 +20,16 @@
 
 #include "admc_test_attributes_tab.h"
 
-#include "editors/multi_editor.h"
-#include "editors/string_editor.h"
+#include "attribute_dialogs/list_attribute_dialog.h"
+#include "attribute_dialogs/string_attribute_dialog.h"
+#include "attribute_dialogs/ui_list_attribute_dialog.h"
+#include "attribute_dialogs/ui_string_attribute_dialog.h"
+#include "tabs/ui_attributes_tab.h"
 
 #include <QDialog>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 #include <QString>
 #include <QTreeView>
@@ -51,23 +55,20 @@ void ADMCTestAttributesTab::init() {
     attributes_tab = new AttributesTab();
     add_widget(attributes_tab);
 
-    filter_menu = attributes_tab->findChild<AttributesFilterMenu *>();
-    QVERIFY(filter_menu != nullptr);
+    filter_menu = attributes_tab->findChild<AttributesTabFilterMenu *>();
+    QVERIFY(filter_menu);
 
-    view = attributes_tab->findChild<QTreeView *>();
-    QVERIFY(view != nullptr);
+    view = attributes_tab->ui->view;
 
     model = attributes_tab->findChild<QStandardItemModel *>();
-    QVERIFY(model != nullptr);
+    QVERIFY(model);
 
     proxy = attributes_tab->findChild<QSortFilterProxyModel *>();
-    QVERIFY(proxy != nullptr);
+    QVERIFY(proxy);
 
-    filter_button = attributes_tab->findChild<QPushButton *>("filter_button");
-    QVERIFY(filter_button != nullptr);
+    filter_button = attributes_tab->ui->filter_button;
 
-    edit_button = attributes_tab->findChild<QPushButton *>("edit_button");
-    QVERIFY(filter_button != nullptr);
+    edit_button = attributes_tab->ui->edit_button;
 
     // Create test user
     const QString name = TEST_USER;
@@ -165,36 +166,34 @@ void ADMCTestAttributesTab::apply() {
     navigate_until_object(view, "description", Qt::DisplayRole);
     edit_button->click();
 
-    auto multi_editor = attributes_tab->findChild<MultiEditor *>();
-    QVERIFY(multi_editor != nullptr);
-    QVERIFY(QTest::qWaitForWindowExposed(multi_editor, 1000));
+    auto list_attribute_dialog = attributes_tab->findChild<ListAttributeDialog *>();
+    QVERIFY(list_attribute_dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(list_attribute_dialog, 1000));
 
-    auto add_button = multi_editor->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button != nullptr);
+    QPushButton *add_button = list_attribute_dialog->ui->add_button;
     add_button->click();
 
-    auto string_editor = multi_editor->findChild<StringEditor *>();
-    QVERIFY(string_editor != nullptr);
-    QVERIFY(QTest::qWaitForWindowExposed(string_editor, 1000));
+    auto string_attribute_dialog = list_attribute_dialog->findChild<StringAttributeDialog *>();
+    QVERIFY(string_attribute_dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(string_attribute_dialog, 1000));
 
-    auto string_editor_edit = string_editor->findChild<QLineEdit *>();
-    QVERIFY(string_editor_edit != nullptr);
-    string_editor_edit->setText(correct_value);
+    QLineEdit *string_attribute_dialog_edit = string_attribute_dialog->ui->edit;
+    string_attribute_dialog_edit->setText(correct_value);
 
-    string_editor->accept();
-    multi_editor->accept();
+    string_attribute_dialog->accept();
+    list_attribute_dialog->accept();
 
     attributes_tab->apply(ad, dn);
 
     const AdObject object = ad.search_object(dn);
     const QString description_value = object.get_string(ATTRIBUTE_DESCRIPTION);
-    QVERIFY(description_value == correct_value);
+    QCOMPARE(description_value, correct_value);
 }
 
 void ADMCTestAttributesTab::set_filter(const QList<AttributeFilter> &filter_list, const bool state) {
     for (const AttributeFilter &filter : filter_list) {
         QAction *action = filter_menu->findChild<QAction *>(QString::number(filter));
-        QVERIFY(action != nullptr);
+        QVERIFY(action);
         action->setChecked(state);
     }
 }

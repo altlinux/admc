@@ -68,7 +68,6 @@ const QList<QString> well_known_sid_list = {
     SID_NT_OTHER_ORGANISATION,
 };
 
-// TODO: not sure if these are supposed to be translated?
 const QHash<QString, QString> trustee_name_map = {
     {SID_WORLD_DOMAIN, "Everyone in Domain"},
     {SID_WORLD, "Everyone"},
@@ -102,16 +101,9 @@ const QHash<QString, QString> trustee_name_map = {
     {SID_NT_OTHER_ORGANISATION, "Other Organization"},
 };
 
-// TODO: values of SEC_ADS_GENERIC_READ and
-// SEC_ADS_GENERIC_WRITE constants don't match with the bits
-// that ADUC sets when you enable those permissions in
-// security tab. There are some extra bits in these
-// constants, took them out as a quick fix.
 const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
     {AcePermission_FullControl, SEC_ADS_GENERIC_ALL},
-    // {AcePermission_Read, SEC_ADS_GENERIC_READ},
     {AcePermission_Read, (SEC_STD_READ_CONTROL | SEC_ADS_LIST | SEC_ADS_READ_PROP)},
-    // {AcePermission_Write, SEC_ADS_GENERIC_WRITE},
     {AcePermission_Write, (SEC_ADS_SELF_WRITE | SEC_ADS_WRITE_PROP)},
     {AcePermission_Delete, SEC_STD_DELETE},
     {AcePermission_DeleteSubtree, SEC_DIR_DELETE_CHILD},
@@ -275,7 +267,7 @@ QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee)
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, trustee_string);
         const QList<QString> attributes = {
             ATTRIBUTE_DISPLAY_NAME,
-            ATTRIBUTE_SAMACCOUNT_NAME,
+            ATTRIBUTE_SAM_ACCOUNT_NAME,
         };
         const auto trustee_search = ad.search(ad.adconfig()->domain_head(), SearchScope_All, filter, QList<QString>());
         if (!trustee_search.isEmpty()) {
@@ -287,8 +279,8 @@ QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee)
 
                 if (object.contains(ATTRIBUTE_DISPLAY_NAME)) {
                     return object.get_string(ATTRIBUTE_DISPLAY_NAME);
-                } else if (object.contains(ATTRIBUTE_SAMACCOUNT_NAME)) {
-                    return object.get_string(ATTRIBUTE_SAMACCOUNT_NAME);
+                } else if (object.contains(ATTRIBUTE_SAM_ACCOUNT_NAME)) {
+                    return object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
                 } else {
                     return dn_get_name(object.get_dn());
                 }
@@ -385,8 +377,11 @@ bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, c
                         return SEC_ACE_TYPE_ACCESS_ALLOWED;
                     }();
 
-                    // TODO: these flags should be set to something
-                    // in some cases, for now just 0
+                    // NOTE: in the future, probably when
+                    // adding advanced security dialog,
+                    // these flags will need to be set to
+                    // something in some cases, but for now
+                    // just 0
                     ace->flags = 0x00;
                     ace->access_mask = ace_permission_to_mask_map[permission];
                     ace->object.object.flags = [&]() {
@@ -531,9 +526,6 @@ void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee) {
     talloc_free(tmp_ctx);
 }
 
-// TODO: this requiring adconfig is so messy and causes
-// other f-ns that use this f-n to require adconfig also.
-// Not sure if possible to remove this requirement.
 QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig) {
     QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
 

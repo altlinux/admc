@@ -19,18 +19,17 @@
  */
 
 #include "tabs/gpo_links_tab.h"
+#include "tabs/ui_gpo_links_tab.h"
 
 #include "adldap.h"
 #include "globals.h"
 #include "properties_dialog.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
 #include <algorithm>
 
 #include <QStandardItemModel>
-#include <QTreeView>
-#include <QVBoxLayout>
 
 enum GpoLinksColumn {
     GpoLinksColumn_Name,
@@ -42,11 +41,8 @@ enum GpoLinksRole {
 };
 
 GpoLinksTab::GpoLinksTab() {
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setContextMenuPolicy(Qt::CustomContextMenu);
-    view->setAllColumnsShowFocus(true);
-    view->setSortingEnabled(true);
+    ui = new Ui::GpoLinksTab();
+    ui->setupUi(this);
 
     model = new QStandardItemModel(0, GpoLinksColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -54,19 +50,17 @@ GpoLinksTab::GpoLinksTab() {
             {GpoLinksColumn_Name, tr("Name")},
         });
 
-    view->setModel(model);
+    ui->view->setModel(model);
 
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(view);
+    PropertiesDialog::open_when_view_item_activated(ui->view, GpoLinksRole_DN);
 
-    PropertiesDialog::open_when_view_item_activated(view, GpoLinksRole_DN);
-
-    settings_restore_header_state(SETTING_gpo_links_tab_header_state, view->header());
+    settings_restore_header_state(SETTING_gpo_links_tab_header_state, ui->view->header());
 }
 
 GpoLinksTab::~GpoLinksTab() {
-    settings_save_header_state(SETTING_gpo_links_tab_header_state, view->header());   
+    settings_save_header_state(SETTING_gpo_links_tab_header_state, ui->view->header());
+
+    delete ui;
 }
 
 void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {

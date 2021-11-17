@@ -42,5 +42,5 @@ bool ScopeProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source
 
     const bool is_scope = source_index.data(ConsoleRole_IsScope).toBool();
 
-    return is_scope;   
+    return is_scope;
 }

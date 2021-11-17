@@ -19,47 +19,48 @@
  */
 
 #include "select_policy_dialog.h"
+#include "ui_select_policy_dialog.h"
 
 #include "adldap.h"
-#include "console_types/console_policy.h"
+#include "console_impls/policy_impl.h"
 #include "globals.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
 #include <QPushButton>
 #include <QStandardItemModel>
-#include <QTreeView>
-#include <QVBoxLayout>
 
 SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 : QDialog(parent) {
-    setWindowTitle(tr("Select Policy"));
-    setAttribute(Qt::WA_DeleteOnClose);
-    setMinimumWidth(400);
-    setMinimumHeight(500);
+    ui = new Ui::SelectPolicyDialog();
+    ui->setupUi(this);
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
+    model = new QStandardItemModel(this);
+    ui->view->setModel(model);
+
+    ui->view->setHeaderHidden(true);
+
+    QPushButton *ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    enable_widget_on_selection(ok_button, ui->view);
+
+    settings_setup_dialog_geometry(SETTING_select_policy_dialog_geometry, this);
+}
+
+SelectPolicyDialog::~SelectPolicyDialog() {
+    delete ui;
+}
+
+void SelectPolicyDialog::open() {
     AdInterface ad;
     if (ad_failed(ad)) {
         close();
         return;
     }
 
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
-    connect(
-        ok_button, &QPushButton::clicked,
-        this, &QDialog::accept);
-    connect(
-        cancel_button, &QPushButton::clicked,
-        this, &SelectPolicyDialog::reject);
-
-    view = new QTreeView();
-    auto model = new QStandardItemModel(this);
-    view->setModel(model);
-
-    model->setHorizontalHeaderLabels(console_policy_header_labels());
+    model->removeRows(0, model->rowCount());
 
     const QString base = g_adconfig->domain_head();
     const SearchScope scope = SearchScope_All;
@@ -68,27 +69,20 @@ SelectPolicyDialog::SelectPolicyDialog(QWidget *parent)
 
     const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-    // TODO: assuming that policy row has 1 column, need to
-    // make it depend on some constant
     for (const AdObject &object : results.values()) {
-        const QList<QStandardItem *> row = {new QStandardItem()};
-        model->appendRow(row);
+        auto item = new QStandardItem();
+        model->appendRow(item);
 
-        console_policy_load(row, object);
+        console_policy_load_item(item, object);
     }
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addWidget(view);
-    top_layout->addWidget(button_box);
-
-    enable_widget_on_selection(ok_button, view);
+    QDialog::open();
 }
 
 QList<QString> SelectPolicyDialog::get_selected_dns() const {
     QList<QString> dns;
 
-    const QList<QModelIndex> indexes = view->selectionModel()->selectedRows();
+    const QList<QModelIndex> indexes = ui->view->selectionModel()->selectedRows();
     for (const QModelIndex &index : indexes) {
         const QString dn = index.data(PolicyRole_DN).toString();
         dns.append(dn);

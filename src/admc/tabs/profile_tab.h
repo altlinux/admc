@@ -23,11 +23,18 @@
 
 #include "tabs/properties_tab.h"
 
+namespace Ui {
+class ProfileTab;
+}
+
 class ProfileTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::ProfileTab *ui;
+
     ProfileTab();
+    ~ProfileTab();
 };
 
 #endif /* PROFILE_TAB_H */

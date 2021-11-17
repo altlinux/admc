@@ -19,103 +19,90 @@
  */
 
 #include "tabs/attributes_tab.h"
-#include "tabs/attributes_tab_p.h"
+#include "tabs/ui_attributes_tab.h"
 
 #include "adldap.h"
-#include "editors/attribute_editor.h"
+#include "attribute_dialogs/bool_attribute_dialog.h"
+#include "attribute_dialogs/datetime_attribute_dialog.h"
+#include "attribute_dialogs/list_attribute_dialog.h"
+#include "attribute_dialogs/octet_attribute_dialog.h"
+#include "attribute_dialogs/string_attribute_dialog.h"
 #include "globals.h"
 #include "settings.h"
+#include "tabs/attributes_tab_filter_menu.h"
+#include "tabs/attributes_tab_proxy.h"
 #include "utils.h"
 
-#include <QCheckBox>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QFrame>
-#include <QLabel>
-#include <QPushButton>
-#include <QStandardItemModel>
-#include <QTreeView>
-#include <QVBoxLayout>
-#include <QMenu>
 #include <QAction>
+#include <QDebug>
 #include <QHeaderView>
-
-enum AttributesColumn {
-    AttributesColumn_Name,
-    AttributesColumn_Value,
-    AttributesColumn_Type,
-    AttributesColumn_COUNT,
-};
+#include <QMenu>
+#include <QStandardItemModel>
 
 QString attribute_type_display_string(const AttributeType type);
 
 AttributesTab::AttributesTab() {
+    ui = new Ui::AttributesTab();
+    ui->setupUi(this);
+
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
-    {
-        {AttributesColumn_Name, tr("Name")},
-        {AttributesColumn_Value, tr("Value")},
-        {AttributesColumn_Type, tr("Type")},
-    });
+        {
+            {AttributesColumn_Name, tr("Name")},
+            {AttributesColumn_Value, tr("Value")},
+            {AttributesColumn_Type, tr("Type")}
+        });
 
-    auto filter_menu = new AttributesFilterMenu(this);
-
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setSelectionBehavior(QAbstractItemView::SelectRows);
-    view->setAllColumnsShowFocus(true);
-    view->setSortingEnabled(true);
+    auto filter_menu = new AttributesTabFilterMenu(this);
 
     proxy = new AttributesTabProxy(filter_menu, this);
 
     proxy->setSourceModel(model);
-    view->setModel(proxy);
+    ui->view->setModel(proxy);
 
-    auto edit_button = new QPushButton(tr("Edit..."));
-    edit_button->setObjectName("edit_button");
-    auto filter_button = new QPushButton(tr("Filter"));
-    filter_button->setObjectName("filter_button");
-    auto buttons = new QHBoxLayout();
-    buttons->addWidget(edit_button);
-    buttons->addStretch();
-    buttons->addWidget(filter_button);
+    ui->filter_button->setMenu(filter_menu);
 
-    filter_button->setMenu(filter_menu);
+    enable_widget_on_selection(ui->edit_button, ui->view);
 
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(view);
-    layout->addLayout(buttons);
-
-    enable_widget_on_selection(edit_button, view);
-
-    settings_restore_header_state(SETTING_attributes_tab_header_state, view->header());
+    settings_restore_header_state(SETTING_attributes_tab_header_state, ui->view->header());
 
     const QHash<QString, QVariant> state = settings_get_variant(SETTING_attributes_tab_header_state).toHash();
 
-    view->header()->restoreState(state["header"].toByteArray());
+    ui->view->header()->restoreState(state["header"].toByteArray());
+
+    QItemSelectionModel *selection_model = ui->view->selectionModel();
 
     connect(
-        view, &QAbstractItemView::doubleClicked,
+        selection_model, &QItemSelectionModel::selectionChanged,
+        this, &AttributesTab::update_edit_and_view_buttons);
+    update_edit_and_view_buttons();
+
+    connect(
+        ui->view, &QAbstractItemView::doubleClicked,
+        this, &AttributesTab::on_double_click);
+    connect(
+        ui->edit_button, &QAbstractButton::clicked,
         this, &AttributesTab::edit_attribute);
     connect(
-        edit_button, &QAbstractButton::clicked,
-        this, &AttributesTab::edit_attribute);
+        ui->view_button, &QAbstractButton::clicked,
+        this, &AttributesTab::view_attribute);
     connect(
-        filter_menu, &AttributesFilterMenu::filter_changed,
+        filter_menu, &AttributesTabFilterMenu::filter_changed,
         proxy, &AttributesTabProxy::invalidate);
 }
 
 AttributesTab::~AttributesTab() {
-    settings_set_variant(SETTING_attributes_tab_header_state, view->header()->saveState());
+    settings_set_variant(SETTING_attributes_tab_header_state, ui->view->header()->saveState());
+
+    delete ui;
 }
 
-void AttributesTab::edit_attribute() {
-    const QItemSelectionModel *selection_model = view->selectionModel();
+QList<QStandardItem *> AttributesTab::get_selected_row() const {
+    const QItemSelectionModel *selection_model = ui->view->selectionModel();
     const QList<QModelIndex> selecteds = selection_model->selectedRows();
 
     if (selecteds.isEmpty()) {
-        return;
+        return QList<QStandardItem *>();
     }
 
     const QModelIndex proxy_index = selecteds[0];
@@ -131,29 +118,92 @@ void AttributesTab::edit_attribute() {
         return out;
     }();
 
-    const QString attribute = row[AttributesColumn_Name]->text();
-    const QList<QByteArray> values = current[attribute];
+    return row;
+}
 
-    AttributeEditor *editor = AttributeEditor::make(attribute, values, this);
-    if (editor != nullptr) {
-        connect(
-            editor, &QDialog::accepted,
-            [this, editor, attribute, row]() {
-                const QList<QByteArray> new_values = editor->get_new_values();
+void AttributesTab::update_edit_and_view_buttons() {
+    const QList<QStandardItem *> selected_row = get_selected_row();
 
-                current[attribute] = new_values;
-                load_row(row, attribute, new_values);
+    const bool no_selection = selected_row.isEmpty();
+    if (no_selection) {
+        ui->edit_button->setVisible(true);
+        ui->edit_button->setEnabled(false);
 
-                emit edited();
-            });
-
-        editor->open();
+        ui->view_button->setVisible(false);
+        ui->view_button->setEnabled(false);
     } else {
-        message_box_critical(this, tr("Error"), tr("No editor is available for this attribute type."));
+        const QString attribute = selected_row[AttributesColumn_Name]->text();
+        const bool read_only = g_adconfig->get_attribute_is_system_only(attribute);
+
+        if (read_only) {
+            ui->edit_button->setVisible(false);
+            ui->edit_button->setEnabled(false);
+
+            ui->view_button->setVisible(true);
+            ui->view_button->setEnabled(true);
+        } else {
+            ui->edit_button->setVisible(true);
+            ui->edit_button->setEnabled(true);
+
+            ui->view_button->setVisible(false);
+            ui->view_button->setEnabled(false);
+        }
     }
 }
 
+void AttributesTab::on_double_click() {
+    const QList<QStandardItem *> selected_row = get_selected_row();
+    const QString attribute = selected_row[AttributesColumn_Name]->text();
+    const bool read_only = g_adconfig->get_attribute_is_system_only(attribute);
+
+    if (read_only) {
+        view_attribute();
+    } else {
+        edit_attribute();
+    }
+}
+
+void AttributesTab::view_attribute() {
+    const bool read_only = true;
+    AttributeDialog *dialog = get_attribute_dialog(read_only);
+    if (dialog == nullptr) {
+        return;
+    }
+
+    dialog->open();
+}
+
+void AttributesTab::edit_attribute() {
+    const bool read_only = false;
+    AttributeDialog *dialog = get_attribute_dialog(read_only);
+    if (dialog == nullptr) {
+        return;
+    }
+    
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            const QList<QStandardItem *> row = get_selected_row();
+
+            if (row.isEmpty()) {
+                return;
+            }
+
+            const QList<QByteArray> new_value_list = dialog->get_value_list();
+            const QString attribute = dialog->get_attribute();
+
+            current[attribute] = new_value_list;
+            load_row(row, attribute, new_value_list);
+
+            emit edited();
+        });
+}
+
 void AttributesTab::load(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     original.clear();
 
     for (auto attribute : object.attributes()) {
@@ -182,8 +232,6 @@ void AttributesTab::load(AdInterface &ad, const AdObject &object) {
         model->appendRow(row);
         load_row(row, attribute, values);
     }
-
-    view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
 }
 
 bool AttributesTab::apply(AdInterface &ad, const QString &target) {
@@ -216,175 +264,81 @@ void AttributesTab::load_row(const QList<QStandardItem *> &row, const QString &a
     row[AttributesColumn_Type]->setText(type_display);
 }
 
-AttributesFilterMenu::AttributesFilterMenu(QWidget *parent)
-: QMenu(parent) {
-    const QList<QVariant> state = settings_get_variant(SETTING_attributes_tab_filter_state).toList();
+// Return an appropriate attribute dialog for currently
+// selected attribute row.
+AttributeDialog *AttributesTab::get_attribute_dialog(const bool read_only) {
+    const QList<QStandardItem *> row = get_selected_row();
 
-    auto add_filter_action = [&](const QString text, const AttributeFilter filter) {
-        QAction *action = addAction(text);
-        action->setText(text);
-        action->setObjectName(QString::number(filter));
-        action->setCheckable(true);
+    if (row.isEmpty()) {
+        return nullptr;
+    }
 
-        const bool is_checked = [&]() {
-            if (filter < state.size()) {
-                return state[filter].toBool();
-            } else {
-                return true;
-            }
-        }();
-        action->setChecked(is_checked);
+    const QString attribute = row[AttributesColumn_Name]->text();
+    const QList<QByteArray> value_list = current[attribute];
+    const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
 
-        action_map.insert(filter, action);
-
-        connect(
-            action, &QAction::toggled,
-            this, &AttributesFilterMenu::filter_changed);
+    // Single/multi valued logic is separated out of the
+    // switch statement for better flow
+    auto octet_attribute_dialog = [&]() -> AttributeDialog * {
+        if (single_valued) {
+            return new OctetAttributeDialog(value_list, attribute, read_only, this);
+        } else {
+            return new ListAttributeDialog(value_list, attribute, read_only, this);
+        }
     };
 
-    add_filter_action(tr("Unset"), AttributeFilter_Unset);
-    add_filter_action(tr("Read-only"), AttributeFilter_ReadOnly);
-
-    addSeparator();
-
-    add_filter_action(tr("Mandatory"), AttributeFilter_Mandatory);
-    add_filter_action(tr("Optional"), AttributeFilter_Optional);
-
-    addSeparator();
-
-    add_filter_action(tr("System-only"), AttributeFilter_SystemOnly);
-    add_filter_action(tr("Constructed"), AttributeFilter_Constructed);
-    add_filter_action(tr("Backlink"), AttributeFilter_Backlink);
-
-    connect(
-        action_map[AttributeFilter_ReadOnly], &QAction::toggled,
-        this, &AttributesFilterMenu::on_read_only_changed);
-    on_read_only_changed();
-}
-
-AttributesFilterMenu::~AttributesFilterMenu() {
-    const QList<QVariant> state = [&]() {
-        QList<QVariant> out;
-
-        for (int fitler_i = 0; fitler_i < AttributeFilter_COUNT; fitler_i++) {
-            const AttributeFilter filter = (AttributeFilter) fitler_i;
-            const QAction *action = action_map[filter];
-            const QVariant filter_state = QVariant(action->isChecked());
-
-            out.append(filter_state);
+    auto string_attribute_dialog = [&]() -> AttributeDialog * {
+        if (single_valued) {
+            return new StringAttributeDialog(value_list, attribute, read_only, this);
+        } else {
+            return new ListAttributeDialog(value_list, attribute, read_only, this);
         }
-
-        return out;
-    }();
-
-    settings_set_variant(SETTING_attributes_tab_filter_state, state);
-}
-
-void AttributesFilterMenu::on_read_only_changed() {
-    const bool read_only_is_enabled = action_map[AttributeFilter_ReadOnly]->isChecked();
-
-    const QList<AttributeFilter> read_only_sub_filters = {
-        AttributeFilter_SystemOnly,
-        AttributeFilter_Constructed,
-        AttributeFilter_Backlink,
     };
 
-    for (const AttributeFilter &filter : read_only_sub_filters) {
-        action_map[filter]->setEnabled(read_only_is_enabled);
-        
-        // Turning off read only turns off the sub read only
-        // filters. Note that turning ON read only doesn't do
-        // the opposite.
-        if (!read_only_is_enabled) {
-            action_map[filter]->setChecked(false);
+    auto bool_attribute_dialog = [&]() -> AttributeDialog * {
+        if (single_valued) {
+            return new BoolAttributeDialog(value_list, attribute, read_only, this);
+        } else {
+            return new ListAttributeDialog(value_list, attribute, read_only, this);
         }
-    }
-}
+    };
 
-bool AttributesFilterMenu::filter_is_enabled(const AttributeFilter filter) const {
-    return action_map[filter]->isChecked();
-}
-
-AttributesTabProxy::AttributesTabProxy(AttributesFilterMenu *filter_menu_arg, QObject *parent)
-: QSortFilterProxyModel(parent) {
-    filter_menu = filter_menu_arg;
-}
-
-void AttributesTabProxy::load(const AdObject &object) {
-    const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    mandatory_attributes = g_adconfig->get_mandatory_attributes(object_classes).toSet();
-    optional_attributes = g_adconfig->get_optional_attributes(object_classes).toSet();
-
-    set_attributes = object.attributes().toSet();
-}
-
-bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
-    auto source = sourceModel();
-    const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();
-
-    const bool system_only = g_adconfig->get_attribute_is_system_only(attribute);
-    const bool unset = !set_attributes.contains(attribute);
-    const bool mandatory = mandatory_attributes.contains(attribute);
-    const bool optional = optional_attributes.contains(attribute);
-
-    if (!filter_menu->filter_is_enabled(AttributeFilter_Unset) && unset) {
-        return false;
-    }
-
-    if (!filter_menu->filter_is_enabled(AttributeFilter_Mandatory) && mandatory) {
-        return false;
-    }
-
-    if (!filter_menu->filter_is_enabled(AttributeFilter_Optional) && optional) {
-        return false;
-    }
-
-    if (filter_menu->filter_is_enabled(AttributeFilter_ReadOnly) && system_only) {
-        const bool constructed = g_adconfig->get_attribute_is_constructed(attribute);
-        const bool backlink = g_adconfig->get_attribute_is_backlink(attribute);
-
-        if (!filter_menu->filter_is_enabled(AttributeFilter_SystemOnly) && !constructed && !backlink) {
-            return false;
+    auto datetime_attribute_dialog = [&]() -> AttributeDialog * {
+        if (single_valued) {
+            return new DatetimeAttributeDialog(value_list, attribute, read_only, this);
+        } else {
+            return nullptr;
         }
+    };
 
-        if (!filter_menu->filter_is_enabled(AttributeFilter_Constructed) && constructed) {
-            return false;
-        }
+    const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
-        if (!filter_menu->filter_is_enabled(AttributeFilter_Backlink) && backlink) {
-            return false;
-        }
-    }
-
-    if (!filter_menu->filter_is_enabled(AttributeFilter_ReadOnly) && system_only) {
-        return false;
-    }
-
-    return true;
-}
-
-QString attribute_type_display_string(const AttributeType type) {
     switch (type) {
-        case AttributeType_Boolean: return AttributesTab::tr("Boolean");
-        case AttributeType_Enumeration: return AttributesTab::tr("Enumeration");
-        case AttributeType_Integer: return AttributesTab::tr("Integer");
-        case AttributeType_LargeInteger: return AttributesTab::tr("Large Integer");
-        case AttributeType_StringCase: return AttributesTab::tr("String Case");
-        case AttributeType_IA5: return AttributesTab::tr("IA5");
-        case AttributeType_NTSecDesc: return AttributesTab::tr("NT Security Descriptor");
-        case AttributeType_Numeric: return AttributesTab::tr("Numeric");
-        case AttributeType_ObjectIdentifier: return AttributesTab::tr("Object Identifier");
-        case AttributeType_Octet: return AttributesTab::tr("Octet");
-        case AttributeType_ReplicaLink: return AttributesTab::tr("Replica Link");
-        case AttributeType_Printable: return AttributesTab::tr("Printable");
-        case AttributeType_Sid: return AttributesTab::tr("SID");
-        case AttributeType_Teletex: return AttributesTab::tr("Teletex");
-        case AttributeType_Unicode: return AttributesTab::tr("Unicode");
-        case AttributeType_UTCTime: return AttributesTab::tr("UTC Time");
-        case AttributeType_GeneralizedTime: return AttributesTab::tr("Generalized Time");
-        case AttributeType_DNString: return AttributesTab::tr("DN String");
-        case AttributeType_DNBinary: return AttributesTab::tr("DN Binary");
-        case AttributeType_DSDN: return AttributesTab::tr("Distinguished Name");
+        case AttributeType_Octet: return octet_attribute_dialog();
+        case AttributeType_Sid: return octet_attribute_dialog();
+
+        case AttributeType_Boolean: return bool_attribute_dialog();
+
+        case AttributeType_Unicode: return string_attribute_dialog();
+        case AttributeType_StringCase: return string_attribute_dialog();
+        case AttributeType_DSDN: return string_attribute_dialog();
+        case AttributeType_IA5: return string_attribute_dialog();
+        case AttributeType_Teletex: return string_attribute_dialog();
+        case AttributeType_ObjectIdentifier: return string_attribute_dialog();
+        case AttributeType_Integer: return string_attribute_dialog();
+        case AttributeType_Enumeration: return string_attribute_dialog();
+        case AttributeType_LargeInteger: return string_attribute_dialog();
+        case AttributeType_UTCTime: return datetime_attribute_dialog();
+        case AttributeType_GeneralizedTime: return datetime_attribute_dialog();
+        case AttributeType_NTSecDesc: return string_attribute_dialog();
+        case AttributeType_Numeric: return string_attribute_dialog();
+        case AttributeType_Printable: return string_attribute_dialog();
+        case AttributeType_DNString: return string_attribute_dialog();
+
+        // NOTE: putting these here as confirmed to be unsupported
+        case AttributeType_ReplicaLink: return nullptr;
+        case AttributeType_DNBinary: return nullptr;
     }
-    return QString();
+
+    return nullptr;
 }

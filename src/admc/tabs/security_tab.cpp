@@ -1,7 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020 BaseALT Ltd.
+ * Copyright (C) 2020-2021 BaseALT Ltd.
+ * Copyright (C) 2020-2021 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,23 +19,21 @@
  */
 
 #include "tabs/security_tab.h"
+#include "tabs/ui_security_tab.h"
 
 #include "ad_security.h"
 #include "adldap.h"
 #include "globals.h"
 #include "select_object_dialog.h"
-#include "utils.h"
+#include "select_well_known_trustee_dialog.h"
 #include "settings.h"
+#include "utils.h"
 
 #include "samba/ndr_security.h"
 
 #include <QDebug>
-#include <QDialog>
-#include <QDialogButtonBox>
 #include <QLabel>
-#include <QListWidget>
 #include <QPersistentModelIndex>
-#include <QPushButton>
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -43,59 +42,58 @@ enum TrusteeItemRole {
     TrusteeItemRole_Sid = Qt::UserRole,
 };
 
-const QHash<AcePermission, QString> ace_permission_to_name_map = {
-    {AcePermission_FullControl, QCoreApplication::translate("Security", "Full control")},
-    {AcePermission_Read, QCoreApplication::translate("Security", "Read")},
-    {AcePermission_Write, QCoreApplication::translate("Security", "Write")},
-    {AcePermission_Delete, QCoreApplication::translate("Security", "Delete")},
-    {AcePermission_DeleteSubtree, QCoreApplication::translate("Security", "Delete subtree")},
-    {AcePermission_CreateChild, QCoreApplication::translate("Security", "Create child")},
-    {AcePermission_DeleteChild, QCoreApplication::translate("Security", "Delete child")},
-    {AcePermission_AllowedToAuthenticate, QCoreApplication::translate("Security", "Allowed to authenticate")},
-    {AcePermission_ChangePassword, QCoreApplication::translate("Security", "Change password")},
-    {AcePermission_ReceiveAs, QCoreApplication::translate("Security", "Receive as")},
-    {AcePermission_ResetPassword, QCoreApplication::translate("Security", "Reset password")},
-    {AcePermission_SendAs, QCoreApplication::translate("Security", "Send as")},
-    {AcePermission_ReadAccountRestrictions, QCoreApplication::translate("Security", "Read Account restrictions")},
-    {AcePermission_WriteAccountRestrictions, QCoreApplication::translate("Security", "Write Account restrictions")},
-    {AcePermission_ReadGeneralInfo, QCoreApplication::translate("Security", "Read general info")},
-    {AcePermission_WriteGeneralInfo, QCoreApplication::translate("Security", "Write general info")},
-    {AcePermission_ReadGroupMembership, QCoreApplication::translate("Security", "Read group membership")},
-    {AcePermission_ReadLogonInfo, QCoreApplication::translate("Security", "Read logon info")},
-    {AcePermission_WriteLogonInfo, QCoreApplication::translate("Security", "Write logon info")},
-    {AcePermission_ReadPersonalInfo, QCoreApplication::translate("Security", "Read personal info")},
-    {AcePermission_WritePersonalInfo, QCoreApplication::translate("Security", "Write personal info")},
-    {AcePermission_ReadPhoneAndMailOptions, QCoreApplication::translate("Security", "Read phone and mail options")},
-    {AcePermission_WritePhoneAndMailOptions, QCoreApplication::translate("Security", "Write phone and mail options")},
-    {AcePermission_ReadPrivateInfo, QCoreApplication::translate("Security", "Read private info")},
-    {AcePermission_WritePrivateInfo, QCoreApplication::translate("Security", "Write private info")},
-    {AcePermission_ReadPublicInfo, QCoreApplication::translate("Security", "Read public info")},
-    {AcePermission_WritePublicInfo, QCoreApplication::translate("Security", "Write public info")},
-    {AcePermission_ReadRemoteAccessInfo, QCoreApplication::translate("Security", "Read remote access info")},
-    {AcePermission_WriteRemoteAccessInfo, QCoreApplication::translate("Security", "Write remote access info")},
-    {AcePermission_ReadTerminalServerLicenseServer, QCoreApplication::translate("Security", "Read terminal server license server")},
-    {AcePermission_WriteTerminalServerLicenseServer, QCoreApplication::translate("Security", "Write terminal server license server")},
-    {AcePermission_ReadWebInfo, QCoreApplication::translate("Security", "Read web info")},
-    {AcePermission_WriteWebInfo, QCoreApplication::translate("Security", "Write web info")},
+enum AcePermissionItemRole {
+    AcePermissionItemRole_Permission = Qt::UserRole,
 };
 
+QHash<AcePermission, QString> SecurityTab::ace_permission_to_name_map() {
+    return {
+        {AcePermission_FullControl, tr("Full control")},
+        {AcePermission_Read, tr("Read")},
+        {AcePermission_Write, tr("Write")},
+        {AcePermission_Delete, tr("Delete")},
+        {AcePermission_DeleteSubtree, tr("Delete subtree")},
+        {AcePermission_CreateChild, tr("Create child")},
+        {AcePermission_DeleteChild, tr("Delete child")},
+        {AcePermission_AllowedToAuthenticate, tr("Allowed to authenticate")},
+        {AcePermission_ChangePassword, tr("Change password")},
+        {AcePermission_ReceiveAs, tr("Receive as")},
+        {AcePermission_ResetPassword, tr("Reset password")},
+        {AcePermission_SendAs, tr("Send as")},
+        {AcePermission_ReadAccountRestrictions, tr("Read Account restrictions")},
+        {AcePermission_WriteAccountRestrictions, tr("Write Account restrictions")},
+        {AcePermission_ReadGeneralInfo, tr("Read general info")},
+        {AcePermission_WriteGeneralInfo, tr("Write general info")},
+        {AcePermission_ReadGroupMembership, tr("Read group membership")},
+        {AcePermission_ReadLogonInfo, tr("Read logon info")},
+        {AcePermission_WriteLogonInfo, tr("Write logon info")},
+        {AcePermission_ReadPersonalInfo, tr("Read personal info")},
+        {AcePermission_WritePersonalInfo, tr("Write personal info")},
+        {AcePermission_ReadPhoneAndMailOptions, tr("Read phone and mail options")},
+        {AcePermission_WritePhoneAndMailOptions, tr("Write phone and mail options")},
+        {AcePermission_ReadPrivateInfo, tr("Read private info")},
+        {AcePermission_WritePrivateInfo, tr("Write private info")},
+        {AcePermission_ReadPublicInfo, tr("Read public info")},
+        {AcePermission_WritePublicInfo, tr("Write public info")},
+        {AcePermission_ReadRemoteAccessInfo, tr("Read remote access info")},
+        {AcePermission_WriteRemoteAccessInfo, tr("Write remote access info")},
+        {AcePermission_ReadTerminalServerLicenseServer, tr("Read terminal server license server")},
+        {AcePermission_WriteTerminalServerLicenseServer, tr("Write terminal server license server")},
+        {AcePermission_ReadWebInfo, tr("Read web info")},
+        {AcePermission_WriteWebInfo, tr("Write web info")},
+    };
+}
+
 SecurityTab::SecurityTab() {
+    ui = new Ui::SecurityTab();
+    ui->setupUi(this);
+
     ignore_item_changed_signal = false;
 
     trustee_model = new QStandardItemModel(0, 1, this);
 
-    trustee_view = new QTreeView(this);
-    trustee_view->setHeaderHidden(true);
-    trustee_view->setModel(trustee_model);
-    trustee_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    trustee_view->sortByColumn(0, Qt::AscendingOrder);
-    trustee_view->setSortingEnabled(true);
-    trustee_view->setSelectionMode(QAbstractItemView::SingleSelection);
-
-    auto trustee_button_box = new QDialogButtonBox();
-    auto add_trustee_button = trustee_button_box->addButton(tr("Add..."), QDialogButtonBox::ActionRole);
-    auto add_well_known_trustee_button = trustee_button_box->addButton(tr("Add well-known trustee..."), QDialogButtonBox::ActionRole);
-    auto remove_trustee_button = trustee_button_box->addButton(tr("Remove"), QDialogButtonBox::ActionRole);
+    ui->trustee_view->setModel(trustee_model);
+    ui->trustee_view->sortByColumn(0, Qt::AscendingOrder);
 
     ace_model = new QStandardItemModel(0, AceColumn_COUNT, this);
     set_horizontal_header_labels_from_map(ace_model,
@@ -109,7 +107,7 @@ SecurityTab::SecurityTab() {
     for (const AcePermission &permission : all_permissions_list) {
         const QList<QStandardItem *> row = make_item_row(AceColumn_COUNT);
 
-        const QString mask_string = ace_permission_to_name_map[permission];
+        const QString mask_string = ace_permission_to_name_map()[permission];
         row[AceColumn_Name]->setText(mask_string);
 
         row[AceColumn_Allowed]->setCheckable(true);
@@ -141,41 +139,32 @@ SecurityTab::SecurityTab() {
         return out;
     }();
 
-    ace_view = new QTreeView(this);
-    ace_view->setModel(ace_model);
-    ace_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ace_view->setColumnWidth(AceColumn_Name, 400);
+    ui->ace_view->setModel(ace_model);
+    ui->ace_view->setColumnWidth(AceColumn_Name, 400);
 
-    trustee_label = new QLabel();
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(trustee_view);
-    layout->addWidget(trustee_button_box);
-    layout->addWidget(trustee_label);
-    layout->addWidget(ace_view);
-
-    settings_restore_header_state(SETTING_security_tab_header_state, ace_view->header());
+    settings_restore_header_state(SETTING_security_tab_header_state, ui->ace_view->header());
 
     connect(
-        trustee_view->selectionModel(), &QItemSelectionModel::currentChanged,
+        ui->trustee_view->selectionModel(), &QItemSelectionModel::currentChanged,
         this, &SecurityTab::load_trustee_acl);
     connect(
         ace_model, &QStandardItemModel::itemChanged,
         this, &SecurityTab::on_item_changed);
     connect(
-        add_trustee_button, &QAbstractButton::clicked,
+        ui->add_trustee_button, &QAbstractButton::clicked,
         this, &SecurityTab::on_add_trustee_button);
     connect(
-        add_well_known_trustee_button, &QAbstractButton::clicked,
-        this, &SecurityTab::on_add_well_known_trustee_button);
+        ui->add_well_known_trustee_button, &QAbstractButton::clicked,
+        this, &SecurityTab::on_add_well_known_trustee);
     connect(
-        remove_trustee_button, &QAbstractButton::clicked,
+        ui->remove_trustee_button, &QAbstractButton::clicked,
         this, &SecurityTab::on_remove_trustee_button);
 }
 
 SecurityTab::~SecurityTab() {
-    settings_save_header_state(SETTING_security_tab_header_state, ace_view->header());   
+    settings_save_header_state(SETTING_security_tab_header_state, ui->ace_view->header());
+
+    delete ui;
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {
@@ -194,26 +183,18 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     // Select first index
     // NOTE: load_trustee_acl() is called because setCurrentIndex
     // emits "current change" signal
-    trustee_view->selectionModel()->setCurrentIndex(trustee_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    ui->trustee_view->selectionModel()->setCurrentIndex(trustee_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+
+    is_policy = object.is_class(CLASS_GP_CONTAINER);
 
     PropertiesTab::load(ad, object);
 }
 
 void SecurityTab::load_trustee_acl() {
-    const QModelIndex current_index = trustee_view->currentIndex();
+    const QModelIndex current_index = ui->trustee_view->currentIndex();
     if (!current_index.isValid()) {
         return;
     }
-    
-    const QString label_text = [&]() {
-        QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
-        const QString trustee_name = current_item->text();
-        const QString text = QString(tr("Permissions for %1")).arg(trustee_name);
-
-        return text;
-    }();
-
-    trustee_label->setText(label_text);
 
     apply_current_state_to_items();
 }
@@ -257,7 +238,7 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
     }();
 
     const QByteArray trustee = [&]() {
-        const QModelIndex current_index = trustee_view->currentIndex();
+        const QModelIndex current_index = ui->trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
 
@@ -282,9 +263,24 @@ bool SecurityTab::set_trustee(const QString &trustee_name) {
     }
 
     const QStandardItem *item = item_list[0];
-    trustee_view->setCurrentIndex(item->index());
+    ui->trustee_view->setCurrentIndex(item->index());
 
     return true;
+}
+
+bool SecurityTab::verify(AdInterface &ad, const QString &target) const {
+    UNUSED_ARG(target);
+
+    if (is_policy) {
+        // To apply security tab for policies we need user
+        // to have admin rights to be able to sync perms of
+        // GPT
+        const bool have_sufficient_rights = ad.logged_in_as_admin();
+
+        return have_sufficient_rights;
+    } else {
+        return true;
+    }
 }
 
 bool SecurityTab::apply(AdInterface &ad, const QString &target) {
@@ -293,18 +289,25 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
         return true;
     }
 
-    const bool apply_success = attribute_replace_security_descriptor(&ad, target, permission_state_map);
+    bool total_success = true;
+
+    total_success &= attribute_replace_security_descriptor(&ad, target, permission_state_map);
 
     original_permission_state_map = permission_state_map;
 
-    return apply_success;
+    if (is_policy) {
+        total_success &= ad.gpo_sync_perms(target);
+    }
+
+    return total_success;
 }
 
 void SecurityTab::on_add_trustee_button() {
     auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, this);
     dialog->setWindowTitle(tr("Add Trustee"));
+    dialog->open();
 
-    QObject::connect(
+    connect(
         dialog, &SelectObjectDialog::accepted,
         [=]() {
             AdInterface ad;
@@ -329,31 +332,10 @@ void SecurityTab::on_add_trustee_button() {
 
             add_trustees(sid_list, ad);
         });
-
-    dialog->open();
-}
-
-void SecurityTab::on_add_well_known_trustee_button() {
-    auto dialog = new SelectWellKnownTrusteeDialog(this);
-
-    QObject::connect(
-        dialog, &QDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            const QList<QByteArray> selected_list = dialog->get_selected();
-
-            add_trustees(selected_list, ad);
-        });
-
-    dialog->open();
 }
 
 void SecurityTab::on_remove_trustee_button() {
-    QItemSelectionModel *selection_model = trustee_view->selectionModel();
+    QItemSelectionModel *selection_model = ui->trustee_view->selectionModel();
     const QList<QPersistentModelIndex> selected_list = persistent_index_list(selection_model->selectedRows());
 
     for (const QPersistentModelIndex &index : selected_list) {
@@ -375,7 +357,7 @@ void SecurityTab::apply_current_state_to_items() {
     ignore_item_changed_signal = true;
 
     const QByteArray trustee = [&]() {
-        const QModelIndex current_index = trustee_view->currentIndex();
+        const QModelIndex current_index = ui->trustee_view->currentIndex();
         QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
         const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
 
@@ -441,7 +423,7 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
         item->setText(name);
         item->setData(sid, TrusteeItemRole_Sid);
         trustee_model->appendRow(item);
-        
+
         added_anything = true;
     }
 
@@ -454,53 +436,20 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
     }
 }
 
-SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
-: QDialog(parent) {
-    setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(tr("Select Well-Known Trustees"));
-
-    resize(600, 400);
-    
-    list = new QListWidget();
-    list->setSelectionMode(QListWidget::ExtendedSelection);
-
-    for (const QString &sid_string : well_known_sid_list) {
-        auto item = new QListWidgetItem();
-
-        const QByteArray sid_bytes = sid_string_to_bytes(sid_string); 
-        item->setData(Qt::UserRole, sid_bytes);
-
-        const QString name = ad_security_get_well_known_trustee_name(sid_bytes);
-        item->setText(name);
-
-        list->addItem(item);
-    }
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(list);
-    layout->addWidget(button_box);
+void SecurityTab::on_add_well_known_trustee() {
+    auto dialog = new SelectWellKnownTrusteeDialog(this);
+    dialog->open();
 
     connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-}
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            AdInterface ad;
+            if (ad_failed(ad)) {
+                return;
+            }
 
-QList<QByteArray> SelectWellKnownTrusteeDialog::get_selected() const {
-    QList<QByteArray> out;
+            const QList<QByteArray> trustee_list = dialog->get_selected();
 
-    const QList<QListWidgetItem *> selected = list->selectedItems();
-    for (QListWidgetItem *item : selected) {
-        const QByteArray sid = item->data(Qt::UserRole).toByteArray();
-        out.append(sid);
-    }
-
-    return out;
+            add_trustees(trustee_list, ad);
+        });
 }

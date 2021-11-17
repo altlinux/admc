@@ -29,34 +29,57 @@
 
 #include <QWidget>
 
-class FilterWidget;
-class FindResults;
 class QStandardItem;
-class QPushButton;
 class AdObject;
-class SelectBaseWidget;
+class QMenu;
+class ObjectImpl;
+class ConsoleWidget;
+
+namespace Ui {
+class FindWidget;
+}
 
 class FindWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    FindResults *find_results;
+    Ui::FindWidget *ui;
 
-    FindWidget(const QList<QString> classes, const QString &default_base);
+    FindWidget(QWidget *parent = nullptr);
+    ~FindWidget();
+
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
+    void set_default_base(const QString &default_base);
+
+    // NOTE: this is only for the console state, filter
+    // widget is untouched
+    QVariant save_console_state() const;
+    void restore_console_state(const QVariant &state);
+
+    void setup_action_menu(QMenu *menu);
+    void setup_view_menu(QMenu *menu);
+
+    void set_buddy_console(ConsoleWidget *buddy_console);
 
     // NOTE: returned items need to be re-parented or deleted!
-    QList<QList<QStandardItem *>> get_selected_rows() const;
+    QList<QString> get_selected_dns() const;
 
 private slots:
     void find();
-    void on_thread_finished();
     void handle_find_thread_results(const QHash<QString, AdObject> &results);
 
 private:
-    FilterWidget *filter_widget;
-    QPushButton *find_button;
-    QPushButton *stop_button;
-    SelectBaseWidget *select_base_widget;
+    ObjectImpl *object_impl;
+    QStandardItem *head_item;
+
+    QAction *action_view_icons;
+    QAction *action_view_list;
+    QAction *action_view_detail;
+    QAction *action_customize_columns;
+    QAction *action_toggle_description_bar;
+
+    void on_clear_button();
+    void clear_results();
 };
 
 #endif /* FIND_WIDGET_H */

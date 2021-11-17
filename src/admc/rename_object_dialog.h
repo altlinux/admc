@@ -23,34 +23,35 @@
 
 #include <QDialog>
 
-class AttributeEdit;
 class QLineEdit;
-class QPushButton;
+class QDialogButtonBox;
+class AttributeEdit;
+class AdInterface;
 
-class RenameObjectDialog final : public QDialog {
+class RenameObjectDialog : public QDialog {
     Q_OBJECT
 
 public:
-    RenameObjectDialog(const QString &target_arg, QWidget *parent);
+    using QDialog::QDialog;
 
     static void success_msg(const QString &old_name);
     static void fail_msg(const QString &old_name);
 
-    QString get_new_dn() const;
+    void init(QLineEdit *name_edit, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits);
 
-public slots:
-    void accept();
-
-private slots:
-    void on_edited();
+    void set_target(const QString &dn);
     void reset();
+    void open() override;
+    void accept() override;
+
+    QString get_target() const;
+    QString get_new_name() const;
+    QString get_new_dn() const;
 
 private:
     QString target;
-    QList<AttributeEdit *> all_edits;
     QLineEdit *name_edit;
-    QPushButton *ok_button;
-    QPushButton *reset_button;
+    QList<AttributeEdit *> edits;
 };
 
 #endif /* RENAME_OBJECT_DIALOG_H */

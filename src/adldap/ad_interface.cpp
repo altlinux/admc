@@ -38,16 +38,16 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <dirent.h>
 #include <krb5.h>
 #include <lber.h>
 #include <ldap.h>
 #include <libsmbclient.h>
 #include <resolv.h>
 #include <sasl/sasl.h>
-#include <uuid/uuid.h>
-#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <uuid/uuid.h>
 
 #include <QDebug>
 #include <QTextCodec>
@@ -61,6 +61,8 @@
 #else
 #define UNUSED(x) x
 #endif
+
+#define UNUSED_ARG(x) (void) (x)
 
 #define MAX_DN_LENGTH 1024
 #define MAX_PASSWORD_LENGTH 255
@@ -82,37 +84,37 @@ QList<QString> query_server_for_hosts(const char *dname);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format);
 
-AdConfig *AdInterfacePrivate::s_adconfig = nullptr;
+AdConfig *AdInterfacePrivate::adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
 QString AdInterfacePrivate::s_dc = QString();
 void *AdInterfacePrivate::s_sasl_nocanon = LDAP_OPT_ON;
-QString AdInterfacePrivate::s_port = QString();
+int AdInterfacePrivate::s_port = 0;
 CertStrategy AdInterfacePrivate::s_cert_strat = CertStrategy_Never;
 SMBCCTX *AdInterfacePrivate::smbc = NULL;
 
 void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup, int maxLenWorkgroup, char *pUsername, int maxLenUsername, char *pPassword, int maxLenPassword) {
+    UNUSED_ARG(pServer);
+    UNUSED_ARG(pShare);
+    UNUSED_ARG(pWorkgroup);
+    UNUSED_ARG(maxLenWorkgroup);
+    UNUSED_ARG(pUsername);
+    UNUSED_ARG(maxLenUsername);
+    UNUSED_ARG(pPassword);
+    UNUSED_ARG(maxLenPassword);
 }
 
-AdInterface::AdInterface(AdConfig *adconfig) {
-    d = new AdInterfacePrivate();
+AdInterface::AdInterface() {
+    d = new AdInterfacePrivate(this);
 
-    // TODO: this is very bug-prone, error returns should
-    // set this to false or return false
     d->is_connected = false;
-
-    if (adconfig != nullptr) {
-        d->adconfig = adconfig;
-    } else if (AdInterfacePrivate::s_adconfig != nullptr) {
-        d->adconfig = AdInterfacePrivate::s_adconfig;
-    } else {
-        d->adconfig = nullptr;
-    }
 
     d->ld = NULL;
 
+    const QString connect_error_context = tr("Failed to connect.");
+
     d->domain = get_default_domain_from_krb5();
     if (d->domain.isEmpty()) {
-        d->error_message(tr("Failed to connect"), tr("Failed to get a domain"));
+        d->error_message(connect_error_context, tr("Failed to get a domain."));
         return;
     }
 
@@ -121,7 +123,6 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     //
     // Connect via LDAP
     //
-    const QString connect_error_context = tr("Failed to connect");
 
     d->dc = [&]() {
         const QList<QString> dc_list = get_domain_hosts(d->domain, QString());
@@ -154,7 +155,7 @@ AdInterface::AdInterface(AdConfig *adconfig) {
         if (!d->dc.isEmpty()) {
             out = "ldap://" + d->dc;
 
-            if (!AdInterfacePrivate::s_port.isEmpty()) {
+            if (AdInterfacePrivate::s_port > 0) {
                 out = out + ":" + AdInterfacePrivate::s_port;
             }
         }
@@ -172,13 +173,13 @@ AdInterface::AdInterface(AdConfig *adconfig) {
     result = ldap_initialize(&d->ld, cstr(uri));
     if (result != LDAP_SUCCESS) {
         ldap_memfree(d->ld);
-        d->error_message(tr("Failed to initialize LDAP library"), strerror(errno));
+        d->error_message(tr("Failed to initialize LDAP library."), strerror(errno));
 
         return;
     }
 
     auto option_error = [&](const QString &option) {
-        d->error_message(connect_error_context, QString(tr("Failed to set ldap option %1")).arg(option));
+        d->error_message(connect_error_context, QString(tr("Failed to set ldap option %1.")).arg(option));
     };
 
     // Set version
@@ -210,19 +211,19 @@ AdInterface::AdInterface(AdConfig *adconfig) {
         return;
     }
 
-    const void *cert_strategy = [&]() {
+    const int cert_strategy = [&]() {
         switch (AdInterfacePrivate::s_cert_strat) {
-            case CertStrategy_Never: return (void *) LDAP_OPT_X_TLS_NEVER;
-            case CertStrategy_Hard: return (void *) LDAP_OPT_X_TLS_HARD;
-            case CertStrategy_Demand: return (void *) LDAP_OPT_X_TLS_DEMAND;
-            case CertStrategy_Allow: return (void *) LDAP_OPT_X_TLS_ALLOW;
-            case CertStrategy_Try: return (void *) LDAP_OPT_X_TLS_TRY;
+            case CertStrategy_Never: return LDAP_OPT_X_TLS_NEVER;
+            case CertStrategy_Hard: return LDAP_OPT_X_TLS_HARD;
+            case CertStrategy_Demand: return LDAP_OPT_X_TLS_DEMAND;
+            case CertStrategy_Allow: return LDAP_OPT_X_TLS_ALLOW;
+            case CertStrategy_Try: return LDAP_OPT_X_TLS_TRY;
         }
 
-        return (void *) LDAP_OPT_X_TLS_NEVER;
+        return LDAP_OPT_X_TLS_NEVER;
     }();
-    
-    ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, cert_strategy);
+
+    ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_strategy);
     if (result != LDAP_SUCCESS) {
         option_error("LDAP_OPT_X_TLS_REQUIRE_CERT");
         return;
@@ -249,8 +250,24 @@ AdInterface::AdInterface(AdConfig *adconfig) {
         return;
     }
 
+    d->client_user = [&]() {
+        char *out_cstr = NULL;
+        ldap_get_option(d->ld, LDAP_OPT_X_SASL_USERNAME, &out_cstr);
+
+        if (out_cstr == NULL) {
+            return QString();
+        }
+
+        QString out = QString(out_cstr);
+        out = out.toLower();
+
+        ldap_memfree(out_cstr);
+
+        return out;
+    }();
+
     // Initialize SMB context
-    
+
     // NOTE: initialize only once, because otherwise
     // wouldn't be able to have multiple active
     // AdInterface's instances at the same time
@@ -260,7 +277,7 @@ AdInterface::AdInterface(AdConfig *adconfig) {
         smbc_setOptionUseKerberos(AdInterfacePrivate::smbc, true);
         smbc_setOptionFallbackAfterKerberos(AdInterfacePrivate::smbc, true);
         if (!smbc_init_context(AdInterfacePrivate::smbc)) {
-            d->error_message(connect_error_context, tr("Failed to initialize SMB context"));
+            d->error_message(connect_error_context, tr("Failed to initialize SMB context."));
 
             return;
         }
@@ -280,12 +297,8 @@ AdInterface::~AdInterface() {
     delete d;
 }
 
-void AdInterface::set_permanent_adconfig(AdConfig *adconfig) {
-    AdInterfacePrivate::s_adconfig = adconfig;
-}
-
-void AdInterface::set_adconfig(AdConfig *adconfig) {
-    d->adconfig = adconfig;
+void AdInterface::set_config(AdConfig *config_arg) {
+    AdInterfacePrivate::adconfig = config_arg;
 }
 
 void AdInterface::set_log_searches(const bool enabled) {
@@ -306,7 +319,7 @@ void AdInterface::set_sasl_nocanon(const bool is_on) {
     }();
 }
 
-void AdInterface::set_port(const QString &port) {
+void AdInterface::set_port(const int port) {
     AdInterfacePrivate::s_port = port;
 }
 
@@ -318,7 +331,8 @@ QString AdInterface::get_dc() {
     return AdInterfacePrivate::s_dc;
 }
 
-AdInterfacePrivate::AdInterfacePrivate() {
+AdInterfacePrivate::AdInterfacePrivate(AdInterface *q_arg) {
+    q = q_arg;
 }
 
 bool AdInterface::is_connected() const {
@@ -347,12 +361,16 @@ AdConfig *AdInterface::adconfig() const {
     return d->adconfig;
 }
 
+QString AdInterface::client_user() const {
+    return d->client_user;
+}
+
 // Helper f-n for search()
 // NOTE: cookie is starts as NULL. Then after each while
 // loop, it is set to the value returned by
 // ldap_search_ext_s(). At the end cookie is set back to
 // NULL.
-bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope, const char *filter, char **attributes, QHash<QString, AdObject> *results, AdCookie *cookie) {
+bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope, const char *filter, char **attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl) {
     int result;
     LDAPMessage *res = NULL;
     LDAPControl *page_control = NULL;
@@ -381,7 +399,17 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     LDAPControl sd_control;
     const char *sd_control_oid = LDAP_SERVER_SD_FLAGS_OID;
     sd_control.ldctl_oid = (char *) sd_control_oid;
-    const int sd_control_value_int = (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
+    // NOTE: sacl part of the sd can only be obtained by
+    // administrators, so for normal operations we omit it.
+    // For some operations sacl is required so there's an
+    // option to get it.
+    const int sd_control_value_int = [&]() {
+        if (get_sacl) {
+            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
+        } else {
+            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
+        }
+    }();
     sd_control_value_be = ber_alloc_t(LBER_USE_DER);
     ber_printf(sd_control_value_be, "{i}", sd_control_value_int);
     ber_flatten(sd_control_value_be, &sd_control_value_bv);
@@ -506,7 +534,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
     return true;
 }
 
-QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes) {
+QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, const bool get_sacl) {
     AdCookie cookie;
     QHash<QString, AdObject> results;
 
@@ -528,7 +556,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchSc
     }
 
     while (true) {
-        const bool success = search_paged(base, scope, filter, attributes, &results, &cookie);
+        const bool success = search_paged(base, scope, filter, attributes, &results, &cookie, get_sacl);
 
         if (!success) {
             break;
@@ -542,7 +570,7 @@ QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchSc
     return results;
 }
 
-bool AdInterface::search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie) {
+bool AdInterface::search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl) {
     const char *base_cstr = cstr(base);
 
     const int scope_int = [&]() {
@@ -586,7 +614,7 @@ bool AdInterface::search_paged(const QString &base, const SearchScope scope, con
         return out;
     }();
 
-    const bool search_success = d->search_paged_internal(base_cstr, scope_int, filter_cstr, attributes_array, results, cookie);
+    const bool search_success = d->search_paged_internal(base_cstr, scope_int, filter_cstr, attributes_array, results, cookie, get_sacl);
     if (!search_success) {
         results->clear();
 
@@ -603,11 +631,11 @@ bool AdInterface::search_paged(const QString &base, const SearchScope scope, con
     return true;
 }
 
-AdObject AdInterface::search_object(const QString &dn, const QList<QString> &attributes) {
+AdObject AdInterface::search_object(const QString &dn, const QList<QString> &attributes, const bool get_sacl) {
     const QString base = dn;
     const SearchScope scope = SearchScope_Object;
     const QString filter = QString();
-    const QHash<QString, AdObject> results = search(base, scope, filter, attributes);
+    const QHash<QString, AdObject> results = search(base, scope, filter, attributes, get_sacl);
 
     if (results.contains(dn)) {
         return results[dn];
@@ -796,7 +824,27 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
     } else {
         const QString context = QString(tr("Failed to create object %1.")).arg(dn);
 
-        d->error_message(context, d->default_error());
+        const QString error = [this, dn]() {
+            const bool wrong_ou_parent = [&]() {
+                const int ldap_result = d->get_ldap_result();
+
+                const bool is_ou = dn.startsWith("OU=");
+                const QString parent = dn_get_parent(dn);
+                const bool bad_parent = parent.startsWith("CN=");
+
+                const bool out = (ldap_result == LDAP_NAMING_VIOLATION && is_ou && bad_parent);
+
+                return out;
+            }();
+
+            if (wrong_ou_parent) {
+                return tr("Can't create OU under this object type.");
+            } else {
+                return d->default_error();
+            }
+        }();
+
+        d->error_message(context, error);
 
         return false;
     }
@@ -817,7 +865,7 @@ bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {
     // Use a tree delete control to enable recursive delete
     tree_delete_control = (LDAPControl *) malloc(sizeof(LDAPControl));
     if (tree_delete_control == NULL) {
-        d->error_message(error_context, tr("LDAP Operation error - Failed to allocate tree delete control"));
+        d->error_message(error_context, tr("LDAP Operation error - Failed to allocate tree delete control."));
         cleanup();
 
         return false;
@@ -825,7 +873,7 @@ bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {
 
     result = ldap_control_create(LDAP_CONTROL_X_TREE_DELETE, 1, NULL, 0, &tree_delete_control);
     if (result != LDAP_SUCCESS) {
-        d->error_message(error_context, tr("LDAP Operation error - Failed to create tree delete control"));
+        d->error_message(error_context, tr("LDAP Operation error - Failed to create tree delete control."));
         cleanup();
 
         return false;
@@ -1062,7 +1110,7 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password, cons
         const QString error = [this]() {
             const int ldap_result = d->get_ldap_result();
             if (ldap_result == LDAP_CONSTRAINT_VIOLATION) {
-                return tr("Password doesn't match rules");
+                return tr("Password doesn't match rules.");
             } else {
                 return d->default_error();
             }
@@ -1074,10 +1122,6 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password, cons
     }
 }
 
-// TODO:
-// "User cannot change password" - CAN'T just set PASSWD_CANT_CHANGE. See: https://docs.microsoft.com/en-us/windows/win32/adsi/modifying-user-cannot-change-password-ldap-provider?redirectedfrom=MSDN
-// "This account supports 128bit encryption" (and for 256bit)
-// "Use Kerberos DES encryption types for this account"
 bool AdInterface::user_set_account_option(const QString &dn, AccountOption option, bool set) {
     if (dn.isEmpty()) {
         return false;
@@ -1223,16 +1267,20 @@ bool AdInterface::computer_reset_account(const QString &dn) {
     }
 }
 
-bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
+bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
     auto error_message = [&](const QString &error) {
-        d->error_message(tr("Failed to create GPO"), error);
+        d->error_message(tr("Failed to create GPO."), error);
     };
+
+    if (!logged_in_as_admin()) {
+        error_message(tr("Insufficient rights."));
+
+        return false;
+    }
 
     //
     // Generate UUID used for directory and object names
     //
-    // TODO: make sure endianess works fine on processors
-    // with weird endianess.
     const QString uuid = []() {
         uuid_t uuid_struct;
         uuid_generate_random(uuid_struct);
@@ -1246,69 +1294,69 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }();
 
     // Ex: "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const QString gPCFileSysPath = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
-    const QString main_dir = sysvol_path_to_smb(gPCFileSysPath);
-    const QString dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_head);
+    const QString filesys_path = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);
+    const QString gpt_path = filesys_path_to_smb_path(filesys_path);
+    const QString gpc_dn = QString("CN=%1,CN=Policies,CN=System,%2").arg(uuid, d->domain_head);
 
     // After each error case we need to clean up whatever we
     // have created successfully so far. Don't just use
-    // delete_gpo() because we want to delete partially in
+    // gpo_delete() because we want to delete partially in
     // some error cases and that shouldn't print any error
     // messages.
     auto cleanup = [&]() {
-        const AdObject gpc_object = search_object(dn);
+        const AdObject gpc_object = search_object(gpc_dn);
         const bool gpc_exists = !gpc_object.is_empty();
         if (gpc_exists) {
-            object_delete(dn);
+            object_delete(gpc_dn);
         }
 
         struct stat filestat;
-        const int stat_result = smbc_stat(cstr(main_dir), &filestat);
+        const int stat_result = smbc_stat(cstr(gpt_path), &filestat);
         const bool gpt_exists = (stat_result == 0);
         if (gpt_exists) {
-            d->delete_gpt(main_dir);
+            d->delete_gpt(gpt_path);
         }
     };
 
     //
-    // Create dirs and files for policy on sysvol
+    // Create GPT
     //
 
-    // Create main dir
+    // Create root dir
     // "smb://domain.alt/sysvol/domain.alt/Policies/{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
-    const int result_mkdir_main = smbc_mkdir(cstr(main_dir), 0755);
-    if (result_mkdir_main != 0) {
-        error_message(tr("Failed to create policy main dir"));
+    const int result_mkdir_gpt = smbc_mkdir(cstr(gpt_path), 0755);
+    if (result_mkdir_gpt != 0) {
+        error_message(tr("Failed to create GPT root dir."));
 
         cleanup();
 
         return false;
     }
 
-    const QString machine_dir = main_dir + "/Machine";
-    const int result_mkdir_machine = smbc_mkdir(cstr(machine_dir), 0755);
+    const QString gpt_machine_path = gpt_path + "/Machine";
+    const int result_mkdir_machine = smbc_mkdir(cstr(gpt_machine_path), 0755);
     if (result_mkdir_machine != 0) {
-        error_message(tr("Failed to create policy machine dir"));
+        error_message(tr("Failed to create GPT machine dir."));
 
         cleanup();
 
         return false;
     }
 
-    const QString user_dir = main_dir + "/User";
-    const int result_mkdir_user = smbc_mkdir(cstr(user_dir), 0755);
+    const QString gpt_user_path = gpt_path + "/User";
+    const int result_mkdir_user = smbc_mkdir(cstr(gpt_user_path), 0755);
     if (result_mkdir_user != 0) {
-        error_message(tr("Failed to create policy user dir"));
+        error_message(tr("Failed to create GPT user dir."));
 
         cleanup();
 
         return false;
     }
 
-    const QString ini_file_path = main_dir + "/GPT.INI";
-    const int ini_file = smbc_open(cstr(ini_file_path), O_WRONLY | O_CREAT, 0644);
+    const QString gpt_ini_path = gpt_path + "/GPT.INI";
+    const int ini_file = smbc_open(cstr(gpt_ini_path), O_WRONLY | O_CREAT, 0644);
     if (ini_file < 0) {
-        error_message(tr("Failed to open policy ini"));
+        error_message(tr("Failed to open GPT ini file."));
 
         cleanup();
 
@@ -1319,7 +1367,7 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     const int bytes_written = smbc_write(ini_file, ini_contents, strlen(ini_contents));
     smbc_close(ini_file);
     if (bytes_written < 0) {
-        error_message(tr("Failed to write policy ini"));
+        error_message(tr("Failed to write GPT ini file."));
 
         cleanup();
 
@@ -1329,10 +1377,9 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     //
     // Create AD object for gpo
     //
-    dn_out = dn;
-    const bool result_add = object_add(dn, CLASS_GP_CONTAINER);
+    const bool result_add = object_add(gpc_dn, CLASS_GP_CONTAINER);
     if (!result_add) {
-        error_message(tr("Failed to create object for GPO"));
+        error_message(tr("Failed to create GPC object."));
 
         cleanup();
 
@@ -1341,8 +1388,8 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
 
     const QHash<QString, QString> attribute_value_map = {
         {ATTRIBUTE_DISPLAY_NAME, display_name},
-        {ATTRIBUTE_GPC_FILE_SYS_PATH, gPCFileSysPath},
-        // TODO: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
+        {ATTRIBUTE_GPC_FILE_SYS_PATH, filesys_path},
+        // NOTE: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
         {ATTRIBUTE_FLAGS, "1"},
         {ATTRIBUTE_VERSION_NUMBER, "0"},
         {ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE"},
@@ -1352,10 +1399,10 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     for (const QString &attribute : attribute_value_map.keys()) {
         const QString value = attribute_value_map[attribute];
 
-        const bool replace_success = attribute_replace_string(dn, attribute, value);
+        const bool replace_success = attribute_replace_string(gpc_dn, attribute, value);
 
         if (!replace_success) {
-            error_message(tr("Failed to set policy attribute"));
+            error_message(QString(tr("Failed to set GPC attribute %1.")).arg(attribute));
 
             cleanup();
 
@@ -1364,11 +1411,11 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }
 
     // User object
-    const QString user_dn = "CN=User," + dn;
+    const QString user_dn = "CN=User," + gpc_dn;
     const bool result_add_user = object_add(user_dn, CLASS_CONTAINER);
-    attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
+    attribute_replace_string(gpc_dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_user) {
-        error_message(tr("Failed to create user folder object for GPO"));
+        error_message(tr("Failed to create user folder object for GPO."));
 
         cleanup();
 
@@ -1376,23 +1423,25 @@ bool AdInterface::create_gpo(const QString &display_name, QString &dn_out) {
     }
 
     // Machine object
-    const QString machine_dn = "CN=Machine," + dn;
+    const QString machine_dn = "CN=Machine," + gpc_dn;
     const bool result_add_machine = object_add(machine_dn, CLASS_CONTAINER);
-    attribute_replace_string(dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
+    attribute_replace_string(gpc_dn, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE");
     if (!result_add_machine) {
-        error_message(tr("Failed to create machine folder object for GPO"));
+        error_message(tr("Failed to create machine folder object for GPO."));
 
         cleanup();
 
         return false;
     }
 
-    const bool sync_perms_success = gpo_sync_perms(dn);
+    const bool sync_perms_success = gpo_sync_perms(gpc_dn);
 
     if (!sync_perms_success) {
         // NOTE: don't fail if failed to sync perms, user
         // can retry it later
     }
+
+    dn_out = gpc_dn;
 
     return true;
 }
@@ -1405,7 +1454,7 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
     explore_stack.append(gpt_root_path);
     seen_stack.append(gpt_root_path);
 
-    const QString error_context = QString(tr("Failed to get contents of GPT \"%1\"")).arg(gpt_root_path);
+    const QString error_context = QString(tr("Failed to get contents of GPT \"%1\".")).arg(gpt_root_path);
 
     while (!explore_stack.isEmpty()) {
         const QString path = explore_stack.takeLast();
@@ -1415,7 +1464,7 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
         if (dirp < 0) {
             *ok = false;
 
-            error_message(error_context, tr("Failed to open dir"));
+            error_message(error_context, tr("Failed to open dir."));
 
             return QList<QString>();
         }
@@ -1451,7 +1500,7 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
         if (errno != 0) {
             *ok = false;
 
-            error_message(error_context, tr("Failed to read dir"));
+            error_message(error_context, tr("Failed to read dir."));
 
             return QList<QString>();
         }
@@ -1462,7 +1511,7 @@ QList<QString> AdInterfacePrivate::gpo_get_gpt_contents(const QString &gpt_root_
     return seen_stack;
 }
 
-bool AdInterface::delete_gpo(const QString &dn) {
+bool AdInterface::gpo_delete(const QString &dn, bool *deleted_object) {
     // NOTE: try to execute both steps, even if first one
     // (deleting gpc) fails
 
@@ -1472,7 +1521,7 @@ bool AdInterface::delete_gpo(const QString &dn) {
     const QString filesys_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
 
     const QString name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
-    const QString smb_path = sysvol_path_to_smb(filesys_path);
+    const QString smb_path = filesys_path_to_smb_path(filesys_path);
 
     const bool delete_gpc_success = object_delete(dn);
     if (!delete_gpc_success) {
@@ -1498,7 +1547,7 @@ bool AdInterface::delete_gpo(const QString &dn) {
 
         attribute_replace_string(linked_object.get_dn(), ATTRIBUTE_GPLINK, gplink.to_string());
     }
-    
+
     const bool total_success = (delete_gpc_success && delete_gpt_success);
 
     if (total_success) {
@@ -1512,42 +1561,49 @@ bool AdInterface::delete_gpo(const QString &dn) {
         }
     }
 
+    *deleted_object = delete_gpc_success;
+
     return total_success;
 }
 
-QString AdInterface::sysvol_path_to_smb(const QString &sysvol_path) const {
-    QString out = sysvol_path;
+QString AdInterface::filesys_path_to_smb_path(const QString &filesys_path) const {
+    QString out = filesys_path;
 
     // NOTE: sysvol paths created by windows have this weird
     // capitalization and smbclient does NOT like it
     out.replace("\\SysVol\\", "\\sysvol\\");
-    
+
     out.replace("\\", "/");
 
     const int sysvol_i = out.indexOf("/sysvol/");
 
     out.remove(0, sysvol_i);
 
-    // TODO: currently using dc that was used for ldap
-    // connection, but maybe there's some specific dc that's
-    // supposed to be used for smb connection?
     out = QString("smb://%1%2").arg(d->dc, out);
 
     return out;
 }
 
-bool AdInterface::check_gpo_perms(const QString &gpo, bool *ok) {
-    const AdObject gpc_object = search_object(gpo);
+bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
+    // NOTE: skip perms check for non-admins, because don't
+    // have enough rights to get full sd
+    if (!logged_in_as_admin()) {
+        return true;
+    }
+
+    const QList<QString> attributes = QList<QString>();
+    const bool get_sacl = true;
+    const AdObject gpc_object = search_object(gpo, attributes, get_sacl);
     const QString name = gpc_object.get_string(ATTRIBUTE_DISPLAY_NAME);
 
-    const QString error_context = QString(tr("Failed to check permissions for GPO \"%1\"")).arg(name);
+    const QString error_context = QString(tr("Failed to check permissions for GPO \"%1\".")).arg(name);
 
     const QString gpc_sd = [&]() {
         const QString out = get_gpt_sd_string(gpc_object, AceMaskFormat_Hexadecimal);
 
         if (out.isEmpty()) {
-            d->error_message(error_context, tr("Failed to get GPT security descriptor"));
-            
+            d->error_message(error_context, tr("Failed to get GPT security descriptor."));
+
             return QString();
         }
 
@@ -1555,21 +1611,49 @@ bool AdInterface::check_gpo_perms(const QString &gpo, bool *ok) {
     }();
 
     const QString gpt_sd = [&]() {
-        char out_cstr[2000];
         const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-        const QString smb_path = sysvol_path_to_smb(filesys_path);
-        const int getxattr_result = smbc_getxattr(cstr(smb_path), "system.nt_sec_desc.*", out_cstr, sizeof(out_cstr));
-        // NOTE: for some reason getxattr() returns positive
-        // non-zero return code on success, even though f-n
-        // description says it "returns 0 on success"
-        if (getxattr_result < 0) {
-            const QString text = QString(tr("Failed to get GPT security descriptor, %1")).arg(strerror(errno));
-            d->error_message(error_context, text);
+        const QString smb_path = filesys_path_to_smb_path(filesys_path);
+        const char *smb_path_cstr = cstr(smb_path);
 
-            return QString();
+        // NOTE: the length of gpt sd string doesn't have a
+        // well defined bound, so we have to use an
+        // expanding buffer
+        size_t buffer_size = 1024 * sizeof(char);
+        char *buffer = (char *) malloc(buffer_size);
+
+        while (true) {
+            const int getxattr_result = smbc_getxattr(smb_path_cstr, "system.nt_sec_desc.*", buffer, buffer_size);
+
+            // NOTE: for some reason getxattr() returns positive
+            // non-zero return code on success, even though f-n
+            // description says it "returns 0 on success"
+            const bool success = (getxattr_result >= 0);
+
+            if (success) {
+                break;
+            } else {
+                const bool buffer_is_too_small = (errno == ERANGE);
+
+                if (buffer_is_too_small) {
+                    // Error occured, but it is due to
+                    // insufficient buffer size, so try
+                    // again with bigger buffer
+                    buffer_size = 2 * buffer_size;
+                    buffer = (char *) realloc(buffer, buffer_size);
+                } else {
+                    const QString text = QString(tr("Failed to get GPT security descriptor, %1.")).arg(strerror(errno));
+                    d->error_message(error_context, text);
+
+                    free(buffer);
+
+                    return QString();
+                }
+            }
         }
 
-        const QString out = QString(out_cstr);
+        const QString out = QString(buffer);
+
+        free(buffer);
 
         return out;
     }();
@@ -1599,14 +1683,16 @@ bool AdInterface::check_gpo_perms(const QString &gpo, bool *ok) {
 
 bool AdInterface::gpo_sync_perms(const QString &dn) {
     // First get GPC descriptor
-    const AdObject gpc_object = search_object(dn);
+    const QList<QString> attributes = QList<QString>();
+    const bool get_sacl = true;
+    const AdObject gpc_object = search_object(dn, attributes, get_sacl);
     const QString name = gpc_object.get_string(ATTRIBUTE_DISPLAY_NAME);
     const QString gpt_sd_string = get_gpt_sd_string(gpc_object, AceMaskFormat_Decimal);
 
-    const QString error_context = QString(tr("Failed to sync permissions of GPO \"%1\"")).arg(name);
+    const QString error_context = QString(tr("Failed to sync permissions of GPO \"%1\".")).arg(name);
 
     if (gpt_sd_string.isEmpty()) {
-        d->error_message(error_context, tr("Failed to generate GPT security descriptor"));
+        d->error_message(error_context, tr("Failed to generate GPT security descriptor."));
 
         return false;
     }
@@ -1617,11 +1703,11 @@ bool AdInterface::gpo_sync_perms(const QString &dn) {
     // folders before their contents, otherwise fails to
     // set! Default gpo_get_gpt_contents() order is good.
     const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-    const QString smb_path = sysvol_path_to_smb(filesys_path);
+    const QString smb_path = filesys_path_to_smb_path(filesys_path);
     bool ok = true;
     const QList<QString> path_list = d->gpo_get_gpt_contents(smb_path, &ok);
     if (!ok || path_list.isEmpty()) {
-        d->error_message(error_context, QString(tr("Failed to read GPT contents of \"%1\"")).arg(smb_path));
+        d->error_message(error_context, QString(tr("Failed to read GPT contents of \"%1\".")).arg(smb_path));
         return false;
     }
 
@@ -1629,7 +1715,7 @@ bool AdInterface::gpo_sync_perms(const QString &dn) {
     for (const QString &path : path_list) {
         const int set_sd_result = smbc_setxattr(cstr(path), "system.nt_sec_desc.*", cstr(gpt_sd_string), strlen(cstr(gpt_sd_string)), 0);
         if (set_sd_result != 0) {
-            const QString error = QString(tr("Failed to set permissions, %1")).arg(strerror(errno));
+            const QString error = QString(tr("Failed to set permissions, %1.")).arg(strerror(errno));
             d->error_message(error_context, error);
 
             return false;
@@ -1639,6 +1725,69 @@ bool AdInterface::gpo_sync_perms(const QString &dn) {
     d->success_message(QString(tr("Synced permissions of GPO \"%1\".")).arg(name));
 
     return true;
+}
+
+bool AdInterface::gpo_get_sysvol_version(const AdObject &gpc_object, int *version_out) {
+    const QString error_context = tr("Failed to load GPO's sysvol version.");
+
+    const QString ini_contents = [&]() {
+        const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+        const QString smb_path = filesys_path_to_smb_path(filesys_path);
+
+        const QString ini_path = smb_path + "/GPT.INI";
+
+        const int ini_fd = smbc_open(cstr(ini_path), O_RDONLY, 0);
+
+        if (ini_fd < 0) {
+            const QString error_text = QString(tr("Failed to open GPT.INI, %1.")).arg(strerror(errno));
+            d->error_message(error_context, error_text);
+
+            return QString();
+        }
+
+        const size_t buffer_size = 2000;
+        char buffer[buffer_size];
+        const ssize_t bytes_read = smbc_read(ini_fd, buffer, buffer_size);
+
+        if (bytes_read < 0) {
+            const QString error_text = QString(tr("Failed to open GPT.INI, %1.")).arg(strerror(errno));
+            d->error_message(error_context, error_text);
+
+            return QString();
+        }
+
+        smbc_close(ini_fd);
+
+        return QString(buffer);
+    }();
+
+    if (ini_contents.isEmpty()) {
+        return false;
+    }
+
+    const int version = [&]() {
+        int out;
+
+        const int scan_result = sscanf(cstr(ini_contents), "[General]\r\nVersion=%i\r\n", &out);
+        const bool scan_success = (scan_result > 0);
+
+        if (!scan_success) {
+            const QString error_text = QString(tr("Failed to extract version from GPT.INI, %1.")).arg(strerror(errno));
+            d->error_message(error_context, error_text);
+
+            return -1;
+        }
+
+        return out;
+    }();
+
+    if (version >= 0) {
+        *version_out = version;
+
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void AdInterfacePrivate::success_message(const QString &msg, const DoStatusMsg do_msg) {
@@ -1657,8 +1806,13 @@ void AdInterfacePrivate::error_message(const QString &context, const QString &er
 
     QString msg = context;
     if (!error.isEmpty()) {
-        msg += QString(tr(". Error: \"%1\"")).arg(error);
-        ;
+        msg += QString(tr(" Error: \"%1\"")).arg(error);
+
+        // Add period if needed, because some error strings,
+        // like the ones from LDAP, might not have one
+        if (!msg.endsWith(".")) {
+            msg += ".";
+        }
     }
 
     const AdMessage message(msg, AdMessageType_Error);
@@ -1718,7 +1872,7 @@ bool AdInterfacePrivate::delete_gpt(const QString &parent_path) {
             const int result_rmdir = smbc_rmdir(cstr(path));
 
             if (result_rmdir != 0) {
-                error_message(QString(tr("Failed to delete GPT folder %1")).arg(path), strerror(errno));
+                error_message(QString(tr("Failed to delete GPT folder %1.")).arg(path), strerror(errno));
 
                 return false;
             }
@@ -1726,7 +1880,7 @@ bool AdInterfacePrivate::delete_gpt(const QString &parent_path) {
             const int result_unlink = smbc_unlink(cstr(path));
 
             if (result_unlink != 0) {
-                error_message(QString(tr("Failed to delete GPT file %1")).arg(path), strerror(errno));
+                error_message(QString(tr("Failed to delete GPT file %1.")).arg(path), strerror(errno));
 
                 return false;
             }
@@ -1740,22 +1894,65 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
     struct stat filestat;
     const int stat_result = smbc_stat(cstr(path), &filestat);
     if (stat_result != 0) {
-        error_message(QString(tr("Failed to get filestat for \"%1\"")).arg(path), strerror(errno));
+        error_message(QString(tr("Failed to get filestat for \"%1\".")).arg(path), strerror(errno));
 
         *ok = false;
+
+        return false;
     } else {
         *ok = true;
+
+        const bool is_dir = S_ISDIR(filestat.st_mode);
+
+        return is_dir;
+    }
+}
+
+bool AdInterface::logged_in_as_admin() {
+    const QString user_dn = [&]() {
+        const QString sam_account_name = [&]() {
+            QString out = d->client_user;
+            out = out.split("@")[0];
+
+            return out;
+        }();
+
+        if (sam_account_name.isEmpty()) {
+            return QString();
+        }
+
+        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_SAM_ACCOUNT_NAME, sam_account_name);
+        const QHash<QString, AdObject> results = search(d->domain_head, SearchScope_All, filter, QList<QString>());
+
+        if (results.isEmpty()) {
+            return QString();
+        }
+
+        const QString out = results.keys()[0];
+
+        return out;
+    }();
+
+    if (user_dn.isEmpty()) {
+        return false;
     }
 
-    const bool is_dir = S_ISDIR(filestat.st_mode);
+    const bool user_is_admin = [&]() {
+        const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(d->domain_head);
 
-    return is_dir;
+        const AdObject domain_admins_object = search_object(domain_admins_dn);
+        const QList<QString> member_list = domain_admins_object.get_strings(ATTRIBUTE_MEMBER);
+
+        const bool out = member_list.contains(user_dn);
+
+        return out;
+    }();
+
+    return user_is_admin;
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
     QList<QString> hosts;
-
-    // TODO: confirm site query is formatted properly, currently getting no answer back (might be working as intended, since tested on domain without sites?)
 
     // Query site hosts
     if (!site.isEmpty()) {
@@ -1800,7 +1997,7 @@ QList<QString> query_server_for_hosts(const char *dname) {
 
     const long unsigned msg_len = res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
 
-    const bool message_error = (msg_len < 0 || msg_len < sizeof(HEADER));
+    const bool message_error = (msg_len < sizeof(HEADER));
     if (message_error) {
         error();
     }
@@ -1886,6 +2083,8 @@ QList<QString> query_server_for_hosts(const char *dname) {
  * Callback for ldap_sasl_interactive_bind_s
  */
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
+    UNUSED_ARG(flags);
+
     sasl_defaults_gssapi *defaults = (sasl_defaults_gssapi *) indefaults;
     sasl_interact_t *interact = (sasl_interact_t *) in;
 
@@ -1898,25 +2097,25 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
 
         switch (interact->id) {
             case SASL_CB_GETREALM:
-            if (defaults)
-                dflt = defaults->realm;
-            break;
+                if (defaults)
+                    dflt = defaults->realm;
+                break;
             case SASL_CB_AUTHNAME:
-            if (defaults)
-                dflt = defaults->authcid;
-            break;
+                if (defaults)
+                    dflt = defaults->authcid;
+                break;
             case SASL_CB_PASS:
-            if (defaults)
-                dflt = defaults->passwd;
-            break;
+                if (defaults)
+                    dflt = defaults->passwd;
+                break;
             case SASL_CB_USER:
-            if (defaults)
-                dflt = defaults->authzid;
-            break;
+                if (defaults)
+                    dflt = defaults->authzid;
+                break;
             case SASL_CB_NOECHOPROMPT:
-            break;
+                break;
             case SASL_CB_ECHOPROMPT:
-            break;
+                break;
         }
 
         if (dflt && !*dflt) {
@@ -1943,11 +2142,9 @@ QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format
 
     security_descriptor *gpc_sd = gpc_object.get_sd(mem_ctx);
 
-    // Create sysvol descriptor from domain descriptor (not
-    // one to one, some modifications are needed)
     struct security_descriptor *gpt_sd;
     const NTSTATUS create_sd_status = gp_create_gpt_security_descriptor(mem_ctx, gpc_sd, &gpt_sd);
-    
+
     if (!NT_STATUS_IS_OK(create_sd_status)) {
         qDebug() << "Failed to create gpt sd";
         talloc_free(mem_ctx);
@@ -1956,7 +2153,7 @@ QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format
     }
 
     ad_security_sort_dacl(gpt_sd);
-    
+
     QList<QString> all_elements;
 
     all_elements.append(QString("REVISION:%1").arg(gpt_sd->revision));

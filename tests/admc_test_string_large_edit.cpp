@@ -20,7 +20,7 @@
 
 #include "admc_test_string_large_edit.h"
 
-#include "edits/string_large_edit.h"
+#include "attribute_edits/string_large_edit.h"
 
 #include <QFormLayout>
 #include <QPlainTextEdit>
@@ -30,11 +30,9 @@
 void ADMCTestStringLargeEdit::init() {
     ADMCTest::init();
 
-    edit = new StringLargeEdit(TEST_ATTRIBUTE, CLASS_USER, &edits, parent_widget);
-    add_attribute_edit(edit);
+    text_edit = new QPlainTextEdit(parent_widget);
 
-    text_edit = parent_widget->findChild<QPlainTextEdit *>();
-    QVERIFY(text_edit != nullptr);
+    edit = new StringLargeEdit(text_edit, TEST_ATTRIBUTE, &edits, parent_widget);
 
     // Create test user
     const QString name = TEST_USER;
@@ -69,7 +67,7 @@ void ADMCTestStringLargeEdit::load() {
 
     const QString edit_value = text_edit->toPlainText();
     ;
-    QVERIFY(edit_value == test_value);
+    QCOMPARE(edit_value, test_value);
 }
 
 void ADMCTestStringLargeEdit::apply_unmodified() {
@@ -87,7 +85,7 @@ void ADMCTestStringLargeEdit::apply() {
     const AdObject object = ad.search_object(dn);
     const QString current_value = object.get_string(TEST_ATTRIBUTE);
 
-    QVERIFY(current_value == new_value);
+    QCOMPARE(current_value, new_value);
 }
 
 QTEST_MAIN(ADMCTestStringLargeEdit)

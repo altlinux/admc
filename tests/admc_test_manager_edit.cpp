@@ -20,23 +20,26 @@
 
 #include "admc_test_manager_edit.h"
 
-#include "edits/manager_edit.h"
+#include "attribute_edits/manager_edit.h"
+#include "attribute_edits/manager_widget.h"
+#include "attribute_edits/ui_manager_widget.h"
 #include "globals.h"
 #include "properties_dialog.h"
 
-#include <QPushButton>
 #include <QLineEdit>
+#include <QPushButton>
 
 void ADMCTestManagerEdit::init() {
     ADMCTest::init();
 
-    edit = new ManagerEdit(ATTRIBUTE_MANAGER, &edits, parent_widget);
-    add_attribute_edit(edit);
+    auto manager_widget = new ManagerWidget(parent_widget);
 
-    manager_display = parent_widget->findChild<QLineEdit *>("manager_display");
-    change_button = parent_widget->findChild<QPushButton *>("change_button");
-    clear_button = parent_widget->findChild<QPushButton *>("clear_button");
-    properties_button = parent_widget->findChild<QPushButton *>("properties_button");
+    edit = new ManagerEdit(manager_widget, ATTRIBUTE_MANAGER, &edits, parent_widget);
+
+    manager_display = manager_widget->ui->manager_display;
+    change_button = manager_widget->ui->change_button;
+    clear_button = manager_widget->ui->clear_button;
+    properties_button = manager_widget->ui->properties_button;
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
@@ -63,7 +66,7 @@ void ADMCTestManagerEdit::load() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    QVERIFY(manager_display->text() == manager_dn);
+    QCOMPARE(manager_display->text(), manager_dn);
 }
 
 void ADMCTestManagerEdit::apply_unmodified() {
@@ -82,7 +85,7 @@ void ADMCTestManagerEdit::apply_after_change() {
 
     const AdObject updated_object = ad.search_object(dn);
     const QString updated_manager = updated_object.get_string(ATTRIBUTE_MANAGER);
-    QVERIFY(updated_manager == manager_dn);
+    QCOMPARE(updated_manager, manager_dn);
 }
 
 void ADMCTestManagerEdit::apply_after_clear() {

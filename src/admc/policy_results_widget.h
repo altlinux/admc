@@ -32,23 +32,28 @@ class QStandardItem;
 class QMenu;
 class ResultsView;
 
+namespace Ui {
+class PolicyResultsWidget;
+}
+
 class PolicyResultsWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    PolicyResultsWidget();
+    Ui::PolicyResultsWidget *ui;
+
+    PolicyResultsWidget(QWidget *parent);
     ~PolicyResultsWidget();
 
     // Loads links for this policy. Nothing is done if given
     // index is not a policy.
     void update(const QModelIndex &index);
-    
+
     void update(const QString &gpo);
 
     ResultsView *get_view() const;
 
 private:
-    ResultsView *view;
     QStandardItemModel *model;
     QString gpo;
     QMenu *context_menu;

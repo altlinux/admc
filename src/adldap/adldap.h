@@ -27,8 +27,8 @@
 #include "ad_filter.h"
 #include "ad_interface.h"
 #include "ad_object.h"
-#include "ad_utils.h"
 #include "ad_security.h"
+#include "ad_utils.h"
 #include "gplink.h"
 
 #endif /* ADLDAP_H */

@@ -23,20 +23,37 @@
 
 #include <QDialog>
 
-class ConsoleWidget;
 class EditQueryItemWidget;
+
+namespace Ui {
+class EditQueryItemDialog;
+}
 
 class EditQueryItemDialog : public QDialog {
     Q_OBJECT
 
 public:
-    EditQueryItemDialog(ConsoleWidget *console_arg);
+    Ui::EditQueryItemDialog *ui;
 
+    EditQueryItemDialog(QWidget *parent);
+    ~EditQueryItemDialog();
+
+    void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter);
+
+    QString name() const;
+    QString description() const;
+    QString filter() const;
+    QString base() const;
+    bool scope_is_children() const;
+    QByteArray filter_state() const;
+
+    void set_sibling_name_list(const QList<QString> &sibling_name_list_arg);
+
+    void open() override;
     void accept() override;
 
 private:
-    ConsoleWidget *console;
-    EditQueryItemWidget *edit_query_widget;
+    QList<QString> sibling_name_list;
 };
 
 #endif /* EDIT_QUERY_ITEM_DIALOG_H */

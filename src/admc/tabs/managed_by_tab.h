@@ -25,11 +25,18 @@
 
 class ManagerEdit;
 
+namespace Ui {
+class ManagedByTab;
+}
+
 class ManagedByTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::ManagedByTab *ui;
+
     ManagedByTab();
+    ~ManagedByTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
 

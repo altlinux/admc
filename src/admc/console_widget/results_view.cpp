@@ -47,7 +47,7 @@ ResultsView::ResultsView(QWidget *parent)
     views[ResultsViewType_Icons] = icons_view;
     views[ResultsViewType_List] = list_view;
     views[ResultsViewType_Detail] = m_detail_view;
-    
+
     proxy_model = new QSortFilterProxyModel(this);
     proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
 
@@ -56,7 +56,6 @@ ResultsView::ResultsView(QWidget *parent)
         view->setEditTriggers(QAbstractItemView::NoEditTriggers);
         view->setContextMenuPolicy(Qt::CustomContextMenu);
         view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-        view->setDragDropMode(QAbstractItemView::DragDrop);
         view->setDragDropOverwriteMode(true);
 
         // NOTE: a proxy is model is inserted between
@@ -66,6 +65,8 @@ ResultsView::ResultsView(QWidget *parent)
         // models becomes extremely slow.
         view->setModel(proxy_model);
     }
+
+    set_drag_drop_enabled(true);
 
     stacked_widget = new QStackedWidget();
 
@@ -82,11 +83,7 @@ ResultsView::ResultsView(QWidget *parent)
     for (auto view : views.values()) {
         connect(
             view, &QTreeView::activated,
-            [=](const QModelIndex &proxy_index) {
-                const QModelIndex &source_index = proxy_model->mapToSource(proxy_index);
-
-                emit activated(source_index);
-            });
+            this, &ResultsView::on_item_activated);
         connect(
             view, &QWidget::customContextMenuRequested,
             this, &ResultsView::context_menu);
@@ -156,7 +153,6 @@ QList<QModelIndex> ResultsView::get_selected_indexes() const {
     return source_indexes;
 }
 
-
 QVariant ResultsView::save_state() const {
     QHash<QString, QVariant> state;
 
@@ -182,5 +178,25 @@ void ResultsView::restore_state(const QVariant &state_variant, const QList<int> 
             const bool hidden = !default_columns.contains(i);
             header->setSectionHidden(i, hidden);
         }
+    }
+}
+
+void ResultsView::on_item_activated(const QModelIndex &proxy_index) {
+    const QModelIndex &source_index = proxy_model->mapToSource(proxy_index);
+
+    emit activated(source_index);
+}
+
+void ResultsView::set_drag_drop_enabled(const bool enabled) {
+    const QAbstractItemView::DragDropMode mode = [&]() {
+        if (enabled) {
+            return QAbstractItemView::DragDrop;
+        } else {
+            return QAbstractItemView::NoDragDrop;
+        }
+    }();
+
+    for (auto view : views.values()) {
+        view->setDragDropMode(mode);
     }
 }

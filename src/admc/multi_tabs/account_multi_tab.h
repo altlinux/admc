@@ -28,11 +28,18 @@
 
 #include "multi_tabs/properties_multi_tab.h"
 
+namespace Ui {
+class AccountMultiTab;
+}
+
 class AccountMultiTab final : public PropertiesMultiTab {
     Q_OBJECT
 
 public:
+    Ui::AccountMultiTab *ui;
+
     AccountMultiTab(AdInterface &ad);
+    ~AccountMultiTab();
 };
 
 #endif /* ACCOUNT_MULTI_TAB_H */

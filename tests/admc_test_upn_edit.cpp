@@ -20,7 +20,7 @@
 
 #include "admc_test_upn_edit.h"
 
-#include "edits/upn_edit.h"
+#include "attribute_edits/upn_edit.h"
 
 #include <QComboBox>
 #include <QFormLayout>
@@ -31,14 +31,11 @@
 void ADMCTestUpnEdit::init() {
     ADMCTest::init();
 
-    upn_edit = new UpnEdit(&edits, ad, parent_widget);
-    add_attribute_edit(upn_edit);
+    prefix_edit = new QLineEdit();
+    suffix_edit = new QComboBox();
 
-    prefix_edit = parent_widget->findChild<QLineEdit *>();
-    QVERIFY(prefix_edit != nullptr);
-
-    suffix_edit = parent_widget->findChild<QComboBox *>();
-    QVERIFY(suffix_edit != nullptr);
+    upn_edit = new UpnEdit(prefix_edit, suffix_edit, &edits, parent_widget);
+    upn_edit->init_suffixes(ad);
 
     // Create test user
     const QString name = TEST_USER;
@@ -56,10 +53,10 @@ void ADMCTestUpnEdit::init() {
 // Edit should load prefix and suffix into widgets correctly
 void ADMCTestUpnEdit::test_load() {
     const QString prefix = prefix_edit->text();
-    QVERIFY(prefix == TEST_USER);
+    QCOMPARE(prefix, TEST_USER);
 
     const QString suffix = suffix_edit->currentText();
-    QVERIFY(suffix == TEST_SUFFIX);
+    QCOMPARE(suffix, TEST_SUFFIX);
 }
 
 // edited() signal should be emitted when prefix or suffix

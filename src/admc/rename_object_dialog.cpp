@@ -21,160 +21,38 @@
 #include "rename_object_dialog.h"
 
 #include "adldap.h"
-#include "edits/string_edit.h"
-#include "edits/upn_edit.h"
+#include "attribute_edits/attribute_edit.h"
 #include "globals.h"
 #include "status.h"
 #include "utils.h"
 
 #include <QDialogButtonBox>
-#include <QFormLayout>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QVBoxLayout>
-
-RenameObjectDialog::RenameObjectDialog(const QString &target_arg, QWidget *parent)
-: QDialog(parent) {
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    target = target_arg;
-
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        close();
-        return;
-    }
-
-    const AdObject object = ad.search_object(target);
-
-    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
-
-    const QString class_name = g_adconfig->get_class_display_name(object_class);
-    const auto title = tr("Rename Object - %1").arg(class_name);;
-    setWindowTitle(title);
-
-    name_edit = new QLineEdit();
-    name_edit->setObjectName("name_edit");
-
-    if (object.is_class(CLASS_USER)) {
-        new StringEdit(ATTRIBUTE_FIRST_NAME, object_class, &all_edits, this);
-        new StringEdit(ATTRIBUTE_LAST_NAME, object_class, &all_edits, this);
-        new StringEdit(ATTRIBUTE_DISPLAY_NAME, object_class, &all_edits, this);
-        new UpnEdit(&all_edits, ad, this);
-        new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
-    } else if (object.is_class(CLASS_GROUP)) {
-        auto sama_edit = new StringEdit(ATTRIBUTE_SAMACCOUNT_NAME, object_class, &all_edits, this);
-        sama_edit->get_edit()->setObjectName("sama_edit");
-    }
-
-    auto button_box = new QDialogButtonBox();
-    ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    const QString name_edit_label = [&]() {
-        if (object.is_class(CLASS_USER)) {
-            return tr("Name:", "In Russian this needs to be different from just <Name> because in Russian <First Name> translates to <Name> as well and there's a First name edit below this one.");
-        } else {
-            return tr("Name:");
-        }
-    }();
-
-    const auto edits_layout = new QFormLayout();
-    edits_layout->addRow(name_edit_label, name_edit);
-    edits_add_to_layout(all_edits, edits_layout);
-
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edits_layout);
-    top_layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-    connect(
-        reset_button, &QPushButton::clicked,
-        this, &RenameObjectDialog::reset);
-    for (auto edit : all_edits) {
-        connect(
-            edit, &AttributeEdit::edited,
-            this, &RenameObjectDialog::on_edited);
-    }
-    connect(
-        name_edit, &QLineEdit::textChanged,
-        this, &RenameObjectDialog::on_edited);
-    on_edited();
-
-    reset();
-
-    g_status()->display_ad_messages(ad, this);
-}
 
 void RenameObjectDialog::success_msg(const QString &old_name) {
     const QString message = QString(tr("Object %1 was renamed.")).arg(old_name);
-    g_status()->add_message(message, StatusType_Success);
+    g_status->add_message(message, StatusType_Success);
 }
 
 void RenameObjectDialog::fail_msg(const QString &old_name) {
     const QString message = QString(tr("Failed to rename object %1")).arg(old_name);
-    g_status()->add_message(message, StatusType_Error);
+    g_status->add_message(message, StatusType_Error);
 }
 
-QString RenameObjectDialog::get_new_dn() const {
-    const QString new_name = name_edit->text();
-    const QString new_dn = dn_rename(target, new_name);
+void RenameObjectDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_arg) {
+    name_edit = name_edit_arg;
+    edits = edits_arg;
 
-    return new_dn;
+    QPushButton *reset_button = button_box->button(QDialogButtonBox::Reset);
+
+    connect(
+        reset_button, &QPushButton::clicked,
+        this, &RenameObjectDialog::reset);
 }
 
-void RenameObjectDialog::accept() {
-    // Handle failure
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
-    const QString old_name = dn_get_name(target);
-
-    const bool verify_success = edits_verify(ad, all_edits, target);
-    if (!verify_success) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    const QString new_name = name_edit->text();
-    const bool rename_success = ad.object_rename(target, new_name);
-
-    bool final_success = false;
-    if (rename_success) {
-        const QString new_dn = dn_rename(target, new_name);
-        const bool apply_success = edits_apply(ad, all_edits, new_dn);
-
-        if (apply_success) {
-            final_success = true;
-
-            QDialog::accept();
-        }
-    }
-
-    hide_busy_indicator();
-
-    g_status()->display_ad_messages(ad, this);
-
-    if (final_success) {
-        success_msg(old_name);
-    } else {
-        fail_msg(old_name);
-    }
-}
-
-void RenameObjectDialog::on_edited() {
-    reset_button->setEnabled(true);
-    ok_button->setEnabled(true);
+void RenameObjectDialog::set_target(const QString &dn) {
+    target = dn;
 }
 
 void RenameObjectDialog::reset() {
@@ -187,8 +65,71 @@ void RenameObjectDialog::reset() {
     name_edit->setText(name);
 
     const AdObject object = ad.search_object(target);
-    edits_load(all_edits, ad, object);
+    edits_load(edits, ad, object);
+}
 
-    reset_button->setEnabled(false);
-    ok_button->setEnabled(false);
+void RenameObjectDialog::open() {
+    reset();
+
+    QDialog::open();
+}
+
+void RenameObjectDialog::accept() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const QString old_dn = target;
+    const QString old_name = dn_get_name(target);
+
+    const bool verify_success = edits_verify(ad, edits, target);
+    if (!verify_success) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    const QString new_name = get_new_name();
+    const QString new_dn = get_new_dn();
+
+    const bool rename_success = ad.object_rename(target, new_name);
+
+    bool final_success = false;
+    if (rename_success) {
+        const bool apply_success = edits_apply(ad, edits, new_dn);
+
+        if (apply_success) {
+            final_success = true;
+        }
+    }
+
+    hide_busy_indicator();
+
+    g_status->display_ad_messages(ad, this);
+
+    if (final_success) {
+        RenameObjectDialog::success_msg(old_name);
+
+        QDialog::accept();
+    } else {
+        RenameObjectDialog::fail_msg(old_name);
+    }
+}
+
+QString RenameObjectDialog::get_target() const {
+    return target;
+}
+
+QString RenameObjectDialog::get_new_name() const {
+    const QString new_name = name_edit->text().trimmed();
+
+    return new_name;
+}
+
+QString RenameObjectDialog::get_new_dn() const {
+    const QString new_name = get_new_name();
+    const QString new_dn = dn_rename(target, new_name);
+
+    return new_dn;
 }

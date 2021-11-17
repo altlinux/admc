@@ -23,23 +23,27 @@
 
 #include <QDialog>
 
-class QLineEdit;
-class ConsoleWidget;
+namespace Ui {
+class EditQueryFolderDialog;
+}
 
 class EditQueryFolderDialog : public QDialog {
     Q_OBJECT
 
 public:
-    EditQueryFolderDialog(ConsoleWidget *console_arg);
+    Ui::EditQueryFolderDialog *ui;
 
-    void open() override;
+    EditQueryFolderDialog(QWidget *parent);
+    ~EditQueryFolderDialog();
+
+    QString name() const;
+    QString description() const;
+
+    void set_data(const QList<QString> &sibling_name_list, const QString &name, const QString &description);
+    void accept() override;
 
 private:
-    QLineEdit *name_edit;
-    QLineEdit *description_edit;
-    ConsoleWidget *console;
-
-    void accept() override;
+    QList<QString> sibling_name_list;
 };
 
 #endif /* EDIT_QUERY_FOLDER_DIALOG_H */

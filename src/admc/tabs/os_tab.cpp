@@ -19,21 +19,23 @@
  */
 
 #include "tabs/os_tab.h"
+#include "tabs/ui_os_tab.h"
 
 #include "adldap.h"
-#include "edits/string_edit.h"
-
-#include <QFormLayout>
+#include "attribute_edits/string_edit.h"
 
 OSTab::OSTab() {
-    new StringEdit(ATTRIBUTE_OS, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ATTRIBUTE_OS_VERSION, CLASS_COMPUTER, &edits, this);
-    new StringEdit(ATTRIBUTE_OS_SERVICE_PACK, CLASS_COMPUTER, &edits, this);
+    ui = new Ui::OSTab();
+    ui->setupUi(this);
+
+    new StringEdit(ui->os_edit, ATTRIBUTE_OS, &edits, this);
+    new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, &edits, this);
+    new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, &edits, this);
 
     edits_set_read_only(edits, true);
     edits_connect_to_tab(edits, this);
+}
 
-    const auto layout = new QFormLayout();
-    setLayout(layout);
-    edits_add_to_layout(edits, layout);
+OSTab::~OSTab() {
+    delete ui;
 }

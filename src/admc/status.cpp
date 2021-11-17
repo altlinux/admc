@@ -21,6 +21,7 @@
 #include "status.h"
 
 #include "adldap.h"
+#include "error_log_dialog.h"
 #include "globals.h"
 #include "settings.h"
 
@@ -36,21 +37,16 @@
 
 #define MAX_MESSAGES_IN_LOG 200
 
-Status::Status() {
-    m_status_bar = new QStatusBar();
-    m_message_log = new QTextEdit();
-    m_message_log->setReadOnly(true);
-}
-
-QStatusBar *Status::status_bar() const {
-    return m_status_bar;
-}
-
-QTextEdit *Status::message_log() const {
-    return m_message_log;
+void Status::init(QStatusBar *statusbar, QTextEdit *message_log) {
+    m_status_bar = statusbar;
+    m_message_log = message_log;
 }
 
 void Status::add_message(const QString &msg, const StatusType &type) {
+    if (m_status_bar == nullptr || m_message_log == nullptr) {
+        return;
+    }
+
     m_status_bar->showMessage(msg);
 
     const QString timestamp = []() {
@@ -98,6 +94,9 @@ void Status::add_message(const QString &msg, const StatusType &type) {
 }
 
 void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
+    if (m_status_bar == nullptr || m_message_log == nullptr) {
+        return;
+    }
     //
     // Display all messages in status log
     //
@@ -118,44 +117,31 @@ void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
 }
 
 void ad_error_log(const AdInterface &ad, QWidget *parent) {
-    if (!ad.any_error_messages()) {
-        return;
-    }
-
-    auto dialog = new QDialog(parent);
-    dialog->setWindowTitle(QCoreApplication::translate("Status", "Errors Occured"));
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->setMinimumWidth(600);
-
-    const QString errors_text = [&]() {
-        QList<QString> errors;
+    const QList<QString> error_list = [&]() {
+        QList<QString> out;
 
         const QList<AdMessage> messages = ad.messages();
 
         for (const auto &message : messages) {
             if (message.type() == AdMessageType_Error) {
-                errors.append(message.text());
+                out.append(message.text());
             }
         }
 
-        return errors.join("\n");
+        return out;
     }();
 
-    auto errors_display = new QPlainTextEdit();
-    errors_display->setPlainText(errors_text);
-    errors_display->setReadOnly(true);
+    error_log(error_list, parent);
+}
 
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Close);
+void error_log(const QList<QString> error_list, QWidget *parent) {
+    if (error_list.isEmpty()) {
+        return;
+    }
 
-    auto layout = new QVBoxLayout();
-    dialog->setLayout(layout);
-    layout->addWidget(errors_display);
-    layout->addWidget(button_box);
+    auto error_log_dialog = new ErrorLogDialog(parent);
 
-    QObject::connect(
-        button_box, &QDialogButtonBox::rejected,
-        dialog, &QDialog::reject);
-
-    dialog->open();
+    const QString errors_text = error_list.join("\n");
+    error_log_dialog->set_text(errors_text);
+    error_log_dialog->open();
 }

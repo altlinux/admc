@@ -20,7 +20,7 @@
 
 #include "admc_test_string_edit.h"
 
-#include "edits/string_edit.h"
+#include "attribute_edits/string_edit.h"
 
 #include <QFormLayout>
 #include <QLineEdit>
@@ -30,11 +30,9 @@
 void ADMCTestStringEdit::init() {
     ADMCTest::init();
 
-    edit = new StringEdit(TEST_ATTRIBUTE, CLASS_USER, &edits, parent_widget);
-    add_attribute_edit(edit);
+    line_edit = new QLineEdit(parent_widget);
 
-    line_edit = parent_widget->findChild<QLineEdit *>();
-    QVERIFY(line_edit != nullptr);
+    edit = new StringEdit(line_edit, TEST_ATTRIBUTE, &edits, parent_widget);
 
     // Create test user
     const QString name = TEST_USER;
@@ -69,7 +67,7 @@ void ADMCTestStringEdit::load() {
 
     const QString edit_value = line_edit->text();
     ;
-    QVERIFY(edit_value == test_value);
+    QCOMPARE(edit_value, test_value);
 }
 
 void ADMCTestStringEdit::apply_unmodified() {
@@ -87,7 +85,7 @@ void ADMCTestStringEdit::apply_modified() {
     const AdObject object = ad.search_object(dn);
     const QString current_value = object.get_string(TEST_ATTRIBUTE);
 
-    QVERIFY(current_value == new_value);
+    QCOMPARE(current_value, new_value);
 }
 
 QTEST_MAIN(ADMCTestStringEdit)

@@ -19,26 +19,27 @@
  */
 
 #include "policy_results_widget.h"
+#include "ui_policy_results_widget.h"
 
 #include "adldap.h"
-#include "central_widget.h"
-#include "console_types/console_policy.h"
+#include "console_impls/item_type.h"
+#include "console_impls/policy_impl.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
 #include "gplink.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "settings.h"
 
 #include <QAction>
 #include <QHeaderView>
 #include <QMenu>
+#include <QMessageBox>
 #include <QModelIndex>
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QMessageBox>
 
 enum PolicyResultsColumn {
     PolicyResultsColumn_Name,
@@ -66,52 +67,46 @@ const QHash<PolicyResultsColumn, GplinkOption> column_to_option = {
     {PolicyResultsColumn_Enforced, GplinkOption_Enforced},
 };
 
-// TODO: need to sync this with changes done through group
-// policy tab (just call load after properties is closed?)
+PolicyResultsWidget::PolicyResultsWidget(QWidget *parent)
+: QWidget(parent) {
+    ui = new Ui::PolicyResultsWidget();
+    ui->setupUi(this);
 
-PolicyResultsWidget::PolicyResultsWidget() {
     auto delete_link_action = new QAction(tr("Delete link"), this);
 
     context_menu = new QMenu(this);
     context_menu->addAction(delete_link_action);
 
-    view = new ResultsView(this);
-
     model = new QStandardItemModel(0, PolicyResultsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
-    {
-        {PolicyResultsColumn_Name, tr("Location")},
-        {PolicyResultsColumn_Enforced, tr("Enforced")},
-        {PolicyResultsColumn_Disabled, tr("Disabled")},
-        {PolicyResultsColumn_Path, tr("Path")},
-    });
+        {
+            {PolicyResultsColumn_Name, tr("Location")},
+            {PolicyResultsColumn_Enforced, tr("Enforced")},
+            {PolicyResultsColumn_Disabled, tr("Disabled")},
+            {PolicyResultsColumn_Path, tr("Path")},
+        });
 
-    view->set_model(model);
+    ui->view->set_model(model);
 
-    view->detail_view()->header()->resizeSection(0, 300);
-    view->detail_view()->header()->resizeSection(1, 100);
-    view->detail_view()->header()->resizeSection(2, 100);
-    view->detail_view()->header()->resizeSection(3, 500);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(view);
+    ui->view->detail_view()->header()->resizeSection(0, 300);
+    ui->view->detail_view()->header()->resizeSection(1, 100);
+    ui->view->detail_view()->header()->resizeSection(2, 100);
+    ui->view->detail_view()->header()->resizeSection(3, 500);
 
     const QVariant state = settings_get_variant(SETTING_policy_results_state);
-    view->restore_state(state, {
-        PolicyResultsColumn_Name,
-        PolicyResultsColumn_Enforced,
-        PolicyResultsColumn_Disabled,
-        PolicyResultsColumn_Path,
-    });
+    ui->view->restore_state(state,
+        {
+            PolicyResultsColumn_Name,
+            PolicyResultsColumn_Enforced,
+            PolicyResultsColumn_Disabled,
+            PolicyResultsColumn_Path,
+        });
 
     connect(
         model, &QStandardItemModel::itemChanged,
         this, &PolicyResultsWidget::on_item_changed);
     connect(
-        view, &ResultsView::context_menu,
+        ui->view, &ResultsView::context_menu,
         this, &PolicyResultsWidget::open_context_menu);
     connect(
         delete_link_action, &QAction::triggered,
@@ -119,12 +114,14 @@ PolicyResultsWidget::PolicyResultsWidget() {
 }
 
 PolicyResultsWidget::~PolicyResultsWidget() {
-    const QVariant state = view->save_state();
+    const QVariant state = ui->view->save_state();
     settings_set_variant(SETTING_policy_results_state, state);
+
+    delete ui;
 }
 
 void PolicyResultsWidget::update(const QModelIndex &index) {
-    const ItemType type = (ItemType) index.data(ConsoleRole_Type).toInt();
+    const ItemType type = (ItemType) console_item_get_type(index);
     if (type != ItemType_Policy) {
         return;
     }
@@ -146,18 +143,15 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
     // make sure that they permissions of GPT and GPC match.
     // If they don't, offer to update GPT permissions.
     bool ok = true;
-    const bool perms_ok = ad.check_gpo_perms(new_gpo, &ok);
+    const bool perms_ok = ad.gpo_check_perms(new_gpo, &ok);
 
     if (!perms_ok && ok) {
-        const QMessageBox::Icon icon = QMessageBox::Warning;
         const QString title = tr("Incorrect permissions detected");
         const QString text = tr("Permissions for this policy's GPT don't match the permissions for it's GPC object. Would you like to update GPT permissions?");
-        const QMessageBox::StandardButtons buttons = (QMessageBox::Yes | QMessageBox::No);
-
-        auto message_box = new QMessageBox(icon, title, text, buttons, this);
+        QMessageBox *sync_warning_dialog =message_box_warning(this, title, text);
 
         connect(
-            message_box, &QDialog::accepted,
+            sync_warning_dialog, &QDialog::accepted,
             [this]() {
                 AdInterface ad_inner;
                 if (ad_failed(ad_inner)) {
@@ -166,13 +160,11 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
                 ad_inner.gpo_sync_perms(gpo);
 
-                g_status()->display_ad_messages(ad_inner, this);
+                g_status->display_ad_messages(ad_inner, this);
             });
-
-        message_box->open();
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     model->removeRows(0, model->rowCount());
 
@@ -230,7 +222,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 }
 
 ResultsView *PolicyResultsWidget::get_view() const {
-    return view;
+    return ui->view;
 }
 
 void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
@@ -277,18 +269,18 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
         item->setCheckState(undo_check_state);
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     hide_busy_indicator();
 }
 
 void PolicyResultsWidget::open_context_menu(const QPoint &pos) {
-    const QModelIndex index = view->current_view()->indexAt(pos);
+    const QModelIndex index = ui->view->current_view()->indexAt(pos);
     if (!index.isValid()) {
         return;
     }
 
-    const QPoint global_pos = view->current_view()->mapToGlobal(pos);
+    const QPoint global_pos = ui->view->current_view()->mapToGlobal(pos);
     context_menu->popup(global_pos);
 }
 
@@ -300,7 +292,7 @@ void PolicyResultsWidget::delete_link() {
 
     show_busy_indicator();
 
-    const QList<QModelIndex> selected = view->get_selected_indexes();
+    const QList<QModelIndex> selected = ui->view->get_selected_indexes();
 
     QList<QPersistentModelIndex> removed_indexes;
 
@@ -328,7 +320,7 @@ void PolicyResultsWidget::delete_link() {
         model->removeRow(index.row());
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     hide_busy_indicator();
 }

@@ -29,15 +29,22 @@
  */
 
 #include <QWidget>
+#include <QVariant>
 
-class QLineEdit;
-class SelectClassesDialog;
+namespace Ui {
+class SelectClassesWidget;
+}
 
 class SelectClassesWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    SelectClassesWidget(const QList<QString> class_list);
+    Ui::SelectClassesWidget *ui;
+
+    SelectClassesWidget(QWidget *parent = nullptr);
+    ~SelectClassesWidget();
+
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QString get_filter() const;
 
@@ -45,10 +52,13 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    QLineEdit *classes_display;
-    SelectClassesDialog *dialog;
+    QList<QString> class_list;
+    QList<QString> selected_list;
+    QString filter;
+    QVariant dialog_state;
 
-    void update_classes_display();
+    void open_dialog();
+    void set_selected_list(const QList<QString> &new_selected_list);
 };
 
 #endif /* SELECT_CLASSES_WIDGET_H */

@@ -25,7 +25,6 @@
 
 #include "gplink.h"
 
-class QTreeView;
 class QString;
 class QStandardItemModel;
 class QStandardItem;
@@ -37,27 +36,31 @@ class QPoint;
  * gpoptions.
  */
 
+namespace Ui {
+class GroupPolicyTab;
+}
+
 class GroupPolicyTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::GroupPolicyTab *ui;
+
     GroupPolicyTab();
     ~GroupPolicyTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;
 
-private slots:
-    void on_context_menu(const QPoint pos);
-    void on_add_button();
-    void on_remove_button();
-    void on_item_changed(QStandardItem *item);
-
 private:
     QStandardItemModel *model;
-    QTreeView *view;
     Gplink gplink;
     QString original_gplink_string;
+
+    void on_context_menu(const QPoint pos);
+    void on_remove_button();
+    void on_item_changed(QStandardItem *item);
+    void on_add_button();
 
     void add_link(QList<QString> gpos);
     void remove_link(QList<QString> gpos);

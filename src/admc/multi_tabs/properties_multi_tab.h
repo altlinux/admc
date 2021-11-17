@@ -37,11 +37,10 @@ public:
     virtual bool apply(AdInterface &ad, const QList<QString> &target_list);
     virtual void reset();
 
+    void on_edit_edited();
+
 signals:
     void edited();
-
-public slots:
-    void on_edit_edited();
 
 protected:
     QList<AttributeMultiEdit *> edit_list;

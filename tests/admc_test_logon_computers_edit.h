@@ -44,7 +44,6 @@ private slots:
 private:
     LogonComputersEdit *edit;
     LogonComputersDialog *dialog;
-    QPushButton *open_dialog_button;
     QListWidget *list;
     QLineEdit *value_edit;
     QPushButton *add_button;

@@ -20,9 +20,10 @@
 
 #include "admc_test_string_other_edit.h"
 
-#include "edits/string_other_edit.h"
-#include "editors/multi_editor.h"
-#include "editors/string_editor.h"
+#include "attribute_dialogs/list_attribute_dialog.h"
+#include "attribute_dialogs/string_attribute_dialog.h"
+#include "attribute_dialogs/ui_list_attribute_dialog.h"
+#include "attribute_edits/string_other_edit.h"
 
 #include <QFormLayout>
 #include <QLineEdit>
@@ -44,14 +45,10 @@ const QList<QByteArray> other_value_list = {
 void ADMCTestStringOtherEdit::init() {
     ADMCTest::init();
 
-    edit = new StringOtherEdit(TEST_ATTRIBUTE_MAIN, ATTRIBUTE_WWW_HOMEPAGE_OTHER, CLASS_USER, &edits, parent_widget);
-    add_attribute_edit(edit);
+    line_edit = new QLineEdit(parent_widget);
+    other_button = new QPushButton(parent_widget);
 
-    line_edit = parent_widget->findChild<QLineEdit *>();
-    QVERIFY(line_edit != nullptr);
-
-    other_button = parent_widget->findChild<QPushButton *>();
-    QVERIFY(other_button != nullptr);
+    edit = new StringOtherEdit(line_edit, other_button, TEST_ATTRIBUTE_MAIN, ATTRIBUTE_WWW_HOMEPAGE_OTHER, &edits, parent_widget);
 
     // Create test user
     const QString name = TEST_USER;
@@ -91,19 +88,19 @@ void ADMCTestStringOtherEdit::test_emit_edited_signal() {
 // Edit should contain current attribute value after load()
 // call
 void ADMCTestStringOtherEdit::load() {
-    QVERIFY(line_edit->text() == main_value);
+    QCOMPARE(line_edit->text(), main_value);
 
     other_button->click();
 
-    auto multi_editor = parent_widget->findChild<MultiEditor *>();
-    QVERIFY(multi_editor != nullptr);
+    auto list_attribute_dialog = parent_widget->findChild<ListAttributeDialog *>();
+    QVERIFY(list_attribute_dialog);
 
-    auto list_widget = multi_editor->findChild<QListWidget *>();
-    QVERIFY(list_widget != nullptr);
+    auto list_widget = list_attribute_dialog->findChild<QListWidget *>();
+    QVERIFY(list_widget);
 
-    QVERIFY(line_edit->text() == main_value);
+    QCOMPARE(line_edit->text(), main_value);
     for (int i = 0; i < 3; i++) {
-        QVERIFY(list_widget->item(i)->text() == other_value_list[i]);
+        QCOMPARE(list_widget->item(i)->text(), other_value_list[i]);
     }
 }
 
@@ -120,11 +117,11 @@ void ADMCTestStringOtherEdit::apply_modified_main_value() {
     const AdObject object = ad.search_object(dn);
     const QString current_value_main = object.get_string(TEST_ATTRIBUTE_MAIN);
 
-    QVERIFY(current_value_main == new_value);
+    QCOMPARE(current_value_main, new_value);
 
     const QList<QByteArray> current_value_other = object.get_values(TEST_ATTRIBUTE_OTHER);
 
-    QVERIFY(current_value_other == other_value_list);
+    QCOMPARE(current_value_other, other_value_list);
 }
 
 void ADMCTestStringOtherEdit::apply_modified_other_value() {
@@ -136,37 +133,35 @@ void ADMCTestStringOtherEdit::apply_modified_other_value() {
     const AdObject object = ad.search_object(dn);
     const QString current_value_main = object.get_string(TEST_ATTRIBUTE_MAIN);
 
-    QVERIFY(current_value_main == main_value);
+    QCOMPARE(current_value_main, main_value);
 
     const QList<QByteArray> current_value_other = object.get_values(TEST_ATTRIBUTE_OTHER);
-    QList<QByteArray> correct_value_other = other_value_list; 
+    QList<QByteArray> correct_value_other = other_value_list;
     correct_value_other.append(new_value);
 
-    QVERIFY(current_value_other == correct_value_other);
+    QCOMPARE(current_value_other, correct_value_other);
 }
 
 void ADMCTestStringOtherEdit::add_new_other_value() {
     other_button->click();
 
-    auto multi_editor = parent_widget->findChild<MultiEditor *>();
-    QVERIFY(multi_editor != nullptr);
+    auto list_attribute_dialog = parent_widget->findChild<ListAttributeDialog *>();
+    QVERIFY(list_attribute_dialog);
 
-    auto add_button = multi_editor->findChild<QPushButton *>();
-    QVERIFY(add_button != nullptr);
-
+    QPushButton *add_button = list_attribute_dialog->ui->add_button;
     add_button->click();
 
-    auto string_editor = multi_editor->findChild<StringEditor *>();
-    QVERIFY(string_editor != nullptr);
+    auto string_attribute_dialog = list_attribute_dialog->findChild<StringAttributeDialog *>();
+    QVERIFY(string_attribute_dialog);
 
-    auto string_editor_line_edit = string_editor->findChild<QLineEdit *>();
-    QVERIFY(string_editor_line_edit != nullptr);
+    auto string_attribute_dialog_line_edit = string_attribute_dialog->findChild<QLineEdit *>();
+    QVERIFY(string_attribute_dialog_line_edit);
 
-    string_editor_line_edit->setText(new_value);
+    string_attribute_dialog_line_edit->setText(new_value);
 
-    string_editor->accept();
+    string_attribute_dialog->accept();
 
-    multi_editor->accept();
+    list_attribute_dialog->accept();
 }
 
 QTEST_MAIN(ADMCTestStringOtherEdit)

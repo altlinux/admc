@@ -19,77 +19,94 @@
  */
 
 #include "find_widget.h"
+#include "ui_find_widget.h"
 
 #include "adldap.h"
-#include "console_types/console_object.h"
-#include "filter_widget/filter_widget.h"
-#include "filter_widget/select_base_widget.h"
-#include "find_results.h"
-#include "globals.h"
+#include "console_impls/item_type.h"
+#include "console_impls/object_impl.h"
+#include "console_impls/query_folder_impl.h"
+#include "console_impls/query_item_impl.h"
+#include "console_widget/results_view.h"
 #include "search_thread.h"
 #include "settings.h"
 #include "utils.h"
+#include "globals.h"
 
-#include <QFormLayout>
-#include <QFrame>
-#include <QList>
-#include <QPushButton>
+#include <QMenu>
+#include <QStandardItem>
 
-FindWidget::FindWidget(const QList<QString> classes, const QString &default_base)
-: QWidget() {
-    select_base_widget = new SelectBaseWidget(default_base);
+FindWidget::FindWidget(QWidget *parent)
+: QWidget(parent) {
+    ui = new Ui::FindWidget();
+    ui->setupUi(this);
 
-    filter_widget = new FilterWidget(classes);
+    action_view_icons = new QAction(tr("Icons"));
+    action_view_icons->setCheckable(true);
+    action_view_list = new QAction(tr("List"));
+    action_view_list->setCheckable(true);
+    action_view_detail = new QAction(tr("Detail"));
+    action_view_detail->setCheckable(true);
+    action_customize_columns = new QAction(tr("Customize Columns"));
+    action_toggle_description_bar = new QAction(tr("Description Bar"));
+    action_toggle_description_bar->setCheckable(true);
 
-    find_button = new QPushButton(tr("Find"));
-    find_button->setDefault(true);
-    find_button->setObjectName("find_button");
+    const ConsoleWidgetActions console_actions = [&]() {
+        ConsoleWidgetActions out;
 
-    stop_button = new QPushButton(tr("Stop"));
-    stop_button->setAutoDefault(false);
+        out.view_icons = action_view_icons;
+        out.view_list = action_view_list;
+        out.view_detail = action_view_detail;
+        out.toggle_description_bar = action_toggle_description_bar;
 
-    find_results = new FindResults();
+        // Use placeholders for unused actions
+        out.navigate_up = new QAction();
+        out.navigate_back = new QAction();
+        out.navigate_forward = new QAction();
+        out.refresh = new QAction();
+        out.customize_columns = new QAction();
+        out.toggle_console_tree = new QAction();
 
-    auto filter_widget_frame = new QFrame();
-    filter_widget_frame->setFrameStyle(QFrame::Raised);
-    filter_widget_frame->setFrameShape(QFrame::Box);
+        return out;
+    }();
 
-    {
-        auto select_base_layout_inner = new QFormLayout();
-        select_base_layout_inner->addRow(tr("Search in:"), select_base_widget);
+    ui->console->set_actions(console_actions);
 
-        auto select_base_layout = new QHBoxLayout();
-        select_base_layout->addLayout(select_base_layout_inner);
-        select_base_layout->addStretch();
+    object_impl = new ObjectImpl(ui->console);
+    ui->console->register_impl(ItemType_Object, object_impl);
 
-        auto button_layout = new QHBoxLayout();
-        button_layout->addWidget(find_button);
-        button_layout->addWidget(stop_button);
-        button_layout->addStretch();
+    object_impl->set_find_action_enabled(false);
+    object_impl->set_refresh_action_enabled(false);
 
-        auto layout = new QVBoxLayout();
-        filter_widget_frame->setLayout(layout);
-        layout->addLayout(select_base_layout);
-        layout->addWidget(filter_widget);
-        layout->addLayout(button_layout);
-    }
+    // NOTE: registering impl so that it supplies text to
+    // the description bar
+    auto query_item_impl = new QueryItemImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryItem, query_item_impl);
 
-    {
-        auto layout = new QHBoxLayout();
-        setLayout(layout);
-        layout->addWidget(filter_widget_frame);
-        layout->addWidget(find_results);
-    }
+    auto query_folder_impl = new QueryFolderImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
-    // Keep filter widget compact, so that when user
-    // expands find dialog horizontally, filter widget will
-    // keep it's size, find results will get expanded
-    filter_widget_frame->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
-    find_results->setMinimumSize(500, 0);
+    ResultsView *query_results = query_item_impl->view();
+    query_results->set_drag_drop_enabled(false);
+
+    const QList<QStandardItem *> root_row = ui->console->add_scope_item(ItemType_QueryFolder, QModelIndex());
+    QStandardItem *root_item = root_row[0];
+    root_item->setData(true, QueryItemRole_IsRoot);
+
+    const QList<QStandardItem *> row = ui->console->add_scope_item(ItemType_QueryItem, root_item->index());
+    head_item = row[0];
+    head_item->setText(tr("Find results"));
+
+    ui->console->set_scope_view_visible(false);
+
+    const QModelIndex head_index = head_item->index();
+    ui->console->set_current_scope(head_index);
 
     connect(
-        find_button, &QPushButton::clicked,
+        ui->find_button, &QPushButton::clicked,
         this, &FindWidget::find);
+    connect(
+        ui->clear_button, &QPushButton::clicked,
+        this, &FindWidget::on_clear_button);
 
     // NOTE: need this for the case where dialog is closed
     // while a search is in progress. Without this busy
@@ -101,10 +118,58 @@ FindWidget::FindWidget(const QList<QString> classes, const QString &default_base
         });
 }
 
+FindWidget::~FindWidget() {
+    delete ui;
+}
+
+void FindWidget::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
+    ui->filter_widget->set_classes(class_list, selected_list);
+}
+
+void FindWidget::set_default_base(const QString &default_base) {
+    ui->select_base_widget->set_default_base(default_base);
+}
+
+void FindWidget::set_buddy_console(ConsoleWidget *buddy_console) {
+    object_impl->set_buddy_console(buddy_console);
+}
+
+QVariant FindWidget::save_console_state() const {
+    const QVariant state = ui->console->save_state();
+
+    return state;
+}
+
+void FindWidget::restore_console_state(const QVariant &state) {
+    ui->console->restore_state(state);
+}
+
+void FindWidget::setup_action_menu(QMenu *menu) {
+    ui->console->add_actions(menu);
+
+    connect(
+        menu, &QMenu::aboutToShow,
+        ui->console, &ConsoleWidget::update_actions);
+}
+
+void FindWidget::setup_view_menu(QMenu *menu) {
+    menu->addAction(action_view_icons);
+    menu->addAction(action_view_list);
+    menu->addAction(action_view_detail);
+    menu->addSeparator();
+    menu->addAction(action_customize_columns);
+    menu->addAction(action_toggle_description_bar);
+}
+
+void FindWidget::clear_results() {
+    const QModelIndex head_index = head_item->index();
+    ui->console->delete_children(head_index);
+}
+
 void FindWidget::find() {
     // Prepare search args
-    const QString filter = filter_widget->get_filter();
-    const QString base = select_base_widget->get_base();
+    const QString filter = ui->filter_widget->get_filter();
+    const QString base = ui->select_base_widget->get_base();
     const QList<QString> search_attributes = console_object_search_attributes();
 
     auto find_thread = new SearchThread(base, SearchScope_All, filter, search_attributes);
@@ -116,33 +181,52 @@ void FindWidget::find() {
         this, &QObject::destroyed,
         find_thread, &SearchThread::stop);
     connect(
-        stop_button, &QPushButton::clicked,
+        ui->stop_button, &QPushButton::clicked,
         find_thread, &SearchThread::stop);
     connect(
         find_thread, &SearchThread::finished,
-        this, &FindWidget::on_thread_finished);
+        this,
+        [this, find_thread]() {
+            if (find_thread->failed_to_connect()) {
+                search_thread_error_log(this);
+            }
+                    
+            ui->find_button->setEnabled(true);
+            ui->clear_button->setEnabled(true);
+
+            hide_busy_indicator();
+        });
 
     show_busy_indicator();
 
-    // NOTE: disable find button, otherwise another find
-    // process can start while this one isn't finished!
-    find_button->setEnabled(false);
+    // NOTE: disable find and clear buttons, do not want
+    // those functions to be available while a search is in
+    // progress
+    ui->find_button->setEnabled(false);
+    ui->clear_button->setEnabled(false);
 
-    find_results->clear();
+    clear_results();
 
     find_thread->start();
 }
 
 void FindWidget::handle_find_thread_results(const QHash<QString, AdObject> &results) {
-    find_results->load(results);
+    const QModelIndex head_index = head_item->index();
+
+    for (const AdObject &object : results) {
+        const QList<QStandardItem *> row = ui->console->add_results_item(ItemType_Object, head_index);
+
+        console_object_load(row, object);
+    }
 }
 
-void FindWidget::on_thread_finished() {
-    find_button->setEnabled(true);
+QList<QString> FindWidget::get_selected_dns() const {
+    const QList<QString> out = get_selected_dn_list(ui->console, ItemType_Object, ObjectRole_DN);
 
-    hide_busy_indicator();
+    return out;
 }
 
-QList<QList<QStandardItem *>> FindWidget::get_selected_rows() const {
-    return find_results->get_selected_rows();
+void FindWidget::on_clear_button() {
+    ui->filter_widget->clear();
+    clear_results();
 }

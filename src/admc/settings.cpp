@@ -23,9 +23,9 @@
 #include "config.h"
 
 #include <QAction>
+#include <QDialog>
 #include <QHeaderView>
 #include <QLocale>
-#include <QDialog>
 #include <QSettings>
 
 const QHash<QString, bool> bool_setting_default_map = {
@@ -33,19 +33,21 @@ const QHash<QString, bool> bool_setting_default_map = {
     {SETTING_confirm_actions, true},
     {SETTING_dev_mode, false},
     {SETTING_show_non_containers_in_console_tree, false},
-    {SETTING_last_name_before_first_name, []() {
-        const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
-        if (locale_is_russian) {
-            return true;
-        } else {
-            return false;
-        }
-    }()},
+    {SETTING_last_name_before_first_name,
+        []() {
+            const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
+            if (locale_is_russian) {
+                return true;
+            } else {
+                return false;
+            }
+        }()},
     {SETTING_show_console_tree, true},
     {SETTING_show_results_header, true},
     {SETTING_log_searches, false},
     {SETTING_timestamp_log, true},
     {SETTING_sasl_nocanon, true},
+    {SETTING_show_login, true},
 };
 
 bool settings_get_bool(const QString setting) {
@@ -66,7 +68,7 @@ void settings_set_bool(const QString setting, const bool value) {
 void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
     settings_restore_geometry(setting, dialog);
 
-    QDialog::connect(
+    QObject::connect(
         dialog, &QDialog::finished,
         [=]() {
             const QByteArray geometry = dialog->saveGeometry();
@@ -78,7 +80,7 @@ bool settings_restore_geometry(const QString setting, QWidget *widget) {
     const QByteArray geometry = settings_get_variant(setting).toByteArray();
     if (!geometry.isEmpty()) {
         widget->restoreGeometry(geometry);
-        
+
         return true;
     } else {
         return false;
@@ -112,43 +114,4 @@ void settings_set_variant(const QString setting, const QVariant &value) {
     QSettings settings;
 
     settings.setValue(setting, value);
-}
-
-void settings_connect_action_to_bool_setting(QAction *action, const QString setting) {
-    action->setCheckable(true);
-
-    // Init action state to saved value
-    const bool saved_value = settings_get_bool(setting);
-    action->setChecked(saved_value);
-
-    // Update saved value when action is toggled
-    QObject::connect(
-        action, &QAction::toggled,
-        [setting](bool checked) {
-            settings_set_bool(setting, checked);
-        });
-}
-
-QAction *settings_make_action(const QString setting, const QString &text, QObject *parent) {
-    auto action = new QAction(text, parent);
-    action->setCheckable(true);
-
-    // Init action state to saved value
-    const bool saved_value = settings_get_bool(setting);
-    action->setChecked(saved_value);
-
-    return action;
-}
-
-QAction *settings_make_and_connect_action(const QString setting, const QString &text, QObject *parent) {
-    auto action = settings_make_action(setting, text, parent);
-
-    // Update saved value when action is toggled
-    QObject::connect(
-        action, &QAction::toggled,
-        [setting](bool checked) {
-            settings_set_bool(setting, checked);
-        });
-
-    return action;
 }

@@ -25,29 +25,25 @@
 
 #include <QSet>
 
-class QTreeView;
 class QStandardItemModel;
-class QPushButton;
-class QLabel;
 
 // Displays and edits membership info which can go both ways
 // 1. users that are members of group
 // 2. groups of user is member of
 // MembersTab and MemberOfTab implement both of those
 
+namespace Ui {
+class MembershipTab;
+}
+
 class MembershipTab : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::MembershipTab *ui;
+
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;
-
-private slots:
-    void on_add_button();
-    void on_remove_button();
-    void on_primary_button();
-    void on_properties_button();
-    void enable_primary_button_on_valid_selection();
 
 protected:
     enum MembershipTabType {
@@ -61,15 +57,17 @@ protected:
 private:
     MembershipTabType type;
     QStandardItemModel *model;
-    QTreeView *view;
-    QPushButton *primary_button;
-    QLabel *primary_group_label;
 
     QSet<QString> original_values;
     QSet<QString> original_primary_values;
     QSet<QString> current_values;
     QSet<QString> current_primary_values;
 
+    void on_add_button();
+    void on_remove_button();
+    void on_primary_button();
+    void on_properties_button();
+    void enable_primary_button_on_valid_selection();
     void reload_model();
     void add_values(QList<QString> values);
     void remove_values(QList<QString> values);

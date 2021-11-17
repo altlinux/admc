@@ -19,22 +19,22 @@
  */
 
 #include "tabs/profile_tab.h"
+#include "tabs/ui_profile_tab.h"
 
 #include "adldap.h"
-#include "edits/string_edit.h"
-
-#include <QFormLayout>
+#include "attribute_edits/string_edit.h"
 
 ProfileTab::ProfileTab() {
-    new StringEdit(ATTRIBUTE_PROFILE_PATH, CLASS_USER, &edits, this);
-    new StringEdit(ATTRIBUTE_SCRIPT_PATH, CLASS_USER, &edits, this);
+    ui = new Ui::ProfileTab();
+    ui->setupUi(this);
 
-    // TODO: verify that local path exists. Also add alternate input method named "Connect"? Has drop-down of disk letters and path input.
-    new StringEdit(ATTRIBUTE_HOME_DIRECTORY, CLASS_USER, &edits, this);
+    new StringEdit(ui->profile_path_edit, ATTRIBUTE_PROFILE_PATH, &edits, this);
+    new StringEdit(ui->script_path_edit, ATTRIBUTE_SCRIPT_PATH, &edits, this);
+    new StringEdit(ui->home_dir_edit, ATTRIBUTE_HOME_DIRECTORY, &edits, this);
 
     edits_connect_to_tab(edits, this);
+}
 
-    const auto layout = new QFormLayout();
-    setLayout(layout);
-    edits_add_to_layout(edits, layout);
+ProfileTab::~ProfileTab() {
+    delete ui;
 }

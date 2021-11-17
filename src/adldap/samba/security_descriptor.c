@@ -545,7 +545,6 @@ static struct security_descriptor *security_descriptor_appendv(struct security_d
         } else {
             status = security_descriptor_dacl_add(sd, ace);
         }
-        /* TODO: check: would talloc_free(ace) here be correct? */
         if (!NT_STATUS_IS_OK(status)) {
             talloc_free(sd);
             return NULL;
@@ -687,7 +686,7 @@ struct security_ace *security_ace_create(TALLOC_CTX *mem_ctx,
 *******************************************************************/
 bool security_descriptor_with_ms_nfs(const struct security_descriptor *psd)
 {
-    int i;
+    uint32_t i;
 
     if (psd->dacl == NULL) {
         return false;

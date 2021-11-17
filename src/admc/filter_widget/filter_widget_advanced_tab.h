@@ -27,21 +27,24 @@
 
 #include "filter_widget/filter_widget.h"
 
-class QPlainTextEdit;
+namespace Ui {
+class FilterWidgetAdvancedTab;
+}
 
 class FilterWidgetAdvancedTab final : public FilterWidgetTab {
     Q_OBJECT
 
 public:
+    Ui::FilterWidgetAdvancedTab *ui;
+
     FilterWidgetAdvancedTab();
+    ~FilterWidgetAdvancedTab();
 
     QString get_filter() const;
+    void clear();
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
-
-private:
-    QPlainTextEdit *ldap_filter_edit;
 };
 
 #endif /* FILTER_WIDGET_ADVANCED_TAB_H */

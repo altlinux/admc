@@ -39,6 +39,7 @@ CustomizeColumnsDialog::CustomizeColumnsDialog(QTreeView *view_arg, const QList<
     d = new CustomizeColumnsDialogPrivate(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
+
     setWindowTitle(tr("Customize Columns"));
 
     d->view = view_arg;

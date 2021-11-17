@@ -22,9 +22,12 @@
 #define GLOBALS_H
 
 class AdConfig;
+class AdInterface;
 class Status;
 
 extern AdConfig *g_adconfig;
-Status *g_status();
+extern Status *g_status;
+
+void load_g_adconfig(AdInterface &ad);
 
 #endif /* GLOBALS_H */

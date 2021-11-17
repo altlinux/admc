@@ -19,82 +19,57 @@
  */
 
 #include "filter_widget/filter_widget_normal_tab.h"
+#include "filter_widget/ui_filter_widget_normal_tab.h"
 
 #include "adldap.h"
-#include "filter_widget/filter_builder.h"
-#include "filter_widget/select_classes_widget.h"
+#include "globals.h"
 
-#include <QFormLayout>
-#include <QLabel>
-#include <QListWidget>
-#include <QPushButton>
-#include <QVBoxLayout>
+#include <algorithm>
 
-FilterWidgetNormalTab::FilterWidgetNormalTab(const QList<QString> classes)
+FilterWidgetNormalTab::FilterWidgetNormalTab()
 : FilterWidgetTab() {
-    select_classes = new SelectClassesWidget(classes);
-
-    filter_builder = new FilterBuilder();
-
-    auto add_filter_button = new QPushButton(tr("Add"));
-    add_filter_button->setAutoDefault(false);
-
-    filter_list = new QListWidget();
-
-    auto remove_filter_button = new QPushButton(tr("Remove"));
-    remove_filter_button->setAutoDefault(false);
-
-    auto clear_filters_button = new QPushButton(tr("Clear"));
-    clear_filters_button->setAutoDefault(false);
-
-    auto filter_builder_framed = new QFrame();
-    filter_builder_framed->setFrameStyle(QFrame::Raised);
-    filter_builder_framed->setFrameShape(QFrame::Box);
-    {
-        auto layout = new QVBoxLayout();
-        filter_builder_framed->setLayout(layout);
-        layout->addWidget(filter_builder);
-        layout->addWidget(add_filter_button);
-        layout->setAlignment(add_filter_button, Qt::AlignLeft);
-    }
-
-    auto classes_layout = new QFormLayout();
-    classes_layout->addRow(tr("Classes:"), select_classes);
-
-    auto button_layout = new QVBoxLayout();
-    button_layout->addWidget(remove_filter_button);
-    button_layout->addWidget(clear_filters_button);
-    button_layout->addStretch();
-
-    auto filter_list_layout = new QHBoxLayout();
-    filter_list_layout->addWidget(filter_list);
-    filter_list_layout->addLayout(button_layout);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(classes_layout);
-    layout->addWidget(filter_builder_framed);
-    layout->addWidget(new QLabel(tr("Filters:")));
-    layout->addLayout(filter_list_layout);
+    ui = new Ui::FilterWidgetNormalTab();
+    ui->setupUi(this);
 
     connect(
-        remove_filter_button, &QAbstractButton::clicked,
+        ui->attribute_class_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &FilterWidgetNormalTab::update_attributes_combo);
+    connect(
+        ui->attribute_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &FilterWidgetNormalTab::update_conditions_combo);
+    connect(
+        ui->condition_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &FilterWidgetNormalTab::update_value_edit);
+    connect(
+        ui->remove_button, &QAbstractButton::clicked,
         this, &FilterWidgetNormalTab::remove_filter);
     connect(
-        add_filter_button, &QAbstractButton::clicked,
+        ui->add_button, &QAbstractButton::clicked,
         this, &FilterWidgetNormalTab::add_filter);
     connect(
-        clear_filters_button, &QAbstractButton::clicked,
+        ui->clear_button, &QAbstractButton::clicked,
         this, &FilterWidgetNormalTab::clear_filters);
+}
 
-    add_filter_button->setObjectName("add_button");
+FilterWidgetNormalTab::~FilterWidgetNormalTab() {
+    delete ui;
+}
+
+void FilterWidgetNormalTab::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
+    for (const QString &object_class : filter_classes) {
+        const QString display = g_adconfig->get_class_display_name(object_class);
+        ui->attribute_class_combo->addItem(display, object_class);
+    }
+
+    ui->select_classes_widget->set_classes(class_list, selected_list);
+
 }
 
 QString FilterWidgetNormalTab::get_filter() const {
     const QString attribute_filter = [this]() {
         QList<QString> filters;
-        for (int i = 0; i < filter_list->count(); i++) {
-            const QListWidgetItem *item = filter_list->item(i);
+        for (int i = 0; i < ui->filter_list->count(); i++) {
+            const QListWidgetItem *item = ui->filter_list->item(i);
             const QString filter = item->data(Qt::UserRole).toString();
 
             filters.append(filter);
@@ -103,7 +78,7 @@ QString FilterWidgetNormalTab::get_filter() const {
         return filter_AND(filters);
     }();
 
-    const QString class_filter = select_classes->get_filter();
+    const QString class_filter = ui->select_classes_widget->get_filter();
 
     const bool classes = !class_filter.isEmpty();
     const bool attributes = !attribute_filter.isEmpty();
@@ -119,20 +94,59 @@ QString FilterWidgetNormalTab::get_filter() const {
     }
 }
 
+void FilterWidgetNormalTab::clear() {
+    ui->attribute_class_combo->setCurrentIndex(0);
+    ui->value_edit->clear();
+
+    clear_filters();
+}
+
 void FilterWidgetNormalTab::add_filter() {
-    const QString filter = filter_builder->get_filter();
-    const QString filter_display = filter_builder->get_filter_display();
+    const QString filter = [&]() {
+        const QString attribute = ui->attribute_combo->itemData(ui->attribute_combo->currentIndex()).toString();
+        const Condition condition = (Condition) ui->condition_combo->itemData(ui->condition_combo->currentIndex()).toInt();
+        const QString value = ui->value_edit->text();
+
+        const QString filter_display_string = [this, condition, value]() {
+            const QString attribute_display = ui->attribute_combo->itemText(ui->attribute_combo->currentIndex());
+            const QString condition_string = condition_to_display_string(condition);
+
+            const bool set_unset_condition = (condition == Condition_Set || condition == Condition_Unset);
+            if (set_unset_condition) {
+                return QString("%1 %2").arg(attribute_display, condition_string);
+            } else {
+                return QString("%1 %2: \"%3\"").arg(attribute_display, condition_string, value);
+            }
+        }();
+
+        return filter_CONDITION(condition, attribute, value);
+    }();
+    const QString filter_display = [&]() {
+        const QString attribute = ui->attribute_combo->itemData(ui->attribute_combo->currentIndex()).toString();
+        const Condition condition = (Condition) ui->condition_combo->itemData(ui->condition_combo->currentIndex()).toInt();
+        const QString value = ui->value_edit->text();
+
+        const QString attribute_display = ui->attribute_combo->itemText(ui->attribute_combo->currentIndex());
+        const QString condition_string = condition_to_display_string(condition);
+
+        const bool set_unset_condition = (condition == Condition_Set || condition == Condition_Unset);
+        if (set_unset_condition) {
+            return QString("%1 %2").arg(attribute_display, condition_string);
+        } else {
+            return QString("%1 %2: \"%3\"").arg(attribute_display, condition_string, value);
+        }
+    }();
 
     auto item = new QListWidgetItem();
     item->setText(filter_display);
     item->setData(Qt::UserRole, filter);
-    filter_list->addItem(item);
+    ui->filter_list->addItem(item);
 
-    filter_builder->clear();
+    ui->value_edit->clear();
 }
 
 void FilterWidgetNormalTab::remove_filter() {
-    const QList<QListWidgetItem *> selected_items = filter_list->selectedItems();
+    const QList<QListWidgetItem *> selected_items = ui->filter_list->selectedItems();
 
     for (auto item : selected_items) {
         delete item;
@@ -140,18 +154,18 @@ void FilterWidgetNormalTab::remove_filter() {
 }
 
 void FilterWidgetNormalTab::clear_filters() {
-    filter_list->clear();
+    ui->filter_list->clear();
 }
 
 QVariant FilterWidgetNormalTab::save_state() const {
     QHash<QString, QVariant> state;
 
-    state["select_classes"] = select_classes->save_state();
+    state["select_classes_widget"] = ui->select_classes_widget->save_state();
 
     QList<QString> filter_display_list;
     QList<QString> filter_value_list;
-    for (int i = 0; i < filter_list->count(); i++) {
-        const QListWidgetItem *item = filter_list->item(i);
+    for (int i = 0; i < ui->filter_list->count(); i++) {
+        const QListWidgetItem *item = ui->filter_list->item(i);
         const QString filter_display = item->data(Qt::DisplayRole).toString();
         const QString filter_value = item->data(Qt::UserRole).toString();
 
@@ -168,12 +182,12 @@ QVariant FilterWidgetNormalTab::save_state() const {
 void FilterWidgetNormalTab::restore_state(const QVariant &state_variant) {
     const QHash<QString, QVariant> state = state_variant.toHash();
 
-    select_classes->restore_state(state["select_classes"]);
+    ui->select_classes_widget->restore_state(state["select_classes_widget"]);
 
     const QList<QString> filter_display_list = state["filter_display_list"].toStringList();
     const QList<QString> filter_value_list = state["filter_value_list"].toStringList();
 
-    filter_list->clear();
+    ui->filter_list->clear();
     for (int i = 0; i < filter_display_list.size(); i++) {
         const QString filter_display = filter_display_list[i];
         const QString filter_value = filter_value_list[i];
@@ -181,6 +195,103 @@ void FilterWidgetNormalTab::restore_state(const QVariant &state_variant) {
         auto item = new QListWidgetItem();
         item->setText(filter_display);
         item->setData(Qt::UserRole, filter_value);
-        filter_list->addItem(item);
+        ui->filter_list->addItem(item);
+    }
+}
+
+// Attributes combo contents depend on what attribute class is selected
+void FilterWidgetNormalTab::update_attributes_combo() {
+    ui->attribute_combo->clear();
+
+    const QString object_class = [this]() {
+        const int index = ui->attribute_class_combo->currentIndex();
+        const QVariant item_data = ui->attribute_class_combo->itemData(index);
+
+        return item_data.toString();
+    }();
+
+    const QList<QString> attributes = g_adconfig->get_find_attributes(object_class);
+
+    const QList<QString> display_attributes = [&]() {
+        QList<QString> out;
+
+        for (const QString &attribute : attributes) {
+            const QString display_name = g_adconfig->get_attribute_display_name(attribute, object_class);
+            out.append(display_name);
+        }
+
+        std::sort(out.begin(), out.end());
+
+        return out;
+    }();
+
+    // NOTE: need backwards mapping from display name to attribute for insertion
+    const QHash<QString, QString> display_to_attribute = [&]() {
+        QHash<QString, QString> out;
+        for (const QString &attribute : attributes) {
+            const QString display_name = g_adconfig->get_attribute_display_name(attribute, object_class);
+
+            out[display_name] = attribute;
+        }
+        return out;
+    }();
+
+    // Insert attributes into combobox in the sorted order of display attributes
+    for (const auto &display_attribute : display_attributes) {
+        const QString attribute = display_to_attribute[display_attribute];
+        ui->attribute_combo->addItem(display_attribute, attribute);
+    }
+}
+
+// Conditions combo contents depend on what attribute is selected
+void FilterWidgetNormalTab::update_conditions_combo() {
+    const QList<Condition> conditions = [this]() -> QList<Condition> {
+        const AttributeType attribute_type = [this]() {
+            const int index = ui->attribute_combo->currentIndex();
+            const QVariant item_data = ui->attribute_combo->itemData(index);
+            const QString attribute = item_data.toString();
+
+            return g_adconfig->get_attribute_type(attribute);
+        }();
+
+        // NOTE: extra conditions don't work on DSDN type
+        // attributes, so don't include them in the combobox
+        // in that case
+        if (attribute_type == AttributeType_DSDN) {
+            return {
+                Condition_Equals,
+                Condition_NotEquals,
+                Condition_Set,
+                Condition_Unset,
+            };
+        } else {
+            return {
+                Condition_StartsWith,
+                Condition_EndsWith,
+                Condition_Equals,
+                Condition_NotEquals,
+                Condition_Set,
+                Condition_Unset,
+            };
+        }
+    }();
+
+    ui->condition_combo->clear();
+    for (const auto condition : conditions) {
+        const QString condition_string = condition_to_display_string(condition);
+
+        ui->condition_combo->addItem(condition_string, (int) condition);
+    }
+}
+
+// Value edit is turned off for set/unset conditions
+void FilterWidgetNormalTab::update_value_edit() {
+    const Condition condition = (Condition) ui->condition_combo->itemData(ui->condition_combo->currentIndex()).toInt();
+
+    const bool disable_value_edit = (condition == Condition_Set || condition == Condition_Unset);
+    ui->value_edit->setDisabled(disable_value_edit);
+
+    if (disable_value_edit) {
+        ui->value_edit->clear();
     }
 }

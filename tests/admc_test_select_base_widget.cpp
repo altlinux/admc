@@ -20,8 +20,9 @@
 
 #include "admc_test_select_base_widget.h"
 
-#include "console_types/console_object.h"
+#include "console_impls/object_impl.h"
 #include "filter_widget/select_base_widget.h"
+#include "filter_widget/ui_select_base_widget.h"
 #include "globals.h"
 #include "select_container_dialog.h"
 
@@ -36,8 +37,7 @@ void ADMCTestSelectBaseWidget::init() {
     select_base_widget = new SelectBaseWidget();
     add_widget(select_base_widget);
 
-    combo = select_base_widget->findChild<QComboBox *>();
-    QVERIFY(combo != nullptr);
+    combo = select_base_widget->ui->combo;
 
     // Create test OU's
     const QList<QString> ou_name_list = {
@@ -61,7 +61,7 @@ void ADMCTestSelectBaseWidget::default_to_domain_head() {
     const QString domain_head = g_adconfig->domain_head();
 
     const QString base = select_base_widget->get_base();
-    QVERIFY(base == domain_head);
+    QCOMPARE(base, domain_head);
 }
 
 // After selecting a search base, the widget should return
@@ -71,7 +71,7 @@ void ADMCTestSelectBaseWidget::select_base() {
     select_base_widget_add(select_base_widget, select_dn);
 
     const QString base = select_base_widget->get_base();
-    QVERIFY(base == select_dn);
+    QCOMPARE(base, select_dn);
 }
 
 // Adding multiple search bases to combo box, then selecting
@@ -85,7 +85,7 @@ void ADMCTestSelectBaseWidget::select_base_multiple() {
     // Alpha is at index 1 in the combo (0 is domain)
     combo->setCurrentIndex(1);
     const QString base = select_base_widget->get_base();
-    QVERIFY(base == dn_list[0]);
+    QCOMPARE(base, dn_list[0]);
 }
 
 void ADMCTestSelectBaseWidget::save_state() {
@@ -109,7 +109,7 @@ void ADMCTestSelectBaseWidget::save_state() {
     // Check that deserialization successfully restored
     // original state
     const QString base_deserialized = select_base_widget->get_base();
-    QVERIFY(base_original == base_deserialized);
+    QCOMPARE(base_original, base_deserialized);
 }
 
 QTEST_MAIN(ADMCTestSelectBaseWidget)

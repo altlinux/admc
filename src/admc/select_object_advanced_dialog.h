@@ -27,19 +27,20 @@
 
 #include <QDialog>
 
-class FindWidget;
-class QStandardItem;
+namespace Ui {
+class SelectObjectAdvancedDialog;
+}
 
 class SelectObjectAdvancedDialog final : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::SelectObjectAdvancedDialog *ui;
+
     SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent);
+    ~SelectObjectAdvancedDialog();
 
-    QList<QList<QStandardItem *>> get_selected_rows() const;
-
-private:
-    FindWidget *find_widget;
+    QList<QString> get_selected_dns() const;
 };
 
 #endif /* SELECT_OBJECT_ADVANCED_DIALOG_H */

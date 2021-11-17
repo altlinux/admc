@@ -2,6 +2,7 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020 BaseALT Ltd.
+ * Copyright (C) 2020-2021 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +81,7 @@ void ADMCTestSecurityTab::load_data() {
     QTest::newRow("ENTERPRISE DOMAIN CONTROLLERS") << QSet<AcePermission>();
 
     QTest::newRow("Enterprise Admins") << all_permissions;
-    
+
     QTest::newRow("Everyone") << [&]() {
         QSet<AcePermission> out;
         out += AcePermission_ChangePassword;
@@ -297,7 +298,7 @@ bool ADMCTestSecurityTab::state_is(const QSet<AcePermission> &permission_set, co
             const bool state_is_correct = (is_checked == should_be_checked);
 
             if (!state_is_correct) {
-                const QString permission_name = ace_permission_to_name_map[permission];
+                const QString permission_name = SecurityTab::ace_permission_to_name_map()[permission];
                 const QString column_name = [&]() {
                     switch (column) {
                         case AceColumn_Allowed: return "Allowed";

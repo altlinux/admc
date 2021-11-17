@@ -19,6 +19,7 @@
  */
 
 #include "select_container_dialog.h"
+#include "ui_select_container_dialog.h"
 
 #include "adldap.h"
 #include "globals.h"
@@ -38,24 +39,12 @@ QStandardItem *make_container_node(const AdObject &object);
 
 SelectContainerDialog::SelectContainerDialog(QWidget *parent)
 : QDialog(parent) {
+    ui = new Ui::SelectContainerDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(tr("Select Container"));
 
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        close();
-        return;
-    }
-
-    resize(400, 500);
-
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setExpandsOnDoubleClick(true);
-    view->setAllColumnsShowFocus(true);
-    view->setSortingEnabled(true);
-    view->sortByColumn(g_adconfig->get_column_index(ATTRIBUTE_NAME), Qt::AscendingOrder);
-    view->setHeaderHidden(true);
+    ui->view->sortByColumn(0, Qt::AscendingOrder);
 
     model = new QStandardItemModel(this);
 
@@ -63,25 +52,40 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     proxy_model->setSourceModel(model);
     proxy_model->setSortCaseSensitivity(Qt::CaseInsensitive);
 
-    view->setModel(proxy_model);
-
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
+    ui->view->setModel(proxy_model);
 
     // Hide all columns except name column
-    QHeaderView *header = view->header();
+    QHeaderView *header = ui->view->header();
     for (int i = 0; i < header->count(); i++) {
         header->setSectionHidden(i, true);
     }
-    header->setSectionHidden(g_adconfig->get_column_index(ATTRIBUTE_NAME), false);
+    header->setSectionHidden(0, false);
 
-    enable_widget_on_selection(ok_button, view);
+    QPushButton *ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    enable_widget_on_selection(ok_button, ui->view);
 
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(view);
-    layout->addWidget(button_box);
+    // NOTE: geometry is shared with the subclass
+    // MoveObjectDialog but that is intended.
+    settings_setup_dialog_geometry(SETTING_select_container_dialog_geometry, this);
+
+    connect(
+        ui->view, &QTreeView::expanded,
+        this, &SelectContainerDialog::on_item_expanded);
+}
+
+SelectContainerDialog::~SelectContainerDialog() {
+    delete ui;
+}
+
+void SelectContainerDialog::open() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        close();
+
+        return;
+    }
+
+    model->removeRows(0, model->rowCount());
 
     // Load head object
     const QString head_dn = g_adconfig->domain_head();
@@ -89,31 +93,13 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     auto item = make_container_node(head_object);
     model->appendRow(item);
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
-    // NOTE: geometry is shared with the subclass
-    // MoveObjectDialog but that is intended.
-    settings_setup_dialog_geometry(SETTING_select_container_dialog_geometry, this);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-
-    connect(
-        view, &QTreeView::expanded,
-        [=](const QModelIndex &index) {
-            const bool fetched = index.data(ContainerRole_Fetched).toBool();
-            if (!fetched) {
-                fetch_node(index);
-            }
-        });
+    QDialog::open();
 }
 
 QString SelectContainerDialog::get_selected() const {
-    const QModelIndex selected_index = view->selectionModel()->currentIndex();
+    const QModelIndex selected_index = ui->view->selectionModel()->currentIndex();
     const QString dn = selected_index.data(ContainerRole_DN).toString();
 
     return dn;
@@ -160,6 +146,13 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
     parent->setData(true, ContainerRole_Fetched);
 
     hide_busy_indicator();
+}
+
+void SelectContainerDialog::on_item_expanded(const QModelIndex &index) {
+    const bool fetched = index.data(ContainerRole_Fetched).toBool();
+    if (!fetched) {
+        fetch_node(index);
+    }
 }
 
 QStandardItem *make_container_node(const AdObject &object) {

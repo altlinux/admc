@@ -40,6 +40,7 @@ class AdInterface;
 class AdObject;
 class QPersistentModelIndex;
 class ConsoleWidget;
+class QMessageBox;
 template <typename T>
 class QList;
 template <typename K, typename T>
@@ -47,12 +48,12 @@ class QMap;
 template <typename K, typename T>
 class QHash;
 
+#define UNUSED_ARG(x) (void) (x)
+
 #define debug_print(a, args...) printf("%s(%s:%d) " a, __func__, __FILE__, __LINE__, ##args)
 #define trace(a, args...) debug_print(a "\n", ##args)
 
 QList<QStandardItem *> make_item_row(const int count);
-
-void exec_menu_from_view(QMenu *menu, const QAbstractItemView *view, const QPoint &pos);
 
 // Convenience f-n so that you can pass a mapping of
 // column => label
@@ -93,9 +94,19 @@ void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad,
 // NOTE: these f-ns replace QMessageBox static f-ns. The
 // static f-ns use exec(), which block execution and makes
 // testing a hassle. These f-ns use open().
-void message_box_critical(QWidget *parent, const QString &title, const QString &text);
-void message_box_information(QWidget *parent, const QString &title, const QString &text);
-void message_box_question(QWidget *parent, const QString &title, const QString &text);
-void message_box_warning(QWidget *parent, const QString &title, const QString &text);
+QMessageBox *message_box_critical(QWidget *parent, const QString &title, const QString &text);
+QMessageBox *message_box_information(QWidget *parent, const QString &title, const QString &text);
+QMessageBox *message_box_question(QWidget *parent, const QString &title, const QString &text);
+QMessageBox *message_box_warning(QWidget *parent, const QString &title, const QString &text);
+
+QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role);
+QString get_selected_dn(ConsoleWidget *console, const int type, const int dn_role);
+
+void center_widget(QWidget *widget);
+
+// If base name is "New X", then this will generate a name
+// "New X (n)" where this name won't conflict with any
+// existing names. For example "New Folder (7)"
+QString generate_new_name(const QList<QString> &existing_name_list, const QString &base_name);
 
 #endif /* UTILS_H */

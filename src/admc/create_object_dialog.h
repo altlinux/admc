@@ -22,42 +22,46 @@
 #define CREATE_OBJECT_DIALOG_H
 
 /**
- * Creates an object by letting user fill in attributes. All
- * objects require a name. Depending on object's class,
- * different additional attributes may be set after
- * creation.
+ * Base class for dialogs that create objects. 
  */
 
 #include <QDialog>
 
-class AttributeEdit;
-class StringEdit;
+#include "widget_state.h"
+
 class QLineEdit;
-class QPushButton;
-class PasswordEdit;
+class QDialogButtonBox;
+class AttributeEdit;
 
 class CreateObjectDialog : public QDialog {
     Q_OBJECT
 
 public:
-    CreateObjectDialog(const QString &parent_dn_arg, const QString &object_class_arg, QWidget *parent);
+    using QDialog::QDialog;
 
-    QString get_created_dn() const;
+    static void success_msg(const QString &old_name);
+    static void fail_msg(const QString &old_name);
 
-public slots:
-    void accept();
+    // Required widgets will be use to determine when dialog
+    // can be accepted. Widget list will be used to
+    // save/restore their state.
+    void init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QList<QWidget *> &widget_list, const QString &object_class);
 
-private slots:
+    void set_parent_dn(const QString &dn);
+    void open() override;
+    void accept() override;
     void on_edited();
+    QString get_created_name() const;
+    QString get_created_dn() const;
 
 private:
     QString parent_dn;
-    QString object_class;
     QLineEdit *name_edit;
-    QPushButton *create_button;
-    QList<AttributeEdit *> all_edits;
-    QList<StringEdit *> required_edits;
-    PasswordEdit *pass_edit;
+    QList<AttributeEdit *> m_edit_list;
+    QList<QLineEdit *> m_required_list;
+    QPushButton *ok_button;
+    QString m_object_class;
+    WidgetState m_state;
 };
 
 #endif /* CREATE_OBJECT_DIALOG_H */

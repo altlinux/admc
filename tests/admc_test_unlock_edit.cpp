@@ -20,7 +20,7 @@
 
 #include "admc_test_unlock_edit.h"
 
-#include "edits/unlock_edit.h"
+#include "attribute_edits/unlock_edit.h"
 
 #include <QCheckBox>
 #include <QFormLayout>
@@ -34,11 +34,9 @@
 void ADMCTestUnlockEdit::init() {
     ADMCTest::init();
 
-    unlock_edit = new UnlockEdit(&edits, UnlockEditStyle_CheckOnLeft, parent_widget);
-    add_attribute_edit(unlock_edit);
+    checkbox = new QCheckBox(parent_widget);
 
-    checkbox = parent_widget->findChild<QCheckBox *>();
-    QVERIFY(checkbox != nullptr);
+    unlock_edit = new UnlockEdit(checkbox, &edits, parent_widget);
 
     // Create test user
     const QString name = TEST_USER;

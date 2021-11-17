@@ -20,56 +20,56 @@
 
 #include "admc_test_policy_results_widget.h"
 
-#include "policy_results_widget.h"
-#include "console_widget/results_view.h"
 #include "ad_filter.h"
+#include "console_widget/results_view.h"
+#include "globals.h"
 #include "gplink.h"
+#include "policy_results_widget.h"
 #include "utils.h"
 
-#include <QTreeView>
 #include <QStandardItemModel>
+#include <QTreeView>
 
 // NOTE: unlike other tests, here we have to create the test
 // thing (gpo) once and reuse between tests because creating
 // and deleting gpo's takes too much time. If we did that
 // for every test they would take forever.
 
-// TODO: test modify operations
-
 const QString gpo_name = "test_policy_for_admc_test_results_widget";
 
 void ADMCTestPolicyResultsWidget::initTestCase() {
     ADMCTest::initTestCase();
 
-    const bool create_gpo_success = ad.create_gpo(gpo_name, gpo);
-    QVERIFY(create_gpo_success);
+    const bool gpo_add_success = ad.gpo_add(gpo_name, gpo);
+    QVERIFY(gpo_add_success);
 }
 
 void ADMCTestPolicyResultsWidget::cleanupTestCase() {
     ADMCTest::cleanupTestCase();
 
     // Delete old test-policy, if needed
-    const QString base = ad.adconfig()->domain_head();
+    const QString base = g_adconfig->domain_head();
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, gpo_name);
     const QList<QString> attributes = QList<QString>();
     const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, attributes);
 
     for (const QString &dn : search_results.keys()) {
-        ad.delete_gpo(dn);
+        bool deleted_object;
+        ad.gpo_delete(dn, &deleted_object);
     }
 }
 
 void ADMCTestPolicyResultsWidget::init() {
     ADMCTest::init();
 
-    widget = new PolicyResultsWidget();
+    widget = new PolicyResultsWidget(parent_widget);
     add_widget(widget);
 
     ResultsView *results_view = widget->get_view();
     view = results_view->detail_view();
 
     model = widget->findChild<QStandardItemModel *>();
-    QVERIFY(model != nullptr);
+    QVERIFY(model);
 }
 
 void ADMCTestPolicyResultsWidget::load_empty() {
@@ -98,7 +98,7 @@ void ADMCTestPolicyResultsWidget::load() {
     QList<QStandardItem *> item_list;
     for (int col = 0; col < 4; col++) {
         QStandardItem *item = model->item(0, col);
-        QVERIFY(item != nullptr);
+        QVERIFY(item);
         item_list.append(item);
     }
 
@@ -106,7 +106,6 @@ void ADMCTestPolicyResultsWidget::load() {
     QCOMPARE(item_list[1]->checkState(), Qt::Checked);
     QCOMPARE(item_list[2]->checkState(), Qt::Unchecked);
     QCOMPARE(item_list[3]->text(), dn_get_parent_canonical(ou_dn));
-
 }
 
 QTEST_MAIN(ADMCTestPolicyResultsWidget)

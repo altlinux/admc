@@ -19,31 +19,36 @@
  */
 
 #include "tabs/object_tab.h"
+#include "tabs/ui_object_tab.h"
 
 #include "adldap.h"
-#include "edits/datetime_edit.h"
-#include "edits/string_edit.h"
-#include "edits/protect_deletion_edit.h"
+#include "attribute_edits/datetime_edit.h"
+#include "attribute_edits/protect_deletion_edit.h"
+#include "attribute_edits/string_edit.h"
 
 #include <QFormLayout>
 
 ObjectTab::ObjectTab() {
-    new StringEdit(ATTRIBUTE_DN, "", &edits, this);
-    new StringEdit(ATTRIBUTE_OBJECT_CLASS, "", &edits, this);
+    ui = new Ui::ObjectTab();
+    ui->setupUi(this);
 
-    new DateTimeEdit(ATTRIBUTE_WHEN_CREATED, &edits, this);
-    new DateTimeEdit(ATTRIBUTE_WHEN_CHANGED, &edits, this);
+    new StringEdit(ui->dn_edit, ATTRIBUTE_DN, &edits, this);
+    new StringEdit(ui->class_edit, ATTRIBUTE_OBJECT_CLASS, &edits, this);
 
-    new StringEdit(ATTRIBUTE_USN_CREATED, "", &edits, this);
-    new StringEdit(ATTRIBUTE_USN_CHANGED, "", &edits, this);
+    new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, &edits, this);
+    new DateTimeEdit(ui->changed_edit, ATTRIBUTE_WHEN_CHANGED, &edits, this);
+
+    new StringEdit(ui->usn_created_edit, ATTRIBUTE_USN_CREATED, &edits, this);
+    new StringEdit(ui->usn_changed_edit, ATTRIBUTE_USN_CHANGED, &edits, this);
+
+    auto deletion_edit = new ProtectDeletionEdit(ui->deletion_check, &edits, this);
 
     edits_set_read_only(edits, true);
-
-    new ProtectDeletionEdit(&edits, this);
+    deletion_edit->set_read_only(false);
 
     edits_connect_to_tab(edits, this);
+}
 
-    const auto layout = new QFormLayout();
-    setLayout(layout);
-    edits_add_to_layout(edits, layout);
+ObjectTab::~ObjectTab() {
+    delete ui;
 }

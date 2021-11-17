@@ -47,6 +47,8 @@ private:
     QString group_dn;
     QPushButton *add_button;
     QPushButton *remove_button;
+
+    int get_group_row(const QString &dn);
 };
 
 #endif /* ADMC_TEST_MEMBER_OF_TAB_H */

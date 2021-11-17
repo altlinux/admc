@@ -23,31 +23,26 @@
 
 #include <QStandardItemModel>
 
+class ConsoleWidget;
+
 /**
  * Implements drag and drop. Note that this only implements
  * the framework for drag and drop. The actual logic is
- * implemented by console widget.
+ * implemented by console widget and console types.
  */
 
 class ConsoleDragModel : public QStandardItemModel {
     Q_OBJECT
 
 public:
-    using QStandardItemModel::QStandardItemModel;
+    ConsoleDragModel(ConsoleWidget *console_arg);
 
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
-signals:
-    // Save these indexes when drag is started
-    void start_drag(const QList<QPersistentModelIndex> &dropped) const;
-
-    // Set "ok" to true if can drop and false if can't drop
-    // NOTE: "ok" is supposed to be set only once
-    void can_drop(const QModelIndex &target, bool *ok) const;
-
-    void drop(const QModelIndex &target);
+private:
+    ConsoleWidget *console;
 };
 
 #endif /* CONSOLE_DRAG_MODEL_H */

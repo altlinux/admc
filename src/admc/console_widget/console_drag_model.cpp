@@ -20,6 +20,9 @@
 
 #include "console_widget/console_drag_model.h"
 
+#include "console_widget/console_widget.h"
+#include "console_widget/console_widget_p.h"
+
 #include <QMimeData>
 
 #define MIME_TYPE_CONSOLE "MIME_TYPE_CONSOLE"
@@ -27,10 +30,11 @@
 QModelIndex prev_parent = QModelIndex();
 bool drag_start = false;
 
-// TODO: when implementing console widget, this should be
-// removed. The replacement will be to store node id's in
-// mimedata so that objects can be obtained directly from
-// models
+ConsoleDragModel::ConsoleDragModel(ConsoleWidget *console_arg)
+: QStandardItemModel(console_arg) {
+    console = console_arg;
+}
+
 QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
     const QList<QPersistentModelIndex> main_indexes = [&]() {
         QList<QPersistentModelIndex> out;
@@ -44,7 +48,7 @@ QMimeData *ConsoleDragModel::mimeData(const QModelIndexList &indexes) const {
         return out;
     }();
 
-    emit start_drag(main_indexes);
+    console->d->start_drag(main_indexes);
 
     auto data = new QMimeData();
 
@@ -87,13 +91,14 @@ bool ConsoleDragModel::canDropMimeData(const QMimeData *data, Qt::DropAction, in
     // has the item roles
     const QModelIndex target = parent.siblingAtColumn(0);
 
-    bool ok = false;
-    emit can_drop(target, &ok);
+    const bool can_drop = console->d->can_drop(target);
 
-    return ok;
+    return can_drop;
 }
 
 bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int, int, const QModelIndex &parent) {
+    UNUSED_ARG(action);
+
     if (!data->hasFormat(MIME_TYPE_CONSOLE)) {
         return false;
     }
@@ -102,7 +107,7 @@ bool ConsoleDragModel::dropMimeData(const QMimeData *data, Qt::DropAction action
     // has the item roles
     const QModelIndex target = parent.siblingAtColumn(0);
 
-    emit drop(target);
+    console->d->drop(target);
 
     return true;
 }

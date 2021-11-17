@@ -19,71 +19,56 @@
  */
 
 #include "create_query_folder_dialog.h"
+#include "ui_create_query_folder_dialog.h"
 
-#include "ad_filter.h"
-#include "console_types/console_query.h"
-#include "filter_widget/filter_widget.h"
-#include "filter_widget/select_base_widget.h"
-#include "globals.h"
-#include "status.h"
+#include "console_impls/query_folder_impl.h"
+#include "settings.h"
+#include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QModelIndex>
+CreateQueryFolderDialog::CreateQueryFolderDialog(QWidget *parent)
+: QDialog(parent) {
+    ui = new Ui::CreateQueryFolderDialog();
+    ui->setupUi(this);
 
-CreateQueryFolderDialog::CreateQueryFolderDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
-    console = console_arg;
+    setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(tr("Create Query Folder"));
+    settings_setup_dialog_geometry(SETTING_create_query_folder_dialog_geometry, this);
+}
 
-    name_edit = new QLineEdit();
-    name_edit->setText("New folder");
+CreateQueryFolderDialog::~CreateQueryFolderDialog() {
+    delete ui;
+}
 
-    description_edit = new QLineEdit();
+QString CreateQueryFolderDialog::name() const {
+    return ui->name_edit->text();
+}
 
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(tr("Create"), QDialogButtonBox::AcceptRole);
-    button_box->addButton(QDialogButtonBox::Cancel);
+QString CreateQueryFolderDialog::description() const {
+    return ui->description_edit->text();
+}
 
-    auto form_layout = new QFormLayout();
-    form_layout->addRow(tr("Name:"), name_edit);
-    form_layout->addRow(tr("Description:"), description_edit);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(form_layout);
-    layout->addWidget(button_box);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
+void CreateQueryFolderDialog::set_sibling_name_list(const QList<QString> &list) {
+    sibling_name_list = list;
 }
 
 void CreateQueryFolderDialog::open() {
-    name_edit->setText(tr("New folder"));
-    description_edit->setText("");
+    const QString default_name = [&]() {
+        const QString out = generate_new_name(sibling_name_list, tr("New Folder"));
+
+        return out;
+    }();
+
+    ui->name_edit->setText(default_name);
+    ui->description_edit->setText("");
 
     QDialog::open();
 }
 
 void CreateQueryFolderDialog::accept() {
-    const QModelIndex parent_index = console->get_selected_item();
-    const QString name = name_edit->text();
-    const QString description = description_edit->text();
+    const QString name = ui->name_edit->text();
+    const bool name_is_valid = console_query_or_folder_name_is_good(name, sibling_name_list, this);
 
-    if (!console_query_or_folder_name_is_good(console, name, parent_index, this, QModelIndex())) {
-        return;
+    if (name_is_valid) {
+        QDialog::accept();
     }
-
-    console_query_folder_create(console, name, description, parent_index);
-
-    console_query_tree_save(console);
-
-    QDialog::accept();
 }

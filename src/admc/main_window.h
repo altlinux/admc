@@ -23,37 +23,34 @@
 
 #include <QMainWindow>
 
-class QAction;
-class QDockWidget;
-class QMenu;
-class ConnectionOptionsDialog;
-class QToolBar;
+class AdInterface;
+class QLabel;
+
+namespace Ui {
+class MainWindow;
+}
 
 class MainWindow final : public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow();
+    Ui::MainWindow *ui;
+
+    MainWindow(AdInterface &ad, QWidget *parent = nullptr);
+    ~MainWindow();
 
 protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    QAction *connect_action;
-    QAction *manual_action;
-    ConnectionOptionsDialog *connection_options_dialog;
-    QDockWidget *message_log_dock;
-    QToolBar *toolbar;
+    QLabel *login_label;
 
-    QMenu *action_menu;
-    QMenu *navigation_menu;
-    QMenu *view_menu;
-    QMenu *preferences_menu;
-
-    void setup_menubar();
-    void connect_to_server();
     void on_log_searches_changed();
-    void load_connection_options();
+    void on_show_login_changed();
+    void open_manual();
+    void open_connection_options();
+    void open_changelog();
+    void open_about();
 };
 
 #endif /* MAIN_WINDOW_H */

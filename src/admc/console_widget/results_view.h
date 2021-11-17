@@ -62,10 +62,12 @@ public:
     QList<QModelIndex> get_selected_indexes() const;
 
     QVariant save_state() const;
-    
+
     // NOTE: if state is empty, default columns are shown
     // and others are hidden
     void restore_state(const QVariant &state, const QList<int> &default_columns);
+
+    void set_drag_drop_enabled(const bool enabled);
 
 signals:
     void activated(const QModelIndex &index);
@@ -77,6 +79,8 @@ private:
     QSortFilterProxyModel *proxy_model;
     ResultsViewType m_current_view_type;
     QTreeView *m_detail_view;
+
+    void on_item_activated(const QModelIndex &index);
 };
 
 #endif /* RESULTS_VIEW_H */

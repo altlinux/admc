@@ -21,9 +21,12 @@
 #include "admc_test_select_object_dialog.h"
 
 #include "admc_test_select_base_widget.h"
-#include "console_types/console_object.h"
+#include "console_impls/object_impl.h"
 #include "filter_widget/select_base_widget.h"
 #include "select_object_dialog.h"
+#include "select_object_match_dialog.h"
+#include "ui_select_object_dialog.h"
+#include "ui_select_object_match_dialog.h"
 
 #include <QLineEdit>
 #include <QPushButton>
@@ -36,14 +39,11 @@ void ADMCTestSelectObjectDialog::init() {
     dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
-    auto select_base_widget = dialog->findChild<SelectBaseWidget *>();
+    SelectBaseWidget *select_base_widget = dialog->ui->select_base_widget;
     select_base_widget_add(select_base_widget, test_arena_dn());
 
-    edit = dialog->findChild<QLineEdit *>("edit");
-    QVERIFY(edit != nullptr);
-
-    add_button = dialog->findChild<QPushButton *>("add_button");
-    QVERIFY(add_button != nullptr);
+    edit = dialog->ui->name_edit;
+    add_button = dialog->ui->add_button;
 }
 
 void ADMCTestSelectObjectDialog::empty() {
@@ -75,7 +75,10 @@ void ADMCTestSelectObjectDialog::one_match() {
     add_button->click();
 
     const QList<QString> selected = dialog->get_selected();
-    QVERIFY(selected == QList<QString>({dn}));
+    QCOMPARE(selected.size(), 1);
+    if (selected.size() == 1) {
+        QCOMPARE(selected[0], dn);
+    }
 }
 
 void ADMCTestSelectObjectDialog::multiple_matches() {
@@ -90,7 +93,7 @@ void ADMCTestSelectObjectDialog::multiple_matches() {
     select_object_in_multi_match_dialog(TEST_USER, dn2);
 
     const QList<QString> selected = dialog->get_selected();
-    QVERIFY(selected == QList<QString>({dn2}));
+    QCOMPARE(selected, QList<QString>({dn2}));
 }
 
 // Adding same object two times should open message box
@@ -104,7 +107,7 @@ void ADMCTestSelectObjectDialog::one_match_duplicate() {
     add_button->click();
 
     const QList<QString> selected_first = dialog->get_selected();
-    QVERIFY(selected_first == QList<QString>({dn}));
+    QCOMPARE(selected_first, QList<QString>({dn}));
 
     edit->setText(TEST_USER);
 
@@ -113,7 +116,7 @@ void ADMCTestSelectObjectDialog::one_match_duplicate() {
     close_message_box();
 
     const QList<QString> selected_second = dialog->get_selected();
-    QVERIFY(selected_second == QList<QString>({dn}));
+    QCOMPARE(selected_second, QList<QString>({dn}));
 }
 
 // Duplicates should also be processed for multiple match
@@ -130,12 +133,12 @@ void ADMCTestSelectObjectDialog::multiple_match_duplicate() {
     select_object_in_multi_match_dialog(TEST_USER, dn2);
 
     const QList<QString> selected_first = dialog->get_selected();
-    QVERIFY(selected_first == QList<QString>({dn2}));
+    QCOMPARE(selected_first, QList<QString>({dn2}));
 
     select_object_in_multi_match_dialog(TEST_USER, dn2);
 
     const QList<QString> selected_second = dialog->get_selected();
-    QVERIFY(selected_second == QList<QString>({dn2}));
+    QCOMPARE(selected_second, QList<QString>({dn2}));
 }
 
 void ADMCTestSelectObjectDialog::select_object_in_multi_match_dialog(const QString &name, const QString &dn) {
@@ -144,19 +147,15 @@ void ADMCTestSelectObjectDialog::select_object_in_multi_match_dialog(const QStri
     add_button->click();
 
     auto match_dialog = dialog->findChild<SelectObjectMatchDialog *>();
-    QVERIFY(match_dialog != nullptr);
+    QVERIFY(match_dialog);
 
-    auto match_dialog_view = match_dialog->findChild<QTreeView *>();
-    QVERIFY(match_dialog_view != nullptr);
+    QTreeView *match_dialog_view = match_dialog->ui->view;
 
     wait_for_find_results_to_load(match_dialog_view);
 
     navigate_until_object(match_dialog_view, dn, ObjectRole_DN);
 
-    auto ok_button = match_dialog->findChild<QPushButton *>();
-    QVERIFY(ok_button != nullptr);
-
-    ok_button->click();
+    match_dialog->accept();
 
     close_message_box();
 }

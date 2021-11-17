@@ -22,7 +22,10 @@
 #include "config.h"
 #include "globals.h"
 #include "main_window.h"
+#include "main_window_connection_error.h"
 #include "settings.h"
+#include "utils.h"
+#include "connection_options_dialog.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -72,10 +75,37 @@ int main(int argc, char **argv) {
         qDebug() << "Failed to load qt translation";
     }
 
-    MainWindow main_window;
-    main_window.show();
+    load_connection_options();
+
+    // In case of failure to connect to AD and load
+    // adconfig, we open a special alternative main window.
+    // We do this to acomplish 2 objectives:
+    // * First, we check that connection is possible at
+    //   startup and give the user an opportunity to
+    //   troubleshoot by adjusting connection options
+    //   (available in the alternative main window).
+    // * Secondly, we guarantee that the real MainWindow is
+    //   created only after adconfig has been loaded. This
+    //   is needed because many child widgets used by
+    //   MainWindow require adconfig to load their UI
+    //   elements.
+    QMainWindow *first_main_window = [&]() -> QMainWindow * {
+        AdInterface ad;
+
+        if (ad_connected(ad)) {
+            load_g_adconfig(ad);
+            
+            return new MainWindow(ad);
+        } else {
+            return new MainWindowConnectionError();
+        }
+    }();
+
+    first_main_window->show();
 
     const int retval = app.exec();
+
+    delete first_main_window;
 
     return retval;
 }

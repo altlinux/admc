@@ -22,13 +22,15 @@
 
 #include "adldap.h"
 #include "status.h"
+#include "settings.h"
+
+#include <QLocale>
 
 AdConfig *g_adconfig = new AdConfig();
+Status *g_status = new Status();
 
-// NOTE: status has to be in a function because it creates a
-// widget so needs to be created after app is created
-Status *g_status() {
-    static Status instance;
-
-    return &instance;
+void load_g_adconfig(AdInterface &ad) {
+    const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
+    g_adconfig->load(ad, locale);
+    AdInterface::set_config(g_adconfig);
 }

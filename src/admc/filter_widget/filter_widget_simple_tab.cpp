@@ -19,29 +19,27 @@
  */
 
 #include "filter_widget/filter_widget_simple_tab.h"
+#include "filter_widget/ui_filter_widget_simple_tab.h"
 
 #include "adldap.h"
-#include "filter_widget/select_classes_widget.h"
 
-#include <QFormLayout>
-#include <QLineEdit>
-
-FilterWidgetSimpleTab::FilterWidgetSimpleTab(const QList<QString> classes)
+FilterWidgetSimpleTab::FilterWidgetSimpleTab()
 : FilterWidgetTab() {
-    select_classes = new SelectClassesWidget(classes);
+    ui = new Ui::FilterWidgetSimpleTab();
+    ui->setupUi(this);
+}
 
-    name_edit = new QLineEdit(this);
-    name_edit->setObjectName("name_edit");
+FilterWidgetSimpleTab::~FilterWidgetSimpleTab() {
+    delete ui;
+}
 
-    auto layout = new QFormLayout();
-    setLayout(layout);
-    layout->addRow(tr("Classes:"), select_classes);
-    layout->addRow(tr("Name:"), name_edit);
+void FilterWidgetSimpleTab::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
+    ui->select_classes_widget->set_classes(class_list, selected_list);
 }
 
 QString FilterWidgetSimpleTab::get_filter() const {
     const QString name_filter = [this]() {
-        const QString name = name_edit->text();
+        const QString name = ui->name_edit->text();
 
         if (!name.isEmpty()) {
             return filter_CONDITION(Condition_Contains, ATTRIBUTE_NAME, name);
@@ -50,16 +48,20 @@ QString FilterWidgetSimpleTab::get_filter() const {
         }
     }();
 
-    const QString classes_filter = select_classes->get_filter();
+    const QString classes_filter = ui->select_classes_widget->get_filter();
 
     return filter_AND({name_filter, classes_filter});
+}
+
+void FilterWidgetSimpleTab::clear() {
+    ui->name_edit->clear();
 }
 
 QVariant FilterWidgetSimpleTab::save_state() const {
     QHash<QString, QVariant> state;
 
-    state["select_classes"] = select_classes->save_state();
-    state["name"] = name_edit->text();
+    state["select_classes_widget"] = ui->select_classes_widget->save_state();
+    state["name"] = ui->name_edit->text();
 
     return QVariant(state);
 }
@@ -67,6 +69,6 @@ QVariant FilterWidgetSimpleTab::save_state() const {
 void FilterWidgetSimpleTab::restore_state(const QVariant &state_variant) {
     const QHash<QString, QVariant> state = state_variant.toHash();
 
-    select_classes->restore_state(state["select_classes"]);
-    name_edit->setText(state["name"].toString());
+    ui->select_classes_widget->restore_state(state["select_classes_widget"]);
+    ui->name_edit->setText(state["name"].toString());
 }

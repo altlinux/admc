@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ProfileMultiTab</class>
+ <widget class="QWidget" name="ProfileMultiTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">Form</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="profile_check">
+     <property name="text">
+      <string>Profile path:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="script_check">
+     <property name="text">
+      <string>Logon script:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="home_check">
+     <property name="text">
+      <string>Home folder:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="profile_edit"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="script_edit"/>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="home_edit"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

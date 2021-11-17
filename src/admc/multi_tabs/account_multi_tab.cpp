@@ -19,26 +19,34 @@
  */
 
 #include "multi_tabs/account_multi_tab.h"
+#include "multi_tabs/ui_account_multi_tab.h"
 
 #include "adldap.h"
-#include "multi_edits/account_option_multi_edit.h"
-#include "multi_edits/expiry_multi_edit.h"
-#include "multi_edits/string_multi_edit.h"
-#include "multi_edits/upn_multi_edit.h"
-
-#include <QFormLayout>
+#include "attribute_multi_edits/account_option_multi_edit.h"
+#include "attribute_multi_edits/expiry_multi_edit.h"
+#include "attribute_multi_edits/string_multi_edit.h"
+#include "attribute_multi_edits/upn_multi_edit.h"
 
 AccountMultiTab::AccountMultiTab(AdInterface &ad) {
-    new UpnMultiEdit(edit_list, ad, this);
-    new AccountOptionMultiEdit(edit_list, this);
-    new ExpiryMultiEdit(edit_list, this);
+    ui = new Ui::AccountMultiTab();
+    ui->setupUi(this);
 
-    auto edit_layout = new QFormLayout();
+    new UpnMultiEdit(ui->upn_edit, ui->upn_check, edit_list, ad, this);
+    const QHash<AccountOption, QCheckBox *> check_map = {
+        {AccountOption_Disabled, ui->option_disabled},
+        {AccountOption_PasswordExpired, ui->option_pass_expired},
+        {AccountOption_DontExpirePassword, ui->option_dont_expire_pass},
+        {AccountOption_UseDesKey, ui->option_use_des_key},
+        {AccountOption_SmartcardRequired, ui->option_smartcard},
+        {AccountOption_CantDelegate, ui->option_cant_delegate},
+        {AccountOption_DontRequirePreauth, ui->option_dont_require_kerb},
+    };
+    new AccountOptionMultiEdit(check_map, ui->options_check, edit_list, this);
+    new ExpiryMultiEdit(ui->expiry_edit, ui->expiry_check, edit_list, this);
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edit_layout);
-
-    multi_edits_add_to_layout(edit_list, edit_layout);
     multi_edits_connect_to_tab(edit_list, this);
+}
+
+AccountMultiTab::~AccountMultiTab() {
+    delete ui;
 }

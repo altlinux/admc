@@ -19,31 +19,29 @@
  */
 
 #include "tabs/address_tab.h"
+#include "tabs/ui_address_tab.h"
 
 #include "adldap.h"
-#include "edits/country_edit.h"
-#include "edits/string_edit.h"
-#include "edits/string_large_edit.h"
-
-#include <QFormLayout>
-#include <QVBoxLayout>
+#include "attribute_edits/country_edit.h"
+#include "attribute_edits/string_edit.h"
+#include "attribute_edits/string_large_edit.h"
 
 AddressTab::AddressTab() {
-    new StringLargeEdit(ATTRIBUTE_STREET, CLASS_USER, &edits, this);
+    ui = new Ui::AddressTab();
+    ui->setupUi(this);
 
-    const QList<QString> attributes = {
-        ATTRIBUTE_PO_BOX,
-        ATTRIBUTE_CITY,
-        ATTRIBUTE_STATE,
-        ATTRIBUTE_POSTAL_CODE,
-    };
-    StringEdit::make_many(attributes, CLASS_USER, &edits, this);
+    new StringLargeEdit(ui->street_edit, ATTRIBUTE_STREET, &edits, this);
 
-    new CountryEdit(&edits, this);
+    new StringEdit(ui->po_box_edit, ATTRIBUTE_PO_BOX, &edits, this);
+    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, &edits, this);
+    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, &edits, this);
+    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, &edits, this);
+
+    new CountryEdit(ui->country_combo, &edits, this);
 
     edits_connect_to_tab(edits, this);
+}
 
-    const auto layout = new QFormLayout();
-    setLayout(layout);
-    edits_add_to_layout(edits, layout);
+AddressTab::~AddressTab() {
+    delete ui;
 }

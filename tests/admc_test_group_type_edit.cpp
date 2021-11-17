@@ -20,18 +20,17 @@
 
 #include "admc_test_group_type_edit.h"
 
-#include "edits/group_type_edit.h"
+#include "attribute_edits/group_type_edit.h"
 
-#include <QFormLayout>
 #include <QComboBox>
+#include <QFormLayout>
 
 void ADMCTestGroupTypeEdit::init() {
     ADMCTest::init();
 
-    edit = new GroupTypeEdit(&edits, parent_widget);
-    add_attribute_edit(edit);
+    combo = new QComboBox(parent_widget);
 
-    combo = parent_widget->findChild<QComboBox *>();
+    edit = new GroupTypeEdit(combo, &edits, parent_widget);
 
     const QString name = TEST_GROUP;
     dn = test_object_dn(name, CLASS_GROUP);
@@ -55,7 +54,7 @@ void ADMCTestGroupTypeEdit::load() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    QVERIFY(combo->currentIndex() == 0);
+    QCOMPARE(combo->currentIndex(), 0);
 }
 
 void ADMCTestGroupTypeEdit::apply_unmodified() {
@@ -71,7 +70,7 @@ void ADMCTestGroupTypeEdit::apply() {
 
     const AdObject updated_object = ad.search_object(dn);
     const GroupType type = updated_object.get_group_type();
-    QVERIFY(type == GroupType_Distribution);
+    QCOMPARE(type, GroupType_Distribution);
 }
 
 QTEST_MAIN(ADMCTestGroupTypeEdit)

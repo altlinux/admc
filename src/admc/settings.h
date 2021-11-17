@@ -39,7 +39,7 @@ class QObject;
 // setting names are unique
 // const QString SETTING = "SETTING";
 #define DEFINE_SETTING(SETTING) \
-const QString SETTING = #SETTING;
+    const QString SETTING = #SETTING;
 
 // Widget state
 DEFINE_SETTING(SETTING_main_window_state);
@@ -47,18 +47,48 @@ DEFINE_SETTING(SETTING_attributes_tab_filter_state);
 DEFINE_SETTING(SETTING_console_widget_state);
 DEFINE_SETTING(SETTING_policy_results_state);
 DEFINE_SETTING(SETTING_find_results_state);
-DEFINE_SETTING(SETTING_filter_dialog_state);
+DEFINE_SETTING(SETTING_console_filter_dialog_state);
+DEFINE_SETTING(SETTING_select_object_advanced_dialog_console_state);
+DEFINE_SETTING(SETTING_find_object_dialog_console_state);
 
 // Widget geometry
 DEFINE_SETTING(SETTING_main_window_geometry);
 DEFINE_SETTING(SETTING_properties_dialog_geometry);
-DEFINE_SETTING(SETTING_filter_dialog_geometry);
+DEFINE_SETTING(SETTING_console_filter_dialog_geometry);
 DEFINE_SETTING(SETTING_find_object_dialog_geometry);
 DEFINE_SETTING(SETTING_select_object_dialog_geometry);
 DEFINE_SETTING(SETTING_select_container_dialog_geometry);
 DEFINE_SETTING(SETTING_object_multi_dialog_geometry);
 DEFINE_SETTING(SETTING_connection_options_dialog_geometry);
-DEFINE_SETTING(SETTING_manual_dialog_geometry);
+DEFINE_SETTING(SETTING_changelog_dialog_geometry);
+DEFINE_SETTING(SETTING_error_log_dialog_geometry);
+DEFINE_SETTING(SETTING_select_well_known_trustee_dialog_geometry);
+DEFINE_SETTING(SETTING_select_object_match_dialog_geometry);
+DEFINE_SETTING(SETTING_edit_query_item_dialog_geometry);
+DEFINE_SETTING(SETTING_create_user_dialog_geometry);
+DEFINE_SETTING(SETTING_create_group_dialog_geometry);
+DEFINE_SETTING(SETTING_create_computer_dialog_geometry);
+DEFINE_SETTING(SETTING_create_ou_dialog_geometry);
+DEFINE_SETTING(SETTING_rename_user_dialog_geometry);
+DEFINE_SETTING(SETTING_rename_group_dialog_geometry);
+DEFINE_SETTING(SETTING_rename_other_dialog_geometry);
+DEFINE_SETTING(SETTING_rename_policy_dialog_geometry);
+DEFINE_SETTING(SETTING_create_query_folder_dialog_geometry);
+DEFINE_SETTING(SETTING_create_query_item_dialog_geometry);
+DEFINE_SETTING(SETTING_edit_query_folder_dialog_geometry);
+DEFINE_SETTING(SETTING_password_dialog_geometry);
+DEFINE_SETTING(SETTING_create_policy_dialog_geometry);
+DEFINE_SETTING(SETTING_select_object_advanced_dialog_geometry);
+DEFINE_SETTING(SETTING_select_policy_dialog_geometry);
+DEFINE_SETTING(SETTING_filter_dialog_geometry);
+DEFINE_SETTING(SETTING_class_filter_dialog_geometry);
+DEFINE_SETTING(SETTING_logon_hours_dialog_geometry);
+DEFINE_SETTING(SETTING_logon_computers_dialog_geometry);
+DEFINE_SETTING(SETTING_bool_attribute_dialog_geometry);
+DEFINE_SETTING(SETTING_datetime_attribute_dialog_geometry);
+DEFINE_SETTING(SETTING_list_attribute_dialog_geometry);
+DEFINE_SETTING(SETTING_octet_attribute_dialog_geometry);
+DEFINE_SETTING(SETTING_string_attribute_dialog_geometry);
 
 // Header state
 DEFINE_SETTING(SETTING_results_header);
@@ -70,6 +100,7 @@ DEFINE_SETTING(SETTING_organization_tab_header_state);
 DEFINE_SETTING(SETTING_gpo_links_tab_header_state);
 DEFINE_SETTING(SETTING_group_policy_tab_header_state);
 DEFINE_SETTING(SETTING_security_tab_header_state);
+DEFINE_SETTING(SETTING_select_object_match_header_state);
 
 // Bool
 DEFINE_SETTING(SETTING_advanced_features);
@@ -82,14 +113,18 @@ DEFINE_SETTING(SETTING_show_results_header);
 DEFINE_SETTING(SETTING_log_searches);
 DEFINE_SETTING(SETTING_timestamp_log);
 DEFINE_SETTING(SETTING_sasl_nocanon);
+DEFINE_SETTING(SETTING_show_login);
 
 // Other
-DEFINE_SETTING(SETTING_dc);
+DEFINE_SETTING(SETTING_host);
 DEFINE_SETTING(SETTING_locale);
 DEFINE_SETTING(SETTING_query_folders);
 DEFINE_SETTING(SETTING_query_items);
 DEFINE_SETTING(SETTING_port);
 DEFINE_SETTING(SETTING_cert_strategy);
+DEFINE_SETTING(SETTING_last_opened_version);
+DEFINE_SETTING(SETTING_object_filter);
+DEFINE_SETTING(SETTING_object_filter_enabled);
 
 QVariant settings_get_variant(const QString setting, const QVariant &default_value = QVariant());
 void settings_set_variant(const QString setting, const QVariant &value);
@@ -113,15 +148,5 @@ bool settings_restore_geometry(const QString setting, QWidget *widget);
 
 void settings_save_header_state(const QString setting, QHeaderView *header);
 bool settings_restore_header_state(const QString setting, QHeaderView *header);
-
-/** 
- * Make a checkable QAction that is connected to a bool
- * setting. Action state will be initialized to the current
- * setting value. The "connect" version of the f-n also
- * connects the action for you so that when toggling the
- * action modifies the setting.
- */
-QAction *settings_make_action(const QString setting, const QString &text, QObject *parent);
-QAction *settings_make_and_connect_action(const QString setting, const QString &text, QObject *parent);
 
 #endif /* SETTINGS_H */

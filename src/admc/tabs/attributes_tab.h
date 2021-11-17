@@ -23,39 +23,54 @@
 
 /** 
  * Show attributes of target in a list. Allows
- * viewing/editing if possible via attribute editor dialogs.
+ * viewing/editing if possible via attribute dialogs.
  */
 
 #include "tabs/properties_tab.h"
 
+enum AttributesColumn {
+    AttributesColumn_Name,
+    AttributesColumn_Value,
+    AttributesColumn_Type,
+    AttributesColumn_COUNT,
+};
+
 class QStandardItemModel;
 class QStandardItem;
 class AttributesTabProxy;
-class QTreeView;
 class AttributesFilterDialog;
+class AttributeDialog;
+
+namespace Ui {
+class AttributesTab;
+}
 
 class AttributesTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::AttributesTab *ui;
+
     AttributesTab();
     ~AttributesTab();
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &target) override;
 
-private slots:
-    void edit_attribute();
-
 private:
     AttributesFilterDialog *filter_dialog;
-    QTreeView *view;
     QStandardItemModel *model;
     AttributesTabProxy *proxy;
     QHash<QString, QList<QByteArray>> original;
     QHash<QString, QList<QByteArray>> current;
 
+    void update_edit_and_view_buttons();
+    void on_double_click();
+    void edit_attribute();
+    void view_attribute();
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
+    QList<QStandardItem *> get_selected_row() const;
+    AttributeDialog *get_attribute_dialog(const bool read_only);
 };
 
 #endif /* ATTRIBUTES_TAB_H */

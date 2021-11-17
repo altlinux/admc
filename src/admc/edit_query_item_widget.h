@@ -27,31 +27,35 @@
  */
 
 #include <QWidget>
+#include <QVariant>
 
-class EditQueryItemFilterDialog;
-class QLineEdit;
-class QTextEdit;
-class SelectBaseWidget;
-class QCheckBox;
+namespace Ui {
+class EditQueryItemWidget;
+}
 
 class EditQueryItemWidget : public QWidget {
     Q_OBJECT
 
 public:
-    EditQueryItemWidget();
+    Ui::EditQueryItemWidget *ui;
 
-    void load(const QModelIndex &index);
-    void save(QString &name, QString &description, QString &filter, QString &base, bool &scope_is_children, QByteArray &filter_state) const;
+    EditQueryItemWidget(QWidget *parent = nullptr);
+    ~EditQueryItemWidget();
+
+    QString name() const;
+    QString description() const;
+    QString filter() const;
+    QString base() const;
+    bool scope_is_children() const;
+    QByteArray filter_state() const;
+
+    void clear();
+    void set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter);
 
 private:
-    EditQueryItemFilterDialog *dialog;
-    QLineEdit *name_edit;
-    QLineEdit *description_edit;
-    QTextEdit *filter_display;
-    SelectBaseWidget *select_base_widget;
-    QCheckBox *scope_checkbox;
+    QVariant filter_dialog_state;
 
-    void update_filter_display();
+    void open_filter_dialog();
 };
 
 #endif /* EDIT_QUERY_ITEM_WIDGET_H */

@@ -19,39 +19,41 @@
  */
 
 #include "select_object_advanced_dialog.h"
+#include "ui_select_object_advanced_dialog.h"
 
 #include "adldap.h"
-#include "find_widget.h"
 #include "globals.h"
+#include "settings.h"
 
-#include <QDialogButtonBox>
-#include <QVBoxLayout>
+#include <QMenuBar>
 
 SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent)
 : QDialog(parent) {
+    ui = new Ui::SelectObjectAdvancedDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
-    setWindowTitle(tr("Select Objects"));
+    auto menubar = new QMenuBar();
+    layout()->setMenuBar(menubar);
+    auto view_menu = menubar->addMenu(tr("&View"));
 
-    find_widget = new FindWidget(classes, g_adconfig->domain_head());
+    ui->find_widget->set_classes(classes, classes);
+    ui->find_widget->setup_view_menu(view_menu);
 
-    auto buttons = new QDialogButtonBox();
-    buttons->addButton(QDialogButtonBox::Ok);
-    buttons->addButton(QDialogButtonBox::Cancel);
+    const QVariant console_state = settings_get_variant(SETTING_select_object_advanced_dialog_console_state);
+    ui->find_widget->restore_console_state(console_state);
 
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(find_widget);
-    layout->addWidget(buttons);
-
-    connect(
-        buttons, &QDialogButtonBox::accepted,
-        this, &SelectObjectAdvancedDialog::accept);
-    connect(
-        buttons, &QDialogButtonBox::rejected,
-        this, &SelectObjectAdvancedDialog::reject);
+    settings_setup_dialog_geometry(SETTING_select_object_advanced_dialog_geometry, this);
 }
 
-QList<QList<QStandardItem *>> SelectObjectAdvancedDialog::get_selected_rows() const {
-    return find_widget->get_selected_rows();
+SelectObjectAdvancedDialog::~SelectObjectAdvancedDialog() {
+    const QVariant console_state = ui->find_widget->save_console_state();
+    settings_set_variant(SETTING_select_object_advanced_dialog_console_state, console_state);
+
+    delete ui;
+}
+
+QList<QString> SelectObjectAdvancedDialog::get_selected_dns() const {
+    return ui->find_widget->get_selected_dns();
 }

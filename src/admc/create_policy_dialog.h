@@ -28,21 +28,28 @@
 #include <QDialog>
 
 class QLineEdit;
-class ConsoleWidget;
+
+namespace Ui {
+class CreatePolicyDialog;
+}
 
 class CreatePolicyDialog : public QDialog {
     Q_OBJECT
 
 public:
-    CreatePolicyDialog(ConsoleWidget *console_arg);
+    Ui::CreatePolicyDialog *ui;
+
+    CreatePolicyDialog(QWidget *parent);
+    ~CreatePolicyDialog();
+
+    QString get_created_dn() const;
 
 public slots:
     void open() override;
     void accept() override;
 
 private:
-    ConsoleWidget *console;
-    QLineEdit *name_edit;
+    QString created_dn;
 };
 
 #endif /* CREATE_POLICY_DIALOG_H */

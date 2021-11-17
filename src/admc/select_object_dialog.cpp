@@ -19,24 +19,17 @@
  */
 
 #include "select_object_dialog.h"
+#include "ui_select_object_dialog.h"
 
 #include "adldap.h"
-#include "console_types/console_object.h"
+#include "console_impls/object_impl.h"
 #include "globals.h"
-#include "utils.h"
-#include "settings.h"
-#include "console_types/console_object.h"
-#include "filter_widget/select_classes_widget.h"
-#include "filter_widget/select_base_widget.h"
 #include "select_object_advanced_dialog.h"
+#include "select_object_match_dialog.h"
+#include "settings.h"
+#include "utils.h"
 
-#include <QPushButton>
 #include <QStandardItemModel>
-#include <QTreeView>
-#include <QFormLayout>
-#include <QLineEdit>
-#include <QLabel>
-#include <QDialogButtonBox>
 
 enum SelectColumn {
     SelectColumn_Name,
@@ -45,107 +38,54 @@ enum SelectColumn {
     SelectColumn_COUNT,
 };
 
-void add_select_object_to_model(QStandardItemModel *model, const AdObject &object);
-
-const QList<QString> header_labels = {
-    QCoreApplication::translate("SelectObjectDialog", "Name"),        
-    QCoreApplication::translate("SelectObjectDialog", "Type"),        
-    QCoreApplication::translate("SelectObjectDialog", "Folder"),        
-};
-
 SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, const SelectObjectDialogMultiSelection multi_selection_arg, QWidget *parent)
 : QDialog(parent) {
-    class_list = class_list_arg;
-    multi_selection = multi_selection_arg;
+    ui = new Ui::SelectObjectDialog();
+    ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const QString title = [&]() {
-        if (multi_selection == SelectObjectDialogMultiSelection_Yes) {
-            return tr("Select Objects");
-        } else {
-            return tr("Select Object");
-        }
-    }();
-    setWindowTitle(title);
+    class_list = class_list_arg;
+    multi_selection = multi_selection_arg;
 
-    resize(600, 400);
+    const QList<QString> selected_list = class_list;
 
-    select_classes = new SelectClassesWidget(class_list);
-
-    select_base_widget = new SelectBaseWidget();
-    select_base_widget->setObjectName("select_base_widget");
-
-    edit = new QLineEdit();
-    edit->setObjectName("edit");
-
-    auto add_button = new QPushButton(tr("Add"));
-    add_button->setDefault(true);
-    add_button->setObjectName("add_button");
-
-    auto name_edit_layout = new QHBoxLayout();
-    name_edit_layout->addWidget(edit);
-    name_edit_layout->addWidget(add_button);
+    ui->select_classes_widget->set_classes(class_list, selected_list);
 
     model = new QStandardItemModel(this);
+    model->setHorizontalHeaderLabels(header_labels());
 
-    model->setHorizontalHeaderLabels(header_labels);
-
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setSortingEnabled(true);
-    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-
-    view->setModel(model);
-
-    auto remove_button = new QPushButton(tr("Remove"));
-
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    ok_button->setDefault(false);
-    button_box->addButton(QDialogButtonBox::Cancel);
-    auto advanced_button = button_box->addButton(tr("Advanced"), QDialogButtonBox::HelpRole);
-
-    auto parameters_layout = new QFormLayout();
-    parameters_layout->addRow(tr("Classes:"), select_classes);
-    parameters_layout->addRow(tr("Search in:"), select_base_widget);
-    parameters_layout->addRow(tr("Name:"), name_edit_layout);
-    parameters_layout->addRow(new QLabel(tr("Selected objects:")));
-
-    auto object_view_layout = new QHBoxLayout();
-    object_view_layout->addWidget(view);
-    object_view_layout->addWidget(remove_button);
-    object_view_layout->setAlignment(remove_button, Qt::AlignTop);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(parameters_layout);
-    layout->addLayout(object_view_layout);
-    layout->addWidget(button_box);
+    ui->view->setModel(model);
 
     settings_setup_dialog_geometry(SETTING_select_object_dialog_geometry, this);
 
-    settings_restore_header_state(SETTING_select_object_header_state, view->header());
+    settings_restore_header_state(SETTING_select_object_header_state, ui->view->header());
 
     connect(
-        add_button, &QPushButton::clicked,
+        ui->add_button, &QPushButton::clicked,
         this, &SelectObjectDialog::on_add_button);
     connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
-    connect(
-        advanced_button, &QPushButton::clicked,
-        this, &SelectObjectDialog::on_advanced_button);
-    connect(
-        remove_button, &QAbstractButton::clicked,
+        ui->remove_button, &QAbstractButton::clicked,
         this, &SelectObjectDialog::on_remove_button);
+    connect(
+        ui->advanced_button, &QPushButton::clicked,
+        this, &SelectObjectDialog::open_advanced_dialog);
 }
 
 SelectObjectDialog::~SelectObjectDialog() {
-    settings_save_header_state(SETTING_select_object_header_state, view->header());   
+    settings_save_header_state(SETTING_select_object_header_state, ui->view->header());
+
+    delete ui;
+}
+
+QList<QString> SelectObjectDialog::header_labels() {
+    const QList<QString> out = {
+        tr("Name"),
+        tr("Type"),
+        tr("Folder"),
+    };
+
+    return out;
 }
 
 QList<QString> SelectObjectDialog::get_selected() const {
@@ -173,7 +113,7 @@ void SelectObjectDialog::accept() {
 }
 
 void SelectObjectDialog::on_add_button() {
-    if (edit->text().isEmpty()) {
+    if (ui->name_edit->text().isEmpty()) {
         return;
     }
 
@@ -182,19 +122,19 @@ void SelectObjectDialog::on_add_button() {
         return;
     }
 
-    const QString base = select_base_widget->get_base();
+    const QString base = ui->select_base_widget->get_base();
 
     const QString filter = [&]() {
-        const QString entered_name = edit->text();
+        const QString entered_name = ui->name_edit->text();
 
         const QString name_filter = filter_OR({
             filter_CONDITION(Condition_StartsWith, ATTRIBUTE_NAME, entered_name),
             filter_CONDITION(Condition_StartsWith, ATTRIBUTE_CN, entered_name),
-            filter_CONDITION(Condition_StartsWith, ATTRIBUTE_SAMACCOUNT_NAME, entered_name),
+            filter_CONDITION(Condition_StartsWith, ATTRIBUTE_SAM_ACCOUNT_NAME, entered_name),
             filter_CONDITION(Condition_StartsWith, ATTRIBUTE_USER_PRINCIPAL_NAME, entered_name),
         });
 
-        const QString classes_filter = select_classes->get_filter();
+        const QString classes_filter = ui->select_classes_widget->get_filter();
 
         const QString out = filter_AND({
             name_filter,
@@ -207,46 +147,21 @@ void SelectObjectDialog::on_add_button() {
     const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, console_object_search_attributes());
 
     if (search_results.size() == 1) {
-        // Add to list
-        const AdObject object = search_results.values()[0];
-
-        if (is_duplicate(object)) {
-            duplicate_message_box();
-        } else {
-            add_select_object_to_model(model, object);
-
-            edit->clear();
-        }
+        const QString dn = search_results.keys()[0];
+        add_objects_to_list({dn}, ad);
     } else if (search_results.size() > 1) {
         // Open dialog where you can select one of the matches
-        // TODO: probably make a separate file, decent sized dialog
-        auto dialog = new SelectObjectMatchDialog(search_results, this);
+        auto dialog = new SelectObjectMatchDialog(this);
+        dialog->set_search_results(search_results);
+        dialog->open();
+
         connect(
             dialog, &QDialog::accepted,
-            [=]() {
-                const QList<QString> selected_list = dialog->get_selected();
+            [this, dialog]() {
+                const QList<QString> selected_matches = dialog->get_selected();
 
-                bool any_duplicates = false;
-
-                // TODO: duplicating section above
-                for (const QString &dn : selected_list) {
-                    const AdObject object = search_results[dn];
-
-                    if (is_duplicate(object)) {
-                        any_duplicates = true;
-                    } else {
-                        add_select_object_to_model(model, object);
-                    }
-                }
-
-                if (any_duplicates) {
-                    duplicate_message_box();
-                }
-
-                edit->clear();
+                add_objects_to_list(selected_matches);
             });
-
-        dialog->open();
     } else if (search_results.size() == 0) {
         // Warn about failing to find any matches
         message_box_warning(this, tr("Error"), tr("Failed to find any matches."));
@@ -254,114 +169,68 @@ void SelectObjectDialog::on_add_button() {
 }
 
 void SelectObjectDialog::on_remove_button() {
-    const QList<QPersistentModelIndex> selected = persistent_index_list(view->selectionModel()->selectedRows());
+    const QList<QPersistentModelIndex> selected = persistent_index_list(ui->view->selectionModel()->selectedRows());
 
     for (const QPersistentModelIndex &index : selected) {
         model->removeRows(index.row(), 1);
     }
 }
 
-void SelectObjectDialog::on_advanced_button() {
+void SelectObjectDialog::open_advanced_dialog() {
     auto dialog = new SelectObjectAdvancedDialog(class_list, this);
-
-    // TODO: can optimize if dialog returns objects
-    // directly, but will need to keep them around
-    connect(
-        dialog, &SelectObjectAdvancedDialog::accepted,
-        [=]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
-                return;
-            }
-
-            const QList<QList<QStandardItem *>> selected = dialog->get_selected_rows();
-
-            bool any_duplicates = false;
-
-            const QList<QList<QStandardItem *>> row_list = dialog->get_selected_rows();
-            for (const QList<QStandardItem *> &row : row_list) {
-                QStandardItem *item = row[0];
-                const QString dn = item->data(ObjectRole_DN).toString();
-                const AdObject object = ad.search_object(dn);
-
-                if (is_duplicate(object)) {
-                    any_duplicates = true;
-                } else {
-                    add_select_object_to_model(model, object);
-                }
-            }
-
-            if (any_duplicates) {
-                duplicate_message_box();
-            }
-        });
-
     dialog->open();
-}
-
-bool SelectObjectDialog::is_duplicate(const AdObject &object) const {
-    const QList<QString> selected = get_selected();
-
-    return selected.contains(object.get_dn());
-}
-
-void SelectObjectDialog::duplicate_message_box() {
-    message_box_warning(this, tr("Error"), tr("Selected object is already in the list."));
-}
-
-SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
-: QDialog(parent) {
-    setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle("Select Match");
-
-    auto label = new QLabel(tr("There are multiple matches. Select one or more to add to the list."));
-
-    auto model = new QStandardItemModel(this);
-
-    model->setHorizontalHeaderLabels(header_labels);
-
-    for (const AdObject &object : search_results) {
-        add_select_object_to_model(model, object);
-    }
-
-    view = new QTreeView(this);
-    view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    view->setSortingEnabled(true);
-    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    view->sortByColumn(0, Qt::AscendingOrder);
-
-    view->setModel(model);
-
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    ok_button->setObjectName("ok_button");
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(label);
-    layout->addWidget(view);
-    layout->addWidget(button_box);
 
     connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
+        dialog, &QDialog::accepted,
+        [this, dialog]() {
+            const QList<QString> selected = dialog->get_selected_dns();
+
+            add_objects_to_list(selected);
+        });
 }
 
-QList<QString> SelectObjectMatchDialog::get_selected() const {
-    QList<QString> out;
-
-    const QList<QModelIndex> selected_indexes = view->selectionModel()->selectedRows();
-
-    for (const QModelIndex &index : selected_indexes) {
-        const QString dn = index.data(ObjectRole_DN).toString();
-        out.append(dn);
+void SelectObjectDialog::add_objects_to_list(const QList<QString> &dn_list) {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
     }
 
-    return out;
+    add_objects_to_list(dn_list, ad);
+}
+
+// Adds objects to the list of selected objects. If list
+// contains objects that are already in list, they won't be
+// added and a message box will open warning user about
+// that.
+// NOTE: this is slightly inefficient because we search for
+// objects again, when they already were searched for by
+// callers of this f-n, in other words we don't reuse search
+// results. For majority of cases this is fine. For rare
+// cases where user is selecting truly huge amounts of
+// objects, they can wait. The alternative of caching
+// objects everywhere adds too much complexity.
+void SelectObjectDialog::add_objects_to_list(const QList<QString> &dn_list, AdInterface &ad) {
+    const QList<QString> current_selected_list = get_selected();
+
+    bool any_duplicates = false;
+
+    for (const QString &dn : dn_list) {
+        const bool is_duplicate = current_selected_list.contains(dn);
+
+        if (is_duplicate) {
+            any_duplicates = true;
+        } else {
+            const AdObject object = ad.search_object(dn);
+
+            add_select_object_to_model(model, object);
+        }
+    }
+
+    if (any_duplicates) {
+        message_box_warning(this, tr("Error"), tr("Selected object is already in the list."));
+    }
+
+    ui->name_edit->clear();
 }
 
 void add_select_object_to_model(QStandardItemModel *model, const AdObject &object) {

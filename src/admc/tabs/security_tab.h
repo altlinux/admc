@@ -1,7 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020 BaseALT Ltd.
+ * Copyright (C) 2020-2021 BaseALT Ltd.
+ * Copyright (C) 2020-2021 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +27,8 @@
 
 #include <QDialog>
 
-class QTreeView;
 class QStandardItemModel;
 class QStandardItem;
-class QLabel;
-class QListWidget;
 
 enum AceColumn {
     AceColumn_Name,
@@ -40,25 +38,23 @@ enum AceColumn {
     AceColumn_COUNT,
 };
 
-enum AcePermissionItemRole {
-    AcePermissionItemRole_Permission = Qt::UserRole,
-};
-
-extern const QList<AcePermission> all_permissions_list;
-extern const QSet<AcePermission> all_permissions;
-extern const QSet<AcePermission> access_permissions;
-extern const QSet<AcePermission> read_prop_permissions;
-extern const QSet<AcePermission> write_prop_permissions;
-extern const QHash<AcePermission, QString> ace_permission_to_name_map;
+namespace Ui {
+class SecurityTab;
+}
 
 class SecurityTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::SecurityTab *ui;
+
     SecurityTab();
     ~SecurityTab();
 
+    static QHash<AcePermission, QString> ace_permission_to_name_map();
+
     void load(AdInterface &ad, const AdObject &object) override;
+    bool verify(AdInterface &ad, const QString &target) const override;
     bool apply(AdInterface &ad, const QString &target) override;
 
     // NOTE: f-ns for testings
@@ -67,36 +63,22 @@ public:
 
 private slots:
     void load_trustee_acl();
-    void on_item_changed(QStandardItem *item);
 
 private:
-    QTreeView *trustee_view;
     QStandardItemModel *trustee_model;
-    QTreeView *ace_view;
     QStandardItemModel *ace_model;
-    QLabel *trustee_label;
     QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
     QHash<QByteArray, QHash<AcePermission, PermissionState>> original_permission_state_map;
     QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
     bool ignore_item_changed_signal;
+    bool is_policy;
 
+    void on_item_changed(QStandardItem *item);
     void on_add_trustee_button();
-    void on_add_well_known_trustee_button();
     void on_remove_trustee_button();
     void apply_current_state_to_items();
     void add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad);
-};
-
-class SelectWellKnownTrusteeDialog final : public QDialog {
-    Q_OBJECT
-
-public:
-    SelectWellKnownTrusteeDialog(QWidget *parent);
-
-    QList<QByteArray> get_selected() const;
-
-private:
-    QListWidget *list;
+    void on_add_well_known_trustee();
 };
 
 #endif /* SECURITY_TAB_H */

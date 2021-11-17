@@ -19,69 +19,67 @@
  */
 
 #include "edit_query_item_dialog.h"
+#include "ui_edit_query_item_dialog.h"
 
-#include "console_types/console_query.h"
-#include "edit_query_item_widget.h"
-#include "utils.h"
+#include "console_impls/query_folder_impl.h"
+#include "settings.h"
 
-#include <QDialogButtonBox>
-#include <QLineEdit>
-#include <QVBoxLayout>
-#include <QModelIndex>
+EditQueryItemDialog::EditQueryItemDialog(QWidget *parent)
+: QDialog(parent) {
+    ui = new Ui::EditQueryItemDialog();
+    ui->setupUi(this);
 
-EditQueryItemDialog::EditQueryItemDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    console = console_arg;
+    settings_setup_dialog_geometry(SETTING_edit_query_item_dialog_geometry, this);
+}
 
-    setWindowTitle(tr("Edit Query"));
+EditQueryItemDialog::~EditQueryItemDialog() {
+    delete ui;
+}
 
-    edit_query_widget = new EditQueryItemWidget();
+void EditQueryItemDialog::set_data(const QString &name, const QString &description, const bool scope_is_children, const QByteArray &filter_state, const QString &filter) {
+    return ui->edit_query_item_widget->set_data(name, description, scope_is_children, filter_state, filter);
+}
 
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
+QString EditQueryItemDialog::name() const {
+    return ui->edit_query_item_widget->name();
+}
 
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(edit_query_widget);
-    layout->addWidget(button_box);
+QString EditQueryItemDialog::description() const {
+    return ui->edit_query_item_widget->description();
+}
 
-    const QModelIndex index = console->get_selected_item();
+QString EditQueryItemDialog::filter() const {
+    return ui->edit_query_item_widget->filter();
+}
 
-    edit_query_widget->load(index);
+QString EditQueryItemDialog::base() const {
+    return ui->edit_query_item_widget->base();
+}
 
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
+bool EditQueryItemDialog::scope_is_children() const {
+    return ui->edit_query_item_widget->scope_is_children();
+}
+
+QByteArray EditQueryItemDialog::filter_state() const {
+    return ui->edit_query_item_widget->filter_state();
+}
+
+void EditQueryItemDialog::set_sibling_name_list(const QList<QString> &sibling_name_list_arg) {
+    sibling_name_list = sibling_name_list_arg;
+}
+
+void EditQueryItemDialog::open() {
+
+    QDialog::open();
 }
 
 void EditQueryItemDialog::accept() {
-    QString name;
-    QString description;
-    QString filter;
-    QString base;
-    QByteArray filter_state;
-    bool scope_is_children;
-    edit_query_widget->save(name, description, filter, base, scope_is_children, filter_state);
+    const QString name = ui->edit_query_item_widget->name();
+    const bool name_is_valid = console_query_or_folder_name_is_good(name, sibling_name_list, this);
 
-    const QModelIndex index = console->get_selected_item();
-
-    if (!console_query_or_folder_name_is_good(console, name, index.parent(), this, index)) {
-        return;
+    if (name_is_valid) {
+        QDialog::accept();
     }
-
-    const QList<QStandardItem *> row = console->get_row(index);
-
-    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
-
-    console_query_tree_save(console);
-
-    console->refresh_scope(index);
-
-    QDialog::accept();
 }

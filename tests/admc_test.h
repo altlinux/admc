@@ -37,12 +37,12 @@ class SelectBaseWidget;
 class QFormLayout;
 class AttributeEdit;
 
-#define TEST_USER "test-user"
-#define TEST_USER_LOGON "test-user-logon"
-#define TEST_PASSWORD "pass123!"
-#define TEST_OU "test-ou"
-#define TEST_GROUP "test-group"
-#define TEST_COMPUTER "test-computer"
+#define TEST_USER "ADMCTEST-test-user"
+#define TEST_USER_LOGON "ADMCTEST-test-user-logon"
+#define TEST_PASSWORD "ADMCTEST-pass123!"
+#define TEST_OU "ADMCTEST-test-ou"
+#define TEST_GROUP "ADMCTEST-test-group"
+#define TEST_COMPUTER "ADMCTEST-test-computer"
 
 class ADMCTest : public QObject {
     Q_OBJECT
@@ -102,22 +102,19 @@ protected:
     // dialog. Object must be inside test arena
     void select_object_dialog_select(const QString &dn);
 
-    // Adds an AttributeEdit to layout in parent widget
-    void add_attribute_edit(AttributeEdit *edit);
-
     // Adds a widget to layout in parent widget
     void add_widget(QWidget *widget);
 
     void test_edit_apply_unmodified(AttributeEdit *edit, const QString &dn);
+
+    // Add a base to the base combo. Note that it is also
+    // automatically selected.
+    void select_base_widget_add(SelectBaseWidget *widget, const QString &dn);
 
 private:
     QFormLayout *layout;
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
-
-// Add a base to the base combo. Note that it is also
-// automatically selected.
-void select_base_widget_add(SelectBaseWidget *widget, const QString &dn);
 
 #endif /* ADMC_TEST_H */

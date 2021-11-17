@@ -23,11 +23,18 @@
 
 #include "tabs/properties_tab.h"
 
+namespace Ui {
+class DelegationTab;
+}
+
 class DelegationTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::DelegationTab *ui;
+
     DelegationTab();
+    ~DelegationTab();
 };
 
 #endif /* DELEGATION_TAB_H */

@@ -19,19 +19,21 @@
  */
 
 #include "tabs/delegation_tab.h"
+#include "tabs/ui_delegation_tab.h"
 
 #include "adldap.h"
+#include "attribute_edits/delegation_edit.h"
 #include "globals.h"
-#include "edits/delegation_edit.h"
-
-#include <QFormLayout>
 
 DelegationTab::DelegationTab() {
-    new DelegationEdit(&edits, this);
+    ui = new Ui::DelegationTab();
+    ui->setupUi(this);
 
-    const auto layout = new QFormLayout();
-    setLayout(layout);
+    new DelegationEdit(ui->off_button, ui->on_button, &edits, this);
 
-    edits_add_to_layout(edits, layout);
     edits_connect_to_tab(edits, this);
+}
+
+DelegationTab::~DelegationTab() {
+    delete ui;
 }

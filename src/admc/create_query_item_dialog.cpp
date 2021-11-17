@@ -19,61 +19,64 @@
  */
 
 #include "create_query_item_dialog.h"
+#include "ui_create_query_item_dialog.h"
 
-#include "console_types/console_query.h"
-#include "edit_query_item_widget.h"
-#include "utils.h"
+#include "console_impls/query_folder_impl.h"
+#include "settings.h"
 
-#include <QDialogButtonBox>
-#include <QLineEdit>
-#include <QVBoxLayout>
-#include <QModelIndex>
+CreateQueryItemDialog::CreateQueryItemDialog(QWidget *parent)
+: QDialog(parent) {
+    ui = new Ui::CreateQueryItemDialog();
+    ui->setupUi(this);
 
-CreateQueryItemDialog::CreateQueryItemDialog(ConsoleWidget *console_arg)
-: QDialog(console_arg) {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    console = console_arg;
+    settings_setup_dialog_geometry(SETTING_create_query_item_dialog_geometry, this);
+}
 
-    setWindowTitle(tr("Create Query"));
+CreateQueryItemDialog::~CreateQueryItemDialog() {
+    delete ui;
+}
 
-    edit_query_widget = new EditQueryItemWidget();
+QString CreateQueryItemDialog::name() const {
+    return ui->edit_query_widget->name();
+}
 
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
+QString CreateQueryItemDialog::description() const {
+    return ui->edit_query_widget->description();
+}
 
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(edit_query_widget);
-    layout->addWidget(button_box);
+QString CreateQueryItemDialog::filter() const {
+    return ui->edit_query_widget->filter();
+}
 
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
+QString CreateQueryItemDialog::base() const {
+    return ui->edit_query_widget->base();
+}
+
+bool CreateQueryItemDialog::scope_is_children() const {
+    return ui->edit_query_widget->scope_is_children();
+}
+
+QByteArray CreateQueryItemDialog::filter_state() const {
+    return ui->edit_query_widget->filter_state();
+}
+
+void CreateQueryItemDialog::set_sibling_name_list(const QList<QString> &list) {
+    sibling_name_list = list;
+}
+
+void CreateQueryItemDialog::open() {
+    ui->edit_query_widget->clear();
+
+    QDialog::open();
 }
 
 void CreateQueryItemDialog::accept() {
-    QString name;
-    QString description;
-    QString filter;
-    QString base;
-    QByteArray filter_state;
-    bool scope_is_children;
-    edit_query_widget->save(name, description, filter, base, scope_is_children, filter_state);
+    const QString name = ui->edit_query_widget->name();
+    const bool name_is_valid = console_query_or_folder_name_is_good(name, sibling_name_list, this);
 
-    const QModelIndex parent_index = console->get_selected_item();
-
-    if (!console_query_or_folder_name_is_good(console, name, parent_index, this, QModelIndex())) {
-        return;
+    if (name_is_valid) {
+        QDialog::accept();
     }
-
-    console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
-
-    console_query_tree_save(console);
-
-    QDialog::accept();
 }

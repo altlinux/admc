@@ -29,28 +29,29 @@
 
 #include <QWidget>
 
-class QTabWidget;
 class FilterWidgetTab;
-class FilterWidgetSimpleTab;
-class FilterWidgetNormalTab;
-class FilterWidgetAdvancedTab;
+
+namespace Ui {
+class FilterWidget;
+}
 
 class FilterWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    FilterWidget(const QList<QString> classes);
+    Ui::FilterWidget *ui;
+
+    FilterWidget(QWidget *parent = nullptr);
+    ~FilterWidget();
+
+    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QString get_filter() const;
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
 
-private:
-    QTabWidget *tab_widget;
-    FilterWidgetSimpleTab *simple_tab;
-    FilterWidgetNormalTab *normal_tab;
-    FilterWidgetAdvancedTab *advanced_tab;
+    void clear();
 };
 
 class FilterWidgetTab : public QWidget {
@@ -58,6 +59,7 @@ class FilterWidgetTab : public QWidget {
 
 public:
     virtual QString get_filter() const = 0;
+    virtual void clear() = 0;
 };
 
 #endif /* FILTER_WIDGET_H */

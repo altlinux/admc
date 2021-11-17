@@ -29,26 +29,26 @@
 
 #include <QWidget>
 
-class QStackedWidget;
-class QListWidget;
+namespace Ui {
+class TabWidget;
+}
 
 class TabWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    TabWidget();
+    Ui::TabWidget *ui;
+
+    TabWidget(QWidget *parent = nullptr);
+    ~TabWidget();
 
     void add_tab(QWidget *tab, const QString &title);
 
 signals:
     void current_changed(QWidget *prev_tab, QWidget *new_tab);
 
-private slots:
-    void on_list_current_row_changed(int index);
-
 private:
-    QStackedWidget *stacked_widget;
-    QListWidget *list_widget;
+    void on_list_current_row_changed(int index);
 };
 
 #endif /* TAB_WIDGET_H */

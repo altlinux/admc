@@ -27,26 +27,36 @@
 
 #include <QDialog>
 
-class QLineEdit;
-class QCheckBox;
-class QComboBox;
+extern const QString CERT_STRATEGY_NEVER;
+extern const QString CERT_STRATEGY_HARD;
+extern const QString CERT_STRATEGY_DEMAND;
+extern const QString CERT_STRATEGY_ALLOW;
+extern const QString CERT_STRATEGY_TRY;
+
+namespace Ui {
+class ConnectionOptionsDialog;
+}
 
 class ConnectionOptionsDialog : public QDialog {
     Q_OBJECT
 
 public:
+    Ui::ConnectionOptionsDialog *ui;
+
     ConnectionOptionsDialog(QWidget *parent);
+    ~ConnectionOptionsDialog();
 
     void accept() override;
-    void reject() override;
 
 private:
-    QCheckBox *sasl_nocanon_check;
-    QLineEdit *port_edit;
-    QComboBox *require_cert_combobox;
+    bool any_hosts_available;
 
-    void reset();
-    void return_defaults();
+    void load_saved_options();
+    void load_default_options();
 };
+
+// Load connection options from settings and apply to
+// AdInterface
+void load_connection_options();
 
 #endif /* CONNECTION_OPTIONS_DIALOG_H */

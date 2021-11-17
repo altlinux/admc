@@ -25,12 +25,21 @@
 
 class AttributeEdit;
 
+namespace Ui {
+class PasswordDialog;
+}
+
 // Accepts input of new password and changes password when done
 class PasswordDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    PasswordDialog(const QString &target_arg, QWidget *parent);
+    Ui::PasswordDialog *ui;
+
+    PasswordDialog(QWidget *parent);
+    ~PasswordDialog();
+
+    void set_target(const QString &dn);
 
 public slots:
     void accept();
@@ -38,6 +47,7 @@ public slots:
 private:
     QString target;
     QList<AttributeEdit *> edits;
+    AttributeEdit *pass_expired_edit;
 };
 
 #endif /* PASSWORD_DIALOG_H */

@@ -19,66 +19,71 @@
  */
 
 #include "password_dialog.h"
+#include "ui_password_dialog.h"
 
 #include "adldap.h"
-#include "edits/account_option_edit.h"
-#include "edits/password_edit.h"
-#include "edits/unlock_edit.h"
+#include "attribute_edits/account_option_edit.h"
+#include "attribute_edits/password_edit.h"
+#include "attribute_edits/unlock_edit.h"
 #include "globals.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
-#include <QDialogButtonBox>
-#include <QFormLayout>
-#include <QPushButton>
-
-PasswordDialog::PasswordDialog(const QString &target_arg, QWidget *parent)
+PasswordDialog::PasswordDialog(QWidget *parent)
 : QDialog(parent) {
+    ui = new Ui::PasswordDialog();
+    ui->setupUi(this);
+
     setAttribute(Qt::WA_DeleteOnClose);
 
+    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edits, this);
+
+    pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
+
+    new UnlockEdit(ui->unlock_check, &edits, this);
+
+    settings_setup_dialog_geometry(SETTING_password_dialog_geometry, this);
+}
+
+PasswordDialog::~PasswordDialog() {
+    delete ui;
+}
+
+void PasswordDialog::set_target(const QString &target_arg) {
     target = target_arg;
 
     AdInterface ad;
     if (ad_failed(ad)) {
-        close();
         return;
     }
 
     const AdObject object = ad.search_object(target);
 
-    setWindowTitle(tr("Change Password"));
-
-    new PasswordEdit(&edits, this);
-
-    auto pass_expired_check = new AccountOptionEdit(AccountOption_PasswordExpired, &edits, this);
-
-    new UnlockEdit(&edits, UnlockEditStyle_CheckOnLeft, this);
-
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(QDialogButtonBox::Ok);
-    button_box->addButton(QDialogButtonBox::Cancel);
-
-    auto edits_layout = new QFormLayout();
-    edits_add_to_layout(edits, edits_layout);
-
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addLayout(edits_layout);
-    layout->addWidget(button_box);
-
     edits_load(edits, ad, object);
 
-    // Turn on "password expired" by default
-    pass_expired_check->set_checked(true);
+    const bool expired_check_enabled = [&]() {
+        const bool dont_expire_pass = object.get_account_option(AccountOption_DontExpirePassword, g_adconfig);
+        const bool cant_change_pass = object.get_account_option(AccountOption_CantChangePassword, g_adconfig);
+        const bool out = !(dont_expire_pass || cant_change_pass);
 
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        this, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        this, &QDialog::reject);
+        return out;
+    }();
 
-    g_status()->display_ad_messages(ad, this);
+    if (expired_check_enabled) {
+        ui->expired_check->setChecked(true);
+
+        // NOTE: always set expired option to modified, so that
+        // it always applies, even if this option is already
+        // turned on. This is for consistent and understandable
+        // messaging to user.
+        pass_expired_edit->set_modified(true);
+    } else {
+        ui->expired_check->setEnabled(false);
+        ui->expired_check->setToolTip(tr("Option is unavailable because a conflicting account option is currently enabled."));
+    }
+
+    g_status->display_ad_messages(ad, this);
 }
 
 void PasswordDialog::accept() {
@@ -98,7 +103,7 @@ void PasswordDialog::accept() {
 
     hide_busy_indicator();
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (apply_success) {
         QDialog::accept();

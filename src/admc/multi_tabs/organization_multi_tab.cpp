@@ -19,25 +19,24 @@
  */
 
 #include "multi_tabs/organization_multi_tab.h"
+#include "multi_tabs/ui_organization_multi_tab.h"
 
 #include "adldap.h"
-#include "multi_edits/manager_multi_edit.h"
-#include "multi_edits/string_multi_edit.h"
-
-#include <QFormLayout>
+#include "attribute_multi_edits/manager_multi_edit.h"
+#include "attribute_multi_edits/string_multi_edit.h"
 
 OrganizationMultiTab::OrganizationMultiTab() {
-    new StringMultiEdit(ATTRIBUTE_TITLE, edit_list, this);
-    new StringMultiEdit(ATTRIBUTE_DEPARTMENT, edit_list, this);
-    new StringMultiEdit(ATTRIBUTE_COMPANY, edit_list, this);
-    new ManagerMultiEdit(edit_list, this);
+    ui = new Ui::OrganizationMultiTab();
+    ui->setupUi(this);
 
-    auto edit_layout = new QFormLayout();
+    new StringMultiEdit(ui->title_edit, ui->title_check, ATTRIBUTE_TITLE, edit_list, this);
+    new StringMultiEdit(ui->department_edit, ui->department_check, ATTRIBUTE_DEPARTMENT, edit_list, this);
+    new StringMultiEdit(ui->company_edit, ui->company_check, ATTRIBUTE_COMPANY, edit_list, this);
+    new ManagerMultiEdit(ui->manager_edit, ui->manager_check, edit_list, this);
 
-    const auto top_layout = new QVBoxLayout();
-    setLayout(top_layout);
-    top_layout->addLayout(edit_layout);
-
-    multi_edits_add_to_layout(edit_list, edit_layout);
     multi_edits_connect_to_tab(edit_list, this);
+}
+
+OrganizationMultiTab::~OrganizationMultiTab() {
+    delete ui;
 }

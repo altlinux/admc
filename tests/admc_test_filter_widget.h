@@ -25,6 +25,9 @@
 
 class FilterWidget;
 class QTabWidget;
+class FilterWidgetSimpleTab;
+class FilterWidgetNormalTab;
+class FilterWidgetAdvancedTab;
 
 class ADMCTestFilterWidget : public ADMCTest {
     Q_OBJECT
@@ -39,9 +42,9 @@ private slots:
 private:
     FilterWidget *filter_widget;
     QTabWidget *tab_widget;
-    QWidget *simple_tab;
-    QWidget *normal_tab;
-    QWidget *advanced_tab;
+    FilterWidgetSimpleTab *simple_tab;
+    FilterWidgetNormalTab *normal_tab;
+    FilterWidgetAdvancedTab *advanced_tab;
 };
 
 #endif /* ADMC_TEST_FILTER_WIDGET_H */

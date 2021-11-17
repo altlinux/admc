@@ -23,11 +23,18 @@
 
 #include "tabs/properties_tab.h"
 
+namespace Ui {
+class TelephonesTab;
+}
+
 class TelephonesTab final : public PropertiesTab {
     Q_OBJECT
 
 public:
+    Ui::TelephonesTab *ui;
+
     TelephonesTab();
+    ~TelephonesTab();
 };
 
 #endif /* TELEPHONES_TAB_H */

@@ -19,35 +19,35 @@
  */
 
 #include "filter_widget/filter_widget_advanced_tab.h"
-
-#include <QLabel>
-#include <QPlainTextEdit>
-#include <QVBoxLayout>
+#include "filter_widget/ui_filter_widget_advanced_tab.h"
 
 FilterWidgetAdvancedTab::FilterWidgetAdvancedTab()
 : FilterWidgetTab() {
-    auto label = new QLabel(tr("Enter LDAP filter:"));
-    ldap_filter_edit = new QPlainTextEdit(this);
+    ui = new Ui::FilterWidgetAdvancedTab();
+    ui->setupUi(this);
+}
 
-    auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->addWidget(label);
-    layout->addWidget(ldap_filter_edit);
+FilterWidgetAdvancedTab::~FilterWidgetAdvancedTab() {
+    delete ui;
 }
 
 QString FilterWidgetAdvancedTab::get_filter() const {
-    const QString filter = ldap_filter_edit->toPlainText();
+    const QString filter = ui->ldap_filter_edit->toPlainText();
 
     return filter;
 }
 
+void FilterWidgetAdvancedTab::clear() {
+    ui->ldap_filter_edit->clear();
+}
+
 QVariant FilterWidgetAdvancedTab::save_state() const {
-    const QString filter = ldap_filter_edit->toPlainText();
+    const QString filter = ui->ldap_filter_edit->toPlainText();
 
     return QVariant(filter);
 }
 
 void FilterWidgetAdvancedTab::restore_state(const QVariant &state_variant) {
     const QString filter = state_variant.toString();
-    ldap_filter_edit->setPlainText(filter);
+    ui->ldap_filter_edit->setPlainText(filter);
 }

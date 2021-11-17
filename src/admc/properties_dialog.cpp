@@ -19,72 +19,74 @@
  */
 
 #include "properties_dialog.h"
+#include "ui_properties_dialog.h"
 
 #include "adldap.h"
-#include "console_types/console_object.h"
+#include "console_impls/object_impl.h"
 #include "globals.h"
+#include "properties_warning_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "tab_widget.h"
 #include "tabs/account_tab.h"
 #include "tabs/address_tab.h"
 #include "tabs/attributes_tab.h"
-#include "tabs/general_tab.h"
+#include "tabs/delegation_tab.h"
+#include "tabs/general_computer_tab.h"
+#include "tabs/general_group_tab.h"
+#include "tabs/general_other_tab.h"
+#include "tabs/general_ou_tab.h"
+#include "tabs/general_policy_tab.h"
+#include "tabs/general_user_tab.h"
+#include "tabs/general_computer_tab.h"
 #include "tabs/gpo_links_tab.h"
 #include "tabs/group_policy_tab.h"
 #include "tabs/managed_by_tab.h"
 #include "tabs/membership_tab.h"
 #include "tabs/object_tab.h"
 #include "tabs/organization_tab.h"
+#include "tabs/os_tab.h"
 #include "tabs/profile_tab.h"
 #include "tabs/properties_tab.h"
 #include "tabs/security_tab.h"
 #include "tabs/telephones_tab.h"
-#include "tabs/os_tab.h"
-#include "tabs/delegation_tab.h"
 #include "utils.h"
 
 #include <QAbstractItemView>
 #include <QAction>
 #include <QDebug>
-#include <QDialogButtonBox>
 #include <QLabel>
 #include <QPushButton>
-#include <QVBoxLayout>
 
-PropertiesDialog *PropertiesDialog::open_for_target(const QString &target) {
+QHash<QString, PropertiesDialog *> PropertiesDialog::instances;
+
+PropertiesDialog *PropertiesDialog::open_for_target(const QString &target, bool *dialog_is_new) {
     if (target.isEmpty()) {
         return nullptr;
     }
 
     show_busy_indicator();
 
-    static QHash<QString, PropertiesDialog *> instances;
-
-    const bool dialog_already_open_for_this_target = instances.contains(target);
+    const bool dialog_already_open_for_this_target = PropertiesDialog::instances.contains(target);
 
     PropertiesDialog *dialog;
 
     if (dialog_already_open_for_this_target) {
         // Focus already open dialog
-        dialog = instances[target];
+        dialog = PropertiesDialog::instances[target];
         dialog->raise();
         dialog->setFocus();
     } else {
         // Make new dialog for this target
         dialog = new PropertiesDialog(target);
-
-        instances[target] = dialog;
-        connect(
-            dialog, &QDialog::finished,
-            [target]() {
-                instances.remove(target);
-            });
-
-        dialog->show();
+        dialog->open();
     }
 
     hide_busy_indicator();
+
+    if (dialog_is_new != nullptr) {
+        *dialog_is_new = !dialog_already_open_for_this_target;
+    }
 
     return dialog;
 }
@@ -101,31 +103,23 @@ void PropertiesDialog::open_when_view_item_activated(QAbstractItemView *view, co
 
 PropertiesDialog::PropertiesDialog(const QString &target_arg)
 : QDialog() {
-    target = target_arg;
-    is_modified = false;
+    ui = new Ui::PropertiesDialog();
+    ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    auto button_box = new QDialogButtonBox();
-    auto ok_button = button_box->addButton(QDialogButtonBox::Ok);
-    apply_button = button_box->addButton(QDialogButtonBox::Apply);
-    reset_button = button_box->addButton(QDialogButtonBox::Reset);
-    auto cancel_button = button_box->addButton(QDialogButtonBox::Cancel);
+    target = target_arg;
+    is_modified = false;
 
-    // Make ok button "auto default", which means that
-    // pressing enter will press ok button
-    cancel_button->setAutoDefault(false);
-    reset_button->setAutoDefault(false);
-    apply_button->setAutoDefault(false);
-    ok_button->setAutoDefault(true);
+    PropertiesDialog::instances[target] = this;
 
-    const auto layout = new QVBoxLayout();
-    setLayout(layout);
-    layout->setSpacing(0);
+    apply_button = ui->button_box->button(QDialogButtonBox::Apply);
+    reset_button = ui->button_box->button(QDialogButtonBox::Reset);
+    auto cancel_button = ui->button_box->button(QDialogButtonBox::Cancel);
 
     const QString title = [&]() {
         const QString target_name = dn_get_name(target_arg);
-        
+
         if (!target_name.isEmpty()) {
             return QString(tr("%1 Properties")).arg(target_name);
         } else {
@@ -141,21 +135,35 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         object = ad.search_object(target);
     }
 
-    auto tab_widget = new TabWidget();
-
-    layout->addWidget(tab_widget);
-    layout->addWidget(button_box);
-
     // Create new tabs
-    const auto add_tab = [this, tab_widget](PropertiesTab *tab, const QString &tab_title) {
+    const auto add_tab = [this](PropertiesTab *tab, const QString &tab_title) {
         tabs.append(tab);
-        tab_widget->add_tab(tab, tab_title);
+        ui->tab_widget->add_tab(tab, tab_title);
     };
 
-    add_tab(new GeneralTab(object), tr("General"));
+    PropertiesTab *general_tab = [&]() -> PropertiesTab * {
+        if (object.is_class(CLASS_USER)) {
+            return new GeneralUserTab(object);
+        } else if (object.is_class(CLASS_GROUP)) {
+            return new GeneralGroupTab(object);
+        } else if (object.is_class(CLASS_OU)) {
+            return new GeneralOUTab(object);
+        } else if (object.is_class(CLASS_GROUP)) {
+            return new GeneralGroupTab(object);
+        } else if (object.is_class(CLASS_COMPUTER)) {
+            return new GeneralComputerTab(object);
+        } else if (object.is_class(CLASS_GP_CONTAINER)) {
+            return new GeneralPolicyTab();
+        } else {
+            return new GeneralOtherTab(object);
+        }
+    }();
+
+    add_tab(general_tab, tr("General"));
 
     const bool advanced_view_ON = settings_get_bool(SETTING_advanced_features);
-    if (advanced_view_ON) {
+
+    if (advanced_view_ON && !object.is_class(CLASS_GP_CONTAINER)) {
         add_tab(new ObjectTab(), tr("Object"));
 
         attributes_tab = new AttributesTab();
@@ -213,10 +221,7 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
     }
 
     settings_setup_dialog_geometry(SETTING_properties_dialog_geometry, this);
-    
-    connect(
-        ok_button, &QPushButton::clicked,
-        this, &PropertiesDialog::ok);
+
     connect(
         apply_button, &QPushButton::clicked,
         this, &PropertiesDialog::apply);
@@ -227,8 +232,12 @@ PropertiesDialog::PropertiesDialog(const QString &target_arg)
         cancel_button, &QPushButton::clicked,
         this, &PropertiesDialog::reject);
     connect(
-        tab_widget, &TabWidget::current_changed,
+        ui->tab_widget, &TabWidget::current_changed,
         this, &PropertiesDialog::on_current_tab_changed);
+}
+
+PropertiesDialog::~PropertiesDialog() {
+    delete ui;
 }
 
 void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab) {
@@ -238,74 +247,70 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
         return;
     }
 
-    // Open dialog which let's user choose whether to
-    // apply changes and move to new tab or stay on
-    // current tab
-    auto dialog = new QDialog(this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-
-    const QString explanation_text = [&]() {
+    const PropertiesWarningType warning_type = [&]() {
         if (new_tab == attributes_tab) {
-            return tr("You're switching to attributes tab, while another tab has unapplied changes. Choose to apply or discard those changes.");
+            return PropertiesWarningType_SwitchToAttributes;
         } else {
-            return tr("You're switching from attributes tab, while it has unapplied changes. Choose to apply or discard those changes.");
+            return PropertiesWarningType_SwitchFromAttributes;
         }
     }();
-    auto explanation_label = new QLabel(explanation_text);
 
-    auto button_box = new QDialogButtonBox();
-    button_box->addButton(tr("Apply current changes"), QDialogButtonBox::AcceptRole);
-    button_box->addButton(tr("Discard changes"), QDialogButtonBox::RejectRole);
-
-    connect(
-        button_box, &QDialogButtonBox::accepted,
-        dialog, &QDialog::accept);
-    connect(
-        button_box, &QDialogButtonBox::rejected,
-        dialog, &QDialog::reject);
-
-    const auto layout = new QVBoxLayout();
-    dialog->setLayout(layout);
-    layout->addWidget(explanation_label);
-    layout->addWidget(button_box);
+    auto dialog = new PropertiesWarningDialog(warning_type, this);
+    dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
-        [&]() {
+        [this]() {
             AdInterface ad;
-
-            if (ad_connected(ad)) {
-                apply_internal(ad);
-
-                // NOTE: have to reset for attributes/other tab
-                // to load updates
-                reset_internal(ad);
+            if (ad_failed(ad)) {
+                return;
             }
+
+            apply_internal(ad);
+
+            // NOTE: have to reset for attributes tab and other tabs
+            // to load updates
+            reset_internal(ad);
         });
 
     connect(
         dialog, &QDialog::rejected,
-        [&]() {
+        [this]() {
             reset();
         });
-
-    dialog->open();
 }
 
-void PropertiesDialog::ok() {
-    const bool success = apply();
+void PropertiesDialog::accept() {
+    AdInterface ad;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const bool success = apply_internal(ad);
 
     if (success) {
-        accept();
+        QDialog::accept();
     }
 }
 
-bool PropertiesDialog::apply() {
+void PropertiesDialog::done(int r) {
+    PropertiesDialog::instances.remove(target);
+
+    QDialog::done(r);
+}
+
+void PropertiesDialog::apply() {
     AdInterface ad;
-    if (ad_connected(ad)) {
-        return apply_internal(ad);
-    } else {
-        return false;
+    if (ad_failed(ad)) {
+        return;
+    }
+
+    const bool apply_success = apply_internal(ad);
+
+    ad.clear_messages();
+
+    if (apply_success) {
+        reset_internal(ad);
     }
 }
 
@@ -335,7 +340,7 @@ bool PropertiesDialog::apply_internal(AdInterface &ad) {
         }
     }
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 
     if (total_apply_success) {
         apply_button->setEnabled(false);
@@ -361,7 +366,7 @@ void PropertiesDialog::reset_internal(AdInterface &ad) {
     reset_button->setEnabled(false);
     is_modified = false;
 
-    g_status()->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, this);
 }
 
 void PropertiesDialog::on_edited() {

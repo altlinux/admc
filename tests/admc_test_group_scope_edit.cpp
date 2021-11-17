@@ -20,18 +20,17 @@
 
 #include "admc_test_group_scope_edit.h"
 
-#include "edits/group_scope_edit.h"
+#include "attribute_edits/group_scope_edit.h"
 
-#include <QFormLayout>
 #include <QComboBox>
+#include <QFormLayout>
 
 void ADMCTestGroupScopeEdit::init() {
     ADMCTest::init();
 
-    edit = new GroupScopeEdit(&edits, parent_widget);
-    add_attribute_edit(edit);
+    combo = new QComboBox(parent_widget);
 
-    combo = parent_widget->findChild<QComboBox *>();
+    edit = new GroupScopeEdit(combo, &edits, parent_widget);
 
     const QString name = TEST_GROUP;
     dn = test_object_dn(name, CLASS_GROUP);
@@ -55,7 +54,7 @@ void ADMCTestGroupScopeEdit::load() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    QVERIFY(combo->currentIndex() == 0);
+    QCOMPARE(combo->currentIndex(), 0);
 }
 
 void ADMCTestGroupScopeEdit::apply_unmodified() {
@@ -71,7 +70,7 @@ void ADMCTestGroupScopeEdit::apply() {
 
     const AdObject updated_object = ad.search_object(dn);
     const GroupScope scope = updated_object.get_group_scope();
-    QVERIFY(scope == GroupScope_DomainLocal);
+    QCOMPARE(scope, GroupScope_DomainLocal);
 }
 
 QTEST_MAIN(ADMCTestGroupScopeEdit)

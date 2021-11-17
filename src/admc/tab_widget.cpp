@@ -19,42 +19,33 @@
  */
 
 #include "tab_widget.h"
+#include "ui_tab_widget.h"
 
-#include <QHBoxLayout>
-#include <QListWidget>
-#include <QStackedWidget>
-
-TabWidget::TabWidget()
-: QWidget() {
-    list_widget = new QListWidget();
-    list_widget->setMaximumWidth(175);
-    list_widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
-
-    stacked_widget = new QStackedWidget();
-    stacked_widget->setFrameStyle(QFrame::Raised);
-    stacked_widget->setFrameShape(QFrame::Box);
-
-    auto layout = new QHBoxLayout();
-    setLayout(layout);
-    layout->addWidget(list_widget);
-    layout->addWidget(stacked_widget);
+TabWidget::TabWidget(QWidget *parent)
+: QWidget(parent) {
+    ui = new Ui::TabWidget();
+    ui->setupUi(this);
 
     connect(
-        list_widget, &QListWidget::currentRowChanged,
+        ui->list_widget, &QListWidget::currentRowChanged,
         this, &TabWidget::on_list_current_row_changed);
 }
 
+TabWidget::~TabWidget() {
+    delete ui;
+}
+
 void TabWidget::add_tab(QWidget *tab, const QString &title) {
-    list_widget->addItem(title);
-    stacked_widget->addWidget(tab);
+    ui->list_widget->addItem(title);
+    ui->stacked_widget->addWidget(tab);
 }
 
 void TabWidget::on_list_current_row_changed(int index) {
-    QWidget *prev_tab = stacked_widget->currentWidget();
+    QWidget *prev_tab = ui->stacked_widget->currentWidget();
 
-    stacked_widget->setCurrentIndex(index);
+    ui->stacked_widget->setCurrentIndex(index);
 
-    QWidget *new_tab = stacked_widget->currentWidget();
+    QWidget *new_tab = ui->stacked_widget->currentWidget();
 
     emit current_changed(prev_tab, new_tab);
 }

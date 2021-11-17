@@ -27,13 +27,20 @@
 
 #include <QWidget>
 
-class QComboBox;
+namespace Ui {
+class SelectBaseWidget;
+}
 
 class SelectBaseWidget final : public QWidget {
     Q_OBJECT
 
 public:
-    SelectBaseWidget(const QString &default_base = QString());
+    Ui::SelectBaseWidget *ui;
+
+    SelectBaseWidget(QWidget *parent = nullptr);
+    ~SelectBaseWidget();
+
+    void set_default_base(const QString &default_base);
 
     QString get_base() const;
 
@@ -41,9 +48,7 @@ public:
     void restore_state(const QVariant &state);
 
 private:
-    QComboBox *combo;
-
-    void browse();
+    void open_browse_dialog();
 };
 
 #endif /* SELECT_BASE_WIDGET_H */
