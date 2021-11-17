@@ -21,6 +21,7 @@
 #include "settings.h"
 
 #include "config.h"
+#include "connection_options_dialog.h"
 
 #include <QAction>
 #include <QDialog>
@@ -48,6 +49,10 @@ const QHash<QString, QVariant> setting_default_map = {
     {SETTING_timestamp_log, true},
     {SETTING_sasl_nocanon, true},
     {SETTING_show_login, true},
+    {SETTING_host, QString()},
+    {SETTING_object_filter, QString()},
+    {SETTING_object_filter_enabled, false},
+    {SETTING_cert_strategy, CERT_STRATEGY_NEVER},
 };
 
 void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
@@ -89,10 +94,10 @@ bool settings_restore_header_state(const QString setting, QHeaderView *header) {
     }
 }
 
-QVariant settings_get_variant(const QString setting, const QVariant &default_value_arg) {
+QVariant settings_get_variant(const QString setting) {
     QSettings settings;
 
-    const QVariant default_value = setting_default_map.value(setting, default_value_arg);
+    const QVariant default_value = setting_default_map.value(setting, QVariant());
 
     const QVariant value = settings.value(setting, default_value);
 

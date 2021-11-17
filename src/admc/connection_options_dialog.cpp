@@ -58,7 +58,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     const bool sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon).toBool();
     ui->canonize_check->setChecked(sasl_nocanon);
 
-    const QString cert_strategy = settings_get_variant(SETTING_cert_strategy, CERT_STRATEGY_NEVER).toString();
+    const QString cert_strategy = settings_get_variant(SETTING_cert_strategy).toString();
     const int cert_strategy_index = ui->cert_combo->findText(cert_strategy);
     ui->cert_combo->setCurrentIndex(cert_strategy_index);
 
@@ -75,7 +75,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
             ui->host_select_list->addItem(host);
         }
 
-        const QString saved_host = settings_get_variant(SETTING_host, QString()).toString();
+        const QString saved_host = settings_get_variant(SETTING_host).toString();
 
         if (!saved_host.isEmpty()) {
             // Select saved host in list, if it's there.

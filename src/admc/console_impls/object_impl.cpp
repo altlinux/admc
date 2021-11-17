@@ -75,8 +75,8 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     find_action_enabled = true;
     refresh_action_enabled = true;
 
-    object_filter = settings_get_variant(SETTING_object_filter, QString()).toString();
-    object_filter_enabled = settings_get_variant(SETTING_object_filter_enabled, false).toBool();
+    object_filter = settings_get_variant(SETTING_object_filter).toString();
+    object_filter_enabled = settings_get_variant(SETTING_object_filter_enabled).toBool();
 
     auto new_user_action = new QAction(tr("User"), this);
     auto new_computer_action = new QAction(tr("Computer"), this);

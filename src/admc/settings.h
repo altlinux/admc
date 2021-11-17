@@ -127,7 +127,7 @@ DEFINE_SETTING(SETTING_last_opened_version);
 DEFINE_SETTING(SETTING_object_filter);
 DEFINE_SETTING(SETTING_object_filter_enabled);
 
-QVariant settings_get_variant(const QString setting, const QVariant &default_value = QVariant());
+QVariant settings_get_variant(const QString setting);
 void settings_set_variant(const QString setting, const QVariant &value);
 
 // Does two things. First it restores previously saved
