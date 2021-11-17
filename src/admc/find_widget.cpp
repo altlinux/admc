@@ -188,10 +188,8 @@ void FindWidget::find() {
         find_thread, &SearchThread::finished,
         this,
         [this, find_thread]() {
-            if (find_thread->failed_to_connect()) {
-                search_thread_error_log(this);
-            }
-                    
+            search_thread_display_errors(find_thread, this);
+
             ui->find_button->setEnabled(true);
             ui->clear_button->setEnabled(true);
 
