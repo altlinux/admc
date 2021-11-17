@@ -27,7 +27,7 @@
 
 #include <QPushButton>
 
-const QString CERT_STRATEGY_NEVER = "never";
+const QString CERT_STRATEGY_NEVER = CERT_STRATEGY_NEVER_define;
 const QString CERT_STRATEGY_HARD = "hard";
 const QString CERT_STRATEGY_DEMAND = "demand";
 const QString CERT_STRATEGY_ALLOW = "allow";

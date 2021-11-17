@@ -27,11 +27,7 @@
 
 #include <QDialog>
 
-extern const QString CERT_STRATEGY_NEVER;
-extern const QString CERT_STRATEGY_HARD;
-extern const QString CERT_STRATEGY_DEMAND;
-extern const QString CERT_STRATEGY_ALLOW;
-extern const QString CERT_STRATEGY_TRY;
+#define CERT_STRATEGY_NEVER_define "never" 
 
 namespace Ui {
 class ConnectionOptionsDialog;

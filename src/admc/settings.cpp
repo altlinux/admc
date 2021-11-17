@@ -52,7 +52,7 @@ const QHash<QString, QVariant> setting_default_map = {
     {SETTING_host, QString()},
     {SETTING_object_filter, QString()},
     {SETTING_object_filter_enabled, false},
-    {SETTING_cert_strategy, CERT_STRATEGY_NEVER},
+    {SETTING_cert_strategy, CERT_STRATEGY_NEVER_define},
 };
 
 void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
