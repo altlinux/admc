@@ -20,8 +20,8 @@
     </message>
     <message>
         <location filename="about_dialog.ui" line="40"/>
-        <source>Copyright (C) 2020 BaseALT Ltd.</source>
-        <translation>Авторские права: ООО «Базальт СПО», 2020.</translation>
+        <source>Copyright (C) 2021 BaseALT Ltd.</source>
+        <translation>Авторские права: ООО «Базальт СПО», 2021.</translation>
     </message>
 </context>
 <context>
