@@ -176,7 +176,7 @@ void ObjectImpl::fetch(const QModelIndex &index) {
 
     // NOTE: do an extra search before real search for
     // objects that should be visible in dev mode
-    const bool dev_mode = settings_get_bool(SETTING_dev_mode);
+    const bool dev_mode = settings_get_variant(SETTING_dev_mode).toBool();
     if (dev_mode) {
         AdInterface ad;
         if (ad_connected(ad, console)) {
@@ -1110,7 +1110,7 @@ void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdOb
                 return filter_containers.contains(object_class);
             }();
 
-            const bool show_non_containers_ON = settings_get_bool(SETTING_show_non_containers_in_console_tree);
+            const bool show_non_containers_ON = settings_get_variant(SETTING_show_non_containers_in_console_tree).toBool();
 
             return (is_container || show_non_containers_ON);
         }();

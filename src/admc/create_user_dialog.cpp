@@ -94,7 +94,7 @@ void CreateUserDialog::autofill_full_name() {
         const QString first_name = ui->first_name_edit->text();
         const QString last_name = ui->last_name_edit->text();
 
-        const bool last_name_first = settings_get_bool(SETTING_last_name_before_first_name);
+        const bool last_name_first = settings_get_variant(SETTING_last_name_before_first_name).toBool();
         if (!first_name.isEmpty() && !last_name.isEmpty()) {
             if (last_name_first) {
                 return last_name + " " + first_name;

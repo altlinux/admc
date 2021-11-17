@@ -55,7 +55,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     const int port = settings_get_variant(SETTING_port).toInt();
     ui->port_spinbox->setValue(port);
 
-    const bool sasl_nocanon = settings_get_bool(SETTING_sasl_nocanon);
+    const bool sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon).toBool();
     ui->canonize_check->setChecked(sasl_nocanon);
 
     const QString cert_strategy = settings_get_variant(SETTING_cert_strategy, CERT_STRATEGY_NEVER).toString();

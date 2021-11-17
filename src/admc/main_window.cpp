@@ -262,7 +262,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     for (const QString &setting : bool_action_map.keys()) {
         QAction *action = bool_action_map[setting];
 
-        const bool setting_enabled = settings_get_bool(setting);
+        const bool setting_enabled = settings_get_variant(setting).toBool();
         action->setChecked(setting_enabled);
     }
 
@@ -275,7 +275,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
             action, &QAction::toggled,
             this,
             [setting](bool checked) {
-                settings_set_bool(setting, checked);
+                settings_set_variant(setting, checked);
             });
     }
 
@@ -296,7 +296,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
             action, &QAction::toggled,
             this,
             [setting, object_impl](bool checked) {
-                settings_set_bool(setting, checked);
+                settings_set_variant(setting, checked);
 
                 object_impl->refresh_tree();
             });

@@ -163,7 +163,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
 
     add_tab(general_tab, tr("General"));
 
-    const bool advanced_view_ON = settings_get_bool(SETTING_advanced_features);
+    const bool advanced_view_ON = settings_get_variant(SETTING_advanced_features).toBool();
 
     if (advanced_view_ON && !object.is_class(CLASS_GP_CONTAINER)) {
         add_tab(new ObjectTab(), tr("Object"));

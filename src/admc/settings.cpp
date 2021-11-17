@@ -28,7 +28,7 @@
 #include <QLocale>
 #include <QSettings>
 
-const QHash<QString, bool> bool_setting_default_map = {
+const QHash<QString, QVariant> setting_default_map = {
     {SETTING_advanced_features, false},
     {SETTING_confirm_actions, true},
     {SETTING_dev_mode, false},
@@ -49,21 +49,6 @@ const QHash<QString, bool> bool_setting_default_map = {
     {SETTING_sasl_nocanon, true},
     {SETTING_show_login, true},
 };
-
-bool settings_get_bool(const QString setting) {
-    QSettings settings;
-
-    const bool default_value = bool_setting_default_map.value(setting, false);
-    const bool value = settings.value(setting, default_value).toBool();
-
-    return value;
-}
-
-void settings_set_bool(const QString setting, const bool value) {
-    QSettings settings;
-
-    settings.setValue(setting, value);
-}
 
 void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
     settings_restore_geometry(setting, dialog);
@@ -104,8 +89,11 @@ bool settings_restore_header_state(const QString setting, QHeaderView *header) {
     }
 }
 
-QVariant settings_get_variant(const QString setting, const QVariant &default_value) {
+QVariant settings_get_variant(const QString setting, const QVariant &default_value_arg) {
     QSettings settings;
+
+    const QVariant default_value = setting_default_map.value(setting, default_value_arg);
+
     const QVariant value = settings.value(setting, default_value);
 
     return value;

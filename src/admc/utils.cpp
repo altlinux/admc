@@ -101,7 +101,7 @@ void hide_busy_indicator() {
 }
 
 bool confirmation_dialog(const QString &text, QWidget *parent) {
-    const bool confirm_actions = settings_get_bool(SETTING_confirm_actions);
+    const bool confirm_actions = settings_get_variant(SETTING_confirm_actions).toBool();
     if (!confirm_actions) {
         return true;
     }
@@ -205,7 +205,7 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
 // Hide advanced view only" objects if advanced view setting
 // is off
 void advanced_features_filter(QString &filter) {
-    const bool advanced_features_OFF = !settings_get_bool(SETTING_advanced_features);
+    const bool advanced_features_OFF = !settings_get_variant(SETTING_advanced_features).toBool();
 
     if (advanced_features_OFF) {
         const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, LDAP_BOOL_TRUE);
@@ -216,7 +216,7 @@ void advanced_features_filter(QString &filter) {
 // OR filter with some dev mode object classes, so that they
 // show up no matter what when dev mode is on
 void dev_mode_filter(QString &filter) {
-    const bool dev_mode = settings_get_bool(SETTING_dev_mode);
+    const bool dev_mode = settings_get_variant(SETTING_dev_mode).toBool();
     if (!dev_mode) {
         return;
     }
@@ -240,7 +240,7 @@ void dev_mode_filter(QString &filter) {
 // they don't show up in regular searches. Have to use
 // search_object() and manually add them to search results.
 void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base) {
-    const bool dev_mode = settings_get_bool(SETTING_dev_mode);
+    const bool dev_mode = settings_get_variant(SETTING_dev_mode).toBool();
     if (!dev_mode) {
         return;
     }

@@ -130,11 +130,6 @@ DEFINE_SETTING(SETTING_object_filter_enabled);
 QVariant settings_get_variant(const QString setting, const QVariant &default_value = QVariant());
 void settings_set_variant(const QString setting, const QVariant &value);
 
-// NOTE: returns default value if it's defined in
-// settings.cpp
-bool settings_get_bool(const QString setting);
-void settings_set_bool(const QString setting, const bool value);
-
 // Does two things. First it restores previously saved
 // geometry, if it exists. Then it connects to dialogs
 // finished() signal so that it's geometry is saved when
