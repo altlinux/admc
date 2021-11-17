@@ -1333,9 +1333,7 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
                 return;
             }
 
-            if (search_thread->failed_to_connect()) {
-                search_thread_error_log(console);
-            }
+            search_thread_display_errors(search_thread, console);
 
             QStandardItem *item_now = console->get_item(persistent_index);
 

@@ -126,6 +126,7 @@ DEFINE_SETTING(SETTING_cert_strategy);
 DEFINE_SETTING(SETTING_last_opened_version);
 DEFINE_SETTING(SETTING_object_filter);
 DEFINE_SETTING(SETTING_object_filter_enabled);
+DEFINE_SETTING(SETTING_object_display_limit);
 
 QVariant settings_get_variant(const QString setting);
 void settings_set_variant(const QString setting, const QVariant &value);

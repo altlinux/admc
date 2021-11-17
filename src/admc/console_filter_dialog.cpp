@@ -47,6 +47,9 @@ ConsoleFilterDialog::ConsoleFilterDialog(QWidget *parent)
     };
     ui->class_filter_widget->set_classes(class_list_for_widget, class_list_for_widget);
 
+    const int object_display_limit = settings_get_variant(SETTING_object_display_limit).toInt();
+    ui->limit_spinbox->setValue(object_display_limit);
+
     settings_setup_dialog_geometry(SETTING_console_filter_dialog_geometry, this);
 
     button_state_name_map = {
@@ -76,6 +79,13 @@ bool ConsoleFilterDialog::get_filter_enabled() const {
 
 ConsoleFilterDialog::~ConsoleFilterDialog() {
     delete ui;
+}
+
+void ConsoleFilterDialog::accept() {
+    const int object_display_limit = ui->limit_spinbox->value();
+    settings_set_variant(SETTING_object_display_limit, object_display_limit);
+
+    QDialog::accept();
 }
 
 QVariant ConsoleFilterDialog::save_state() const {

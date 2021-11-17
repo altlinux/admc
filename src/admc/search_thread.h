@@ -48,9 +48,11 @@ public:
     void stop();
     int get_id() const;
     bool failed_to_connect() const;
+    bool hit_object_display_limit() const;
 
 signals:
     void results_ready(const QHash<QString, AdObject> &results);
+    void over_object_display_limit();
 
 private:
     bool stop_flag;
@@ -60,10 +62,14 @@ private:
     QList<QString> attributes;
     int id;
     bool m_failed_to_connect;
+    bool m_hit_object_display_limit;
 
     void run() override;
 };
 
-void search_thread_error_log(QWidget *parent);
+// Call this in your finished() slot to display any
+// error dialogs. Search thread can't display them
+// because it is run in non-GUI thread.
+void search_thread_display_errors(SearchThread *thread, QWidget *parent);
 
 #endif /* SEARCH_THREAD_H */
