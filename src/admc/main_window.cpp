@@ -202,6 +202,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
         connect(
             action, &QAction::triggered,
+            this,
             [this, language](bool checked) {
                 if (checked) {
                     settings_set_variant(SETTING_locale, QLocale(language));
@@ -272,6 +273,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
         connect(
             action, &QAction::toggled,
+            this,
             [setting](bool checked) {
                 settings_set_bool(setting, checked);
             });
@@ -292,6 +294,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
         connect(
             action, &QAction::toggled,
+            this,
             [setting, object_impl](bool checked) {
                 settings_set_bool(setting, checked);
 

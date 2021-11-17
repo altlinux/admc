@@ -132,6 +132,7 @@ void ConsoleFilterDialog::open_custom_dialog() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             filter_dialog_state = dialog->save_state();
 

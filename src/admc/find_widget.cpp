@@ -113,6 +113,7 @@ FindWidget::FindWidget(QWidget *parent)
     // indicator stays on.
     connect(
         this, &QObject::destroyed,
+        this,
         []() {
             hide_busy_indicator();
         });

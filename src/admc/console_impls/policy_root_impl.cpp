@@ -128,6 +128,7 @@ void PolicyRootImpl::create_policy() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             AdInterface ad2;
             if (ad_failed(ad2, console)) {

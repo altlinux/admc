@@ -152,6 +152,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
         connect(
             sync_warning_dialog, &QDialog::accepted,
+            this,
             [this]() {
                 AdInterface ad_inner;
                 if (ad_failed(ad_inner, this)) {

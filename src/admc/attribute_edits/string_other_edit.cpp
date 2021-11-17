@@ -67,6 +67,7 @@ void StringOtherEdit::on_other_button() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             other_values = dialog->get_value_list();
 

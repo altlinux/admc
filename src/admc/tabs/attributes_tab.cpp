@@ -184,6 +184,7 @@ void AttributesTab::edit_attribute() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QStandardItem *> row = get_selected_row();
 

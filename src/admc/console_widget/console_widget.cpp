@@ -165,6 +165,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
         connect(
             action, &QAction::triggered,
+            this,
             [this, action_enum]() {
                 d->on_standard_action(action_enum);
             });

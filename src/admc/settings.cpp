@@ -70,7 +70,8 @@ void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
 
     QObject::connect(
         dialog, &QDialog::finished,
-        [=]() {
+        dialog,
+        [setting, dialog]() {
             const QByteArray geometry = dialog->saveGeometry();
             settings_set_variant(setting, geometry);
         });

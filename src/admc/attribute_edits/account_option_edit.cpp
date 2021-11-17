@@ -74,6 +74,7 @@ void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &che
 
         QObject::connect(
             subject, &QCheckBox::clicked,
+            blocker,
             [subject, blocker, subject_option, blocker_option]() {
                 const bool conflict = (subject->isChecked() && blocker->isChecked());
                 if (conflict) {

@@ -48,6 +48,7 @@ void ADMCTestPasswordEdit::edited_signal() {
     bool edited_signal_emitted = false;
     connect(
         edit, &AttributeEdit::edited,
+        this,
         [&edited_signal_emitted]() {
             edited_signal_emitted = true;
         });

@@ -164,6 +164,7 @@ void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, index, dn]() {
             AdInterface ad_inner;
             if (ad_failed(ad_inner, console)) {
@@ -286,7 +287,8 @@ void PolicyImpl::on_add_link() {
 
     connect(
         dialog, &SelectObjectDialog::accepted,
-        [=]() {
+        this,
+        [this, dialog]() {
             const QList<QString> gpos = get_selected_dn_list(console, ItemType_Policy, PolicyRole_DN);
 
             const QList<QString> ou_list = dialog->get_selected();

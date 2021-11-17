@@ -419,6 +419,7 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, old_dn]() {
             AdInterface ad_inner;
             if (ad_failed(ad_inner, console)) {
@@ -606,6 +607,7 @@ void ObjectImpl::open_console_filter_dialog() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             object_filter = dialog->get_filter();
             object_filter_enabled = dialog->get_filter_enabled();
@@ -651,6 +653,7 @@ void ObjectImpl::on_move() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             AdInterface ad2;
             if (ad_failed(ad2, console)) {
@@ -702,7 +705,8 @@ void ObjectImpl::on_add_to_group() {
 
     connect(
         dialog, &SelectObjectDialog::accepted,
-        [=]() {
+        this,
+        [this, dialog]() {
             AdInterface ad;
             if (ad_failed(ad, console)) {
                 return;
@@ -769,6 +773,7 @@ void ObjectImpl::on_edit_upn_suffixes() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, partitions_dn]() {
             AdInterface ad_inner;
             if (ad_failed(ad_inner, console)) {
@@ -803,6 +808,7 @@ void ObjectImpl::new_object(CreateObjectDialog *dialog) {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, parent_dn]() {
             AdInterface ad;
             if (ad_failed(ad, console)) {

@@ -171,6 +171,7 @@ void GroupPolicyTab::on_add_button() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected_dns();
 

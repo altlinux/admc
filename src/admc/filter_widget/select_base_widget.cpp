@@ -71,6 +71,7 @@ void SelectBaseWidget::open_browse_dialog() {
 
     connect(
         browse_dialog, &QDialog::accepted,
+        this,
         [this, browse_dialog]() {
             const QString selected = browse_dialog->get_selected();
             const QString name = dn_get_name(selected);

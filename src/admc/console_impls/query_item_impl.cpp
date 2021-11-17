@@ -269,6 +269,7 @@ void QueryItemImpl::on_edit_query_item() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, index]() {
             const QString name = dialog->name();
             const QString description = dialog->description();

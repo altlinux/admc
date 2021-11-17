@@ -95,6 +95,7 @@ PropertiesDialog *PropertiesDialog::open_for_target(AdInterface &ad, const QStri
 void PropertiesDialog::open_when_view_item_activated(QAbstractItemView *view, const int dn_role) {
     connect(
         view, &QAbstractItemView::doubleClicked,
+        view,
         [view, dn_role](const QModelIndex &index) {
             AdInterface ad;
             if (ad_failed(ad, view)) {
@@ -270,6 +271,7 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this]() {
             AdInterface ad;
             if (ad_failed(ad, this)) {
@@ -285,9 +287,7 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
 
     connect(
         dialog, &QDialog::rejected,
-        [this]() {
-            reset();
-        });
+        this, &PropertiesDialog::reset);
 }
 
 void PropertiesDialog::accept() {

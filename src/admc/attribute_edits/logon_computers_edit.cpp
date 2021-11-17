@@ -58,6 +58,7 @@ void LogonComputersEdit::open_dialog() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             current_value = dialog->get();
 

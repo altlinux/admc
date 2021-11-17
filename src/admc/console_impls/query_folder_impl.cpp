@@ -88,6 +88,7 @@ void QueryFolderImpl::on_create_query_folder() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, parent_index]() {
             const QString name = dialog->name();
             const QString description = dialog->description();
@@ -107,6 +108,7 @@ void QueryFolderImpl::on_create_query_item() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, parent_index]() {
             const QString name = dialog->name();
             const QString description = dialog->description();
@@ -139,6 +141,7 @@ void QueryFolderImpl::on_edit_query_folder() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, index]() {
             const QString name = dialog->name();
             const QString description = dialog->description();

@@ -76,6 +76,7 @@ void SelectClassesWidget::open_dialog() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QString> new_selected_list = dialog->get_selected_classes();
             m_selected_list = new_selected_list;

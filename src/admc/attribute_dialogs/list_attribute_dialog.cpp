@@ -78,6 +78,7 @@ void ListAttributeDialog::on_add_button() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QByteArray> new_values = dialog->get_value_list();
 

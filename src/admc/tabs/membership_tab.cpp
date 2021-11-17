@@ -318,6 +318,7 @@ void MembershipTab::on_add_button() {
 
     connect(
         dialog, &SelectObjectDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected();
 

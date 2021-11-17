@@ -65,6 +65,7 @@ void ADMCTestUpnEdit::test_emit_edited() {
     bool edited_signal_emitted = false;
     connect(
         upn_edit, &AttributeEdit::edited,
+        this,
         [&edited_signal_emitted]() {
             edited_signal_emitted = true;
         });

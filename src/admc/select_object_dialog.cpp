@@ -156,6 +156,7 @@ void SelectObjectDialog::on_add_button() {
 
         connect(
             dialog, &QDialog::accepted,
+            this,
             [this, dialog]() {
                 const QList<QString> selected_matches = dialog->get_selected();
 
@@ -181,6 +182,7 @@ void SelectObjectDialog::open_advanced_dialog() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected_dns();
 

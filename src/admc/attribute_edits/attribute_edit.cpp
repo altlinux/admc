@@ -38,6 +38,7 @@ AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
     m_modified = false;
     connect(
         this, &AttributeEdit::edited,
+        this,
         [this]() {
             m_modified = true;
         });
