@@ -211,19 +211,19 @@ AdInterface::AdInterface() {
         return;
     }
 
-    const void *cert_strategy = [&]() {
+    const int cert_strategy = [&]() {
         switch (AdInterfacePrivate::s_cert_strat) {
-            case CertStrategy_Never: return (void *) LDAP_OPT_X_TLS_NEVER;
-            case CertStrategy_Hard: return (void *) LDAP_OPT_X_TLS_HARD;
-            case CertStrategy_Demand: return (void *) LDAP_OPT_X_TLS_DEMAND;
-            case CertStrategy_Allow: return (void *) LDAP_OPT_X_TLS_ALLOW;
-            case CertStrategy_Try: return (void *) LDAP_OPT_X_TLS_TRY;
+            case CertStrategy_Never: return LDAP_OPT_X_TLS_NEVER;
+            case CertStrategy_Hard: return LDAP_OPT_X_TLS_HARD;
+            case CertStrategy_Demand: return LDAP_OPT_X_TLS_DEMAND;
+            case CertStrategy_Allow: return LDAP_OPT_X_TLS_ALLOW;
+            case CertStrategy_Try: return LDAP_OPT_X_TLS_TRY;
         }
 
-        return (void *) LDAP_OPT_X_TLS_NEVER;
+        return LDAP_OPT_X_TLS_NEVER;
     }();
 
-    ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, cert_strategy);
+    ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_strategy);
     if (result != LDAP_SUCCESS) {
         option_error("LDAP_OPT_X_TLS_REQUIRE_CERT");
         return;
