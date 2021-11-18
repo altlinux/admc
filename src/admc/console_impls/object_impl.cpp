@@ -441,7 +441,7 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
 
     const QList<QString> dn_list = index_list_to_dn_list(index_list);
 
-    auto on_object_properties_applied = [=]() {
+    auto on_object_properties_applied = [this, dn_list]() {
         AdInterface ad2;
         if (ad_failed(ad2, console)) {
             return;
@@ -468,7 +468,7 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
             apply_changes(buddy_console);
         }
 
-        g_status->display_ad_messages(ad, console);
+        g_status->display_ad_messages(ad2, console);
     };
 
     if (dn_list.size() == 1) {
