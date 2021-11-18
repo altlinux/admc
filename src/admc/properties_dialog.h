@@ -35,6 +35,7 @@ class QAbstractItemView;
 class QPushButton;
 class AttributesTab;
 class AdInterface;
+class AdObject;
 class PropertiesWarningDialog;
 
 namespace Ui {
@@ -82,7 +83,7 @@ private:
     // NOTE: ctor is private, use open_for_target() instead
     PropertiesDialog(AdInterface &ad, const QString &target_arg);
     bool apply_internal(AdInterface &ad);
-    void reset_internal(AdInterface &ad);
+    void reset_internal(AdInterface &ad, const AdObject &object);
 
     void on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab);
 };

@@ -229,7 +229,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
             this, &PropertiesDialog::on_edited);
     }
 
-    reset_internal(ad);
+    reset_internal(ad, object);
 
     settings_setup_dialog_geometry(SETTING_properties_dialog_geometry, this);
 
@@ -282,7 +282,8 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
 
             // NOTE: have to reset for attributes tab and other tabs
             // to load updates
-            reset_internal(ad);
+            const AdObject object = ad.search_object(target);
+            reset_internal(ad, object);
         });
 
     connect(
@@ -320,14 +321,16 @@ void PropertiesDialog::apply() {
     ad.clear_messages();
 
     if (apply_success) {
-        reset_internal(ad);
+        const AdObject object = ad.search_object(target);
+        reset_internal(ad, object);
     }
 }
 
 void PropertiesDialog::reset() {
     AdInterface ad;
     if (ad_connected(ad, this)) {
-        reset_internal(ad);
+        const AdObject object = ad.search_object(target);
+        reset_internal(ad, object);
     }
 }
 
@@ -365,9 +368,7 @@ bool PropertiesDialog::apply_internal(AdInterface &ad) {
     return total_apply_success;
 }
 
-void PropertiesDialog::reset_internal(AdInterface &ad) {
-    const AdObject object = ad.search_object(target);
-
+void PropertiesDialog::reset_internal(AdInterface &ad, const AdObject &object) {
     for (auto tab : tabs) {
         tab->load(ad, object);
     }
