@@ -213,29 +213,6 @@ void advanced_features_filter(QString &filter) {
     }
 }
 
-// OR filter with some dev mode object classes, so that they
-// show up no matter what when dev mode is on
-void dev_mode_filter(QString &filter) {
-    const bool dev_mode = settings_get_variant(SETTING_dev_mode).toBool();
-    if (!dev_mode) {
-        return;
-    }
-
-    const QList<QString> schema_classes = {
-        "classSchema",
-        "attributeSchema",
-        "displaySpecifier",
-    };
-
-    QList<QString> class_filters;
-    for (const QString &object_class : schema_classes) {
-        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
-        class_filters.append(class_filter);
-    }
-
-    filter = filter_OR({filter, filter_OR(class_filters)});
-}
-
 // NOTE: configuration and schema objects are hidden so that
 // they don't show up in regular searches. Have to use
 // search_object() and manually add them to search results.

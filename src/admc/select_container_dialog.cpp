@@ -111,7 +111,6 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
         out = is_container_filter();
 
         advanced_features_filter(out);
-        dev_mode_filter(out);
 
         return out;
     }();

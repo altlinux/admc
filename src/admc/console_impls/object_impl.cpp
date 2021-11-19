@@ -167,7 +167,6 @@ void ObjectImpl::fetch(const QModelIndex &index) {
         }
 
         advanced_features_filter(out);
-        dev_mode_filter(out);
 
         return out;
     }();

@@ -88,7 +88,6 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
 
 void advanced_features_filter(QString &filter);
 
-void dev_mode_filter(QString &filter);
 void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base);
 
 // NOTE: these f-ns replace QMessageBox static f-ns. The

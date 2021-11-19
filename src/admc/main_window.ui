@@ -316,6 +316,9 @@
    <property name="text">
     <string>Dev mode</string>
    </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="action_show_login">
    <property name="checkable">
