@@ -48,13 +48,7 @@ void SelectClassesWidget::set_classes(const QList<QString> &class_list_arg, cons
 }
 
 QString SelectClassesWidget::get_filter() const {
-    QList<QString> class_filters;
-    for (const QString &object_class : m_selected_list) {
-        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
-        class_filters.append(class_filter);
-    }
-
-    const QString out = filter_OR(class_filters);
+    const QString out = get_classes_filter(m_selected_list);
 
     return out;
 }

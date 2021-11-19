@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QCheckBox>
 
@@ -58,22 +59,21 @@ void ClassFilterWidget::set_classes(const QList<QString> &class_list, const QLis
 }
 
 QString ClassFilterWidget::get_filter() const {
-    const QList<QString> class_filter_list = [&] {
+    const QList<QString> selected_list = [&] {
         QList<QString> out;
 
         for (const QString &object_class : checkbox_map.keys()) {
             QCheckBox *checkbox = checkbox_map[object_class];
 
             if (checkbox->isChecked()) {
-                const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
-                out.append(class_filter);
+                out.append(object_class);
             }
         }
 
         return out;
     }();
 
-    const QString filter = filter_OR(class_filter_list);
+    const QString filter = get_classes_filter(selected_list);
 
     return filter;
 }
