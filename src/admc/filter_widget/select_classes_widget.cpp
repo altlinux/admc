@@ -48,7 +48,15 @@ void SelectClassesWidget::set_classes(const QList<QString> &class_list_arg, cons
 }
 
 QString SelectClassesWidget::get_filter() const {
-    return filter;
+    QList<QString> class_filters;
+    for (const QString &object_class : m_selected_list) {
+        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
+        class_filters.append(class_filter);
+    }
+
+    const QString out = filter_OR(class_filters);
+
+    return out;
 }
 
 QVariant SelectClassesWidget::save_state() const {
@@ -81,8 +89,6 @@ void SelectClassesWidget::open_dialog() {
             const QList<QString> new_selected_list = dialog->get_selected_classes();
             m_selected_list = new_selected_list;
             update_class_display(m_selected_list);
-
-            filter = dialog->get_filter();
         });
 }
 
