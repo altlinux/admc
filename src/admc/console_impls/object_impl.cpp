@@ -767,7 +767,7 @@ void ObjectImpl::on_edit_upn_suffixes() {
     const QString attribute = ATTRIBUTE_UPN_SUFFIXES;
     const bool read_only = false;
     auto dialog = new ListAttributeDialog(current_values, attribute, read_only, console);
-
+    dialog->setWindowTitle(tr("Edit UPN Suffixes"));
     dialog->open();
 
     connect(

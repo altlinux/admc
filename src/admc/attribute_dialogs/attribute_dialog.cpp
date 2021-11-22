@@ -30,29 +30,6 @@ AttributeDialog::AttributeDialog(const QString &attribute, const bool read_only,
 : QDialog(parent) {
     m_attribute = attribute;
     m_read_only = read_only;
-
-    const QString title = [&]() {
-        const AttributeType type = g_adconfig->get_attribute_type(m_attribute);
-        const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
-
-        const QString title_action = [&]() {
-            if (m_read_only) {
-                return tr("Edit");
-            } else {
-                return tr("View");
-            }
-        }();
-
-        const QString title_attribute = attribute_type_display_string(type);
-
-        if (single_valued) {
-            return QString("%1 %2").arg(title_action, title_attribute);
-        } else {
-            return QString(tr("%1 Multi-Valued %2", "This is a dialog title for attribute editors. Example: \"Edit Multi-Valued String\"")).arg(title_action, title_attribute);
-        }
-    }();
-
-    setWindowTitle(title);
 }
 
 QString AttributeDialog::get_attribute() const {

@@ -74,6 +74,7 @@ void ListAttributeDialog::on_add_button() {
         }
     }();
 
+    dialog->setWindowTitle(tr("Add Value"));
     dialog->open();
 
     connect(

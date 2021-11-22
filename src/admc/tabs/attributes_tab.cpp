@@ -314,32 +314,60 @@ AttributeDialog *AttributesTab::get_attribute_dialog(const bool read_only) {
 
     const AttributeType type = g_adconfig->get_attribute_type(attribute);
 
-    switch (type) {
-        case AttributeType_Octet: return octet_attribute_dialog();
-        case AttributeType_Sid: return octet_attribute_dialog();
+    AttributeDialog *dialog = [&]() -> AttributeDialog * {
+        switch (type) {
+            case AttributeType_Octet: return octet_attribute_dialog();
+            case AttributeType_Sid: return octet_attribute_dialog();
 
-        case AttributeType_Boolean: return bool_attribute_dialog();
+            case AttributeType_Boolean: return bool_attribute_dialog();
 
-        case AttributeType_Unicode: return string_attribute_dialog();
-        case AttributeType_StringCase: return string_attribute_dialog();
-        case AttributeType_DSDN: return string_attribute_dialog();
-        case AttributeType_IA5: return string_attribute_dialog();
-        case AttributeType_Teletex: return string_attribute_dialog();
-        case AttributeType_ObjectIdentifier: return string_attribute_dialog();
-        case AttributeType_Integer: return string_attribute_dialog();
-        case AttributeType_Enumeration: return string_attribute_dialog();
-        case AttributeType_LargeInteger: return string_attribute_dialog();
-        case AttributeType_UTCTime: return datetime_attribute_dialog();
-        case AttributeType_GeneralizedTime: return datetime_attribute_dialog();
-        case AttributeType_NTSecDesc: return string_attribute_dialog();
-        case AttributeType_Numeric: return string_attribute_dialog();
-        case AttributeType_Printable: return string_attribute_dialog();
-        case AttributeType_DNString: return string_attribute_dialog();
+            case AttributeType_Unicode: return string_attribute_dialog();
+            case AttributeType_StringCase: return string_attribute_dialog();
+            case AttributeType_DSDN: return string_attribute_dialog();
+            case AttributeType_IA5: return string_attribute_dialog();
+            case AttributeType_Teletex: return string_attribute_dialog();
+            case AttributeType_ObjectIdentifier: return string_attribute_dialog();
+            case AttributeType_Integer: return string_attribute_dialog();
+            case AttributeType_Enumeration: return string_attribute_dialog();
+            case AttributeType_LargeInteger: return string_attribute_dialog();
+            case AttributeType_UTCTime: return datetime_attribute_dialog();
+            case AttributeType_GeneralizedTime: return datetime_attribute_dialog();
+            case AttributeType_NTSecDesc: return string_attribute_dialog();
+            case AttributeType_Numeric: return string_attribute_dialog();
+            case AttributeType_Printable: return string_attribute_dialog();
+            case AttributeType_DNString: return string_attribute_dialog();
 
-        // NOTE: putting these here as confirmed to be unsupported
-        case AttributeType_ReplicaLink: return nullptr;
-        case AttributeType_DNBinary: return nullptr;
+            // NOTE: putting these here as confirmed to be unsupported
+            case AttributeType_ReplicaLink: return nullptr;
+            case AttributeType_DNBinary: return nullptr;
+        }
+
+        return nullptr;
+    }();
+
+    const QString title = [&]() {
+        const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
+
+        const QString title_action = [&]() {
+            if (read_only) {
+                return tr("Edit");
+            } else {
+                return tr("View");
+            }
+        }();
+
+        const QString title_attribute = attribute_type_display_string(type);
+
+        if (single_valued) {
+            return QString("%1 %2").arg(title_action, title_attribute);
+        } else {
+            return QString(tr("%1 Multi-Valued %2", "This is a dialog title for attribute editors. Example: \"Edit Multi-Valued String\"")).arg(title_action, title_attribute);
+        }
+    }();
+
+    if (dialog != nullptr) {
+        dialog->setWindowTitle(title);
     }
 
-    return nullptr;
+    return dialog;
 }
