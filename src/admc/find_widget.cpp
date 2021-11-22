@@ -57,13 +57,13 @@ FindWidget::FindWidget(QWidget *parent)
         out.view_list = action_view_list;
         out.view_detail = action_view_detail;
         out.toggle_description_bar = action_toggle_description_bar;
+        out.customize_columns = action_customize_columns;
 
         // Use placeholders for unused actions
         out.navigate_up = new QAction();
         out.navigate_back = new QAction();
         out.navigate_forward = new QAction();
         out.refresh = new QAction();
-        out.customize_columns = new QAction();
         out.toggle_console_tree = new QAction();
 
         return out;
