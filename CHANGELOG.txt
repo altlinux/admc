@@ -2,6 +2,14 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.8.2
+-----------------------------------------------------------------------
+- Misc: Fixed problems with sAMAccountName fields for
+  computer and group objects. In some places domain and
+  name fields were swapped or domain name was
+  incorrectly enabled. (#324)
+
+-----------------------------------------------------------------------
  VERSION 0.8.1
 -----------------------------------------------------------------------
 - Misc: Fixed build for e2k.
