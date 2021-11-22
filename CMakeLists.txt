@@ -5,9 +5,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# NOTE: neeed largefile options to prevent problems with
+# NOTE: need largefile options to prevent problems with
 # smbclient on 32bit systems
-add_compile_options(-Wall -Wextra -Werror=unused-parameter -Werror=unused-variable -Werror=shadow -Werror=switch -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
+add_compile_options(-Wall -Wextra -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
+
+# NOTE: Turn warnings into errors only for debug build.
+# Release builds shouldn't have this because they are
+# built for different repo's, architectures and
+# compiler versions which can all produce different
+# warnings, which breaks the build if they are treated
+# as  errors.
+if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+    add_compile_options(-Werror=unused-parameter -Werror=unused-variable -Werror=shadow -Werror=switch)
+endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
 
 # You can get version from spec by first finding Versions keyword.
 # After that you can use awk to split line by : and then select second part of it.
