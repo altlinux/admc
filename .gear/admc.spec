@@ -113,7 +113,7 @@ Tests for ADMC
 
 %changelog
 * %(LC_TIME=C date "+%%a %%b %%d %%Y") %{?package_signer:%package_signer}%{!?package_signer:%packager} %version-%release
-- Build for admc-%version-%release%{?_development_release: %_development_release}.
+- %version-%release%{?_development_release: %_development_release}.
 
 * Thu Aug 05 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.6.4-alt1
 - 0.6.4
