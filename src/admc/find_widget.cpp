@@ -40,14 +40,14 @@ FindWidget::FindWidget(QWidget *parent)
     ui = new Ui::FindWidget();
     ui->setupUi(this);
 
-    action_view_icons = new QAction(tr("Icons"));
+    action_view_icons = new QAction(tr("Icons"), this);
     action_view_icons->setCheckable(true);
-    action_view_list = new QAction(tr("List"));
+    action_view_list = new QAction(tr("List"), this);
     action_view_list->setCheckable(true);
-    action_view_detail = new QAction(tr("Detail"));
+    action_view_detail = new QAction(tr("Detail"), this);
     action_view_detail->setCheckable(true);
-    action_customize_columns = new QAction(tr("Customize Columns"));
-    action_toggle_description_bar = new QAction(tr("Description Bar"));
+    action_customize_columns = new QAction(tr("Customize Columns"), this);
+    action_toggle_description_bar = new QAction(tr("Description Bar"), this);
     action_toggle_description_bar->setCheckable(true);
 
     const ConsoleWidgetActions console_actions = [&]() {
@@ -60,11 +60,11 @@ FindWidget::FindWidget(QWidget *parent)
         out.customize_columns = action_customize_columns;
 
         // Use placeholders for unused actions
-        out.navigate_up = new QAction();
-        out.navigate_back = new QAction();
-        out.navigate_forward = new QAction();
-        out.refresh = new QAction();
-        out.toggle_console_tree = new QAction();
+        out.navigate_up = new QAction(this);
+        out.navigate_back = new QAction(this);
+        out.navigate_forward = new QAction(this);
+        out.refresh = new QAction(this);
+        out.toggle_console_tree = new QAction(this);
 
         return out;
     }();
