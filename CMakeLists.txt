@@ -15,9 +15,9 @@ add_compile_options(-Wall -Wextra -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
 # compiler versions which can all produce different
 # warnings, which breaks the build if they are treated
 # as  errors.
-if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options(-Werror=unused-parameter -Werror=unused-variable -Werror=shadow -Werror=switch)
-endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # You can get version from spec by first finding Versions keyword.
 # After that you can use awk to split line by : and then select second part of it.
