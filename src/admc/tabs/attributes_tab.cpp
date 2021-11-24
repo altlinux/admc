@@ -346,8 +346,6 @@ AttributeDialog *AttributesTab::get_attribute_dialog(const bool read_only) {
     }();
 
     const QString title = [&]() {
-        const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
-
         const QString title_action = [&]() {
             if (read_only) {
                 return tr("Edit");
