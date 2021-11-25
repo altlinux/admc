@@ -57,6 +57,10 @@ public:
     QList<ObjectClass> add_auxiliary_classes(const QList<QString> &object_classes) const;
 
     QHash<QString, QString> right_to_guid_map;
+    QHash<QByteArray, QString> rights_guid_to_name_map;
+
+    QHash<QByteArray, QString> guid_to_attribute_map;
+    QHash<QByteArray, QString> guid_to_class_map;
 
     QList<QString> supported_control_list;
 };

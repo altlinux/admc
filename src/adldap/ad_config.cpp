@@ -113,6 +113,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_RANGE_UPPER,
             ATTRIBUTE_LINK_ID,
             ATTRIBUTE_SYSTEM_FLAGS,
+            ATTRIBUTE_SCHEMA_ID_GUID,
         };
 
         const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
@@ -120,6 +121,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         for (const AdObject &object : results.values()) {
             const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             d->attribute_schemas[attribute] = object;
+
+            const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
+            d->guid_to_attribute_map[guid] = attribute;
         }
     }
 
@@ -137,6 +141,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_SYSTEM_MUST_CONTAIN,
             ATTRIBUTE_AUXILIARY_CLASS,
             ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
+            ATTRIBUTE_SCHEMA_ID_GUID,
         };
 
         const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
@@ -144,6 +149,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         for (const AdObject &object : results.values()) {
             const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             d->class_schemas[object_class] = object;
+
+            const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
+            d->guid_to_class_map[guid] = object_class;
         }
     }
 
@@ -282,13 +290,15 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         return out;
     }();
 
-    d->right_to_guid_map = [&]() {
+    // Extended rights
+    {
         QHash<QString, QString> out;
 
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);
 
         const QList<QString> attributes = {
             ATTRIBUTE_CN,
+            ATTRIBUTE_DISPLAY_NAME,
             ATTRIBUTE_RIGHTS_GUID,
         };
 
@@ -298,13 +308,14 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
 
         for (const AdObject &object : search_results.values()) {
             const QString cn = object.get_string(ATTRIBUTE_CN);
-            const QString guid = object.get_string(ATTRIBUTE_RIGHTS_GUID);
+            const QString guid_string = object.get_string(ATTRIBUTE_RIGHTS_GUID);
+            const QByteArray guid = guid_string_to_bytes(guid_string);
+            const QByteArray display_name = object.get_value(ATTRIBUTE_DISPLAY_NAME);
 
-            out[cn] = guid;
+            d->right_to_guid_map[cn] = guid_string;
+            d->rights_guid_to_name_map[guid] = display_name;
         }
-
-        return out;
-    }();
+    }
 }
 
 QString AdConfig::domain() const {
@@ -554,6 +565,21 @@ bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
 
 QString AdConfig::get_right_guid(const QString &right_cn) const {
     const QString out = d->right_to_guid_map.value(right_cn, QString());
+    return out;
+}
+
+QString AdConfig::get_right_name(const QByteArray &right_guid) const {
+    const QString out = d->rights_guid_to_name_map.value(right_guid, "<unknown rights>");
+    return out;
+}
+
+QString AdConfig::guid_to_attribute(const QByteArray &guid) const {
+    const QString out = d->guid_to_attribute_map.value(guid, "<unknown attribute>");
+    return out;
+}
+
+QString AdConfig::guid_to_class(const QByteArray &guid) const {
+    const QString out = d->guid_to_class_map.value(guid, "<unknown class>");
     return out;
 }
 
