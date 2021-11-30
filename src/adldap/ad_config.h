@@ -94,6 +94,8 @@ public:
 
     QList<QString> get_noncontainer_classes();
 
+    bool rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const;
+
 private:
     AdConfigPrivate *d;
 };

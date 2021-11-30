@@ -292,14 +292,13 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
 
     // Extended rights
     {
-        QHash<QString, QString> out;
-
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);
 
         const QList<QString> attributes = {
             ATTRIBUTE_CN,
             ATTRIBUTE_DISPLAY_NAME,
             ATTRIBUTE_RIGHTS_GUID,
+            ATTRIBUTE_APPLIES_TO,
         };
 
         const QString search_base = extended_rights_dn();
@@ -311,9 +310,24 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             const QString guid_string = object.get_string(ATTRIBUTE_RIGHTS_GUID);
             const QByteArray guid = guid_string_to_bytes(guid_string);
             const QByteArray display_name = object.get_value(ATTRIBUTE_DISPLAY_NAME);
+            const QList<QString> applies_to = [this, object]() {
+                QList<QString> out;
+                
+                const QList<QString> class_guid_string_list = object.get_strings(ATTRIBUTE_APPLIES_TO);
+                for (const QString &class_guid_string : class_guid_string_list) {
+                    const QByteArray class_guid = guid_string_to_bytes(class_guid_string);
+                    const QString object_class = guid_to_class(class_guid);
+
+                    out.append(object_class);
+                }
+
+                return out;
+            }();
 
             d->right_to_guid_map[cn] = guid_string;
             d->rights_guid_to_name_map[guid] = display_name;
+            d->rights_name_to_guid_map[cn] = guid;
+            d->rights_applies_to_map[guid] = applies_to;
         }
     }
 }
@@ -593,6 +607,14 @@ QList<QString> AdConfig::get_noncontainer_classes() {
     }
 
     return out;
+}
+
+bool AdConfig::rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const {
+    const QByteArray rights_guid = d->rights_name_to_guid_map[rights_cn];
+    const QSet<QString> applies_to = d->rights_applies_to_map[rights_guid].toSet();
+    const bool applies = applies_to.intersects(class_list.toSet());
+
+    return applies;
 }
 
 QList<QString> AdConfigPrivate::add_auxiliary_classes(const QList<QString> &object_classes) const {
