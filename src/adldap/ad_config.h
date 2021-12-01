@@ -87,6 +87,9 @@ public:
 
     QByteArray get_right_guid(const QString &right_cn) const;
     QString get_right_name(const QByteArray &right_guid) const;
+    // Returns extended rights that apply to given
+    // classes
+    QList<QString> get_extended_rights_list(const QList<QString> &class_list) const;
 
     QString guid_to_attribute(const QByteArray &guid) const;
 

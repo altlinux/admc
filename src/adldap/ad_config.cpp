@@ -328,6 +328,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             d->rights_guid_to_name_map[guid] = display_name;
             d->rights_name_to_guid_map[cn] = guid;
             d->rights_applies_to_map[guid] = applies_to;
+            d->extended_rights_list.append(cn);
         }
     }
 }
@@ -584,6 +585,19 @@ QByteArray AdConfig::get_right_guid(const QString &right_cn) const {
 
 QString AdConfig::get_right_name(const QByteArray &right_guid) const {
     const QString out = d->rights_guid_to_name_map.value(right_guid, "<unknown rights>");
+    return out;
+}
+
+QList<QString> AdConfig::get_extended_rights_list(const QList<QString> &class_list) const {
+    QList<QString> out;
+    
+    for (const QString &rights : d->extended_rights_list) {
+        const bool applies_to = rights_applies_to_class(rights, class_list);
+        if (applies_to) {
+            out.append(rights);
+        }
+    }
+
     return out;
 }
 

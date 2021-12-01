@@ -60,6 +60,7 @@ public:
     QHash<QByteArray, QString> rights_guid_to_name_map;
     QHash<QString, QByteArray> rights_name_to_guid_map;
     QHash<QByteArray, QList<QString>> rights_applies_to_map;
+    QList<QString> extended_rights_list;
 
     QHash<QByteArray, QString> guid_to_attribute_map;
     QHash<QByteArray, QString> guid_to_class_map;
