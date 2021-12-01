@@ -170,7 +170,7 @@ QIcon get_object_icon(const AdObject &object) {
         {CLASS_DOMAIN, "network-server"},
         {CLASS_CONTAINER, "folder"},
         {CLASS_OU, "folder-documents"},
-        {CLASS_GROUP, "application-x-smb-workgroup"},
+        {CLASS_GROUP, "system-users"},
         {CLASS_PERSON, "avatar-default"},
         {CLASS_COMPUTER, "computer"},
         {CLASS_GP_CONTAINER, "folder-templates"},
