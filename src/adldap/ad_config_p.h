@@ -56,7 +56,7 @@ public:
 
     QList<ObjectClass> add_auxiliary_classes(const QList<QString> &object_classes) const;
 
-    QHash<QString, QString> right_to_guid_map;
+    QHash<QString, QByteArray> right_to_guid_map;
     QHash<QByteArray, QString> rights_guid_to_name_map;
     QHash<QString, QByteArray> rights_name_to_guid_map;
     QHash<QByteArray, QList<QString>> rights_applies_to_map;

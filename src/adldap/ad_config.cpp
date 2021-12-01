@@ -324,7 +324,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
                 return out;
             }();
 
-            d->right_to_guid_map[cn] = guid_string;
+            d->right_to_guid_map[cn] = guid;
             d->rights_guid_to_name_map[guid] = display_name;
             d->rights_name_to_guid_map[cn] = guid;
             d->rights_applies_to_map[guid] = applies_to;
@@ -577,8 +577,8 @@ bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
     return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);
 }
 
-QString AdConfig::get_right_guid(const QString &right_cn) const {
-    const QString out = d->right_to_guid_map.value(right_cn, QString());
+QByteArray AdConfig::get_right_guid(const QString &right_cn) const {
+    const QByteArray out = d->right_to_guid_map.value(right_cn, QByteArray());
     return out;
 }
 
