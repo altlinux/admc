@@ -299,6 +299,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_DISPLAY_NAME,
             ATTRIBUTE_RIGHTS_GUID,
             ATTRIBUTE_APPLIES_TO,
+            ATTRIBUTE_VALID_ACCESSES,
         };
 
         const QString search_base = extended_rights_dn();
@@ -323,12 +324,14 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
 
                 return out;
             }();
+            const int valid_accesses = object.get_int(ATTRIBUTE_VALID_ACCESSES);
 
             d->right_to_guid_map[cn] = guid;
             d->rights_guid_to_name_map[guid] = display_name;
             d->rights_name_to_guid_map[cn] = guid;
             d->rights_applies_to_map[guid] = applies_to;
             d->extended_rights_list.append(cn);
+            d->rights_valid_accesses_map[cn] = valid_accesses;
         }
     }
 }
@@ -597,6 +600,12 @@ QList<QString> AdConfig::get_extended_rights_list(const QList<QString> &class_li
             out.append(rights);
         }
     }
+
+    return out;
+}
+
+int AdConfig::get_rights_valid_accesses(const QString &rights_cn) const {
+    const int out = d->rights_valid_accesses_map.value(rights_cn, 0);
 
     return out;
 }
