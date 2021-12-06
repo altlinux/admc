@@ -166,7 +166,7 @@ void ObjectImpl::fetch(const QModelIndex &index) {
             out = filter_OR({object_filter, out});
         }
 
-        advanced_features_filter(out);
+        out = advanced_features_filter(out);
 
         return out;
     }();
