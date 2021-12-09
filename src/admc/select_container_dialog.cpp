@@ -109,8 +109,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
         QString out;
 
         out = is_container_filter();
-
-        advanced_features_filter(out);
+        out = advanced_features_filter(out);
 
         return out;
     }();

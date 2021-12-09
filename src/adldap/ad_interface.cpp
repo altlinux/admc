@@ -1653,7 +1653,33 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
         return false;
     }
 
-    const bool sd_match = (gpc_sd == gpt_sd);
+    // SD's match if they both contain all lines of the
+    // other one. Order doesn't matter. Note that
+    // simple equality doesn't work because entry order
+    // may not match.
+    // 
+    // NOTE: there's also a weird thing where RSAT
+    // creates GPO's with duplicate ace's for Domain
+    // Admins. Not sure why that happens but this
+    // matching method ignores that quirk.
+    const bool sd_match = [&]() {
+        const QList<QString> gpt_list = QString(gpt_sd).split(",");
+        const QList<QString> gpc_list = QString(gpc_sd).split(",");
+
+        for (const QString &line : gpt_list) {
+            if (!gpc_list.contains(line)) {
+                return false;
+            }
+        }
+
+        for (const QString &line : gpc_list) {
+            if (!gpt_list.contains(line)) {
+                return false;
+            }
+        }
+
+        return true;
+    }();
 
     return sd_match;
 }

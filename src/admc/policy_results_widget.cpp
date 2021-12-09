@@ -148,7 +148,13 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
     if (!perms_ok && ok) {
         const QString title = tr("Incorrect permissions detected");
         const QString text = tr("Permissions for this policy's GPT don't match the permissions for it's GPC object. Would you like to update GPT permissions?");
-        QMessageBox *sync_warning_dialog =message_box_warning(this, title, text);
+
+        auto sync_warning_dialog = new QMessageBox(this);
+        sync_warning_dialog->setAttribute(Qt::WA_DeleteOnClose);
+        sync_warning_dialog->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        sync_warning_dialog->setWindowTitle(title);
+        sync_warning_dialog->setText(text);
+        sync_warning_dialog->setIcon(QMessageBox::Warning);
 
         connect(
             sync_warning_dialog, &QDialog::accepted,

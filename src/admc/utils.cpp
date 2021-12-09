@@ -170,7 +170,7 @@ QIcon get_object_icon(const AdObject &object) {
         {CLASS_DOMAIN, "network-server"},
         {CLASS_CONTAINER, "folder"},
         {CLASS_OU, "folder-documents"},
-        {CLASS_GROUP, "application-x-smb-workgroup"},
+        {CLASS_GROUP, "system-users"},
         {CLASS_PERSON, "avatar-default"},
         {CLASS_COMPUTER, "computer"},
         {CLASS_GP_CONTAINER, "folder-templates"},
@@ -212,12 +212,16 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
 
 // Hide advanced view only" objects if advanced view setting
 // is off
-void advanced_features_filter(QString &filter) {
+QString advanced_features_filter(const QString &filter) {
     const bool advanced_features_OFF = !settings_get_variant(SETTING_advanced_features).toBool();
 
     if (advanced_features_OFF) {
         const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, LDAP_BOOL_TRUE);
-        filter = filter_AND({filter, advanced_features});
+        const QString out = filter_AND({filter, advanced_features});
+
+        return out;
+    } else {
+        return filter;
     }
 }
 

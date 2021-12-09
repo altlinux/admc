@@ -612,6 +612,12 @@ void ConsoleWidget::update_actions() {
 void ConsoleWidget::set_actions(const ConsoleWidgetActions &actions_arg) {
     d->actions = actions_arg;
 
+    // Setup exclusivity for view type actions
+    auto view_type_group = new QActionGroup(this);
+    view_type_group->addAction(d->actions.view_icons);
+    view_type_group->addAction(d->actions.view_list);
+    view_type_group->addAction(d->actions.view_detail);
+
     connect(
         d->actions.navigate_up, &QAction::triggered,
         d, &ConsoleWidgetPrivate::on_navigate_up);

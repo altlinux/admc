@@ -90,7 +90,7 @@ QIcon get_object_icon(const AdObject &object);
 
 QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes);
 
-void advanced_features_filter(QString &filter);
+QString advanced_features_filter(const QString &filter);
 
 void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base);
 
