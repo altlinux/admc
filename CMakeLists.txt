@@ -7,17 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # NOTE: need largefile options to prevent problems with
 # smbclient on 32bit systems
-add_compile_options(-Wall -Wextra -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
-
-# NOTE: Turn warnings into errors only for debug build.
-# Release builds shouldn't have this because they are
-# built for different repo's, architectures and
-# compiler versions which can all produce different
-# warnings, which breaks the build if they are treated
-# as  errors.
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_compile_options(-Werror=unused-parameter -Werror=unused-variable -Werror=shadow -Werror=switch)
-endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
+add_compile_options(-Wall -Wextra -Werror=shadow -Werror=switch -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64)
 
 # You can get version from spec by first finding Versions keyword.
 # After that you can use awk to split line by : and then select second part of it.
