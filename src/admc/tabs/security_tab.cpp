@@ -37,118 +37,170 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
+#include <QSortFilterProxyModel>
+
+struct security_descriptor;
 
 enum TrusteeItemRole {
     TrusteeItemRole_Sid = Qt::UserRole,
 };
 
-enum AcePermissionItemRole {
-    AcePermissionItemRole_Permission = Qt::UserRole,
+enum EditAction {
+    EditAction_None,
+    EditAction_Add,
+    EditAction_Remove,
 };
 
-QHash<AcePermission, QString> SecurityTab::ace_permission_to_name_map() {
-    return {
-        {AcePermission_FullControl, tr("Full control")},
-        {AcePermission_Read, tr("Read")},
-        {AcePermission_Write, tr("Write")},
-        {AcePermission_Delete, tr("Delete")},
-        {AcePermission_DeleteSubtree, tr("Delete subtree")},
-        {AcePermission_CreateChild, tr("Create child")},
-        {AcePermission_DeleteChild, tr("Delete child")},
-        {AcePermission_AllowedToAuthenticate, tr("Allowed to authenticate")},
-        {AcePermission_ChangePassword, tr("Change password")},
-        {AcePermission_ReceiveAs, tr("Receive as")},
-        {AcePermission_ResetPassword, tr("Reset password")},
-        {AcePermission_SendAs, tr("Send as")},
-        {AcePermission_ReadAccountRestrictions, tr("Read Account restrictions")},
-        {AcePermission_WriteAccountRestrictions, tr("Write Account restrictions")},
-        {AcePermission_ReadGeneralInfo, tr("Read general info")},
-        {AcePermission_WriteGeneralInfo, tr("Write general info")},
-        {AcePermission_ReadGroupMembership, tr("Read group membership")},
-        {AcePermission_ReadLogonInfo, tr("Read logon info")},
-        {AcePermission_WriteLogonInfo, tr("Write logon info")},
-        {AcePermission_ReadPersonalInfo, tr("Read personal info")},
-        {AcePermission_WritePersonalInfo, tr("Write personal info")},
-        {AcePermission_ReadPhoneAndMailOptions, tr("Read phone and mail options")},
-        {AcePermission_WritePhoneAndMailOptions, tr("Write phone and mail options")},
-        {AcePermission_ReadPrivateInfo, tr("Read private info")},
-        {AcePermission_WritePrivateInfo, tr("Write private info")},
-        {AcePermission_ReadPublicInfo, tr("Read public info")},
-        {AcePermission_WritePublicInfo, tr("Write public info")},
-        {AcePermission_ReadRemoteAccessInfo, tr("Read remote access info")},
-        {AcePermission_WriteRemoteAccessInfo, tr("Write remote access info")},
-        {AcePermission_ReadTerminalServerLicenseServer, tr("Read terminal server license server")},
-        {AcePermission_WriteTerminalServerLicenseServer, tr("Write terminal server license server")},
-        {AcePermission_ReadWebInfo, tr("Read web info")},
-        {AcePermission_WriteWebInfo, tr("Write web info")},
-    };
+enum RightsItemRole {
+    RightsItemRole_AccessMask = Qt::UserRole,
+    RightsItemRole_ObjectType,
+    RightsItemRole_ObjectTypeName,
+};
+
+// NOTE: this is also used for display order
+const QList<uint32_t> common_rights_list = {
+    SEC_ADS_GENERIC_ALL,
+    SEC_ADS_GENERIC_READ,
+    SEC_ADS_GENERIC_WRITE,
+    SEC_ADS_CREATE_CHILD,
+    SEC_ADS_DELETE_CHILD,
+};
+
+class SecurityRight {
+public:
+    uint32_t access_mask;
+    QByteArray object_type;
+};
+
+class RightsSortModel final : public QSortFilterProxyModel {
+public:
+    using QSortFilterProxyModel::QSortFilterProxyModel;
+
+    bool lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const override {
+        const QString name_left = source_left.data(Qt::DisplayRole).toString();
+        const QString name_right = source_right.data(Qt::DisplayRole).toString();
+        const QString object_type_name_left = source_left.data(RightsItemRole_ObjectTypeName).toString();
+        const QString object_type_name_right = source_right.data(RightsItemRole_ObjectTypeName).toString();
+        const QByteArray object_type_left = source_left.data(RightsItemRole_ObjectType).toByteArray();
+        const QByteArray object_type_right = source_right.data(RightsItemRole_ObjectType).toByteArray();
+        const uint32_t access_mask_left = source_left.data(RightsItemRole_AccessMask).toUInt();
+        const uint32_t access_mask_right = source_right.data(RightsItemRole_AccessMask).toUInt();
+        const bool is_common_left = object_type_left.isEmpty();
+        const bool is_common_right = object_type_right.isEmpty();
+        const bool is_control_left = (access_mask_left == SEC_ADS_CONTROL_ACCESS);
+        const bool is_control_right = (access_mask_right == SEC_ADS_CONTROL_ACCESS);
+        const bool is_read_left = (access_mask_left == SEC_ADS_READ_PROP);
+        const bool is_read_right = (access_mask_right == SEC_ADS_READ_PROP);
+
+        // Generic are before non-generic
+        if (is_common_left != is_common_right) {
+            return is_common_left;
+        }
+
+        // Generic among generic are in pre-defined order
+        if (is_common_left && is_common_right) {
+            const int common_index_left = common_rights_list.indexOf(access_mask_left);
+            const int common_index_right = common_rights_list.indexOf(access_mask_right);
+
+            return (common_index_left < common_index_right);
+        }
+
+        // Control rights are before read/write rights
+        if (is_control_left != is_control_right) {
+            return is_control_left;
+        }
+
+        // Control rights are sorted by name
+        if (is_control_left && is_control_right) {
+            return name_left < name_right;
+        }
+
+        // Read/write rights are sorted by name
+        if (object_type_left != object_type_right) {
+            return object_type_name_left < object_type_name_right;
+        }
+
+        // Read rights are before write rights
+        if (is_read_left != is_read_right) {
+            return is_read_left;
+        }
+
+        return name_left < name_right;
+    }
+};
+
+QList<SecurityRight> get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list) {
+    QList<SecurityRight> out;
+
+    for (const uint32_t &access_mask : common_rights_list) {
+        SecurityRight right;
+        right.access_mask = access_mask;
+        right.object_type = QByteArray();
+
+        out.append(right);
+    }
+
+    const QList<QString> extended_rights_list = adconfig->get_extended_rights_list(class_list);
+    for (const QString &rights : extended_rights_list) {
+        const int valid_accesses = adconfig->get_rights_valid_accesses(rights);
+        const QByteArray rights_guid = adconfig->get_right_guid(rights);
+        const QList<uint32_t> access_mask_list = {
+            SEC_ADS_CONTROL_ACCESS,
+            SEC_ADS_READ_PROP,
+            SEC_ADS_WRITE_PROP,
+        };
+
+        for (const uint32_t &access_mask : access_mask_list) {
+            const bool mask_match = bit_is_set(valid_accesses, access_mask);
+
+            if (mask_match) {
+                SecurityRight right;
+                right.access_mask = access_mask;
+                right.object_type = rights_guid;
+
+                out.append(right);
+            }
+        }
+    }
+
+    return out;
 }
 
 SecurityTab::SecurityTab() {
     ui = new Ui::SecurityTab();
     ui->setupUi(this);
 
+    sd = nullptr;
+
+    modified = false;
+
     ignore_item_changed_signal = false;
 
     trustee_model = new QStandardItemModel(0, 1, this);
 
     ui->trustee_view->setModel(trustee_model);
-    ui->trustee_view->sortByColumn(0, Qt::AscendingOrder);
-
-    ace_model = new QStandardItemModel(0, AceColumn_COUNT, this);
-    set_horizontal_header_labels_from_map(ace_model,
+    
+    rights_model = new QStandardItemModel(0, AceColumn_COUNT, this);
+    set_horizontal_header_labels_from_map(rights_model,
         {
             {AceColumn_Name, tr("Name")},
             {AceColumn_Allowed, tr("Allowed")},
             {AceColumn_Denied, tr("Denied")},
         });
 
-    // Fill ace model
-    for (const AcePermission &permission : all_permissions_list) {
-        const QList<QStandardItem *> row = make_item_row(AceColumn_COUNT);
+    rights_sort_model = new RightsSortModel(this);
+    rights_sort_model->setSourceModel(rights_model);
 
-        const QString mask_string = ace_permission_to_name_map()[permission];
-        row[AceColumn_Name]->setText(mask_string);
+    ui->rights_view->setModel(rights_sort_model);
+    ui->rights_view->setColumnWidth(AceColumn_Name, 400);
 
-        row[AceColumn_Allowed]->setCheckable(true);
-        row[AceColumn_Denied]->setCheckable(true);
-
-        row[0]->setData(permission, AcePermissionItemRole_Permission);
-
-        ace_model->appendRow(row);
-    }
-
-    permission_item_map = [&]() {
-        QHash<AcePermission, QHash<AceColumn, QStandardItem *>> out;
-
-        for (int row = 0; row < ace_model->rowCount(); row++) {
-            QStandardItem *main_item = ace_model->item(row, 0);
-            const AcePermission permission = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
-
-            const QList<AceColumn> column_list = {
-                AceColumn_Allowed,
-                AceColumn_Denied,
-            };
-
-            for (const AceColumn &column : column_list) {
-                QStandardItem *item = ace_model->item(row, column);
-                out[permission][column] = item;
-            }
-        }
-
-        return out;
-    }();
-
-    ui->ace_view->setModel(ace_model);
-    ui->ace_view->setColumnWidth(AceColumn_Name, 400);
-
-    settings_restore_header_state(SETTING_security_tab_header_state, ui->ace_view->header());
+    settings_restore_header_state(SETTING_security_tab_header_state, ui->rights_view->header());
 
     connect(
         ui->trustee_view->selectionModel(), &QItemSelectionModel::currentChanged,
-        this, &SecurityTab::load_trustee_acl);
+        this, &SecurityTab::load_rights_model);
     connect(
-        ace_model, &QStandardItemModel::itemChanged,
+        rights_model, &QStandardItemModel::itemChanged,
         this, &SecurityTab::on_item_changed);
     connect(
         ui->add_trustee_button, &QAbstractButton::clicked,
@@ -162,41 +214,312 @@ SecurityTab::SecurityTab() {
 }
 
 SecurityTab::~SecurityTab() {
-    settings_save_header_state(SETTING_security_tab_header_state, ui->ace_view->header());
+    settings_save_header_state(SETTING_security_tab_header_state, ui->rights_view->header());
+
+    if (sd != nullptr) {
+        security_descriptor_free(sd);
+    }
 
     delete ui;
 }
 
-void SecurityTab::load(AdInterface &ad, const AdObject &object) {
-    trustee_model->removeRows(0, trustee_model->rowCount());
+// Load sd data into trustee model and rights model
+// NOTE: load_rights_model() is not explicitly called
+// here but it is called implicitly because
+// setCurrentIndex() emits currentChanged() signal
+// which calls load_rights_model()
+void SecurityTab::load_current_sd(AdInterface &ad) {
+    // Save previous selected trustee before reloading
+    // trustee model. This is for the case where we
+    // need to restore selection later.
+    const QByteArray previous_selected_trustee = [&]() {
+        const QList<QModelIndex> selected_list = ui->trustee_view->selectionModel()->selectedRows();
 
-    // Add items to trustee model
-    const QList<QByteArray> trustee_list = ad_security_get_trustee_list_from_object(object);
+        if (!selected_list.isEmpty()) {
+            const QModelIndex selected = selected_list[0];
+            const QByteArray out = selected.data(TrusteeItemRole_Sid).toByteArray();
+
+            return out;
+        } else {
+            return QByteArray();
+        }
+    }();
+
+    // Load trustee model
+    trustee_model->removeRows(0, trustee_model->rowCount());
+    const QList<QByteArray> trustee_list = security_descriptor_get_trustee_list(sd);
     add_trustees(trustee_list, ad);
 
-    trustee_model->sort(0, Qt::AscendingOrder);
+    // Select a trustee
+    // 
+    // Note that trustee view must always have a
+    // selection so that rights view displays
+    // something. We also restore
+    const QModelIndex selected_trustee = [&]() {
+        const QModelIndex first_index = trustee_model->index(0,0);
 
-    permission_state_map = object.get_security_state(g_adconfig);
+        // Restore previously selected trustee
+        const QList<QModelIndex> match_list = trustee_model->match(first_index, TrusteeItemRole_Sid, previous_selected_trustee, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
 
-    original_permission_state_map = permission_state_map;
+        if (!match_list.isEmpty()) {
+            return match_list[0];
+        } else {
+            return first_index;
+        }
+    }();
 
-    // Select first index
-    // NOTE: load_trustee_acl() is called because setCurrentIndex
-    // emits "current change" signal
-    ui->trustee_view->selectionModel()->setCurrentIndex(trustee_model->index(0, 0), QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    ui->trustee_view->selectionModel()->setCurrentIndex(selected_trustee, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+}
+
+void SecurityTab::load(AdInterface &ad, const AdObject &object) {
+    security_descriptor_free(sd);
+    sd = object.get_security_descriptor();
+
+    target_class_list = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+
+    // Create items in rights model. These will not
+    // change until target object changes. Only the
+    // state of items changes during editing.
+    const QList<SecurityRight> right_list = get_right_list_for_class(g_adconfig, target_class_list);
+
+    for (const SecurityRight &right : right_list) {
+        const QList<QStandardItem *> row = make_item_row(AceColumn_COUNT);
+
+        // TODO: for russian, probably do "read/write
+        // property - [property name]" to avoid having
+        // to do suffixes properties
+        const QString right_name = ad_security_get_right_name(g_adconfig, right.access_mask, right.object_type);
+
+        const QString object_type_name = g_adconfig->get_right_name(right.object_type);
+
+        row[AceColumn_Name]->setText(right_name);
+        row[AceColumn_Allowed]->setCheckable(true);
+        row[AceColumn_Denied]->setCheckable(true);
+
+        row[0]->setData(right.access_mask, RightsItemRole_AccessMask);
+        row[0]->setData(right.object_type, RightsItemRole_ObjectType);
+        row[0]->setData(object_type_name, RightsItemRole_ObjectTypeName);
+
+        rights_model->appendRow(row);
+    }
+
+    rights_sort_model->sort(0);
+
+    load_current_sd(ad);
 
     is_policy = object.is_class(CLASS_GP_CONTAINER);
 
     PropertiesTab::load(ad, object);
 }
 
-void SecurityTab::load_trustee_acl() {
+// Load rights model based on current sd and current
+// trustee
+void SecurityTab::load_rights_model() {
     const QModelIndex current_index = ui->trustee_view->currentIndex();
     if (!current_index.isValid()) {
         return;
     }
 
-    apply_current_state_to_items();
+    // NOTE: this flag is turned on so that
+    // on_item_changed() slot doesn't react to us
+    // changing state of items
+    ignore_item_changed_signal = true;
+
+    const QByteArray trustee = get_current_trustee();
+
+    for (int row = 0; row < rights_model->rowCount(); row++) {
+        const SecurityRightState state = [&]() {
+            QStandardItem *item = rights_model->item(row, 0);
+            const uint32_t access_mask = item->data(RightsItemRole_AccessMask).toUInt();
+
+            const QByteArray object_type = item->data(RightsItemRole_ObjectType).toByteArray();
+            const SecurityRightState out = security_descriptor_get_right(sd, trustee, access_mask, object_type);
+
+            return out;
+        }();
+
+        const QHash<SecurityRightStateType, QStandardItem *> item_map = {
+            {SecurityRightStateType_Allow, rights_model->item(row, AceColumn_Allowed)},
+            {SecurityRightStateType_Deny, rights_model->item(row, AceColumn_Denied)},
+        };
+
+        for (int type_i = 0; type_i < SecurityRightStateType_COUNT; type_i++) {
+            const SecurityRightStateType type = (SecurityRightStateType) type_i;
+
+            QStandardItem *item = item_map[type];
+
+            const bool object_state = state.get(SecurityRightStateInherited_No, type);
+            const bool inherited_state = state.get(SecurityRightStateInherited_Yes, type);
+
+            // Checkboxes become disabled if they
+            // contain only inherited state. Note that
+            // if there's both inherited and object
+            // state for same right, checkbox is
+            // enabled so that user can remove object
+            // state.
+            const bool disabled = (inherited_state && !object_state);
+            item->setEnabled(!disabled);
+
+            const Qt::CheckState check_state = [&]() {
+                if (object_state || inherited_state) {
+                    return Qt::Checked;
+                } else {
+                    return Qt::Unchecked;
+                }
+            }();
+            item->setCheckState(check_state);
+        }
+    }
+
+    ignore_item_changed_signal = false;
+}
+
+QList<uint32_t> get_superior_right_list(const uint32_t access_mask) {
+    QList<uint32_t> out;
+
+    // NOTE: order is important, because we want to
+    // process "more superior" rights first. "Generic
+    // all" is more superior than others.
+    if (access_mask == SEC_ADS_READ_PROP) {
+        out.append(SEC_ADS_GENERIC_ALL);
+        out.append(SEC_ADS_GENERIC_READ);
+    } else if (access_mask == SEC_ADS_WRITE_PROP) {
+        out.append(SEC_ADS_GENERIC_ALL);
+        out.append(SEC_ADS_GENERIC_WRITE);
+    } else if (access_mask == SEC_ADS_CONTROL_ACCESS) {
+        out.append(SEC_ADS_GENERIC_ALL);
+    } else if (access_mask == SEC_ADS_GENERIC_READ || access_mask == SEC_ADS_GENERIC_WRITE) {
+        out.append(SEC_ADS_GENERIC_ALL);
+    }
+
+    return out;
+}
+
+QList<SecurityRight> get_subordinate_right_list(const uint32_t access_mask, const QList<QString> &class_list) {
+    QList<SecurityRight> out;
+
+    const QList<SecurityRight> right_list_for_target = get_right_list_for_class(g_adconfig, class_list);
+
+    for (const SecurityRight &right : right_list_for_target) {
+        const bool match = [&]() {
+            if (access_mask == SEC_ADS_GENERIC_ALL) {
+                // All except full control
+                return (right.access_mask != access_mask);
+            } else if (access_mask == SEC_ADS_GENERIC_READ) {
+                // All read property rights
+                return (right.access_mask == SEC_ADS_READ_PROP);
+            } else if (access_mask == SEC_ADS_GENERIC_WRITE) {
+                // All write property rights
+                return (right.access_mask == SEC_ADS_WRITE_PROP);
+            } else {
+                return false;
+            }
+        }();
+
+        if (match) {
+            out.append(right);
+        }
+    }
+
+    return out;
+}
+
+void SecurityTab::add_right(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
+    const QList<uint32_t> superior_list = get_superior_right_list(access_mask);
+    for (const uint32_t &superior : superior_list) {
+        const bool opposite_superior_is_set = [&]() {
+            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior, QByteArray());
+            const SecurityRightStateType type = [&]() {
+                // NOTE: opposite!
+                if (!allow) {
+                    return SecurityRightStateType_Allow;
+                } else {
+                    return SecurityRightStateType_Deny;
+                }
+            }();
+            const bool out = state.get(SecurityRightStateInherited_No, type);
+
+            return out;
+        }();
+
+        // NOTE: skip superior if it's not set, so that
+        // we don't add opposite subordinate rights
+        // when not needed
+        if (!opposite_superior_is_set) {
+            continue;
+        }
+
+        // Remove opposite superior
+        security_descriptor_remove_right(sd, trustee, superior, QByteArray(), !allow);
+
+        // Add opposite superior subordinates
+        const QList<SecurityRight> superior_subordinate_list = get_subordinate_right_list(superior, target_class_list);
+        for (const SecurityRight &subordinate : superior_subordinate_list) {
+
+            security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
+        }
+    }
+
+    // Remove subordinates
+    const QList<SecurityRight> subordinate_list = get_subordinate_right_list(access_mask, target_class_list);
+    for (const SecurityRight &subordinate : subordinate_list) {
+        security_descriptor_remove_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
+    }
+
+    // Remove opposite
+    security_descriptor_remove_right(sd, trustee, access_mask, object_type, !allow);
+
+    // Remove opposite subordinates
+    for (const SecurityRight &subordinate : subordinate_list) {
+        security_descriptor_remove_right(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
+    }
+
+    // Add target
+    security_descriptor_add_right(sd, trustee, access_mask, object_type, allow);
+}
+
+void SecurityTab::remove_right(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
+    const QList<uint32_t> target_superior_list = get_superior_right_list(access_mask);
+
+    // Remove superiors
+    for (const uint32_t &superior : target_superior_list) {
+        const bool superior_is_set = [&]() {
+            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior, QByteArray());
+            const SecurityRightStateType type = [&]() {
+                if (allow) {
+                    return SecurityRightStateType_Allow;
+                } else {
+                    return SecurityRightStateType_Deny;
+                }
+            }();
+            const bool out = state.get(SecurityRightStateInherited_No, type);
+
+            return out;
+        }();
+
+        // NOTE: skip superior if it's not set, so that we don't add opposite subordinate rights when not needed
+        if (!superior_is_set) {
+            continue;
+        }
+
+        security_descriptor_remove_right(sd, trustee, superior, QByteArray(), allow);
+        
+        const QList<SecurityRight> superior_subordinate_list = get_subordinate_right_list(superior, target_class_list);
+
+        // Add opposite subordinate rights
+        for (const SecurityRight &subordinate : superior_subordinate_list) {
+            security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
+        }
+    }
+
+    // Remove target right
+    security_descriptor_remove_right(sd, trustee, access_mask, object_type, allow);
+
+    // Add target subordinate rights
+    const QList<SecurityRight> target_subordinate_right_list = get_subordinate_right_list(access_mask, target_class_list);
+    for (const SecurityRight &subordinate : target_subordinate_right_list) {
+        security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
+    }
 }
 
 void SecurityTab::on_item_changed(QStandardItem *item) {
@@ -212,65 +535,30 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
         return;
     }
 
-    const AcePermission permission = [&]() {
-        QStandardItem *main_item = ace_model->item(item->row(), 0);
-        const AcePermission out = (AcePermission) main_item->data(AcePermissionItemRole_Permission).toInt();
+    QStandardItem *main_item = rights_model->item(item->row(), 0);
 
-        return out;
-    }();
+    const bool checked = (item->checkState() == Qt::Checked);
 
-    const PermissionState new_state = [&]() {
-        const bool checked = (item->checkState() == Qt::Checked);
-        const bool allowed = (column == AceColumn_Allowed);
+    const QByteArray trustee = get_current_trustee();
+    const uint32_t access_mask = main_item->data(RightsItemRole_AccessMask).toUInt();
+    const QByteArray object_type = main_item->data(RightsItemRole_ObjectType).toByteArray();
+    const bool allow = (column == AceColumn_Allowed);
 
-        if (checked) {
-            if (allowed) {
-                return PermissionState_Allowed;
-            } else {
-                return PermissionState_Denied;
-            }
-        } else {
-            // NOTE: the case of opposite column being
-            // checked while this one becomes unchecked is
-            // impossible, so ignore it
-            return PermissionState_None;
-        }
-    }();
+    if (checked) {
+        add_right(trustee, access_mask, object_type, allow);
+    } else {
+        remove_right(trustee, access_mask, object_type, allow);
+    }
 
-    const QByteArray trustee = [&]() {
-        const QModelIndex current_index = ui->trustee_view->currentIndex();
-        QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
-        const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
+    load_rights_model();
 
-        return out;
-    }();
-
-    permission_state_map = ad_security_modify(permission_state_map, trustee, permission, new_state);
-    apply_current_state_to_items();
+    modified = true;
 
     emit edited();
 }
 
-QStandardItem *SecurityTab::get_item(const AcePermission permission, const AceColumn column) {
-    return permission_item_map[permission][column];
-}
-
-bool SecurityTab::set_trustee(const QString &trustee_name) {
-    const QList<QStandardItem *> item_list = trustee_model->findItems(trustee_name);
-
-    if (item_list.isEmpty()) {
-        return false;
-    }
-
-    const QStandardItem *item = item_list[0];
-    ui->trustee_view->setCurrentIndex(item->index());
-
-    return true;
-}
-
 bool SecurityTab::verify(AdInterface &ad, const QString &target) const {
     UNUSED_ARG(target);
-
     if (is_policy) {
         // To apply security tab for policies we need user
         // to have admin rights to be able to sync perms of
@@ -284,20 +572,19 @@ bool SecurityTab::verify(AdInterface &ad, const QString &target) const {
 }
 
 bool SecurityTab::apply(AdInterface &ad, const QString &target) {
-    const bool modified = (original_permission_state_map != permission_state_map);
     if (!modified) {
         return true;
     }
 
     bool total_success = true;
 
-    total_success &= attribute_replace_security_descriptor(&ad, target, permission_state_map);
-
-    original_permission_state_map = permission_state_map;
+    total_success &= ad_security_replace_security_descriptor(ad, target, sd);
 
     if (is_policy) {
         total_success &= ad.gpo_sync_perms(target);
     }
+
+    modified = false;
 
     return total_success;
 }
@@ -336,60 +623,41 @@ void SecurityTab::on_add_trustee_button() {
 }
 
 void SecurityTab::on_remove_trustee_button() {
-    QItemSelectionModel *selection_model = ui->trustee_view->selectionModel();
-    const QList<QPersistentModelIndex> selected_list = persistent_index_list(selection_model->selectedRows());
-
-    for (const QPersistentModelIndex &index : selected_list) {
-        const QByteArray sid = index.data(TrusteeItemRole_Sid).toByteArray();
-        permission_state_map.remove(sid);
-
-        trustee_model->removeRow(index.row());
+    AdInterface ad;
+    if (ad_failed(ad, this)) {
+        return;
     }
 
-    if (!selected_list.isEmpty()) {
-        emit edited();
-    }
-}
+    const QList<QByteArray> removed_trustee_list = [&]() {
+        QList<QByteArray> out;
 
-// NOTE: a flag is set to avoid triggering on_item_changed()
-// slot due to setCheckState() calls. Otherwise it would
-// recurse and do all kinds of bad stuff.
-void SecurityTab::apply_current_state_to_items() {
-    ignore_item_changed_signal = true;
+        QItemSelectionModel *selection_model = ui->trustee_view->selectionModel();
+        const QList<QPersistentModelIndex> selected_list = persistent_index_list(selection_model->selectedRows());
 
-    const QByteArray trustee = [&]() {
-        const QModelIndex current_index = ui->trustee_view->currentIndex();
-        QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
-        const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
+        for (const QPersistentModelIndex &index : selected_list) {
+            const QByteArray sid = index.data(TrusteeItemRole_Sid).toByteArray();
+
+            out.append(sid);
+        }
 
         return out;
     }();
 
-    for (const AcePermission &permission : all_permissions) {
-        QStandardItem *allowed = permission_item_map[permission][AceColumn_Allowed];
-        QStandardItem *denied = permission_item_map[permission][AceColumn_Denied];
-        const PermissionState state = permission_state_map[trustee][permission];
+    // Remove from sd
+    security_descriptor_remove_trustee(sd, removed_trustee_list);
 
-        switch (state) {
-            case PermissionState_None: {
-                allowed->setCheckState(Qt::Unchecked);
-                denied->setCheckState(Qt::Unchecked);
-                break;
-            };
-            case PermissionState_Allowed: {
-                allowed->setCheckState(Qt::Checked);
-                denied->setCheckState(Qt::Unchecked);
-                break;
-            }
-            case PermissionState_Denied: {
-                allowed->setCheckState(Qt::Unchecked);
-                denied->setCheckState(Qt::Checked);
-                break;
-            }
-        }
+    // Reload sd
+    // 
+    // NOTE: we do this instead of removing selected
+    // indexes because not all trustee's are guaranteed
+    // to have been removed
+    load_current_sd(ad);
+
+    const bool removed_any = !removed_trustee_list.isEmpty();
+
+    if (removed_any) {
+        emit edited();
     }
-
-    ignore_item_changed_signal = false;
 }
 
 void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad) {
@@ -428,6 +696,8 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
         added_anything = true;
     }
 
+    ui->trustee_view->sortByColumn(0, Qt::AscendingOrder);
+
     if (added_anything) {
         emit edited();
     }
@@ -454,4 +724,12 @@ void SecurityTab::on_add_well_known_trustee() {
 
             add_trustees(trustee_list, ad);
         });
+}
+
+QByteArray SecurityTab::get_current_trustee() const {
+    const QModelIndex current_index = ui->trustee_view->currentIndex();
+    QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
+    const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
+
+    return out;
 }

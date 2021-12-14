@@ -57,7 +57,7 @@ void ProtectDeletionEdit::set_read_only(const bool read_only) {
 
 bool ProtectDeletionEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool enabled = check->isChecked();
-    const bool apply_success = ad_security_set_protected_against_deletion(ad, dn, g_adconfig, enabled);
+    const bool apply_success = ad_security_set_protected_against_deletion(ad, dn, enabled);
 
     return apply_success;
 }

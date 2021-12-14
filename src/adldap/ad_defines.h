@@ -247,50 +247,6 @@ const long long MILLIS_TO_100_NANOS = 10000LL;
 #define SACL_SECURITY_INFORMATION 0x08
 #define DACL_SECURITY_INFORMATION 0x10
 
-enum PermissionState {
-    PermissionState_None,
-    PermissionState_Allowed,
-    PermissionState_Denied,
-};
-
-enum AcePermission {
-    AcePermission_FullControl,
-    AcePermission_Read,
-    AcePermission_Write,
-    AcePermission_Delete,
-    AcePermission_DeleteSubtree,
-    AcePermission_CreateChild,
-    AcePermission_DeleteChild,
-    AcePermission_AllowedToAuthenticate,
-    AcePermission_ChangePassword,
-    AcePermission_ReceiveAs,
-    AcePermission_ResetPassword,
-    AcePermission_SendAs,
-    AcePermission_ReadAccountRestrictions,
-    AcePermission_WriteAccountRestrictions,
-    AcePermission_ReadGeneralInfo,
-    AcePermission_WriteGeneralInfo,
-    AcePermission_ReadGroupMembership,
-    AcePermission_ReadLogonInfo,
-    AcePermission_WriteLogonInfo,
-    AcePermission_ReadPersonalInfo,
-    AcePermission_WritePersonalInfo,
-    AcePermission_ReadPhoneAndMailOptions,
-    AcePermission_WritePhoneAndMailOptions,
-    AcePermission_ReadPrivateInfo,
-    AcePermission_WritePrivateInfo,
-    AcePermission_ReadPublicInfo,
-    AcePermission_WritePublicInfo,
-    AcePermission_ReadRemoteAccessInfo,
-    AcePermission_WriteRemoteAccessInfo,
-    AcePermission_ReadTerminalServerLicenseServer,
-    AcePermission_WriteTerminalServerLicenseServer,
-    AcePermission_ReadWebInfo,
-    AcePermission_WriteWebInfo,
-
-    AcePermission_COUNT,
-};
-
 enum SearchScope {
     SearchScope_Object,
     SearchScope_Children,

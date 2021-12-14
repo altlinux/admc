@@ -27,8 +27,12 @@
 
 #include <QDialog>
 
+class RightsSortModel;
 class QStandardItemModel;
 class QStandardItem;
+class SecurityTabPrivate;
+class SecurityDescriptor;
+struct security_descriptor;
 
 enum AceColumn {
     AceColumn_Name,
@@ -51,34 +55,32 @@ public:
     SecurityTab();
     ~SecurityTab();
 
-    static QHash<AcePermission, QString> ace_permission_to_name_map();
-
     void load(AdInterface &ad, const AdObject &object) override;
     bool verify(AdInterface &ad, const QString &target) const override;
     bool apply(AdInterface &ad, const QString &target) override;
 
-    // NOTE: f-ns for testings
-    QStandardItem *get_item(const AcePermission permission, const AceColumn column);
-    bool set_trustee(const QString &trustee_name);
-
-private slots:
-    void load_trustee_acl();
-
 private:
+    SecurityTabPrivate *d;
     QStandardItemModel *trustee_model;
-    QStandardItemModel *ace_model;
-    QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
-    QHash<QByteArray, QHash<AcePermission, PermissionState>> original_permission_state_map;
-    QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
-    bool ignore_item_changed_signal;
+    QStandardItemModel *rights_model;
+    RightsSortModel *rights_sort_model;
     bool is_policy;
+    bool ignore_item_changed_signal;
+    bool modified;
+    security_descriptor *sd;
+    QList<QString> target_class_list;
 
     void on_item_changed(QStandardItem *item);
     void on_add_trustee_button();
     void on_remove_trustee_button();
-    void apply_current_state_to_items();
     void add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad);
     void on_add_well_known_trustee();
+    void load_current_sd(AdInterface &ad);
+    void load_rights_model();
+    QByteArray get_current_trustee() const;
+
+    void remove_right(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
+    void add_right(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
 };
 
 #endif /* SECURITY_TAB_H */

@@ -83,4 +83,6 @@ QByteArray sid_string_to_bytes(const QString &sid_string);
 
 QString attribute_type_display_string(const AttributeType type);
 
+QString int_to_hex_string(const int n);
+
 #endif /* AD_UTILS_H */

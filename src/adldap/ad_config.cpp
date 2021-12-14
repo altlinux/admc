@@ -25,6 +25,9 @@
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_utils.h"
+#include "ad_security.h"
+
+#include "samba/ndr_security.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -605,6 +608,14 @@ QList<QString> AdConfig::get_extended_rights_list(const QList<QString> &class_li
 }
 
 int AdConfig::get_rights_valid_accesses(const QString &rights_cn) const {
+    // NOTE: awkward exception. Can't write group
+    // membership because target attribute is
+    // constructed. For some reason valid accesses for
+    // membership right does allow writing.
+    if (rights_cn == "Membership") {
+        return SEC_ADS_READ_PROP;
+    }
+
     const int out = d->rights_valid_accesses_map.value(rights_cn, 0);
 
     return out;

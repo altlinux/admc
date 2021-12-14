@@ -19,7 +19,8 @@
  */
 
 /** 
- * Functions for working with security descriptors.
+ * Functions for working with AD security and security
+ * descriptors.
  */
 
 #ifndef AD_SECURITY_H
@@ -28,40 +29,78 @@
 #include "ad_defines.h"
 
 #include <QByteArray>
-#include <QHash>
-#include <QSet>
-#include <QString>
 
 class AdInterface;
 class AdConfig;
 class AdObject;
 struct security_descriptor;
 struct dom_sid;
+typedef void TALLOC_CTX;
 
 extern const QList<QString> well_known_sid_list;
-extern const QHash<AcePermission, uint32_t> ace_permission_to_mask_map;
-extern const QHash<AcePermission, QString> ace_permission_to_type_map;
-extern const QList<AcePermission> all_permissions_list;
-extern const QSet<AcePermission> all_permissions;
-extern const QSet<AcePermission> access_permissions;
-extern const QSet<AcePermission> read_prop_permissions;
-extern const QSet<AcePermission> write_prop_permissions;
 
-QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &current, const QByteArray &trustee, const AcePermission permission, const PermissionState new_state);
+enum SecurityRightStateType {
+    SecurityRightStateType_Allow,
+    SecurityRightStateType_Deny,
+    SecurityRightStateType_COUNT,
+};
+
+enum SecurityRightStateInherited {
+    SecurityRightStateInherited_Yes,
+    SecurityRightStateInherited_No,
+    SecurityRightStateInherited_COUNT,
+};
+
+class SecurityRightState {
+public:
+    SecurityRightState(const bool data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT]);
+
+    bool get(const SecurityRightStateInherited inherited, const SecurityRightStateType type) const;
+
+private:
+    bool data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT];
+};
+
 QString ad_security_get_well_known_trustee_name(const QByteArray &trustee);
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee);
-bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg);
-QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject &object);
-QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig);
 bool ad_security_get_protected_against_deletion(const AdObject &object, AdConfig *config);
-bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString dn, AdConfig *config, const bool enabled);
+bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString dn, const bool enabled);
+bool ad_security_get_user_cant_change_pass(const AdObject *object, AdConfig *adconfig);
+bool ad_security_set_user_cant_change_pass(AdInterface *ad, const QString &dn, const bool enabled);
+bool ad_security_replace_security_descriptor(AdInterface &ad, const QString &dn, security_descriptor *new_sd);
 
-// NOTE: have to talloc_free() returned sd
-security_descriptor *ad_security_get_sd(const AdObject &object);
+// Returns the full right name, adding "Write" or
+// "Read" depending on access mask.
+QString ad_security_get_right_name(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type);
 
-void ad_security_sort_dacl(security_descriptor *sd);
+// NOTE: returned sd needs to be free'd with
+// security_descriptor_free()
+security_descriptor *security_descriptor_make_from_bytes(const QByteArray &sd_bytes);
+security_descriptor *security_descriptor_make_from_bytes(TALLOC_CTX *mem_ctx, const QByteArray &sd_bytes);
+security_descriptor *security_descriptor_copy(security_descriptor *sd);
+void security_descriptor_free(security_descriptor *sd);
+void security_descriptor_sort_dacl(security_descriptor *sd);
+QList<QByteArray> security_descriptor_get_trustee_list(security_descriptor *sd);
+SecurityRightState security_descriptor_get_right(const security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type);
 
-QByteArray dom_sid_to_bytes(const dom_sid &sid);
-QByteArray dom_sid_string_to_bytes(const dom_sid &sid);
+// These f-ns do only the requested operation. For
+// example, if some right is currently denied and you
+// want to allow it, just calling add_right() is not
+// enough. You would need to remove the "Deny" entry
+// for this right using remove_right() and add "Allow"
+// using add_right(). In addition, these f-ns only edit
+// object rights and don't touch inherited rights. Note
+// that order of operations matters, a right won't be
+// added if it's already applied by a generic right
+// that contains it. In that case you'd have to first
+// remove the generic right and then add the specific
+// right.
+void security_descriptor_add_right(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
+void security_descriptor_remove_right(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
+
+// Remove all ACE's from DACL for given trustee. Note
+// that inherited ACE's are untouched, so trustee might
+// still have ace's remaining after this is called.
+void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QByteArray> &trustee_list);
 
 #endif /* AD_SECURITY_H */

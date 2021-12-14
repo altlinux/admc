@@ -344,6 +344,8 @@ QString get_default_domain_from_krb5() {
     return out;
 }
 
+// TODO: rename because this is really more about masks
+// than bits
 int bit_set(int bitmask, int bit, bool set) {
     if (set) {
         return bitmask | bit;
@@ -353,7 +355,7 @@ int bit_set(int bitmask, int bit, bool set) {
 }
 
 bool bit_is_set(int bitmask, int bit) {
-    return ((bitmask & bit) != 0);
+    return ((bitmask & bit) == bit);
 }
 
 const char *cstr(const QString &qstr) {
@@ -439,4 +441,8 @@ QString attribute_type_display_string(const AttributeType type) {
         case AttributeType_DSDN: return QCoreApplication::translate("ad_utils.cpp", "Distinguished Name");
     }
     return QString();
+}
+
+QString int_to_hex_string(const int n) {
+    return QString("0x%1").arg(n, 8, 16, QLatin1Char('0'));
 }
