@@ -261,27 +261,23 @@ void security_descriptor_sort_dacl(security_descriptor *sd) {
     qsort(sd->dacl->aces, sd->dacl->num_aces, sizeof(security_ace), ace_compare);
 }
 
-bool ad_security_get_protected_against_deletion(const AdObject &object, AdConfig *adconfig) {
+bool ad_security_get_protected_against_deletion(const AdObject &object) {
     security_descriptor *sd = object.get_security_descriptor();
 
     const QByteArray trustee_everyone = sid_string_to_bytes(SID_WORLD);
 
     const bool is_enabled_for_trustee = [&]() {
-        const QByteArray protect_against = adconfig->get_right_guid("User-Change-Password");
-
-        bool all_enabled = false;
-
         for (const uint32_t &mask : protect_deletion_mask_list) {
             const SecurityRightState state = security_descriptor_get_right(sd, trustee_everyone, mask, QByteArray());
 
             const bool deny = state.get(SecurityRightStateInherited_No, SecurityRightStateType_Deny);
 
             if (!deny) {
-                all_enabled = false;
+                return false;
             }
         }
 
-        return all_enabled;
+        return true;
     }();
 
     security_descriptor_free(sd);
@@ -355,7 +351,7 @@ bool ad_security_set_user_cant_change_pass(AdInterface *ad, const QString &dn, c
 bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString dn, const bool enabled) {
     const AdObject object = ad.search_object(dn);
 
-    const bool is_enabled = ad_security_get_protected_against_deletion(object, ad.adconfig());
+    const bool is_enabled = ad_security_get_protected_against_deletion(object);
 
     const bool dont_need_to_change = (is_enabled == enabled);
     if (dont_need_to_change) {

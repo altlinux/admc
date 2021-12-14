@@ -63,7 +63,7 @@ private:
 
 QString ad_security_get_well_known_trustee_name(const QByteArray &trustee);
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee);
-bool ad_security_get_protected_against_deletion(const AdObject &object, AdConfig *config);
+bool ad_security_get_protected_against_deletion(const AdObject &object);
 bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString dn, const bool enabled);
 bool ad_security_get_user_cant_change_pass(const AdObject *object, AdConfig *adconfig);
 bool ad_security_set_user_cant_change_pass(AdInterface *ad, const QString &dn, const bool enabled);
