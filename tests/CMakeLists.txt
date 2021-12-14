@@ -34,6 +34,7 @@ include_directories(
 # target + target.cpp
 set(TEST_TARGETS
     admc_test_ad_interface
+    admc_test_ad_security
     admc_test_unlock_edit
     admc_test_upn_edit
     admc_test_string_edit
