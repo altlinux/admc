@@ -49,7 +49,7 @@ enum SecurityRightStateInherited {
     SecurityRightStateInherited_Yes,
     SecurityRightStateInherited_No,
     SecurityRightStateInherited_COUNT,
-};
+}; 
 
 class SecurityRightState {
 public:

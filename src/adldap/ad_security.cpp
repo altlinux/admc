@@ -34,6 +34,7 @@
 #define UNUSED_ARG(x) (void) (x)
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
+dom_sid dom_sid_from_bytes(const QByteArray &bytes);
 QByteArray dom_sid_string_to_bytes(const dom_sid &sid);
 bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow, const bool inherited);
 QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd);
@@ -238,6 +239,16 @@ QByteArray dom_sid_to_bytes(const dom_sid &sid) {
     return bytes;
 }
 
+// Copy sid bytes into dom_sid struct and adds padding
+// if necessary
+dom_sid dom_sid_from_bytes(const QByteArray &bytes) {
+    dom_sid out;
+    memset(&out, '\0', sizeof(dom_sid));
+    memcpy(&out, bytes.data(), sizeof(dom_sid));
+
+    return out;
+}
+
 QByteArray dom_sid_string_to_bytes(const QString &string) {
     dom_sid sid;
     dom_sid_parse(cstr(string), &sid);
@@ -427,10 +438,10 @@ SecurityRightState security_descriptor_get_right(const security_descriptor *sd, 
     for (const security_ace &ace : dacl) {
         const bool match = [&]() {
             const bool trustee_match = [&]() {
-                const QByteArray ace_trustee = dom_sid_to_bytes(ace.trustee);
-                const bool out = (ace_trustee == trustee);
+                const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
+                const bool trustees_are_equal = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
 
-                return out;
+                return trustees_are_equal;
             }();
 
             const bool access_mask_match = bit_is_set(ace.access_mask, access_mask);
@@ -569,11 +580,11 @@ void security_descriptor_add_right(security_descriptor *sd, const QByteArray &tr
                 }();
             }
             
-            memcpy(&out.trustee, trustee.data(), sizeof(dom_sid));
+            out.trustee = dom_sid_from_bytes(trustee);
 
             return out;
         }();
-        
+
         security_descriptor_dacl_add(sd, &ace);
     }
 }
@@ -616,8 +627,9 @@ bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const u
     }();
 
     const bool trustee_match = [&]() {
-        const QByteArray ace_trustee = dom_sid_to_bytes(ace.trustee);
-        const bool trustees_are_equal = (ace_trustee == trustee);
+        const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
+        const bool trustees_are_equal = (dom_sid_compare(
+            &ace.trustee, &trustee_sid) == 0);
 
         return trustees_are_equal;
     }();
@@ -713,10 +725,16 @@ void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QBy
         for (const security_ace &ace : old_dacl) {
             const bool match = [&]() {
                 const bool trustee_match = [&]() {
-                    const QByteArray ace_trustee = dom_sid_to_bytes(ace.trustee);
-                    const bool out_trustee_match = trustee_list.contains(ace_trustee);
+                    for (const QByteArray &trustee : trustee_list) {
+                        const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
+                        const bool trustees_are_equal = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
 
-                    return out_trustee_match;
+                        if (trustees_are_equal) {
+                            return true;
+                        }
+                    }
+
+                    return false;
                 }();
 
                 const bool inherited = bit_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
