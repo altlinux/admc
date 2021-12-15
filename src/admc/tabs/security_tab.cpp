@@ -57,21 +57,6 @@ enum RightsItemRole {
     RightsItemRole_ObjectTypeName,
 };
 
-// NOTE: this is also used for display order
-const QList<uint32_t> common_rights_list = {
-    SEC_ADS_GENERIC_ALL,
-    SEC_ADS_GENERIC_READ,
-    SEC_ADS_GENERIC_WRITE,
-    SEC_ADS_CREATE_CHILD,
-    SEC_ADS_DELETE_CHILD,
-};
-
-class SecurityRight {
-public:
-    uint32_t access_mask;
-    QByteArray object_type;
-};
-
 class RightsSortModel final : public QSortFilterProxyModel {
 public:
     using QSortFilterProxyModel::QSortFilterProxyModel;
@@ -128,43 +113,6 @@ public:
         return name_left < name_right;
     }
 };
-
-QList<SecurityRight> get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list) {
-    QList<SecurityRight> out;
-
-    for (const uint32_t &access_mask : common_rights_list) {
-        SecurityRight right;
-        right.access_mask = access_mask;
-        right.object_type = QByteArray();
-
-        out.append(right);
-    }
-
-    const QList<QString> extended_rights_list = adconfig->get_extended_rights_list(class_list);
-    for (const QString &rights : extended_rights_list) {
-        const int valid_accesses = adconfig->get_rights_valid_accesses(rights);
-        const QByteArray rights_guid = adconfig->get_right_guid(rights);
-        const QList<uint32_t> access_mask_list = {
-            SEC_ADS_CONTROL_ACCESS,
-            SEC_ADS_READ_PROP,
-            SEC_ADS_WRITE_PROP,
-        };
-
-        for (const uint32_t &access_mask : access_mask_list) {
-            const bool mask_match = bit_is_set(valid_accesses, access_mask);
-
-            if (mask_match) {
-                SecurityRight right;
-                right.access_mask = access_mask;
-                right.object_type = rights_guid;
-
-                out.append(right);
-            }
-        }
-    }
-
-    return out;
-}
 
 SecurityTab::SecurityTab() {
     ui = new Ui::SecurityTab();
@@ -280,7 +228,7 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     // Create items in rights model. These will not
     // change until target object changes. Only the
     // state of items changes during editing.
-    const QList<SecurityRight> right_list = get_right_list_for_class(g_adconfig, target_class_list);
+    const QList<SecurityRight> right_list = ad_security_get_right_list_for_class(g_adconfig, target_class_list);
 
     for (const SecurityRight &right : right_list) {
         const QList<QStandardItem *> row = make_item_row(AceColumn_COUNT);
@@ -374,154 +322,6 @@ void SecurityTab::load_rights_model() {
     ignore_item_changed_signal = false;
 }
 
-QList<uint32_t> get_superior_right_list(const uint32_t access_mask) {
-    QList<uint32_t> out;
-
-    // NOTE: order is important, because we want to
-    // process "more superior" rights first. "Generic
-    // all" is more superior than others.
-    if (access_mask == SEC_ADS_READ_PROP) {
-        out.append(SEC_ADS_GENERIC_ALL);
-        out.append(SEC_ADS_GENERIC_READ);
-    } else if (access_mask == SEC_ADS_WRITE_PROP) {
-        out.append(SEC_ADS_GENERIC_ALL);
-        out.append(SEC_ADS_GENERIC_WRITE);
-    } else if (access_mask == SEC_ADS_CONTROL_ACCESS) {
-        out.append(SEC_ADS_GENERIC_ALL);
-    } else if (access_mask == SEC_ADS_GENERIC_READ || access_mask == SEC_ADS_GENERIC_WRITE) {
-        out.append(SEC_ADS_GENERIC_ALL);
-    }
-
-    return out;
-}
-
-QList<SecurityRight> get_subordinate_right_list(const uint32_t access_mask, const QList<QString> &class_list) {
-    QList<SecurityRight> out;
-
-    const QList<SecurityRight> right_list_for_target = get_right_list_for_class(g_adconfig, class_list);
-
-    for (const SecurityRight &right : right_list_for_target) {
-        const bool match = [&]() {
-            if (access_mask == SEC_ADS_GENERIC_ALL) {
-                // All except full control
-                return (right.access_mask != access_mask);
-            } else if (access_mask == SEC_ADS_GENERIC_READ) {
-                // All read property rights
-                return (right.access_mask == SEC_ADS_READ_PROP);
-            } else if (access_mask == SEC_ADS_GENERIC_WRITE) {
-                // All write property rights
-                return (right.access_mask == SEC_ADS_WRITE_PROP);
-            } else {
-                return false;
-            }
-        }();
-
-        if (match) {
-            out.append(right);
-        }
-    }
-
-    return out;
-}
-
-void SecurityTab::add_right(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
-    const QList<uint32_t> superior_list = get_superior_right_list(access_mask);
-    for (const uint32_t &superior : superior_list) {
-        const bool opposite_superior_is_set = [&]() {
-            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior, QByteArray());
-            const SecurityRightStateType type = [&]() {
-                // NOTE: opposite!
-                if (!allow) {
-                    return SecurityRightStateType_Allow;
-                } else {
-                    return SecurityRightStateType_Deny;
-                }
-            }();
-            const bool out = state.get(SecurityRightStateInherited_No, type);
-
-            return out;
-        }();
-
-        // NOTE: skip superior if it's not set, so that
-        // we don't add opposite subordinate rights
-        // when not needed
-        if (!opposite_superior_is_set) {
-            continue;
-        }
-
-        // Remove opposite superior
-        security_descriptor_remove_right(sd, trustee, superior, QByteArray(), !allow);
-
-        // Add opposite superior subordinates
-        const QList<SecurityRight> superior_subordinate_list = get_subordinate_right_list(superior, target_class_list);
-        for (const SecurityRight &subordinate : superior_subordinate_list) {
-
-            security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
-        }
-    }
-
-    // Remove subordinates
-    const QList<SecurityRight> subordinate_list = get_subordinate_right_list(access_mask, target_class_list);
-    for (const SecurityRight &subordinate : subordinate_list) {
-        security_descriptor_remove_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
-    }
-
-    // Remove opposite
-    security_descriptor_remove_right(sd, trustee, access_mask, object_type, !allow);
-
-    // Remove opposite subordinates
-    for (const SecurityRight &subordinate : subordinate_list) {
-        security_descriptor_remove_right(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
-    }
-
-    // Add target
-    security_descriptor_add_right(sd, trustee, access_mask, object_type, allow);
-}
-
-void SecurityTab::remove_right(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
-    const QList<uint32_t> target_superior_list = get_superior_right_list(access_mask);
-
-    // Remove superiors
-    for (const uint32_t &superior : target_superior_list) {
-        const bool superior_is_set = [&]() {
-            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior, QByteArray());
-            const SecurityRightStateType type = [&]() {
-                if (allow) {
-                    return SecurityRightStateType_Allow;
-                } else {
-                    return SecurityRightStateType_Deny;
-                }
-            }();
-            const bool out = state.get(SecurityRightStateInherited_No, type);
-
-            return out;
-        }();
-
-        // NOTE: skip superior if it's not set, so that we don't add opposite subordinate rights when not needed
-        if (!superior_is_set) {
-            continue;
-        }
-
-        security_descriptor_remove_right(sd, trustee, superior, QByteArray(), allow);
-        
-        const QList<SecurityRight> superior_subordinate_list = get_subordinate_right_list(superior, target_class_list);
-
-        // Add opposite subordinate rights
-        for (const SecurityRight &subordinate : superior_subordinate_list) {
-            security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
-        }
-    }
-
-    // Remove target right
-    security_descriptor_remove_right(sd, trustee, access_mask, object_type, allow);
-
-    // Add target subordinate rights
-    const QList<SecurityRight> target_subordinate_right_list = get_subordinate_right_list(access_mask, target_class_list);
-    for (const SecurityRight &subordinate : target_subordinate_right_list) {
-        security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
-    }
-}
-
 void SecurityTab::on_item_changed(QStandardItem *item) {
     // NOTE: in some cases we need to ignore this signal
     if (ignore_item_changed_signal) {
@@ -545,9 +345,9 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
     const bool allow = (column == AceColumn_Allowed);
 
     if (checked) {
-        add_right(trustee, access_mask, object_type, allow);
+        security_descriptor_add_right_complete(sd, g_adconfig, target_class_list, trustee, access_mask, object_type, allow);
     } else {
-        remove_right(trustee, access_mask, object_type, allow);
+        security_descriptor_remove_right_complete(sd, g_adconfig, target_class_list, trustee, access_mask, object_type, allow);
     }
 
     load_rights_model();

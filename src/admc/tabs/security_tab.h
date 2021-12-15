@@ -78,9 +78,6 @@ private:
     void load_current_sd(AdInterface &ad);
     void load_rights_model();
     QByteArray get_current_trustee() const;
-
-    void remove_right(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
-    void add_right(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
 };
 
 #endif /* SECURITY_TAB_H */

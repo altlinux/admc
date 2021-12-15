@@ -38,6 +38,7 @@ struct dom_sid;
 typedef void TALLOC_CTX;
 
 extern const QList<QString> well_known_sid_list;
+extern const QList<uint32_t> common_rights_list;
 
 enum SecurityRightStateType {
     SecurityRightStateType_Allow,
@@ -59,6 +60,12 @@ public:
 
 private:
     bool data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT];
+};
+
+class SecurityRight {
+public:
+    uint32_t access_mask;
+    QByteArray object_type;
 };
 
 QString ad_security_get_well_known_trustee_name(const QByteArray &trustee);
@@ -102,5 +109,16 @@ void security_descriptor_remove_right(security_descriptor *sd, const QByteArray 
 // that inherited ACE's are untouched, so trustee might
 // still have ace's remaining after this is called.
 void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QByteArray> &trustee_list);
+
+// "Complete" versions of add/remove right f-ns that do A
+// LOT more than just add rights. They also take care
+// of superior and subordinate rights to follow a logic
+// of a typical gui checklist of rights.
+void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
+void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
+
+QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list);
+QList<uint32_t> ad_security_get_superior_right_list(const uint32_t access_mask);
+QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, const uint32_t access_mask, const QList<QString> &class_list);
 
 #endif /* AD_SECURITY_H */
