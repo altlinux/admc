@@ -39,7 +39,6 @@ private slots:
     void init() override;
     void cleanup() override;
 
-private:
     void add_right();
     void remove_right();
     void remove_trustee();
@@ -49,11 +48,24 @@ private:
     void cant_change_pass_data();
     void cant_change_pass();
 
+    // Tests below are for add_right_complete() and
+    // remove_right_complete() and all of their special
+    // cases.
+    void complete_unset_opposite_data();
+    void complete_unset_opposite();
+    void complete_set_subordinate_data();
+    void complete_set_subordinate();
+    void complete_unset_superior_data();
+    void complete_unset_superior();
+    void complete_unset_opposite_superior_data();
+    void complete_unset_opposite_superior();
+
 private:
     QString test_user_dn;
     QString test_trustee_dn;
     QByteArray test_trustee;
     security_descriptor *sd;
+    const QList<QString> class_list = {CLASS_USER};
 
     void check_state(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const TestAdSecurityType type) const;
     void load_sd();

@@ -23,6 +23,10 @@
 #include "samba/ndr_security.h"
 #include "ad_security.h"
 
+// NOTE: using "int" instead of "uint32_t" for test
+// data because "uint32_t" is not supported by
+// QTest::addColumn()
+
 void ADMCTestAdSecurity::init() {
     ADMCTest::init();
 
@@ -178,6 +182,156 @@ void ADMCTestAdSecurity::cant_change_pass() {
     const AdObject object = ad.search_object(test_user_dn);
     const bool actual_from_get = ad_security_get_user_cant_change_pass(&object, ad.adconfig());
     QCOMPARE(actual_from_get, enabled);
+}
+
+// Setting a right should unset it's opposite. For
+// example, set allow for X, then set deny for Y, allow
+// for X should go away as a result.
+void ADMCTestAdSecurity::complete_unset_opposite_data() {
+    QTest::addColumn<bool>("first_allow");
+    QTest::addColumn<TestAdSecurityType>("expected_result");
+
+    QTest::newRow("allow then deny") << true << TestAdSecurityType_Deny;
+    QTest::newRow("deny then allow") << false << TestAdSecurityType_Allow;
+}
+
+void ADMCTestAdSecurity::complete_unset_opposite() {
+    QFETCH(bool, first_allow);
+    QFETCH(TestAdSecurityType, expected_result);
+   
+    security_descriptor_add_right_complete(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), first_allow);
+    security_descriptor_add_right_complete(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), !first_allow);
+
+    check_state(test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), expected_result);
+}
+
+// When a right is unset, if it has any subordinates,
+// they should become set. Logic here is that
+// subordinates are "contained" by the superior's ACE
+// but when superior is unset, they need their own
+// ACE'S. For example, unsetting "generic read" should
+// set all subordinate rights for reading properties.
+void ADMCTestAdSecurity::complete_set_subordinate_data() {
+    QTest::addColumn<bool>("allow_superior");
+    QTest::addColumn<int>("superior_mask");
+    QTest::addColumn<QList<int>>("subordinate_mask_list");
+    QTest::addColumn<TestAdSecurityType>("exptected_state");
+
+    QTest::newRow("allow full control") << true << SEC_ADS_GENERIC_ALL << QList<int>({SEC_ADS_WRITE_PROP, SEC_ADS_READ_PROP}) << TestAdSecurityType_Allow;
+    QTest::newRow("deny full control") << false << SEC_ADS_GENERIC_ALL << QList<int>({SEC_ADS_WRITE_PROP, SEC_ADS_READ_PROP}) << TestAdSecurityType_Deny;
+    QTest::newRow("allow generic read") << true << SEC_ADS_GENERIC_READ << QList<int>({SEC_ADS_READ_PROP}) << TestAdSecurityType_Allow;
+    QTest::newRow("deny generic read") << false << SEC_ADS_GENERIC_READ << QList<int>({SEC_ADS_READ_PROP}) << TestAdSecurityType_Deny;
+    QTest::newRow("allow generic write") << true << SEC_ADS_GENERIC_WRITE << QList<int>({SEC_ADS_WRITE_PROP}) << TestAdSecurityType_Allow;
+    QTest::newRow("deny generic write") << false << SEC_ADS_GENERIC_WRITE << QList<int>({SEC_ADS_WRITE_PROP}) << TestAdSecurityType_Deny;
+}
+
+void ADMCTestAdSecurity::complete_set_subordinate() {
+    QFETCH(bool, allow_superior);
+    QFETCH(int, superior_mask);
+    QFETCH(QList<int>, subordinate_mask_list);
+    QFETCH(TestAdSecurityType, exptected_state);
+
+    const QByteArray subordinate_right_type = ad.adconfig()->get_right_guid("Web-Information");
+
+    // Add superior
+    security_descriptor_add_right_complete(sd, ad.adconfig(), class_list, test_trustee, superior_mask, QByteArray(), allow_superior);
+
+    // Superior should be set
+    check_state(test_trustee, superior_mask, QByteArray(), exptected_state);
+
+    // Subordinate should be set
+    for (const int &subordinate_mask : subordinate_mask_list) {
+        check_state(test_trustee, subordinate_mask, subordinate_right_type, exptected_state);
+    }
+
+    // Remove superior
+    security_descriptor_remove_right_complete(sd, ad.adconfig(), class_list, test_trustee, superior_mask, QByteArray(), allow_superior);
+
+    // Superior should be unset
+    check_state(test_trustee, superior_mask, QByteArray(), TestAdSecurityType_None);
+
+    // But subordinates should remain
+    for (const int &subordinate_mask : subordinate_mask_list) {
+        check_state(test_trustee, subordinate_mask, subordinate_right_type, exptected_state);
+    }
+}
+
+// When a right is unset, if it has any superiors and
+// they are set, they should become unset. For example,
+// unsetting "allow read some property" should unset
+// "generic read" and "full control".
+void ADMCTestAdSecurity::complete_unset_superior_data() {
+    QTest::addColumn<bool>("allow");
+    QTest::addColumn<QList<int>>("superior_mask_list");
+    QTest::addColumn<int>("subordinate_mask");
+    QTest::addColumn<TestAdSecurityType>("state_before_remove");
+
+    QTest::newRow("allow generic read") << true << QList<int>({SEC_ADS_GENERIC_READ}) << SEC_ADS_READ_PROP << TestAdSecurityType_Allow;
+    QTest::newRow("deny generic read") << false << QList<int>({SEC_ADS_GENERIC_READ}) << SEC_ADS_READ_PROP << TestAdSecurityType_Deny;
+    QTest::newRow("allow generic write") << true << QList<int>({SEC_ADS_GENERIC_WRITE}) << SEC_ADS_WRITE_PROP << TestAdSecurityType_Allow;
+    QTest::newRow("deny generic write") << false << QList<int>({SEC_ADS_GENERIC_WRITE}) << SEC_ADS_WRITE_PROP << TestAdSecurityType_Deny;
+    QTest::newRow("allow generic all and read") << true << QList<int>({SEC_ADS_GENERIC_ALL, SEC_ADS_GENERIC_READ}) << SEC_ADS_READ_PROP << TestAdSecurityType_Allow;
+    QTest::newRow("deny generic all and read") << false << QList<int>({SEC_ADS_GENERIC_ALL, SEC_ADS_GENERIC_READ}) << SEC_ADS_READ_PROP << TestAdSecurityType_Deny;
+}
+
+void ADMCTestAdSecurity::complete_unset_superior() {
+    QFETCH(bool, allow);
+    QFETCH(QList<int>, superior_mask_list);
+    QFETCH(int, subordinate_mask);
+    QFETCH(TestAdSecurityType, state_before_remove);
+
+    const QByteArray subordinate_right_type = ad.adconfig()->get_right_guid("Web-Information");
+
+    // Add superiors
+    // NOTE: there might be overlap but that's ok
+    for (const int &superior_mask : superior_mask_list) {
+        security_descriptor_add_right_complete(sd, ad.adconfig(), class_list, test_trustee, superior_mask, QByteArray(), allow);
+    }
+
+    // Superior should be set
+    for (const int &superior_mask : superior_mask_list) {
+        check_state(test_trustee, superior_mask, QByteArray(), state_before_remove);
+    }
+
+    // Subordinate should be set
+    check_state(test_trustee, subordinate_mask, subordinate_right_type, state_before_remove);
+
+    // Remove subordinate
+    security_descriptor_remove_right_complete(sd, ad.adconfig(), class_list, test_trustee, subordinate_mask, subordinate_right_type, allow);
+
+    // Superiors should be unset
+    for (const int &superior_mask : superior_mask_list) {
+        check_state(test_trustee, superior_mask, QByteArray(), TestAdSecurityType_None);
+    }
+
+    // And subordinates also should be unset
+    check_state(test_trustee, subordinate_mask, subordinate_right_type, TestAdSecurityType_None);
+}
+
+// Setting a right should unset it's opposite superior.
+// For example, "Create child" right is subordinate to
+// "Full control", so if full control is allowed and
+// then you deny "Create child", full control stops
+// being allowed.
+void ADMCTestAdSecurity::complete_unset_opposite_superior_data() {
+    QTest::addColumn<bool>("first_allow");
+    QTest::addColumn<TestAdSecurityType>("expected_create_child");
+    QTest::addColumn<TestAdSecurityType>("expected_full_control");
+
+    QTest::newRow("allow full control, then deny create child") << true << TestAdSecurityType_Deny << TestAdSecurityType_None;
+    QTest::newRow("deny full control, then allow create child") << false << TestAdSecurityType_Allow << TestAdSecurityType_None;
+}
+
+void ADMCTestAdSecurity::complete_unset_opposite_superior() {
+    QFETCH(bool, first_allow);
+    QFETCH(TestAdSecurityType, expected_create_child);
+    QFETCH(TestAdSecurityType, expected_full_control);
+   
+    security_descriptor_add_right_complete(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_GENERIC_ALL, QByteArray(), first_allow);
+    security_descriptor_add_right_complete(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), !first_allow);
+
+    check_state(test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), expected_create_child);
+    check_state(test_trustee, SEC_ADS_GENERIC_ALL, QByteArray(), expected_full_control);
 }
 
 void ADMCTestAdSecurity::check_state(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const TestAdSecurityType type) const {
