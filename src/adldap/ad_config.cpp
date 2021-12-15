@@ -25,6 +25,9 @@
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_utils.h"
+#include "ad_security.h"
+
+#include "samba/ndr_security.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -113,6 +116,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_RANGE_UPPER,
             ATTRIBUTE_LINK_ID,
             ATTRIBUTE_SYSTEM_FLAGS,
+            ATTRIBUTE_SCHEMA_ID_GUID,
         };
 
         const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
@@ -120,6 +124,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         for (const AdObject &object : results.values()) {
             const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             d->attribute_schemas[attribute] = object;
+
+            const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
+            d->guid_to_attribute_map[guid] = attribute;
         }
     }
 
@@ -137,6 +144,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_SYSTEM_MUST_CONTAIN,
             ATTRIBUTE_AUXILIARY_CLASS,
             ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
+            ATTRIBUTE_SCHEMA_ID_GUID,
         };
 
         const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
@@ -144,6 +152,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         for (const AdObject &object : results.values()) {
             const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             d->class_schemas[object_class] = object;
+
+            const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
+            d->guid_to_class_map[guid] = object_class;
         }
     }
 
@@ -282,14 +293,16 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         return out;
     }();
 
-    d->right_to_guid_map = [&]() {
-        QHash<QString, QString> out;
-
+    // Extended rights
+    {
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);
 
         const QList<QString> attributes = {
             ATTRIBUTE_CN,
+            ATTRIBUTE_DISPLAY_NAME,
             ATTRIBUTE_RIGHTS_GUID,
+            ATTRIBUTE_APPLIES_TO,
+            ATTRIBUTE_VALID_ACCESSES,
         };
 
         const QString search_base = extended_rights_dn();
@@ -298,13 +311,32 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
 
         for (const AdObject &object : search_results.values()) {
             const QString cn = object.get_string(ATTRIBUTE_CN);
-            const QString guid = object.get_string(ATTRIBUTE_RIGHTS_GUID);
+            const QString guid_string = object.get_string(ATTRIBUTE_RIGHTS_GUID);
+            const QByteArray guid = guid_string_to_bytes(guid_string);
+            const QByteArray display_name = object.get_value(ATTRIBUTE_DISPLAY_NAME);
+            const QList<QString> applies_to = [this, object]() {
+                QList<QString> out;
+                
+                const QList<QString> class_guid_string_list = object.get_strings(ATTRIBUTE_APPLIES_TO);
+                for (const QString &class_guid_string : class_guid_string_list) {
+                    const QByteArray class_guid = guid_string_to_bytes(class_guid_string);
+                    const QString object_class = guid_to_class(class_guid);
 
-            out[cn] = guid;
+                    out.append(object_class);
+                }
+
+                return out;
+            }();
+            const int valid_accesses = object.get_int(ATTRIBUTE_VALID_ACCESSES);
+
+            d->right_to_guid_map[cn] = guid;
+            d->rights_guid_to_name_map[guid] = display_name;
+            d->rights_name_to_guid_map[cn] = guid;
+            d->rights_applies_to_map[guid] = applies_to;
+            d->extended_rights_list.append(cn);
+            d->rights_valid_accesses_map[cn] = valid_accesses;
         }
-
-        return out;
-    }();
+    }
 }
 
 QString AdConfig::domain() const {
@@ -552,8 +584,50 @@ bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
     return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);
 }
 
-QString AdConfig::get_right_guid(const QString &right_cn) const {
-    const QString out = d->right_to_guid_map.value(right_cn, QString());
+QByteArray AdConfig::get_right_guid(const QString &right_cn) const {
+    const QByteArray out = d->right_to_guid_map.value(right_cn, QByteArray());
+    return out;
+}
+
+QString AdConfig::get_right_name(const QByteArray &right_guid) const {
+    const QString out = d->rights_guid_to_name_map.value(right_guid, "<unknown rights>");
+    return out;
+}
+
+QList<QString> AdConfig::get_extended_rights_list(const QList<QString> &class_list) const {
+    QList<QString> out;
+    
+    for (const QString &rights : d->extended_rights_list) {
+        const bool applies_to = rights_applies_to_class(rights, class_list);
+        if (applies_to) {
+            out.append(rights);
+        }
+    }
+
+    return out;
+}
+
+int AdConfig::get_rights_valid_accesses(const QString &rights_cn) const {
+    // NOTE: awkward exception. Can't write group
+    // membership because target attribute is
+    // constructed. For some reason valid accesses for
+    // membership right does allow writing.
+    if (rights_cn == "Membership") {
+        return SEC_ADS_READ_PROP;
+    }
+
+    const int out = d->rights_valid_accesses_map.value(rights_cn, 0);
+
+    return out;
+}
+
+QString AdConfig::guid_to_attribute(const QByteArray &guid) const {
+    const QString out = d->guid_to_attribute_map.value(guid, "<unknown attribute>");
+    return out;
+}
+
+QString AdConfig::guid_to_class(const QByteArray &guid) const {
+    const QString out = d->guid_to_class_map.value(guid, "<unknown class>");
     return out;
 }
 
@@ -567,6 +641,14 @@ QList<QString> AdConfig::get_noncontainer_classes() {
     }
 
     return out;
+}
+
+bool AdConfig::rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const {
+    const QByteArray rights_guid = d->rights_name_to_guid_map[rights_cn];
+    const QSet<QString> applies_to = d->rights_applies_to_map[rights_guid].toSet();
+    const bool applies = applies_to.intersects(class_list.toSet());
+
+    return applies;
 }
 
 QList<QString> AdConfigPrivate::add_auxiliary_classes(const QList<QString> &object_classes) const {

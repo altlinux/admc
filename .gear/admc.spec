@@ -80,9 +80,9 @@ Tests for ADMC
 %_bindir/admc_test_country_edit
 %_bindir/admc_test_gplink
 %_bindir/admc_test_ad_interface
+%_bindir/admc_test_ad_security
 %_bindir/admc_test_select_base_widget
 %_bindir/admc_test_filter_widget
-%_bindir/admc_test_security_tab
 %_bindir/admc_test_attributes_tab
 %_bindir/admc_test_member_of_tab
 %_bindir/admc_test_members_tab

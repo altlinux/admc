@@ -101,19 +101,19 @@ void ADMCTestAdInterface::gpo_check_perms() {
 
     // Change GPC perms so they don't match with GPT perms
     {
-        const AdObject gpc_object = ad.search_object(gpc_dn);
-        auto permission_state_map = gpc_object.get_security_state(g_adconfig);
-        const QByteArray trustee = []() {
-            // NOTE: S-1-1-0 is "WORLD"
-            const char *sid_string = "S-1-1-0";
-            dom_sid sid;
-            dom_sid_parse(sid_string, &sid);
-            const QByteArray bytes = dom_sid_to_bytes(sid);
+        security_descriptor *new_sd = [&]() {
+            const AdObject gpc_object = ad.search_object(gpc_dn);
+            security_descriptor *out = gpc_object.get_security_descriptor();
 
-            return bytes;
+            // NOTE: S-1-1-0 is "WORLD"
+            const QByteArray trustee_everyone = sid_string_to_bytes("S-1-1-0");
+
+            security_descriptor_add_right(out, trustee_everyone, SEC_ADS_GENERIC_ALL, QByteArray(), true);
+
+            return out;
         }();
-        permission_state_map = ad_security_modify(permission_state_map, trustee, AcePermission_FullControl, PermissionState_Allowed);
-        attribute_replace_security_descriptor(&ad, gpc_dn, permission_state_map);
+
+        ad_security_replace_security_descriptor(ad, gpc_dn, new_sd);
     }
 
     bool gpo_check_perms_ok_2 = true;

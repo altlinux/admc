@@ -31,9 +31,22 @@
 
 #include <QDebug>
 
-QList<security_ace *> ad_security_get_dacl(security_descriptor *sd);
-QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
-QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd);
+#define UNUSED_ARG(x) (void) (x)
+
+QByteArray dom_sid_to_bytes(const dom_sid &sid);
+dom_sid dom_sid_from_bytes(const QByteArray &bytes);
+QByteArray dom_sid_string_to_bytes(const dom_sid &sid);
+bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow, const bool inherited);
+QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd);
+void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace> &new_dacl);
+uint32_t ad_security_map_access_mask(const uint32_t access_mask);
+
+const QList<int> ace_types_with_object = {
+    SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT,
+    SEC_ACE_TYPE_ACCESS_DENIED_OBJECT,
+    SEC_ACE_TYPE_SYSTEM_AUDIT_OBJECT,
+    SEC_ACE_TYPE_SYSTEM_ALARM_OBJECT,
+};
 
 const QList<QString> well_known_sid_list = {
     SID_WORLD_DOMAIN,
@@ -71,7 +84,6 @@ const QList<QString> well_known_sid_list = {
 const QHash<QString, QString> trustee_name_map = {
     {SID_WORLD_DOMAIN, "Everyone in Domain"},
     {SID_WORLD, "Everyone"},
-    {SID_WORLD, "Everyone"},
     {SID_CREATOR_OWNER_DOMAIN, "CREATOR OWNER DOMAIN"},
     {SID_CREATOR_OWNER, "CREATOR OWNER"},
     {SID_CREATOR_GROUP, "CREATOR GROUP"},
@@ -101,153 +113,70 @@ const QHash<QString, QString> trustee_name_map = {
     {SID_NT_OTHER_ORGANISATION, "Other Organization"},
 };
 
-const QHash<AcePermission, uint32_t> ace_permission_to_mask_map = {
-    {AcePermission_FullControl, SEC_ADS_GENERIC_ALL},
-    {AcePermission_Read, (SEC_STD_READ_CONTROL | SEC_ADS_LIST | SEC_ADS_READ_PROP)},
-    {AcePermission_Write, (SEC_ADS_SELF_WRITE | SEC_ADS_WRITE_PROP)},
-    {AcePermission_Delete, SEC_STD_DELETE},
-    {AcePermission_DeleteSubtree, SEC_DIR_DELETE_CHILD},
-    {AcePermission_CreateChild, SEC_ADS_CREATE_CHILD},
-    {AcePermission_DeleteChild, SEC_ADS_DELETE_CHILD},
-    {AcePermission_AllowedToAuthenticate, SEC_ADS_CONTROL_ACCESS},
-    {AcePermission_ChangePassword, SEC_ADS_CONTROL_ACCESS},
-    {AcePermission_ReceiveAs, SEC_ADS_CONTROL_ACCESS},
-    {AcePermission_ResetPassword, SEC_ADS_CONTROL_ACCESS},
-    {AcePermission_SendAs, SEC_ADS_CONTROL_ACCESS},
-    {AcePermission_ReadAccountRestrictions, SEC_ADS_READ_PROP},
-    {AcePermission_WriteAccountRestrictions, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadGeneralInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WriteGeneralInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadGroupMembership, SEC_ADS_READ_PROP},
-    {AcePermission_ReadLogonInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WriteLogonInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadPersonalInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WritePersonalInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadPhoneAndMailOptions, SEC_ADS_READ_PROP},
-    {AcePermission_WritePhoneAndMailOptions, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadPrivateInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WritePrivateInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadPublicInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WritePublicInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadRemoteAccessInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WriteRemoteAccessInfo, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadTerminalServerLicenseServer, SEC_ADS_READ_PROP},
-    {AcePermission_WriteTerminalServerLicenseServer, SEC_ADS_WRITE_PROP},
-    {AcePermission_ReadWebInfo, SEC_ADS_READ_PROP},
-    {AcePermission_WriteWebInfo, SEC_ADS_WRITE_PROP},
+const QList<QString> cant_change_pass_trustee_cn_list = {
+    SID_NT_SELF,
+    SID_WORLD,
 };
 
-// NOTE: store right's cn value here, then search for it to
-// get right's guid, which is compared to ace type.
-const QHash<AcePermission, QString> ace_permission_to_type_map = {
-    {AcePermission_AllowedToAuthenticate, "Allowed-To-Authenticate"},
-    {AcePermission_ChangePassword, "User-Change-Password"},
-    {AcePermission_ReceiveAs, "Receive-As"},
-    {AcePermission_ResetPassword, "User-Force-Change-Password"},
-    {AcePermission_SendAs, "Send-As"},
-    {AcePermission_ReadAccountRestrictions, "User-Account-Restrictions"},
-    {AcePermission_WriteAccountRestrictions, "User-Account-Restrictions"},
-    {AcePermission_ReadGeneralInfo, "General-Information"},
-    {AcePermission_WriteGeneralInfo, "General-Information"},
-    {AcePermission_ReadGroupMembership, "Membership"},
-    {AcePermission_ReadLogonInfo, "User-Logon"},
-    {AcePermission_WriteLogonInfo, "User-Logon"},
-    {AcePermission_ReadPersonalInfo, "Personal-Information"},
-    {AcePermission_WritePersonalInfo, "Personal-Information"},
-    {AcePermission_ReadPhoneAndMailOptions, "Email-Information"},
-    {AcePermission_WritePhoneAndMailOptions, "Email-Information"},
-    {AcePermission_ReadPrivateInfo, "Private-Information"},
-    {AcePermission_WritePrivateInfo, "Private-Information"},
-    {AcePermission_ReadPublicInfo, "Public-Information"},
-    {AcePermission_WritePublicInfo, "Public-Information"},
-    {AcePermission_ReadRemoteAccessInfo, "RAS-Information"},
-    {AcePermission_WriteRemoteAccessInfo, "RAS-Information"},
-    {AcePermission_ReadTerminalServerLicenseServer, "Terminal-Server-License-Server"},
-    {AcePermission_WriteTerminalServerLicenseServer, "Terminal-Server-License-Server"},
-    {AcePermission_ReadWebInfo, "Web-Information"},
-    {AcePermission_WriteWebInfo, "Web-Information"}};
+const QList<uint32_t> protect_deletion_mask_list = {
+    SEC_STD_DELETE,
+    SEC_ADS_DELETE_TREE,
+};
 
-const QList<AcePermission> all_permissions_list = []() {
-    QList<AcePermission> out;
+const QSet<security_ace_type> ace_type_allow_set = {
+    SEC_ACE_TYPE_ACCESS_ALLOWED,
+    SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT,
+};
+const QSet<security_ace_type> ace_type_deny_set = {
+    SEC_ACE_TYPE_ACCESS_DENIED,
+    SEC_ACE_TYPE_ACCESS_DENIED_OBJECT,
+};
 
-    for (int permission_i = 0; permission_i < AcePermission_COUNT; permission_i++) {
-        const AcePermission permission = (AcePermission) permission_i;
-        out.append(permission);
-    }
+// NOTE: this is also used for display order
+const QList<uint32_t> common_rights_list = {
+    SEC_ADS_GENERIC_ALL,
+    SEC_ADS_GENERIC_READ,
+    SEC_ADS_GENERIC_WRITE,
+    SEC_ADS_CREATE_CHILD,
+    SEC_ADS_DELETE_CHILD,
+};
 
-    return out;
-}();
-
-const QSet<AcePermission> all_permissions = all_permissions_list.toSet();
-
-QSet<AcePermission> get_permission_set(const uint32_t mask) {
-    QSet<AcePermission> out;
-
-    for (const AcePermission &permission : all_permissions) {
-        const uint32_t this_mask = ace_permission_to_mask_map[permission];
-
-        if (this_mask == mask) {
-            out.insert(permission);
+SecurityRightState::SecurityRightState(const bool data_arg[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT]) {
+    for (int inherited = 0; inherited < SecurityRightStateInherited_COUNT; inherited++) {
+        for (int type = 0; type < SecurityRightStateType_COUNT; type++) {
+            data[inherited][type] = data_arg[inherited][type];
         }
     }
+}
+
+bool SecurityRightState::get(const SecurityRightStateInherited inherited, const SecurityRightStateType type) const {
+    return data[inherited][type];
+}
+
+security_descriptor *security_descriptor_make_from_bytes(TALLOC_CTX *mem_ctx, const QByteArray &sd_bytes) {
+    DATA_BLOB blob = data_blob_const(sd_bytes.data(), sd_bytes.size());
+
+    security_descriptor *out = talloc(mem_ctx, struct security_descriptor);
+
+    ndr_pull_struct_blob(&blob, out, out, (ndr_pull_flags_fn_t) ndr_pull_security_descriptor);
 
     return out;
 }
 
-const QSet<AcePermission> access_permissions = get_permission_set(SEC_ADS_CONTROL_ACCESS);
-const QSet<AcePermission> read_prop_permissions = get_permission_set(SEC_ADS_READ_PROP);
-const QSet<AcePermission> write_prop_permissions = get_permission_set(SEC_ADS_WRITE_PROP);
+security_descriptor *security_descriptor_make_from_bytes(const QByteArray &sd_bytes) {
+    security_descriptor *out = security_descriptor_make_from_bytes(NULL, sd_bytes);
 
-QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_modify(const QHash<QByteArray, QHash<AcePermission, PermissionState>> &current, const QByteArray &trustee, const AcePermission permission, const PermissionState new_state) {
-    QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
+    return out;
+}
 
-    out = current;
+void security_descriptor_free(security_descriptor *sd) {
+    talloc_free(sd);
+}
 
-    auto permission_state_set = [&](const QSet<AcePermission> &permission_set, const PermissionState state) {
-        for (const AcePermission &this_permission : permission_set) {
-            out[trustee][this_permission] = state;
-        }
-    };
+security_descriptor *security_descriptor_copy(security_descriptor *sd) {
+    security_descriptor *out = talloc(NULL, struct security_descriptor);
 
-    //
-    // Apply state change to permission state map
-    //
-    out[trustee][permission] = new_state;
-
-    // When children permissions change their parent
-    // permissions always become None (yes, for each case).
-    const QSet<AcePermission> parent_permissions = [&]() {
-        QSet<AcePermission> out_set;
-
-        out_set.insert(AcePermission_FullControl);
-
-        if (read_prop_permissions.contains(permission)) {
-            out_set.insert(AcePermission_Read);
-        } else if (write_prop_permissions.contains(permission)) {
-            out_set.insert(AcePermission_Write);
-        }
-
-        return out_set;
-    }();
-    permission_state_set(parent_permissions, PermissionState_None);
-
-    // When parent permissions become Allowed or Denied,
-    // their children change to that state as well.
-    if (new_state != PermissionState_None) {
-        const QSet<AcePermission> child_permissions = [&]() {
-            if (permission == AcePermission_FullControl) {
-                return all_permissions;
-            } else if (permission == AcePermission_Read) {
-                return read_prop_permissions;
-            } else if (permission == AcePermission_Write) {
-                return write_prop_permissions;
-            } else {
-                return QSet<AcePermission>();
-            }
-        }();
-
-        permission_state_set(child_permissions, new_state);
-    }
+    out = security_descriptor_copy(out, sd);
 
     return out;
 }
@@ -294,136 +223,12 @@ QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee)
     }
 }
 
-bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, const QHash<QByteArray, QHash<AcePermission, PermissionState>> &descriptor_state_arg) {
+bool ad_security_replace_security_descriptor(AdInterface &ad, const QString &dn, security_descriptor *new_sd) {
     const QByteArray new_descriptor_bytes = [&]() {
-        // Remove redundancy from permission state
-        const QHash<QByteArray, QHash<AcePermission, PermissionState>> state = [&]() {
-            QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
-
-            out = descriptor_state_arg;
-
-            // Remove child permission states. For example if
-            // "Read" is allowed, then there's no need to
-            // include any other state for "read prop"
-            // permissions.
-            for (const QByteArray &trustee : out.keys()) {
-                const bool full_control = out[trustee].contains(AcePermission_FullControl) && (out[trustee][AcePermission_FullControl] != PermissionState_None);
-                const bool read = out[trustee].contains(AcePermission_Read) && (out[trustee][AcePermission_Read] != PermissionState_None);
-                const bool write = out[trustee].contains(AcePermission_Write) && (out[trustee][AcePermission_Write] != PermissionState_None);
-
-                if (full_control) {
-                    for (const AcePermission &permission : all_permissions) {
-                        if (permission != AcePermission_FullControl) {
-                            out[trustee].remove(permission);
-                        }
-                    }
-                } else if (read) {
-                    for (const AcePermission &permission : read_prop_permissions) {
-                        if (permission != AcePermission_Read) {
-                            out[trustee].remove(permission);
-                        }
-                    }
-                } else if (write) {
-                    for (const AcePermission &permission : write_prop_permissions) {
-                        if (permission != AcePermission_Read) {
-                            out[trustee].remove(permission);
-                        }
-                    }
-                }
-            }
-
-            return out;
-        }();
-
         TALLOC_CTX *tmp_ctx = talloc_new(NULL);
 
-        // Use original sd as base, only remaking the dacl
-        const AdObject object = ad->search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
-        security_descriptor *sd = object.get_sd(tmp_ctx);
-
-        // Generate new dacl
-        const QList<security_ace *> dacl_qlist = [&]() {
-            QList<security_ace *> out;
-
-            for (const QByteArray &trustee : state.keys()) {
-                const QHash<AcePermission, PermissionState> permission_map = state[trustee];
-
-                for (const AcePermission &permission : permission_map.keys()) {
-                    const PermissionState permission_state = permission_map[permission];
-
-                    if (permission_state == PermissionState_None) {
-                        continue;
-                    }
-
-                    struct security_ace *ace = talloc(tmp_ctx, struct security_ace);
-
-                    const bool object_present = ace_permission_to_type_map.contains(permission);
-
-                    ace->type = [&]() {
-                        if (permission_state == PermissionState_Allowed) {
-                            if (object_present) {
-                                return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
-                            } else {
-                                return SEC_ACE_TYPE_ACCESS_ALLOWED;
-                            }
-                        } else if (permission_state == PermissionState_Denied) {
-                            if (object_present) {
-                                return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
-                            } else {
-                                return SEC_ACE_TYPE_ACCESS_DENIED;
-                            }
-                        }
-
-                        return SEC_ACE_TYPE_ACCESS_ALLOWED;
-                    }();
-
-                    // NOTE: in the future, probably when
-                    // adding advanced security dialog,
-                    // these flags will need to be set to
-                    // something in some cases, but for now
-                    // just 0
-                    ace->flags = 0x00;
-                    ace->access_mask = ace_permission_to_mask_map[permission];
-                    ace->object.object.flags = [&]() {
-                        if (object_present) {
-                            return SEC_ACE_OBJECT_TYPE_PRESENT;
-                        } else {
-                            return 0;
-                        }
-                    }();
-                    ace->object.object.type.type = [&]() {
-                        if (object_present) {
-                            const QString type_name_string = ace_permission_to_type_map[permission];
-                            const QString type_string = ad->adconfig()->get_right_guid(type_name_string);
-                            const QByteArray type_bytes = guid_string_to_bytes(type_string);
-
-                            struct GUID guid;
-                            memcpy(&guid, type_bytes.data(), sizeof(GUID));
-
-                            return guid;
-                        } else {
-                            return GUID();
-                        }
-                    }();
-                    memcpy(&ace->trustee, trustee.data(), sizeof(dom_sid));
-
-                    out.append(ace);
-                }
-            }
-
-            return out;
-        }();
-
-        // Replace dacl
-        talloc_free(sd->dacl);
-        sd->dacl = NULL;
-        for (security_ace *ace : dacl_qlist) {
-            security_descriptor_dacl_add(sd, ace);
-        }
-        ad_security_sort_dacl(sd);
-
         DATA_BLOB blob;
-        ndr_push_struct_blob(&blob, tmp_ctx, sd, (ndr_push_flags_fn_t) ndr_push_security_descriptor);
+        ndr_push_struct_blob(&blob, tmp_ctx, new_sd, (ndr_push_flags_fn_t) ndr_push_security_descriptor);
 
         const QByteArray out = QByteArray((char *) blob.data, blob.length);
 
@@ -432,27 +237,25 @@ bool attribute_replace_security_descriptor(AdInterface *ad, const QString &dn, c
         return out;
     }();
 
-    const bool apply_success = ad->attribute_replace_value(dn, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes);
+    const bool apply_success = ad.attribute_replace_value(dn, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes);
 
     return apply_success;
-}
-
-QList<QByteArray> ad_security_get_trustee_list_from_object(const AdObject &object) {
-    TALLOC_CTX *mem_ctx = talloc_new(NULL);
-
-    security_descriptor *sd = object.get_sd(mem_ctx);
-
-    const QList<QByteArray> out = ad_security_get_trustee_list_from_sd(sd);
-
-    talloc_free(mem_ctx);
-
-    return out;
 }
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid) {
     const QByteArray bytes = QByteArray((char *) &sid, sizeof(struct dom_sid));
 
     return bytes;
+}
+
+// Copy sid bytes into dom_sid struct and adds padding
+// if necessary
+dom_sid dom_sid_from_bytes(const QByteArray &bytes) {
+    dom_sid out;
+    memset(&out, '\0', sizeof(dom_sid));
+    memcpy(&out, bytes.data(), sizeof(dom_sid));
+
+    return out;
 }
 
 QByteArray dom_sid_string_to_bytes(const QString &string) {
@@ -463,46 +266,451 @@ QByteArray dom_sid_string_to_bytes(const QString &string) {
     return bytes;
 }
 
-void ad_security_sort_dacl(security_descriptor *sd) {
+void security_descriptor_sort_dacl(security_descriptor *sd) {
     qsort(sd->dacl->aces, sd->dacl->num_aces, sizeof(security_ace), ace_compare);
 }
 
-QList<security_ace *> ad_security_get_dacl(security_descriptor *sd) {
-    QList<security_ace *> out;
+bool ad_security_get_protected_against_deletion(const AdObject &object) {
+    security_descriptor *sd = object.get_security_descriptor();
 
-    for (uint32_t i = 0; i < sd->dacl->num_aces; i++) {
-        security_ace *ace = &sd->dacl->aces[i];
+    const QByteArray trustee_everyone = sid_string_to_bytes(SID_WORLD);
+
+    const bool is_enabled_for_trustee = [&]() {
+        for (const uint32_t &mask : protect_deletion_mask_list) {
+            const SecurityRightState state = security_descriptor_get_right(sd, trustee_everyone, mask, QByteArray());
+
+            const bool deny = state.get(SecurityRightStateInherited_No, SecurityRightStateType_Deny);
+
+            if (!deny) {
+                return false;
+            }
+        }
+
+        return true;
+    }();
+
+    security_descriptor_free(sd);
+
+    return is_enabled_for_trustee;
+}
+
+bool ad_security_get_user_cant_change_pass(const AdObject *object, AdConfig *adconfig) {
+    security_descriptor *sd = object->get_security_descriptor();
+
+    const bool enabled = [&]() {
+        bool out = false;
+
+        for (const QString &trustee_cn : cant_change_pass_trustee_cn_list) {
+            const bool is_denied = [&]() {
+                const QByteArray trustee = sid_string_to_bytes(trustee_cn);
+                const QByteArray change_pass_right = adconfig->get_right_guid("User-Change-Password");
+                const SecurityRightState state = security_descriptor_get_right(sd, trustee, SEC_ADS_CONTROL_ACCESS, change_pass_right);
+                const bool out_denied = state.get(SecurityRightStateInherited_No, SecurityRightStateType_Deny);
+
+                return out_denied;
+            }();
+
+            // Enabled if enabled for either of the
+            // trustee's. Both don't have to be
+            // enabled
+            if (is_denied) {
+                out = true;
+
+                break;
+            }
+        }
+
+        return out;
+    }();
+
+    security_descriptor_free(sd);
+
+    return enabled;
+}
+
+bool ad_security_set_user_cant_change_pass(AdInterface *ad, const QString &dn, const bool enabled) {
+    security_descriptor *sd = [&]() {
+        const AdObject object = ad->search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
+        security_descriptor *out = object.get_security_descriptor();
+
+        return out;
+    }();
+
+    for (const QString &trustee_cn : cant_change_pass_trustee_cn_list) {
+        const QByteArray trustee = sid_string_to_bytes(trustee_cn);
+        const QByteArray change_pass_right = ad->adconfig()->get_right_guid("User-Change-Password");
+
+        // NOTE: the logic is a bit confusing here with
+        // all the layers of negation but: "enabled"
+        // means "denied", so we remove the opposite of
+        // what we want, and add the type of right that
+        // we want
+        const bool allow = !enabled;
+        security_descriptor_remove_right(sd, trustee, SEC_ADS_CONTROL_ACCESS, change_pass_right, !allow);
+        security_descriptor_add_right(sd, trustee, SEC_ADS_CONTROL_ACCESS, change_pass_right, allow);
+    }
+
+    const bool success = ad_security_replace_security_descriptor(*ad, dn, sd);
+
+    security_descriptor_free(sd);
+
+    return success;
+}
+
+bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString dn, const bool enabled) {
+    const AdObject object = ad.search_object(dn);
+
+    const bool is_enabled = ad_security_get_protected_against_deletion(object);
+
+    const bool dont_need_to_change = (is_enabled == enabled);
+    if (dont_need_to_change) {
+        return true;
+    }
+
+    security_descriptor *new_sd = [&]() {
+        security_descriptor *out = object.get_security_descriptor();
+
+        const QByteArray trustee_everyone = sid_string_to_bytes(SID_WORLD);
+
+        // NOTE: we only add/remove deny entries. If
+        // there are any allow entries, they are
+        // untouched.
+        for (const uint32_t &mask : protect_deletion_mask_list) {
+            if (enabled) {
+                security_descriptor_add_right(out, trustee_everyone, mask, QByteArray(), false);
+            } else {
+                security_descriptor_remove_right(out, trustee_everyone, mask, QByteArray(), false);
+            }
+        }
+
+        return out;
+    }();
+
+    const bool apply_success = ad_security_replace_security_descriptor(ad, dn, new_sd);
+
+    security_descriptor_free(new_sd);
+
+    return apply_success;
+}
+
+QList<QByteArray> security_descriptor_get_trustee_list(security_descriptor *sd) {
+    const QSet<QByteArray> trustee_set = [&]() {
+        QSet<QByteArray> out;
+
+        const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
+
+        for (const security_ace &ace : dacl) {
+            const QByteArray trustee = dom_sid_to_bytes(ace.trustee);
+
+            out.insert(trustee);
+        }
+
+        return out;
+    }();
+
+    const QList<QByteArray> trustee_list = trustee_set.toList();
+
+    return trustee_list;
+}
+
+QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd) {
+    QList<security_ace> out;
+
+    security_acl *dacl = sd->dacl;
+
+    for (size_t i = 0; i < dacl->num_aces; i++) {
+        security_ace ace = dacl->aces[i];
+
         out.append(ace);
     }
 
     return out;
 }
 
-QList<QByteArray> ad_security_get_trustee_list_from_sd(security_descriptor *sd) {
-    QSet<QByteArray> out;
+SecurityRightState security_descriptor_get_right(const security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask_arg, const QByteArray &object_type) {
+    bool out_data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT];
 
-    const QList<security_ace *> dacl = ad_security_get_dacl(sd);
-    for (security_ace *ace : dacl) {
-        const QByteArray trustee_bytes = dom_sid_to_bytes(ace->trustee);
+    const uint32_t access_mask = ad_security_map_access_mask(access_mask_arg);
 
-        out.insert(trustee_bytes);
+    for (int x = 0; x < SecurityRightStateInherited_COUNT; x++) {
+        for (int y = 0; y < SecurityRightStateType_COUNT; y++) {
+            out_data[x][y] = false;
+        }
     }
 
-    return out.toList();
+    const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
+
+    for (const security_ace &ace : dacl) {
+        const bool match = [&]() {
+            const bool trustee_match = [&]() {
+                const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
+                const bool trustees_are_equal = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
+
+                return trustees_are_equal;
+            }();
+
+            const bool access_mask_match = bit_is_set(ace.access_mask, access_mask);
+
+            
+            const bool object_match = [&]() {
+                const bool object_present = ace_types_with_object.contains(ace.type);
+
+                if (object_present) {
+                    const GUID out_guid = ace.object.object.type.type;
+                    const QByteArray ace_object_type = QByteArray((char *) &out_guid, sizeof(GUID));
+                    const bool types_are_equal = (ace_object_type == object_type);
+
+                    return types_are_equal;
+                } else {
+                    // NOTE: if ace doesn't have an
+                    // object it can still match.
+                    // Example: ace that allows
+                    // "generic read" will also allow
+                    // reading of all properties.
+                    return true;
+                }
+            }();
+
+            const bool out = (trustee_match && access_mask_match && object_match);
+
+            return out;
+        }();
+
+        if (match) {
+            bool state_list[2];
+            state_list[SecurityRightStateType_Allow] = ace_type_allow_set.contains(ace.type);
+            state_list[SecurityRightStateType_Deny] = ace_type_deny_set.contains(ace.type);
+
+            const int inherit_i = [&]() {
+                const bool ace_is_inherited = bit_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
+
+                if (ace_is_inherited) {
+                    return SecurityRightStateInherited_Yes;
+                } else {
+                    return SecurityRightStateInherited_No;
+                }
+            }();
+
+            for (int type_i = 0; type_i < SecurityRightStateType_COUNT; type_i++) {
+                const bool right_state = state_list[type_i];
+
+                if (right_state) {
+                    out_data[inherit_i][type_i] = true;
+                }
+            }
+        }
+    }
+
+    const SecurityRightState out = SecurityRightState(out_data);
+
+    return out;
 }
 
-void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee) {
-    TALLOC_CTX *tmp_ctx = talloc_new(NULL);
+void security_descriptor_add_right(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask_arg, const QByteArray &object_type, const bool allow) {
+    const uint32_t access_mask = ad_security_map_access_mask(access_mask_arg);
 
-    const QList<security_ace *> ace_list = [&]() {
-        QList<security_ace *> out;
+    const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
 
-        const QList<security_ace *> dacl = ad_security_get_dacl(sd);
-        for (security_ace *ace : dacl) {
-            const QByteArray this_trustee_bytes = dom_sid_to_bytes(ace->trustee);
+    const int matching_index = [&]() {
+        for (int i = 0; i < dacl.size(); i++) {
+            const security_ace ace = dacl[i];
 
-            const bool trustee_match = (this_trustee_bytes == trustee);
-            if (trustee_match) {
+            const bool match = check_ace_match(ace, trustee, access_mask, object_type, allow, false);
+
+            if (match) {
+                return -1;
+            }
+        }
+
+        return -1;
+    }();
+
+    if (matching_index != -1) {
+        const bool right_already_set = [&]() {
+            const security_ace matching_ace = dacl[matching_index];
+            const bool out = bit_is_set(matching_ace.access_mask, access_mask);
+
+            return out;
+        }();
+
+        // Matching ace exists, so reuse it by adding
+        // given mask to this ace, but only if it's not set already
+        if (!right_already_set) {
+            security_ace new_ace = dacl[matching_index];
+            new_ace.access_mask = bit_set(new_ace.access_mask, access_mask, true);
+            sd->dacl->aces[matching_index] = new_ace;
+        }
+    } else {
+        // No matching ace, so make a new ace for this
+        // right
+        const security_ace ace = [&]() {
+            security_ace out;
+
+            const bool object_present = !object_type.isEmpty();
+
+            out.type = [&]() {
+                if (allow) {
+                    if (object_present) {
+                        return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
+                    } else {
+                        return SEC_ACE_TYPE_ACCESS_ALLOWED;
+                    }
+                } else {
+                    if (object_present) {
+                        return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
+                    } else {
+                        return SEC_ACE_TYPE_ACCESS_DENIED;
+                    }
+                }
+
+                return SEC_ACE_TYPE_ACCESS_ALLOWED;
+            }();
+
+            out.flags = 0x00;
+            out.access_mask = access_mask;
+            out.object.object.flags = [&]() {
+                if (object_present) {
+                    return SEC_ACE_OBJECT_TYPE_PRESENT;
+                } else {
+                    return 0;
+                }
+            }();
+
+            if (object_present) {
+                out.object.object.type.type = [&]() {
+                    struct GUID type_guid;
+                    memcpy(&type_guid, object_type.data(), sizeof(GUID));
+
+                    return type_guid;
+                }();
+            }
+            
+            out.trustee = dom_sid_from_bytes(trustee);
+
+            return out;
+        }();
+
+        security_descriptor_dacl_add(sd, &ace);
+    }
+}
+
+// Checks if ace matches given members. Note that
+// access mask matches if they are equal or if ace mask
+// contains given mask.
+bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow, const bool inherited) {
+    const bool type_match = [&]() {
+        const security_ace_type ace_type = ace.type;
+
+        const bool ace_allow = ace_type_allow_set.contains(ace_type);
+        const bool ace_deny = ace_type_deny_set.contains(ace_type);
+
+        if (allow && ace_allow) {
+            return true;
+        } else if (!allow && ace_deny) {
+            return true;
+        } else {
+            return false;
+        }
+    }();
+
+    const bool flags_match = [&]() {
+        const bool ace_is_inherited = bit_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
+        const bool out = (ace_is_inherited == inherited);
+
+        return out;
+    }();
+
+    // NOTE: matches both on equality and
+    // contains because of cases where a
+    // generic right is removed that is
+    // part of a full control ace for
+    // example
+    const bool access_mask_match = [&]() {
+        const bool ace_mask_contains_mask = bit_is_set(ace.access_mask, access_mask);
+
+        return ace_mask_contains_mask;
+    }();
+
+    const bool trustee_match = [&]() {
+        const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
+        const bool trustees_are_equal = (dom_sid_compare(
+            &ace.trustee, &trustee_sid) == 0);
+
+        return trustees_are_equal;
+    }();
+
+    const bool object_match = [&]() {
+        const bool object_present = ace_types_with_object.contains(ace.type);
+
+        if (object_present) {
+            const GUID ace_object_type_guid = ace.object.object.type.type;
+            const QByteArray ace_object_type = QByteArray((char *) &ace_object_type_guid, sizeof(GUID));
+            const bool types_are_equal = (ace_object_type == object_type);
+
+            return types_are_equal;
+        } else {
+            return object_type.isEmpty();
+        }
+    }();
+
+    const bool out_match = (type_match && flags_match && access_mask_match && trustee_match && object_match);
+
+    return out_match;
+}
+
+void security_descriptor_remove_right(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask_arg, const QByteArray &object_type, const bool allow) {
+    const uint32_t access_mask = ad_security_map_access_mask(access_mask_arg);
+
+    const QList<security_ace> new_dacl = [&]() {
+        QList<security_ace> out;
+
+        const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
+
+        for (const security_ace &ace : old_dacl) {
+            const bool match = check_ace_match(ace, trustee, access_mask, object_type, allow, false);
+
+            if (match) {
+                const security_ace edited_ace = [&]() {
+                    security_ace out_ace = ace;
+
+                    // NOTE: need to handle a special
+                    // case due to read and write
+                    // rights sharing the "read
+                    // control" bit. When setting
+                    // either read/write, don't change
+                    // that shared bit if the other of
+                    // these rights is set
+                    const uint32_t mask_to_unset = [&]() {
+                        const QHash<uint32_t, uint32_t> opposite_map = {
+                            {SEC_ADS_GENERIC_READ, SEC_ADS_GENERIC_WRITE},
+                            {SEC_ADS_GENERIC_WRITE, SEC_ADS_GENERIC_READ},
+                        };
+
+                        for (const uint32_t &mask : opposite_map.keys()) {
+                            const uint32_t opposite = opposite_map[mask];
+                            const bool opposite_is_set = bit_is_set(ace.access_mask, opposite);
+
+                            if (access_mask == mask && opposite_is_set) {
+                                const uint32_t out_mask = (access_mask & ~SEC_STD_READ_CONTROL);
+
+                                return out_mask;
+                            }
+                        }
+
+                        return access_mask;
+                    }();
+
+                    out_ace.access_mask = bit_set(ace.access_mask, mask_to_unset, false);
+
+                    return out_ace;
+                }();
+
+                const bool edited_ace_became_empty = (edited_ace.access_mask == 0);
+
+                if (!edited_ace_became_empty) {
+                    out.append(edited_ace);
+                }
+            } else {
                 out.append(ace);
             }
         }
@@ -510,135 +718,297 @@ void ad_security_print_acl(security_descriptor *sd, const QByteArray &trustee) {
         return out;
     }();
 
-    for (security_ace *ace : ace_list) {
-        const QString ace_string = [&]() {
-            char *ace_cstr = ndr_print_struct_string(tmp_ctx, (ndr_print_fn_t) ndr_print_security_ace,
-                "ace", ace);
-
-            const QString out = QString(ace_cstr);
-
-            return out;
-        }();
-
-        qDebug().noquote() << ace_string;
-    }
-
-    talloc_free(tmp_ctx);
+    ad_security_replace_dacl(sd, new_dacl);
 }
 
-QHash<QByteArray, QHash<AcePermission, PermissionState>> ad_security_get_state_from_sd(security_descriptor *sd, AdConfig *adconfig) {
-    QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
+void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QByteArray> &trustee_list) {
+    const QList<security_ace> new_dacl = [&]() {
+        QList<security_ace> out;
 
-    // Initialize to None by default
-    const QList<QByteArray> trustee_list = ad_security_get_trustee_list_from_sd(sd);
-    for (const QByteArray &trustee : trustee_list) {
-        for (const AcePermission &permission : all_permissions) {
-            out[trustee][permission] = PermissionState_None;
-        }
-    }
+        const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
 
-    // Then go through acl and set allowed/denied permission
-    // states
-    const QList<security_ace *> dacl = ad_security_get_dacl(sd);
-    for (security_ace *ace : dacl) {
-        const QByteArray trustee = dom_sid_to_bytes(ace->trustee);
+        for (const security_ace &ace : old_dacl) {
+            const bool match = [&]() {
+                const bool trustee_match = [&]() {
+                    for (const QByteArray &trustee : trustee_list) {
+                        const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
+                        const bool trustees_are_equal = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
 
-        for (const AcePermission &permission : all_permissions) {
-            const uint32_t permission_mask = ace_permission_to_mask_map[permission];
+                        if (trustees_are_equal) {
+                            return true;
+                        }
+                    }
 
-            const bool mask_match = ((ace->access_mask & permission_mask) == permission_mask);
-            if (!mask_match) {
-                continue;
-            }
-
-            const bool object_match = [&]() {
-                const bool object_present = ((ace->object.object.flags & SEC_ACE_OBJECT_TYPE_PRESENT) != 0);
-                if (!object_present) {
                     return false;
-                }
-
-                const QString rights_guid = [&]() {
-                    const QString right_cn = ace_permission_to_type_map[permission];
-                    const QString guid_out = adconfig->get_right_guid(right_cn);
-
-                    return guid_out;
                 }();
 
-                const QString ace_type_guid = [&]() {
-                    const GUID type = ace->object.object.type.type;
-                    const QByteArray type_bytes = QByteArray((char *) &type, sizeof(GUID));
+                const bool inherited = bit_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
 
-                    return attribute_display_value(ATTRIBUTE_OBJECT_GUID, type_bytes, adconfig);
-                }();
+                const bool out_match = trustee_match && !inherited;
 
-                return (rights_guid.toLower() == ace_type_guid.toLower());
+                return out_match;
             }();
 
-            switch (ace->type) {
-                case SEC_ACE_TYPE_ACCESS_ALLOWED: {
-                    out[trustee][permission] = PermissionState_Allowed;
-                    break;
-                }
-                case SEC_ACE_TYPE_ACCESS_DENIED: {
-                    out[trustee][permission] = PermissionState_Denied;
-                    break;
-                }
-                case SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT: {
-                    if (object_match) {
-                        out[trustee][permission] = PermissionState_Allowed;
-                    }
-                    break;
-                }
-                case SEC_ACE_TYPE_ACCESS_DENIED_OBJECT: {
-                    if (object_match) {
-                        out[trustee][permission] = PermissionState_Denied;
-                    }
-                    break;
-                }
-                default: break;
+            if (!match) {
+                out.append(ace);
             }
         }
-    }
-
-    return out;
-}
-
-bool ad_security_get_protected_against_deletion(const AdObject &object, AdConfig *adconfig) {
-    QHash<QByteArray, QHash<AcePermission, PermissionState>> permissions = object.get_security_state(adconfig);
-
-    const QByteArray world_trustee = dom_sid_string_to_bytes(SID_WORLD);
-
-    const PermissionState delete_state = permissions[world_trustee][AcePermission_Delete];
-    const PermissionState delete_subtree_state = permissions[world_trustee][AcePermission_DeleteSubtree];
-    const bool out = ((delete_state == PermissionState_Denied) && (delete_subtree_state == PermissionState_Denied));
-
-    return out;
-}
-
-bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString dn, AdConfig *adconfig, const bool enabled) {
-    const AdObject object = ad.search_object(dn);
-    const QHash<QByteArray, QHash<AcePermission, PermissionState>> old_permissions = object.get_security_state(adconfig);
-
-    const QHash<QByteArray, QHash<AcePermission, PermissionState>> new_permissions = [&]() {
-        QHash<QByteArray, QHash<AcePermission, PermissionState>> out;
-
-        const QByteArray world_trustee = dom_sid_string_to_bytes(SID_WORLD);
-
-        const PermissionState state = [&]() {
-            if (enabled) {
-                return PermissionState_Denied;
-            } else {
-                return PermissionState_None;
-            }
-        }();
-        out = old_permissions;
-        out = ad_security_modify(out, world_trustee, AcePermission_Delete, state);
-        out = ad_security_modify(out, world_trustee, AcePermission_DeleteSubtree, state);
 
         return out;
     }();
 
-    const bool apply_success = attribute_replace_security_descriptor(&ad, dn, new_permissions);
+    ad_security_replace_dacl(sd, new_dacl);
+}
 
-    return apply_success;
+QString ad_security_get_right_name(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type) {
+    // TODO: translate object type name. How to: object
+    // type guid -> extended right CN -> map of cn's to
+    // translations (both english and russian!)
+    // 
+    // TODO: Add "translated" to decl comment when
+    // done.
+    // 
+    // TODO: also add this note explaning *why* we need
+    // to translate these ourselves. 
+    // Predefined schema classes use the localizationDisplayId attribute of a controlAccessRight object to specify a message identifier used to retrieve a localized display name from Dssec.dll.
+    // we don't have dssec.dll!
+
+    const QString object_type_name = adconfig->get_right_name(object_type);
+
+    if (access_mask == SEC_ADS_CONTROL_ACCESS) {
+        return object_type_name;
+    } else if (access_mask == SEC_ADS_READ_PROP) {
+        return QString(QCoreApplication::translate("ad_security.cpp", "Read %1")).arg(object_type_name);
+    } else if (access_mask == SEC_ADS_WRITE_PROP) {
+        return QString(QCoreApplication::translate("ad_security.cpp", "Write %1")).arg(object_type_name);
+    } else {
+        const QHash<uint32_t, QString> common_right_name_map = {
+            {SEC_ADS_GENERIC_ALL, "Full control"},
+            {SEC_ADS_GENERIC_READ, "Read"},
+            {SEC_ADS_GENERIC_WRITE, "Write"},
+            {SEC_STD_DELETE, "Delete"},
+            {SEC_ADS_CREATE_CHILD, "Create all child objects"},
+            {SEC_ADS_DELETE_CHILD, "Delete all child objects"},
+        };
+
+        return common_right_name_map.value(access_mask, QCoreApplication::translate("ad_security.cpp", "<unknown right>"));
+    }
+}
+
+void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
+    const QList<uint32_t> superior_list = ad_security_get_superior_right_list(access_mask);
+    for (const uint32_t &superior : superior_list) {
+        const bool opposite_superior_is_set = [&]() {
+            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior, QByteArray());
+            const SecurityRightStateType type = [&]() {
+                // NOTE: opposite!
+                if (!allow) {
+                    return SecurityRightStateType_Allow;
+                } else {
+                    return SecurityRightStateType_Deny;
+                }
+            }();
+            const bool out = state.get(SecurityRightStateInherited_No, type);
+
+            return out;
+        }();
+
+        // NOTE: skip superior if it's not set, so that
+        // we don't add opposite subordinate rights
+        // when not needed
+        if (!opposite_superior_is_set) {
+            continue;
+        }
+
+        // Remove opposite superior
+        security_descriptor_remove_right(sd, trustee, superior, QByteArray(), !allow);
+
+        // Add opposite superior subordinates
+        const QList<SecurityRight> superior_subordinate_list = ad_security_get_subordinate_right_list(adconfig, superior, class_list);
+        for (const SecurityRight &subordinate : superior_subordinate_list) {
+
+            security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
+        }
+    }
+
+    // Remove subordinates
+    const QList<SecurityRight> subordinate_list = ad_security_get_subordinate_right_list(adconfig, access_mask, class_list);
+    for (const SecurityRight &subordinate : subordinate_list) {
+        security_descriptor_remove_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
+    }
+
+    // Remove opposite
+    security_descriptor_remove_right(sd, trustee, access_mask, object_type, !allow);
+
+    // Remove opposite subordinates
+    for (const SecurityRight &subordinate : subordinate_list) {
+        security_descriptor_remove_right(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
+    }
+
+    // Add target
+    security_descriptor_add_right(sd, trustee, access_mask, object_type, allow);
+}
+
+void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
+    const QList<uint32_t> target_superior_list = ad_security_get_superior_right_list(access_mask);
+
+    // Remove superiors
+    for (const uint32_t &superior : target_superior_list) {
+        const bool superior_is_set = [&]() {
+            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior, QByteArray());
+            const SecurityRightStateType type = [&]() {
+                if (allow) {
+                    return SecurityRightStateType_Allow;
+                } else {
+                    return SecurityRightStateType_Deny;
+                }
+            }();
+            const bool out = state.get(SecurityRightStateInherited_No, type);
+
+            return out;
+        }();
+
+        // NOTE: skip superior if it's not set, so that we don't add opposite subordinate rights when not needed
+        if (!superior_is_set) {
+            continue;
+        }
+
+        security_descriptor_remove_right(sd, trustee, superior, QByteArray(), allow);
+        
+        const QList<SecurityRight> superior_subordinate_list = ad_security_get_subordinate_right_list(adconfig, superior, class_list);
+
+        // Add opposite subordinate rights
+        for (const SecurityRight &subordinate : superior_subordinate_list) {
+            security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
+        }
+    }
+
+    // Remove target right
+    security_descriptor_remove_right(sd, trustee, access_mask, object_type, allow);
+
+    // Add target subordinate rights
+    const QList<SecurityRight> tarad_security_get_subordinate_right_list = ad_security_get_subordinate_right_list(adconfig, access_mask, class_list);
+    for (const SecurityRight &subordinate : tarad_security_get_subordinate_right_list) {
+        security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
+    }
+}
+
+QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list) {
+    QList<SecurityRight> out;
+
+    for (const uint32_t &access_mask : common_rights_list) {
+        SecurityRight right;
+        right.access_mask = access_mask;
+        right.object_type = QByteArray();
+
+        out.append(right);
+    }
+
+    const QList<QString> extended_rights_list = adconfig->get_extended_rights_list(class_list);
+    for (const QString &rights : extended_rights_list) {
+        const int valid_accesses = adconfig->get_rights_valid_accesses(rights);
+        const QByteArray rights_guid = adconfig->get_right_guid(rights);
+        const QList<uint32_t> access_mask_list = {
+            SEC_ADS_CONTROL_ACCESS,
+            SEC_ADS_READ_PROP,
+            SEC_ADS_WRITE_PROP,
+        };
+
+        for (const uint32_t &access_mask : access_mask_list) {
+            const bool mask_match = bit_is_set(valid_accesses, access_mask);
+
+            if (mask_match) {
+                SecurityRight right;
+                right.access_mask = access_mask;
+                right.object_type = rights_guid;
+
+                out.append(right);
+            }
+        }
+    }
+
+    return out;
+}
+
+QList<uint32_t> ad_security_get_superior_right_list(const uint32_t access_mask) {
+    QList<uint32_t> out;
+
+    // NOTE: order is important, because we want to
+    // process "more superior" rights first. "Generic
+    // all" is more superior than others.
+    if (access_mask == SEC_ADS_READ_PROP) {
+        out.append(SEC_ADS_GENERIC_ALL);
+        out.append(SEC_ADS_GENERIC_READ);
+    } else if (access_mask == SEC_ADS_WRITE_PROP) {
+        out.append(SEC_ADS_GENERIC_ALL);
+        out.append(SEC_ADS_GENERIC_WRITE);
+    } else if (access_mask == SEC_ADS_CONTROL_ACCESS) {
+        out.append(SEC_ADS_GENERIC_ALL);
+    } else if (access_mask == SEC_ADS_GENERIC_READ || access_mask == SEC_ADS_GENERIC_WRITE) {
+        out.append(SEC_ADS_GENERIC_ALL);
+    }
+
+    return out;
+}
+
+QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, const uint32_t access_mask, const QList<QString> &class_list) {
+    QList<SecurityRight> out;
+
+    const QList<SecurityRight> right_list_for_target = ad_security_get_right_list_for_class(adconfig, class_list);
+
+    for (const SecurityRight &right : right_list_for_target) {
+        const bool match = [&]() {
+            if (access_mask == SEC_ADS_GENERIC_ALL) {
+                // All except full control
+                return (right.access_mask != access_mask);
+            } else if (access_mask == SEC_ADS_GENERIC_READ) {
+                // All read property rights
+                return (right.access_mask == SEC_ADS_READ_PROP);
+            } else if (access_mask == SEC_ADS_GENERIC_WRITE) {
+                // All write property rights
+                return (right.access_mask == SEC_ADS_WRITE_PROP);
+            } else {
+                return false;
+            }
+        }();
+
+        if (match) {
+            out.append(right);
+        }
+    }
+
+    return out;
+}
+
+void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace> &new_dacl) {
+    
+    // Free old dacl
+    talloc_free(sd->dacl);
+    sd->dacl = NULL;
+
+    // Fill new dacl
+    // NOTE: dacl_add() allocates new dacl
+    for (const security_ace &ace : new_dacl) {
+        security_descriptor_dacl_add(sd, &ace);
+    }
+
+    security_descriptor_sort_dacl(sd);
+}
+
+// This f-n is only necessary to band-aid one problem
+// with generic read. For some reason, security editing
+// in RSAT has a different value for generic read,
+// without the "list object" right. Need to remove that
+// bit both when setting generic read and when reading
+// it.
+uint32_t ad_security_map_access_mask(const uint32_t access_mask) {
+    const bool is_generic_read = (access_mask == SEC_ADS_GENERIC_READ);
+
+    if (is_generic_read) {
+        const uint32_t out = (access_mask & ~SEC_ADS_LIST_OBJECT);
+
+        return out;
+    } else {
+        return access_mask;
+    }
 }

@@ -1108,22 +1108,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
 
     switch (option) {
         case AccountOption_CantChangePassword: {
-            const AdObject object = search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
-            const auto old_security_state = object.get_security_state(d->adconfig);
-
-            const QByteArray self_trustee = sid_string_to_bytes(SID_NT_SELF);
-
-            const PermissionState new_permission_state = [&]() {
-                if (set) {
-                    return PermissionState_Denied;
-                } else {
-                    return PermissionState_Allowed;
-                }
-            }();
-
-            const auto new_security_state = ad_security_modify(old_security_state, self_trustee, AcePermission_ChangePassword, new_permission_state);
-
-            success = attribute_replace_security_descriptor(this, dn, new_security_state);
+            success = ad_security_set_user_cant_change_pass(this, dn, set);
 
             break;
         }
@@ -2182,7 +2167,7 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
 QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format_enum) {
     TALLOC_CTX *mem_ctx = talloc_new(NULL);
 
-    security_descriptor *gpc_sd = gpc_object.get_sd(mem_ctx);
+    security_descriptor *gpc_sd = gpc_object.get_security_descriptor(mem_ctx);
 
     struct security_descriptor *gpt_sd;
     const NTSTATUS create_sd_status = gp_create_gpt_security_descriptor(mem_ctx, gpc_sd, &gpt_sd);
@@ -2194,7 +2179,7 @@ QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format
         return QString();
     }
 
-    ad_security_sort_dacl(gpt_sd);
+    security_descriptor_sort_dacl(gpt_sd);
 
     QList<QString> all_elements;
 

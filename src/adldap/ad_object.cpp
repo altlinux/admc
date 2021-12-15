@@ -173,16 +173,9 @@ bool AdObject::get_system_flag(const SystemFlagsBit bit) const {
 bool AdObject::get_account_option(AccountOption option, AdConfig *adconfig) const {
     switch (option) {
         case AccountOption_CantChangePassword: {
-            if (contains(ATTRIBUTE_SECURITY_DESCRIPTOR)) {
-                const auto security_state = get_security_state(adconfig);
-                const QByteArray self_trustee = sid_string_to_bytes(SID_NT_SELF);
-                const PermissionState permission_state = security_state[self_trustee][AcePermission_ChangePassword];
-                const bool denied = (permission_state == PermissionState_Denied);
+            const bool out = ad_security_get_user_cant_change_pass(this, adconfig);
 
-                return denied;
-            } else {
-                return false;
-            }
+            return out;
         }
         case AccountOption_PasswordExpired: {
             if (contains(ATTRIBUTE_PWD_LAST_SET)) {
@@ -267,25 +260,17 @@ QString AdObject::get_upn_suffix() const {
     return upn_split[1];
 }
 
-security_descriptor *AdObject::get_sd(TALLOC_CTX *mem_ctx) const {
-    const QByteArray descriptor_bytes = get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-    DATA_BLOB blob = data_blob_const(descriptor_bytes.data(), descriptor_bytes.size());
+security_descriptor *AdObject::get_security_descriptor(TALLOC_CTX *mem_ctx_arg) const {
+    TALLOC_CTX *mem_ctx = [&]() -> void * {
+        if (mem_ctx_arg != nullptr) {
+            return mem_ctx_arg;
+        } else {
+            return NULL;
+        }
+    }();
 
-    security_descriptor *sd = talloc(mem_ctx, struct security_descriptor);
-
-    ndr_pull_struct_blob(&blob, mem_ctx, sd, (ndr_pull_flags_fn_t) ndr_pull_security_descriptor);
-
-    return sd;
-}
-
-QHash<QByteArray, QHash<AcePermission, PermissionState>> AdObject::get_security_state(AdConfig *adconfig) const {
-    TALLOC_CTX *mem_ctx = talloc_new(NULL);
-
-    security_descriptor *sd = get_sd(mem_ctx);
-
-    const auto out = ad_security_get_state_from_sd(sd, adconfig);
-
-    talloc_free(mem_ctx);
+    const QByteArray sd_bytes = get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
+    security_descriptor *out = security_descriptor_make_from_bytes(mem_ctx, sd_bytes);
 
     return out;
 }

@@ -34,6 +34,7 @@ class AdInterface;
 class QLocale;
 class QString;
 class QLineEdit;
+class QByteArray;
 template <typename T>
 class QList;
 
@@ -84,9 +85,21 @@ public:
 
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
-    QString get_right_guid(const QString &right_cn) const;
+    QByteArray get_right_guid(const QString &right_cn) const;
+    QString get_right_name(const QByteArray &right_guid) const;
+    int get_rights_valid_accesses(const QString &rights_cn) const;
+
+    // Returns extended rights that apply to given
+    // classes
+    QList<QString> get_extended_rights_list(const QList<QString> &class_list) const;
+
+    QString guid_to_attribute(const QByteArray &guid) const;
+
+    QString guid_to_class(const QByteArray &guid) const;
 
     QList<QString> get_noncontainer_classes();
+
+    bool rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const;
 
 private:
     AdConfigPrivate *d;
