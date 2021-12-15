@@ -105,15 +105,10 @@ void ADMCTestAdInterface::gpo_check_perms() {
             const AdObject gpc_object = ad.search_object(gpc_dn);
             security_descriptor *out = gpc_object.get_security_descriptor();
 
-            const QByteArray trustee = []() {
-                // NOTE: S-1-1-0 is "WORLD"
-                const QString world_trustee_string = "S-1-1-0";
-                const QByteArray trustee_everyone = sid_string_to_bytes(world_trustee_string);
+            // NOTE: S-1-1-0 is "WORLD"
+            const QByteArray trustee_everyone = sid_string_to_bytes("S-1-1-0");
 
-                return bytes;
-            }();
-
-            security_descriptor_add_right(out, trustee, AdSecurityMasks::generic_all, QByteArray(), true);
+            security_descriptor_add_right(out, trustee_everyone, SEC_ADS_GENERIC_ALL, QByteArray(), true);
 
             return out;
         }();

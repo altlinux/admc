@@ -43,7 +43,6 @@ set(TEST_TARGETS
     admc_test_gplink
     admc_test_select_base_widget
     admc_test_filter_widget
-    admc_test_security_tab
     admc_test_attributes_tab
     admc_test_members_tab
     admc_test_member_of_tab
