@@ -21,11 +21,12 @@
 #include "multi_tabs/address_multi_tab.h"
 #include "ui_address_multi_tab.h"
 
-#include "adldap.h"
+#include "ad_defines.h"
 #include "attribute_multi_edits/country_multi_edit.h"
 #include "attribute_multi_edits/string_multi_edit.h"
 
-AddressMultiTab::AddressMultiTab() {
+AddressMultiTab::AddressMultiTab(QList<AttributeMultiEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::AddressMultiTab();
     ui->setupUi(this);
 
@@ -34,8 +35,6 @@ AddressMultiTab::AddressMultiTab() {
     new StringMultiEdit(ui->state_edit, ui->state_check, ATTRIBUTE_STATE, edit_list, this);
     new StringMultiEdit(ui->postal_edit, ui->postal_check, ATTRIBUTE_POSTAL_CODE, edit_list, this);
     new CountryMultiEdit(ui->country_combo, ui->country_check, edit_list, this);
-
-    multi_edits_connect_to_tab(edit_list, this);
 }
 
 AddressMultiTab::~AddressMultiTab() {

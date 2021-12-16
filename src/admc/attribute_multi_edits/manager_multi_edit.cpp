@@ -27,28 +27,18 @@
 #include <QCheckBox>
 #include <QFormLayout>
 
-ManagerMultiEdit::ManagerMultiEdit(ManagerWidget *widget_arg, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(check, edits_out, parent) {
+ManagerMultiEdit::ManagerMultiEdit(ManagerWidget *widget_arg, QCheckBox *check, QList<AttributeMultiEdit *> *edit_list, QObject *parent)
+: AttributeMultiEdit(check, edit_list, parent) {
     const QString label_text = g_adconfig->get_attribute_display_name(ATTRIBUTE_MANAGER, CLASS_USER) + ":";
-    apply_check->setText(label_text);
+    check->setText(label_text);
 
     widget = widget_arg;
-
-    connect(
-        widget, &ManagerWidget::edited,
-        this, &AttributeMultiEdit::edited);
-
-    set_enabled(false);
 }
 
-bool ManagerMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
+bool ManagerMultiEdit::apply(AdInterface &ad, const QString &target) {
     return widget->apply(ad, target);
 }
 
 void ManagerMultiEdit::set_enabled(const bool enabled) {
-    if (!enabled) {
-        widget->reset();
-    }
-
     widget->setEnabled(enabled);
 }

@@ -27,18 +27,12 @@
 #include <QCheckBox>
 #include <QComboBox>
 
-CountryMultiEdit::CountryMultiEdit(QComboBox *country_combo_arg, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(check, edits_out, parent) {
+CountryMultiEdit::CountryMultiEdit(QComboBox *country_combo_arg, QCheckBox *check, QList<AttributeMultiEdit *> *edit_list, QObject *parent)
+: AttributeMultiEdit(check, edit_list, parent) {
     country_combo = country_combo_arg;
-
-    connect(
-        country_combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &AttributeMultiEdit::edited);
-
-    set_enabled(false);
 }
 
-bool CountryMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
+bool CountryMultiEdit::apply(AdInterface &ad, const QString &target) {
     return country_combo_apply(country_combo, ad, target);
 }
 

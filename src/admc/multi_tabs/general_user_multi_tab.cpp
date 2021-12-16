@@ -21,10 +21,11 @@
 #include "multi_tabs/general_user_multi_tab.h"
 #include "multi_tabs/ui_general_user_multi_tab.h"
 
-#include "adldap.h"
+#include "ad_defines.h"
 #include "attribute_multi_edits/string_multi_edit.h"
 
-GeneralUserMultiTab::GeneralUserMultiTab() {
+GeneralUserMultiTab::GeneralUserMultiTab(QList<AttributeMultiEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralUserMultiTab();
     ui->setupUi(this);
 
@@ -34,8 +35,6 @@ GeneralUserMultiTab::GeneralUserMultiTab() {
     new StringMultiEdit(ui->fax_edit, ui->fax_check, ATTRIBUTE_FAX_NUMBER, edit_list, this);
     new StringMultiEdit(ui->web_edit, ui->web_check, ATTRIBUTE_WWW_HOMEPAGE, edit_list, this);
     new StringMultiEdit(ui->email_edit, ui->email_check, ATTRIBUTE_MAIL, edit_list, this);
-
-    multi_edits_connect_to_tab(edit_list, this);
 }
 
 GeneralUserMultiTab::~GeneralUserMultiTab() {

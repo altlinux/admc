@@ -29,6 +29,7 @@
 #include "multi_tabs/general_user_multi_tab.h"
 #include "multi_tabs/organization_multi_tab.h"
 #include "multi_tabs/profile_multi_tab.h"
+#include "attribute_multi_edits/attribute_multi_edit.h"
 #include "settings.h"
 #include "status.h"
 #include "tab_widget.h"
@@ -47,22 +48,34 @@ PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QStrin
 
     target_list = target_list_arg;
 
-    auto apply_button = ui->button_box->button(QDialogButtonBox::Apply);
-    auto reset_button = ui->button_box->button(QDialogButtonBox::Reset);
-
-    auto add_tab = [&](PropertiesMultiTab *tab, const QString &title) {
-        ui->tab_widget->add_tab(tab, title);
-        tab_list.append(tab);
-    };
+    apply_button = ui->button_box->button(QDialogButtonBox::Apply);
 
     if (class_list == QList<QString>({CLASS_USER})) {
-        add_tab(new GeneralUserMultiTab(), tr("General"));
-        add_tab(new AccountMultiTab(ad), tr("Account"));
-        add_tab(new AddressMultiTab(), tr("Address"));
-        add_tab(new ProfileMultiTab(), tr("Profile"));
-        add_tab(new OrganizationMultiTab(), tr("Organization"));
+        auto general_user_tab = new GeneralUserMultiTab(&edit_list, this);
+        auto account_tab = new AccountMultiTab(&edit_list, ad, this);
+        auto address_tab = new AddressMultiTab(&edit_list, this);
+        auto profile_tab = new ProfileMultiTab(&edit_list, this);
+        auto organization_tab = new OrganizationMultiTab(&edit_list, this);
+
+        ui->tab_widget->add_tab(general_user_tab, tr("General"));
+        ui->tab_widget->add_tab(account_tab, tr("Account"));
+        ui->tab_widget->add_tab(address_tab, tr("Address"));
+        ui->tab_widget->add_tab(profile_tab, tr("Profile"));
+        ui->tab_widget->add_tab(organization_tab, tr("Organization"));
     } else {
-        add_tab(new GeneralOtherMultiTab(), tr("General"));
+        auto general_other_tab = new GeneralOtherMultiTab(&edit_list, this);
+
+        ui->tab_widget->add_tab(general_other_tab, tr("General"));
+    }
+
+    for (AttributeMultiEdit *edit : edit_list) {
+        connect(
+            edit, &AttributeMultiEdit::edited,
+            this, &PropertiesMultiDialog::on_edited);
+    }
+
+    for (AttributeMultiEdit *edit : edit_list) {
+        edit->set_enabled(false);
     }
 
     settings_setup_dialog_geometry(SETTING_object_multi_dialog_geometry, this);
@@ -70,11 +83,6 @@ PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QStrin
     connect(
         apply_button, &QPushButton::clicked,
         this, &PropertiesMultiDialog::apply);
-    connect(
-        reset_button, &QPushButton::clicked,
-        this, &PropertiesMultiDialog::reset);
-
-    reset();
 }
 
 PropertiesMultiDialog::~PropertiesMultiDialog() {
@@ -97,14 +105,35 @@ bool PropertiesMultiDialog::apply() {
 
     show_busy_indicator();
 
-    bool total_apply_success = true;
-    for (PropertiesMultiTab *tab : tab_list) {
-        const bool success = tab->apply(ad, target_list);
+    const bool apply_success = [&]() {
+        bool out = true;
 
-        if (!success) {
-            total_apply_success = false;
+        for (AttributeMultiEdit *edit : edit_list) {
+            const bool need_to_apply = edit->need_to_apply();
+
+            if (need_to_apply) {
+                const bool success = [&]() {
+                    bool success_out = true;
+
+                    for (const QString &target : target_list) {
+                        const bool this_success = edit->apply(ad, target);
+
+                        success_out = (success_out && this_success);
+                    }
+
+                    return success_out;
+                }();
+
+                if (success) {
+                    edit->uncheck();
+                }
+
+                out = (out && success);
+            }
         }
-    }
+
+        return out;
+    }();
 
     g_status->display_ad_messages(ad, this);
 
@@ -112,11 +141,9 @@ bool PropertiesMultiDialog::apply() {
 
     emit applied();
 
-    return total_apply_success;
+    return apply_success;
 }
 
-void PropertiesMultiDialog::reset() {
-    for (PropertiesMultiTab *tab : tab_list) {
-        tab->reset();
-    }
+void PropertiesMultiDialog::on_edited() {
+    apply_button->setEnabled(true);
 }

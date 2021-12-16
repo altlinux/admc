@@ -28,9 +28,10 @@ class ManagerWidget;
 class ManagerMultiEdit : public AttributeMultiEdit {
     Q_OBJECT
 public:
-    ManagerMultiEdit(ManagerWidget *widget, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    ManagerMultiEdit(ManagerWidget *widget, QCheckBox *check, QList<AttributeMultiEdit *> *edit_list, QObject *parent);
 
-    DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
+    bool apply(AdInterface &ad, const QString &target) override;
+    void set_enabled(const bool enabled) override;
 
 private:
     ManagerWidget *widget;

@@ -32,9 +32,10 @@ class QComboBox;
 class CountryMultiEdit : public AttributeMultiEdit {
     Q_OBJECT
 public:
-    CountryMultiEdit(QComboBox *country_combo, QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    CountryMultiEdit(QComboBox *country_combo, QCheckBox *check, QList<AttributeMultiEdit *> *edit_list, QObject *parent);
 
-    DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
+    bool apply(AdInterface &ad, const QString &target) override;
+    void set_enabled(const bool enabled) override;
 
 private:
     QComboBox *country_combo;

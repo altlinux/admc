@@ -30,7 +30,7 @@
 
 #include <QDialog>
 
-class PropertiesMultiTab;
+class AttributeMultiEdit;
 class AdInterface;
 
 namespace Ui {
@@ -51,11 +51,12 @@ signals:
 
 private slots:
     void accept() override;
-    void reset();
+    void on_edited();
 
 private:
     QList<QString> target_list;
-    QList<PropertiesMultiTab *> tab_list;
+    QList<AttributeMultiEdit *> edit_list;
+    QPushButton *apply_button;
 
     bool apply();
 };

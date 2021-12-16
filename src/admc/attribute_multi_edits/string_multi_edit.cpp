@@ -25,28 +25,18 @@
 
 #include <QLineEdit>
 
-StringMultiEdit::StringMultiEdit(QLineEdit *edit_arg, QCheckBox *check, const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
-: AttributeMultiEdit(check, edits_out, parent) {
+StringMultiEdit::StringMultiEdit(QLineEdit *edit_arg, QCheckBox *check, const QString &attribute_arg, QList<AttributeMultiEdit *> *edit_list, QObject *parent)
+: AttributeMultiEdit(check, edit_list, parent) {
     attribute = attribute_arg;
 
     edit = edit_arg;
-
-    connect(
-        edit, &QLineEdit::textChanged,
-        this, &AttributeMultiEdit::edited);
-
-    set_enabled(false);
 }
 
-bool StringMultiEdit::apply_internal(AdInterface &ad, const QString &target) {
+bool StringMultiEdit::apply(AdInterface &ad, const QString &target) {
     const QString new_value = edit->text();
     return ad.attribute_replace_string(target, attribute, new_value);
 }
 
 void StringMultiEdit::set_enabled(const bool enabled) {
-    if (!enabled) {
-        edit->setText(QString());
-    }
-
     edit->setEnabled(enabled);
 }

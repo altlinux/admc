@@ -21,14 +21,13 @@
 #include "multi_tabs/general_other_multi_tab.h"
 #include "multi_tabs/ui_general_other_multi_tab.h"
 
-#include "adldap.h"
+#include "ad_defines.h"
 #include "attribute_multi_edits/string_multi_edit.h"
 
-GeneralOtherMultiTab::GeneralOtherMultiTab() {
+GeneralOtherMultiTab::GeneralOtherMultiTab(QList<AttributeMultiEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralOtherMultiTab();
     ui->setupUi(this);
 
     new StringMultiEdit(ui->description_edit, ui->description_check, ATTRIBUTE_DESCRIPTION, edit_list, this);
-
-    multi_edits_connect_to_tab(edit_list, this);
 }

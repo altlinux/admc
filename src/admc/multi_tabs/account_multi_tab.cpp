@@ -27,7 +27,8 @@
 #include "attribute_multi_edits/string_multi_edit.h"
 #include "attribute_multi_edits/upn_multi_edit.h"
 
-AccountMultiTab::AccountMultiTab(AdInterface &ad) {
+AccountMultiTab::AccountMultiTab(QList<AttributeMultiEdit *> *edit_list, AdInterface &ad, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::AccountMultiTab();
     ui->setupUi(this);
 
@@ -43,8 +44,6 @@ AccountMultiTab::AccountMultiTab(AdInterface &ad) {
     };
     new AccountOptionMultiEdit(check_map, ui->options_check, edit_list, this);
     new ExpiryMultiEdit(ui->expiry_edit, ui->expiry_check, edit_list, this);
-
-    multi_edits_connect_to_tab(edit_list, this);
 }
 
 AccountMultiTab::~AccountMultiTab() {

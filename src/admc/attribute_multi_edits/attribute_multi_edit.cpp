@@ -20,67 +20,39 @@
 
 #include "attribute_multi_edits/attribute_multi_edit.h"
 
-#include "multi_tabs/properties_multi_tab.h"
-
 #include <QCheckBox>
 #include <QDebug>
 
-AttributeMultiEdit::AttributeMultiEdit(QCheckBox *apply_check_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent)
+AttributeMultiEdit::AttributeMultiEdit(QCheckBox *apply_check_arg, QList<AttributeMultiEdit *> *edit_list, QObject *parent)
 : QObject(parent) {
-    if (edits_out.contains(this)) {
+    if (edit_list->contains(this)) {
         qDebug() << "ERROR: attribute edit added twice to list!";
     } else {
-        edits_out.append(this);
+        edit_list->append(this);
     }
 
     apply_check = apply_check_arg;
 
     connect(
         apply_check, &QAbstractButton::toggled,
-        this, &AttributeMultiEdit::on_check_toggled);
+        this, &AttributeMultiEdit::on_apply_check);
 }
 
-bool AttributeMultiEdit::apply(AdInterface &ad, const QList<QString> &target_list) {
-    const bool need_to_apply = apply_check->isChecked();
-    if (!need_to_apply) {
-        return true;
-    }
+bool AttributeMultiEdit::need_to_apply() const {
+    const bool out = apply_check->isChecked();
 
-    bool total_success = true;
-
-    for (const QString &target : target_list) {
-        const bool success = apply_internal(ad, target);
-
-        if (!success) {
-            total_success = false;
-        }
-    }
-
-    apply_check->setChecked(false);
-
-    return total_success;
+    return out;
 }
 
-void AttributeMultiEdit::reset() {
-    // NOTE: when apply_check is unchecked, the
-    // on_check_toggled() calls set_enabled()
+void AttributeMultiEdit::uncheck() {
     apply_check->setChecked(false);
 }
 
-void AttributeMultiEdit::on_check_toggled() {
+void AttributeMultiEdit::on_apply_check() {
     if (apply_check->isChecked()) {
         emit edited();
     }
 
-    // NOTE: call set_enabled() of the subclass
     const bool enabled = apply_check->isChecked();
     set_enabled(enabled);
-}
-
-void multi_edits_connect_to_tab(const QList<AttributeMultiEdit *> &edits, PropertiesMultiTab *tab) {
-    for (auto edit : edits) {
-        QObject::connect(
-            edit, &AttributeMultiEdit::edited,
-            tab, &PropertiesMultiTab::on_edit_edited);
-    }
 }

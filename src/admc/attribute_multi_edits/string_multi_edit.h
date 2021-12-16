@@ -32,9 +32,10 @@ class QLineEdit;
 class StringMultiEdit : public AttributeMultiEdit {
     Q_OBJECT
 public:
-    StringMultiEdit(QLineEdit *edit, QCheckBox *check, const QString &attribute_arg, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    StringMultiEdit(QLineEdit *edit, QCheckBox *check, const QString &attribute_arg, QList<AttributeMultiEdit *> *edit_list, QObject *parent);
 
-    DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS();
+    bool apply(AdInterface &ad, const QString &target) override;
+    void set_enabled(const bool enabled) override;
 
 private:
     QLineEdit *edit;

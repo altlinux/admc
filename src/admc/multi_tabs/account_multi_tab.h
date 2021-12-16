@@ -26,19 +26,22 @@
  * attributes.
  */
 
-#include "multi_tabs/properties_multi_tab.h"
+#include <QWidget>
+
+class AttributeMultiEdit;
+class AdInterface;
 
 namespace Ui {
 class AccountMultiTab;
 }
 
-class AccountMultiTab final : public PropertiesMultiTab {
+class AccountMultiTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::AccountMultiTab *ui;
 
-    AccountMultiTab(AdInterface &ad);
+    AccountMultiTab(QList<AttributeMultiEdit *> *edit_list, AdInterface &ad, QWidget *parent);
     ~AccountMultiTab();
 };
 

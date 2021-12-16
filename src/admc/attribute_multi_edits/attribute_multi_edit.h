@@ -34,31 +34,22 @@ class QCheckBox;
 class AttributeMultiEdit : public QObject {
     Q_OBJECT
 public:
-    AttributeMultiEdit(QCheckBox *check, QList<AttributeMultiEdit *> &edits_out, QObject *parent);
+    AttributeMultiEdit(QCheckBox *check, QList<AttributeMultiEdit *> *edit_list, QObject *parent);
 
-    bool apply(AdInterface &ad, const QList<QString> &target_list);
-    void reset();
+    bool need_to_apply() const;
+    void uncheck();
 
-private slots:
-    void on_check_toggled();
+    virtual bool apply(AdInterface &ad, const QString &target) = 0;
+    virtual void set_enabled(const bool enabled) = 0;
 
 signals:
     void edited();
 
-protected:
+private slots:
+    void on_apply_check();
+
+private:
     QCheckBox *apply_check;
-
-    virtual bool apply_internal(AdInterface &ad, const QString &target) = 0;
-    virtual void set_enabled(const bool enabled) = 0;
 };
-
-#define DECL_ATTRIBUTE_MULTI_EDIT_VIRTUALS()                              \
-protected:                                                                \
-    bool apply_internal(AdInterface &ad, const QString &target) override; \
-    void set_enabled(const bool enabled) override;                        \
-                                                                          \
-public:
-
-void multi_edits_connect_to_tab(const QList<AttributeMultiEdit *> &edits, PropertiesMultiTab *tab);
 
 #endif /* ATTRIBUTE_MULTI_EDIT_H */

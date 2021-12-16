@@ -21,18 +21,17 @@
 #include "multi_tabs/profile_multi_tab.h"
 #include "ui_profile_multi_tab.h"
 
-#include "adldap.h"
+#include "ad_defines.h"
 #include "attribute_multi_edits/string_multi_edit.h"
 
-ProfileMultiTab::ProfileMultiTab() {
+ProfileMultiTab::ProfileMultiTab(QList<AttributeMultiEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::ProfileMultiTab();
     ui->setupUi(this);
 
     new StringMultiEdit(ui->profile_edit, ui->profile_check, ATTRIBUTE_PROFILE_PATH, edit_list, this);
     new StringMultiEdit(ui->script_edit, ui->script_check, ATTRIBUTE_SCRIPT_PATH, edit_list, this);
     new StringMultiEdit(ui->home_edit, ui->home_check, ATTRIBUTE_HOME_DIRECTORY, edit_list, this);
-
-    multi_edits_connect_to_tab(edit_list, this);
 }
 
 ProfileMultiTab::~ProfileMultiTab() {

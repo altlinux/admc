@@ -21,11 +21,12 @@
 #include "multi_tabs/organization_multi_tab.h"
 #include "multi_tabs/ui_organization_multi_tab.h"
 
-#include "adldap.h"
+#include "ad_defines.h"
 #include "attribute_multi_edits/manager_multi_edit.h"
 #include "attribute_multi_edits/string_multi_edit.h"
 
-OrganizationMultiTab::OrganizationMultiTab() {
+OrganizationMultiTab::OrganizationMultiTab(QList<AttributeMultiEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::OrganizationMultiTab();
     ui->setupUi(this);
 
@@ -33,8 +34,6 @@ OrganizationMultiTab::OrganizationMultiTab() {
     new StringMultiEdit(ui->department_edit, ui->department_check, ATTRIBUTE_DEPARTMENT, edit_list, this);
     new StringMultiEdit(ui->company_edit, ui->company_check, ATTRIBUTE_COMPANY, edit_list, this);
     new ManagerMultiEdit(ui->manager_edit, ui->manager_check, edit_list, this);
-
-    multi_edits_connect_to_tab(edit_list, this);
 }
 
 OrganizationMultiTab::~OrganizationMultiTab() {
