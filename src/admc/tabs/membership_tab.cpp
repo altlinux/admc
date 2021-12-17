@@ -48,17 +48,17 @@ enum MembersRole {
     MembersRole_Primary = Qt::UserRole + 2,
 };
 
-MembersTab::MembersTab()
-: MembershipTab(MembershipTabType_Members) {
-}
-
-MemberOfTab::MemberOfTab()
-: MembershipTab(MembershipTabType_MemberOf) {
-}
-
-MembershipTab::MembershipTab(const MembershipTabType type_arg) {
+MembershipTab::MembershipTab(QList<AttributeEdit *> *edit_list, const MembershipTabType &type, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::MembershipTab();
     ui->setupUi(this);
+
+    new MembershipTabEdit(edit_list, ui, type, this);
+}
+
+MembershipTabEdit::MembershipTabEdit(QList<AttributeEdit *> *edit_list, Ui::MembershipTab *ui_arg, const MembershipTabType &type_arg, QObject *parent)
+: AttributeEdit(edit_list, parent) {
+    ui = ui_arg;
 
     type = type_arg;
 
@@ -85,21 +85,21 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
     const QItemSelectionModel *selection_model = ui->view->selectionModel();
     connect(
         selection_model, &QItemSelectionModel::selectionChanged,
-        this, &MembershipTab::enable_primary_button_on_valid_selection);
+        this, &MembershipTabEdit::enable_primary_button_on_valid_selection);
     enable_primary_button_on_valid_selection();
 
     connect(
         ui->remove_button, &QAbstractButton::clicked,
-        this, &MembershipTab::on_remove_button);
+        this, &MembershipTabEdit::on_remove_button);
     connect(
         ui->add_button, &QAbstractButton::clicked,
-        this, &MembershipTab::on_add_button);
+        this, &MembershipTabEdit::on_add_button);
     connect(
         ui->properties_button, &QAbstractButton::clicked,
-        this, &MembershipTab::on_properties_button);
+        this, &MembershipTabEdit::on_properties_button);
     connect(
         ui->primary_button, &QAbstractButton::clicked,
-        this, &MembershipTab::on_primary_button);
+        this, &MembershipTabEdit::on_primary_button);
 
     PropertiesDialog::open_when_view_item_activated(ui->view, MembersRole_DN);
 }
@@ -110,7 +110,7 @@ MembershipTab::~MembershipTab() {
     delete ui;
 }
 
-void MembershipTab::load(AdInterface &ad, const AdObject &object) {
+void MembershipTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QList<QString> values = object.get_strings(get_membership_attribute());
     original_values = values.toSet();
     current_values = original_values;
@@ -170,7 +170,7 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
     reload_model();
 }
 
-bool MembershipTab::apply(AdInterface &ad, const QString &target) {
+bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) {
     bool total_success = true;
 
     // NOTE: need temp copy because can't edit the set
@@ -289,7 +289,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
     return total_success;
 }
 
-void MembershipTab::on_add_button() {
+void MembershipTabEdit::on_add_button() {
     const QList<QString> classes = [this]() -> QList<QString> {
         switch (type) {
             case MembershipTabType_Members: return {
@@ -303,7 +303,7 @@ void MembershipTab::on_add_button() {
         return QList<QString>();
     }();
 
-    auto dialog = new SelectObjectDialog(classes, SelectObjectDialogMultiSelection_Yes, this);
+    auto dialog = new SelectObjectDialog(classes, SelectObjectDialogMultiSelection_Yes, ui->view);
 
     const QString title = [&]() {
         switch (type) {
@@ -326,7 +326,7 @@ void MembershipTab::on_add_button() {
         });
 }
 
-void MembershipTab::on_remove_button() {
+void MembershipTabEdit::on_remove_button() {
     const QItemSelectionModel *selection_model = ui->view->selectionModel();
     const QList<QModelIndex> selected = selection_model->selectedRows();
 
@@ -356,13 +356,13 @@ void MembershipTab::on_remove_button() {
             return QString();
         }();
 
-        message_box_warning(this, tr("Error"), error_text);
+        message_box_warning(ui->view, tr("Error"), error_text);
     } else {
         remove_values(removed_values);
     }
 }
 
-void MembershipTab::on_primary_button() {
+void MembershipTabEdit::on_primary_button() {
     // Make selected group primary
     const QItemSelectionModel *selection_model = ui->view->selectionModel();
     const QList<QModelIndex> selecteds = selection_model->selectedRows();
@@ -381,9 +381,9 @@ void MembershipTab::on_primary_button() {
     emit edited();
 }
 
-void MembershipTab::on_properties_button() {
+void MembershipTabEdit::on_properties_button() {
     AdInterface ad;
-    if (ad_failed(ad, this)) {
+    if (ad_failed(ad, ui->view)) {
         return;
     }
 
@@ -393,7 +393,7 @@ void MembershipTab::on_properties_button() {
     PropertiesDialog::open_for_target(ad, dn);
 }
 
-void MembershipTab::enable_primary_button_on_valid_selection() {
+void MembershipTabEdit::enable_primary_button_on_valid_selection() {
     if (ui->primary_button == nullptr) {
         return;
     }
@@ -423,7 +423,7 @@ void MembershipTab::enable_primary_button_on_valid_selection() {
     }
 }
 
-void MembershipTab::reload_model() {
+void MembershipTabEdit::reload_model() {
     // Load primary group name into label
     if (type == MembershipTabType_MemberOf) {
         const QString primary_group_label_text = [this]() {
@@ -462,7 +462,7 @@ void MembershipTab::reload_model() {
     model->sort(MembersColumn_Name);
 }
 
-void MembershipTab::add_values(QList<QString> values) {
+void MembershipTabEdit::add_values(QList<QString> values) {
     for (auto value : values) {
         current_values.insert(value);
     }
@@ -472,7 +472,7 @@ void MembershipTab::add_values(QList<QString> values) {
     emit edited();
 }
 
-void MembershipTab::remove_values(QList<QString> values) {
+void MembershipTabEdit::remove_values(QList<QString> values) {
     for (auto value : values) {
         current_values.remove(value);
     }
@@ -482,10 +482,14 @@ void MembershipTab::remove_values(QList<QString> values) {
     emit edited();
 }
 
-QString MembershipTab::get_membership_attribute() {
+QString MembershipTabEdit::get_membership_attribute() {
     switch (type) {
         case MembershipTabType_Members: return ATTRIBUTE_MEMBER;
         case MembershipTabType_MemberOf: return ATTRIBUTE_MEMBER_OF;
     }
     return "";
+}
+
+void MembershipTabEdit::set_read_only(const bool read_only) {
+    UNUSED_ARG(read_only);
 }

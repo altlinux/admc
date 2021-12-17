@@ -185,10 +185,12 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         add_tab(new ProfileTab(), tr("Profile"));
     }
     if (object.is_class(CLASS_GROUP)) {
-        add_tab(new MembersTab(), tr("Members"));
+        auto members_tab = new MembershipTab(&edit_list, MembershipTabType_Members, this);
+        ui->tab_widget->add_tab(members_tab, tr("Members"));
     }
-    if (object.is_class(CLASS_USER)) {
-        add_tab(new MemberOfTab(), tr("Member of"));
+    if (object.is_class(CLASS_USER) || object.is_class(CLASS_COMPUTER)) {
+        auto member_of_tab = new MembershipTab(&edit_list, MembershipTabType_MemberOf, this);
+        ui->tab_widget->add_tab(member_of_tab, tr("Member of"));
     }
 
     if (object.is_class(CLASS_OU) || object.is_class(CLASS_COMPUTER)) {
@@ -209,7 +211,6 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     if (object.is_class(CLASS_COMPUTER)) {
         add_tab(new OSTab(), tr("Operating System"));
         add_tab(new DelegationTab(), tr("Delegation"));
-        add_tab(new MemberOfTab(), tr("Member of"));
 
         const bool laps_enabled = [&]() {
             const QList<QString> attribute_list = object.attributes();
