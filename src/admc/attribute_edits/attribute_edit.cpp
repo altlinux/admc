@@ -67,9 +67,9 @@ void AttributeEdit::reset_modified() {
     m_modified = false;
 }
 
-bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn, const bool ignore_modified) {
+bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn) {
     for (auto edit : edits) {
-        if (edit->modified() || ignore_modified) {
+        if (edit->modified()) {
             const bool verify_success = edit->verify(ad, dn);
             if (!verify_success) {
                 return false;

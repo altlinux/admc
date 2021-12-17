@@ -95,7 +95,7 @@ public:
 // Verify all edits that were modified. Verify process will
 // stop on first failure. This is so that only one failure
 // message is shown at a time.
-bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn, const bool ignore_modified = false);
+bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
 
 // Applies all edits that were modified. If one of the edits
 // fails to apply midway, the apply process still continues.
