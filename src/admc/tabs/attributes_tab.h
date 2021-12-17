@@ -26,7 +26,8 @@
  * viewing/editing if possible via attribute dialogs.
  */
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+#include "attribute_edits/attribute_edit.h"
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -40,24 +41,31 @@ class QStandardItem;
 class AttributesTabProxy;
 class AttributesFilterDialog;
 class AttributeDialog;
+class AttributesTabEdit;
 
 namespace Ui {
 class AttributesTab;
 }
 
-class AttributesTab final : public PropertiesTab {
+class AttributesTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::AttributesTab *ui;
 
-    AttributesTab();
+    AttributesTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~AttributesTab();
+};
 
-    void load(AdInterface &ad, const AdObject &object) override;
-    bool apply(AdInterface &ad, const QString &target) override;
+class AttributesTabEdit final : public AttributeEdit {
+    Q_OBJECT
+
+public:
+    AttributesTabEdit(QList<AttributeEdit *> *edit_list, Ui::AttributesTab *ui, QObject *parent);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
+    Ui::AttributesTab *ui;
     AttributesFilterDialog *filter_dialog;
     QStandardItemModel *model;
     AttributesTabProxy *proxy;

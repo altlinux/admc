@@ -168,8 +168,8 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     if (advanced_view_ON) {
         add_tab(new ObjectTab(), tr("Object"));
 
-        attributes_tab = new AttributesTab();
-        add_tab(attributes_tab, tr("Attributes"));
+        attributes_tab = new AttributesTab(&edit_list, this);
+        ui->tab_widget->add_tab(attributes_tab, tr("Attributes"));
     } else {
         attributes_tab = nullptr;
     }
