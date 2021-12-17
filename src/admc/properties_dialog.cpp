@@ -193,7 +193,8 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     }
 
     if (object.is_class(CLASS_OU) || object.is_class(CLASS_DOMAIN)) {
-        add_tab(new GroupPolicyTab(), tr("Group policy"));
+        auto group_policy_tab = new GroupPolicyTab(&edit_list, this);
+        ui->tab_widget->add_tab(group_policy_tab, tr("Group policy"));
     }
 
     if (object.is_class(CLASS_GP_CONTAINER)) {
