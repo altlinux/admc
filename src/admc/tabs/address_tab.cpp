@@ -26,20 +26,19 @@
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/string_large_edit.h"
 
-AddressTab::AddressTab() {
+AddressTab::AddressTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::AddressTab();
     ui->setupUi(this);
 
-    new StringLargeEdit(ui->street_edit, ATTRIBUTE_STREET, &edits, this);
+    new StringLargeEdit(ui->street_edit, ATTRIBUTE_STREET, edit_list, this);
 
-    new StringEdit(ui->po_box_edit, ATTRIBUTE_PO_BOX, &edits, this);
-    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, &edits, this);
-    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, &edits, this);
-    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, &edits, this);
+    new StringEdit(ui->po_box_edit, ATTRIBUTE_PO_BOX, edit_list, this);
+    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, edit_list, this);
+    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, edit_list, this);
+    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, edit_list, this);
 
-    new CountryEdit(ui->country_combo, &edits, this);
-
-    edits_connect_to_tab(edits, this);
+    new CountryEdit(ui->country_combo, edit_list, this);
 }
 
 AddressTab::~AddressTab() {

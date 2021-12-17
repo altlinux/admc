@@ -20,7 +20,6 @@
 
 #include "attribute_edits/attribute_edit.h"
 
-#include "tabs/properties_tab.h"
 #include "utils.h"
 
 #include <QDebug>
@@ -101,14 +100,6 @@ bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &d
 void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object) {
     for (auto edit : edits) {
         edit->load(ad, object);
-    }
-}
-
-void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab) {
-    for (auto edit : edits) {
-        QObject::connect(
-            edit, &AttributeEdit::edited,
-            tab, &PropertiesTab::on_edit_edited);
     }
 }
 

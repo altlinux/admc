@@ -44,6 +44,6 @@ void ExpiryEdit::set_read_only(const bool read_only) {
     edit_widget->set_read_only(read_only);
 }
 
-bool ExpiryEdit::apply(AdInterface &ad, const QString &dn) const {
+bool ExpiryEdit::apply(AdInterface &ad, const QString &dn) {
     return edit_widget->apply(ad, dn);
 }

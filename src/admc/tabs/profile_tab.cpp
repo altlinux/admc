@@ -24,15 +24,14 @@
 #include "adldap.h"
 #include "attribute_edits/string_edit.h"
 
-ProfileTab::ProfileTab() {
+ProfileTab::ProfileTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::ProfileTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->profile_path_edit, ATTRIBUTE_PROFILE_PATH, &edits, this);
-    new StringEdit(ui->script_path_edit, ATTRIBUTE_SCRIPT_PATH, &edits, this);
-    new StringEdit(ui->home_dir_edit, ATTRIBUTE_HOME_DIRECTORY, &edits, this);
-
-    edits_connect_to_tab(edits, this);
+    new StringEdit(ui->profile_path_edit, ATTRIBUTE_PROFILE_PATH, edit_list, this);
+    new StringEdit(ui->script_path_edit, ATTRIBUTE_SCRIPT_PATH, edit_list, this);
+    new StringEdit(ui->home_dir_edit, ATTRIBUTE_HOME_DIRECTORY, edit_list, this);
 }
 
 ProfileTab::~ProfileTab() {

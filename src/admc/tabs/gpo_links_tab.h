@@ -21,10 +21,12 @@
 #ifndef GPO_LINKS_TAB_H
 #define GPO_LINKS_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+#include "attribute_edits/attribute_edit.h"
 
 class QTreeView;
 class QStandardItemModel;
+class GpoLinksTabEdit;
 
 /**
  * List objects that this GPO links to. Does not provide a
@@ -36,18 +38,25 @@ namespace Ui {
 class GpoLinksTab;
 }
 
-class GpoLinksTab final : public PropertiesTab {
+class GpoLinksTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::GpoLinksTab *ui;
 
-    GpoLinksTab();
+    GpoLinksTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GpoLinksTab();
+};
 
-    void load(AdInterface &ad, const AdObject &object) override;
+class GpoLinksTabEdit final : public AttributeEdit {
+    Q_OBJECT
+
+public:
+    GpoLinksTabEdit(QList<AttributeEdit *> *edit_list, Ui::GpoLinksTab *ui, QObject *parent);
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
+    Ui::GpoLinksTab *ui;
     QStandardItemModel *model;
 };
 

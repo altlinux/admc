@@ -21,19 +21,22 @@
 #ifndef GENERAL_COMPUTER_TAB_H
 #define GENERAL_COMPUTER_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
+class AdObject;
 
 namespace Ui {
 class GeneralComputerTab;
 }
 
-class GeneralComputerTab final : public PropertiesTab {
+class GeneralComputerTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::GeneralComputerTab *ui;
 
-    GeneralComputerTab(const AdObject &object);
+    GeneralComputerTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralComputerTab();
 };
 

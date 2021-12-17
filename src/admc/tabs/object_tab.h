@@ -21,20 +21,22 @@
 #ifndef OBJECT_TAB_H
 #define OBJECT_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
 
 namespace Ui {
 class ObjectTab;
 }
 
 // Object attributes, same for all types
-class ObjectTab final : public PropertiesTab {
+class ObjectTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::ObjectTab *ui;
 
-    ObjectTab();
+    ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~ObjectTab();
 };
 

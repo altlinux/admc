@@ -41,17 +41,23 @@ enum ReportsRole {
     ReportsRole_DN = Qt::UserRole + 1,
 };
 
-OrganizationTab::OrganizationTab() {
+OrganizationTab::OrganizationTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::OrganizationTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->job_title_edit, ATTRIBUTE_TITLE, &edits, this);
-    new StringEdit(ui->department_edit, ATTRIBUTE_DEPARTMENT, &edits, this);
-    new StringEdit(ui->company_edit, ATTRIBUTE_COMPANY, &edits, this);
+    new OrganizationTabEdit(edit_list, ui, this);
+}
 
-    new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGER, &edits, this);
+OrganizationTabEdit::OrganizationTabEdit(QList<AttributeEdit *> *edit_list, Ui::OrganizationTab *ui_arg, QObject *parent)
+: AttributeEdit(edit_list, parent) {
+    ui = ui_arg;
 
-    edits_connect_to_tab(edits, this);
+    new StringEdit(ui->job_title_edit, ATTRIBUTE_TITLE, edit_list, this);
+    new StringEdit(ui->department_edit, ATTRIBUTE_DEPARTMENT, edit_list, this);
+    new StringEdit(ui->company_edit, ATTRIBUTE_COMPANY, edit_list, this);
+
+    new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGER, edit_list, this);
 
     reports_model = new QStandardItemModel(0, ReportsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(reports_model,
@@ -73,7 +79,9 @@ OrganizationTab::~OrganizationTab() {
     delete ui;
 }
 
-void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
+void OrganizationTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     const QList<QString> reports = object.get_strings(ATTRIBUTE_DIRECT_REPORTS);
 
     reports_model->removeRows(0, reports_model->rowCount());
@@ -89,6 +97,15 @@ void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
 
         reports_model->appendRow(row);
     }
+}
 
-    PropertiesTab::load(ad, object);
+bool OrganizationTabEdit::apply(AdInterface &ad, const QString &target) {
+    UNUSED_ARG(ad);
+    UNUSED_ARG(target);
+
+    return true;
+}
+
+void OrganizationTabEdit::set_read_only(const bool read_only) {
+    UNUSED_ARG(read_only);
 }

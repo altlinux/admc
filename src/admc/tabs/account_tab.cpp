@@ -34,17 +34,18 @@
 // they control the same thing. And vice versa. Too
 // complicated to implement so this is a WONTFIX.
 
-AccountTab::AccountTab(AdInterface &ad) {
+AccountTab::AccountTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::AccountTab();
     ui->setupUi(this);
 
-    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edits, this);
+    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, edit_list, this);
     upn_edit->init_suffixes(ad);
 
-    new UnlockEdit(ui->unlock_check, &edits, this);
-    new ExpiryEdit(ui->expiry_widget, &edits, this);
-    new LogonHoursEdit(ui->logon_hours_button, &edits, this);
-    new LogonComputersEdit(ui->logon_computers_button, &edits, this);
+    new UnlockEdit(ui->unlock_check, edit_list, this);
+    new ExpiryEdit(ui->expiry_widget, edit_list, this);
+    new LogonHoursEdit(ui->logon_hours_button, edit_list, this);
+    new LogonComputersEdit(ui->logon_computers_button, edit_list, this);
 
     const QHash<AccountOption, QCheckBox *> check_map = {
         {AccountOption_Disabled, ui->disabled_check},
@@ -60,12 +61,10 @@ AccountTab::AccountTab(AdInterface &ad) {
 
     for (const AccountOption &option : check_map.keys()) {
         QCheckBox *check = check_map[option];
-        new AccountOptionEdit(check, option, &edits, this);
+        new AccountOptionEdit(check, option, edit_list, this);
     }
 
     account_option_setup_conflicts(check_map);
-
-    edits_connect_to_tab(edits, this);
 }
 
 AccountTab::~AccountTab() {

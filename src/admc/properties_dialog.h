@@ -37,6 +37,7 @@ class AttributesTab;
 class AdInterface;
 class AdObject;
 class PropertiesWarningDialog;
+class AttributeEdit;
 
 namespace Ui {
 class PropertiesDialog;
@@ -72,7 +73,7 @@ private slots:
     void on_edited();
 
 private:
-    QList<PropertiesTab *> tabs;
+    QList<AttributeEdit *> edit_list;
     QString target;
     QPushButton *apply_button;
     QPushButton *reset_button;

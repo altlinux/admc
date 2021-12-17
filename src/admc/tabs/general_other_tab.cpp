@@ -25,15 +25,14 @@
 #include "attribute_edits/string_edit.h"
 #include "tabs/general_other_tab.h"
 
-GeneralOtherTab::GeneralOtherTab(const AdObject &object) {
+GeneralOtherTab::GeneralOtherTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralOtherTab();
     ui->setupUi(this);
 
     load_name_label(ui->name_label, object);
 
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
-
-    edits_connect_to_tab(edits, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, edit_list, this);
 }
 
 GeneralOtherTab::~GeneralOtherTab() {

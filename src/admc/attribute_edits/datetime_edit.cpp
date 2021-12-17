@@ -52,7 +52,7 @@ void DateTimeEdit::set_read_only(const bool read_only) {
     edit->setDisabled(read_only);
 }
 
-bool DateTimeEdit::apply(AdInterface &ad, const QString &dn) const {
+bool DateTimeEdit::apply(AdInterface &ad, const QString &dn) {
     const QDateTime datetime_local = edit->dateTime();
     const QDateTime datetime = datetime_local.toUTC();
 

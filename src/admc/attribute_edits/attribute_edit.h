@@ -53,7 +53,7 @@ public:
 
     // Apply current input by making a modification to the
     // AD server
-    virtual bool apply(AdInterface &ad, const QString &dn) const = 0;
+    virtual bool apply(AdInterface &ad, const QString &dn) = 0;
 
     // Returns whether edit was edited by user. Rsets on
     // load(). Note that this will be true if user EVER
@@ -78,7 +78,7 @@ private:
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()                                    \
     void set_read_only(const bool read_only) override;                    \
-    bool apply(AdInterface &ad, const QString &dn) const override;        \
+    bool apply(AdInterface &ad, const QString &dn) override;        \
                                                                           \
 protected:                                                                \
     void load_internal(AdInterface &ad, const AdObject &object) override; \
@@ -86,7 +86,6 @@ protected:                                                                \
 public:
 
 // Helper f-ns that iterate over edit lists for you
-void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab);
 
 // NOTE: "ignore_modified" argument is solely for a edge
 // case in CreateObjectDialog. If it's set to true, then edits are

@@ -57,7 +57,7 @@ void SamNameEdit::set_read_only(const bool read_only) {
     edit->setDisabled(read_only);
 }
 
-bool SamNameEdit::apply(AdInterface &ad, const QString &dn) const {
+bool SamNameEdit::apply(AdInterface &ad, const QString &dn) {
     const QString new_value = edit->text();
     const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
 

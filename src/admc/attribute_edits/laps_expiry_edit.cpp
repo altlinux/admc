@@ -53,7 +53,7 @@ void LAPSExpiryEdit::set_read_only(const bool read_only) {
     UNUSED_ARG(read_only);
 }
 
-bool LAPSExpiryEdit::apply(AdInterface &ad, const QString &dn) const {
+bool LAPSExpiryEdit::apply(AdInterface &ad, const QString &dn) {
     const QDateTime datetime_local = edit->dateTime();
     const QDateTime datetime = datetime_local.toUTC();
 

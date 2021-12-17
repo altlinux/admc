@@ -21,7 +21,8 @@
 #ifndef SECURITY_TAB_H
 #define SECURITY_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+#include "attribute_edits/attribute_edit.h"
 
 #include "ad_defines.h"
 
@@ -46,20 +47,28 @@ namespace Ui {
 class SecurityTab;
 }
 
-class SecurityTab final : public PropertiesTab {
+class SecurityTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::SecurityTab *ui;
 
-    SecurityTab();
+    SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~SecurityTab();
+};
 
-    void load(AdInterface &ad, const AdObject &object) override;
-    bool verify(AdInterface &ad, const QString &target) const override;
-    bool apply(AdInterface &ad, const QString &target) override;
+class SecurityTabEdit final : public AttributeEdit {
+    Q_OBJECT
+
+public:
+    SecurityTabEdit(QList<AttributeEdit *> *edit_list, Ui::SecurityTab *ui, QObject *parent);
+    ~SecurityTabEdit();
+    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+
+    bool verify(AdInterface &ad, const QString &dn) const override;
 
 private:
+    Ui::SecurityTab *ui;
     SecurityTabPrivate *d;
     QStandardItemModel *trustee_model;
     QStandardItemModel *rights_model;

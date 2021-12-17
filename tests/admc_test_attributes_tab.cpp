@@ -52,7 +52,7 @@ const QList<AttributeFilter> all_filters = {
 void ADMCTestAttributesTab::init() {
     ADMCTest::init();
 
-    attributes_tab = new AttributesTab();
+    attributes_tab = new AttributesTab(&edit_list, parent_widget);
     add_widget(attributes_tab);
 
     filter_menu = attributes_tab->findChild<AttributesTabFilterMenu *>();
@@ -78,11 +78,17 @@ void ADMCTestAttributesTab::init() {
 
     // Load it into the tab
     const AdObject object = ad.search_object(dn);
-    attributes_tab->load(ad, object);
+    edits_load(edit_list, ad, object);
 
     // NOTE: filters might be messed up in settings by user
     // so reset it before tests
     set_filter(all_filters, true);
+}
+
+void ADMCTestAttributesTab::cleanup() {
+    ADMCTest::cleanup();
+
+    edit_list.clear();
 }
 
 void ADMCTestAttributesTab::load() {
@@ -183,7 +189,7 @@ void ADMCTestAttributesTab::apply() {
     string_attribute_dialog->accept();
     list_attribute_dialog->accept();
 
-    attributes_tab->apply(ad, dn);
+    edits_apply(ad, edit_list, dn);
 
     const AdObject object = ad.search_object(dn);
     const QString description_value = object.get_string(ATTRIBUTE_DESCRIPTION);

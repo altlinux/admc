@@ -47,7 +47,7 @@ void GpoptionsEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
 }
 
-bool GpoptionsEdit::apply(AdInterface &ad, const QString &dn) const {
+bool GpoptionsEdit::apply(AdInterface &ad, const QString &dn) {
     const QString new_value = [this]() {
         const bool checked = check->isChecked();
         if (checked) {

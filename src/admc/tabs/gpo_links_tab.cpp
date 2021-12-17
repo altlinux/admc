@@ -18,6 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// TODO: this tab is kind of useless, policy results
+// widget does more and allows editing links
+
 #include "tabs/gpo_links_tab.h"
 #include "tabs/ui_gpo_links_tab.h"
 
@@ -40,9 +43,17 @@ enum GpoLinksRole {
     GpoLinksRole_DN = Qt::UserRole + 1,
 };
 
-GpoLinksTab::GpoLinksTab() {
+GpoLinksTab::GpoLinksTab(QList<AttributeEdit *> *edit_list, QWidget *parent) 
+: QWidget(parent) {
     ui = new Ui::GpoLinksTab();
     ui->setupUi(this);
+
+    new GpoLinksTabEdit(edit_list, ui, this);
+}
+
+GpoLinksTabEdit::GpoLinksTabEdit(QList<AttributeEdit *> *edit_list, Ui::GpoLinksTab *ui_arg, QObject *parent)
+: AttributeEdit(edit_list, parent) {
+    ui = ui_arg;
 
     model = new QStandardItemModel(0, GpoLinksColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -63,7 +74,7 @@ GpoLinksTab::~GpoLinksTab() {
     delete ui;
 }
 
-void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {
+void GpoLinksTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
     const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QList<QString> attributes = {ATTRIBUTE_NAME};
@@ -87,4 +98,15 @@ void GpoLinksTab::load(AdInterface &ad, const AdObject &object) {
     }
 
     model->sort(GpoLinksColumn_Name);
+}
+
+void GpoLinksTabEdit::set_read_only(const bool read_only) {
+    UNUSED_ARG(read_only);
+}
+
+bool GpoLinksTabEdit::apply(AdInterface &ad, const QString &dn) {
+    UNUSED_ARG(ad);
+    UNUSED_ARG(dn);
+
+    return true;
 }

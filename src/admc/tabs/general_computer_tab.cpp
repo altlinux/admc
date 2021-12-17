@@ -26,21 +26,20 @@
 #include "attribute_edits/string_edit.h"
 #include "tabs/general_other_tab.h"
 
-GeneralComputerTab::GeneralComputerTab(const AdObject &object) {
+GeneralComputerTab::GeneralComputerTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralComputerTab();
     ui->setupUi(this);
 
     load_name_label(ui->name_label, object);
 
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edits, this);
-    auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, &edits, this);
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
-    new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, &edits, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, edit_list, this);
+    auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, edit_list, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, edit_list, this);
+    new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, edit_list, this);
 
     sam_name_edit->set_read_only(true);
     dns_edit->set_read_only(true);
-
-    edits_connect_to_tab(edits, this);
 }
 
 GeneralComputerTab::~GeneralComputerTab() {

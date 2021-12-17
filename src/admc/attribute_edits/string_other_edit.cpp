@@ -54,7 +54,7 @@ void StringOtherEdit::set_read_only(const bool read_only_arg) {
     main_edit->set_read_only(read_only);
 }
 
-bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {
+bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) {
     const bool main_succcess = main_edit->apply(ad, dn);
     const bool other_success = ad.attribute_replace_values(dn, other_attribute, other_values);
 
