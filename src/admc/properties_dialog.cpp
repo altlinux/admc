@@ -179,7 +179,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         add_tab(new AddressTab(), tr("Address"));
 
         auto organization_tab = new OrganizationTab(&edit_list, this);
-        ui->tab_widget->add_tab(attributes_tab, tr("Organization"));
+        ui->tab_widget->add_tab(organization_tab, tr("Organization"));
 
         add_tab(new TelephonesTab(), tr("Telephones"));
         add_tab(new ProfileTab(), tr("Profile"));
