@@ -146,8 +146,6 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
             return new GeneralGroupTab(object, &edit_list, this);
         } else if (object.is_class(CLASS_OU)) {
             return new GeneralOUTab(object, &edit_list, this);
-        } else if (object.is_class(CLASS_GROUP)) {
-            return new GeneralGroupTab(object, &edit_list, this);
         } else if (object.is_class(CLASS_COMPUTER)) {
             return new GeneralComputerTab(object, &edit_list, this);
         } else if (object.is_class(CLASS_GP_CONTAINER)) {

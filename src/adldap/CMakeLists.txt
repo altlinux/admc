@@ -45,7 +45,6 @@ target_link_libraries(adldap
     Qt5::Core
     PkgConfig::Uuid
     PkgConfig::Smbclient
-    PkgConfig::Smbclient
     PkgConfig::Krb5
     Ldap::Ldap
     PkgConfig::NdrStandard
