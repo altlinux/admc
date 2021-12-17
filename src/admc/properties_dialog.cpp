@@ -177,7 +177,10 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     if (object.is_class(CLASS_USER)) {
         add_tab(new AccountTab(ad), tr("Account"));
         add_tab(new AddressTab(), tr("Address"));
-        add_tab(new OrganizationTab(), tr("Organization"));
+
+        auto organization_tab = new OrganizationTab(&edit_list, this);
+        ui->tab_widget->add_tab(attributes_tab, tr("Organization"));
+
         add_tab(new TelephonesTab(), tr("Telephones"));
         add_tab(new ProfileTab(), tr("Profile"));
     }
