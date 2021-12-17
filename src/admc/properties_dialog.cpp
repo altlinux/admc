@@ -143,7 +143,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         ui->tab_widget->add_tab(tab, tab_title);
     };
 
-    PropertiesTab *general_tab = [&]() -> PropertiesTab * {
+    QWidget *general_tab = [&]() -> QWidget * {
         if (object.is_class(CLASS_USER)) {
             return new GeneralUserTab(object);
         } else if (object.is_class(CLASS_GROUP)) {
@@ -155,13 +155,13 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         } else if (object.is_class(CLASS_COMPUTER)) {
             return new GeneralComputerTab(object);
         } else if (object.is_class(CLASS_GP_CONTAINER)) {
-            return new GeneralPolicyTab();
+            return new GeneralPolicyTab(&edit_list, this);
         } else {
             return new GeneralOtherTab(object);
         }
     }();
 
-    add_tab(general_tab, tr("General"));
+    ui->tab_widget->add_tab(general_tab, tr("General"));
 
     const bool advanced_view_ON = settings_get_variant(SETTING_advanced_features).toBool();
 

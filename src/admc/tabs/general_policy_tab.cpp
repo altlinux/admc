@@ -34,24 +34,29 @@
 // is stored somewhere on sysvol. Owner, not sure, might be
 // in security descriptor?
 
-GeneralPolicyTab::GeneralPolicyTab() {
+GeneralPolicyTab::GeneralPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralPolicyTab();
     ui->setupUi(this);
 
-    auto created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, &edits, this);
-    auto modified_edit = new DateTimeEdit(ui->modified_edit, ATTRIBUTE_WHEN_CHANGED, &edits, this);
+    auto created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, edit_list, this);
+    auto modified_edit = new DateTimeEdit(ui->modified_edit, ATTRIBUTE_WHEN_CHANGED, edit_list, this);
+    new GeneralPolicyTabEdit(edit_list, ui, this);
 
     created_edit->set_read_only(true);
     modified_edit->set_read_only(true);
-
-    edits_connect_to_tab(edits, this);
 }
 
 GeneralPolicyTab::~GeneralPolicyTab() {
     delete ui;
 }
 
-void GeneralPolicyTab::load(AdInterface &ad, const AdObject &object) {
+GeneralPolicyTabEdit::GeneralPolicyTabEdit(QList<AttributeEdit *> *edit_list, Ui::GeneralPolicyTab *ui_arg, QObject *parent)
+: AttributeEdit(edit_list, parent) {
+    ui = ui_arg;
+}
+
+void GeneralPolicyTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
     // Load version strings
     const int ad_version = object.get_int(ATTRIBUTE_VERSION_NUMBER);
 
@@ -105,6 +110,15 @@ void GeneralPolicyTab::load(AdInterface &ad, const AdObject &object) {
 
     const QString id = object.get_string(ATTRIBUTE_CN);
     ui->unique_id_label->setText(id);
+}
 
-    PropertiesTab::load(ad, object);
+bool GeneralPolicyTabEdit::apply(AdInterface &ad, const QString &target) {
+    UNUSED_ARG(ad);
+    UNUSED_ARG(target);
+
+    return true;
+}
+
+void GeneralPolicyTabEdit::set_read_only(const bool read_only) {
+    UNUSED_ARG(read_only);
 }
