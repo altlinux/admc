@@ -56,7 +56,7 @@ void DelegationEdit::set_read_only(const bool read_only) {
     off_button->setEnabled(read_only);
 }
 
-bool DelegationEdit::apply(AdInterface &ad, const QString &dn) const {
+bool DelegationEdit::apply(AdInterface &ad, const QString &dn) {
     const bool is_on = [&]() {
         if (on_button->isChecked()) {
             return true;

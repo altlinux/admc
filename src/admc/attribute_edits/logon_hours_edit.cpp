@@ -45,7 +45,7 @@ void LogonHoursEdit::set_read_only(const bool read_only) {
     button->setEnabled(read_only);
 }
 
-bool LogonHoursEdit::apply(AdInterface &ad, const QString &dn) const {
+bool LogonHoursEdit::apply(AdInterface &ad, const QString &dn) {
     const bool success = ad.attribute_replace_value(dn, ATTRIBUTE_LOGON_HOURS, current_value);
 
     return success;

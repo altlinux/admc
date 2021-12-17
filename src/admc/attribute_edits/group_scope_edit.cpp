@@ -54,7 +54,7 @@ void GroupScopeEdit::set_read_only(const bool read_only) {
     combo->setDisabled(read_only);
 }
 
-bool GroupScopeEdit::apply(AdInterface &ad, const QString &dn) const {
+bool GroupScopeEdit::apply(AdInterface &ad, const QString &dn) {
     const GroupScope new_value = (GroupScope) combo->currentData().toInt();
     const bool success = ad.group_set_scope(dn, new_value);
 
