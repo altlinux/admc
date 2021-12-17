@@ -197,7 +197,8 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     }
 
     if (object.is_class(CLASS_GP_CONTAINER)) {
-        add_tab(new GpoLinksTab(), tr("Links to"));
+        auto gpo_links_tab = new GpoLinksTab(&edit_list, this);
+        ui->tab_widget->add_tab(gpo_links_tab, tr("Links to"));
     }
 
     if (object.is_class(CLASS_COMPUTER)) {
