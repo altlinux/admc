@@ -226,7 +226,8 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
 
     const bool need_security_tab = object.attributes().contains(ATTRIBUTE_SECURITY_DESCRIPTOR);
     if (need_security_tab && advanced_view_ON) {
-        add_tab(new SecurityTab(), tr("Security"));
+        auto security_tab = new SecurityTab(&edit_list, this);
+        ui->tab_widget->add_tab(security_tab, tr("Security"));
     }
 
     for (auto tab : tabs) {

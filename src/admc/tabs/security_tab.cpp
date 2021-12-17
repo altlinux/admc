@@ -114,9 +114,17 @@ public:
     }
 };
 
-SecurityTab::SecurityTab() {
+SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::SecurityTab();
     ui->setupUi(this);
+
+    new SecurityTabEdit(edit_list, ui, this);
+}
+
+SecurityTabEdit::SecurityTabEdit(QList<AttributeEdit *> *edit_list, Ui::SecurityTab *ui_arg, QObject *parent)
+: AttributeEdit(edit_list, parent) {
+    ui = ui_arg;
 
     sd = nullptr;
 
@@ -146,27 +154,29 @@ SecurityTab::SecurityTab() {
 
     connect(
         ui->trustee_view->selectionModel(), &QItemSelectionModel::currentChanged,
-        this, &SecurityTab::load_rights_model);
+        this, &SecurityTabEdit::load_rights_model);
     connect(
         rights_model, &QStandardItemModel::itemChanged,
-        this, &SecurityTab::on_item_changed);
+        this, &SecurityTabEdit::on_item_changed);
     connect(
         ui->add_trustee_button, &QAbstractButton::clicked,
-        this, &SecurityTab::on_add_trustee_button);
+        this, &SecurityTabEdit::on_add_trustee_button);
     connect(
         ui->add_well_known_trustee_button, &QAbstractButton::clicked,
-        this, &SecurityTab::on_add_well_known_trustee);
+        this, &SecurityTabEdit::on_add_well_known_trustee);
     connect(
         ui->remove_trustee_button, &QAbstractButton::clicked,
-        this, &SecurityTab::on_remove_trustee_button);
+        this, &SecurityTabEdit::on_remove_trustee_button);
+}
+
+SecurityTabEdit::~SecurityTabEdit() {
+    if (sd != nullptr) {
+        security_descriptor_free(sd);
+    }
 }
 
 SecurityTab::~SecurityTab() {
     settings_save_header_state(SETTING_security_tab_header_state, ui->rights_view->header());
-
-    if (sd != nullptr) {
-        security_descriptor_free(sd);
-    }
 
     delete ui;
 }
@@ -176,7 +186,7 @@ SecurityTab::~SecurityTab() {
 // here but it is called implicitly because
 // setCurrentIndex() emits currentChanged() signal
 // which calls load_rights_model()
-void SecurityTab::load_current_sd(AdInterface &ad) {
+void SecurityTabEdit::load_current_sd(AdInterface &ad) {
     // Save previous selected trustee before reloading
     // trustee model. This is for the case where we
     // need to restore selection later.
@@ -219,7 +229,7 @@ void SecurityTab::load_current_sd(AdInterface &ad) {
     ui->trustee_view->selectionModel()->setCurrentIndex(selected_trustee, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
-void SecurityTab::load(AdInterface &ad, const AdObject &object) {
+void SecurityTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
     security_descriptor_free(sd);
     sd = object.get_security_descriptor();
 
@@ -256,13 +266,11 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
     load_current_sd(ad);
 
     is_policy = object.is_class(CLASS_GP_CONTAINER);
-
-    PropertiesTab::load(ad, object);
 }
 
 // Load rights model based on current sd and current
 // trustee
-void SecurityTab::load_rights_model() {
+void SecurityTabEdit::load_rights_model() {
     const QModelIndex current_index = ui->trustee_view->currentIndex();
     if (!current_index.isValid()) {
         return;
@@ -322,7 +330,7 @@ void SecurityTab::load_rights_model() {
     ignore_item_changed_signal = false;
 }
 
-void SecurityTab::on_item_changed(QStandardItem *item) {
+void SecurityTabEdit::on_item_changed(QStandardItem *item) {
     // NOTE: in some cases we need to ignore this signal
     if (ignore_item_changed_signal) {
         return;
@@ -357,7 +365,7 @@ void SecurityTab::on_item_changed(QStandardItem *item) {
     emit edited();
 }
 
-bool SecurityTab::verify(AdInterface &ad, const QString &target) const {
+bool SecurityTabEdit::verify(AdInterface &ad, const QString &target) const {
     UNUSED_ARG(target);
     if (is_policy) {
         // To apply security tab for policies we need user
@@ -371,7 +379,7 @@ bool SecurityTab::verify(AdInterface &ad, const QString &target) const {
     }
 }
 
-bool SecurityTab::apply(AdInterface &ad, const QString &target) {
+bool SecurityTabEdit::apply(AdInterface &ad, const QString &target) {
     if (!modified) {
         return true;
     }
@@ -389,8 +397,8 @@ bool SecurityTab::apply(AdInterface &ad, const QString &target) {
     return total_success;
 }
 
-void SecurityTab::on_add_trustee_button() {
-    auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, this);
+void SecurityTabEdit::on_add_trustee_button() {
+    auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, ui->trustee_view);
     dialog->setWindowTitle(tr("Add Trustee"));
     dialog->open();
 
@@ -399,7 +407,7 @@ void SecurityTab::on_add_trustee_button() {
         this,
         [this, dialog]() {
             AdInterface ad;
-            if (ad_failed(ad, this)) {
+            if (ad_failed(ad, ui->trustee_view)) {
                 return;
             }
 
@@ -422,9 +430,9 @@ void SecurityTab::on_add_trustee_button() {
         });
 }
 
-void SecurityTab::on_remove_trustee_button() {
+void SecurityTabEdit::on_remove_trustee_button() {
     AdInterface ad;
-    if (ad_failed(ad, this)) {
+    if (ad_failed(ad, ui->remove_trustee_button)) {
         return;
     }
 
@@ -460,7 +468,7 @@ void SecurityTab::on_remove_trustee_button() {
     }
 }
 
-void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad) {
+void SecurityTabEdit::add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad) {
     const QList<QString> current_sid_string_list = [&]() {
         QList<QString> out;
 
@@ -503,12 +511,12 @@ void SecurityTab::add_trustees(const QList<QByteArray> &sid_list, AdInterface &a
     }
 
     if (failed_to_add_because_already_exists) {
-        message_box_warning(this, tr("Error"), tr("Failed to add some trustee's because they are already in the list."));
+        message_box_warning(ui->trustee_view, tr("Error"), tr("Failed to add some trustee's because they are already in the list."));
     }
 }
 
-void SecurityTab::on_add_well_known_trustee() {
-    auto dialog = new SelectWellKnownTrusteeDialog(this);
+void SecurityTabEdit::on_add_well_known_trustee() {
+    auto dialog = new SelectWellKnownTrusteeDialog(ui->trustee_view);
     dialog->open();
 
     connect(
@@ -516,7 +524,7 @@ void SecurityTab::on_add_well_known_trustee() {
         this,
         [this, dialog]() {
             AdInterface ad;
-            if (ad_failed(ad, this)) {
+            if (ad_failed(ad, ui->trustee_view)) {
                 return;
             }
 
@@ -526,10 +534,14 @@ void SecurityTab::on_add_well_known_trustee() {
         });
 }
 
-QByteArray SecurityTab::get_current_trustee() const {
+QByteArray SecurityTabEdit::get_current_trustee() const {
     const QModelIndex current_index = ui->trustee_view->currentIndex();
     QStandardItem *current_item = trustee_model->itemFromIndex(current_index);
     const QByteArray out = current_item->data(TrusteeItemRole_Sid).toByteArray();
 
     return out;
+}
+
+void SecurityTabEdit::set_read_only(const bool read_only) {
+    UNUSED_ARG(read_only);
 }
