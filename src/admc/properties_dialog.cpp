@@ -228,6 +228,11 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
             tab, &PropertiesTab::edited,
             this, &PropertiesDialog::on_edited);
     }
+    for (AttributeEdit *edit : edit_list) {
+        connect(
+            edit, &AttributeEdit::edited,
+            this, &PropertiesDialog::on_edited);
+    }
 
     reset_internal(ad, object);
 
@@ -342,6 +347,12 @@ bool PropertiesDialog::apply_internal(AdInterface &ad) {
         }
     }
 
+    const bool edits_verify_success = edits_verify(ad, edit_list, target);
+
+    if (!edits_verify_success) {
+        return false;
+    }
+
     show_busy_indicator();
 
     bool total_apply_success = true;
@@ -351,6 +362,11 @@ bool PropertiesDialog::apply_internal(AdInterface &ad) {
         if (!apply_success) {
             total_apply_success = false;
         }
+    }
+
+    const bool edits_apply_success = edits_apply(ad, edit_list, target);
+    if (!edits_apply_success) {
+        total_apply_success = false;
     }
 
     g_status->display_ad_messages(ad, this);
@@ -372,6 +388,8 @@ void PropertiesDialog::reset_internal(AdInterface &ad, const AdObject &object) {
     for (auto tab : tabs) {
         tab->load(ad, object);
     }
+
+    edits_load(edit_list, ad, object);
 
     apply_button->setEnabled(false);
     reset_button->setEnabled(false);
