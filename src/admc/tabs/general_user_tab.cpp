@@ -26,24 +26,23 @@
 #include "attribute_edits/string_other_edit.h"
 #include "tabs/general_other_tab.h"
 
-GeneralUserTab::GeneralUserTab(const AdObject &object) {
+GeneralUserTab::GeneralUserTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralUserTab();
     ui->setupUi(this);
 
     load_name_label(ui->name_label, object);
 
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
-    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edits, this);
-    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edits, this);
-    new StringEdit(ui->display_name_edit, ATTRIBUTE_DISPLAY_NAME, &edits, this);
-    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, &edits, this);
-    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, &edits, this);
-    new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, &edits, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, edit_list, this);
+    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, edit_list, this);
+    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, edit_list, this);
+    new StringEdit(ui->display_name_edit, ATTRIBUTE_DISPLAY_NAME, edit_list, this);
+    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, edit_list, this);
+    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, edit_list, this);
+    new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, edit_list, this);
 
-    new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, &edits, this);
-    new StringOtherEdit(ui->web_page_edit, ui->web_page_button, ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, &edits, this);
-
-    edits_connect_to_tab(edits, this);
+    new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, edit_list, this);
+    new StringOtherEdit(ui->web_page_edit, ui->web_page_button, ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, edit_list, this);
 }
 
 GeneralUserTab::~GeneralUserTab() {

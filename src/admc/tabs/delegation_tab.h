@@ -21,19 +21,21 @@
 #ifndef DELEGATION_TAB_H
 #define DELEGATION_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
 
 namespace Ui {
 class DelegationTab;
 }
 
-class DelegationTab final : public PropertiesTab {
+class DelegationTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::DelegationTab *ui;
 
-    DelegationTab();
+    DelegationTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~DelegationTab();
 };
 

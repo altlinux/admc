@@ -24,16 +24,20 @@
 #include "adldap.h"
 #include "attribute_edits/string_edit.h"
 
-OSTab::OSTab() {
+OSTab::OSTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::OSTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->os_edit, ATTRIBUTE_OS, &edits, this);
-    new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, &edits, this);
-    new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, &edits, this);
+    QList<AttributeEdit *> my_edit_list;
 
-    edits_set_read_only(edits, true);
-    edits_connect_to_tab(edits, this);
+    new StringEdit(ui->os_edit, ATTRIBUTE_OS, &my_edit_list, this);
+    new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, &my_edit_list, this);
+    new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, &my_edit_list, this);
+
+    edits_set_read_only(my_edit_list, true);
+
+    edit_list->append(my_edit_list);
 }
 
 OSTab::~OSTab() {

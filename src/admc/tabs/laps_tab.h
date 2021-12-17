@@ -21,19 +21,21 @@
 #ifndef LAPS_TAB_H
 #define LAPS_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
 
 namespace Ui {
 class LAPSTab;
 }
 
-class LAPSTab final : public PropertiesTab {
+class LAPSTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::LAPSTab *ui;
 
-    LAPSTab();
+    LAPSTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~LAPSTab();
 };
 

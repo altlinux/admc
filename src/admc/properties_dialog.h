@@ -73,7 +73,6 @@ private slots:
     void on_edited();
 
 private:
-    QList<PropertiesTab *> tabs;
     QList<AttributeEdit *> edit_list;
     QString target;
     QPushButton *apply_button;

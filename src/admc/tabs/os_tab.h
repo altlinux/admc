@@ -21,19 +21,21 @@
 #ifndef OS_TAB_H
 #define OS_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
 
 namespace Ui {
 class OSTab;
 }
 
-class OSTab final : public PropertiesTab {
+class OSTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::OSTab *ui;
 
-    OSTab();
+    OSTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~OSTab();
 };
 

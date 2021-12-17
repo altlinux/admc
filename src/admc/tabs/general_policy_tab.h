@@ -26,6 +26,7 @@
 
 class AdObject;
 class GeneralPolicyTabEdit;
+class AttributeEdit;
 
 namespace Ui {
 class GeneralPolicyTab;

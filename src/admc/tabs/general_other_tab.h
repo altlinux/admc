@@ -21,22 +21,23 @@
 #ifndef GENERAL_OTHER_TAB_H
 #define GENERAL_OTHER_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
 
 class QLabel;
 class AdObject;
+class AttributeEdit;
 
 namespace Ui {
 class GeneralOtherTab;
 }
 
-class GeneralOtherTab final : public PropertiesTab {
+class GeneralOtherTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::GeneralOtherTab *ui;
 
-    GeneralOtherTab(const AdObject &object);
+    GeneralOtherTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralOtherTab();
 };
 

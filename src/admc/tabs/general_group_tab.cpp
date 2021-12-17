@@ -28,27 +28,26 @@
 #include "attribute_edits/string_edit.h"
 #include "tabs/general_other_tab.h"
 
-GeneralGroupTab::GeneralGroupTab(const AdObject &object) {
+GeneralGroupTab::GeneralGroupTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralGroupTab();
     ui->setupUi(this);
 
     load_name_label(ui->name_label, object);
 
-    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edits, this);
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
-    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, &edits, this);
-    new StringEdit(ui->notes_edit, ATTRIBUTE_INFO, &edits, this);
+    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, edit_list, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, edit_list, this);
+    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, edit_list, this);
+    new StringEdit(ui->notes_edit, ATTRIBUTE_INFO, edit_list, this);
 
-    auto scope_edit = new GroupScopeEdit(ui->scope_combo, &edits, this);
-    auto type_edit = new GroupTypeEdit(ui->type_combo, &edits, this);
+    auto scope_edit = new GroupScopeEdit(ui->scope_combo, edit_list, this);
+    auto type_edit = new GroupTypeEdit(ui->type_combo, edit_list, this);
 
     const bool is_critical_system_object = object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT);
     if (is_critical_system_object) {
         scope_edit->set_read_only(true);
         type_edit->set_read_only(true);
     }
-
-    edits_connect_to_tab(edits, this);
 }
 
 GeneralGroupTab::~GeneralGroupTab() {

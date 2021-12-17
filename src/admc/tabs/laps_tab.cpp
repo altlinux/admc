@@ -25,16 +25,15 @@
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/laps_expiry_edit.h"
 
-LAPSTab::LAPSTab() {
+LAPSTab::LAPSTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::LAPSTab();
     ui->setupUi(this);
 
-    auto pass_edit = new StringEdit(ui->pass_lineedit, ATTRIBUTE_LAPS_PASSWORD, &edits, this);
-    new LAPSExpiryEdit(ui->expiry_datetimeedit, ui->reset_expiry_button, &edits, this);
+    auto pass_edit = new StringEdit(ui->pass_lineedit, ATTRIBUTE_LAPS_PASSWORD, edit_list, this);
+    new LAPSExpiryEdit(ui->expiry_datetimeedit, ui->reset_expiry_button, edit_list, this);
 
     pass_edit->set_read_only(true);
-
-    edits_connect_to_tab(edits, this);
 }
 
 LAPSTab::~LAPSTab() {

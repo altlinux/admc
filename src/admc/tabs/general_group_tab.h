@@ -21,19 +21,22 @@
 #ifndef GENERAL_GROUP_TAB_H
 #define GENERAL_GROUP_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AdObject;
+class AttributeEdit;
 
 namespace Ui {
 class GeneralGroupTab;
 }
 
-class GeneralGroupTab final : public PropertiesTab {
+class GeneralGroupTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::GeneralGroupTab *ui;
 
-    GeneralGroupTab(const AdObject &object);
+    GeneralGroupTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralGroupTab();
 };
 

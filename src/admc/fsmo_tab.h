@@ -21,7 +21,9 @@
 #ifndef FSMO_TAB_H
 #define FSMO_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AdInterface;
 
 namespace Ui {
 class FSMOTab;

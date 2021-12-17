@@ -21,19 +21,22 @@
 #ifndef GENERAL_OU_TAB_H
 #define GENERAL_OU_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AdObject;
+class AttributeEdit;
 
 namespace Ui {
 class GeneralOUTab;
 }
 
-class GeneralOUTab final : public PropertiesTab {
+class GeneralOUTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::GeneralOUTab *ui;
 
-    GeneralOUTab(const AdObject &object);
+    GeneralOUTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralOUTab();
 };
 

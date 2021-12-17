@@ -86,7 +86,6 @@ protected:                                                                \
 public:
 
 // Helper f-ns that iterate over edit lists for you
-void edits_connect_to_tab(QList<AttributeEdit *> edits, PropertiesTab *tab);
 
 // NOTE: "ignore_modified" argument is solely for a edge
 // case in CreateObjectDialog. If it's set to true, then edits are
