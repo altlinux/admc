@@ -33,11 +33,19 @@
 // NOTE: store manager's edits in separate list because they
 // don't apply to the target of properties.
 
-ManagedByTab::ManagedByTab() {
+ManagedByTab::ManagedByTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::ManagedByTab();
     ui->setupUi(this);
 
-    manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGED_BY, &edits, this);
+    new ManagedByTabEdit(edit_list, ui, this);
+}
+
+ManagedByTabEdit::ManagedByTabEdit(QList<AttributeEdit *> *edit_list, Ui::ManagedByTab *ui_arg, QObject *parent)
+: AttributeEdit(edit_list, parent) {
+    ui = ui_arg;
+
+    manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGED_BY, edit_list, this);
 
     new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, &manager_edits, this);
     new StringEdit(ui->street_edit, ATTRIBUTE_STREET, &manager_edits, this);
@@ -51,28 +59,25 @@ ManagedByTab::ManagedByTab() {
 
     edits_set_read_only(manager_edits, true);
 
-    edits_connect_to_tab(edits, this);
-    edits_connect_to_tab(manager_edits, this);
-
     connect(
         manager_edit, &ManagerEdit::edited,
-        this, &ManagedByTab::on_manager_edited);
+        this, &ManagedByTabEdit::on_manager_edited);
 }
 
 ManagedByTab::~ManagedByTab() {
     delete ui;
 }
 
-void ManagedByTab::on_manager_edited() {
+void ManagedByTabEdit::on_manager_edited() {
     AdInterface ad;
-    if (ad_failed(ad, this)) {
+    if (ad_failed(ad, ui->manager_widget)) {
         return;
     }
 
     load_manager_edits(ad);
 }
 
-void ManagedByTab::load(AdInterface &ad, const AdObject &object) {
+void ManagedByTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
     manager_edit->load(ad, object);
 
     // NOTE: load AFTER loading manager! because manager
@@ -80,7 +85,7 @@ void ManagedByTab::load(AdInterface &ad, const AdObject &object) {
     load_manager_edits(ad);
 }
 
-void ManagedByTab::load_manager_edits(AdInterface &ad) {
+void ManagedByTabEdit::load_manager_edits(AdInterface &ad) {
     const QString manager = manager_edit->get_manager();
 
     if (!manager.isEmpty()) {
@@ -90,4 +95,15 @@ void ManagedByTab::load_manager_edits(AdInterface &ad) {
         AdObject empty_object;
         edits_load(manager_edits, ad, empty_object);
     }
+}
+
+bool ManagedByTabEdit::apply(AdInterface &ad, const QString &target) {
+    UNUSED_ARG(ad);
+    UNUSED_ARG(target);
+
+    return true;
+}
+
+void ManagedByTabEdit::set_read_only(const bool read_only) {
+    UNUSED_ARG(read_only);
 }
