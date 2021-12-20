@@ -956,7 +956,30 @@ void ObjectImpl::drop_policies(const QList<QPersistentModelIndex> &dropped_list,
     }
 }
 
-void ObjectImpl::move_and_rename(AdInterface &ad, const QHash<QString, QString> &old_to_new_dn_map, const QString &new_parent_dn) {
+void ObjectImpl::move_and_rename(AdInterface &ad, const QHash<QString, QString> &old_to_new_dn_map_arg, const QString &new_parent_dn) {
+    // NOTE: sometimes, some objects that are supposed
+    // to be moved don't actually need to be. For
+    // example, if an object were to be moved to an
+    // object that is already it's current parent. If
+    // we were to move them that would cause gui
+    // glitches because that kind of move is not
+    // considered in the update logic. Instead, we skip
+    // these kinds of objects.
+    const QHash<QString, QString> &old_to_new_dn_map = [&]() {
+        QHash<QString, QString> out;
+
+        for (const QString &old_dn : old_to_new_dn_map_arg.keys()) {
+            const QString new_dn = old_to_new_dn_map_arg[old_dn];
+            const bool dn_changed = (new_dn != old_dn);
+
+            if (dn_changed) {
+                out[old_dn] = new_dn;
+            }
+        }
+
+        return out;
+    }();
+
     const QList<QString> old_dn_list = old_to_new_dn_map.keys();
     const QList<QString> new_dn_list = old_to_new_dn_map.values();
 
