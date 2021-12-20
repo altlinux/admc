@@ -1419,15 +1419,6 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
         return (dropped_dn == target_dn);
     }();
 
-    const bool target_is_already_parent = [&]() {
-        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
-        const QString target_dn = target.data(ObjectRole_DN).toString();
-        const QString dropped_parent_dn = dn_get_parent(dropped_dn);
-        const bool out = (dropped_parent_dn == target_dn);
-
-        return out;
-    }();
-
     const QList<QString> dropped_classes = dropped.data(ObjectRole_ObjectClasses).toStringList();
     const QList<QString> target_classes = target.data(ObjectRole_ObjectClasses).toStringList();
 
@@ -1436,7 +1427,7 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
     const bool target_is_group = target_classes.contains(CLASS_GROUP);
     const bool target_is_fetching = target.data(ObjectRole_Fetching).toBool();
 
-    if (dropped_is_target || target_is_fetching || target_is_already_parent) {
+    if (dropped_is_target || target_is_fetching) {
         return DropType_None;
     } else if (dropped_is_user && target_is_group) {
         return DropType_AddToGroup;
