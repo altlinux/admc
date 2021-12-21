@@ -39,7 +39,6 @@
 #include "tabs/general_policy_tab.h"
 #include "tabs/general_user_tab.h"
 #include "tabs/general_computer_tab.h"
-#include "tabs/gpo_links_tab.h"
 #include "tabs/group_policy_tab.h"
 #include "tabs/managed_by_tab.h"
 #include "tabs/membership_tab.h"
@@ -199,11 +198,6 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     if (object.is_class(CLASS_OU) || object.is_class(CLASS_DOMAIN)) {
         auto group_policy_tab = new GroupPolicyTab(&edit_list, this);
         ui->tab_widget->add_tab(group_policy_tab, tr("Group policy"));
-    }
-
-    if (object.is_class(CLASS_GP_CONTAINER)) {
-        auto gpo_links_tab = new GpoLinksTab(&edit_list, this);
-        ui->tab_widget->add_tab(gpo_links_tab, tr("Links to"));
     }
 
     if (object.is_class(CLASS_COMPUTER)) {

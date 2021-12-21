@@ -98,7 +98,6 @@ DEFINE_SETTING(SETTING_attributes_tab_header_state);
 DEFINE_SETTING(SETTING_select_object_header_state);
 DEFINE_SETTING(SETTING_membership_tab_header_state);
 DEFINE_SETTING(SETTING_organization_tab_header_state);
-DEFINE_SETTING(SETTING_gpo_links_tab_header_state);
 DEFINE_SETTING(SETTING_group_policy_tab_header_state);
 DEFINE_SETTING(SETTING_security_tab_header_state);
 DEFINE_SETTING(SETTING_select_object_match_header_state);
