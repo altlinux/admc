@@ -64,7 +64,6 @@ PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidg
         // it always applies, even if this option is already
         // turned on. This is for consistent and understandable
         // messaging to user.
-        pass_expired_edit->set_modified(true);
     } else {
         ui->expired_check->setEnabled(false);
         ui->expired_check->setToolTip(tr("Option is unavailable because a conflicting account option is currently enabled."));

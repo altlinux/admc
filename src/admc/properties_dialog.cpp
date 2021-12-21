@@ -235,7 +235,13 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     for (AttributeEdit *edit : edit_list) {
         connect(
             edit, &AttributeEdit::edited,
-            this, &PropertiesDialog::on_edited);
+            [this, edit]() {
+                const bool already_added = apply_list.contains(edit);
+
+                if (!already_added) {
+                    apply_list.append(edit);
+                }
+            });
     }
 
     reset_internal(ad, object);
@@ -344,7 +350,9 @@ void PropertiesDialog::reset() {
 }
 
 bool PropertiesDialog::apply_internal(AdInterface &ad) {
-    const bool edits_verify_success = edits_verify(ad, edit_list, target);
+    // NOTE: only verify and apply edits in the "apply
+    // list", aka the edits that were edited
+    const bool edits_verify_success = edits_verify(ad, apply_list, target);
 
     if (!edits_verify_success) {
         return false;
@@ -354,7 +362,7 @@ bool PropertiesDialog::apply_internal(AdInterface &ad) {
 
     bool total_apply_success = true;
 
-    const bool edits_apply_success = edits_apply(ad, edit_list, target);
+    const bool edits_apply_success = edits_apply(ad, apply_list, target);
     if (!edits_apply_success) {
         total_apply_success = false;
     }
@@ -375,6 +383,8 @@ bool PropertiesDialog::apply_internal(AdInterface &ad) {
 }
 
 void PropertiesDialog::reset_internal(AdInterface &ad, const AdObject &object) {
+    apply_list.clear();
+
     edits_load(edit_list, ad, object);
 
     apply_button->setEnabled(false);

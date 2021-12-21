@@ -59,14 +59,6 @@ void CreateObjectDialog::accept() {
     const QString name = get_created_name();
     const QString dn = get_created_dn();
 
-    // NOTE: since this is a new object, we don't want
-    // edits like unchecked account options to not
-    // apply. We want all edits to apply, no matter if
-    // they were modified by user or not. So, we
-    // manually set the modified flag so that all edits
-    // apply
-    edits_set_modified(m_edit_list, true);
-
     // Verify edits
     const bool verify_success = edits_verify(ad, m_edit_list, dn);
 

@@ -33,19 +33,10 @@ AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
             edits_out->append(this);
         }
     }
-
-    m_modified = false;
-    connect(
-        this, &AttributeEdit::edited,
-        this,
-        [this]() {
-            m_modified = true;
-        });
 }
 
 void AttributeEdit::load(AdInterface &ad, const AdObject &object) {
     load_internal(ad, object);
-    m_modified = false;
 }
 
 bool AttributeEdit::verify(AdInterface &ad, const QString &dn) const {
@@ -55,25 +46,12 @@ bool AttributeEdit::verify(AdInterface &ad, const QString &dn) const {
     return true;
 }
 
-bool AttributeEdit::modified() const {
-    return m_modified;
-}
-
-void AttributeEdit::set_modified(const bool modified) {
-    m_modified = modified;
-}
-
-void AttributeEdit::reset_modified() {
-    m_modified = false;
-}
-
 bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn) {
     for (auto edit : edits) {
-        if (edit->modified()) {
-            const bool verify_success = edit->verify(ad, dn);
-            if (!verify_success) {
-                return false;
-            }
+        const bool verify_success = edit->verify(ad, dn);
+
+        if (!verify_success) {
+            return false;
         }
     }
 
@@ -84,13 +62,10 @@ bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &d
     bool success = true;
 
     for (auto edit : edits) {
-        if (edit->modified()) {
-            const bool apply_success = edit->apply(ad, dn);
-            if (apply_success) {
-                edit->reset_modified();
-            } else {
-                success = false;
-            }
+        const bool apply_success = edit->apply(ad, dn);
+
+        if (!apply_success) {
+            success = false;
         }
     }
 
@@ -106,11 +81,5 @@ void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &o
 void edits_set_read_only(QList<AttributeEdit *> edits, const bool read_only) {
     for (AttributeEdit *edit : edits) {
         edit->set_read_only(read_only);
-    }
-}
-
-void edits_set_modified(QList<AttributeEdit *> edits, const bool modified) {
-    for (AttributeEdit *edit : edits) {
-        edit->set_modified(modified);
     }
 }

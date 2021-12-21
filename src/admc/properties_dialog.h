@@ -74,6 +74,7 @@ private slots:
 
 private:
     QList<AttributeEdit *> edit_list;
+    QList<AttributeEdit *> apply_list;
     QString target;
     QPushButton *apply_button;
     QPushButton *reset_button;

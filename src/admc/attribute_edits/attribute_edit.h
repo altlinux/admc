@@ -55,16 +55,6 @@ public:
     // AD server
     virtual bool apply(AdInterface &ad, const QString &dn) = 0;
 
-    // Returns whether edit was edited by user. Rsets on
-    // load(). Note that this will be true if user EVER
-    // edited this edit. This won't become false if user
-    // manually undoes changes by retyping original value
-    // for StringEdit for example.
-    bool modified() const;
-    void set_modified(const bool modified);
-
-    void reset_modified();
-
 signals:
     // Emitted when edit was edited by user
     void edited();
@@ -72,8 +62,6 @@ signals:
 protected:
     virtual void load_internal(AdInterface &ad, const AdObject &object) = 0;
 
-private:
-    bool m_modified;
 };
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()                                    \
@@ -87,23 +75,18 @@ public:
 
 // Helper f-ns that iterate over edit lists for you
 
-// NOTE: "ignore_modified" argument is solely for a edge
-// case in CreateObjectDialog. If it's set to true, then edits are
-// verified/applied regardless or whether they are modified
-// or not
-
-// Verify all edits that were modified. Verify process will
-// stop on first failure. This is so that only one failure
-// message is shown at a time.
+// Verify edit. Verify process will stop on first
+// failure. This is so that only one failure message is
+// shown at a time.
 bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
 
-// Applies all edits that were modified. If one of the edits
-// fails to apply midway, the apply process still continues.
-// This is so that if more errors occur, they are all
-// gathered together and presented to the user together. If
-// process stopped on first error, the user would have to
-// apply multiple times while fixing errors to see all of
-// them.
+// Applies edits. If one of the edits fails to apply
+// midway, the apply process still continues. This is
+// so that if more errors occur, they are all gathered
+// together and presented to the user together. If
+// process stopped on first error, the user would have
+// to apply multiple times while fixing errors to see
+// all of them.
 bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
 
 void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object);
@@ -112,7 +95,5 @@ void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &o
 // specific edit headers to verify that they implement
 // set_read_only()
 void edits_set_read_only(QList<AttributeEdit *> edits, const bool read_only);
-
-void edits_set_modified(QList<AttributeEdit *> edits, const bool modified);
 
 #endif /* ATTRIBUTE_EDIT_H */
