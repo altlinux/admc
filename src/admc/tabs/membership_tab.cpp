@@ -53,11 +53,15 @@ MembershipTab::MembershipTab(QList<AttributeEdit *> *edit_list, const Membership
     ui = new Ui::MembershipTab();
     ui->setupUi(this);
 
-    new MembershipTabEdit(edit_list, ui, type, this);
+    auto tab_edit = new MembershipTabEdit(ui, type, this);
+
+    edit_list->append({
+        tab_edit,
+    });
 }
 
-MembershipTabEdit::MembershipTabEdit(QList<AttributeEdit *> *edit_list, Ui::MembershipTab *ui_arg, const MembershipTabType &type_arg, QObject *parent)
-: AttributeEdit(edit_list, parent) {
+MembershipTabEdit::MembershipTabEdit(Ui::MembershipTab *ui_arg, const MembershipTabType &type_arg, QObject *parent)
+: AttributeEdit(parent) {
     ui = ui_arg;
 
     type = type_arg;

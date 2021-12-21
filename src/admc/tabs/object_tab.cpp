@@ -33,18 +33,26 @@ ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::ObjectTab();
     ui->setupUi(this);
 
-    QList<AttributeEdit *> my_edit_list;
+    auto dn_edit = new StringEdit(ui->dn_edit, ATTRIBUTE_DN, this);
+    auto class_edit = new StringEdit(ui->class_edit, ATTRIBUTE_OBJECT_CLASS, this);
 
-    new StringEdit(ui->dn_edit, ATTRIBUTE_DN, &my_edit_list, this);
-    new StringEdit(ui->class_edit, ATTRIBUTE_OBJECT_CLASS, &my_edit_list, this);
+    auto when_created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, this);
+    auto when_changed_edit = new DateTimeEdit(ui->changed_edit, ATTRIBUTE_WHEN_CHANGED, this);
 
-    new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, &my_edit_list, this);
-    new DateTimeEdit(ui->changed_edit, ATTRIBUTE_WHEN_CHANGED, &my_edit_list, this);
+    auto usn_created_edit = new StringEdit(ui->usn_created_edit, ATTRIBUTE_USN_CREATED, this);
+    auto usn_changed_edit = new StringEdit(ui->usn_changed_edit, ATTRIBUTE_USN_CHANGED, this);
 
-    new StringEdit(ui->usn_created_edit, ATTRIBUTE_USN_CREATED, &my_edit_list, this);
-    new StringEdit(ui->usn_changed_edit, ATTRIBUTE_USN_CHANGED, &my_edit_list, this);
+    auto deletion_edit = new ProtectDeletionEdit(ui->deletion_check, this);
 
-    new ProtectDeletionEdit(ui->deletion_check, &my_edit_list, this);
+    const QList<AttributeEdit *> my_edit_list = {
+        dn_edit,
+        class_edit,
+        when_created_edit,
+        when_changed_edit,
+        usn_created_edit,
+        usn_changed_edit,
+        deletion_edit,
+    };
 
     AttributeEdit::set_read_only(my_edit_list, true);
 

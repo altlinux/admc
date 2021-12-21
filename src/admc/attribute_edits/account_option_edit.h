@@ -31,7 +31,7 @@ class QWidget;
 class AccountOptionEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    AccountOptionEdit(QCheckBox *check, const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    AccountOptionEdit(QCheckBox *check, const AccountOption option_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

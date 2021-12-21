@@ -45,7 +45,7 @@ class ManagedByTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    ManagedByTabEdit(QList<AttributeEdit *> *edit_list, Ui::ManagedByTab *ui, QObject *parent);
+    ManagedByTabEdit(Ui::ManagedByTab *ui, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

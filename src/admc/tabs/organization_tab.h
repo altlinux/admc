@@ -44,7 +44,7 @@ class OrganizationTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    OrganizationTabEdit(QList<AttributeEdit *> *edit_list, Ui::OrganizationTab *ui, QObject *parent);
+    OrganizationTabEdit(Ui::OrganizationTab *ui, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

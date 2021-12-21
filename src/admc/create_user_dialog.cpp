@@ -37,14 +37,13 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, QWidget *parent)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QList<AttributeEdit *> edit_list;
-    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
-    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);
-    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, &edit_list, this);
-    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
-    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edit_list, this);
+    auto first_name_edit = new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
+    auto last_name_edit = new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
+    auto initials_edit = new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto password_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, this);
 
-    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
+    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, this);
     upn_edit->init_suffixes(ad);
 
     const QHash<AccountOption, QCheckBox *> check_map = {
@@ -54,9 +53,13 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, QWidget *parent)
         {AccountOption_Disabled, ui->disabled_check},
     };
 
+    QList<AttributeEdit *> option_edit_list;
+
     for (const AccountOption &option : check_map.keys()) {
         QCheckBox *check = check_map[option];
-        new AccountOptionEdit(check, option, &edit_list, this);
+        auto edit = new AccountOptionEdit(check, option, this);
+
+        option_edit_list.append(edit);
     }
 
     account_option_setup_conflicts(check_map);
@@ -79,6 +82,23 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, QWidget *parent)
         ui->first_name_edit,
         ui->sam_name_edit,
     };
+
+    const QList<AttributeEdit *> edit_list = [&]() {
+        QList<AttributeEdit *> out;
+
+        out = {
+            first_name_edit,
+            last_name_edit,
+            initials_edit,
+            sam_name_edit,
+            password_edit,
+            upn_edit,
+        };
+
+        out.append(option_edit_list);
+
+        return out;
+    }();
 
     init(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_USER);
 

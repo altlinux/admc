@@ -61,7 +61,7 @@ class SecurityTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    SecurityTabEdit(QList<AttributeEdit *> *edit_list, Ui::SecurityTab *ui, QObject *parent);
+    SecurityTabEdit(Ui::SecurityTab *ui, QObject *parent);
     ~SecurityTabEdit();
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 

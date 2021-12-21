@@ -30,13 +30,22 @@ TelephonesTab::TelephonesTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::TelephonesTab();
     ui->setupUi(this);
 
-    new StringOtherEdit(ui->home_phone_edit, ui->home_phone_button, ATTRIBUTE_HOME_PHONE, ATTRIBUTE_OTHER_HOME_PHONE, edit_list, this);
-    new StringOtherEdit(ui->pager_edit, ui->pager_button, ATTRIBUTE_PAGER, ATTRIBUTE_OTHER_PAGER, edit_list, this);
-    new StringOtherEdit(ui->mobile_edit, ui->mobile_button, ATTRIBUTE_MOBILE, ATTRIBUTE_OTHER_MOBILE, edit_list, this);
-    new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, edit_list, this);
-    new StringOtherEdit(ui->ip_phone_edit, ui->ip_phone_button, ATTRIBUTE_IP_PHONE, ATTRIBUTE_OTHER_IP_PHONE, edit_list, this);
+    auto home_phone_edit = new StringOtherEdit(ui->home_phone_edit, ui->home_phone_button, ATTRIBUTE_HOME_PHONE, ATTRIBUTE_OTHER_HOME_PHONE, this);
+    auto pager_edit = new StringOtherEdit(ui->pager_edit, ui->pager_button, ATTRIBUTE_PAGER, ATTRIBUTE_OTHER_PAGER, this);
+    auto mobile_edit = new StringOtherEdit(ui->mobile_edit, ui->mobile_button, ATTRIBUTE_MOBILE, ATTRIBUTE_OTHER_MOBILE, this);
+    auto fax_edit = new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, this);
+    auto ip_phone_edit = new StringOtherEdit(ui->ip_phone_edit, ui->ip_phone_button, ATTRIBUTE_IP_PHONE, ATTRIBUTE_OTHER_IP_PHONE, this);
 
-    new StringLargeEdit(ui->notes_edit, ATTRIBUTE_INFO, edit_list, this);
+    auto notes_edit = new StringLargeEdit(ui->notes_edit, ATTRIBUTE_INFO, this);
+
+    edit_list->append({
+        home_phone_edit,
+        pager_edit,
+        mobile_edit,
+        fax_edit,
+        ip_phone_edit,
+        notes_edit,
+    });
 }
 
 TelephonesTab::~TelephonesTab() {

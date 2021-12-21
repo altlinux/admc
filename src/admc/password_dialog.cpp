@@ -37,13 +37,19 @@ PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidg
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edits, this);
+    auto password_main_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, this);
 
-    pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
+    pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, this);
 
-    new UnlockEdit(ui->unlock_check, &edits, this);
+    auto unlock_edit = new UnlockEdit(ui->unlock_check, this);
     
     target = target_arg;
+
+    edits = {
+        password_main_edit,
+        pass_expired_edit,
+        unlock_edit,
+    };
 
     const AdObject object = ad.search_object(target);
 
@@ -59,11 +65,6 @@ PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidg
 
     if (expired_check_enabled) {
         ui->expired_check->setChecked(true);
-
-        // NOTE: always set expired option to modified, so that
-        // it always applies, even if this option is already
-        // turned on. This is for consistent and understandable
-        // messaging to user.
     } else {
         ui->expired_check->setEnabled(false);
         ui->expired_check->setToolTip(tr("Option is unavailable because a conflicting account option is currently enabled."));

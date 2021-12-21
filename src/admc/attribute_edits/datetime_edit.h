@@ -30,7 +30,7 @@ class QDateTimeEdit;
 class DateTimeEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    DateTimeEdit(QDateTimeEdit *edit, const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    DateTimeEdit(QDateTimeEdit *edit, const QString &attribute_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

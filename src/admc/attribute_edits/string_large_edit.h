@@ -33,7 +33,7 @@ class QPlainTextEdit;
 class StringLargeEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    StringLargeEdit(QPlainTextEdit *edit, const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    StringLargeEdit(QPlainTextEdit *edit, const QString &attribute_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

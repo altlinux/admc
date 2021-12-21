@@ -36,12 +36,16 @@ CreateGroupDialog::CreateGroupDialog(QWidget *parent)
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
-
-    QList<AttributeEdit *> edit_list;
     
-    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
-    new GroupScopeEdit(ui->scope_combo, &edit_list, this);
-    new GroupTypeEdit(ui->type_combo, &edit_list, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto scope_edit = new GroupScopeEdit(ui->scope_combo, this);
+    auto type_edit = new GroupTypeEdit(ui->type_combo, this);
+
+    const QList<AttributeEdit *> edit_list = {
+        sam_name_edit,
+        scope_edit,
+        type_edit,
+    };
 
     const QList<QLineEdit *> required_edits = {
         ui->sam_name_edit,

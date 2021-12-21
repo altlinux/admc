@@ -31,14 +31,24 @@ AddressTab::AddressTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::AddressTab();
     ui->setupUi(this);
 
-    new StringLargeEdit(ui->street_edit, ATTRIBUTE_STREET, edit_list, this);
+    auto street_edit = new StringLargeEdit(ui->street_edit, ATTRIBUTE_STREET, this);
 
-    new StringEdit(ui->po_box_edit, ATTRIBUTE_PO_BOX, edit_list, this);
-    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, edit_list, this);
-    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, edit_list, this);
-    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, edit_list, this);
+    auto po_box_edit = new StringEdit(ui->po_box_edit, ATTRIBUTE_PO_BOX, this);
+    auto city_edit = new StringEdit(ui->city_edit, ATTRIBUTE_CITY, this);
+    auto state_edit = new StringEdit(ui->state_edit, ATTRIBUTE_STATE, this);
+    auto postal_code_edit = new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, this);
 
-    new CountryEdit(ui->country_combo, edit_list, this);
+    auto country_edit = new CountryEdit(ui->country_combo, this);
+
+    edit_list->append({
+        street_edit,
+        po_box_edit,
+        city_edit,
+        state_edit,
+        street_edit,
+        postal_code_edit,
+        country_edit,
+    });
 }
 
 AddressTab::~AddressTab() {

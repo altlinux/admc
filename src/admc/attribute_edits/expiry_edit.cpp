@@ -25,8 +25,8 @@
 #include "globals.h"
 #include "utils.h"
 
-ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QObject *parent)
+: AttributeEdit(parent) {
     edit_widget = edit_widget_arg;
 
     connect(

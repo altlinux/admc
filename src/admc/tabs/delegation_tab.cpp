@@ -29,7 +29,11 @@ DelegationTab::DelegationTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::DelegationTab();
     ui->setupUi(this);
 
-    new DelegationEdit(ui->off_button, ui->on_button, edit_list, this);
+    auto tab_edit = new DelegationEdit(ui->off_button, ui->on_button, this);
+
+    edit_list->append({
+        tab_edit,
+    });
 }
 
 DelegationTab::~DelegationTab() {

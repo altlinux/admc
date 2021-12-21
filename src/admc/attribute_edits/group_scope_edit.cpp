@@ -26,8 +26,8 @@
 #include <QComboBox>
 #include <QFormLayout>
 
-GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QObject *parent)
+: AttributeEdit(parent) {
     combo = combo_arg;
 
     for (int i = 0; i < GroupScope_COUNT; i++) {

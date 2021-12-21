@@ -25,8 +25,8 @@
 
 #include <QComboBox>
 
-GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QObject *parent)
+: AttributeEdit(parent) {
     combo = combo_arg;
 
     for (int i = 0; i < GroupType_COUNT; i++) {

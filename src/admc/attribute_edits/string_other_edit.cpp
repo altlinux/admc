@@ -28,10 +28,10 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_button_arg, const QString &main_attribute, const QString &other_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
+StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_button_arg, const QString &main_attribute, const QString &other_attribute_arg, QObject *parent)
+: AttributeEdit(parent)
 , other_attribute(other_attribute_arg) {
-    main_edit = new StringEdit(line_edit_arg, main_attribute, nullptr, parent);
+    main_edit = new StringEdit(line_edit_arg, main_attribute, parent);
 
     other_button = other_button_arg;
 

@@ -28,7 +28,7 @@ class QPushButton;
 class LogonComputersEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    LogonComputersEdit(QPushButton *button, QList<AttributeEdit *> *edits_out, QObject *parent);
+    LogonComputersEdit(QPushButton *button, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

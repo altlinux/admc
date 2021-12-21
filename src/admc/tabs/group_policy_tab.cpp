@@ -64,12 +64,17 @@ GroupPolicyTab::GroupPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *paren
     ui = new Ui::GroupPolicyTab();
     ui->setupUi(this);
 
-    new GroupPolicyTabEdit(edit_list, ui, this);
-    new GpoptionsEdit(ui->gpo_options_check, edit_list, this);
+    auto tab_edit = new GroupPolicyTabEdit(ui, this);
+    auto options_edit = new GpoptionsEdit(ui->gpo_options_check, this);
+
+    edit_list->append({
+        tab_edit,
+        options_edit,
+    });
 }
 
-GroupPolicyTabEdit::GroupPolicyTabEdit(QList<AttributeEdit *> *edit_list, Ui::GroupPolicyTab *ui_arg, QObject *parent)
-: AttributeEdit(edit_list, parent) {
+GroupPolicyTabEdit::GroupPolicyTabEdit(Ui::GroupPolicyTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
     ui = ui_arg;
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);

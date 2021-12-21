@@ -61,7 +61,7 @@ class AttributesTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    AttributesTabEdit(QList<AttributeEdit *> *edit_list, Ui::AttributesTab *ui, QObject *parent);
+    AttributesTabEdit(Ui::AttributesTab *ui, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

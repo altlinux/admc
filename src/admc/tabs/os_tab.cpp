@@ -29,11 +29,15 @@ OSTab::OSTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::OSTab();
     ui->setupUi(this);
 
-    QList<AttributeEdit *> my_edit_list;
+    auto os_edit = new StringEdit(ui->os_edit, ATTRIBUTE_OS, this);
+    auto version_edit = new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, this);
+    auto pack_edit = new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, this);
 
-    new StringEdit(ui->os_edit, ATTRIBUTE_OS, &my_edit_list, this);
-    new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, &my_edit_list, this);
-    new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, &my_edit_list, this);
+    const QList<AttributeEdit *> my_edit_list = {
+        os_edit,
+        version_edit,
+        pack_edit,
+    };
 
     AttributeEdit::set_read_only(my_edit_list, true);
 

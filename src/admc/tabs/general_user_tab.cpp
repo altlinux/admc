@@ -33,16 +33,28 @@ GeneralUserTab::GeneralUserTab(const AdObject &object, QList<AttributeEdit *> *e
 
     load_name_label(ui->name_label, object);
 
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, edit_list, this);
-    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, edit_list, this);
-    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, edit_list, this);
-    new StringEdit(ui->display_name_edit, ATTRIBUTE_DISPLAY_NAME, edit_list, this);
-    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, edit_list, this);
-    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, edit_list, this);
-    new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, edit_list, this);
+    auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
+    auto first_name_edit = new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
+    auto last_name_edit = new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
+    auto display_name_edit = new StringEdit(ui->display_name_edit, ATTRIBUTE_DISPLAY_NAME, this);
+    auto initials_edit = new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, this);
+    auto mail_edit = new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, this);
+    auto office_edit = new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, this);
 
-    new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, edit_list, this);
-    new StringOtherEdit(ui->web_page_edit, ui->web_page_button, ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, edit_list, this);
+    auto telephone_edit = new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, this);
+    auto web_page_edit = new StringOtherEdit(ui->web_page_edit, ui->web_page_button, ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, this);
+
+    edit_list->append({
+        description_edit,
+        first_name_edit,
+        last_name_edit,
+        display_name_edit,
+        initials_edit,
+        mail_edit,
+        office_edit,
+        telephone_edit,
+        web_page_edit,
+    });
 }
 
 GeneralUserTab::~GeneralUserTab() {

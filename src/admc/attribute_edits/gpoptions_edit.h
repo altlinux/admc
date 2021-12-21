@@ -28,7 +28,7 @@ class QCheckBox;
 class GpoptionsEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    GpoptionsEdit(QCheckBox *check, QList<AttributeEdit *> *edits_out, QObject *parent);
+    GpoptionsEdit(QCheckBox *check, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

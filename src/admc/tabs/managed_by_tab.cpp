@@ -38,24 +38,38 @@ ManagedByTab::ManagedByTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::ManagedByTab();
     ui->setupUi(this);
 
-    new ManagedByTabEdit(edit_list, ui, this);
+    auto tab_edit = new ManagedByTabEdit(ui, this);
+
+    edit_list->append({
+        tab_edit,
+    });
 }
 
-ManagedByTabEdit::ManagedByTabEdit(QList<AttributeEdit *> *edit_list, Ui::ManagedByTab *ui_arg, QObject *parent)
-: AttributeEdit(edit_list, parent) {
+ManagedByTabEdit::ManagedByTabEdit(Ui::ManagedByTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
     ui = ui_arg;
 
-    manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGED_BY, edit_list, this);
+    manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGED_BY, this);
 
-    new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, &manager_edits, this);
-    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, &manager_edits, this);
-    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, &manager_edits, this);
-    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, &manager_edits, this);
+    auto office_edit = new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, this);
+    auto street_edit = new StringEdit(ui->street_edit, ATTRIBUTE_STREET, this);
+    auto city_edit = new StringEdit(ui->city_edit, ATTRIBUTE_CITY, this);
+    auto state_edit = new StringEdit(ui->state_edit, ATTRIBUTE_STATE, this);
 
-    new CountryEdit(ui->country_combo, &manager_edits, this);
+    auto country_edit = new CountryEdit(ui->country_combo, this);
 
-    new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, &manager_edits, this);
-    new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, &manager_edits, this);
+    auto telephone_edit = new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, this);
+    auto fax_edit = new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, this);
+
+    manager_edits = {
+        office_edit,
+        street_edit,
+        city_edit,
+        state_edit,
+        country_edit,
+        telephone_edit,
+        fax_edit,
+    };
 
     AttributeEdit::set_read_only(manager_edits, true);
 

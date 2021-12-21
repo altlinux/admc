@@ -119,11 +119,15 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::SecurityTab();
     ui->setupUi(this);
 
-    new SecurityTabEdit(edit_list, ui, this);
+    auto tab_edit = new SecurityTabEdit(ui, this);
+
+    edit_list->append({
+        tab_edit,
+    });
 }
 
-SecurityTabEdit::SecurityTabEdit(QList<AttributeEdit *> *edit_list, Ui::SecurityTab *ui_arg, QObject *parent)
-: AttributeEdit(edit_list, parent) {
+SecurityTabEdit::SecurityTabEdit(Ui::SecurityTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
     ui = ui_arg;
 
     sd = nullptr;

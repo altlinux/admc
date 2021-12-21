@@ -28,7 +28,7 @@ class QLineEdit;
 class SamNameEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    SamNameEdit(QLineEdit *edit, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    SamNameEdit(QLineEdit *edit, QLineEdit *domain_edit_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

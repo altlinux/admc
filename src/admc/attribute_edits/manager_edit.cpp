@@ -25,8 +25,8 @@
 #include "globals.h"
 #include "utils.h"
 
-ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QObject *parent)
+: AttributeEdit(parent) {
     manager_attribute = manager_attribute_arg;
 
     widget = widget_arg;

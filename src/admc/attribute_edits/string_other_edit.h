@@ -38,7 +38,7 @@ class QLineEdit;
 class StringOtherEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    StringOtherEdit(QLineEdit *line_edit, QPushButton *other_button, const QString &main_attribute_arg, const QString &other_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    StringOtherEdit(QLineEdit *line_edit, QPushButton *other_button, const QString &main_attribute_arg, const QString &other_attribute_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:
