@@ -24,13 +24,13 @@
 
 #include <QDebug>
 
-AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
+AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edit_list, QObject *parent)
 : QObject(parent) {
-    if (edits_out != nullptr) {
-        if (edits_out->contains(this)) {
+    if (edit_list != nullptr) {
+        if (edit_list->contains(this)) {
             qDebug() << "ERROR: attribute edit added twice to list!";
         } else {
-            edits_out->append(this);
+            edit_list->append(this);
         }
     }
 }
@@ -42,8 +42,8 @@ bool AttributeEdit::verify(AdInterface &ad, const QString &dn) const {
     return true;
 }
 
-bool AttributeEdit::verify(const QList<AttributeEdit *> &edits, AdInterface &ad, const QString &dn) {
-    for (auto edit : edits) {
+bool AttributeEdit::verify(const QList<AttributeEdit *> &edit_list, AdInterface &ad, const QString &dn) {
+    for (auto edit : edit_list) {
         const bool verify_success = edit->verify(ad, dn);
 
         if (!verify_success) {
@@ -54,10 +54,10 @@ bool AttributeEdit::verify(const QList<AttributeEdit *> &edits, AdInterface &ad,
     return true;
 }
 
-bool AttributeEdit::apply(const QList<AttributeEdit *> &edits, AdInterface &ad, const QString &dn) {
+bool AttributeEdit::apply(const QList<AttributeEdit *> &edit_list, AdInterface &ad, const QString &dn) {
     bool success = true;
 
-    for (auto edit : edits) {
+    for (auto edit : edit_list) {
         const bool apply_success = edit->apply(ad, dn);
 
         if (!apply_success) {
@@ -68,14 +68,14 @@ bool AttributeEdit::apply(const QList<AttributeEdit *> &edits, AdInterface &ad, 
     return success;
 }
 
-void AttributeEdit::load(const QList<AttributeEdit *> &edits, AdInterface &ad, const AdObject &object) {
-    for (auto edit : edits) {
+void AttributeEdit::load(const QList<AttributeEdit *> &edit_list, AdInterface &ad, const AdObject &object) {
+    for (auto edit : edit_list) {
         edit->load(ad, object);
     }
 }
 
-void AttributeEdit::set_read_only(const QList<AttributeEdit *> &edits, const bool read_only) {
-    for (AttributeEdit *edit : edits) {
+void AttributeEdit::set_read_only(const QList<AttributeEdit *> &edit_list, const bool read_only) {
+    for (AttributeEdit *edit : edit_list) {
         edit->set_read_only(read_only);
     }
 }

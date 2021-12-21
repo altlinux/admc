@@ -30,7 +30,6 @@
  * are used to represent different data types. 
  */
 
-class PropertiesTab;
 class AdInterface;
 class AdObject;
 
@@ -41,7 +40,7 @@ public:
     // Verify edit. Verify process will stop on first
     // failure. This is so that only one failure message is
     // shown at a time.
-    static bool verify(const QList<AttributeEdit *> &edits, AdInterface &ad, const QString &dn);
+    static bool verify(const QList<AttributeEdit *> &edit_list, AdInterface &ad, const QString &dn);
 
     // Applies edits. If one of the edits fails to apply
     // midway, the apply process still continues. This is
@@ -50,16 +49,16 @@ public:
     // process stopped on first error, the user would have
     // to apply multiple times while fixing errors to see
     // all of them.
-    static bool apply(const QList<AttributeEdit *> &edits, AdInterface &ad, const QString &dn);
+    static bool apply(const QList<AttributeEdit *> &edit_list, AdInterface &ad, const QString &dn);
 
-    static void load(const QList<AttributeEdit *> &edits, AdInterface &ad, const AdObject &object);
+    static void load(const QList<AttributeEdit *> &edit_list, AdInterface &ad, const AdObject &object);
 
     // NOTE: not all edits might support read-only mode, see
     // specific edit headers to verify that they implement
     // set_read_only()
-    static void set_read_only(const QList<AttributeEdit *> &edits, const bool read_only);
+    static void set_read_only(const QList<AttributeEdit *> &edit_list, const bool read_only);
 
-    AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
+    AttributeEdit(QList<AttributeEdit *> *edit_list, QObject *parent);
 
     // Load state from object, used to initialize or
     // reset edit.
