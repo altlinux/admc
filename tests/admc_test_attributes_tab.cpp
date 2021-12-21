@@ -78,7 +78,7 @@ void ADMCTestAttributesTab::init() {
 
     // Load it into the tab
     const AdObject object = ad.search_object(dn);
-    edits_load(edit_list, ad, object);
+    AttributeEdit::load(edit_list, ad, object);
 
     // NOTE: filters might be messed up in settings by user
     // so reset it before tests
@@ -189,7 +189,7 @@ void ADMCTestAttributesTab::apply() {
     string_attribute_dialog->accept();
     list_attribute_dialog->accept();
 
-    edits_apply(ad, edit_list, dn);
+    AttributeEdit::apply(ad, edit_list, dn);
 
     const AdObject object = ad.search_object(dn);
     const QString description_value = object.get_string(ATTRIBUTE_DESCRIPTION);

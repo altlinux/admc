@@ -57,7 +57,7 @@ ManagedByTabEdit::ManagedByTabEdit(QList<AttributeEdit *> *edit_list, Ui::Manage
     new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, &manager_edits, this);
     new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, &manager_edits, this);
 
-    edits_set_read_only(manager_edits, true);
+    AttributeEdit::set_read_only(manager_edits, true);
 
     connect(
         manager_edit, &ManagerEdit::edited,
@@ -90,10 +90,10 @@ void ManagedByTabEdit::load_manager_edits(AdInterface &ad) {
 
     if (!manager.isEmpty()) {
         const AdObject manager_object = ad.search_object(manager);
-        edits_load(manager_edits, ad, manager_object);
+        AttributeEdit::load(manager_edits, ad, manager_object);
     } else {
         AdObject empty_object;
-        edits_load(manager_edits, ad, empty_object);
+        AttributeEdit::load(manager_edits, ad, empty_object);
     }
 }
 

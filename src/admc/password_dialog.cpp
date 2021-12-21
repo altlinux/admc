@@ -47,7 +47,7 @@ PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidg
 
     const AdObject object = ad.search_object(target);
 
-    edits_load(edits, ad, object);
+    AttributeEdit::load(edits, ad, object);
 
     const bool expired_check_enabled = [&]() {
         const bool dont_expire_pass = object.get_account_option(AccountOption_DontExpirePassword, g_adconfig);
@@ -84,12 +84,12 @@ void PasswordDialog::accept() {
 
     show_busy_indicator();
 
-    const bool verify_success = edits_verify(ad, edits, target);
+    const bool verify_success = AttributeEdit::verify(ad, edits, target);
     if (!verify_success) {
         return;
     }
 
-    const bool apply_success = edits_apply(ad, edits, target);
+    const bool apply_success = AttributeEdit::apply(ad, edits, target);
 
     hide_busy_indicator();
 

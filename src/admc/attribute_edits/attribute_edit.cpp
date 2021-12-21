@@ -42,7 +42,7 @@ bool AttributeEdit::verify(AdInterface &ad, const QString &dn) const {
     return true;
 }
 
-bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn) {
+bool AttributeEdit::verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn) {
     for (auto edit : edits) {
         const bool verify_success = edit->verify(ad, dn);
 
@@ -54,7 +54,7 @@ bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &
     return true;
 }
 
-bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn) {
+bool AttributeEdit::apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn) {
     bool success = true;
 
     for (auto edit : edits) {
@@ -68,13 +68,13 @@ bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &d
     return success;
 }
 
-void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object) {
+void AttributeEdit::load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object) {
     for (auto edit : edits) {
         edit->load(ad, object);
     }
 }
 
-void edits_set_read_only(QList<AttributeEdit *> edits, const bool read_only) {
+void AttributeEdit::set_read_only(QList<AttributeEdit *> edits, const bool read_only) {
     for (AttributeEdit *edit : edits) {
         edit->set_read_only(read_only);
     }

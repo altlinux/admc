@@ -46,7 +46,7 @@ ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 
     new ProtectDeletionEdit(ui->deletion_check, &my_edit_list, this);
 
-    edits_set_read_only(my_edit_list, true);
+    AttributeEdit::set_read_only(my_edit_list, true);
 
     edit_list->append(my_edit_list);
 }

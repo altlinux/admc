@@ -37,6 +37,28 @@ class AdObject;
 class AttributeEdit : public QObject {
     Q_OBJECT
 public:
+
+    // Verify edit. Verify process will stop on first
+    // failure. This is so that only one failure message is
+    // shown at a time.
+    static bool verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
+
+    // Applies edits. If one of the edits fails to apply
+    // midway, the apply process still continues. This is
+    // so that if more errors occur, they are all gathered
+    // together and presented to the user together. If
+    // process stopped on first error, the user would have
+    // to apply multiple times while fixing errors to see
+    // all of them.
+    static bool apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
+
+    static void load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object);
+
+    // NOTE: not all edits might support read-only mode, see
+    // specific edit headers to verify that they implement
+    // set_read_only()
+    static void set_read_only(QList<AttributeEdit *> edits, const bool read_only);
+
     AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
 
     // Load state from object, used to initialize or
@@ -65,27 +87,5 @@ signals:
     bool apply(AdInterface &ad, const QString &dn) override;        \
     void load(AdInterface &ad, const AdObject &object) override; \
 
-// Helper f-ns that iterate over edit lists for you
-
-// Verify edit. Verify process will stop on first
-// failure. This is so that only one failure message is
-// shown at a time.
-bool edits_verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
-
-// Applies edits. If one of the edits fails to apply
-// midway, the apply process still continues. This is
-// so that if more errors occur, they are all gathered
-// together and presented to the user together. If
-// process stopped on first error, the user would have
-// to apply multiple times while fixing errors to see
-// all of them.
-bool edits_apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
-
-void edits_load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object);
-
-// NOTE: not all edits might support read-only mode, see
-// specific edit headers to verify that they implement
-// set_read_only()
-void edits_set_read_only(QList<AttributeEdit *> edits, const bool read_only);
 
 #endif /* ATTRIBUTE_EDIT_H */

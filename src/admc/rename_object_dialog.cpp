@@ -47,7 +47,7 @@ void RenameObjectDialog::init(AdInterface &ad, const QString &target_arg, QLineE
     name_edit->setText(name);
 
     const AdObject object = ad.search_object(target);
-    edits_load(edits, ad, object);
+    AttributeEdit::load(edits, ad, object);
 }
 
 void RenameObjectDialog::accept() {
@@ -59,7 +59,7 @@ void RenameObjectDialog::accept() {
     const QString old_dn = target;
     const QString old_name = dn_get_name(target);
 
-    const bool verify_success = edits_verify(ad, edits, target);
+    const bool verify_success = AttributeEdit::verify(ad, edits, target);
     if (!verify_success) {
         return;
     }
@@ -73,7 +73,7 @@ void RenameObjectDialog::accept() {
 
     bool final_success = false;
     if (rename_success) {
-        const bool apply_success = edits_apply(ad, edits, new_dn);
+        const bool apply_success = AttributeEdit::apply(ad, edits, new_dn);
 
         if (apply_success) {
             final_success = true;
