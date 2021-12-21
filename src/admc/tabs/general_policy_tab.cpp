@@ -118,7 +118,7 @@ void GeneralPolicyTabEdit::load(AdInterface &ad, const AdObject &object) {
     ui->unique_id_label->setText(id);
 }
 
-bool GeneralPolicyTabEdit::apply(AdInterface &ad, const QString &target) {
+bool GeneralPolicyTabEdit::apply(AdInterface &ad, const QString &target) const {
     UNUSED_ARG(ad);
     UNUSED_ARG(target);
 

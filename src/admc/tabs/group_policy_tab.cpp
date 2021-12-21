@@ -121,7 +121,7 @@ void GroupPolicyTabEdit::load(AdInterface &ad, const AdObject &object) {
     reload_gplink();
 }
 
-bool GroupPolicyTabEdit::apply(AdInterface &ad, const QString &target) {
+bool GroupPolicyTabEdit::apply(AdInterface &ad, const QString &target) const {
     bool total_success = true;
 
     const bool gplink_changed = !gplink.equals(original_gplink_string);
@@ -132,10 +132,6 @@ bool GroupPolicyTabEdit::apply(AdInterface &ad, const QString &target) {
 
         if (!replace_success) {
             total_success = false;
-        }
-
-        if (replace_success) {
-            original_gplink_string = gplink_string;
         }
     }
 

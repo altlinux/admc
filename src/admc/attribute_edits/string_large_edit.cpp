@@ -47,7 +47,7 @@ void StringLargeEdit::set_read_only(const bool read_only) {
     edit->setDisabled(read_only);
 }
 
-bool StringLargeEdit::apply(AdInterface &ad, const QString &dn) {
+bool StringLargeEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = edit->toPlainText();
     const bool success = ad.attribute_replace_string(dn, attribute, new_value);
 

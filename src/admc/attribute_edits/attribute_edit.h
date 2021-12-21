@@ -74,7 +74,7 @@ public:
 
     // Apply current input by making a modification to the
     // AD server
-    virtual bool apply(AdInterface &ad, const QString &dn) = 0;
+    virtual bool apply(AdInterface &ad, const QString &dn) const = 0;
 
 signals:
     // Emitted when edit was edited by user
@@ -83,7 +83,7 @@ signals:
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()                                    \
     void set_read_only(const bool read_only) override;                    \
-    bool apply(AdInterface &ad, const QString &dn) override;        \
+    bool apply(AdInterface &ad, const QString &dn) const override;        \
     void load(AdInterface &ad, const AdObject &object) override; \
 
 

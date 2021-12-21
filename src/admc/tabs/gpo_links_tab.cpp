@@ -108,7 +108,7 @@ void GpoLinksTabEdit::set_read_only(const bool read_only) {
     UNUSED_ARG(read_only);
 }
 
-bool GpoLinksTabEdit::apply(AdInterface &ad, const QString &dn) {
+bool GpoLinksTabEdit::apply(AdInterface &ad, const QString &dn) const {
     UNUSED_ARG(ad);
     UNUSED_ARG(dn);
 

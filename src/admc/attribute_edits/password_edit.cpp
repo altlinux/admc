@@ -77,7 +77,7 @@ bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
     return true;
 }
 
-bool PasswordEdit::apply(AdInterface &ad, const QString &dn) {
+bool PasswordEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = edit->text();
 
     const bool success = ad.user_set_pass(dn, new_value);

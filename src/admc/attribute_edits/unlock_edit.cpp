@@ -49,7 +49,7 @@ void UnlockEdit::set_read_only(const bool read_only) {
     check->setDisabled(read_only);
 }
 
-bool UnlockEdit::apply(AdInterface &ad, const QString &dn) {
+bool UnlockEdit::apply(AdInterface &ad, const QString &dn) const {
 
     if (check->isChecked()) {
         const bool result = ad.user_unlock(dn);

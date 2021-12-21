@@ -103,7 +103,7 @@ void OrganizationTabEdit::load(AdInterface &ad, const AdObject &object) {
     }
 }
 
-bool OrganizationTabEdit::apply(AdInterface &ad, const QString &target) {
+bool OrganizationTabEdit::apply(AdInterface &ad, const QString &target) const {
     UNUSED_ARG(ad);
     UNUSED_ARG(target);
 

@@ -174,13 +174,8 @@ void MembershipTabEdit::load(AdInterface &ad, const AdObject &object) {
     reload_model();
 }
 
-bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) {
+bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) const {
     bool total_success = true;
-
-    // NOTE: need temp copy because can't edit the set
-    // during iteration
-    QSet<QString> new_original_values = original_values;
-    QSet<QString> new_original_primary_values = original_primary_values;
 
     // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
     switch (type) {
@@ -191,9 +186,7 @@ bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) {
                 const bool removed = !current_values.contains(user);
                 if (removed) {
                     const bool success = ad.group_remove_member(group, user);
-                    if (success) {
-                        new_original_values.remove(user);
-                    } else {
+                    if (!success) {
                         total_success = false;
                     }
                 }
@@ -203,9 +196,7 @@ bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) {
                 const bool added = !original_values.contains(user);
                 if (added) {
                     const bool success = ad.group_add_member(group, user);
-                    if (success) {
-                        new_original_values.insert(user);
-                    } else {
+                    if (!success) {
                         total_success = false;
                     }
                 }
@@ -226,17 +217,7 @@ bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) {
                 const QString group_dn = current_primary_values.values()[0];
 
                 const bool success = ad.user_set_primary_group(group_dn, target);
-                if (success) {
-                    new_original_primary_values = {group_dn};
-
-                    // Server adds old primary group to
-                    // normal membership
-                    new_original_values.insert(original_primary_group);
-
-                    // Server removes new primary group from
-                    // normal membership
-                    new_original_values.remove(group_dn);
-                } else {
+                if (!success) {
                     total_success = false;
                 }
             }
@@ -258,9 +239,7 @@ bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) {
                 const bool removed = !current_values.contains(group);
                 if (removed) {
                     const bool success = ad.group_remove_member(group, user);
-                    if (success) {
-                        new_original_values.remove(group);
-                    } else {
+                    if (!success) {
                         total_success = false;
                     }
                 }
@@ -275,9 +254,7 @@ bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) {
                 const bool added = !original_values.contains(group);
                 if (added) {
                     const bool success = ad.group_add_member(group, user);
-                    if (success) {
-                        new_original_values.insert(group);
-                    } else {
+                    if (!success) {
                         total_success = false;
                     }
                 }
@@ -286,9 +263,6 @@ bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) {
             break;
         }
     }
-
-    original_values = new_original_values;
-    original_primary_values = new_original_primary_values;
 
     return total_success;
 }

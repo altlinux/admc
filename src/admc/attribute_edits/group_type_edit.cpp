@@ -53,7 +53,7 @@ void GroupTypeEdit::set_read_only(const bool read_only) {
     combo->setDisabled(read_only);
 }
 
-bool GroupTypeEdit::apply(AdInterface &ad, const QString &dn) {
+bool GroupTypeEdit::apply(AdInterface &ad, const QString &dn) const {
     const GroupType new_value = (GroupType) combo->currentData().toInt();
     const bool success = ad.group_set_type(dn, new_value);
 

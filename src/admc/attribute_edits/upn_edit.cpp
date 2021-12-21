@@ -96,7 +96,7 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
     return true;
 }
 
-bool UpnEdit::apply(AdInterface &ad, const QString &dn) {
+bool UpnEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = get_new_value();
     const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_USER_PRINCIPAL_NAME, new_value);
 

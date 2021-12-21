@@ -250,7 +250,7 @@ void AttributesTabEdit::load(AdInterface &ad, const AdObject &object) {
     }
 }
 
-bool AttributesTabEdit::apply(AdInterface &ad, const QString &target) {
+bool AttributesTabEdit::apply(AdInterface &ad, const QString &target) const {
     bool total_success = true;
 
     for (const QString &attribute : current.keys()) {
@@ -259,9 +259,7 @@ bool AttributesTabEdit::apply(AdInterface &ad, const QString &target) {
 
         if (current_values != original_values) {
             const bool success = ad.attribute_replace_values(target, attribute, current_values);
-            if (success) {
-                original[attribute] = current_values;
-            } else {
+            if (!success) {
                 total_success = false;
             }
         }

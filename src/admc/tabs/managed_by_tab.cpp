@@ -111,7 +111,7 @@ void ManagedByTabEdit::load_manager_edits(AdInterface &ad) {
     }
 }
 
-bool ManagedByTabEdit::apply(AdInterface &ad, const QString &target) {
+bool ManagedByTabEdit::apply(AdInterface &ad, const QString &target) const {
     UNUSED_ARG(ad);
     UNUSED_ARG(target);
 

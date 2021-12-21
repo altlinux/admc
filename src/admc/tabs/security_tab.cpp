@@ -379,7 +379,7 @@ bool SecurityTabEdit::verify(AdInterface &ad, const QString &target) const {
     }
 }
 
-bool SecurityTabEdit::apply(AdInterface &ad, const QString &target) {
+bool SecurityTabEdit::apply(AdInterface &ad, const QString &target) const {
     bool total_success = true;
 
     total_success &= ad_security_replace_security_descriptor(ad, target, sd);
