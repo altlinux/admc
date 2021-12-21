@@ -84,12 +84,12 @@ void PasswordDialog::accept() {
 
     show_busy_indicator();
 
-    const bool verify_success = AttributeEdit::verify(ad, edits, target);
+    const bool verify_success = AttributeEdit::verify(edits, ad, target);
     if (!verify_success) {
         return;
     }
 
-    const bool apply_success = AttributeEdit::apply(ad, edits, target);
+    const bool apply_success = AttributeEdit::apply(edits, ad, target);
 
     hide_busy_indicator();
 

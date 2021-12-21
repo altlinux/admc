@@ -41,7 +41,7 @@ public:
     // Verify edit. Verify process will stop on first
     // failure. This is so that only one failure message is
     // shown at a time.
-    static bool verify(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
+    static bool verify(const QList<AttributeEdit *> &edits, AdInterface &ad, const QString &dn);
 
     // Applies edits. If one of the edits fails to apply
     // midway, the apply process still continues. This is
@@ -50,14 +50,14 @@ public:
     // process stopped on first error, the user would have
     // to apply multiple times while fixing errors to see
     // all of them.
-    static bool apply(AdInterface &ad, QList<AttributeEdit *> edits, const QString &dn);
+    static bool apply(const QList<AttributeEdit *> &edits, AdInterface &ad, const QString &dn);
 
-    static void load(QList<AttributeEdit *> edits, AdInterface &ad, const AdObject &object);
+    static void load(const QList<AttributeEdit *> &edits, AdInterface &ad, const AdObject &object);
 
     // NOTE: not all edits might support read-only mode, see
     // specific edit headers to verify that they implement
     // set_read_only()
-    static void set_read_only(QList<AttributeEdit *> edits, const bool read_only);
+    static void set_read_only(const QList<AttributeEdit *> &edits, const bool read_only);
 
     AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
 

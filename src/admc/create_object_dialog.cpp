@@ -60,7 +60,7 @@ void CreateObjectDialog::accept() {
     const QString dn = get_created_dn();
 
     // Verify edits
-    const bool verify_success = AttributeEdit::verify(ad, m_edit_list, dn);
+    const bool verify_success = AttributeEdit::verify(m_edit_list, ad, dn);
 
     if (!verify_success) {
         return;
@@ -75,7 +75,7 @@ void CreateObjectDialog::accept() {
 
     bool final_success = false;
     if (add_success) {
-        const bool apply_success = AttributeEdit::apply(ad, m_edit_list, dn);
+        const bool apply_success = AttributeEdit::apply(m_edit_list, ad, dn);
 
         if (apply_success) {
             final_success = true;

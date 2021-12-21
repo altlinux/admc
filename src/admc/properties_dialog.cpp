@@ -352,7 +352,7 @@ void PropertiesDialog::reset() {
 bool PropertiesDialog::apply_internal(AdInterface &ad) {
     // NOTE: only verify and apply edits in the "apply
     // list", aka the edits that were edited
-    const bool edits_verify_success = AttributeEdit::verify(ad, apply_list, target);
+    const bool edits_verify_success = AttributeEdit::verify(apply_list, ad, target);
 
     if (!edits_verify_success) {
         return false;
@@ -362,7 +362,7 @@ bool PropertiesDialog::apply_internal(AdInterface &ad) {
 
     bool total_apply_success = true;
 
-    const bool edits_apply_success = AttributeEdit::apply(ad, apply_list, target);
+    const bool edits_apply_success = AttributeEdit::apply(apply_list, ad, target);
     if (!edits_apply_success) {
         total_apply_success = false;
     }
