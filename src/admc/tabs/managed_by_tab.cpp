@@ -77,7 +77,7 @@ void ManagedByTabEdit::on_manager_edited() {
     load_manager_edits(ad);
 }
 
-void ManagedByTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void ManagedByTabEdit::load(AdInterface &ad, const AdObject &object) {
     manager_edit->load(ad, object);
 
     // NOTE: load AFTER loading manager! because manager

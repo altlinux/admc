@@ -47,7 +47,7 @@ void UpnEdit::init_suffixes(AdInterface &ad) {
     upn_suffix_combo_init(upn_suffix_combo, ad);
 }
 
-void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void UpnEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     upn_suffix_combo_load(upn_suffix_combo, object);

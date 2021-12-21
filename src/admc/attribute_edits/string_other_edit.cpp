@@ -43,7 +43,7 @@ StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_bu
         this, &StringOtherEdit::on_other_button);
 }
 
-void StringOtherEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void StringOtherEdit::load(AdInterface &ad, const AdObject &object) {
     main_edit->load(ad, object);
 
     other_values = object.get_values(other_attribute);

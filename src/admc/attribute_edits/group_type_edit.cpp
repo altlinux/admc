@@ -41,7 +41,7 @@ GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits
         this, &AttributeEdit::edited);
 }
 
-void GroupTypeEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void GroupTypeEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const GroupType type = object.get_group_type();

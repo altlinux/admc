@@ -110,7 +110,7 @@ MembershipTab::~MembershipTab() {
     delete ui;
 }
 
-void MembershipTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void MembershipTabEdit::load(AdInterface &ad, const AdObject &object) {
     const QList<QString> values = object.get_strings(get_membership_attribute());
     original_values = values.toSet();
     current_values = original_values;

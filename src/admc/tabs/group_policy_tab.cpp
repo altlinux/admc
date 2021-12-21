@@ -106,7 +106,7 @@ GroupPolicyTab::~GroupPolicyTab() {
     delete ui;
 }
 
-void GroupPolicyTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void GroupPolicyTabEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);

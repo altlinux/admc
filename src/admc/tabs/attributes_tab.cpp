@@ -213,7 +213,7 @@ void AttributesTabEdit::edit_attribute() {
         });
 }
 
-void AttributesTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void AttributesTabEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     original.clear();

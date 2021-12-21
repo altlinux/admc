@@ -38,7 +38,7 @@ QString UnlockEdit::label_text() {
     return tr("Unlock account");
 }
 
-void UnlockEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void UnlockEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
     UNUSED_ARG(object);
 

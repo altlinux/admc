@@ -35,10 +35,6 @@ AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent)
     }
 }
 
-void AttributeEdit::load(AdInterface &ad, const AdObject &object) {
-    load_internal(ad, object);
-}
-
 bool AttributeEdit::verify(AdInterface &ad, const QString &dn) const {
     UNUSED_ARG(ad);
     UNUSED_ARG(dn);

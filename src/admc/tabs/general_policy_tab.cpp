@@ -56,7 +56,7 @@ GeneralPolicyTabEdit::GeneralPolicyTabEdit(QList<AttributeEdit *> *edit_list, Ui
     ui = ui_arg;
 }
 
-void GeneralPolicyTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void GeneralPolicyTabEdit::load(AdInterface &ad, const AdObject &object) {
     // Load version strings
     const int ad_version = object.get_int(ATTRIBUTE_VERSION_NUMBER);
 

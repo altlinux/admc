@@ -229,7 +229,7 @@ void SecurityTabEdit::load_current_sd(AdInterface &ad) {
     ui->trustee_view->selectionModel()->setCurrentIndex(selected_trustee, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
-void SecurityTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void SecurityTabEdit::load(AdInterface &ad, const AdObject &object) {
     security_descriptor_free(sd);
     sd = object.get_security_descriptor();
 

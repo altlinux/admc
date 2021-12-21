@@ -79,7 +79,7 @@ OrganizationTab::~OrganizationTab() {
     delete ui;
 }
 
-void OrganizationTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void OrganizationTabEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const QList<QString> reports = object.get_strings(ATTRIBUTE_DIRECT_REPORTS);

@@ -42,7 +42,7 @@ GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edi
         this, &AttributeEdit::edited);
 }
 
-void GroupScopeEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void GroupScopeEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const GroupScope scope = object.get_group_scope();

@@ -39,7 +39,7 @@ DateTimeEdit::DateTimeEdit(QDateTimeEdit *edit_arg, const QString &attribute_arg
         this, &AttributeEdit::edited);
 }
 
-void DateTimeEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void DateTimeEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const QDateTime datetime = object.get_datetime(attribute, g_adconfig);

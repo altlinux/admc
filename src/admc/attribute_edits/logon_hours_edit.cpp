@@ -35,7 +35,7 @@ LogonHoursEdit::LogonHoursEdit(QPushButton *button_arg, QList<AttributeEdit *> *
         this, &LogonHoursEdit::open_dialog);
 }
 
-void LogonHoursEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void LogonHoursEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     current_value = object.get_value(ATTRIBUTE_LOGON_HOURS);

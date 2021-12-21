@@ -38,7 +38,7 @@ CountryEdit::CountryEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out
         this, &AttributeEdit::edited);
 }
 
-void CountryEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void CountryEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     country_combo_load(combo, object);

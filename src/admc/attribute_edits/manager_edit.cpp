@@ -37,7 +37,7 @@ ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attri
         this, &AttributeEdit::edited);
 }
 
-void ManagerEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void ManagerEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     widget->load(object);

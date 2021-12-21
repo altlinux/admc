@@ -39,9 +39,9 @@ class AttributeEdit : public QObject {
 public:
     AttributeEdit(QList<AttributeEdit *> *edits_out, QObject *parent);
 
-    // Load state from object, used to initialize or reset edit
-    // Calls load_internal() implemented by subclasses
-    void load(AdInterface &ad, const AdObject &object);
+    // Load state from object, used to initialize or
+    // reset edit.
+    virtual void load(AdInterface &ad, const AdObject &object) = 0;
 
     virtual void set_read_only(const bool read_only) = 0;
 
@@ -58,20 +58,12 @@ public:
 signals:
     // Emitted when edit was edited by user
     void edited();
-
-protected:
-    virtual void load_internal(AdInterface &ad, const AdObject &object) = 0;
-
 };
 
 #define DECL_ATTRIBUTE_EDIT_VIRTUALS()                                    \
     void set_read_only(const bool read_only) override;                    \
     bool apply(AdInterface &ad, const QString &dn) override;        \
-                                                                          \
-protected:                                                                \
-    void load_internal(AdInterface &ad, const AdObject &object) override; \
-                                                                          \
-public:
+    void load(AdInterface &ad, const AdObject &object) override; \
 
 // Helper f-ns that iterate over edit lists for you
 

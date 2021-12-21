@@ -74,7 +74,7 @@ GpoLinksTab::~GpoLinksTab() {
     delete ui;
 }
 
-void GpoLinksTabEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void GpoLinksTabEdit::load(AdInterface &ad, const AdObject &object) {
     const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QList<QString> attributes = {ATTRIBUTE_NAME};

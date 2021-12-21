@@ -46,7 +46,7 @@ SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QList<Attr
         this, &AttributeEdit::edited);
 }
 
-void SamNameEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void SamNameEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const QString value = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);

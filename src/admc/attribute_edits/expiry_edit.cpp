@@ -34,7 +34,7 @@ ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QList<AttributeEdit *> *ed
         this, &AttributeEdit::edited);
 }
 
-void ExpiryEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void ExpiryEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     edit_widget->load(object);

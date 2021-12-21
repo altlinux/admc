@@ -40,7 +40,7 @@ PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QLi
         this, &AttributeEdit::edited);
 }
 
-void PasswordEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void PasswordEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
     UNUSED_ARG(object);
 

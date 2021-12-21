@@ -42,7 +42,7 @@ StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QList<
         this, &AttributeEdit::edited);
 }
 
-void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void StringEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const QString value = [=]() {

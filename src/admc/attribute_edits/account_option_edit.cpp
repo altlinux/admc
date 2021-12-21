@@ -39,7 +39,7 @@ AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption o
         this, &AttributeEdit::edited);
 }
 
-void AccountOptionEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void AccountOptionEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const bool option_is_set = object.get_account_option(option, g_adconfig);
