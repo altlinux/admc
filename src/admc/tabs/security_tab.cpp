@@ -535,7 +535,3 @@ QByteArray SecurityTabEdit::get_current_trustee() const {
 
     return out;
 }
-
-void SecurityTabEdit::set_read_only(const bool read_only) {
-    UNUSED_ARG(read_only);
-}

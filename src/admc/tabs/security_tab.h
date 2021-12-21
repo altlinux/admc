@@ -63,9 +63,10 @@ class SecurityTabEdit final : public AttributeEdit {
 public:
     SecurityTabEdit(Ui::SecurityTab *ui, QObject *parent);
     ~SecurityTabEdit();
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
+    void load(AdInterface &ad, const AdObject &object) override;
     bool verify(AdInterface &ad, const QString &dn) const override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
     Ui::SecurityTab *ui;

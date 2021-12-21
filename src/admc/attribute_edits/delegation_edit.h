@@ -29,7 +29,10 @@ class DelegationEdit final : public AttributeEdit {
     Q_OBJECT
 public:
     DelegationEdit(QRadioButton *off_button, QRadioButton *on_button, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    void set_read_only(const bool read_only) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
     QRadioButton *off_button;

@@ -47,7 +47,10 @@ class GeneralPolicyTabEdit final : public AttributeEdit {
 
 public:
     GeneralPolicyTabEdit(Ui::GeneralPolicyTab *ui, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    void set_read_only(const bool read_only) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
     Ui::GeneralPolicyTab *ui;

@@ -29,7 +29,10 @@ class GroupTypeEdit final : public AttributeEdit {
     Q_OBJECT
 public:
     GroupTypeEdit(QComboBox *combo, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    void set_read_only(const bool read_only) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
     QComboBox *combo;

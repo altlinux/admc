@@ -29,7 +29,10 @@ class StringEdit final : public AttributeEdit {
     Q_OBJECT
 public:
     StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
+    void set_read_only(const bool read_only) override;
 
 private:
     QLineEdit *edit;

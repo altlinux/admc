@@ -62,9 +62,9 @@ public:
 
     // Load state from object, used to initialize or
     // reset edit.
-    virtual void load(AdInterface &ad, const AdObject &object) = 0;
+    virtual void load(AdInterface &ad, const AdObject &object);
 
-    virtual void set_read_only(const bool read_only) = 0;
+    virtual void set_read_only(const bool read_only);
 
     // Verify current input. This is for the kinds of errors
     // that the server doesn't or can't check for. For
@@ -74,17 +74,11 @@ public:
 
     // Apply current input by making a modification to the
     // AD server
-    virtual bool apply(AdInterface &ad, const QString &dn) const = 0;
+    virtual bool apply(AdInterface &ad, const QString &dn) const;
 
 signals:
     // Emitted when edit was edited by user
     void edited();
 };
-
-#define DECL_ATTRIBUTE_EDIT_VIRTUALS()                                    \
-    void set_read_only(const bool read_only) override;                    \
-    bool apply(AdInterface &ad, const QString &dn) const override;        \
-    void load(AdInterface &ad, const AdObject &object) override; \
-
 
 #endif /* ATTRIBUTE_EDIT_H */

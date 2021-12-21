@@ -31,11 +31,13 @@ class UpnEdit final : public AttributeEdit {
     Q_OBJECT
 public:
     UpnEdit(QLineEdit *prefix_edit, QComboBox *suffix_combo, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    void set_read_only(const bool read_only) override;
+    bool verify(AdInterface &ad, const QString &dn) const override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
     void init_suffixes(AdInterface &ad);
-
-    bool verify(AdInterface &ad, const QString &dn) const override;
 
 private:
     QLineEdit *prefix_edit;
