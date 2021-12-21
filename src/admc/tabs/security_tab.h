@@ -75,7 +75,6 @@ private:
     RightsSortModel *rights_sort_model;
     bool is_policy;
     bool ignore_item_changed_signal;
-    bool modified;
     security_descriptor *sd;
     QList<QString> target_class_list;
 

@@ -132,8 +132,6 @@ SecurityTabEdit::SecurityTabEdit(Ui::SecurityTab *ui_arg, QObject *parent)
 
     sd = nullptr;
 
-    modified = false;
-
     ignore_item_changed_signal = false;
 
     trustee_model = new QStandardItemModel(0, 1, this);
@@ -364,8 +362,6 @@ void SecurityTabEdit::on_item_changed(QStandardItem *item) {
 
     load_rights_model();
 
-    modified = true;
-
     emit edited();
 }
 
@@ -384,10 +380,6 @@ bool SecurityTabEdit::verify(AdInterface &ad, const QString &target) const {
 }
 
 bool SecurityTabEdit::apply(AdInterface &ad, const QString &target) {
-    if (!modified) {
-        return true;
-    }
-
     bool total_success = true;
 
     total_success &= ad_security_replace_security_descriptor(ad, target, sd);
@@ -395,8 +387,6 @@ bool SecurityTabEdit::apply(AdInterface &ad, const QString &target) {
     if (is_policy) {
         total_success &= ad.gpo_sync_perms(target);
     }
-
-    modified = false;
 
     return total_success;
 }
