@@ -35,16 +35,16 @@ ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 
     QList<AttributeEdit *> my_edit_list;
 
-    new StringEdit(ui->dn_edit, ATTRIBUTE_DN, &my_edit_list, this);
-    new StringEdit(ui->class_edit, ATTRIBUTE_OBJECT_CLASS, &my_edit_list, this);
+    new StringEdit(ui->dn_edit, ATTRIBUTE_DN, &my_this);
+    new StringEdit(ui->class_edit, ATTRIBUTE_OBJECT_CLASS, &my_this);
 
-    new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, &my_edit_list, this);
-    new DateTimeEdit(ui->changed_edit, ATTRIBUTE_WHEN_CHANGED, &my_edit_list, this);
+    new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, &my_this);
+    new DateTimeEdit(ui->changed_edit, ATTRIBUTE_WHEN_CHANGED, &my_this);
 
-    new StringEdit(ui->usn_created_edit, ATTRIBUTE_USN_CREATED, &my_edit_list, this);
-    new StringEdit(ui->usn_changed_edit, ATTRIBUTE_USN_CHANGED, &my_edit_list, this);
+    new StringEdit(ui->usn_created_edit, ATTRIBUTE_USN_CREATED, &my_this);
+    new StringEdit(ui->usn_changed_edit, ATTRIBUTE_USN_CHANGED, &my_this);
 
-    new ProtectDeletionEdit(ui->deletion_check, &my_edit_list, this);
+    new ProtectDeletionEdit(ui->deletion_check, &my_this);
 
     AttributeEdit::set_read_only(my_edit_list, true);
 

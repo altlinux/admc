@@ -28,7 +28,7 @@ class QLineEdit;
 class PasswordEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     bool verify(AdInterface &ad, const QString &dn) const override;

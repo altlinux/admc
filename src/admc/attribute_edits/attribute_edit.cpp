@@ -20,21 +20,6 @@
 
 #include "attribute_edits/attribute_edit.h"
 
-#include "utils.h"
-
-#include <QDebug>
-
-AttributeEdit::AttributeEdit(QList<AttributeEdit *> *edit_list, QObject *parent)
-: QObject(parent) {
-    if (edit_list != nullptr) {
-        if (edit_list->contains(this)) {
-            qDebug() << "ERROR: attribute edit added twice to list!";
-        } else {
-            edit_list->append(this);
-        }
-    }
-}
-
 bool AttributeEdit::verify(AdInterface &ad, const QString &dn) const {
     UNUSED_ARG(ad);
     UNUSED_ARG(dn);

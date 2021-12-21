@@ -39,9 +39,9 @@ CreateGroupDialog::CreateGroupDialog(QWidget *parent)
 
     QList<AttributeEdit *> edit_list;
     
-    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
-    new GroupScopeEdit(ui->scope_combo, &edit_list, this);
-    new GroupTypeEdit(ui->type_combo, &edit_list, this);
+    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    new GroupScopeEdit(ui->scope_combo, this);
+    new GroupTypeEdit(ui->type_combo, this);
 
     const QList<QLineEdit *> required_edits = {
         ui->sam_name_edit,

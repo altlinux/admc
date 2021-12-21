@@ -25,8 +25,8 @@
 
 #include <QCheckBox>
 
-GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QObject *parent)
+: AttributeEdit(parent) {
     check = check_arg;
 
     connect(

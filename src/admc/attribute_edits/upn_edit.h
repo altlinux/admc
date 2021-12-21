@@ -30,7 +30,7 @@ class QComboBox;
 class UpnEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    UpnEdit(QLineEdit *prefix_edit, QComboBox *suffix_combo, QList<AttributeEdit *> *edits_out, QObject *parent);
+    UpnEdit(QLineEdit *prefix_edit, QComboBox *suffix_combo, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     void init_suffixes(AdInterface &ad);

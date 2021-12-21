@@ -28,7 +28,7 @@ class ExpiryWidget;
 class ExpiryEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    ExpiryEdit(ExpiryWidget *edit_widget, QList<AttributeEdit *> *edits_out, QObject *parent);
+    ExpiryEdit(ExpiryWidget *edit_widget, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

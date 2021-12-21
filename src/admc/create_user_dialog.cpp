@@ -38,13 +38,13 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     QList<AttributeEdit *> edit_list;
-    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
-    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);
-    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, &edit_list, this);
-    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
-    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edit_list, this);
+    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
+    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
+    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, this);
+    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, this);
 
-    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
+    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, this);
     upn_edit->init_suffixes(ad);
 
     const QHash<AccountOption, QCheckBox *> check_map = {
@@ -56,7 +56,7 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, QWidget *parent)
 
     for (const AccountOption &option : check_map.keys()) {
         QCheckBox *check = check_map[option];
-        new AccountOptionEdit(check, option, &edit_list, this);
+        new AccountOptionEdit(check, option, this);
     }
 
     account_option_setup_conflicts(check_map);

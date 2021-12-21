@@ -33,10 +33,10 @@ GeneralComputerTab::GeneralComputerTab(const AdObject &object, QList<AttributeEd
 
     load_name_label(ui->name_label, object);
 
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, edit_list, this);
-    auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, edit_list, this);
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, edit_list, this);
-    new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, edit_list, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
+    new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, this);
 
     sam_name_edit->set_read_only(true);
     dns_edit->set_read_only(true);

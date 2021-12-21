@@ -39,8 +39,8 @@ GeneralPolicyTab::GeneralPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *p
     ui = new Ui::GeneralPolicyTab();
     ui->setupUi(this);
 
-    auto created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, edit_list, this);
-    auto modified_edit = new DateTimeEdit(ui->modified_edit, ATTRIBUTE_WHEN_CHANGED, edit_list, this);
+    auto created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, this);
+    auto modified_edit = new DateTimeEdit(ui->modified_edit, ATTRIBUTE_WHEN_CHANGED, this);
     new GeneralPolicyTabEdit(edit_list, ui, this);
 
     created_edit->set_read_only(true);
@@ -51,8 +51,8 @@ GeneralPolicyTab::~GeneralPolicyTab() {
     delete ui;
 }
 
-GeneralPolicyTabEdit::GeneralPolicyTabEdit(QList<AttributeEdit *> *edit_list, Ui::GeneralPolicyTab *ui_arg, QObject *parent)
-: AttributeEdit(edit_list, parent) {
+GeneralPolicyTabEdit::GeneralPolicyTabEdit(Ui::GeneralPolicyTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
     ui = ui_arg;
 }
 

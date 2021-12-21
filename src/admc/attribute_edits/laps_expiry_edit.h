@@ -29,7 +29,7 @@ class QPushButton;
 class LAPSExpiryEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    LAPSExpiryEdit(QDateTimeEdit *edit_arg, QPushButton *reset_expiry_button, QList<AttributeEdit *> *edits_out, QObject *parent);
+    LAPSExpiryEdit(QDateTimeEdit *edit_arg, QPushButton *reset_expiry_button, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

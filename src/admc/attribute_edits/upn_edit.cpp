@@ -28,8 +28,8 @@
 #include <QComboBox>
 #include <QLineEdit>
 
-UpnEdit::UpnEdit(QLineEdit *prefix_edit_arg, QComboBox *upn_suffix_combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+UpnEdit::UpnEdit(QLineEdit *prefix_edit_arg, QComboBox *upn_suffix_combo_arg, QObject *parent)
+: AttributeEdit(parent) {
     prefix_edit = prefix_edit_arg;
     upn_suffix_combo = upn_suffix_combo_arg;
 

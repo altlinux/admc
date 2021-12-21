@@ -51,11 +51,11 @@ PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QStrin
     apply_button = ui->button_box->button(QDialogButtonBox::Apply);
 
     if (class_list == QList<QString>({CLASS_USER})) {
-        auto general_user_tab = new GeneralUserMultiTab(&edit_list, this);
+        auto general_user_tab = new GeneralUserMultiTab(this);
         auto account_tab = new AccountMultiTab(&edit_list, ad, this);
-        auto address_tab = new AddressMultiTab(&edit_list, this);
-        auto profile_tab = new ProfileMultiTab(&edit_list, this);
-        auto organization_tab = new OrganizationMultiTab(&edit_list, this);
+        auto address_tab = new AddressMultiTab(this);
+        auto profile_tab = new ProfileMultiTab(this);
+        auto organization_tab = new OrganizationMultiTab(this);
 
         ui->tab_widget->add_tab(general_user_tab, tr("General"));
         ui->tab_widget->add_tab(account_tab, tr("Account"));
@@ -63,7 +63,7 @@ PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QStrin
         ui->tab_widget->add_tab(profile_tab, tr("Profile"));
         ui->tab_widget->add_tab(organization_tab, tr("Organization"));
     } else {
-        auto general_other_tab = new GeneralOtherMultiTab(&edit_list, this);
+        auto general_other_tab = new GeneralOtherMultiTab(this);
 
         ui->tab_widget->add_tab(general_other_tab, tr("General"));
     }

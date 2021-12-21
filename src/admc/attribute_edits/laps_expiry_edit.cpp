@@ -27,8 +27,8 @@
 #include <QPushButton>
 #include <QDateTimeEdit>
 
-LAPSExpiryEdit::LAPSExpiryEdit(QDateTimeEdit *edit_arg, QPushButton *reset_expiry_button, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+LAPSExpiryEdit::LAPSExpiryEdit(QDateTimeEdit *edit_arg, QPushButton *reset_expiry_button, QObject *parent)
+: AttributeEdit(parent) {
     edit = edit_arg;
 
     connect(

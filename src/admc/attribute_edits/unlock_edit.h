@@ -39,7 +39,7 @@ class QCheckBox;
 class UnlockEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    UnlockEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    UnlockEdit(QCheckBox *check_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
     static QString label_text();

@@ -51,8 +51,8 @@ GpoLinksTab::GpoLinksTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     new GpoLinksTabEdit(edit_list, ui, this);
 }
 
-GpoLinksTabEdit::GpoLinksTabEdit(QList<AttributeEdit *> *edit_list, Ui::GpoLinksTab *ui_arg, QObject *parent)
-: AttributeEdit(edit_list, parent) {
+GpoLinksTabEdit::GpoLinksTabEdit(Ui::GpoLinksTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
     ui = ui_arg;
 
     model = new QStandardItemModel(0, GpoLinksColumn_COUNT, this);

@@ -33,15 +33,14 @@ RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, Q
     ui = new Ui::RenameUserDialog();
     ui->setupUi(this);
 
-    QList<AttributeEdit *> edit_list;
-    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
-    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);
-    new StringEdit(ui->full_name_edit, ATTRIBUTE_DISPLAY_NAME, &edit_list, this);
+    auto first_name_edit = new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
+    auto last_name_edit = new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
+    auto display_name_edit = new StringEdit(ui->full_name_edit, ATTRIBUTE_DISPLAY_NAME, this);
 
-    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
+    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, this);
     upn_edit->init_suffixes(ad);
 
-    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
+    auto same_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
 
     init(ad, target_arg, ui->name_edit, edit_list);
 

@@ -26,8 +26,8 @@
 
 #include <QLineEdit>
 
-SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QObject *parent)
+: AttributeEdit(parent) {
     edit = edit_arg;
     limit_edit(edit, ATTRIBUTE_SAM_ACCOUNT_NAME);
 

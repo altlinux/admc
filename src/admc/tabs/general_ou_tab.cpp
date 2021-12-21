@@ -33,13 +33,13 @@ GeneralOUTab::GeneralOUTab(const AdObject &object, QList<AttributeEdit *> *edit_
 
     load_name_label(ui->name_label, object);
 
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, edit_list, this);
-    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, edit_list, this);
-    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, edit_list, this);
-    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, edit_list, this);
-    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, edit_list, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
+    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, this);
+    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, this);
+    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, this);
+    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, this);
 
-    new CountryEdit(ui->country_combo, edit_list, this);
+    new CountryEdit(ui->country_combo, this);
 }
 
 GeneralOUTab::~GeneralOUTab() {

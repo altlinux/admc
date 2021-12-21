@@ -52,7 +52,7 @@ class GpoLinksTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    GpoLinksTabEdit(QList<AttributeEdit *> *edit_list, Ui::GpoLinksTab *ui, QObject *parent);
+    GpoLinksTabEdit(Ui::GpoLinksTab *ui, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

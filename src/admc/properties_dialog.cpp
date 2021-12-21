@@ -141,17 +141,17 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     //
     QWidget *general_tab = [&]() -> QWidget * {
         if (object.is_class(CLASS_USER)) {
-            return new GeneralUserTab(object, &edit_list, this);
+            return new GeneralUserTab(object, this);
         } else if (object.is_class(CLASS_GROUP)) {
-            return new GeneralGroupTab(object, &edit_list, this);
+            return new GeneralGroupTab(object, this);
         } else if (object.is_class(CLASS_OU)) {
-            return new GeneralOUTab(object, &edit_list, this);
+            return new GeneralOUTab(object, this);
         } else if (object.is_class(CLASS_COMPUTER)) {
-            return new GeneralComputerTab(object, &edit_list, this);
+            return new GeneralComputerTab(object, this);
         } else if (object.is_class(CLASS_GP_CONTAINER)) {
-            return new GeneralPolicyTab(&edit_list, this);
+            return new GeneralPolicyTab(this);
         } else {
-            return new GeneralOtherTab(object, &edit_list, this);
+            return new GeneralOtherTab(object, this);
         }
     }();
 
@@ -160,8 +160,8 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     const bool advanced_view_ON = settings_get_variant(SETTING_advanced_features).toBool();
 
     if (advanced_view_ON) {
-        auto object_tab = new ObjectTab(&edit_list, this);
-        attributes_tab = new AttributesTab(&edit_list, this);
+        auto object_tab = new ObjectTab(this);
+        attributes_tab = new AttributesTab(this);
 
         ui->tab_widget->add_tab(object_tab, tr("Object"));
         ui->tab_widget->add_tab(attributes_tab, tr("Attributes"));
@@ -170,11 +170,11 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     }
 
     if (object.is_class(CLASS_USER)) {
-        auto account_tab = new AccountTab(ad, &edit_list, this);
-        auto address_tab = new AddressTab(&edit_list, this);
-        auto organization_tab = new OrganizationTab(&edit_list, this);
-        auto telephones_tab = new TelephonesTab(&edit_list, this);
-        auto profile_tab = new ProfileTab(&edit_list, this);
+        auto account_tab = new AccountTab(ad, this);
+        auto address_tab = new AddressTab(this);
+        auto organization_tab = new OrganizationTab(this);
+        auto telephones_tab = new TelephonesTab(this);
+        auto profile_tab = new ProfileTab(this);
 
         ui->tab_widget->add_tab(account_tab, tr("Account"));
         ui->tab_widget->add_tab(address_tab, tr("Address"));
@@ -192,23 +192,23 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     }
 
     if (object.is_class(CLASS_OU) || object.is_class(CLASS_COMPUTER)) {
-        auto managed_by_tab = new ManagedByTab(&edit_list, this);
+        auto managed_by_tab = new ManagedByTab(this);
         ui->tab_widget->add_tab(managed_by_tab, tr("Managed by"));
     }
 
     if (object.is_class(CLASS_OU) || object.is_class(CLASS_DOMAIN)) {
-        auto group_policy_tab = new GroupPolicyTab(&edit_list, this);
+        auto group_policy_tab = new GroupPolicyTab(this);
         ui->tab_widget->add_tab(group_policy_tab, tr("Group policy"));
     }
 
     if (object.is_class(CLASS_GP_CONTAINER)) {
-        auto gpo_links_tab = new GpoLinksTab(&edit_list, this);
+        auto gpo_links_tab = new GpoLinksTab(this);
         ui->tab_widget->add_tab(gpo_links_tab, tr("Links to"));
     }
 
     if (object.is_class(CLASS_COMPUTER)) {
-        auto os_tab = new OSTab(&edit_list, this);
-        auto delegation_tab = new DelegationTab(&edit_list, this);
+        auto os_tab = new OSTab(this);
+        auto delegation_tab = new DelegationTab(this);
 
         ui->tab_widget->add_tab(os_tab, tr("Operating System"));
         ui->tab_widget->add_tab(delegation_tab, tr("Delegation"));
@@ -221,14 +221,14 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         }();
 
         if (laps_enabled) {
-            auto laps_tab = new LAPSTab(&edit_list, this);
+            auto laps_tab = new LAPSTab(this);
             ui->tab_widget->add_tab(laps_tab, tr("LAPS"));
         }
     }
 
     const bool need_security_tab = object.attributes().contains(ATTRIBUTE_SECURITY_DESCRIPTOR);
     if (need_security_tab && advanced_view_ON) {
-        auto security_tab = new SecurityTab(&edit_list, this);
+        auto security_tab = new SecurityTab(this);
         ui->tab_widget->add_tab(security_tab, tr("Security"));
     }
 

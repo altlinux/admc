@@ -28,7 +28,7 @@ class QLineEdit;
 class StringEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
+    StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

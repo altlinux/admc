@@ -35,13 +35,13 @@ GeneralGroupTab::GeneralGroupTab(const AdObject &object, QList<AttributeEdit *> 
 
     load_name_label(ui->name_label, object);
 
-    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, edit_list, this);
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, edit_list, this);
-    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, edit_list, this);
-    new StringEdit(ui->notes_edit, ATTRIBUTE_INFO, edit_list, this);
+    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
+    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, this);
+    new StringEdit(ui->notes_edit, ATTRIBUTE_INFO, this);
 
-    auto scope_edit = new GroupScopeEdit(ui->scope_combo, edit_list, this);
-    auto type_edit = new GroupTypeEdit(ui->type_combo, edit_list, this);
+    auto scope_edit = new GroupScopeEdit(ui->scope_combo, this);
+    auto type_edit = new GroupTypeEdit(ui->type_combo, this);
 
     const bool is_critical_system_object = object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT);
     if (is_critical_system_object) {

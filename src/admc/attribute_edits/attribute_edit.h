@@ -58,7 +58,7 @@ public:
     // set_read_only()
     static void set_read_only(const QList<AttributeEdit *> &edit_list, const bool read_only);
 
-    AttributeEdit(QList<AttributeEdit *> *edit_list, QObject *parent);
+    using QObject::QObject;
 
     // Load state from object, used to initialize or
     // reset edit.

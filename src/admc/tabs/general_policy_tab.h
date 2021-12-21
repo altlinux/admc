@@ -46,7 +46,7 @@ class GeneralPolicyTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    GeneralPolicyTabEdit(QList<AttributeEdit *> *edit_list, Ui::GeneralPolicyTab *ui, QObject *parent);
+    GeneralPolicyTabEdit(Ui::GeneralPolicyTab *ui, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

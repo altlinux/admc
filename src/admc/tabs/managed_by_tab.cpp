@@ -41,11 +41,11 @@ ManagedByTab::ManagedByTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     new ManagedByTabEdit(edit_list, ui, this);
 }
 
-ManagedByTabEdit::ManagedByTabEdit(QList<AttributeEdit *> *edit_list, Ui::ManagedByTab *ui_arg, QObject *parent)
-: AttributeEdit(edit_list, parent) {
+ManagedByTabEdit::ManagedByTabEdit(Ui::ManagedByTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
     ui = ui_arg;
 
-    manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGED_BY, edit_list, this);
+    manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGED_BY, this);
 
     new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, &manager_edits, this);
     new StringEdit(ui->street_edit, ATTRIBUTE_STREET, &manager_edits, this);

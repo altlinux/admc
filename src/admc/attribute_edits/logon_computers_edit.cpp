@@ -27,8 +27,8 @@
 
 #include <QPushButton>
 
-LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QObject *parent)
+: AttributeEdit(parent) {
     button = button_arg;
 
     connect(

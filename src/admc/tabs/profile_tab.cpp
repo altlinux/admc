@@ -29,9 +29,9 @@ ProfileTab::ProfileTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::ProfileTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->profile_path_edit, ATTRIBUTE_PROFILE_PATH, edit_list, this);
-    new StringEdit(ui->script_path_edit, ATTRIBUTE_SCRIPT_PATH, edit_list, this);
-    new StringEdit(ui->home_dir_edit, ATTRIBUTE_HOME_DIRECTORY, edit_list, this);
+    new StringEdit(ui->profile_path_edit, ATTRIBUTE_PROFILE_PATH, this);
+    new StringEdit(ui->script_path_edit, ATTRIBUTE_SCRIPT_PATH, this);
+    new StringEdit(ui->home_dir_edit, ATTRIBUTE_HOME_DIRECTORY, this);
 }
 
 ProfileTab::~ProfileTab() {

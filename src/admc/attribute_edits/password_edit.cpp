@@ -27,8 +27,8 @@
 #include <QLineEdit>
 #include <QTextCodec>
 
-PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QObject *parent)
+: AttributeEdit(parent) {
     edit = edit_arg;
     confirm_edit = confirm_edit_arg;
 

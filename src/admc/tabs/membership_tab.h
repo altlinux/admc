@@ -56,7 +56,7 @@ class MembershipTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    MembershipTabEdit(QList<AttributeEdit *> *edit_list, Ui::MembershipTab *ui, const MembershipTabType &type, QObject *parent);
+    MembershipTabEdit(Ui::MembershipTab *ui, const MembershipTabType &type, QObject *parent);
     DECL_ATTRIBUTE_EDIT_VIRTUALS();
 
 private:

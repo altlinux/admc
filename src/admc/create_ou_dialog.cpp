@@ -36,7 +36,7 @@ CreateOUDialog::CreateOUDialog(QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     QList<AttributeEdit *> edit_list;
-    new ProtectDeletionEdit(ui->deletion_check, &edit_list, this);
+    new ProtectDeletionEdit(ui->deletion_check, this);
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,

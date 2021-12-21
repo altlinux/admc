@@ -48,11 +48,15 @@ AttributesTab::AttributesTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::AttributesTab();
     ui->setupUi(this);
 
-    new AttributesTabEdit(edit_list, ui, this);
+    auto tab_edit = new AttributesTabEdit(edit_list, ui, this);
+
+    edit_list->append({
+        tab_edit,
+    });
 }
 
-AttributesTabEdit::AttributesTabEdit(QList<AttributeEdit *> *edit_list, Ui::AttributesTab *ui_arg, QObject *parent)
-: AttributeEdit(edit_list, parent) {
+AttributesTabEdit::AttributesTabEdit(Ui::AttributesTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
     ui = ui_arg;
 
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);

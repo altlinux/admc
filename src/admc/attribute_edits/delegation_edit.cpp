@@ -26,8 +26,8 @@
 
 #include <QRadioButton>
 
-DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_button_arg, QObject *parent)
+: AttributeEdit(parent) {
     off_button = off_button_arg;
     on_button = on_button_arg;
 

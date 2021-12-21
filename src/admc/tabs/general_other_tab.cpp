@@ -32,7 +32,11 @@ GeneralOtherTab::GeneralOtherTab(const AdObject &object, QList<AttributeEdit *> 
 
     load_name_label(ui->name_label, object);
 
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, edit_list, this);
+    auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
+
+    edit_list->append({
+        description_edit
+    });
 }
 
 GeneralOtherTab::~GeneralOtherTab() {
