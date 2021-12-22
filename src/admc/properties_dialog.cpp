@@ -234,6 +234,9 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
                 if (!already_added) {
                     apply_list.append(edit);
                 }
+
+                apply_button->setEnabled(true);
+                reset_button->setEnabled(true);
             });
     }
 
@@ -383,9 +386,4 @@ void PropertiesDialog::reset_internal(AdInterface &ad, const AdObject &object) {
     apply_list.clear();
 
     g_status->display_ad_messages(ad, this);
-}
-
-void PropertiesDialog::on_edited() {
-    apply_button->setEnabled(true);
-    reset_button->setEnabled(true);
 }

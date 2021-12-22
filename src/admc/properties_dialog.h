@@ -70,7 +70,6 @@ private slots:
     void done(int r) override;
     void apply();
     void reset();
-    void on_edited();
 
 private:
     QList<AttributeEdit *> edit_list;
