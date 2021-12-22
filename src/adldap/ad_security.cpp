@@ -518,7 +518,7 @@ void security_descriptor_add_right(security_descriptor *sd, const QByteArray &tr
             const bool match = check_ace_match(ace, trustee, access_mask, object_type, allow, false);
 
             if (match) {
-                return -1;
+                return i;
             }
         }
 
