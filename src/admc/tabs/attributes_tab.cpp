@@ -48,16 +48,19 @@ AttributesTab::AttributesTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::AttributesTab();
     ui->setupUi(this);
 
-    auto tab_edit = new AttributesTabEdit(ui, this);
+    auto tab_edit = new AttributesTabEdit(ui->view, ui->filter_button, ui->edit_button, ui->view_button, this);
 
     edit_list->append({
         tab_edit,
     });
 }
 
-AttributesTabEdit::AttributesTabEdit(Ui::AttributesTab *ui_arg, QObject *parent)
+AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_button_arg, QPushButton *edit_button_arg, QPushButton *view_button_arg, QObject *parent)
 : AttributeEdit(parent) {
-    ui = ui_arg;
+    view = view_arg;
+    filter_button = filter_button_arg;
+    edit_button = edit_button_arg;
+    view_button = view_button_arg;
 
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -67,24 +70,24 @@ AttributesTabEdit::AttributesTabEdit(Ui::AttributesTab *ui_arg, QObject *parent)
             {AttributesColumn_Type, tr("Type")}
         });
 
-    auto filter_menu = new AttributesTabFilterMenu(ui->view);
+    auto filter_menu = new AttributesTabFilterMenu(view);
 
     proxy = new AttributesTabProxy(filter_menu, this);
 
     proxy->setSourceModel(model);
-    ui->view->setModel(proxy);
+    view->setModel(proxy);
 
-    ui->filter_button->setMenu(filter_menu);
+    filter_button->setMenu(filter_menu);
 
-    enable_widget_on_selection(ui->edit_button, ui->view);
+    enable_widget_on_selection(edit_button, view);
 
-    settings_restore_header_state(SETTING_attributes_tab_header_state, ui->view->header());
+    settings_restore_header_state(SETTING_attributes_tab_header_state, view->header());
 
     const QHash<QString, QVariant> state = settings_get_variant(SETTING_attributes_tab_header_state).toHash();
 
-    ui->view->header()->restoreState(state["header"].toByteArray());
+    view->header()->restoreState(state["header"].toByteArray());
 
-    QItemSelectionModel *selection_model = ui->view->selectionModel();
+    QItemSelectionModel *selection_model = view->selectionModel();
 
     connect(
         selection_model, &QItemSelectionModel::selectionChanged,
@@ -92,13 +95,13 @@ AttributesTabEdit::AttributesTabEdit(Ui::AttributesTab *ui_arg, QObject *parent)
     update_edit_and_view_buttons();
 
     connect(
-        ui->view, &QAbstractItemView::doubleClicked,
+        view, &QAbstractItemView::doubleClicked,
         this, &AttributesTabEdit::on_double_click);
     connect(
-        ui->edit_button, &QAbstractButton::clicked,
+        edit_button, &QAbstractButton::clicked,
         this, &AttributesTabEdit::edit_attribute);
     connect(
-        ui->view_button, &QAbstractButton::clicked,
+        view_button, &QAbstractButton::clicked,
         this, &AttributesTabEdit::view_attribute);
     connect(
         filter_menu, &AttributesTabFilterMenu::filter_changed,
@@ -112,7 +115,7 @@ AttributesTab::~AttributesTab() {
 }
 
 QList<QStandardItem *> AttributesTabEdit::get_selected_row() const {
-    const QItemSelectionModel *selection_model = ui->view->selectionModel();
+    const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selecteds = selection_model->selectedRows();
 
     if (selecteds.isEmpty()) {
@@ -140,27 +143,27 @@ void AttributesTabEdit::update_edit_and_view_buttons() {
 
     const bool no_selection = selected_row.isEmpty();
     if (no_selection) {
-        ui->edit_button->setVisible(true);
-        ui->edit_button->setEnabled(false);
+        edit_button->setVisible(true);
+        edit_button->setEnabled(false);
 
-        ui->view_button->setVisible(false);
-        ui->view_button->setEnabled(false);
+        view_button->setVisible(false);
+        view_button->setEnabled(false);
     } else {
         const QString attribute = selected_row[AttributesColumn_Name]->text();
         const bool read_only = g_adconfig->get_attribute_is_system_only(attribute);
 
         if (read_only) {
-            ui->edit_button->setVisible(false);
-            ui->edit_button->setEnabled(false);
+            edit_button->setVisible(false);
+            edit_button->setEnabled(false);
 
-            ui->view_button->setVisible(true);
-            ui->view_button->setEnabled(true);
+            view_button->setVisible(true);
+            view_button->setEnabled(true);
         } else {
-            ui->edit_button->setVisible(true);
-            ui->edit_button->setEnabled(true);
+            edit_button->setVisible(true);
+            edit_button->setEnabled(true);
 
-            ui->view_button->setVisible(false);
-            ui->view_button->setEnabled(false);
+            view_button->setVisible(false);
+            view_button->setEnabled(false);
         }
     }
 }
@@ -295,31 +298,31 @@ AttributeDialog *AttributesTabEdit::get_attribute_dialog(const bool read_only) {
     // switch statement for better flow
     auto octet_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new OctetAttributeDialog(value_list, attribute, read_only, ui->view);
+            return new OctetAttributeDialog(value_list, attribute, read_only, view);
         } else {
-            return new ListAttributeDialog(value_list, attribute, read_only, ui->view);
+            return new ListAttributeDialog(value_list, attribute, read_only, view);
         }
     };
 
     auto string_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new StringAttributeDialog(value_list, attribute, read_only, ui->view);
+            return new StringAttributeDialog(value_list, attribute, read_only, view);
         } else {
-            return new ListAttributeDialog(value_list, attribute, read_only, ui->view);
+            return new ListAttributeDialog(value_list, attribute, read_only, view);
         }
     };
 
     auto bool_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new BoolAttributeDialog(value_list, attribute, read_only, ui->view);
+            return new BoolAttributeDialog(value_list, attribute, read_only, view);
         } else {
-            return new ListAttributeDialog(value_list, attribute, read_only, ui->view);
+            return new ListAttributeDialog(value_list, attribute, read_only, view);
         }
     };
 
     auto datetime_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new DatetimeAttributeDialog(value_list, attribute, read_only, ui->view);
+            return new DatetimeAttributeDialog(value_list, attribute, read_only, view);
         } else {
             return nullptr;
         }

@@ -27,6 +27,9 @@
 #include <QSet>
 
 class QStandardItemModel;
+class QTreeView;
+class QPushButton;
+class QLabel;
 
 // Displays and edits membership info which can go both ways
 // 1. users that are members of group
@@ -56,13 +59,18 @@ class MembershipTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    MembershipTabEdit(Ui::MembershipTab *ui, const MembershipTabType &type, QObject *parent);
+    MembershipTabEdit(QTreeView *view, QPushButton *primary_button, QPushButton *add_button, QPushButton *remove_button, QPushButton *properties_button, QLabel *primary_group_label, const MembershipTabType &type, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
-    Ui::MembershipTab *ui;
+    QTreeView *view;
+    QPushButton *primary_button;
+    QPushButton *add_button;
+    QPushButton *remove_button;
+    QPushButton *properties_button;
+    QLabel *primary_group_label;
     MembershipTabType type;
     QStandardItemModel *model;
 
