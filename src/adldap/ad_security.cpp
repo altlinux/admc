@@ -592,6 +592,8 @@ void security_descriptor_add_right(security_descriptor *sd, const QByteArray &tr
 
         security_descriptor_dacl_add(sd, &ace);
     }
+
+    security_descriptor_sort_dacl(sd);
 }
 
 // Checks if ace matches given members. Note that
@@ -719,6 +721,8 @@ void security_descriptor_remove_right(security_descriptor *sd, const QByteArray 
     }();
 
     ad_security_replace_dacl(sd, new_dacl);
+
+    security_descriptor_sort_dacl(sd);
 }
 
 void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QByteArray> &trustee_list) {
@@ -991,8 +995,6 @@ void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace>
     for (const security_ace &ace : new_dacl) {
         security_descriptor_dacl_add(sd, &ace);
     }
-
-    security_descriptor_sort_dacl(sd);
 }
 
 // This f-n is only necessary to band-aid one problem
