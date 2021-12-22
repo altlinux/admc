@@ -506,6 +506,19 @@ SecurityRightState security_descriptor_get_right(const security_descriptor *sd, 
     return out;
 }
 
+void security_descriptor_print(security_descriptor *sd, AdInterface &ad) {
+    const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
+
+    for (const security_ace &ace : dacl) {
+        qInfo() << "\nace:";
+        const QByteArray trustee_sid = dom_sid_to_bytes(ace.trustee);
+        const QString trustee_name = ad_security_get_trustee_name(ad, trustee_sid);
+        qInfo() << "trustee:" << trustee_name;
+        qInfo() << "mask:" << int_to_hex_string(ace.access_mask);
+        qInfo() << "type:" << ace.type;
+    }
+}
+
 void security_descriptor_add_right(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask_arg, const QByteArray &object_type, const bool allow) {
     const uint32_t access_mask = ad_security_map_access_mask(access_mask_arg);
 
