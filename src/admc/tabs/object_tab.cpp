@@ -55,6 +55,7 @@ ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     };
 
     AttributeEdit::set_read_only(my_edit_list, true);
+    deletion_edit->set_read_only(false);
 
     edit_list->append(my_edit_list);
 }
