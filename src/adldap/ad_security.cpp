@@ -141,6 +141,13 @@ const QList<uint32_t> common_rights_list = {
     SEC_ADS_DELETE_CHILD,
 };
 
+// NOTE: This is needed because for some reason,
+// security editing in RSAT has a different value for
+// generic read, without the "list object" right. Need
+// to remove that bit both when setting generic read
+// and when reading it.
+#define GENERIC_READ_FIXED (SEC_ADS_GENERIC_READ & ~SEC_ADS_LIST_OBJECT)
+
 SecurityRightState::SecurityRightState(const bool data_arg[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT]) {
     for (int inherited = 0; inherited < SecurityRightStateInherited_COUNT; inherited++) {
         for (int type = 0; type < SecurityRightStateType_COUNT; type++) {
@@ -692,22 +699,24 @@ void security_descriptor_remove_right(security_descriptor *sd, const QByteArray 
                     // these rights is set
                     const uint32_t mask_to_unset = [&]() {
                         const QHash<uint32_t, uint32_t> opposite_map = {
-                            {SEC_ADS_GENERIC_READ, SEC_ADS_GENERIC_WRITE},
-                            {SEC_ADS_GENERIC_WRITE, SEC_ADS_GENERIC_READ},
+                            {GENERIC_READ_FIXED, SEC_ADS_GENERIC_WRITE},
+                            {SEC_ADS_GENERIC_WRITE, GENERIC_READ_FIXED},
                         };
 
-                        for (const uint32_t &mask : opposite_map.keys()) {
-                            const uint32_t opposite = opposite_map[mask];
+                        if (opposite_map.contains(access_mask)) {
+                            const uint32_t opposite = opposite_map[access_mask];
                             const bool opposite_is_set = bit_is_set(ace.access_mask, opposite);
 
-                            if (access_mask == mask && opposite_is_set) {
+                            if (opposite_is_set) {
                                 const uint32_t out_mask = (access_mask & ~SEC_STD_READ_CONTROL);
 
                                 return out_mask;
-                            }
+                            } else {
+                                return access_mask;
+                            } 
+                        } else {
+                            return access_mask;
                         }
-
-                        return access_mask;
                     }();
 
                     out_ace.access_mask = bit_set(ace.access_mask, mask_to_unset, false);
@@ -1006,18 +1015,12 @@ void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace>
 }
 
 // This f-n is only necessary to band-aid one problem
-// with generic read. For some reason, security editing
-// in RSAT has a different value for generic read,
-// without the "list object" right. Need to remove that
-// bit both when setting generic read and when reading
-// it.
+// with generic read.
 uint32_t ad_security_map_access_mask(const uint32_t access_mask) {
     const bool is_generic_read = (access_mask == SEC_ADS_GENERIC_READ);
 
     if (is_generic_read) {
-        const uint32_t out = (access_mask & ~SEC_ADS_LIST_OBJECT);
-
-        return out;
+        return GENERIC_READ_FIXED;
     } else {
         return access_mask;
     }
