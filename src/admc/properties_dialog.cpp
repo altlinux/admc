@@ -114,7 +114,6 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     setAttribute(Qt::WA_DeleteOnClose);
 
     target = target_arg;
-    is_modified = false;
 
     PropertiesDialog::instances[target] = this;
 
@@ -262,6 +261,7 @@ PropertiesDialog::~PropertiesDialog() {
 
 void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab) {
     const bool switching_to_or_from_attributes = (prev_tab == attributes_tab || new_tab == attributes_tab);
+    const bool is_modified = !apply_list.isEmpty();
     const bool need_to_open_dialog = (switching_to_or_from_attributes && is_modified);
     if (!need_to_open_dialog) {
         return;
@@ -366,7 +366,6 @@ bool PropertiesDialog::apply_internal(AdInterface &ad) {
     if (total_apply_success) {
         apply_button->setEnabled(false);
         reset_button->setEnabled(false);
-        is_modified = false;
     }
 
     hide_busy_indicator();
@@ -377,13 +376,11 @@ bool PropertiesDialog::apply_internal(AdInterface &ad) {
 }
 
 void PropertiesDialog::reset_internal(AdInterface &ad, const AdObject &object) {
-    apply_list.clear();
-
     AttributeEdit::load(edit_list, ad, object);
 
     apply_button->setEnabled(false);
     reset_button->setEnabled(false);
-    is_modified = false;
+    apply_list.clear();
 
     g_status->display_ad_messages(ad, this);
 }
@@ -391,5 +388,4 @@ void PropertiesDialog::reset_internal(AdInterface &ad, const AdObject &object) {
 void PropertiesDialog::on_edited() {
     apply_button->setEnabled(true);
     reset_button->setEnabled(true);
-    is_modified = true;
 }

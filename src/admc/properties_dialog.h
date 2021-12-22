@@ -80,7 +80,6 @@ private:
     QPushButton *reset_button;
     AttributesTab *attributes_tab;
     PropertiesWarningDialog *warning_dialog;
-    bool is_modified;
 
     // NOTE: ctor is private, use open_for_target() instead
     PropertiesDialog(AdInterface &ad, const QString &target_arg);
