@@ -36,7 +36,7 @@
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
 dom_sid dom_sid_from_bytes(const QByteArray &bytes);
 QByteArray dom_sid_string_to_bytes(const dom_sid &sid);
-bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow, const bool inherited);
+bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const QByteArray &object_type, const bool allow, const bool inherited);
 QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd);
 void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace> &new_dacl);
 uint32_t ad_security_map_access_mask(const uint32_t access_mask);
@@ -528,7 +528,12 @@ void security_descriptor_add_right(security_descriptor *sd, const QByteArray &tr
         for (int i = 0; i < dacl.size(); i++) {
             const security_ace ace = dacl[i];
 
-            const bool match = check_ace_match(ace, trustee, access_mask, object_type, allow, false);
+            // NOTE: access mask match doesn't matter
+            // because we also want to add right to
+            // existing ace, if it exists. In that case
+            // such ace would not match by mask and
+            // that's fine.
+            const bool match = check_ace_match(ace, trustee, object_type, allow, false);
 
             if (match) {
                 return i;
@@ -610,9 +615,9 @@ void security_descriptor_add_right(security_descriptor *sd, const QByteArray &tr
 }
 
 // Checks if ace matches given members. Note that
-// access mask matches if they are equal or if ace mask
-// contains given mask.
-bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow, const bool inherited) {
+// access masks are not compared. Compare them yourself
+// if you need to further filter by masks.
+bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const QByteArray &object_type, const bool allow, const bool inherited) {
     const bool type_match = [&]() {
         const security_ace_type ace_type = ace.type;
 
@@ -633,17 +638,6 @@ bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const u
         const bool out = (ace_is_inherited == inherited);
 
         return out;
-    }();
-
-    // NOTE: matches both on equality and
-    // contains because of cases where a
-    // generic right is removed that is
-    // part of a full control ace for
-    // example
-    const bool access_mask_match = [&]() {
-        const bool ace_mask_contains_mask = bit_is_set(ace.access_mask, access_mask);
-
-        return ace_mask_contains_mask;
     }();
 
     const bool trustee_match = [&]() {
@@ -668,7 +662,7 @@ bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const u
         }
     }();
 
-    const bool out_match = (type_match && flags_match && access_mask_match && trustee_match && object_match);
+    const bool out_match = (type_match && flags_match && trustee_match && object_match);
 
     return out_match;
 }
@@ -682,9 +676,10 @@ void security_descriptor_remove_right(security_descriptor *sd, const QByteArray 
         const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
 
         for (const security_ace &ace : old_dacl) {
-            const bool match = check_ace_match(ace, trustee, access_mask, object_type, allow, false);
+            const bool match = check_ace_match(ace, trustee, object_type, allow, false);
+            const bool ace_mask_contains_mask = bit_is_set(ace.access_mask, access_mask);
 
-            if (match) {
+            if (match && ace_mask_contains_mask) {
                 const security_ace edited_ace = [&]() {
                     security_ace out_ace = ace;
 
