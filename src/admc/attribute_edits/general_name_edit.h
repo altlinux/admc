@@ -18,39 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ORGANIZATION_TAB_H
-#define ORGANIZATION_TAB_H
+#ifndef GENERAL_NAME_EDIT_H
+#define GENERAL_NAME_EDIT_H
 
-#include <QWidget>
+/**
+ * Edit for displaying name of object in a label. Used
+ * in general tabs of the properties dialog
+ */
+
 #include "attribute_edits/attribute_edit.h"
 
-class QStandardItemModel;
+class QLabel;
 
-namespace Ui {
-class OrganizationTab;
-}
-
-class OrganizationTab final : public QWidget {
+class GeneralNameEdit final : public AttributeEdit {
     Q_OBJECT
-
 public:
-    Ui::OrganizationTab *ui;
-
-    OrganizationTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
-    ~OrganizationTab();
-};
-
-class OrganizationTabEdit final : public AttributeEdit {
-    Q_OBJECT
-
-public:
-    OrganizationTabEdit(Ui::OrganizationTab *ui, QObject *parent);
+    GeneralNameEdit(QLabel *label, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
 
 private:
-    Ui::OrganizationTab *ui;
-    QStandardItemModel *reports_model;
+    QLabel *label;
 };
 
-#endif /* ORGANIZATION_TAB_H */
+#endif /* GENERAL_NAME_EDIT_H */

@@ -36,7 +36,7 @@ class GeneralUserTab final : public QWidget {
 public:
     Ui::GeneralUserTab *ui;
 
-    GeneralUserTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent);
+    GeneralUserTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralUserTab();
 };
 

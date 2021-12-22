@@ -47,6 +47,12 @@ void GroupTypeEdit::load(AdInterface &ad, const AdObject &object) {
     const GroupType type = object.get_group_type();
 
     combo->setCurrentIndex((int) type);
+
+    const bool is_critical_system_object = object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT);
+
+    if (is_critical_system_object) {
+        set_read_only(true);
+    }
 }
 
 void GroupTypeEdit::set_read_only(const bool read_only) {

@@ -102,14 +102,3 @@ void OrganizationTabEdit::load(AdInterface &ad, const AdObject &object) {
         reports_model->appendRow(row);
     }
 }
-
-bool OrganizationTabEdit::apply(AdInterface &ad, const QString &target) const {
-    UNUSED_ARG(ad);
-    UNUSED_ARG(target);
-
-    return true;
-}
-
-void OrganizationTabEdit::set_read_only(const bool read_only) {
-    UNUSED_ARG(read_only);
-}

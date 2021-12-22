@@ -36,7 +36,7 @@ class GeneralOUTab final : public QWidget {
 public:
     Ui::GeneralOUTab *ui;
 
-    GeneralOUTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent);
+    GeneralOUTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralOUTab();
 };
 

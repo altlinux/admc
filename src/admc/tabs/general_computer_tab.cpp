@@ -22,17 +22,16 @@
 #include "tabs/ui_general_computer_tab.h"
 
 #include "adldap.h"
+#include "attribute_edits/general_name_edit.h"
 #include "attribute_edits/sam_name_edit.h"
 #include "attribute_edits/string_edit.h"
-#include "tabs/general_other_tab.h"
 
-GeneralComputerTab::GeneralComputerTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent)
+GeneralComputerTab::GeneralComputerTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::GeneralComputerTab();
     ui->setupUi(this);
 
-    load_name_label(ui->name_label, object);
-
+    auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
     auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, this);
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
@@ -42,6 +41,7 @@ GeneralComputerTab::GeneralComputerTab(const AdObject &object, QList<AttributeEd
     dns_edit->set_read_only(true);
 
     edit_list->append({
+        name_edit,
         sam_name_edit,
         dns_edit,
         description_edit,

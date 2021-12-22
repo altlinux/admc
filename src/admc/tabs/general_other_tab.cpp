@@ -22,32 +22,23 @@
 #include "tabs/ui_general_other_tab.h"
 
 #include "adldap.h"
+#include "attribute_edits/general_name_edit.h"
 #include "attribute_edits/string_edit.h"
-#include "tabs/general_other_tab.h"
 
-GeneralOtherTab::GeneralOtherTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent)
+GeneralOtherTab::GeneralOtherTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::GeneralOtherTab();
     ui->setupUi(this);
 
-    load_name_label(ui->name_label, object);
-
+    auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
 
     edit_list->append({
+        name_edit,
         description_edit,
     });
 }
 
 GeneralOtherTab::~GeneralOtherTab() {
     delete ui;
-}
-
-void load_name_label(QLabel *name_label, const AdObject &object) {
-    const QString name = object.get_string(ATTRIBUTE_NAME);
-    name_label->setText(name);
-
-    if (object.is_empty()) {
-        name_label->setText(QCoreApplication::translate("general_other_tab.cpp", "Failed to load object information. Check your connection."));
-    }
 }

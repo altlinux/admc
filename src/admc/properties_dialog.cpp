@@ -140,17 +140,17 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     //
     QWidget *general_tab = [&]() -> QWidget * {
         if (object.is_class(CLASS_USER)) {
-            return new GeneralUserTab(object, &edit_list, this);
+            return new GeneralUserTab(&edit_list, this);
         } else if (object.is_class(CLASS_GROUP)) {
-            return new GeneralGroupTab(object, &edit_list, this);
+            return new GeneralGroupTab(&edit_list, this);
         } else if (object.is_class(CLASS_OU)) {
-            return new GeneralOUTab(object, &edit_list, this);
+            return new GeneralOUTab(&edit_list, this);
         } else if (object.is_class(CLASS_COMPUTER)) {
-            return new GeneralComputerTab(object, &edit_list, this);
+            return new GeneralComputerTab(&edit_list, this);
         } else if (object.is_class(CLASS_GP_CONTAINER)) {
             return new GeneralPolicyTab(&edit_list, this);
         } else {
-            return new GeneralOtherTab(object, &edit_list, this);
+            return new GeneralOtherTab(&edit_list, this);
         }
     }();
 

@@ -110,14 +110,3 @@ void ManagedByTabEdit::load_manager_edits(AdInterface &ad) {
         AttributeEdit::load(manager_edits, ad, empty_object);
     }
 }
-
-bool ManagedByTabEdit::apply(AdInterface &ad, const QString &target) const {
-    UNUSED_ARG(ad);
-    UNUSED_ARG(target);
-
-    return true;
-}
-
-void ManagedByTabEdit::set_read_only(const bool read_only) {
-    UNUSED_ARG(read_only);
-}

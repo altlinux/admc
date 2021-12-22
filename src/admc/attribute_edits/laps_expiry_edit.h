@@ -32,7 +32,6 @@ public:
     LAPSExpiryEdit(QDateTimeEdit *edit_arg, QPushButton *reset_expiry_button, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
-    void set_read_only(const bool read_only) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:

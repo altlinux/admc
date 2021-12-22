@@ -36,7 +36,7 @@ class GeneralComputerTab final : public QWidget {
 public:
     Ui::GeneralComputerTab *ui;
 
-    GeneralComputerTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent);
+    GeneralComputerTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralComputerTab();
 };
 

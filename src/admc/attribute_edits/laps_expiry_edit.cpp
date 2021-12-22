@@ -48,11 +48,6 @@ void LAPSExpiryEdit::load(AdInterface &ad, const AdObject &object) {
     edit->setDateTime(datetime_local);
 }
 
-void LAPSExpiryEdit::set_read_only(const bool read_only) {
-    // LAPS expiry can't be read only
-    UNUSED_ARG(read_only);
-}
-
 bool LAPSExpiryEdit::apply(AdInterface &ad, const QString &dn) const {
     const QDateTime datetime_local = edit->dateTime();
     const QDateTime datetime = datetime_local.toUTC();

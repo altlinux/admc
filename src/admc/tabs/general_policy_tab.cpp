@@ -22,6 +22,7 @@
 #include "tabs/ui_general_policy_tab.h"
 
 #include "adldap.h"
+#include "attribute_edits/general_name_edit.h"
 #include "attribute_edits/datetime_edit.h"
 #include "utils.h"
 
@@ -39,6 +40,7 @@ GeneralPolicyTab::GeneralPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *p
     ui = new Ui::GeneralPolicyTab();
     ui->setupUi(this);
 
+    auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, this);
     auto modified_edit = new DateTimeEdit(ui->modified_edit, ATTRIBUTE_WHEN_CHANGED, this);
     auto tab_edit = new GeneralPolicyTabEdit(ui, this);
@@ -47,6 +49,7 @@ GeneralPolicyTab::GeneralPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *p
     modified_edit->set_read_only(true);
 
     edit_list->append({
+        name_edit,    
         created_edit,    
         modified_edit,    
         tab_edit,    
@@ -116,15 +119,4 @@ void GeneralPolicyTabEdit::load(AdInterface &ad, const AdObject &object) {
 
     const QString id = object.get_string(ATTRIBUTE_CN);
     ui->unique_id_label->setText(id);
-}
-
-bool GeneralPolicyTabEdit::apply(AdInterface &ad, const QString &target) const {
-    UNUSED_ARG(ad);
-    UNUSED_ARG(target);
-
-    return true;
-}
-
-void GeneralPolicyTabEdit::set_read_only(const bool read_only) {
-    UNUSED_ARG(read_only);
 }

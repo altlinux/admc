@@ -382,7 +382,3 @@ AttributeDialog *AttributesTabEdit::get_attribute_dialog(const bool read_only) {
 
     return dialog;
 }
-
-void AttributesTabEdit::set_read_only(const bool read_only) {
-    UNUSED_ARG(read_only);
-}

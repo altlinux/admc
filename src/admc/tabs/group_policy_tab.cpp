@@ -327,7 +327,3 @@ void GroupPolicyTabEdit::on_item_changed(QStandardItem *item) {
         emit edited();
     }
 }
-
-void GroupPolicyTabEdit::set_read_only(const bool read_only) {
-    UNUSED_ARG(read_only);
-}

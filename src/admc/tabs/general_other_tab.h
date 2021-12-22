@@ -37,10 +37,8 @@ class GeneralOtherTab final : public QWidget {
 public:
     Ui::GeneralOtherTab *ui;
 
-    GeneralOtherTab(const AdObject &object, QList<AttributeEdit *> *edit_list, QWidget *parent);
+    GeneralOtherTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralOtherTab();
 };
-
-void load_name_label(QLabel *name_label, const AdObject &object);
 
 #endif /* GENERAL_OTHER_TAB_H */

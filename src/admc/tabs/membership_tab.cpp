@@ -467,7 +467,3 @@ QString MembershipTabEdit::get_membership_attribute() {
     }
     return "";
 }
-
-void MembershipTabEdit::set_read_only(const bool read_only) {
-    UNUSED_ARG(read_only);
-}
