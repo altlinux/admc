@@ -39,7 +39,7 @@ void ADMCTestDelegationEdit::init() {
     auto on_button = new QRadioButton(parent_widget);
     auto off_button = new QRadioButton(parent_widget);
 
-    edit = new DelegationEdit(off_button, on_button, &edits, parent_widget);
+    edit = new DelegationEdit(off_button, on_button, parent_widget);
 
     QFETCH_GLOBAL(bool, use_on_button);
     button = [&]() {

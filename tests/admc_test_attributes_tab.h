@@ -46,7 +46,7 @@ private slots:
     void filter();
 
 private:
-    AttributesTab *attributes_tab;
+    AttributeEdit *edit;
     AttributesTabFilterMenu *filter_menu;
     QTreeView *view;
     QStandardItemModel *model;

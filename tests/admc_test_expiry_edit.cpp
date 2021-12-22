@@ -44,7 +44,7 @@ void ADMCTestExpiryEdit::init() {
 
     auto widget = new ExpiryWidget(parent_widget);
 
-    edit = new ExpiryEdit(widget, &edits, parent_widget);
+    edit = new ExpiryEdit(widget, parent_widget);
 
     date_edit = widget->ui->date_edit;
 

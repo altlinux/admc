@@ -34,7 +34,7 @@ void ADMCTestManagerEdit::init() {
 
     auto manager_widget = new ManagerWidget(parent_widget);
 
-    edit = new ManagerEdit(manager_widget, ATTRIBUTE_MANAGER, &edits, parent_widget);
+    edit = new ManagerEdit(manager_widget, ATTRIBUTE_MANAGER, parent_widget);
 
     manager_display = manager_widget->ui->manager_display;
     change_button = manager_widget->ui->change_button;

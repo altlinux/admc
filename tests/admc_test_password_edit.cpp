@@ -35,7 +35,7 @@ void ADMCTestPasswordEdit::init() {
     main_edit = new QLineEdit(parent_widget);
     confirm_edit = new QLineEdit(parent_widget);
 
-    edit = new PasswordEdit(main_edit, confirm_edit, &edits, parent_widget);
+    edit = new PasswordEdit(main_edit, confirm_edit, parent_widget);
 
     // Create test user
     const QString name = TEST_USER;

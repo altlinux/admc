@@ -34,7 +34,7 @@ void ADMCTestLogonComputersEdit::init() {
 
     auto open_dialog_button = new QPushButton(parent_widget);
 
-    edit = new LogonComputersEdit(open_dialog_button, &edits, parent_widget);
+    edit = new LogonComputersEdit(open_dialog_button, parent_widget);
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);

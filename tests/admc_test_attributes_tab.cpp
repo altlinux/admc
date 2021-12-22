@@ -52,23 +52,21 @@ const QList<AttributeFilter> all_filters = {
 void ADMCTestAttributesTab::init() {
     ADMCTest::init();
 
-    attributes_tab = new AttributesTab(&edit_list, parent_widget);
-    add_widget(attributes_tab);
+    view = new QTreeView(parent_widget);
+    filter_button = new QPushButton(parent_widget);
+    edit_button = new QPushButton(parent_widget);
+    auto view_button = new QPushButton(parent_widget);
 
-    filter_menu = attributes_tab->findChild<AttributesTabFilterMenu *>();
+    edit = new AttributesTabEdit(view, filter_button, edit_button, view_button, parent_widget);
+
+    filter_menu = view->findChild<AttributesTabFilterMenu *>();
     QVERIFY(filter_menu);
 
-    view = attributes_tab->ui->view;
-
-    model = attributes_tab->findChild<QStandardItemModel *>();
+    model = edit->findChild<QStandardItemModel *>();
     QVERIFY(model);
 
-    proxy = attributes_tab->findChild<QSortFilterProxyModel *>();
+    proxy = edit->findChild<QSortFilterProxyModel *>();
     QVERIFY(proxy);
-
-    filter_button = attributes_tab->ui->filter_button;
-
-    edit_button = attributes_tab->ui->edit_button;
 
     // Create test user
     const QString name = TEST_USER;
@@ -78,7 +76,7 @@ void ADMCTestAttributesTab::init() {
 
     // Load it into the tab
     const AdObject object = ad.search_object(dn);
-    AttributeEdit::load(edit_list, ad, object);
+    edit->load(ad, object);
 
     // NOTE: filters might be messed up in settings by user
     // so reset it before tests
@@ -172,7 +170,7 @@ void ADMCTestAttributesTab::apply() {
     navigate_until_object(view, "description", Qt::DisplayRole);
     edit_button->click();
 
-    auto list_attribute_dialog = attributes_tab->findChild<ListAttributeDialog *>();
+    auto list_attribute_dialog = view->findChild<ListAttributeDialog *>();
     QVERIFY(list_attribute_dialog);
     QVERIFY(QTest::qWaitForWindowExposed(list_attribute_dialog, 1000));
 
@@ -189,7 +187,7 @@ void ADMCTestAttributesTab::apply() {
     string_attribute_dialog->accept();
     list_attribute_dialog->accept();
 
-    AttributeEdit::apply(ad, edit_list, dn);
+    edit->apply(ad, dn);
 
     const AdObject object = ad.search_object(dn);
     const QString description_value = object.get_string(ATTRIBUTE_DESCRIPTION);

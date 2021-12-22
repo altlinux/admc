@@ -34,7 +34,7 @@ void ADMCTestUpnEdit::init() {
     prefix_edit = new QLineEdit();
     suffix_edit = new QComboBox();
 
-    upn_edit = new UpnEdit(prefix_edit, suffix_edit, &edits, parent_widget);
+    upn_edit = new UpnEdit(prefix_edit, suffix_edit, parent_widget);
     upn_edit->init_suffixes(ad);
 
     // Create test user

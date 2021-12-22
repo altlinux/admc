@@ -30,7 +30,7 @@ void ADMCTestGroupTypeEdit::init() {
 
     combo = new QComboBox(parent_widget);
 
-    edit = new GroupTypeEdit(combo, &edits, parent_widget);
+    edit = new GroupTypeEdit(combo, parent_widget);
 
     const QString name = TEST_GROUP;
     dn = test_object_dn(name, CLASS_GROUP);
