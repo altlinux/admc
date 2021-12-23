@@ -64,3 +64,7 @@ bool StringEdit::apply(AdInterface &ad, const QString &dn) const {
 
     return success;
 }
+
+void StringEdit::set_enabled(const bool enabled) {
+    edit->setEnabled(enabled);
+}

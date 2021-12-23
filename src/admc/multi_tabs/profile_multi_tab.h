@@ -23,7 +23,8 @@
 
 #include <QWidget>
 
-class AttributeMultiEdit;
+class AttributeEdit;
+class QCheckBox;
 
 namespace Ui {
 class ProfileMultiTab;
@@ -35,7 +36,7 @@ class ProfileMultiTab final : public QWidget {
 public:
     Ui::ProfileMultiTab *ui;
 
-    ProfileMultiTab(QList<AttributeMultiEdit *> *edit_list, QWidget *parent);
+    ProfileMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent);
     ~ProfileMultiTab();
 };
 

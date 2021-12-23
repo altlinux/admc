@@ -69,6 +69,8 @@ public:
     // AD server
     virtual bool apply(AdInterface &ad, const QString &dn) const;
 
+    virtual void set_enabled(const bool enabled);
+
 signals:
     // Emitted when edit was edited by user
     void edited();

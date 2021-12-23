@@ -28,8 +28,9 @@
 
 #include <QWidget>
 
-class AttributeMultiEdit;
+class AttributeEdit;
 class AdInterface;
+class QCheckBox;
 
 namespace Ui {
 class AccountMultiTab;
@@ -41,7 +42,7 @@ class AccountMultiTab final : public QWidget {
 public:
     Ui::AccountMultiTab *ui;
 
-    AccountMultiTab(QList<AttributeMultiEdit *> *edit_list, AdInterface &ad, QWidget *parent);
+    AccountMultiTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent);
     ~AccountMultiTab();
 };
 

@@ -26,13 +26,13 @@
 
 #include <QComboBox>
 
-UpnMultiEdit::UpnMultiEdit(QComboBox *upn_suffix_combo_arg, QCheckBox *check, QList<AttributeMultiEdit *> *edit_list, AdInterface &ad, QObject *parent)
-: AttributeMultiEdit(check, edit_list, parent) {
+UpnMultiEdit::UpnMultiEdit(QComboBox *upn_suffix_combo_arg, AdInterface &ad, QObject *parent)
+: AttributeEdit(parent) {
     upn_suffix_combo = upn_suffix_combo_arg;
     upn_suffix_combo_init(upn_suffix_combo, ad);
 }
 
-bool UpnMultiEdit::apply(AdInterface &ad, const QString &target) {
+bool UpnMultiEdit::apply(AdInterface &ad, const QString &target) const {
     const QString new_value = [&]() {
         const AdObject current_object = ad.search_object(target);
         const QString current_prefix = current_object.get_upn_prefix();

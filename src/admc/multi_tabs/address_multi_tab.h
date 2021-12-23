@@ -28,7 +28,8 @@
 
 #include <QWidget>
 
-class AttributeMultiEdit;
+class AttributeEdit;
+class QCheckBox;
 
 namespace Ui {
 class AddressMultiTab;
@@ -40,7 +41,7 @@ class AddressMultiTab final : public QWidget {
 public:
     Ui::AddressMultiTab *ui;
 
-    AddressMultiTab(QList<AttributeMultiEdit *> *edit_list, QWidget *parent);
+    AddressMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent);
     ~AddressMultiTab();
 };
 

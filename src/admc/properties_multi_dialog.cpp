@@ -29,7 +29,7 @@
 #include "multi_tabs/general_user_multi_tab.h"
 #include "multi_tabs/organization_multi_tab.h"
 #include "multi_tabs/profile_multi_tab.h"
-#include "attribute_multi_edits/attribute_multi_edit.h"
+#include "attribute_edits/attribute_edit.h"
 #include "settings.h"
 #include "status.h"
 #include "tab_widget.h"
@@ -38,6 +38,7 @@
 #include <QAction>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QCheckBox>
 
 PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QString> &target_list_arg, const QList<QString> &class_list)
 : QDialog() {
@@ -51,11 +52,11 @@ PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QStrin
     apply_button = ui->button_box->button(QDialogButtonBox::Apply);
 
     if (class_list == QList<QString>({CLASS_USER})) {
-        auto general_user_tab = new GeneralUserMultiTab(&edit_list, this);
-        auto account_tab = new AccountMultiTab(&edit_list, ad, this);
-        auto address_tab = new AddressMultiTab(&edit_list, this);
-        auto profile_tab = new ProfileMultiTab(&edit_list, this);
-        auto organization_tab = new OrganizationMultiTab(&edit_list, this);
+        auto general_user_tab = new GeneralUserMultiTab(&edit_list, &check_map, this);
+        auto account_tab = new AccountMultiTab(ad, &edit_list, &check_map, this);
+        auto address_tab = new AddressMultiTab(&edit_list, &check_map, this);
+        auto profile_tab = new ProfileMultiTab(&edit_list, &check_map, this);
+        auto organization_tab = new OrganizationMultiTab(&edit_list, &check_map, this);
 
         ui->tab_widget->add_tab(general_user_tab, tr("General"));
         ui->tab_widget->add_tab(account_tab, tr("Account"));
@@ -63,18 +64,27 @@ PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QStrin
         ui->tab_widget->add_tab(profile_tab, tr("Profile"));
         ui->tab_widget->add_tab(organization_tab, tr("Organization"));
     } else {
-        auto general_other_tab = new GeneralOtherMultiTab(&edit_list, this);
+        auto general_other_tab = new GeneralOtherMultiTab(&edit_list, &check_map, this);
 
         ui->tab_widget->add_tab(general_other_tab, tr("General"));
     }
 
-    for (AttributeMultiEdit *edit : edit_list) {
+    for (AttributeEdit *edit : check_map.keys()) {
+        QCheckBox *apply_check = check_map[edit];
+
         connect(
-            edit, &AttributeMultiEdit::edited,
+            apply_check, &QAbstractButton::toggled,
             this, &PropertiesMultiDialog::on_edited);
+        connect(
+            apply_check, &QAbstractButton::toggled,
+            edit,
+            [edit, apply_check]() {
+                const bool enabled = apply_check->isChecked();
+                edit->set_enabled(enabled);
+            });
     }
 
-    for (AttributeMultiEdit *edit : edit_list) {
+    for (AttributeEdit *edit : edit_list) {
         edit->set_enabled(false);
     }
 
@@ -108,8 +118,9 @@ bool PropertiesMultiDialog::apply() {
     const bool apply_success = [&]() {
         bool out = true;
 
-        for (AttributeMultiEdit *edit : edit_list) {
-            const bool need_to_apply = edit->need_to_apply();
+        for (AttributeEdit *edit : edit_list) {
+            QCheckBox *apply_check = check_map[edit];
+            const bool need_to_apply = apply_check->isChecked();
 
             if (need_to_apply) {
                 const bool success = [&]() {
@@ -125,7 +136,7 @@ bool PropertiesMultiDialog::apply() {
                 }();
 
                 if (success) {
-                    edit->uncheck();
+                    apply_check->setChecked(false);
                 }
 
                 out = (out && success);

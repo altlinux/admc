@@ -43,3 +43,7 @@ void ExpiryEdit::load(AdInterface &ad, const AdObject &object) {
 bool ExpiryEdit::apply(AdInterface &ad, const QString &dn) const {
     return edit_widget->apply(ad, dn);
 }
+
+void ExpiryEdit::set_enabled(const bool enabled) {
+    edit_widget->setEnabled(enabled);
+}

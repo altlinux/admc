@@ -26,8 +26,8 @@
 
 #include <QCheckBox>
 
-AccountOptionMultiEdit::AccountOptionMultiEdit(const QHash<AccountOption, QCheckBox *> &check_map_arg, QCheckBox *check, QList<AttributeMultiEdit *> *edit_list, QObject *parent)
-: AttributeMultiEdit(check, edit_list, parent) {
+AccountOptionMultiEdit::AccountOptionMultiEdit(const QHash<AccountOption, QCheckBox *> &check_map_arg, QObject *parent)
+: AttributeEdit(parent) {
     check_map = check_map_arg;
 
     account_option_setup_conflicts(check_map);
@@ -38,7 +38,7 @@ AccountOptionMultiEdit::AccountOptionMultiEdit(const QHash<AccountOption, QCheck
 // bitmask can be changed at the same time. BUT, do need to
 // do this if want to get separate status messages for each
 // bit.
-bool AccountOptionMultiEdit::apply(AdInterface &ad, const QString &target) {
+bool AccountOptionMultiEdit::apply(AdInterface &ad, const QString &target) const {
     const QList<AccountOption> option_change_list = [&]() {
         QList<AccountOption> out;
 

@@ -72,3 +72,7 @@ bool AttributeEdit::apply(AdInterface &ad, const QString &dn) const {
 
     return true;
 }
+
+void AttributeEdit::set_enabled(const bool enabled) {
+    UNUSED_ARG(enabled);
+}

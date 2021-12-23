@@ -26,16 +26,16 @@
  * that prefix remains unchanged.
  */
 
-#include "attribute_multi_edits/attribute_multi_edit.h"
+#include "attribute_edits/attribute_edit.h"
 
 class QComboBox;
 
-class UpnMultiEdit final : public AttributeMultiEdit {
+class UpnMultiEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    UpnMultiEdit(QComboBox *upn_suffix_combo_arg, QCheckBox *check, QList<AttributeMultiEdit *> *edit_list, AdInterface &ad, QObject *parent);
+    UpnMultiEdit(QComboBox *upn_suffix_combo, AdInterface &ad, QObject *parent);
 
-    bool apply(AdInterface &ad, const QString &target) override;
+    bool apply(AdInterface &ad, const QString &target) const override;
     void set_enabled(const bool enabled) override;
 
 private:

@@ -23,7 +23,8 @@
 
 #include <QWidget>
 
-class AttributeMultiEdit;
+class AttributeEdit;
+class QCheckBox;
 
 namespace Ui {
 class OrganizationMultiTab;
@@ -35,7 +36,7 @@ class OrganizationMultiTab final : public QWidget {
 public:
     Ui::OrganizationMultiTab *ui;
 
-    OrganizationMultiTab(QList<AttributeMultiEdit *> *edit_list, QWidget *parent);
+    OrganizationMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent);
     ~OrganizationMultiTab();
 };
 

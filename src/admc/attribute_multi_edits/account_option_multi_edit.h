@@ -21,18 +21,20 @@
 #ifndef ACCOUNT_OPTION_MULTI_EDIT_H
 #define ACCOUNT_OPTION_MULTI_EDIT_H
 
-#include "attribute_multi_edits/attribute_multi_edit.h"
+#include "attribute_edits/attribute_edit.h"
 
 #include "ad_defines.h"
 
 #include <QHash>
 
-class AccountOptionMultiEdit final : public AttributeMultiEdit {
+class QCheckBox;
+
+class AccountOptionMultiEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    AccountOptionMultiEdit(const QHash<AccountOption, QCheckBox *> &check_map_arg, QCheckBox *check, QList<AttributeMultiEdit *> *edit_list, QObject *parent);
+    AccountOptionMultiEdit(const QHash<AccountOption, QCheckBox *> &check_map, QObject *parent);
 
-    bool apply(AdInterface &ad, const QString &target) override;
+    bool apply(AdInterface &ad, const QString &target) const override;
     void set_enabled(const bool enabled) override;
 
 private:

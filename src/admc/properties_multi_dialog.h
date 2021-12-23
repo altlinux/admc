@@ -30,8 +30,9 @@
 
 #include <QDialog>
 
-class AttributeMultiEdit;
+class AttributeEdit;
 class AdInterface;
+class QCheckBox;
 
 namespace Ui {
 class PropertiesMultiDialog;
@@ -55,7 +56,8 @@ private slots:
 
 private:
     QList<QString> target_list;
-    QList<AttributeMultiEdit *> edit_list;
+    QList<AttributeEdit *> edit_list;
+    QHash<AttributeEdit *, QCheckBox *> check_map;
     QPushButton *apply_button;
 
     bool apply();

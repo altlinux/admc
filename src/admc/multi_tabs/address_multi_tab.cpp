@@ -22,19 +22,35 @@
 #include "ui_address_multi_tab.h"
 
 #include "ad_defines.h"
-#include "attribute_multi_edits/country_multi_edit.h"
-#include "attribute_multi_edits/string_multi_edit.h"
+#include "attribute_edits/country_edit.h"
+#include "attribute_edits/string_edit.h"
 
-AddressMultiTab::AddressMultiTab(QList<AttributeMultiEdit *> *edit_list, QWidget *parent)
+#include <QHash>
+
+AddressMultiTab::AddressMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::AddressMultiTab();
     ui->setupUi(this);
 
-    new StringMultiEdit(ui->po_edit, ui->po_check, ATTRIBUTE_PO_BOX, edit_list, this);
-    new StringMultiEdit(ui->city_edit, ui->city_check, ATTRIBUTE_CITY, edit_list, this);
-    new StringMultiEdit(ui->state_edit, ui->state_check, ATTRIBUTE_STATE, edit_list, this);
-    new StringMultiEdit(ui->postal_edit, ui->postal_check, ATTRIBUTE_POSTAL_CODE, edit_list, this);
-    new CountryMultiEdit(ui->country_combo, ui->country_check, edit_list, this);
+    auto po_edit = new StringEdit(ui->po_edit, ATTRIBUTE_PO_BOX, this);
+    auto city_edit = new StringEdit(ui->city_edit, ATTRIBUTE_CITY, this);
+    auto state_edit = new StringEdit(ui->state_edit, ATTRIBUTE_STATE, this);
+    auto postal_edit = new StringEdit(ui->postal_edit, ATTRIBUTE_POSTAL_CODE, this);
+    auto country_edit = new CountryEdit(ui->country_combo, this);
+
+    edit_list->append({
+        po_edit,
+        city_edit,
+        state_edit,
+        postal_edit,
+        country_edit,
+    });
+
+    check_map->insert(po_edit, ui->po_check);
+    check_map->insert(city_edit, ui->city_check);
+    check_map->insert(state_edit, ui->state_check);
+    check_map->insert(postal_edit, ui->postal_check);
+    check_map->insert(country_edit, ui->country_check);
 }
 
 AddressMultiTab::~AddressMultiTab() {

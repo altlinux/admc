@@ -47,3 +47,7 @@ void CountryEdit::load(AdInterface &ad, const AdObject &object) {
 bool CountryEdit::apply(AdInterface &ad, const QString &dn) const {
     return country_combo_apply(combo, ad, dn);
 }
+
+void CountryEdit::set_enabled(const bool enabled) {
+    combo->setEnabled(enabled);
+}

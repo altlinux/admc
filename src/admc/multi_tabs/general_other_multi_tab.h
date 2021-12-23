@@ -27,7 +27,8 @@
 
 #include <QWidget>
 
-class AttributeMultiEdit;
+class AttributeEdit;
+class QCheckBox;
 
 namespace Ui {
 class GeneralOtherMultiTab;
@@ -39,7 +40,7 @@ class GeneralOtherMultiTab final : public QWidget {
 public:
     Ui::GeneralOtherMultiTab *ui;
 
-    GeneralOtherMultiTab(QList<AttributeMultiEdit *> *edit_list, QWidget *parent);
+    GeneralOtherMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent);
 };
 
 #endif /* GENERAL_OTHER_MULTI_TAB_H */

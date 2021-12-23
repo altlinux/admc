@@ -23,17 +23,19 @@
 
 #include "adldap.h"
 #include "attribute_multi_edits/account_option_multi_edit.h"
-#include "attribute_multi_edits/expiry_multi_edit.h"
-#include "attribute_multi_edits/string_multi_edit.h"
+#include "attribute_edits/expiry_edit.h"
+#include "attribute_edits/string_edit.h"
 #include "attribute_multi_edits/upn_multi_edit.h"
 
-AccountMultiTab::AccountMultiTab(QList<AttributeMultiEdit *> *edit_list, AdInterface &ad, QWidget *parent)
+#include <QHash>
+
+AccountMultiTab::AccountMultiTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::AccountMultiTab();
     ui->setupUi(this);
 
-    new UpnMultiEdit(ui->upn_edit, ui->upn_check, edit_list, ad, this);
-    const QHash<AccountOption, QCheckBox *> check_map = {
+    auto upn_edit = new UpnMultiEdit(ui->upn_edit, ad, this);
+    const QHash<AccountOption, QCheckBox *> option_to_check_map = {
         {AccountOption_Disabled, ui->option_disabled},
         {AccountOption_PasswordExpired, ui->option_pass_expired},
         {AccountOption_DontExpirePassword, ui->option_dont_expire_pass},
@@ -42,8 +44,18 @@ AccountMultiTab::AccountMultiTab(QList<AttributeMultiEdit *> *edit_list, AdInter
         {AccountOption_CantDelegate, ui->option_cant_delegate},
         {AccountOption_DontRequirePreauth, ui->option_dont_require_kerb},
     };
-    new AccountOptionMultiEdit(check_map, ui->options_check, edit_list, this);
-    new ExpiryMultiEdit(ui->expiry_edit, ui->expiry_check, edit_list, this);
+    auto options_edit = new AccountOptionMultiEdit(option_to_check_map, this);
+    auto expiry_edit = new ExpiryEdit(ui->expiry_edit, this);
+
+    edit_list->append({
+        upn_edit,
+        options_edit,
+        expiry_edit,
+    });
+
+    check_map->insert(upn_edit, ui->upn_check);
+    check_map->insert(options_edit, ui->options_check);
+    check_map->insert(expiry_edit, ui->expiry_check);
 }
 
 AccountMultiTab::~AccountMultiTab() {

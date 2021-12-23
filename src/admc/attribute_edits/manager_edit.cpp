@@ -47,6 +47,10 @@ bool ManagerEdit::apply(AdInterface &ad, const QString &dn) const {
     return widget->apply(ad, dn);
 }
 
+void ManagerEdit::set_enabled(const bool enabled) {
+    widget->setEnabled(enabled);
+}
+
 QString ManagerEdit::get_manager() const {
     return widget->get_manager();
 }
