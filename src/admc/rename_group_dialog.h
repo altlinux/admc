@@ -35,6 +35,12 @@ public:
 
     RenameGroupDialog(AdInterface &ad, const QString &target, QWidget *parent);
     ~RenameGroupDialog();
+
+    void accept() override;
+    QString get_new_dn() const override;
+
+private:
+    RenameObjectHelper *helper;
 };
 
 #endif /* RENAME_GROUP_DIALOG_H */

@@ -36,10 +36,16 @@ public:
     static void success_msg(const QString &old_name);
     static void fail_msg(const QString &old_name);
 
-    void init(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg);
+    virtual QString get_new_dn() const = 0;
+};
 
-    void accept() override;
+class RenameObjectHelper : public QObject {
+    Q_OBJECT
 
+public:
+    RenameObjectHelper(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg, QDialog *parent_dialog);
+
+    bool accept() const;
     QString get_new_name() const;
     QString get_new_dn() const;
 
@@ -47,6 +53,7 @@ private:
     QString target;
     QLineEdit *name_edit;
     QList<AttributeEdit *> edits;
+    QDialog *parent_dialog;
 };
 
 #endif /* RENAME_OBJECT_DIALOG_H */

@@ -50,9 +50,21 @@ RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, Q
         sam_name_edit,
     };
 
-    init(ad, target_arg, ui->name_edit, edit_list);
+    helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, edit_list, this);
 
     settings_setup_dialog_geometry(SETTING_rename_user_dialog_geometry, this);
+}
+
+void RenameUserDialog::accept() {
+    const bool accepted = helper->accept();
+
+    if (accepted) {
+        QDialog::accept();
+    }
+}
+
+QString RenameUserDialog::get_new_dn() const {
+    return helper->get_new_dn();
 }
 
 RenameUserDialog::~RenameUserDialog() {

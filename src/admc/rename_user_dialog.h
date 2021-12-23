@@ -35,6 +35,12 @@ public:
 
     RenameUserDialog(AdInterface &ad, const QString &target, QWidget *parent);
     ~RenameUserDialog();
+
+    void accept() override;
+    QString get_new_dn() const override;
+
+private:
+    RenameObjectHelper *helper;
 };
 
 #endif /* RENAME_USER_DIALOG_H */

@@ -38,10 +38,12 @@ void RenameObjectDialog::fail_msg(const QString &old_name) {
     g_status->add_message(message, StatusType_Error);
 }
 
-void RenameObjectDialog::init(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg) {
+RenameObjectHelper::RenameObjectHelper(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg, QDialog *parent_dialog_arg)
+: QObject(parent_dialog_arg) {
     name_edit = name_edit_arg;
     edits = edits_arg;
     target = target_arg;
+    parent_dialog = parent_dialog_arg;
 
     const QString name = dn_get_name(target);
     name_edit->setText(name);
@@ -50,10 +52,10 @@ void RenameObjectDialog::init(AdInterface &ad, const QString &target_arg, QLineE
     AttributeEdit::load(edits, ad, object);
 }
 
-void RenameObjectDialog::accept() {
+bool RenameObjectHelper::accept() const {
     AdInterface ad;
-    if (ad_failed(ad, this)) {
-        return;
+    if (ad_failed(ad, parent_dialog)) {
+        return false;
     }
 
     const QString old_dn = target;
@@ -61,7 +63,7 @@ void RenameObjectDialog::accept() {
 
     const bool verify_success = AttributeEdit::verify(edits, ad, target);
     if (!verify_success) {
-        return;
+        return false;
     }
 
     show_busy_indicator();
@@ -82,24 +84,24 @@ void RenameObjectDialog::accept() {
 
     hide_busy_indicator();
 
-    g_status->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, parent_dialog);
 
     if (final_success) {
         RenameObjectDialog::success_msg(old_name);
-
-        QDialog::accept();
     } else {
         RenameObjectDialog::fail_msg(old_name);
     }
+
+    return final_success;
 }
 
-QString RenameObjectDialog::get_new_name() const {
+QString RenameObjectHelper::get_new_name() const {
     const QString new_name = name_edit->text().trimmed();
 
     return new_name;
 }
 
-QString RenameObjectDialog::get_new_dn() const {
+QString RenameObjectHelper::get_new_dn() const {
     const QString new_name = get_new_name();
     const QString new_dn = dn_rename(target, new_name);
 

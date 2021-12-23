@@ -35,9 +35,21 @@ RenameGroupDialog::RenameGroupDialog(AdInterface &ad, const QString &target_arg,
         sam_name_edit,
     };
 
-    init(ad, target_arg, ui->name_edit, edit_list);
+    helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, edit_list, this);
 
     settings_setup_dialog_geometry(SETTING_rename_group_dialog_geometry, this);
+}
+
+void RenameGroupDialog::accept() {
+    const bool accepted = helper->accept();
+
+    if (accepted) {
+        QDialog::accept();
+    }
+}
+
+QString RenameGroupDialog::get_new_dn() const {
+    return helper->get_new_dn();
 }
 
 RenameGroupDialog::~RenameGroupDialog() {
