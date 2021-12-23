@@ -275,7 +275,7 @@ void ConsoleWidget::delete_item(const QModelIndex &index) {
 
 void ConsoleWidget::set_current_scope(const QModelIndex &index) {
     const QModelIndex index_proxy = d->scope_proxy_model->mapFromSource(index);
-    d->scope_view->selectionModel()->setCurrentIndex(index_proxy, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    d->scope_view->selectionModel()->setCurrentIndex(index_proxy, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
 }
 
 void ConsoleWidget::refresh_scope(const QModelIndex &index) {

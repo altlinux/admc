@@ -1414,6 +1414,9 @@ void console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
 
     const QString domain = g_adconfig->domain().toLower();
     root->setText(domain);
+
+    // Select object tree root in scope pane on startup
+    console->set_current_scope(root->index());
 }
 
 bool console_object_is_ou(const QModelIndex &index) {
