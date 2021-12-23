@@ -27,10 +27,6 @@
 
 #include <QDialog>
 
-class QLineEdit;
-class QDialogButtonBox;
-class AttributeEdit;
-
 class CreateObjectDialog : public QDialog {
     Q_OBJECT
 
@@ -38,30 +34,6 @@ public:
     using QDialog::QDialog;
 
     virtual QString get_created_dn() const = 0;
-};
-
-class CreateObjectHelper : public QObject {
-    Q_OBJECT
-
-public:
-    CreateObjectHelper(QLineEdit *name_edit, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QString &object_class, const QString &parent_dn, QDialog *parent_dialog);
-
-    static void success_msg(const QString &old_name);
-    static void fail_msg(const QString &old_name);
-
-    bool accept() const;
-    void on_edited();
-    QString get_created_name() const;
-    QString get_created_dn() const;
-
-private:
-    QDialog *parent_dialog;
-    QString parent_dn;
-    QLineEdit *name_edit;
-    QList<AttributeEdit *> m_edit_list;
-    QList<QLineEdit *> m_required_list;
-    QPushButton *ok_button;
-    QString m_object_class;
 };
 
 #endif /* CREATE_OBJECT_DIALOG_H */

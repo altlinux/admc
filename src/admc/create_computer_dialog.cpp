@@ -26,6 +26,7 @@
 #include "attribute_edits/upn_edit.h"
 #include "utils.h"
 #include "settings.h"
+#include "create_object_helper.h"
 
 CreateComputerDialog::CreateComputerDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {

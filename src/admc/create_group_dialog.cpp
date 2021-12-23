@@ -29,6 +29,7 @@
 #include "attribute_edits/upn_edit.h"
 #include "utils.h"
 #include "settings.h"
+#include "create_object_helper.h"
 
 CreateGroupDialog::CreateGroupDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {

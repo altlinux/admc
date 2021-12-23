@@ -23,6 +23,8 @@
 
 #include "create_object_dialog.h"
 
+class CreateObjectHelper;
+
 namespace Ui {
 class CreateOUDialog;
 }

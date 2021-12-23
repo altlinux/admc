@@ -29,6 +29,7 @@
 #include "attribute_edits/upn_edit.h"
 #include "settings.h"
 #include "utils.h"
+#include "create_object_helper.h"
 
 CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {
