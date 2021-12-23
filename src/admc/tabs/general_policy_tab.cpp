@@ -45,9 +45,6 @@ GeneralPolicyTab::GeneralPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *p
     auto modified_edit = new DateTimeEdit(ui->modified_edit, ATTRIBUTE_WHEN_CHANGED, this);
     auto tab_edit = new GeneralPolicyTabEdit(ui, this);
 
-    created_edit->set_read_only(true);
-    modified_edit->set_read_only(true);
-
     edit_list->append({
         name_edit,    
         created_edit,    

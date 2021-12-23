@@ -37,9 +37,6 @@ GeneralComputerTab::GeneralComputerTab(QList<AttributeEdit *> *edit_list, QWidge
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
     auto location_edit = new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, this);
 
-    sam_name_edit->set_read_only(true);
-    dns_edit->set_read_only(true);
-
     edit_list->append({
         name_edit,
         sam_name_edit,

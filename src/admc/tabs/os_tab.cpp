@@ -33,15 +33,11 @@ OSTab::OSTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     auto version_edit = new StringEdit(ui->version_edit, ATTRIBUTE_OS_VERSION, this);
     auto pack_edit = new StringEdit(ui->pack_edit, ATTRIBUTE_OS_SERVICE_PACK, this);
 
-    const QList<AttributeEdit *> my_edit_list = {
+    edit_list->append({
         os_edit,
         version_edit,
         pack_edit,
-    };
-
-    AttributeEdit::set_read_only(my_edit_list, true);
-
-    edit_list->append(my_edit_list);
+    });
 }
 
 OSTab::~OSTab() {

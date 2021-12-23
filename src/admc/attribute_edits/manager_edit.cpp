@@ -43,10 +43,6 @@ void ManagerEdit::load(AdInterface &ad, const AdObject &object) {
     widget->load(object);
 }
 
-void ManagerEdit::set_read_only(const bool read_only) {
-    widget->setEnabled(!read_only);
-}
-
 bool ManagerEdit::apply(AdInterface &ad, const QString &dn) const {
     return widget->apply(ad, dn);
 }

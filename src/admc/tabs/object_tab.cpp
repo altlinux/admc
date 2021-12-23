@@ -44,7 +44,7 @@ ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 
     auto deletion_edit = new ProtectDeletionEdit(ui->deletion_check, this);
 
-    const QList<AttributeEdit *> my_edit_list = {
+    edit_list->append({
         dn_edit,
         class_edit,
         when_created_edit,
@@ -52,12 +52,7 @@ ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
         usn_created_edit,
         usn_changed_edit,
         deletion_edit,
-    };
-
-    AttributeEdit::set_read_only(my_edit_list, true);
-    deletion_edit->set_read_only(false);
-
-    edit_list->append(my_edit_list);
+    });
 }
 
 ObjectTab::~ObjectTab() {

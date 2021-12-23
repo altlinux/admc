@@ -45,10 +45,6 @@ void UnlockEdit::load(AdInterface &ad, const AdObject &object) {
     check->setChecked(false);
 }
 
-void UnlockEdit::set_read_only(const bool read_only) {
-    check->setDisabled(read_only);
-}
-
 bool UnlockEdit::apply(AdInterface &ad, const QString &dn) const {
 
     if (check->isChecked()) {

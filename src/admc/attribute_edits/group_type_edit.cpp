@@ -51,12 +51,8 @@ void GroupTypeEdit::load(AdInterface &ad, const AdObject &object) {
     const bool is_critical_system_object = object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT);
 
     if (is_critical_system_object) {
-        set_read_only(true);
+        combo->setDisabled(true);
     }
-}
-
-void GroupTypeEdit::set_read_only(const bool read_only) {
-    combo->setDisabled(read_only);
 }
 
 bool GroupTypeEdit::apply(AdInterface &ad, const QString &dn) const {

@@ -33,6 +33,8 @@ StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_bu
 , other_attribute(other_attribute_arg) {
     main_edit = new StringEdit(line_edit_arg, main_attribute, parent);
 
+    line_edit = line_edit_arg;
+
     other_button = other_button_arg;
 
     connect(
@@ -51,7 +53,7 @@ void StringOtherEdit::load(AdInterface &ad, const AdObject &object) {
 
 void StringOtherEdit::set_read_only(const bool read_only_arg) {
     read_only = read_only_arg;
-    main_edit->set_read_only(read_only);
+    line_edit->setReadOnly(read_only);
 }
 
 bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {

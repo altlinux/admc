@@ -53,18 +53,11 @@ public:
 
     static void load(const QList<AttributeEdit *> &edit_list, AdInterface &ad, const AdObject &object);
 
-    // NOTE: not all edits might support read-only mode, see
-    // specific edit headers to verify that they implement
-    // set_read_only()
-    static void set_read_only(const QList<AttributeEdit *> &edit_list, const bool read_only);
-
     using QObject::QObject;
 
     // Load state from object, used to initialize or
     // reset edit.
     virtual void load(AdInterface &ad, const AdObject &object);
-
-    virtual void set_read_only(const bool read_only);
 
     // Verify current input. This is for the kinds of errors
     // that the server doesn't or can't check for. For

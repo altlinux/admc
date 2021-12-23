@@ -39,7 +39,6 @@ public:
     ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
-    void set_read_only(const bool read_only) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
 
     QString get_manager() const;

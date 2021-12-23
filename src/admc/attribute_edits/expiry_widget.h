@@ -39,7 +39,6 @@ public:
     ~ExpiryWidget();
 
     void load(const AdObject &object);
-    void set_read_only(const bool read_only);
     bool apply(AdInterface &ad, const QString &dn) const;
 
 signals:

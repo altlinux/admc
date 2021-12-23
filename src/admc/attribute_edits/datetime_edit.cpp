@@ -48,10 +48,6 @@ void DateTimeEdit::load(AdInterface &ad, const AdObject &object) {
     edit->setDateTime(datetime_local);
 }
 
-void DateTimeEdit::set_read_only(const bool read_only) {
-    edit->setDisabled(read_only);
-}
-
 bool DateTimeEdit::apply(AdInterface &ad, const QString &dn) const {
     const QDateTime datetime_local = edit->dateTime();
     const QDateTime datetime = datetime_local.toUTC();

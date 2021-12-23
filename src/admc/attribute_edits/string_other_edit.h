@@ -41,12 +41,19 @@ public:
     StringOtherEdit(QLineEdit *line_edit, QPushButton *other_button, const QString &main_attribute_arg, const QString &other_attribute_arg, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
-    void set_read_only(const bool read_only) override;
+
+    // Sets read only property on both main edit and
+    // edit dialog for "Other" values. Dialog for
+    // "Other" values can still be opened to view them,
+    // while read only is active.
+    void set_read_only(const bool read_only);
+
     bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
     StringEdit *main_edit;
     QPushButton *other_button;
+    QLineEdit *line_edit;
     bool read_only;
 
     const QString other_attribute;

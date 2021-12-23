@@ -71,7 +71,8 @@ ManagedByTabEdit::ManagedByTabEdit(Ui::ManagedByTab *ui_arg, QObject *parent)
         fax_edit,
     };
 
-    AttributeEdit::set_read_only(manager_edits, true);
+    telephone_edit->set_read_only(true);
+    fax_edit->set_read_only(true);
 
     connect(
         manager_edit, &ManagerEdit::edited,

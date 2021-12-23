@@ -44,10 +44,6 @@ void CountryEdit::load(AdInterface &ad, const AdObject &object) {
     country_combo_load(combo, object);
 }
 
-void CountryEdit::set_read_only(const bool read_only) {
-    combo->setEnabled(!read_only);
-}
-
 bool CountryEdit::apply(AdInterface &ad, const QString &dn) const {
     return country_combo_apply(combo, ad, dn);
 }

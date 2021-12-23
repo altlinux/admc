@@ -86,12 +86,6 @@ void ExpiryWidget::load(const AdObject &object) {
     ui->date_edit->setDate(date);
 }
 
-void ExpiryWidget::set_read_only(const bool read_only) {
-    ui->never_check->setDisabled(read_only);
-    ui->end_of_check->setDisabled(read_only);
-    ui->date_edit->setReadOnly(read_only);
-}
-
 bool ExpiryWidget::apply(AdInterface &ad, const QString &dn) const {
     const bool never = ui->never_check->isChecked();
 

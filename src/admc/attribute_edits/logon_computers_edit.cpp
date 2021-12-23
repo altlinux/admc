@@ -42,10 +42,6 @@ void LogonComputersEdit::load(AdInterface &ad, const AdObject &object) {
     current_value = object.get_value(ATTRIBUTE_USER_WORKSTATIONS);
 }
 
-void LogonComputersEdit::set_read_only(const bool read_only) {
-    button->setEnabled(read_only);
-}
-
 bool LogonComputersEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_USER_WORKSTATIONS, current_value);
 

@@ -61,19 +61,9 @@ void AttributeEdit::load(const QList<AttributeEdit *> &edit_list, AdInterface &a
     }
 }
 
-void AttributeEdit::set_read_only(const QList<AttributeEdit *> &edit_list, const bool read_only) {
-    for (AttributeEdit *edit : edit_list) {
-        edit->set_read_only(read_only);
-    }
-}
-
 void AttributeEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
     UNUSED_ARG(object);
-}
-
-void AttributeEdit::set_read_only(const bool read_only) {
-    UNUSED_ARG(read_only);
 }
 
 bool AttributeEdit::apply(AdInterface &ad, const QString &dn) const {

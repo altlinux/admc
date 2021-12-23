@@ -56,10 +56,6 @@ void UpnEdit::load(AdInterface &ad, const AdObject &object) {
     prefix_edit->setText(prefix);
 }
 
-void UpnEdit::set_read_only(const bool read_only) {
-    prefix_edit->setDisabled(read_only);
-}
-
 bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
     const QString new_value = get_new_value();
 

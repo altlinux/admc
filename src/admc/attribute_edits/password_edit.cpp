@@ -48,11 +48,6 @@ void PasswordEdit::load(AdInterface &ad, const AdObject &object) {
     confirm_edit->clear();
 }
 
-void PasswordEdit::set_read_only(const bool read_only) {
-    edit->setDisabled(read_only);
-    confirm_edit->setDisabled(read_only);
-}
-
 bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
     UNUSED_ARG(ad);
 
