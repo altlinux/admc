@@ -28,7 +28,6 @@
 #include <QDialog>
 
 class CreateObjectDialog : public QDialog {
-    Q_OBJECT
 
 public:
     using QDialog::QDialog;

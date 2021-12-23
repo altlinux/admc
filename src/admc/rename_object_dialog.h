@@ -24,13 +24,9 @@
 #include <QDialog>
 
 class RenameObjectDialog : public QDialog {
-    Q_OBJECT
 
 public:
     using QDialog::QDialog;
-
-    static void success_msg(const QString &old_name);
-    static void fail_msg(const QString &old_name);
 
     virtual QString get_new_dn() const = 0;
 };

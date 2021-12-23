@@ -46,13 +46,11 @@ set(ADMC_SOURCES
 
     console_filter_dialog.cpp
     password_dialog.cpp
-    rename_object_dialog.cpp
     rename_object_helper.cpp
     rename_other_dialog.cpp
     rename_policy_dialog.cpp
     rename_user_dialog.cpp
     rename_group_dialog.cpp
-    create_object_dialog.cpp
     create_object_helper.cpp
     create_user_dialog.cpp
     create_group_dialog.cpp
