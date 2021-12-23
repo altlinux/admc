@@ -25,6 +25,7 @@
 #include "attribute_edits/sam_name_edit.h"
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/upn_edit.h"
+#include "rename_object_helper.h"
 #include "utils.h"
 #include "settings.h"
 

@@ -23,6 +23,9 @@
 
 #include "rename_object_dialog.h"
 
+class AdInterface;
+class RenameObjectHelper;
+
 namespace Ui {
 class RenameOtherDialog;
 }

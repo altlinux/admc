@@ -18,21 +18,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RENAME_OBJECT_DIALOG_H
-#define RENAME_OBJECT_DIALOG_H
+#ifndef RENAME_OBJECT_HELPER_H
+#define RENAME_OBJECT_HELPER_H
 
-#include <QDialog>
+#include <QObject>
 
-class RenameObjectDialog : public QDialog {
+class QLineEdit;
+class QDialog;
+class AttributeEdit;
+class AdInterface;
+
+class RenameObjectHelper : public QObject {
     Q_OBJECT
 
 public:
-    using QDialog::QDialog;
+    RenameObjectHelper(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg, QDialog *parent_dialog);
 
     static void success_msg(const QString &old_name);
     static void fail_msg(const QString &old_name);
 
-    virtual QString get_new_dn() const = 0;
+    bool accept() const;
+    QString get_new_name() const;
+    QString get_new_dn() const;
+
+private:
+    QString target;
+    QLineEdit *name_edit;
+    QList<AttributeEdit *> edits;
+    QDialog *parent_dialog;
 };
 
-#endif /* RENAME_OBJECT_DIALOG_H */
+#endif /* RENAME_OBJECT_HELPER_H */

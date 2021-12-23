@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "globals.h"
-#include "rename_object_dialog.h"
+#include "rename_object_helper.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
@@ -62,9 +62,9 @@ void RenamePolicyDialog::accept() {
     const bool apply_success = ad.attribute_replace_string(target_dn, ATTRIBUTE_DISPLAY_NAME, new_name);
 
     if (apply_success) {
-        RenameObjectDialog::success_msg(target_name);
+        RenameObjectHelper::success_msg(target_name);
     } else {
-        RenameObjectDialog::fail_msg(target_name);
+        RenameObjectHelper::fail_msg(target_name);
     }
 
     g_status->display_ad_messages(ad, this);

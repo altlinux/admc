@@ -21,6 +21,7 @@
 #include "rename_other_dialog.h"
 #include "ui_rename_other_dialog.h"
 
+#include "rename_object_helper.h"
 #include "settings.h"
 
 RenameOtherDialog::RenameOtherDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
