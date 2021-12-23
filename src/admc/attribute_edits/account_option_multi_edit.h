@@ -21,6 +21,13 @@
 #ifndef ACCOUNT_OPTION_MULTI_EDIT_H
 #define ACCOUNT_OPTION_MULTI_EDIT_H
 
+/**
+ * Edit for editing account options of multiple objects
+ * at the same time. Needed because in this case all of
+ * the checks are grouped together, unlike the normal
+ * account option edit.
+ */
+
 #include "attribute_edits/attribute_edit.h"
 
 #include "ad_defines.h"

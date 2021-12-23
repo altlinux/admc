@@ -22,10 +22,10 @@
 #include "multi_tabs/ui_account_multi_tab.h"
 
 #include "adldap.h"
-#include "attribute_multi_edits/account_option_multi_edit.h"
+#include "attribute_edits/account_option_multi_edit.h"
 #include "attribute_edits/expiry_edit.h"
 #include "attribute_edits/string_edit.h"
-#include "attribute_multi_edits/upn_multi_edit.h"
+#include "attribute_edits/upn_multi_edit.h"
 
 #include <QHash>
 

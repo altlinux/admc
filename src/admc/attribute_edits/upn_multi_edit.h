@@ -22,8 +22,10 @@
 #define UPN_MULTI_EDIT_H
 
 /**
- * Edit for editing UPN suffixes of multiple objects. Note
- * that prefix remains unchanged.
+ * Edit for editing UPN suffixes of multiple objects.
+ * This special version is needed because when editing
+ * multiple objects, only the suffix is edited, so
+ * normal UpnEdit doesn't work for this.
  */
 
 #include "attribute_edits/attribute_edit.h"

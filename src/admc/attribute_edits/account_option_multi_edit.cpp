@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_multi_edits/account_option_multi_edit.h"
+#include "attribute_edits/account_option_multi_edit.h"
 
 #include "adldap.h"
 #include "attribute_edits/account_option_edit.h"

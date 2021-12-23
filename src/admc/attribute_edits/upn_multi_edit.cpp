@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_multi_edits/upn_multi_edit.h"
+#include "attribute_edits/upn_multi_edit.h"
 
 #include "adldap.h"
 #include "attribute_edits/upn_suffix_combo.h"
