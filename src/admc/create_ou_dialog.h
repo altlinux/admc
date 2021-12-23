@@ -33,8 +33,14 @@ class CreateOUDialog final : public CreateObjectDialog {
 public:
     Ui::CreateOUDialog *ui;
 
-    CreateOUDialog(QWidget *parent);
+    CreateOUDialog(const QString &parent_dn, QWidget *parent);
     ~CreateOUDialog();
+
+    void accept() override;
+    QString get_created_dn() const override;
+
+private:
+    CreateObjectHelper *helper;
 };
 
 #endif /* CREATE_OU_DIALOG_H */

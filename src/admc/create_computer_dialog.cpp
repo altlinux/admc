@@ -27,7 +27,7 @@
 #include "utils.h"
 #include "settings.h"
 
-CreateComputerDialog::CreateComputerDialog(QWidget *parent)
+CreateComputerDialog::CreateComputerDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {
     ui = new Ui::CreateComputerDialog();
     ui->setupUi(this);
@@ -55,13 +55,25 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
         ui->name_edit, &QLineEdit::textChanged,
         this, &CreateComputerDialog::autofill_sam_name);
 
-    init(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_COMPUTER);
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_COMPUTER, parent_dn, this);
 
     settings_setup_dialog_geometry(SETTING_create_computer_dialog_geometry, this);
 }
 
 CreateComputerDialog::~CreateComputerDialog() {
     delete ui;
+}
+
+void CreateComputerDialog::accept() {
+    const bool accepted = helper->accept();
+
+    if (accepted) {
+        QDialog::accepted();
+    }
+}
+
+QString CreateComputerDialog::get_created_dn() const {
+    return helper->get_created_dn();
 }
 
 void CreateComputerDialog::autofill_sam_name() {

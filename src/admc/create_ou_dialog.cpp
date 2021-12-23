@@ -28,7 +28,7 @@
 #include "utils.h"
 #include "settings.h"
 
-CreateOUDialog::CreateOUDialog(QWidget *parent)
+CreateOUDialog::CreateOUDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {
     ui = new Ui::CreateOUDialog();
     ui->setupUi(this);
@@ -45,11 +45,23 @@ CreateOUDialog::CreateOUDialog(QWidget *parent)
         ui->name_edit,
     };
 
-    init(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_OU);
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_OU, parent_dn, this);
 
     settings_setup_dialog_geometry(SETTING_create_ou_dialog_geometry, this);
 }
 
 CreateOUDialog::~CreateOUDialog() {
     delete ui;
+}
+
+void CreateOUDialog::accept() {
+    const bool accepted = helper->accept();
+
+    if (accepted) {
+        QDialog::accepted();
+    }
+}
+
+QString CreateOUDialog::get_created_dn() const {
+    return helper->get_created_dn();
 }

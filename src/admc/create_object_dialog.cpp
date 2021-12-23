@@ -30,30 +30,29 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-void CreateObjectDialog::init(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QString &object_class) {
+CreateObjectHelper::CreateObjectHelper(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QString &object_class, const QString &parent_dn_arg, QDialog *parent_dialog_arg)
+: QObject(parent_dialog_arg) {
+    parent_dialog = parent_dialog_arg;
     name_edit = name_edit_arg;
     m_edit_list = edits_list;
     m_required_list = required_list;
     m_object_class = object_class;
+    parent_dn = parent_dn_arg;
 
     ok_button = button_box->button(QDialogButtonBox::Ok);
 
     for (QLineEdit *edit : m_required_list) {
         connect(
             edit, &QLineEdit::textChanged,
-            this, &CreateObjectDialog::on_edited);
+            this, &CreateObjectHelper::on_edited);
     }
     on_edited();
 }
 
-void CreateObjectDialog::set_parent_dn(const QString &dn) {
-    parent_dn = dn;
-}
-
-void CreateObjectDialog::accept() {
+bool CreateObjectHelper::accept() const {
     AdInterface ad;
-    if (ad_failed(ad, this)) {
-        return;
+    if (ad_failed(ad, parent_dialog)) {
+        return false;
     }
 
     const QString name = get_created_name();
@@ -63,7 +62,7 @@ void CreateObjectDialog::accept() {
     const bool verify_success = AttributeEdit::verify(m_edit_list, ad, dn);
 
     if (!verify_success) {
-        return;
+        return false;
     }
 
     auto fail_msg = [name]() {
@@ -84,21 +83,21 @@ void CreateObjectDialog::accept() {
         }
     }
 
-    g_status->display_ad_messages(ad, this);
+    g_status->display_ad_messages(ad, parent_dialog);
 
     if (final_success) {
         const QString message = QString(tr("Object %1 was created")).arg(name);
 
         g_status->add_message(message, StatusType_Success);
-
-        QDialog::accept();
     } else {
         fail_msg();
     }
+
+    return true;
 }
 
 // Enable/disable create button if all required edits filled
-void CreateObjectDialog::on_edited() {
+void CreateObjectHelper::on_edited() {
     const bool all_required_filled = [this]() {
         for (QLineEdit *edit : m_required_list) {
             if (edit->text().isEmpty()) {
@@ -112,7 +111,7 @@ void CreateObjectDialog::on_edited() {
     ok_button->setEnabled(all_required_filled);
 }
 
-QString CreateObjectDialog::get_created_name() const {
+QString CreateObjectHelper::get_created_name() const {
     // NOTE: trim whitespaces because server will do it
     // anyway and we want a correct name
     const QString name = name_edit->text().trimmed();
@@ -120,7 +119,7 @@ QString CreateObjectDialog::get_created_name() const {
     return name;
 }
 
-QString CreateObjectDialog::get_created_dn() const {
+QString CreateObjectHelper::get_created_dn() const {
     const QString name = get_created_name();
     const QString dn = dn_from_name_and_parent(name, parent_dn, m_object_class);
 

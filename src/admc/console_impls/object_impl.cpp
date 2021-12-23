@@ -621,24 +621,19 @@ void ObjectImpl::open_console_filter_dialog() {
 }
 
 void ObjectImpl::on_new_user() {
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
-
-    new_object(new CreateUserDialog(ad, console));
+    new_object(CLASS_USER);
 }
 
 void ObjectImpl::on_new_computer() {
-    new_object(new CreateComputerDialog(console));
+    new_object(CLASS_COMPUTER);
 }
 
 void ObjectImpl::on_new_ou() {
-    new_object(new CreateOUDialog(console));
+    new_object(CLASS_OU);
 }
 
 void ObjectImpl::on_new_group() {
-    new_object(new CreateGroupDialog(console));
+    new_object(CLASS_GROUP);
 }
 
 void ObjectImpl::on_move() {
@@ -799,18 +794,45 @@ void ObjectImpl::on_reset_account() {
     }
 }
 
-void ObjectImpl::new_object(CreateObjectDialog *dialog) {
+void ObjectImpl::new_object(const QString &object_class) {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
     const QString parent_dn = get_selected_dn_object(console);
 
-    dialog->set_parent_dn(parent_dn);
+    CreateObjectDialog *dialog = [&]() -> CreateObjectDialog * {
+        const bool is_user = (object_class == CLASS_USER);
+        const bool is_group = (object_class == CLASS_GROUP);
+        const bool is_computer = (object_class == CLASS_COMPUTER);
+        const bool is_ou = (object_class == CLASS_OU);
+
+        if (is_user) {
+            return new CreateUserDialog(ad, parent_dn, console);
+        } else if (is_group) {
+            return new CreateGroupDialog(parent_dn, console);
+        } else if (is_computer) {
+            return new CreateComputerDialog(parent_dn, console);
+        } else if (is_ou) {
+            return new CreateOUDialog(parent_dn, console);
+        } else {
+            return nullptr;
+        }
+    }();
+
+    if (dialog == nullptr) {
+        return;
+    }
+
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
         this,
         [this, dialog, parent_dn]() {
-            AdInterface ad;
-            if (ad_failed(ad, console)) {
+            AdInterface ad_inner;
+            if (ad_failed(ad_inner, console)) {
                 return;
             }
 
@@ -837,7 +859,7 @@ void ObjectImpl::new_object(CreateObjectDialog *dialog) {
                 }
 
                 const QModelIndex scope_parent_index = search_parent[0];
-                object_impl_add_objects_to_console_from_dns(target_console, ad, {created_dn}, scope_parent_index);
+                object_impl_add_objects_to_console_from_dns(target_console, ad_inner, {created_dn}, scope_parent_index);
             };
 
             apply_changes(console);

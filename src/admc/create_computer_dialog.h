@@ -23,6 +23,8 @@
 
 #include "create_object_dialog.h"
 
+class CreateObjectHelper;
+
 namespace Ui {
 class CreateComputerDialog;
 }
@@ -33,10 +35,15 @@ class CreateComputerDialog final : public CreateObjectDialog {
 public:
     Ui::CreateComputerDialog *ui;
 
-    CreateComputerDialog(QWidget *parent);
+    CreateComputerDialog(const QString &parent_dn, QWidget *parent);
     ~CreateComputerDialog();
 
+    void accept() override;
+    QString get_created_dn() const override;
+
 private:
+    CreateObjectHelper *helper;
+
     void autofill_sam_name();
 };
 

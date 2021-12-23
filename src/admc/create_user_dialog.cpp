@@ -30,7 +30,7 @@
 #include "settings.h"
 #include "utils.h"
 
-CreateUserDialog::CreateUserDialog(AdInterface &ad, QWidget *parent)
+CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {
     ui = new Ui::CreateUserDialog();
     ui->setupUi(this);
@@ -100,13 +100,25 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, QWidget *parent)
         return out;
     }();
 
-    init(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_USER);
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_USER, parent_dn, this);
 
     settings_setup_dialog_geometry(SETTING_create_user_dialog_geometry, this);
 }
 
 CreateUserDialog::~CreateUserDialog() {
     delete ui;
+}
+
+void CreateUserDialog::accept() {
+    const bool accepted = helper->accept();
+
+    if (accepted) {
+        QDialog::accepted();
+    }
+}
+
+QString CreateUserDialog::get_created_dn() const {
+    return helper->get_created_dn();
 }
 
 void CreateUserDialog::autofill_full_name() {

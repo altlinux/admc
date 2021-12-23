@@ -30,7 +30,7 @@
 #include "utils.h"
 #include "settings.h"
 
-CreateGroupDialog::CreateGroupDialog(QWidget *parent)
+CreateGroupDialog::CreateGroupDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {
     ui = new Ui::CreateGroupDialog();
     ui->setupUi(this);
@@ -51,11 +51,23 @@ CreateGroupDialog::CreateGroupDialog(QWidget *parent)
         ui->sam_name_edit,
     };
 
-    init(ui->name_edit, ui->button_box, edit_list, required_edits, CLASS_GROUP);
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_edits, CLASS_GROUP, parent_dn, this);
 
     settings_setup_dialog_geometry(SETTING_create_group_dialog_geometry, this);
 }
 
 CreateGroupDialog::~CreateGroupDialog() {
     delete ui;
+}
+
+void CreateGroupDialog::accept() {
+    const bool accepted = helper->accept();
+
+    if (accepted) {
+        QDialog::accepted();
+    }
+}
+
+QString CreateGroupDialog::get_created_dn() const {
+    return helper->get_created_dn();
 }

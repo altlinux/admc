@@ -35,7 +35,6 @@ template <typename T>
 class QList;
 class PolicyImpl;
 class ConsoleWidget;
-class CreateObjectDialog;
 class ConsoleFilterDialog;
 
 /**
@@ -131,7 +130,7 @@ private:
     bool find_action_enabled;
     bool refresh_action_enabled;
 
-    void new_object(CreateObjectDialog *dialog);
+    void new_object(const QString &object_class);
     void set_disabled(const bool disabled);
     void drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
     void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);

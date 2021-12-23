@@ -23,6 +23,8 @@
 
 #include "create_object_dialog.h"
 
+class CreateObjectHelper;
+
 namespace Ui {
 class CreateGroupDialog;
 }
@@ -33,8 +35,14 @@ class CreateGroupDialog final : public CreateObjectDialog {
 public:
     Ui::CreateGroupDialog *ui;
 
-    CreateGroupDialog(QWidget *parent);
+    CreateGroupDialog(const QString &parent_dn, QWidget *parent);
     ~CreateGroupDialog();
+
+    void accept() override;
+    QString get_created_dn() const override;
+
+private:
+    CreateObjectHelper *helper;
 };
 
 #endif /* CREATE_GROUP_DIALOG_H */

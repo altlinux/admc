@@ -24,6 +24,7 @@
 #include "create_object_dialog.h"
 
 class AdInterface;
+class CreateObjectHelper;
 
 namespace Ui {
 class CreateUserDialog;
@@ -35,10 +36,15 @@ class CreateUserDialog final : public CreateObjectDialog {
 public:
     Ui::CreateUserDialog *ui;
 
-    CreateUserDialog(AdInterface &ad, QWidget *parent);
+    CreateUserDialog(AdInterface &ad, const QString &parent_dn, QWidget *parent);
     ~CreateUserDialog();
 
+    void accept() override;
+    QString get_created_dn() const override;
+
 private:
+    CreateObjectHelper *helper;
+
     void autofill_full_name();
     void autofill_sam_name();
 };
