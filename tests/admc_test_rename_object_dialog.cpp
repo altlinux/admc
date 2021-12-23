@@ -46,7 +46,6 @@ void ADMCTestRenameObjectDialog::rename() {
     rename_object_dialog->accept();
 
     QVERIFY(object_exists(new_dn));
-    QCOMPARE(rename_object_dialog->get_new_name(), new_name);
     QCOMPARE(rename_object_dialog->get_new_dn(), new_dn);
 }
 

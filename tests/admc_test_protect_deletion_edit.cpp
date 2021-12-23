@@ -36,7 +36,7 @@ void ADMCTestProtectDeletionEdit::init() {
 
     checkbox = new QCheckBox(parent_widget);
 
-    edit = new ProtectDeletionEdit(checkbox, &edits, parent_widget);
+    edit = new ProtectDeletionEdit(checkbox, parent_widget);
 
     dn = test_object_dn(TEST_OU, CLASS_OU);
     const bool create_success = ad.object_add(dn, CLASS_OU);

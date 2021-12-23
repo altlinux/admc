@@ -38,8 +38,7 @@ void ADMCTestCreateObjectDialog::create_user() {
     const QString dn = test_object_dn(name, CLASS_USER);
 
     // Create user
-    auto create_dialog = new CreateUserDialog(ad, parent_widget);
-    create_dialog->set_parent_dn(parent);
+    auto create_dialog = new CreateUserDialog(ad, parent, parent_widget);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -51,7 +50,6 @@ void ADMCTestCreateObjectDialog::create_user() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created user doesn't exist");
-    QCOMPARE(create_dialog->get_created_name(), name);
     QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
@@ -61,8 +59,7 @@ void ADMCTestCreateObjectDialog::create_ou() {
     const QString dn = test_object_dn(name, CLASS_OU);
 
     // Create ou
-    auto create_dialog = new CreateOUDialog(parent_widget);
-    create_dialog->set_parent_dn(parent);
+    auto create_dialog = new CreateOUDialog(parent, parent_widget);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -71,7 +68,6 @@ void ADMCTestCreateObjectDialog::create_ou() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created OU doesn't exist");
-    QCOMPARE(create_dialog->get_created_name(), name);
     QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
@@ -82,8 +78,7 @@ void ADMCTestCreateObjectDialog::create_computer() {
     const QString dn = test_object_dn(name, object_class);
 
     // Open create dialog
-    auto create_dialog = new CreateComputerDialog(parent_widget);
-    create_dialog->set_parent_dn(parent);
+    auto create_dialog = new CreateComputerDialog(parent, parent_widget);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -93,7 +88,6 @@ void ADMCTestCreateObjectDialog::create_computer() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created computer doesn't exist");
-    QCOMPARE(create_dialog->get_created_name(), name);
     QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
@@ -104,8 +98,7 @@ void ADMCTestCreateObjectDialog::create_group() {
     const QString dn = test_object_dn(name, object_class);
 
     // Open create dialog
-    auto create_dialog = new CreateGroupDialog(parent_widget);
-    create_dialog->set_parent_dn(parent);
+    auto create_dialog = new CreateGroupDialog(parent, parent_widget);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -115,7 +108,6 @@ void ADMCTestCreateObjectDialog::create_group() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created group doesn't exist");
-    QCOMPARE(create_dialog->get_created_name(), name);
     QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
