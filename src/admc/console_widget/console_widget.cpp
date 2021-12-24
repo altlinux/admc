@@ -500,9 +500,10 @@ void ConsoleWidgetPrivate::on_menubar_action_menu_open() {
     update_actions();
 }
 
-void ConsoleWidgetPrivate::update_actions() {
+// Returns whether any action is visible
+bool ConsoleWidgetPrivate::update_actions() {
     if (!action_target_list.isEmpty() && !action_target_list[0].isValid()) {
-        return;
+        return false;
     }
 
     const bool single_selection = (action_target_list.size() == 1);
@@ -634,6 +635,10 @@ void ConsoleWidgetPrivate::update_actions() {
         QAction *action = standard_action_map[action_enum];
         action->setDisabled(disabled);
     }
+
+    const bool any_action_is_visible = (!visible_standard_actions.isEmpty() || !visible_custom_action_set.isEmpty());
+
+    return any_action_is_visible;
 }
 
 void ConsoleWidget::set_actions(const ConsoleWidgetActions &actions_arg) {
@@ -1207,8 +1212,13 @@ void ConsoleWidgetPrivate::open_context_menu(const QPoint &global_pos) {
     auto menu = new QMenu(q);
     menu->setAttribute(Qt::WA_DeleteOnClose);
     add_actions(menu);
-    update_actions();
-    menu->popup(global_pos);
+    const bool need_to_open = update_actions();
+
+    if (need_to_open) {
+        menu->popup(global_pos);
+    } else {
+        delete menu;
+    }
 }
 
 void ConsoleWidgetPrivate::on_scope_expanded(const QModelIndex &index_proxy) {

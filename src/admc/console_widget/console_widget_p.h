@@ -104,7 +104,7 @@ public:
     QList<QAction *> get_custom_action_list() const;
     void open_context_menu(const QPoint &global_pos);
     void add_actions(QMenu *menu);
-    void update_actions();
+    bool update_actions();
     void on_menubar_action_menu_open();
 
 public slots:
