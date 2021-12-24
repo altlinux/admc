@@ -146,11 +146,7 @@ void FindWidget::restore_console_state(const QVariant &state) {
 }
 
 void FindWidget::setup_action_menu(QMenu *menu) {
-    ui->console->add_actions(menu);
-
-    connect(
-        menu, &QMenu::aboutToShow,
-        ui->console, &ConsoleWidget::update_actions);
+    ui->console->setup_menubar_action_menu(menu);
 }
 
 void FindWidget::setup_view_menu(QMenu *menu) {
@@ -220,7 +216,8 @@ void FindWidget::handle_find_thread_results(const QHash<QString, AdObject> &resu
 }
 
 QList<QString> FindWidget::get_selected_dns() const {
-    const QList<QString> out = get_selected_dn_list(ui->console, ItemType_Object, ObjectRole_DN);
+    const QList<QModelIndex> indexes = ui->console->get_selected_items(ItemType_Object);
+    const QList<QString> out = index_list_to_dn_list(indexes, ObjectRole_DN);
 
     return out;
 }

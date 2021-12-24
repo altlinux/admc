@@ -104,7 +104,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     // NOTE: "Action" menu actions need to be filled by the
     // console
-    ui->console->add_actions(ui->menu_action);
+    ui->console->setup_menubar_action_menu(ui->menu_action);
 
 #ifndef QT_DEBUG
     ui->action_dev_mode->setVisible(false);
@@ -236,9 +236,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     connect(
         ui->action_filter_objects, &QAction::triggered,
         object_impl, &ObjectImpl::open_console_filter_dialog);
-    connect(
-        ui->menu_action, &QMenu::aboutToShow,
-        ui->console, &ConsoleWidget::update_actions);
 
     const QHash<QString, QAction *> bool_action_map = {
         {SETTING_confirm_actions, ui->action_confirm_actions},

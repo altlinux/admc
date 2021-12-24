@@ -61,8 +61,8 @@ enum DropType {
 
 DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target);
 QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list);
-QList<QString> get_selected_dn_list_object(ConsoleWidget *console);
-QString get_selected_dn_object(ConsoleWidget *console);
+QList<QString> get_action_target_dn_list_object(ConsoleWidget *console);
+QString get_action_target_dn_object(ConsoleWidget *console);
 void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root);
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
@@ -397,7 +397,7 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
         return;
     }
 
-    const QString old_dn = get_selected_dn_object(console);
+    const QString old_dn = get_action_target_dn_object(console);
 
     RenameObjectDialog *dialog = [&]() -> RenameObjectDialog * {
         const QModelIndex index = index_list[0];
@@ -654,7 +654,7 @@ void ObjectImpl::on_move() {
                 return;
             }
 
-            const QList<QString> dn_list = get_selected_dn_list_object(console);
+            const QList<QString> dn_list = get_action_target_dn_list_object(console);
 
             show_busy_indicator();
 
@@ -708,7 +708,7 @@ void ObjectImpl::on_add_to_group() {
 
             show_busy_indicator();
 
-            const QList<QString> target_list = get_selected_dn_list_object(console);
+            const QList<QString> target_list = get_action_target_dn_list_object(console);
 
             const QList<QString> groups = dialog->get_selected();
 
@@ -725,7 +725,7 @@ void ObjectImpl::on_add_to_group() {
 }
 
 void ObjectImpl::on_find() {
-    const QList<QString> dn_list = get_selected_dn_list_object(console);
+    const QList<QString> dn_list = get_action_target_dn_list_object(console);
 
     const QString dn = dn_list[0];
 
@@ -739,7 +739,7 @@ void ObjectImpl::on_reset_password() {
         return;
     }
 
-    const QString dn = get_selected_dn_object(console);
+    const QString dn = get_action_target_dn_object(console);
 
     auto dialog = new PasswordDialog(ad, dn, console);
     dialog->open();
@@ -787,7 +787,7 @@ void ObjectImpl::on_reset_account() {
         return;
     }
 
-    const QList<QString> target_list = get_selected_dn_list_object(console);
+    const QList<QString> target_list = get_action_target_dn_list_object(console);
 
     for (const QString &target : target_list) {
         ad.computer_reset_account(target);
@@ -800,7 +800,7 @@ void ObjectImpl::new_object(const QString &object_class) {
         return;
     }
 
-    const QString parent_dn = get_selected_dn_object(console);
+    const QString parent_dn = get_action_target_dn_object(console);
 
     CreateObjectDialog *dialog = [&]() -> CreateObjectDialog * {
         const bool is_user = (object_class == CLASS_USER);
@@ -883,7 +883,7 @@ void ObjectImpl::set_disabled(const bool disabled) {
     const QList<QString> changed_objects = [&]() {
         QList<QString> out;
 
-        const QList<QString> dn_list = get_selected_dn_list_object(console);
+        const QList<QString> dn_list = get_action_target_dn_list_object(console);
 
         for (const QString &dn : dn_list) {
             const bool success = ad.user_set_account_option(dn, AccountOption_Disabled, disabled);
@@ -1513,12 +1513,12 @@ QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list) {
     return out;
 }
 
-QList<QString> get_selected_dn_list_object(ConsoleWidget *console) {
-    return get_selected_dn_list(console, ItemType_Object, ObjectRole_DN);
+QList<QString> get_action_target_dn_list_object(ConsoleWidget *console) {
+    return get_action_target_dn_list(console, ItemType_Object, ObjectRole_DN);
 }
 
-QString get_selected_dn_object(ConsoleWidget *console) {
-    return get_selected_dn(console, ItemType_Object, ObjectRole_DN);
+QString get_action_target_dn_object(ConsoleWidget *console) {
+    return get_action_target_dn(console, ItemType_Object, ObjectRole_DN);
 }
 
 void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root) {

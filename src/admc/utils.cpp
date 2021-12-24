@@ -274,11 +274,10 @@ QMessageBox *message_box_warning(QWidget *parent, const QString &title, const QS
     return message_box_generic(QMessageBox::Warning, title, text, parent);
 }
 
-QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role) {
+QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list, const int dn_role) {
     QList<QString> out;
 
-    const QList<QModelIndex> indexes = console->get_selected_items(type);
-    for (const QModelIndex &index : indexes) {
+    for (const QModelIndex &index : index_list) {
         const QString dn = index.data(dn_role).toString();
         out.append(dn);
     }
@@ -286,8 +285,15 @@ QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, cons
     return out;
 }
 
-QString get_selected_dn(ConsoleWidget *console, const int type, const int dn_role) {
-    const QList<QString> dn_list = get_selected_dn_list(console, type, dn_role);
+QList<QString> get_action_target_dn_list(ConsoleWidget *console, const int type, const int dn_role) {
+    const QList<QModelIndex> indexes = console->get_action_target_items(type);
+    const QList<QString> out = index_list_to_dn_list(indexes, dn_role);
+
+    return out;
+}
+
+QString get_action_target_dn(ConsoleWidget *console, const int type, const int dn_role) {
+    const QList<QString> dn_list = get_action_target_dn_list(console, type, dn_role);
 
     if (!dn_list.isEmpty()) {
         return dn_list[0];

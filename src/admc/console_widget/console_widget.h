@@ -120,19 +120,29 @@ public:
     // type
     void refresh_scope(const QModelIndex &index);
 
-    // Gets selected item(s) from currently focused view,
-    // which could be scope or results. Only the main (first
-    // column) item is returned for each selected row. There
-    // is always at least one selected item. If results is
-    // currently focused but has no selection, selected
-    // items from scope are returned instead.
+    // Gets selected item(s) from currently focused
+    // view, which could be scope or results. Only the
+    // main (first column) item is returned for each
+    // selected row. There is always at least one
+    // selected item. If results is currently focused
+    // but has no selection, selected items from scope
+    // are returned instead. Note that this shouldn't
+    // be use for as targets of actions, use
+    // get_action_target_items() instead.
     QList<QModelIndex> get_selected_items(const int type) const;
 
-    // Get a single selected item. Use if you are sure that
-    // there's only one (dialog that uses one target item
-    // for example). Returns first item in list if there are
-    // multiple items selected.
-    QModelIndex get_selected_item(const int type) const;
+    // Get list of action targets. These are the items
+    // that should be the target of console actions,
+    // both default and extra from console impl's.
+    // Targets are equal to currently selected items or
+    // to current scope if context menu was opened by
+    // clicking on empty space in results.
+    QList<QModelIndex> get_action_target_items(const int type) const;
+
+    // Get a single action target. Use if you are sure
+    // that there's only one (dialog that uses one
+    // target item for example).
+    QModelIndex get_action_target(const int type) const;
 
     // NOTE: Search is inclusive, examining the given parent
     // and all of it's descendants. Pass QModelIndex()
@@ -156,15 +166,9 @@ public:
 
     void set_scope_view_visible(const bool visible);
 
-    // Adds actions to a menu. Actions come from console
-    // itself as well as impl's. All impl's must be
-    // registered before this is called.
-    void add_actions(QMenu *menu);
-
-    // Updates visibility and disability state of actions
-    // based on current selection. Call before showing the
-    // menu that contains console actions.
-    void update_actions();
+    // Setups the action menu in menubar. Action menu
+    // opened by right click is setup automatically.
+    void setup_menubar_action_menu(QMenu *menu);
 
 private:
     ConsoleWidgetPrivate *d;
