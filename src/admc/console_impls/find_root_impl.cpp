@@ -18,19 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ITEM_TYPE_H
-#define ITEM_TYPE_H
+#include "console_impls/find_root_impl.h"
 
-enum ItemType {
-    ItemType_Unassigned,
-    ItemType_Object,
-    ItemType_PolicyRoot,
-    ItemType_Policy,
-    ItemType_QueryFolder,
-    ItemType_QueryItem,
-    ItemType_FindRoot,
+#include "adldap.h"
+#include "console_impls/object_impl.h"
+#include "console_widget/results_view.h"
 
-    ItemType_LAST,
-};
+FindRootImpl::FindRootImpl(ConsoleWidget *console_arg)
+: ConsoleImpl(console_arg) {
+    set_results_view(new ResultsView(console_arg));
+}
 
-#endif /* ITEM_TYPE_H */
+QString FindRootImpl::get_description(const QModelIndex &index) const {
+    const QString object_count_text = console_object_count_string(console, index);
+
+    return object_count_text;
+}
+
+QList<QString> FindRootImpl::column_labels() const {
+    return object_impl_column_labels();
+}
+
+QList<int> FindRootImpl::default_columns() const {
+    return object_impl_default_columns();
+}

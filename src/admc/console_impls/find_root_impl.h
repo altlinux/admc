@@ -18,19 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ITEM_TYPE_H
-#define ITEM_TYPE_H
+#ifndef FIND_ROOT_IMPL_H
+#define FIND_ROOT_IMPL_H
 
-enum ItemType {
-    ItemType_Unassigned,
-    ItemType_Object,
-    ItemType_PolicyRoot,
-    ItemType_Policy,
-    ItemType_QueryFolder,
-    ItemType_QueryItem,
-    ItemType_FindRoot,
+#include "console_widget/console_impl.h"
 
-    ItemType_LAST,
+class FindRootImpl final : public ConsoleImpl {
+    Q_OBJECT
+
+public:
+    FindRootImpl(ConsoleWidget *console_arg);
+
+    QString get_description(const QModelIndex &index) const override;
+
+    QList<QString> column_labels() const override;
+    QList<int> default_columns() const override;
 };
 
-#endif /* ITEM_TYPE_H */
+#endif /* FIND_ROOT_IMPL_H */
