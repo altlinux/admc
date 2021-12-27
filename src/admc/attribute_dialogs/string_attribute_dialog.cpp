@@ -47,7 +47,7 @@ StringAttributeDialog::StringAttributeDialog(const QList<QByteArray> &value_list
     const QString value_string = QString(value);
     ui->edit->setText(value_string);
 
-    settings_setup_dialog_geometry(SETTING_list_attribute_dialog_geometry, this);
+    settings_setup_dialog_geometry(SETTING_string_attribute_dialog_geometry, this);
 }
 
 StringAttributeDialog::~StringAttributeDialog() {
