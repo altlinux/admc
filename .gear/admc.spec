@@ -70,6 +70,7 @@ Tests for ADMC
 %_libdir/libadldap.so
 %_man1dir/admc*
 %_datadir/applications/admc.desktop
+%_iconsdir/hicolor/scalable/apps/admc.svg
 
 %files test
 %_libdir/libadmctest.so
