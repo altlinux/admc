@@ -189,20 +189,28 @@ void ADMCTestAdSecurity::cant_change_pass() {
 // for X should go away as a result.
 void ADMCTestAdSecurity::complete_unset_opposite_data() {
     QTest::addColumn<bool>("first_allow");
+    QTest::addColumn<int>("access_mask");
+    QTest::addColumn<QByteArray>("object_type");
     QTest::addColumn<TestAdSecurityType>("expected_result");
 
-    QTest::newRow("allow then deny") << true << TestAdSecurityType_Deny;
-    QTest::newRow("deny then allow") << false << TestAdSecurityType_Allow;
+    const QByteArray allowed_to_auth_object_type = ad.adconfig()->get_right_guid("Allowed-To-Authenticate");
+
+    QTest::newRow("allow [create child]") << true << SEC_ADS_CREATE_CHILD << QByteArray() << TestAdSecurityType_Deny;
+    QTest::newRow("deny [create child]") << false << SEC_ADS_CREATE_CHILD << QByteArray() << TestAdSecurityType_Allow;
+    QTest::newRow("allow [allowed to authenticate]") << true << SEC_ADS_CONTROL_ACCESS << allowed_to_auth_object_type << TestAdSecurityType_Deny;
+    QTest::newRow("deny [allowed to authenticate]") << false << SEC_ADS_CONTROL_ACCESS << allowed_to_auth_object_type << TestAdSecurityType_Allow;
 }
 
 void ADMCTestAdSecurity::complete_unset_opposite() {
     QFETCH(bool, first_allow);
+    QFETCH(int, access_mask);
+    QFETCH(QByteArray, object_type);
     QFETCH(TestAdSecurityType, expected_result);
    
-    security_descriptor_add_right_complete(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), first_allow);
-    security_descriptor_add_right_complete(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), !first_allow);
+    security_descriptor_add_right_complete(sd, ad.adconfig(), class_list, test_trustee, access_mask, object_type, first_allow);
+    security_descriptor_add_right_complete(sd, ad.adconfig(), class_list, test_trustee, access_mask, object_type, !first_allow);
 
-    check_state(test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), expected_result);
+    check_state(test_trustee, access_mask, object_type, expected_result);
 }
 
 // When a right is unset, if it has any subordinates,
