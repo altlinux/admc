@@ -242,6 +242,8 @@ void SecurityTabEdit::load(AdInterface &ad, const AdObject &object) {
     // state of items changes during editing.
     const QList<SecurityRight> right_list = ad_security_get_right_list_for_class(g_adconfig, target_class_list);
 
+    rights_model->removeRows(0, rights_model->rowCount());
+
     for (const SecurityRight &right : right_list) {
         const QList<QStandardItem *> row = make_item_row(AceColumn_COUNT);
 
