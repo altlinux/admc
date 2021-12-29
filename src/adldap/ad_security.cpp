@@ -963,6 +963,7 @@ QList<SecurityRight> ad_security_get_superior_right_list(const uint32_t access_m
     const SecurityRight generic_all = {SEC_ADS_GENERIC_ALL, QByteArray()};
     const SecurityRight generic_read = {SEC_ADS_GENERIC_READ, QByteArray()};
     const SecurityRight generic_write = {SEC_ADS_GENERIC_WRITE, QByteArray()};
+    const SecurityRight all_extended_rights = {SEC_ADS_CONTROL_ACCESS, QByteArray()};
 
     // NOTE: order is important, because we want to
     // process "more superior" rights first. "Generic
@@ -973,8 +974,9 @@ QList<SecurityRight> ad_security_get_superior_right_list(const uint32_t access_m
     } else if (access_mask == SEC_ADS_WRITE_PROP) {
         out.append(generic_all);
         out.append(generic_write);
-    } else if (access_mask == SEC_ADS_CONTROL_ACCESS) {
+    } else if (access_mask == SEC_ADS_CONTROL_ACCESS && !object_type.isEmpty()) {
         out.append(generic_all);
+        out.append(all_extended_rights);
     } else if (access_mask == SEC_ADS_GENERIC_READ || access_mask == SEC_ADS_GENERIC_WRITE) {
         out.append(generic_all);
     }
@@ -998,6 +1000,8 @@ QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, 
             } else if (access_mask == SEC_ADS_GENERIC_WRITE) {
                 // All write property rights
                 return (right.access_mask == SEC_ADS_WRITE_PROP);
+            } else if (access_mask == SEC_ADS_CONTROL_ACCESS && object_type.isEmpty()) {
+                return (right.access_mask == SEC_ADS_CONTROL_ACCESS && !right.object_type.isEmpty());
             } else {
                 return false;
             }
