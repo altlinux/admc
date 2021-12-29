@@ -469,12 +469,18 @@ SecurityRightState security_descriptor_get_right(const security_descriptor *sd, 
 
                     return types_are_equal;
                 } else {
-                    // NOTE: if ace doesn't have an
-                    // object it can still match.
-                    // Example: ace that allows
-                    // "generic read" will also allow
-                    // reading of all properties.
-                    return true;
+                    // NOTE: if compared ace doesn't
+                    // have an object it can still
+                    // match if it's access mask
+                    // matches with given ace. Example:
+                    // ace that allows "generic read"
+                    // (mask contains bit for "read
+                    // property" and object is empty)
+                    // will also allow right for
+                    // reading personal info (mask *is*
+                    // "read property" and contains
+                    // some object)
+                    return access_mask_match;
                 }
             }();
 
