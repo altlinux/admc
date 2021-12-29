@@ -823,10 +823,10 @@ QString ad_security_get_right_name(AdConfig *adconfig, const uint32_t access_mas
 }
 
 void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
-    const QList<uint32_t> superior_list = ad_security_get_superior_right_list(access_mask);
-    for (const uint32_t &superior : superior_list) {
+    const QList<SecurityRight> superior_list = ad_security_get_superior_right_list(access_mask, object_type);
+    for (const SecurityRight &superior : superior_list) {
         const bool opposite_superior_is_set = [&]() {
-            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior, QByteArray());
+            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior.access_mask, superior.object_type);
             const SecurityRightStateType type = [&]() {
                 // NOTE: opposite!
                 if (!allow) {
@@ -848,10 +848,10 @@ void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *a
         }
 
         // Remove opposite superior
-        security_descriptor_remove_right(sd, trustee, superior, QByteArray(), !allow);
+        security_descriptor_remove_right(sd, trustee, superior.access_mask, superior.object_type, !allow);
 
         // Add opposite superior subordinates
-        const QList<SecurityRight> superior_subordinate_list = ad_security_get_subordinate_right_list(adconfig, superior, class_list);
+        const QList<SecurityRight> superior_subordinate_list = ad_security_get_subordinate_right_list(adconfig, superior.access_mask, superior.object_type, class_list);
         for (const SecurityRight &subordinate : superior_subordinate_list) {
 
             security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
@@ -859,7 +859,7 @@ void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *a
     }
 
     // Remove subordinates
-    const QList<SecurityRight> subordinate_list = ad_security_get_subordinate_right_list(adconfig, access_mask, class_list);
+    const QList<SecurityRight> subordinate_list = ad_security_get_subordinate_right_list(adconfig, access_mask, object_type, class_list);
     for (const SecurityRight &subordinate : subordinate_list) {
         security_descriptor_remove_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
     }
@@ -877,12 +877,12 @@ void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *a
 }
 
 void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
-    const QList<uint32_t> target_superior_list = ad_security_get_superior_right_list(access_mask);
+    const QList<SecurityRight> target_superior_list = ad_security_get_superior_right_list(access_mask, object_type);
 
     // Remove superiors
-    for (const uint32_t &superior : target_superior_list) {
+    for (const SecurityRight &superior : target_superior_list) {
         const bool superior_is_set = [&]() {
-            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior, QByteArray());
+            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior.access_mask, superior.object_type);
             const SecurityRightStateType type = [&]() {
                 if (allow) {
                     return SecurityRightStateType_Allow;
@@ -900,9 +900,9 @@ void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig
             continue;
         }
 
-        security_descriptor_remove_right(sd, trustee, superior, QByteArray(), allow);
+        security_descriptor_remove_right(sd, trustee, superior.access_mask, superior.object_type, allow);
         
-        const QList<SecurityRight> superior_subordinate_list = ad_security_get_subordinate_right_list(adconfig, superior, class_list);
+        const QList<SecurityRight> superior_subordinate_list = ad_security_get_subordinate_right_list(adconfig, superior.access_mask, superior.object_type, class_list);
 
         // Add opposite subordinate rights
         for (const SecurityRight &subordinate : superior_subordinate_list) {
@@ -914,7 +914,7 @@ void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig
     security_descriptor_remove_right(sd, trustee, access_mask, object_type, allow);
 
     // Add target subordinate rights
-    const QList<SecurityRight> tarad_security_get_subordinate_right_list = ad_security_get_subordinate_right_list(adconfig, access_mask, class_list);
+    const QList<SecurityRight> tarad_security_get_subordinate_right_list = ad_security_get_subordinate_right_list(adconfig, access_mask, object_type, class_list);
     for (const SecurityRight &subordinate : tarad_security_get_subordinate_right_list) {
         security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
     }
@@ -957,28 +957,32 @@ QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, co
     return out;
 }
 
-QList<uint32_t> ad_security_get_superior_right_list(const uint32_t access_mask) {
-    QList<uint32_t> out;
+QList<SecurityRight> ad_security_get_superior_right_list(const uint32_t access_mask, const QByteArray &object_type) {
+    QList<SecurityRight> out;
+
+    const SecurityRight generic_all = {SEC_ADS_GENERIC_ALL, QByteArray()};
+    const SecurityRight generic_read = {SEC_ADS_GENERIC_READ, QByteArray()};
+    const SecurityRight generic_write = {SEC_ADS_GENERIC_WRITE, QByteArray()};
 
     // NOTE: order is important, because we want to
     // process "more superior" rights first. "Generic
     // all" is more superior than others.
     if (access_mask == SEC_ADS_READ_PROP) {
-        out.append(SEC_ADS_GENERIC_ALL);
-        out.append(SEC_ADS_GENERIC_READ);
+        out.append(generic_all);
+        out.append(generic_read);
     } else if (access_mask == SEC_ADS_WRITE_PROP) {
-        out.append(SEC_ADS_GENERIC_ALL);
-        out.append(SEC_ADS_GENERIC_WRITE);
+        out.append(generic_all);
+        out.append(generic_write);
     } else if (access_mask == SEC_ADS_CONTROL_ACCESS) {
-        out.append(SEC_ADS_GENERIC_ALL);
+        out.append(generic_all);
     } else if (access_mask == SEC_ADS_GENERIC_READ || access_mask == SEC_ADS_GENERIC_WRITE) {
-        out.append(SEC_ADS_GENERIC_ALL);
+        out.append(generic_all);
     }
 
     return out;
 }
 
-QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, const uint32_t access_mask, const QList<QString> &class_list) {
+QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type, const QList<QString> &class_list) {
     QList<SecurityRight> out;
 
     const QList<SecurityRight> right_list_for_target = ad_security_get_right_list_for_class(adconfig, class_list);

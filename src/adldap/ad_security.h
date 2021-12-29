@@ -119,7 +119,7 @@ void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *a
 void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
 
 QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list);
-QList<uint32_t> ad_security_get_superior_right_list(const uint32_t access_mask);
-QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, const uint32_t access_mask, const QList<QString> &class_list);
+QList<SecurityRight> ad_security_get_superior_right_list(const uint32_t access_mask, const QByteArray &object_type);
+QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type, const QList<QString> &class_list);
 
 #endif /* AD_SECURITY_H */
