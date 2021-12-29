@@ -960,6 +960,8 @@ QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, co
 QList<SecurityRight> ad_security_get_superior_right_list(const uint32_t access_mask, const QByteArray &object_type) {
     QList<SecurityRight> out;
 
+    const bool object_present = !object_type.isEmpty();
+
     const SecurityRight generic_all = {SEC_ADS_GENERIC_ALL, QByteArray()};
     const SecurityRight generic_read = {SEC_ADS_GENERIC_READ, QByteArray()};
     const SecurityRight generic_write = {SEC_ADS_GENERIC_WRITE, QByteArray()};
@@ -968,16 +970,16 @@ QList<SecurityRight> ad_security_get_superior_right_list(const uint32_t access_m
     // NOTE: order is important, because we want to
     // process "more superior" rights first. "Generic
     // all" is more superior than others.
-    if (access_mask == SEC_ADS_READ_PROP) {
+    if (access_mask == SEC_ADS_READ_PROP && object_present) {
         out.append(generic_all);
         out.append(generic_read);
-    } else if (access_mask == SEC_ADS_WRITE_PROP) {
+    } else if (access_mask == SEC_ADS_WRITE_PROP && object_present) {
         out.append(generic_all);
         out.append(generic_write);
-    } else if (access_mask == SEC_ADS_CONTROL_ACCESS && !object_type.isEmpty()) {
+    } else if (access_mask == SEC_ADS_CONTROL_ACCESS && object_present) {
         out.append(generic_all);
         out.append(all_extended_rights);
-    } else if (access_mask == SEC_ADS_GENERIC_READ || access_mask == SEC_ADS_GENERIC_WRITE) {
+    } else if ((access_mask == SEC_ADS_GENERIC_READ || access_mask == SEC_ADS_GENERIC_WRITE) && !object_present) {
         out.append(generic_all);
     }
 
@@ -987,21 +989,25 @@ QList<SecurityRight> ad_security_get_superior_right_list(const uint32_t access_m
 QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type, const QList<QString> &class_list) {
     QList<SecurityRight> out;
 
+    const bool object_present = !object_type.isEmpty();
+
     const QList<SecurityRight> right_list_for_target = ad_security_get_right_list_for_class(adconfig, class_list);
 
     for (const SecurityRight &right : right_list_for_target) {
         const bool match = [&]() {
-            if (access_mask == SEC_ADS_GENERIC_ALL) {
+            const bool right_object_present = !right.object_type.isEmpty();
+
+            if (access_mask == SEC_ADS_GENERIC_ALL && !object_present) {
                 // All except full control
                 return (right.access_mask != access_mask);
-            } else if (access_mask == SEC_ADS_GENERIC_READ) {
+            } else if (access_mask == SEC_ADS_GENERIC_READ && !object_present) {
                 // All read property rights
-                return (right.access_mask == SEC_ADS_READ_PROP);
-            } else if (access_mask == SEC_ADS_GENERIC_WRITE) {
+                return (right.access_mask == SEC_ADS_READ_PROP && right_object_present);
+            } else if (access_mask == SEC_ADS_GENERIC_WRITE && !object_present) {
                 // All write property rights
-                return (right.access_mask == SEC_ADS_WRITE_PROP);
-            } else if (access_mask == SEC_ADS_CONTROL_ACCESS && object_type.isEmpty()) {
-                return (right.access_mask == SEC_ADS_CONTROL_ACCESS && !right.object_type.isEmpty());
+                return (right.access_mask == SEC_ADS_WRITE_PROP && right_object_present);
+            } else if (access_mask == SEC_ADS_CONTROL_ACCESS && !object_present) {
+                return (right.access_mask == SEC_ADS_CONTROL_ACCESS && right_object_present);
             } else {
                 return false;
             }
