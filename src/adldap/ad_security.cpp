@@ -970,17 +970,21 @@ QList<SecurityRight> ad_security_get_superior_right_list(const uint32_t access_m
     // NOTE: order is important, because we want to
     // process "more superior" rights first. "Generic
     // all" is more superior than others.
-    if (access_mask == SEC_ADS_READ_PROP && object_present) {
-        out.append(generic_all);
-        out.append(generic_read);
-    } else if (access_mask == SEC_ADS_WRITE_PROP && object_present) {
-        out.append(generic_all);
-        out.append(generic_write);
-    } else if (access_mask == SEC_ADS_CONTROL_ACCESS && object_present) {
-        out.append(generic_all);
-        out.append(all_extended_rights);
-    } else if ((access_mask == SEC_ADS_GENERIC_READ || access_mask == SEC_ADS_GENERIC_WRITE) && !object_present) {
-        out.append(generic_all);
+    if (object_present) {
+        if (access_mask == SEC_ADS_READ_PROP) {
+            out.append(generic_all);
+            out.append(generic_read);
+        } else if (access_mask == SEC_ADS_WRITE_PROP) {
+            out.append(generic_all);
+            out.append(generic_write);
+        } else if (access_mask == SEC_ADS_CONTROL_ACCESS) {
+            out.append(generic_all);
+            out.append(all_extended_rights);
+        }
+    } else {
+        if (access_mask == SEC_ADS_GENERIC_READ || access_mask == SEC_ADS_GENERIC_WRITE) {
+            out.append(generic_all);
+        }
     }
 
     return out;
@@ -997,19 +1001,24 @@ QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, 
         const bool match = [&]() {
             const bool right_object_present = !right.object_type.isEmpty();
 
-            if (access_mask == SEC_ADS_GENERIC_ALL && !object_present) {
-                // All except full control
-                return (right.access_mask != access_mask);
-            } else if (access_mask == SEC_ADS_GENERIC_READ && !object_present) {
-                // All read property rights
-                return (right.access_mask == SEC_ADS_READ_PROP && right_object_present);
-            } else if (access_mask == SEC_ADS_GENERIC_WRITE && !object_present) {
-                // All write property rights
-                return (right.access_mask == SEC_ADS_WRITE_PROP && right_object_present);
-            } else if (access_mask == SEC_ADS_CONTROL_ACCESS && !object_present) {
-                return (right.access_mask == SEC_ADS_CONTROL_ACCESS && right_object_present);
-            } else {
+            if (object_present) {
                 return false;
+            } else {
+                if (access_mask == SEC_ADS_GENERIC_ALL) {
+                    // All except full control
+                    return (right.access_mask != access_mask);
+                } else if (access_mask == SEC_ADS_GENERIC_READ) {
+                    // All read property rights
+                    return (right.access_mask == SEC_ADS_READ_PROP && right_object_present);
+                } else if (access_mask == SEC_ADS_GENERIC_WRITE) {
+                    // All write property rights
+                    return (right.access_mask == SEC_ADS_WRITE_PROP && right_object_present);
+                } else if (access_mask == SEC_ADS_CONTROL_ACCESS) {
+                    // All extended rights
+                    return (right.access_mask == SEC_ADS_CONTROL_ACCESS && right_object_present);
+                } else {
+                    return false;
+                }
             }
         }();
 
