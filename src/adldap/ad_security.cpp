@@ -624,8 +624,6 @@ void security_descriptor_add_right(security_descriptor *sd, const QByteArray &tr
 
         security_descriptor_dacl_add(sd, &ace);
     }
-
-    security_descriptor_sort_dacl(sd);
 }
 
 // Checks if ace matches given members. Note that
@@ -745,8 +743,6 @@ void security_descriptor_remove_right(security_descriptor *sd, const QByteArray 
     }();
 
     ad_security_replace_dacl(sd, new_dacl);
-
-    security_descriptor_sort_dacl(sd);
 }
 
 void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QByteArray> &trustee_list) {
@@ -908,6 +904,8 @@ void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *a
 
     // Add target
     security_descriptor_add_right(sd, trustee, access_mask, object_type, allow);
+
+    security_descriptor_sort_dacl(sd);
 }
 
 void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
@@ -952,6 +950,8 @@ void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig
     for (const SecurityRight &subordinate : tarad_security_get_subordinate_right_list) {
         security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
     }
+
+    security_descriptor_sort_dacl(sd);
 }
 
 QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list) {
