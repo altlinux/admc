@@ -42,6 +42,15 @@ void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace>
 uint32_t ad_security_map_access_mask(const uint32_t access_mask);
 int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2);
 
+// NOTE: these "base" f-ns are used by the full
+// versions of add/remove right f-ns. Base f-ns do only
+// the bare minimum, just adding/removing matching ace,
+// without handling opposites, subordinates, superiors,
+// etc. They also don't sort ACL, callers need to
+// handle sorting themselves.
+void security_descriptor_add_right_base(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
+void security_descriptor_remove_right_base(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
+
 const QList<int> ace_types_with_object = {
     SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT,
     SEC_ACE_TYPE_ACCESS_DENIED_OBJECT,
@@ -353,10 +362,14 @@ bool ad_security_set_user_cant_change_pass(AdInterface *ad, const QString &dn, c
         // means "denied", so we remove the opposite of
         // what we want, and add the type of right that
         // we want
+        // NOTE: using "base" f-ns because we don't want
+        // to touch superiors/subordinates
         const bool allow = !enabled;
-        security_descriptor_remove_right(sd, trustee, SEC_ADS_CONTROL_ACCESS, change_pass_right, !allow);
-        security_descriptor_add_right(sd, trustee, SEC_ADS_CONTROL_ACCESS, change_pass_right, allow);
+        security_descriptor_remove_right_base(sd, trustee, SEC_ADS_CONTROL_ACCESS, change_pass_right, !allow);
+        security_descriptor_add_right_base(sd, trustee, SEC_ADS_CONTROL_ACCESS, change_pass_right, allow);
     }
+
+    security_descriptor_sort_dacl(sd);
 
     const bool success = ad_security_replace_security_descriptor(*ad, dn, sd);
 
@@ -385,14 +398,16 @@ bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString d
         // untouched.
         for (const uint32_t &mask : protect_deletion_mask_list) {
             if (enabled) {
-                security_descriptor_add_right(out, trustee_everyone, mask, QByteArray(), false);
+                security_descriptor_add_right_base(out, trustee_everyone, mask, QByteArray(), false);
             } else {
-                security_descriptor_remove_right(out, trustee_everyone, mask, QByteArray(), false);
+                security_descriptor_remove_right_base(out, trustee_everyone, mask, QByteArray(), false);
             }
         }
 
         return out;
     }();
+
+    security_descriptor_sort_dacl(new_sd);
 
     const bool apply_success = ad_security_replace_security_descriptor(ad, dn, new_sd);
 
@@ -533,7 +548,7 @@ void security_descriptor_print(security_descriptor *sd, AdInterface &ad) {
     }
 }
 
-void security_descriptor_add_right(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask_arg, const QByteArray &object_type, const bool allow) {
+void security_descriptor_add_right_base(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask_arg, const QByteArray &object_type, const bool allow) {
     const uint32_t access_mask = ad_security_map_access_mask(access_mask_arg);
 
     const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
@@ -679,7 +694,7 @@ bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const Q
     return out_match;
 }
 
-void security_descriptor_remove_right(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask_arg, const QByteArray &object_type, const bool allow) {
+void security_descriptor_remove_right_base(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask_arg, const QByteArray &object_type, const bool allow) {
     const uint32_t access_mask = ad_security_map_access_mask(access_mask_arg);
 
     const QList<security_ace> new_dacl = [&]() {
@@ -852,7 +867,7 @@ QString ad_security_get_right_name(AdConfig *adconfig, const uint32_t access_mas
     }
 }
 
-void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
+void security_descriptor_add_right(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
     const QList<SecurityRight> superior_list = ad_security_get_superior_right_list(access_mask, object_type);
     for (const SecurityRight &superior : superior_list) {
         const bool opposite_superior_is_set = [&]() {
@@ -878,37 +893,37 @@ void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *a
         }
 
         // Remove opposite superior
-        security_descriptor_remove_right(sd, trustee, superior.access_mask, superior.object_type, !allow);
+        security_descriptor_remove_right_base(sd, trustee, superior.access_mask, superior.object_type, !allow);
 
         // Add opposite superior subordinates
         const QList<SecurityRight> superior_subordinate_list = ad_security_get_subordinate_right_list(adconfig, superior.access_mask, superior.object_type, class_list);
         for (const SecurityRight &subordinate : superior_subordinate_list) {
 
-            security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
+            security_descriptor_add_right_base(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
         }
     }
 
     // Remove subordinates
     const QList<SecurityRight> subordinate_list = ad_security_get_subordinate_right_list(adconfig, access_mask, object_type, class_list);
     for (const SecurityRight &subordinate : subordinate_list) {
-        security_descriptor_remove_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
+        security_descriptor_remove_right_base(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
     }
 
     // Remove opposite
-    security_descriptor_remove_right(sd, trustee, access_mask, object_type, !allow);
+    security_descriptor_remove_right_base(sd, trustee, access_mask, object_type, !allow);
 
     // Remove opposite subordinates
     for (const SecurityRight &subordinate : subordinate_list) {
-        security_descriptor_remove_right(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
+        security_descriptor_remove_right_base(sd, trustee, subordinate.access_mask, subordinate.object_type, !allow);
     }
 
     // Add target
-    security_descriptor_add_right(sd, trustee, access_mask, object_type, allow);
+    security_descriptor_add_right_base(sd, trustee, access_mask, object_type, allow);
 
     security_descriptor_sort_dacl(sd);
 }
 
-void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
+void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow) {
     const QList<SecurityRight> target_superior_list = ad_security_get_superior_right_list(access_mask, object_type);
 
     // Remove superiors
@@ -932,23 +947,23 @@ void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig
             continue;
         }
 
-        security_descriptor_remove_right(sd, trustee, superior.access_mask, superior.object_type, allow);
+        security_descriptor_remove_right_base(sd, trustee, superior.access_mask, superior.object_type, allow);
         
         const QList<SecurityRight> superior_subordinate_list = ad_security_get_subordinate_right_list(adconfig, superior.access_mask, superior.object_type, class_list);
 
         // Add opposite subordinate rights
         for (const SecurityRight &subordinate : superior_subordinate_list) {
-            security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
+            security_descriptor_add_right_base(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
         }
     }
 
     // Remove target right
-    security_descriptor_remove_right(sd, trustee, access_mask, object_type, allow);
+    security_descriptor_remove_right_base(sd, trustee, access_mask, object_type, allow);
 
     // Add target subordinate rights
     const QList<SecurityRight> tarad_security_get_subordinate_right_list = ad_security_get_subordinate_right_list(adconfig, access_mask, object_type, class_list);
     for (const SecurityRight &subordinate : tarad_security_get_subordinate_right_list) {
-        security_descriptor_add_right(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
+        security_descriptor_add_right_base(sd, trustee, subordinate.access_mask, subordinate.object_type, allow);
     }
 
     security_descriptor_sort_dacl(sd);

@@ -92,21 +92,6 @@ SecurityRightState security_descriptor_get_right(const security_descriptor *sd, 
 void security_descriptor_print(security_descriptor *sd, AdInterface &ad);
 bool security_descriptor_verify_acl_order(security_descriptor *sd);
 
-// These f-ns do only the requested operation. For
-// example, if some right is currently denied and you
-// want to allow it, just calling add_right() is not
-// enough. You would need to remove the "Deny" entry
-// for this right using remove_right() and add "Allow"
-// using add_right(). In addition, these f-ns only edit
-// object rights and don't touch inherited rights. Note
-// that order of operations matters, a right won't be
-// added if it's already applied by a generic right
-// that contains it. In that case you'd have to first
-// remove the generic right and then add the specific
-// right.
-void security_descriptor_add_right(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
-void security_descriptor_remove_right(security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
-
 // Remove all ACE's from DACL for given trustee. Note
 // that inherited ACE's are untouched, so trustee might
 // still have ace's remaining after this is called.
@@ -116,8 +101,8 @@ void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QBy
 // LOT more than just add rights. They also take care
 // of superior and subordinate rights to follow a logic
 // of a typical gui checklist of rights.
-void security_descriptor_add_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
-void security_descriptor_remove_right_complete(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
+void security_descriptor_add_right(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
+void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
 
 QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list);
 QList<SecurityRight> ad_security_get_superior_right_list(const uint32_t access_mask, const QByteArray &object_type);

@@ -426,9 +426,9 @@ void SecurityTabEdit::on_item_changed(QStandardItem *item) {
     const bool allow = (column == AceColumn_Allowed);
 
     if (checked) {
-        security_descriptor_add_right_complete(sd, g_adconfig, target_class_list, trustee, access_mask, object_type, allow);
+        security_descriptor_add_right(sd, g_adconfig, target_class_list, trustee, access_mask, object_type, allow);
     } else {
-        security_descriptor_remove_right_complete(sd, g_adconfig, target_class_list, trustee, access_mask, object_type, allow);
+        security_descriptor_remove_right(sd, g_adconfig, target_class_list, trustee, access_mask, object_type, allow);
     }
 
     load_rights_model();

@@ -47,18 +47,14 @@ private slots:
     void protected_against_deletion();
     void cant_change_pass_data();
     void cant_change_pass();
-
-    // Tests below are for add_right_complete() and
-    // remove_right_complete() and all of their special
-    // cases.
-    void complete_unset_opposite_data();
-    void complete_unset_opposite();
-    void complete_set_subordinate_data();
-    void complete_set_subordinate();
-    void complete_unset_superior_data();
-    void complete_unset_superior();
-    void complete_unset_opposite_superior_data();
-    void complete_unset_opposite_superior();
+    void add_to_unset_opposite_data();
+    void add_to_unset_opposite();
+    void remove_to_set_subordinates_data();
+    void remove_to_set_subordinates();
+    void remove_to_unset_superior_data();
+    void remove_to_unset_superior();
+    void add_to_unset_opposite_superior_data();
+    void add_to_unset_opposite_superior();
 
 private:
     QString test_user_dn;

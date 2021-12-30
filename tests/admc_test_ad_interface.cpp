@@ -108,7 +108,9 @@ void ADMCTestAdInterface::gpo_check_perms() {
             // NOTE: S-1-1-0 is "WORLD"
             const QByteArray trustee_everyone = sid_string_to_bytes("S-1-1-0");
 
-            security_descriptor_add_right(out, trustee_everyone, SEC_ADS_GENERIC_ALL, QByteArray(), true);
+            const QList<QString> class_list = gpc_object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+
+            security_descriptor_add_right(out, ad.adconfig(), class_list, trustee_everyone,  SEC_ADS_GENERIC_ALL, QByteArray(), true);
 
             return out;
         }();
