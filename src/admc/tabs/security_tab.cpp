@@ -119,11 +119,23 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::SecurityTab();
     ui->setupUi(this);
 
-    auto tab_edit = new SecurityTabEdit(ui, this);
+    tab_edit = new SecurityTabEdit(ui, this);
 
     edit_list->append({
         tab_edit,
     });
+}
+
+void SecurityTab::fix_acl_order() {
+    tab_edit->fix_acl_order();
+}
+
+void SecurityTab::set_read_only() {
+    tab_edit->set_read_only();
+}
+
+bool SecurityTab::verify_acl_order() const {
+    return tab_edit->verify_acl_order();
 }
 
 SecurityTabEdit::SecurityTabEdit(Ui::SecurityTab *ui_arg, QObject *parent)
@@ -133,6 +145,7 @@ SecurityTabEdit::SecurityTabEdit(Ui::SecurityTab *ui_arg, QObject *parent)
     sd = nullptr;
 
     ignore_item_changed_signal = false;
+    read_only = false;
 
     trustee_model = new QStandardItemModel(0, 1, this);
 
@@ -175,6 +188,28 @@ SecurityTabEdit::~SecurityTabEdit() {
     if (sd != nullptr) {
         security_descriptor_free(sd);
     }
+}
+
+void SecurityTabEdit::fix_acl_order() {
+    security_descriptor_sort_dacl(sd);
+
+    emit edited();
+}
+
+void SecurityTabEdit::set_read_only() {  
+    ui->add_trustee_button->setEnabled(false);
+    ui->add_well_known_trustee_button->setEnabled(false);
+    ui->remove_trustee_button->setEnabled(false);
+
+    make_rights_model_read_only();
+
+    read_only = true;
+}
+
+bool SecurityTabEdit::verify_acl_order() const {
+    const bool out = security_descriptor_verify_acl_order(sd);
+
+    return out;
 }
 
 SecurityTab::~SecurityTab() {
@@ -265,6 +300,13 @@ void SecurityTabEdit::load(AdInterface &ad, const AdObject &object) {
         rights_model->appendRow(row);
     }
 
+    // NOTE: because rights model is dynamically filled
+    // when trustee switches, we have to make rights
+    // model read only again after it's reloaded
+    if (read_only) {
+        make_rights_model_read_only();
+    }
+
     rights_sort_model->sort(0);
 
     load_current_sd(ad);
@@ -328,6 +370,33 @@ void SecurityTabEdit::load_rights_model() {
                 }
             }();
             item->setCheckState(check_state);
+        }
+    }
+
+    // NOTE: need to make read only again because
+    // during load, items are enabled/disabled based on
+    // their inheritance state
+    if (read_only) {
+        make_rights_model_read_only();
+    }
+
+    ignore_item_changed_signal = false;
+}
+
+void SecurityTabEdit::make_rights_model_read_only() {
+    // NOTE: important to ignore this signal because
+    // it's slot reloads the rights model
+    ignore_item_changed_signal = true;
+
+    for (int row = 0; row < rights_model->rowCount(); row++) {
+        const QList<int> col_list = {
+            AceColumn_Allowed,
+            AceColumn_Denied,
+        };
+
+        for (const int col : col_list) {
+            QStandardItem *item = rights_model->item(row, col);
+            item->setEnabled(false);
         }
     }
 

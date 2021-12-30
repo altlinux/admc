@@ -40,6 +40,7 @@ bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const Q
 QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd);
 void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace> &new_dacl);
 uint32_t ad_security_map_access_mask(const uint32_t access_mask);
+int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2);
 
 const QList<int> ace_types_with_object = {
     SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT,
@@ -787,6 +788,39 @@ void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QBy
     ad_security_replace_dacl(sd, new_dacl);
 }
 
+// TODO: Need to verify SACL order as well, because
+// advanced security dialog(to be implemented) edits
+// SACL.
+bool security_descriptor_verify_acl_order(security_descriptor *sd) {
+    security_descriptor *copy = security_descriptor_copy(sd);
+
+    const bool order_is_correct = [&]() {
+        bool out = true;
+
+        QList<security_ace> dacl = security_descriptor_get_dacl(copy);
+
+        security_ace curr = dacl.takeFirst();
+
+        while (!dacl.isEmpty()) {
+            security_ace next = dacl.takeFirst();
+            const int comparison = ace_compare_simplified(curr, next);
+            const bool order_is_good = (comparison <= 0);
+
+            if (!order_is_good) {
+                out = false;
+            } 
+
+            curr = next;
+        }
+
+        return out;
+    }();
+
+    security_descriptor_free(copy);
+
+    return order_is_correct;
+}
+
 QString ad_security_get_right_name(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type) {
     // TODO: translate object type name. How to: object
     // type guid -> extended right CN -> map of cn's to
@@ -1053,4 +1087,49 @@ uint32_t ad_security_map_access_mask(const uint32_t access_mask) {
     } else {
         return access_mask;
     }
+}
+
+// This simplified version of ace_compare() for
+// verifying ACL order. Only includes necessary
+// comparisons specified by Microsoft here:
+// https://docs.microsoft.com/en-us/windows/win32/secauthz/order-of-aces-in-a-dacl
+// 
+// TODO: currently missing one comparison:
+// 
+// "Inherited ACE's are placed in the order in which
+// they are inherited"
+// 
+// Not a big problem because inherited ACE's are added
+// to ACL by the server. Clients cannot manually add
+// such ACE's, so theoretically their order should
+// always be correct. But do implement this at some
+// point, just in case. Using order requirements listed
+// here:
+int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2)
+{
+    bool b1;
+    bool b2;
+
+    /* If the ACEs are equal, we have nothing more to do. */
+    if (security_ace_equal(&ace1, &ace2)) {
+        return 0;
+    }
+
+    /* Inherited follow non-inherited */
+    b1 = ((ace1.flags & SEC_ACE_FLAG_INHERITED_ACE) != 0);
+    b2 = ((ace2.flags & SEC_ACE_FLAG_INHERITED_ACE) != 0);
+    if (b1 != b2) {
+        return (b1 ? 1 : -1);
+    }
+
+    /* Allowed ACEs follow denied ACEs */
+    b1 = (ace1.type == SEC_ACE_TYPE_ACCESS_ALLOWED ||
+          ace1.type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT);
+    b2 = (ace2.type == SEC_ACE_TYPE_ACCESS_ALLOWED ||
+          ace2.type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT);
+    if (b1 != b2) {
+        return (b1 ? 1 : -1);
+    }
+
+    return 0;
 }

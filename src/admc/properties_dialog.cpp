@@ -25,6 +25,7 @@
 #include "console_impls/object_impl.h"
 #include "globals.h"
 #include "properties_warning_dialog.h"
+#include "security_sort_warning_dialog.h"
 #include "settings.h"
 #include "status.h"
 #include "tab_widget.h"
@@ -114,6 +115,9 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     setAttribute(Qt::WA_DeleteOnClose);
 
     target = target_arg;
+
+    security_warning_was_rejected = false;
+    security_tab = nullptr;
 
     PropertiesDialog::instances[target] = this;
 
@@ -221,7 +225,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
 
     const bool need_security_tab = object.attributes().contains(ATTRIBUTE_SECURITY_DESCRIPTOR);
     if (need_security_tab && advanced_view_ON) {
-        auto security_tab = new SecurityTab(&edit_list, this);
+        security_tab = new SecurityTab(&edit_list, this);
         ui->tab_widget->add_tab(security_tab, tr("Security"));
     }
 
@@ -262,11 +266,18 @@ PropertiesDialog::~PropertiesDialog() {
     delete ui;
 }
 
+// NOTE: order here is important. Attributes warning
+// can apply/discard changes, while security warning
+// can add a modification to security tab. Therefore
+// attributes warning needs to go first so that it
+// won't discard security warning modification.
 void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab) {
     const bool switching_to_or_from_attributes = (prev_tab == attributes_tab || new_tab == attributes_tab);
     const bool is_modified = !apply_list.isEmpty();
-    const bool need_to_open_dialog = (switching_to_or_from_attributes && is_modified);
-    if (!need_to_open_dialog) {
+    const bool need_attributes_warning = (switching_to_or_from_attributes && is_modified);
+    if (!need_attributes_warning) {
+        open_security_warning();
+
         return;
     }
 
@@ -278,11 +289,11 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
         }
     }();
 
-    auto dialog = new PropertiesWarningDialog(warning_type, this);
-    dialog->open();
+    auto attributes_warning_dialog = new PropertiesWarningDialog(warning_type, this);
+    attributes_warning_dialog->open();
 
     connect(
-        dialog, &QDialog::accepted,
+        attributes_warning_dialog, &QDialog::accepted,
         this,
         [this]() {
             AdInterface ad;
@@ -299,8 +310,64 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
         });
 
     connect(
-        dialog, &QDialog::rejected,
+        attributes_warning_dialog, &QDialog::rejected,
         this, &PropertiesDialog::reset);
+
+    // Open security warning after attributes warning
+    // is finished
+    connect(
+        attributes_warning_dialog, &QDialog::finished,
+        this, &PropertiesDialog::open_security_warning);
+}
+
+void PropertiesDialog::open_security_warning() {
+    const bool security_tab_exists = (security_tab != nullptr);
+    if (!security_tab_exists) {
+        return;
+    }
+
+    // NOTE: if security warning was rejected once,
+    // then security tab is forever read only and we
+    // don't show the warning again (for this dialog
+    // instance).
+    if (security_warning_was_rejected) {
+        return;
+    }
+
+    const bool switched_to_security_tab = [&]() {
+        const QWidget *current_tab = ui->tab_widget->get_current_tab();
+        const bool out = (current_tab == security_tab);
+
+        return out;
+    }();
+    if (!switched_to_security_tab) {
+        return;
+    }
+
+    const bool order_is_correct = security_tab->verify_acl_order();
+    if (order_is_correct) {
+        return;
+    }
+
+    auto security_warning_dialog = new SecuritySortWarningDialog(this);
+    security_warning_dialog->open();
+
+    connect(
+        security_warning_dialog, &QDialog::accepted,
+        this, &PropertiesDialog::on_security_warning_accepted);
+    connect(
+        security_warning_dialog, &QDialog::rejected,
+        this, &PropertiesDialog::on_security_warning_rejected);
+}
+
+void PropertiesDialog::on_security_warning_accepted() {
+    security_tab->fix_acl_order();
+}
+
+void PropertiesDialog::on_security_warning_rejected() {
+    security_tab->set_read_only();
+
+    security_warning_was_rejected = true;
 }
 
 void PropertiesDialog::accept() {

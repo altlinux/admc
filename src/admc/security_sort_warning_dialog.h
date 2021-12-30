@@ -18,38 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TAB_WIDGET_H
-#define TAB_WIDGET_H
+#ifndef SECURITY_SORT_WARNING_DIALOG
+#define SECURITY_SORT_WARNING_DIALOG
 
 /**
- * Shows tabs in a horizontal list to the left and current
- * tab to the right. Used as a replacement for QTabWidget
- * because it doesn't have multi-line tabs.
+ * Dialog that warns about incorrect ACL sort order and
+ * offers to fix it. Opens when switching to security
+ * tab and incorrect order is detected.
  */
 
-#include <QWidget>
+#include <QDialog>
 
 namespace Ui {
-class TabWidget;
+class SecuritySortWarningDialog;
 }
 
-class TabWidget final : public QWidget {
+class SecuritySortWarningDialog final : public QDialog {
     Q_OBJECT
 
 public:
-    Ui::TabWidget *ui;
+    Ui::SecuritySortWarningDialog *ui;
 
-    TabWidget(QWidget *parent = nullptr);
-    ~TabWidget();
-
-    QWidget *get_current_tab() const;
-    void add_tab(QWidget *tab, const QString &title);
-
-signals:
-    void current_changed(QWidget *prev_tab, QWidget *new_tab);
-
-private:
-    void on_list_current_row_changed(int index);
+    SecuritySortWarningDialog(QWidget *parent);
+    ~SecuritySortWarningDialog();
 };
 
-#endif /* TAB_WIDGET_H */
+#endif /* SECURITY_SORT_WARNING_DIALOG */

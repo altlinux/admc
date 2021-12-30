@@ -43,6 +43,8 @@ enum AceColumn {
     AceColumn_COUNT,
 };
 
+class SecurityTabEdit;
+
 namespace Ui {
 class SecurityTab;
 }
@@ -55,6 +57,13 @@ public:
 
     SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~SecurityTab();
+
+    void fix_acl_order();
+    void set_read_only();
+    bool verify_acl_order() const;
+
+private:
+    SecurityTabEdit *tab_edit;
 };
 
 class SecurityTabEdit final : public AttributeEdit {
@@ -68,6 +77,10 @@ public:
     bool verify(AdInterface &ad, const QString &dn) const override;
     bool apply(AdInterface &ad, const QString &dn) const override;
 
+    void fix_acl_order();
+    void set_read_only();
+    bool verify_acl_order() const;
+
 private:
     Ui::SecurityTab *ui;
     SecurityTabPrivate *d;
@@ -78,6 +91,7 @@ private:
     bool ignore_item_changed_signal;
     security_descriptor *sd;
     QList<QString> target_class_list;
+    bool read_only;
 
     void on_item_changed(QStandardItem *item);
     void on_add_trustee_button();
@@ -86,6 +100,7 @@ private:
     void on_add_well_known_trustee();
     void load_current_sd(AdInterface &ad);
     void load_rights_model();
+    void make_rights_model_read_only();
     QByteArray get_current_trustee() const;
 };
 

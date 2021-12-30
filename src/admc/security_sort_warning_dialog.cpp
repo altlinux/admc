@@ -18,38 +18,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TAB_WIDGET_H
-#define TAB_WIDGET_H
+#include "security_sort_warning_dialog.h"
+#include "ui_security_sort_warning_dialog.h"
 
-/**
- * Shows tabs in a horizontal list to the left and current
- * tab to the right. Used as a replacement for QTabWidget
- * because it doesn't have multi-line tabs.
- */
+SecuritySortWarningDialog::SecuritySortWarningDialog(QWidget *parent)
+: QDialog(parent) {
+    ui = new Ui::SecuritySortWarningDialog();
+    ui->setupUi(this);
 
-#include <QWidget>
+    setAttribute(Qt::WA_DeleteOnClose);
 
-namespace Ui {
-class TabWidget;
+    ui->label->setText(tr("This object's security descriptor contains ACL that has incorrect order. Fix order to proceed with editing. If order is not fixed, Security tab will be read only."));
+
+    ui->button_box->addButton(tr("Fix order"), QDialogButtonBox::AcceptRole);
+    ui->button_box->addButton(tr("Cancel"), QDialogButtonBox::RejectRole);
 }
 
-class TabWidget final : public QWidget {
-    Q_OBJECT
-
-public:
-    Ui::TabWidget *ui;
-
-    TabWidget(QWidget *parent = nullptr);
-    ~TabWidget();
-
-    QWidget *get_current_tab() const;
-    void add_tab(QWidget *tab, const QString &title);
-
-signals:
-    void current_changed(QWidget *prev_tab, QWidget *new_tab);
-
-private:
-    void on_list_current_row_changed(int index);
-};
-
-#endif /* TAB_WIDGET_H */
+SecuritySortWarningDialog::~SecuritySortWarningDialog() {
+    delete ui;
+}

@@ -38,6 +38,7 @@ class AdInterface;
 class AdObject;
 class PropertiesWarningDialog;
 class AttributeEdit;
+class SecurityTab;
 
 namespace Ui {
 class PropertiesDialog;
@@ -79,6 +80,8 @@ private:
     QPushButton *reset_button;
     AttributesTab *attributes_tab;
     PropertiesWarningDialog *warning_dialog;
+    bool security_warning_was_rejected;
+    SecurityTab *security_tab;
 
     // NOTE: ctor is private, use open_for_target() instead
     PropertiesDialog(AdInterface &ad, const QString &target_arg);
@@ -86,6 +89,9 @@ private:
     void reset_internal(AdInterface &ad, const AdObject &object);
 
     void on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab);
+    void open_security_warning();
+    void on_security_warning_accepted();
+    void on_security_warning_rejected();
 };
 
 #endif /* PROPERTIES_DIALOG_H */

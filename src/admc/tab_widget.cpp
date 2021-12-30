@@ -35,6 +35,12 @@ TabWidget::~TabWidget() {
     delete ui;
 }
 
+QWidget *TabWidget::get_current_tab() const {
+    QWidget *out = ui->stacked_widget->currentWidget();
+
+    return out;
+}
+
 void TabWidget::add_tab(QWidget *tab, const QString &title) {
     ui->list_widget->addItem(title);
     ui->stacked_widget->addWidget(tab);

@@ -90,6 +90,7 @@ void security_descriptor_sort_dacl(security_descriptor *sd);
 QList<QByteArray> security_descriptor_get_trustee_list(security_descriptor *sd);
 SecurityRightState security_descriptor_get_right(const security_descriptor *sd, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type);
 void security_descriptor_print(security_descriptor *sd, AdInterface &ad);
+bool security_descriptor_verify_acl_order(security_descriptor *sd);
 
 // These f-ns do only the requested operation. For
 // example, if some right is currently denied and you
