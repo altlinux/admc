@@ -23,9 +23,11 @@
 
 #include "console_impls/object_impl.h"
 #include "select_object_dialog.h"
+#include "utils.h"
 #include "settings.h"
 
 #include <QStandardItemModel>
+#include <QPushButton>
 
 SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
 : QDialog(parent) {
@@ -44,6 +46,9 @@ SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> 
     for (const AdObject &object : search_results) {
         add_select_object_to_model(model, object);
     }
+
+    QPushButton *ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    enable_widget_on_selection(ok_button, ui->view);
 
     settings_setup_dialog_geometry(SETTING_select_object_match_dialog_geometry, this);
     settings_restore_header_state(SETTING_select_object_match_header_state, ui->view->header());

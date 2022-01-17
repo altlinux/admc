@@ -25,6 +25,8 @@
 #include "utils.h"
 #include "settings.h"
 
+#include <QPushButton>
+
 LogonComputersDialog::LogonComputersDialog(const QString &value, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::LogonComputersDialog();
@@ -37,6 +39,8 @@ LogonComputersDialog::LogonComputersDialog(const QString &value, QWidget *parent
     for (const QString &subvalue : value_list) {
         ui->list->addItem(subvalue);
     }
+
+    enable_widget_on_selection(ui->remove_button, ui->list);
 
     settings_setup_dialog_geometry(SETTING_logon_computers_dialog_geometry, this);
 

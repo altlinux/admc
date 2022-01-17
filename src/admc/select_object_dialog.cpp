@@ -57,6 +57,8 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 
     ui->view->setModel(model);
 
+    enable_widget_on_selection(ui->remove_button, ui->view);
+
     settings_setup_dialog_geometry(SETTING_select_object_dialog_geometry, this);
 
     settings_restore_header_state(SETTING_select_object_header_state, ui->view->header());
