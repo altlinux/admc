@@ -39,8 +39,6 @@
 #include <QMenu>
 #include <QStandardItemModel>
 
-// TODO: improve composition of tab and edit
-
 QString attribute_type_display_string(const AttributeType type);
 
 AttributesTab::AttributesTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
