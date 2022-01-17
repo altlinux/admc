@@ -222,24 +222,30 @@ void ADMCTestAdSecurity::add_to_unset_opposite() {
 void ADMCTestAdSecurity::remove_to_set_subordinates_data() {
     QTest::addColumn<bool>("allow_superior");
     QTest::addColumn<int>("superior_mask");
+    QTest::addColumn<QByteArray>("subordinate_right_type");
     QTest::addColumn<QList<int>>("subordinate_mask_list");
     QTest::addColumn<TestAdSecurityType>("exptected_state");
 
-    QTest::newRow("allow full control") << true << SEC_ADS_GENERIC_ALL << QList<int>({SEC_ADS_WRITE_PROP, SEC_ADS_READ_PROP}) << TestAdSecurityType_Allow;
-    QTest::newRow("deny full control") << false << SEC_ADS_GENERIC_ALL << QList<int>({SEC_ADS_WRITE_PROP, SEC_ADS_READ_PROP}) << TestAdSecurityType_Deny;
-    QTest::newRow("allow generic read") << true << SEC_ADS_GENERIC_READ << QList<int>({SEC_ADS_READ_PROP}) << TestAdSecurityType_Allow;
-    QTest::newRow("deny generic read") << false << SEC_ADS_GENERIC_READ << QList<int>({SEC_ADS_READ_PROP}) << TestAdSecurityType_Deny;
-    QTest::newRow("allow generic write") << true << SEC_ADS_GENERIC_WRITE << QList<int>({SEC_ADS_WRITE_PROP}) << TestAdSecurityType_Allow;
-    QTest::newRow("deny generic write") << false << SEC_ADS_GENERIC_WRITE << QList<int>({SEC_ADS_WRITE_PROP}) << TestAdSecurityType_Deny;
+    const QByteArray type_web_info = ad.adconfig()->get_right_guid("Web-Information");
+    const QByteArray type_change_password = ad.adconfig()->get_right_guid("User-Change-Password");
+
+    QTest::newRow("allow full control") << true << SEC_ADS_GENERIC_ALL << type_web_info << QList<int>({SEC_ADS_WRITE_PROP, SEC_ADS_READ_PROP}) << TestAdSecurityType_Allow;
+    QTest::newRow("deny full control") << false << SEC_ADS_GENERIC_ALL << type_web_info << QList<int>({SEC_ADS_WRITE_PROP, SEC_ADS_READ_PROP}) << TestAdSecurityType_Deny;
+    QTest::newRow("allow generic read") << true << SEC_ADS_GENERIC_READ << type_web_info << QList<int>({SEC_ADS_READ_PROP}) << TestAdSecurityType_Allow;
+    QTest::newRow("deny generic read") << false << SEC_ADS_GENERIC_READ << type_web_info << QList<int>({SEC_ADS_READ_PROP}) << TestAdSecurityType_Deny;
+    QTest::newRow("allow generic write") << true << SEC_ADS_GENERIC_WRITE << type_web_info << QList<int>({SEC_ADS_WRITE_PROP}) << TestAdSecurityType_Allow;
+    QTest::newRow("deny generic write") << false << SEC_ADS_GENERIC_WRITE << type_web_info << QList<int>({SEC_ADS_WRITE_PROP}) << TestAdSecurityType_Deny;
+    QTest::newRow("allow all extended rights") << true << SEC_ADS_CONTROL_ACCESS << type_change_password << QList<int>({SEC_ADS_CONTROL_ACCESS}) << TestAdSecurityType_Allow;
+    QTest::newRow("allow all extended rights") << true << SEC_ADS_CONTROL_ACCESS << type_change_password << QList<int>({SEC_ADS_CONTROL_ACCESS}) << TestAdSecurityType_Allow;
+    QTest::newRow("deny all extended rights") << false << SEC_ADS_CONTROL_ACCESS << type_change_password << QList<int>({SEC_ADS_CONTROL_ACCESS}) << TestAdSecurityType_Deny;
 }
 
 void ADMCTestAdSecurity::remove_to_set_subordinates() {
     QFETCH(bool, allow_superior);
     QFETCH(int, superior_mask);
+    QFETCH(QByteArray, subordinate_right_type);
     QFETCH(QList<int>, subordinate_mask_list);
     QFETCH(TestAdSecurityType, exptected_state);
-
-    const QByteArray subordinate_right_type = ad.adconfig()->get_right_guid("Web-Information");
 
     // Add superior
     security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, superior_mask, QByteArray(), allow_superior);
