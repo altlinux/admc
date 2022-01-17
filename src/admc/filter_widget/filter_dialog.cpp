@@ -51,6 +51,10 @@ void FilterDialog::restore_state(const QVariant &state) {
     ui->filter_widget->restore_state(state);
 }
 
+void FilterDialog::enable_filtering_all_classes() {
+    ui->filter_widget->enable_filtering_all_classes();
+}
+
 QString FilterDialog::get_filter() const {
     return ui->filter_widget->get_filter();
 }

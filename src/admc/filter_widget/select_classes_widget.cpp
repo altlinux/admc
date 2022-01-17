@@ -70,6 +70,8 @@ QVariant SelectClassesWidget::save_state() const {
     const QList<QVariant> selected_list_variant = string_list_to_variant_list(m_selected_list);
     state["selected_list"] = selected_list_variant;
 
+    state["m_all_is_checked"] = m_all_is_checked;
+
     return state;
 }
 
@@ -80,6 +82,9 @@ void SelectClassesWidget::restore_state(const QVariant &state_variant) {
     const QList<QString> saved_selected_list = variant_list_to_string_list(saved_selected_list_variant);
 
     m_selected_list = saved_selected_list;
+
+    m_all_is_checked = state["m_all_is_checked"].toBool();
+
     update_class_display(m_selected_list);
 }
 

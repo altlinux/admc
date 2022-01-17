@@ -90,6 +90,7 @@ void EditQueryItemWidget::set_data(const QString &name, const QString &descripti
 
 void EditQueryItemWidget::open_filter_dialog() {
     auto dialog = new FilterDialog(filter_classes, filter_classes, this);
+    dialog->enable_filtering_all_classes();
     dialog->restore_state(filter_dialog_state);
 
     dialog->open();

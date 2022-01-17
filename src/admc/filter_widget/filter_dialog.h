@@ -44,6 +44,7 @@ public:
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
+    void enable_filtering_all_classes();
 
     QString get_filter() const;
 
