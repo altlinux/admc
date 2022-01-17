@@ -977,12 +977,12 @@ bool AdInterface::group_set_scope(const QString &dn, GroupScope scope, const DoS
         const GroupScope this_scope = (GroupScope) i;
         const int this_scope_bit = group_scope_bit(this_scope);
 
-        group_type = bit_set(group_type, this_scope_bit, false);
+        group_type = bitmask_set(group_type, this_scope_bit, false);
     }
 
     // Set given scope bit
     const int scope_bit = group_scope_bit(scope);
-    group_type = bit_set(group_type, scope_bit, true);
+    group_type = bitmask_set(group_type, scope_bit, true);
 
     const QString name = dn_get_name(dn);
     const QString scope_string = group_scope_string(scope);
@@ -1007,7 +1007,7 @@ bool AdInterface::group_set_type(const QString &dn, GroupType type) {
 
     const bool set_security_bit = type == GroupType_Security;
 
-    const int update_group_type = bit_set(group_type, GROUP_TYPE_BIT_SECURITY, set_security_bit);
+    const int update_group_type = bitmask_set(group_type, GROUP_TYPE_BIT_SECURITY, set_security_bit);
     const QString update_group_type_string = QString::number(update_group_type);
 
     const QString name = dn_get_name(dn);
@@ -1131,7 +1131,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             }();
 
             const int bit = account_option_bit(option);
-            const int updated_uac = bit_set(uac, bit, set);
+            const int updated_uac = bitmask_set(uac, bit, set);
 
             success = attribute_replace_int(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, updated_uac, DoStatusMsg_No);
         }

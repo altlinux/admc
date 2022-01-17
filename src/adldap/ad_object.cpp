@@ -162,7 +162,7 @@ bool AdObject::get_bool(const QString &attribute) const {
 bool AdObject::get_system_flag(const SystemFlagsBit bit) const {
     if (contains(ATTRIBUTE_SYSTEM_FLAGS)) {
         const int system_flags_bits = get_int(ATTRIBUTE_SYSTEM_FLAGS);
-        const bool is_set = bit_is_set(system_flags_bits, bit);
+        const bool is_set = bitmask_is_set(system_flags_bits, bit);
 
         return is_set;
     } else {
@@ -223,7 +223,7 @@ GroupScope AdObject::get_group_scope() const {
         const GroupScope this_scope = (GroupScope) i;
         const int scope_bit = group_scope_bit(this_scope);
 
-        if (bit_is_set(group_type, scope_bit)) {
+        if (bitmask_is_set(group_type, scope_bit)) {
             return this_scope;
         }
     }

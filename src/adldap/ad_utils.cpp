@@ -344,18 +344,16 @@ QString get_default_domain_from_krb5() {
     return out;
 }
 
-// TODO: rename because this is really more about masks
-// than bits
-int bit_set(int bitmask, int bit, bool set) {
-    if (set) {
-        return bitmask | bit;
+int bitmask_set(const int input_mask, const int mask_to_set, const bool is_set) {
+    if (is_set) {
+        return input_mask | mask_to_set;
     } else {
-        return bitmask & ~bit;
+        return input_mask & ~mask_to_set;
     }
 }
 
-bool bit_is_set(int bitmask, int bit) {
-    return ((bitmask & bit) == bit);
+bool bitmask_is_set(const int input_mask, const int mask_to_read) {
+    return ((input_mask & mask_to_read) == mask_to_read);
 }
 
 const char *cstr(const QString &qstr) {

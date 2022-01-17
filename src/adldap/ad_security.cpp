@@ -472,7 +472,7 @@ SecurityRightState security_descriptor_get_right(const security_descriptor *sd, 
                 return trustees_are_equal;
             }();
 
-            const bool access_mask_match = bit_is_set(ace.access_mask, access_mask);
+            const bool access_mask_match = bitmask_is_set(ace.access_mask, access_mask);
 
             
             const bool object_match = [&]() {
@@ -511,7 +511,7 @@ SecurityRightState security_descriptor_get_right(const security_descriptor *sd, 
             state_list[SecurityRightStateType_Deny] = ace_type_deny_set.contains(ace.type);
 
             const int inherit_i = [&]() {
-                const bool ace_is_inherited = bit_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
+                const bool ace_is_inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
 
                 if (ace_is_inherited) {
                     return SecurityRightStateInherited_Yes;
@@ -575,7 +575,7 @@ void security_descriptor_add_right_base(security_descriptor *sd, const QByteArra
     if (matching_index != -1) {
         const bool right_already_set = [&]() {
             const security_ace matching_ace = dacl[matching_index];
-            const bool out = bit_is_set(matching_ace.access_mask, access_mask);
+            const bool out = bitmask_is_set(matching_ace.access_mask, access_mask);
 
             return out;
         }();
@@ -584,7 +584,7 @@ void security_descriptor_add_right_base(security_descriptor *sd, const QByteArra
         // given mask to this ace, but only if it's not set already
         if (!right_already_set) {
             security_ace new_ace = dacl[matching_index];
-            new_ace.access_mask = bit_set(new_ace.access_mask, access_mask, true);
+            new_ace.access_mask = bitmask_set(new_ace.access_mask, access_mask, true);
             sd->dacl->aces[matching_index] = new_ace;
         }
     } else {
@@ -661,7 +661,7 @@ bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const Q
     }();
 
     const bool flags_match = [&]() {
-        const bool ace_is_inherited = bit_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
+        const bool ace_is_inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
         const bool out = (ace_is_inherited == inherited);
 
         return out;
@@ -704,7 +704,7 @@ void security_descriptor_remove_right_base(security_descriptor *sd, const QByteA
 
         for (const security_ace &ace : old_dacl) {
             const bool match = check_ace_match(ace, trustee, object_type, allow, false);
-            const bool ace_mask_contains_mask = bit_is_set(ace.access_mask, access_mask);
+            const bool ace_mask_contains_mask = bitmask_is_set(ace.access_mask, access_mask);
 
             if (match && ace_mask_contains_mask) {
                 const security_ace edited_ace = [&]() {
@@ -725,7 +725,7 @@ void security_descriptor_remove_right_base(security_descriptor *sd, const QByteA
 
                         if (opposite_map.contains(access_mask)) {
                             const uint32_t opposite = opposite_map[access_mask];
-                            const bool opposite_is_set = bit_is_set(ace.access_mask, opposite);
+                            const bool opposite_is_set = bitmask_is_set(ace.access_mask, opposite);
 
                             if (opposite_is_set) {
                                 const uint32_t out_mask = (access_mask & ~SEC_STD_READ_CONTROL);
@@ -739,7 +739,7 @@ void security_descriptor_remove_right_base(security_descriptor *sd, const QByteA
                         }
                     }();
 
-                    out_ace.access_mask = bit_set(ace.access_mask, mask_to_unset, false);
+                    out_ace.access_mask = bitmask_set(ace.access_mask, mask_to_unset, false);
 
                     return out_ace;
                 }();
@@ -781,7 +781,7 @@ void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QBy
                     return false;
                 }();
 
-                const bool inherited = bit_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
+                const bool inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
 
                 const bool out_match = trustee_match && !inherited;
 
@@ -991,7 +991,7 @@ QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, co
         };
 
         for (const uint32_t &access_mask : access_mask_list) {
-            const bool mask_match = bit_is_set(valid_accesses, access_mask);
+            const bool mask_match = bitmask_is_set(valid_accesses, access_mask);
 
             if (mask_match) {
                 SecurityRight right;

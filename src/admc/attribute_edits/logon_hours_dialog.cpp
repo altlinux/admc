@@ -152,7 +152,7 @@ QList<QList<bool>> logon_hours_to_bools(const QByteArray &byte_list, const int t
         for (const char byte : byte_list) {
             for (int bit_i = 0; bit_i < 8; bit_i++) {
                 const int bit = (0x01 << bit_i);
-                const bool is_set = bit_is_set((int) byte, bit);
+                const bool is_set = bitmask_is_set((int) byte, bit);
                 out.append(is_set);
             }
         }
@@ -199,7 +199,7 @@ QByteArray logon_hours_to_bytes(const QList<QList<bool>> bool_list, const int ti
             int byte = 0;
             for (int bit_i = 0; bit_i < 8; bit_i++) {
                 const int bit = (0x01 << bit_i);
-                byte = bit_set(byte, bit, byte_list[bit_i]);
+                byte = bitmask_set(byte, bit, byte_list[bit_i]);
             }
 
             bytes.append(byte);

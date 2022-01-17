@@ -581,7 +581,7 @@ bool AdConfig::get_attribute_is_backlink(const QString &attribute) const {
 
 bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
     const int system_flags = d->attribute_schemas[attribute].get_int(ATTRIBUTE_SYSTEM_FLAGS);
-    return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);
+    return bitmask_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);
 }
 
 QByteArray AdConfig::get_right_guid(const QString &right_cn) const {
