@@ -59,7 +59,7 @@ private:
     bool m_all_is_checked;
 
     void open_dialog();
-    void update_class_display(const QList<QString> &selected_list);
+    void update_class_display();
 };
 
 #endif /* SELECT_CLASSES_WIDGET_H */
