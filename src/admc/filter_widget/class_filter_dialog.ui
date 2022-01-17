@@ -15,6 +15,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QCheckBox" name="all_checkbox">
+     <property name="text">
+      <string>All</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="ClassFilterWidget" name="class_filter_widget" native="true"/>
    </item>
    <item>

@@ -64,6 +64,8 @@ public:
     // NOTE: returned items need to be re-parented or deleted!
     QList<QString> get_selected_dns() const;
 
+    void enable_filtering_all_classes();
+
 private slots:
     void find();
     void handle_find_thread_results(const QHash<QString, AdObject> &results);

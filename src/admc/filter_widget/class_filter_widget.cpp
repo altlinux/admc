@@ -55,6 +55,10 @@ void ClassFilterWidget::set_classes(const QList<QString> &class_list, const QLis
         checkbox->setChecked(is_selected);
 
         ui->classes_layout->addWidget(checkbox);
+
+        connect(
+            checkbox, &QCheckBox::toggled,
+            this, &ClassFilterWidget::changed);
     }
 }
 

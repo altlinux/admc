@@ -41,6 +41,7 @@ public:
     ~FilterWidgetSimpleTab();
 
     void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
+    void enable_filtering_all_classes();
 
     QString get_filter() const;
     void clear();

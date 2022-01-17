@@ -37,6 +37,10 @@ void FilterWidgetSimpleTab::set_classes(const QList<QString> &class_list, const 
     ui->select_classes_widget->set_classes(class_list, selected_list);
 }
 
+void FilterWidgetSimpleTab::enable_filtering_all_classes() {
+    ui->select_classes_widget->enable_filtering_all_classes();
+}
+
 QString FilterWidgetSimpleTab::get_filter() const {
     const QString name_filter = [this]() {
         const QString name = ui->name_edit->text();

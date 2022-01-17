@@ -53,6 +53,7 @@ FindObjectDialog::FindObjectDialog(ConsoleWidget *buddy_console, const QString &
     ui->find_widget->set_default_base(default_base);
     ui->find_widget->setup_action_menu(action_menu);
     ui->find_widget->setup_view_menu(view_menu);
+    ui->find_widget->enable_filtering_all_classes();
 
     settings_setup_dialog_geometry(SETTING_find_object_dialog_geometry, this);
 

@@ -42,6 +42,11 @@ void FilterWidget::set_classes(const QList<QString> &class_list, const QList<QSt
     ui->normal_tab->set_classes(class_list, selected_list);
 }
 
+void FilterWidget::enable_filtering_all_classes() {
+    ui->simple_tab->enable_filtering_all_classes();
+    ui->normal_tab->enable_filtering_all_classes();
+}
+
 QString FilterWidget::get_filter() const {
     const FilterWidgetTab *current_tab = dynamic_cast<FilterWidgetTab *>(ui->tab_widget->currentWidget());
 

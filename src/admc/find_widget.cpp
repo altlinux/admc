@@ -117,6 +117,10 @@ void FindWidget::set_classes(const QList<QString> &class_list, const QList<QStri
     ui->filter_widget->set_classes(class_list, selected_list);
 }
 
+void FindWidget::enable_filtering_all_classes() {
+    ui->filter_widget->enable_filtering_all_classes();
+}
+
 void FindWidget::set_default_base(const QString &default_base) {
     ui->select_base_widget->set_default_base(default_base);
 }

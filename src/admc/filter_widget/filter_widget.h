@@ -52,6 +52,8 @@ public:
     void restore_state(const QVariant &state);
 
     void clear();
+
+    void enable_filtering_all_classes();
 };
 
 class FilterWidgetTab : public QWidget {

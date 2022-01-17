@@ -45,6 +45,7 @@ public:
     ~SelectClassesWidget();
 
     void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
+    void enable_filtering_all_classes();
 
     QString get_filter() const;
 
@@ -54,6 +55,8 @@ public:
 private:
     QList<QString> class_list;
     QList<QString> m_selected_list;
+    bool filtering_all_classes_is_enabled;
+    bool m_all_is_checked;
 
     void open_dialog();
     void update_class_display(const QList<QString> &selected_list);
