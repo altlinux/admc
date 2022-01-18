@@ -1,9 +1,4 @@
 %define _unpackaged_files_terminate_build 1
-%define _development 1
-%if %_development
-%define _git_commit %(git rev-parse --short HEAD)
-%define _development_release (development release %_git_commit)
-%endif
 
 Name: admc
 Version: 0.9.0
@@ -113,64 +108,7 @@ Tests for ADMC
 %_bindir/admc_test_create_object_dialog
 %_bindir/admc_test_select_classes_widget
 
+# NOTE: remove this changelog entry when merging into sisyphus branch. This is an auto-generated changelog entry for the upstream branch. For release builds, you should add a hand-written changelog entry.
 %changelog
 * %(LC_TIME=C date "+%%a %%b %%d %%Y") %{?package_signer:%package_signer}%{!?package_signer:%packager} %version-%release
-- %version-%release%{?_development_release: %_development_release}.
-
-* Thu Aug 05 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.6.4-alt1
-- 0.6.4
-- closes: 40653
-- closes: 40654
-
-* Mon Aug 02 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.6.3-alt1
-- 0.6.3
-
-* Thu Jul 29 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.6.2-alt1
-- 0.6.2 (closes: 40562)
-
-* Tue Jul 20 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.6.1-alt1
-- 0.6.1
-
-* Fri Jul 09 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.6.0-alt1
-- 0.6.0
-
-* Mon Jun 21 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.3-alt1
-- 0.5.3
-
-* Sun May 30 2021 Arseny Maslennikov <arseny@altlinux.org> 0.5.2-alt1.1
-- NMU: spec: adapted to new cmake macros.
-
-* Wed May 12 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.2-alt1
-- 0.5.2
-
-* Fri Apr 23 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.1-alt1
-- 0.5.1
-
-* Thu Apr 22 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.5.0-alt1
-- 0.5.0
-
-* Tue Mar 02 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.4.1-alt1
-- 0.4.1
-
-* Mon Feb 15 2021 Dmitry Degtyarev <kevl@altlinux.org> 0.4.0-alt1
-- 0.4.0
-
-* Sun Dec 27 2020 Alexey Shabalin <shaba@altlinux.org> 0.3.1-alt2
-- Delete openldap package from requires.
-
-* Tue Jul 28 2020 Dmitry Degtyarev <kevl@altlinux.org> 0.3.1-alt1
-- Fixed login dialog closing app
-- Fixed app sometimes segfaulting when reading ber format attributes
-
-* Fri Jul 24 2020 Igor Chudov <nir@altlinux.org> 0.3.0-alt1
-- Build ADMC for all architectures
-
-* Fri Jul 24 2020 Igor Chudov <nir@altlinux.org> 0.2.0-alt1
-- Translations added
-- Logon dialog implemented
-- libadldap improved
-- Various UI improvements added
-
-* Thu May 21 2020 Igor Chudov <nir@altlinux.org> 0.1.0-alt1
-- Initial build
-
+- %version-%release
