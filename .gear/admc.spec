@@ -111,6 +111,7 @@ Tests for ADMC
 %_bindir/admc_test_find_object_dialog
 %_bindir/admc_test_rename_object_dialog
 %_bindir/admc_test_create_object_dialog
+%_bindir/admc_test_select_classes_widget
 
 %changelog
 * %(LC_TIME=C date "+%%a %%b %%d %%Y") %{?package_signer:%package_signer}%{!?package_signer:%packager} %version-%release

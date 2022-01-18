@@ -70,6 +70,7 @@ set(TEST_TARGETS
     admc_test_find_object_dialog
     admc_test_rename_object_dialog
     admc_test_create_object_dialog
+    admc_test_select_classes_widget
 )
 
 foreach(target ${TEST_TARGETS})
