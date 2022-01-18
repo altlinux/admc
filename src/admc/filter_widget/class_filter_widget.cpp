@@ -44,7 +44,9 @@ ClassFilterWidget::~ClassFilterWidget() {
     delete ui;
 }
 
-void ClassFilterWidget::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
+void ClassFilterWidget::set_classes(const QList<QString> &class_list_arg, const QList<QString> &selected_list) {
+    class_list = class_list_arg;
+
     for (const QString &object_class : class_list) {
         const QString class_string = g_adconfig->get_class_display_name(object_class);
         auto checkbox = new QCheckBox(class_string);
@@ -66,7 +68,11 @@ QString ClassFilterWidget::get_filter() const {
     const QList<QString> selected_list = [&] {
         QList<QString> out;
 
-        for (const QString &object_class : checkbox_map.keys()) {
+        // NOTE: important iterate over class list
+        // because iterating over map keys causes
+        // undefined order, which breaks tests and
+        // creates other problems
+        for (const QString &object_class : class_list) {
             QCheckBox *checkbox = checkbox_map[object_class];
 
             if (checkbox->isChecked()) {
@@ -85,7 +91,7 @@ QString ClassFilterWidget::get_filter() const {
 QList<QString> ClassFilterWidget::get_selected_classes() const {
     QList<QString> out;
 
-    for (const QString &object_class : checkbox_map.keys()) {
+    for (const QString &object_class : class_list) {
         const QCheckBox *check = checkbox_map[object_class];
 
         if (check->isChecked()) {
@@ -111,7 +117,11 @@ void ClassFilterWidget::clear_selection() {
 QVariant ClassFilterWidget::save_state() const {
     QHash<QString, QVariant> state;
 
-    for (const QString &object_class : checkbox_map.keys()) {
+    // NOTE: important iterate over class list
+    // because iterating over map keys causes
+    // undefined order, which breaks tests and
+    // creates other problems
+    for (const QString &object_class : class_list) {
         QCheckBox *checkbox = checkbox_map[object_class];
         const bool checked = checkbox->isChecked();
 
@@ -124,7 +134,7 @@ QVariant ClassFilterWidget::save_state() const {
 void ClassFilterWidget::restore_state(const QVariant &state_variant) {
     const QHash<QString, QVariant> state = state_variant.toHash();
 
-    for (const QString &object_class : checkbox_map.keys()) {
+    for (const QString &object_class : class_list) {
         const bool checked = [&]() {
             if (state.contains(object_class)) {
                 const bool out = state[object_class].toBool();

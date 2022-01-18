@@ -57,6 +57,7 @@ signals:
 
 private:
     QHash<QString, QCheckBox *> checkbox_map;
+    QList<QString> class_list;
 
     void clear_selection();
     void select_all();
