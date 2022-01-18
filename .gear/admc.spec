@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.9.0
+Version: 0.10.0
 Release: alt1
 
 Summary: AD editor
