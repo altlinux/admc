@@ -2,6 +2,54 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.9.0
+-----------------------------------------------------------------------
+- Console: Added object display limit option. Applies
+  to main window and find dialog. (#319)
+- Console: Implemented opening action menu by right
+  clicking on empty space in results pane. In this
+  case, currently selected scope item is treated as
+  target object for the menu. (#334)
+- Console: Fixed action menu being empty on startup
+  until user selected another console item. (#340)
+- Console: Fixed being able to move an object onto it's
+  current parent via action menu or drag and drop. This
+  caused visual glitches. (#336, #338)
+- Security Tab: Fixed handling of inherited rights.
+  Inherited rights will now correctly display as grayed
+  out checkboxes and will not be editable. (#327)
+- Security Tab: Fixed all objects having the same kinds
+  of rights. Security tab will now correctly show
+  rights that are appropriate for the object type.
+  (#328)
+- Security Tab: Added verification of ACL order. When
+  switching to security tab, order will be verified and
+  if it's incorrect, a warning dialog will open
+  offering to fix it. (#339)
+- Propeties: Added LAPS(Local Administration Password
+  Solution) tab for computer objects. This tab is
+  accessible only if LAPS is enabled in the domain. (#312)
+- Policies: Fixed permission check incorrectly
+  complaining about policies made by RSAT. (#333)
+- Find dialog: Added class filtering by all classes,
+  implemented as a separate checkbox. This filtering
+  will accept all classes, not just the ones in the
+  list. (#341)
+- Menubar: Fixed checkboxes for view types (Icons,
+  List, Details) not being exclusive. (#329)
+- Misc: Fixed class filters not working correctly until
+  class selection dialog was opened. Occured in find
+  dialog, query creation/editing and others. (#322)
+- Misc: Added "Operations Masters" dialog for viewing
+  and editing FSMO roles. Opened from
+  Menubar->File->Operations Masters. (#313)
+- Misc: Changed AD error dialogs to be modal.
+- Misc: Removed "Reset" button from rename dialogs.
+- Misc: Fixed group icons not displaying on some DE's. (#330)
+- Misc: Added app icon which is displayed next to in
+  app lists and on the title bar.
+
+-----------------------------------------------------------------------
  VERSION 0.8.0
 -----------------------------------------------------------------------
 - Connection: Added a new window for case where app fails to
