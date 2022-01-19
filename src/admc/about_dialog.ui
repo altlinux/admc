@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>428</width>
-    <height>300</height>
+    <width>432</width>
+    <height>164</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,9 +15,16 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="version_label">
+    <widget class="QLabel" name="label_1">
+     <property name="font">
+      <font>
+       <pointsize>20</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
      <property name="text">
-      <string notr="true">Version x.y.z (placeholder)</string>
+      <string notr="true">ADMC</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -25,19 +32,32 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>ADMC is a tool for Active Directory administration.</string>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
      </property>
-    </widget>
+    </spacer>
    </item>
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Copyright (C) 2021 BaseALT Ltd.</string>
+      <string>Copyright (C) 2022 BaseALT Ltd.</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="version_label">
+     <property name="text">
+      <string>Version x.y.z (placeholder)</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
