@@ -27,6 +27,15 @@
 // data because "uint32_t" is not supported by
 // QTest::addColumn()
 
+void ADMCTestAdSecurity::initTestCase() {
+    // NOTE: important to set sd early here, because
+    // base class initTestCase() calls cleanup() which
+    // needs to not free sd
+    sd = NULL;
+
+    ADMCTest::initTestCase();
+}
+
 void ADMCTestAdSecurity::init() {
     ADMCTest::init();
 
@@ -47,7 +56,6 @@ void ADMCTestAdSecurity::init() {
         return out;
     }();
 
-    sd = NULL;
     load_sd();
 }
 
@@ -55,6 +63,7 @@ void ADMCTestAdSecurity::cleanup() {
     ADMCTest::cleanup();
 
     security_descriptor_free(sd);
+    sd = NULL;
 }
 
 void ADMCTestAdSecurity::add_right() {
@@ -382,9 +391,7 @@ void ADMCTestAdSecurity::check_state(const QByteArray &trustee, const uint32_t a
 }
 
 void ADMCTestAdSecurity::load_sd() {
-    if (sd != NULL) {
-        security_descriptor_free(sd);
-    }
+    security_descriptor_free(sd);
 
     sd = [&]() {
         const AdObject test_user = ad.search_object(test_user_dn);

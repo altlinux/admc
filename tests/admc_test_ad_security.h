@@ -36,6 +36,7 @@ class ADMCTestAdSecurity : public ADMCTest {
     Q_OBJECT
 
 private slots:
+    void initTestCase() override;
     void init() override;
     void cleanup() override;
 
