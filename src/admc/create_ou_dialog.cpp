@@ -59,7 +59,7 @@ void CreateOUDialog::accept() {
     const bool accepted = helper->accept();
 
     if (accepted) {
-        QDialog::accepted();
+        QDialog::accept();
     }
 }
 
