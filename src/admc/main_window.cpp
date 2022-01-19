@@ -194,7 +194,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         const bool is_checked = [=]() {
             const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
 
-            return (current_locale == locale);
+            return (current_locale.language() == locale.language());
         }();
         action->setChecked(is_checked);
 
