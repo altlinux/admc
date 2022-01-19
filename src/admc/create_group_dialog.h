@@ -43,6 +43,8 @@ public:
 
 private:
     CreateObjectHelper *helper;
+
+    void autofill_sam_name();
 };
 
 #endif /* CREATE_GROUP_DIALOG_H */

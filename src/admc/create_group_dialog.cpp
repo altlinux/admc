@@ -55,6 +55,11 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn, QWidget *parent)
     helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_edits, CLASS_GROUP, parent_dn, this);
 
     settings_setup_dialog_geometry(SETTING_create_group_dialog_geometry, this);
+
+    // name -> sam account name
+    connect(
+        ui->name_edit, &QLineEdit::textChanged,
+        this, &CreateGroupDialog::autofill_sam_name);
 }
 
 CreateGroupDialog::~CreateGroupDialog() {
@@ -71,4 +76,9 @@ void CreateGroupDialog::accept() {
 
 QString CreateGroupDialog::get_created_dn() const {
     return helper->get_created_dn();
+}
+
+void CreateGroupDialog::autofill_sam_name() {
+    const QString name_input = ui->name_edit->text();
+    ui->sam_name_edit->setText(name_input);
 }
