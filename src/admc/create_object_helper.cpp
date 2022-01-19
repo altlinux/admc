@@ -94,7 +94,7 @@ bool CreateObjectHelper::accept() const {
         fail_msg();
     }
 
-    return true;
+    return final_success;
 }
 
 // Enable/disable create button if all required edits filled
