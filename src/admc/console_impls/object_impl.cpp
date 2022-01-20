@@ -862,6 +862,15 @@ void ObjectImpl::new_object(const QString &object_class) {
 
                 const QModelIndex scope_parent_index = search_parent[0];
                 object_impl_add_objects_to_console_from_dns(target_console, ad_inner, {created_dn}, scope_parent_index);
+
+                // NOTE: changes are not applied to
+                // find tree because creation of
+                // objects shouldn't affect find
+                // results. If it does affect them by
+                // creating a new object that fits
+                // search criteria, then find dialog
+                // can just be considered out of date
+                // and should be updated
             };
 
             apply_changes(console);
@@ -1094,6 +1103,38 @@ void ObjectImpl::move_and_rename(AdInterface &ad, const QHash<QString, QString> 
                 QStandardItem *item = target_console->get_item(query_index);
                 item->setIcon(QIcon::fromTheme("dialog-warning"));
                 item->setToolTip(tr("Query may be out of date"));
+
+                // Update item row
+                const QList<QStandardItem *> row = target_console->get_row(index);
+                const QString new_dn = old_to_new_dn_map[old_dn];
+                const AdObject object = object_map[new_dn];
+                console_object_load(row, object);
+            }
+        }
+
+        // TODO: decrease code duplication
+        // For find tree, we only reload the rows to
+        // update name, and attributes (DN for example)
+        const QModelIndex find_root = get_query_tree_root(target_console);
+        if (find_root.isValid()) {
+            // Find indexes of modified objects in find
+            // tree
+            const QHash<QString, QModelIndex> index_map = [&]() {
+                QHash<QString, QModelIndex> out;
+
+                for (const QString &old_dn : old_dn_list) {
+                    const QList<QModelIndex> results = target_console->search_items(find_root, ObjectRole_DN, old_dn, ItemType_Object);
+
+                    for (const QModelIndex &index : results) {
+                        out[old_dn] = index;
+                    }
+                }
+
+                return out;
+            }();
+
+            for (const QString &old_dn : index_map.keys()) {
+                const QModelIndex index = index_map[old_dn];
 
                 // Update item row
                 const QList<QStandardItem *> row = target_console->get_row(index);
