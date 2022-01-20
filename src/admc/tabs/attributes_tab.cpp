@@ -83,6 +83,10 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
 
     const QHash<QString, QVariant> state = settings_get_variant(SETTING_attributes_tab_header_state).toHash();
 
+    // This is the default sort, overriden by saved
+    // sort when state is restored
+    view->sortByColumn(AttributesColumn_Name, Qt::AscendingOrder);
+
     view->header()->restoreState(state["header"].toByteArray());
 
     QItemSelectionModel *selection_model = view->selectionModel();
