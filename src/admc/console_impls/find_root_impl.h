@@ -35,4 +35,6 @@ public:
     QList<int> default_columns() const override;
 };
 
+QModelIndex get_find_tree_root(ConsoleWidget *console);
+
 #endif /* FIND_ROOT_IMPL_H */

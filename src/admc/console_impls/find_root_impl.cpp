@@ -23,6 +23,10 @@
 #include "adldap.h"
 #include "console_impls/object_impl.h"
 #include "console_widget/results_view.h"
+#include "item_type.h"
+
+#include <QStandardItem>
+#include <QModelIndex>
 
 FindRootImpl::FindRootImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -41,4 +45,14 @@ QList<QString> FindRootImpl::column_labels() const {
 
 QList<int> FindRootImpl::default_columns() const {
     return object_impl_default_columns();
+}
+
+QModelIndex get_find_tree_root(ConsoleWidget *console) {
+    const QList<QModelIndex> index_list = console->search_items(QModelIndex(), ItemType_FindRoot);
+
+    if (!index_list.isEmpty()) {
+        return index_list[0];
+    } else {
+        return QModelIndex();
+    }
 }

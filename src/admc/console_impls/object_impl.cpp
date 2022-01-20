@@ -25,6 +25,7 @@
 #include "console_impls/policy_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
+#include "console_impls/find_root_impl.h"
 #include "console_widget/results_view.h"
 #include "create_computer_dialog.h"
 #include "create_group_dialog.h"
@@ -544,15 +545,16 @@ void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
     }();
 
     auto apply_changes = [&ad, &deleted_list](ConsoleWidget *target_console) {
-        const QModelIndex object_root = get_object_tree_root(target_console);
-        if (object_root.isValid()) {
-            console_object_delete(target_console, deleted_list, object_root);
-        }
-
-        // NOTE: also delete in query tree
-        const QModelIndex query_root = get_query_tree_root(target_console);
-        if (query_root.isValid()) {
-            console_object_delete(target_console, deleted_list, query_root);
+        const QList<QModelIndex> root_list = {
+            get_object_tree_root(target_console),
+            get_query_tree_root(target_console),
+            get_find_tree_root(target_console),
+        };
+        
+        for (const QModelIndex &root : root_list) {
+            if (root.isValid()) {
+                console_object_delete(target_console, deleted_list, root);
+            }
         }
     };
 

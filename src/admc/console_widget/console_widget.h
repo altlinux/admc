@@ -149,6 +149,7 @@ public:
     // parent to search the whole model. If no type is
     // given, then items of all types will be returned.
     QList<QModelIndex> search_items(const QModelIndex &parent, int role, const QVariant &value, const int type = -1) const;
+    QList<QModelIndex> search_items(const QModelIndex &parent, const int type) const;
 
     QModelIndex get_current_scope_item() const;
     int get_child_count(const QModelIndex &index) const;
