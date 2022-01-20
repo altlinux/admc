@@ -49,6 +49,8 @@ RenameObjectHelper::RenameObjectHelper(AdInterface &ad, const QString &target_ar
     const QString name = dn_get_name(target);
     name_edit->setText(name);
 
+    limit_edit(name_edit, ATTRIBUTE_CN);
+
     const AdObject object = ad.search_object(target);
     AttributeEdit::load(edits, ad, object);
 }
