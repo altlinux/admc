@@ -119,6 +119,8 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     security_warning_was_rejected = false;
     security_tab = nullptr;
 
+    ui->tab_widget->enable_auto_switch_tab(false);
+
     PropertiesDialog::instances[target] = this;
 
     apply_button = ui->button_box->button(QDialogButtonBox::Apply);
@@ -271,11 +273,16 @@ PropertiesDialog::~PropertiesDialog() {
 // can add a modification to security tab. Therefore
 // attributes warning needs to go first so that it
 // won't discard security warning modification.
-void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab) {
+void PropertiesDialog::on_current_tab_changed(const int prev, const int current) {
+    QWidget *prev_tab = ui->tab_widget->get_tab(prev);
+    QWidget *new_tab = ui->tab_widget->get_tab(current);
+
     const bool switching_to_or_from_attributes = (prev_tab == attributes_tab || new_tab == attributes_tab);
     const bool is_modified = !apply_list.isEmpty();
     const bool need_attributes_warning = (switching_to_or_from_attributes && is_modified);
     if (!need_attributes_warning) {
+        ui->tab_widget->set_current_tab(current);
+
         open_security_warning();
 
         return;
@@ -293,9 +300,9 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
     attributes_warning_dialog->open();
 
     connect(
-        attributes_warning_dialog, &QDialog::accepted,
+        attributes_warning_dialog, &PropertiesWarningDialog::applied,
         this,
-        [this]() {
+        [this, current]() {
             AdInterface ad;
             if (ad_failed(ad, this)) {
                 return;
@@ -307,11 +314,23 @@ void PropertiesDialog::on_current_tab_changed(QWidget *prev_tab, QWidget *new_ta
             // to load updates
             const AdObject object = ad.search_object(target);
             reset_internal(ad, object);
+
+            ui->tab_widget->set_current_tab(current);
         });
 
     connect(
-        attributes_warning_dialog, &QDialog::rejected,
-        this, &PropertiesDialog::reset);
+        attributes_warning_dialog, &PropertiesWarningDialog::discarded,
+        [this, current]() {
+            reset();
+
+            ui->tab_widget->set_current_tab(current);
+        });
+
+    connect(
+        attributes_warning_dialog, &PropertiesWarningDialog::rejected,
+        [this, prev]() {
+            ui->tab_widget->set_current_tab(prev);
+        });
 
     // Open security warning after attributes warning
     // is finished

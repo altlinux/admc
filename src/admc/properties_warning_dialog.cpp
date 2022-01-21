@@ -21,6 +21,8 @@
 #include "properties_warning_dialog.h"
 #include "ui_properties_warning_dialog.h"
 
+#include <QPushButton>
+
 PropertiesWarningDialog::PropertiesWarningDialog(const PropertiesWarningType type, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::PropertiesWarningDialog();
@@ -38,10 +40,29 @@ PropertiesWarningDialog::PropertiesWarningDialog(const PropertiesWarningType typ
 
     ui->label->setText(label_text);
 
-    ui->button_box->addButton(tr("Apply current changes"), QDialogButtonBox::AcceptRole);
-    ui->button_box->addButton(tr("Discard changes"), QDialogButtonBox::RejectRole);
+    auto apply_button = ui->button_box->button(QDialogButtonBox::Apply);
+    auto discard_button = ui->button_box->button(QDialogButtonBox::Discard);
+
+    connect(
+        apply_button, &QPushButton::clicked,
+        this, &PropertiesWarningDialog::on_apply_button);
+    connect(
+        discard_button, &QPushButton::clicked,
+        this, &PropertiesWarningDialog::on_discard_button);
 }
 
 PropertiesWarningDialog::~PropertiesWarningDialog() {
     delete ui;
+}
+
+void PropertiesWarningDialog::on_apply_button() {
+    emit applied();
+
+    QDialog::accept();
+}
+
+void PropertiesWarningDialog::on_discard_button() {
+    emit discarded();
+
+    QDialog::accept();
 }

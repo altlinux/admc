@@ -88,7 +88,7 @@ private:
     bool apply_internal(AdInterface &ad);
     void reset_internal(AdInterface &ad, const AdObject &object);
 
-    void on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab);
+    void on_current_tab_changed(const int prev, const int current);
     void open_security_warning();
     void on_security_warning_accepted();
     void on_security_warning_rejected();
