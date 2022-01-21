@@ -19,6 +19,9 @@
      <property name="text">
       <string notr="true">PLACEHOLDER (actual text depends on context)</string>
      </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item>
