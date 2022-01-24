@@ -33,18 +33,15 @@ ExpiryWidget::ExpiryWidget(QWidget *parent)
     ui = new Ui::ExpiryWidget();
     ui->setupUi(this);
 
-    ui->never_check->setAutoExclusive(true);
-    ui->end_of_check->setAutoExclusive(true);
-
     auto button_group = new QButtonGroup(this);
     button_group->addButton(ui->never_check);
     button_group->addButton(ui->end_of_check);
 
     connect(
-        ui->never_check, &QCheckBox::stateChanged,
+        ui->never_check, &QRadioButton::toggled,
         this, &ExpiryWidget::on_never_check);
     connect(
-        ui->end_of_check, &QCheckBox::stateChanged,
+        ui->end_of_check, &QRadioButton::toggled,
         this, &ExpiryWidget::on_end_of_check);
     connect(
         ui->date_edit, &QDateEdit::dateChanged,
