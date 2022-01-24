@@ -25,6 +25,7 @@
 
 class AttributeEdit;
 class AdInterface;
+class QLineEdit;
 
 namespace Ui {
 class PasswordDialog;
@@ -47,6 +48,9 @@ private:
     QString target;
     QList<AttributeEdit *> edits;
     AttributeEdit *pass_expired_edit;
+    QList<QLineEdit *> required_list;
+
+    void on_edited();
 };
 
 #endif /* PASSWORD_DIALOG_H */

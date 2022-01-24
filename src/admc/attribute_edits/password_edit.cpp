@@ -74,10 +74,17 @@ bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
 
 bool PasswordEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = edit->text();
+    const bool input_is_not_empty = !new_value.isEmpty();
 
-    const bool success = ad.user_set_pass(dn, new_value);
-
-    return success;
+    if (input_is_not_empty) {
+        const bool success = ad.user_set_pass(dn, new_value);
+        
+        return success;
+    } else {
+        // If no password was entered, don't change
+        // password at all
+        return true;
+    }
 }
 
 QLineEdit *PasswordEdit::get_edit() const {

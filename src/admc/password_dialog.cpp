@@ -30,6 +30,8 @@
 #include "status.h"
 #include "utils.h"
 
+#include <QPushButton>
+
 PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::PasswordDialog();
@@ -70,6 +72,18 @@ PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidg
         ui->expired_check->setToolTip(tr("Option is unavailable because a conflicting account option is currently enabled."));
     }
 
+    required_list = {
+        ui->password_main_edit,
+        ui->password_confirm_edit,
+    };
+
+    for (QLineEdit *edit : required_list) {
+        connect(
+            edit, &QLineEdit::textChanged,
+            this, &PasswordDialog::on_edited);
+    }
+    on_edited();
+
     settings_setup_dialog_geometry(SETTING_password_dialog_geometry, this);
 }
 
@@ -99,4 +113,19 @@ void PasswordDialog::accept() {
     if (apply_success) {
         QDialog::accept();
     }
+}
+
+void PasswordDialog::on_edited() {
+    const bool all_required_filled = [this]() {
+        for (QLineEdit *edit : required_list) {
+            if (edit->text().isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }();
+
+    auto ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    ok_button->setEnabled(all_required_filled);
 }

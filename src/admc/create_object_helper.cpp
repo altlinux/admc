@@ -31,6 +31,12 @@
 #include <QLineEdit>
 #include <QPushButton>
 
+// TODO: the logic of "enable/disable ok button
+// depending on whether all required edits contain
+// input" is duplicated in password dialog and maybe in
+// other places. Can create an abstraction for it to
+// reduce duplication.
+
 CreateObjectHelper::CreateObjectHelper(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QString &object_class, const QString &parent_dn_arg, QDialog *parent_dialog_arg)
 : QObject(parent_dialog_arg) {
     parent_dialog = parent_dialog_arg;
