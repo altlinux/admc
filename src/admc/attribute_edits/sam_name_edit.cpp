@@ -95,7 +95,8 @@ bool SamNameEdit::verify(AdInterface &ad, const QString &dn) const {
     const bool value_is_valid = (!contains_bad_chars && !ends_with_dot);
 
     if (!value_is_valid) {
-        message_box_warning(edit, tr("Error"), "bad!");
+        const QString error_text = QString(tr("Input field for Logon name (pre-Windows 2000) contains illegal characters: @\"[]:;|=+*?<>/\\, ."));
+        message_box_warning(edit, tr("Error"), error_text);
     }
 
     return value_is_valid;
