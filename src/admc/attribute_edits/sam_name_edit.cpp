@@ -25,6 +25,7 @@
 #include "utils.h"
 
 #include <QLineEdit>
+#include <QRegularExpression>
 
 SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QObject *parent)
 : AttributeEdit(parent) {
@@ -51,6 +52,39 @@ void SamNameEdit::load(AdInterface &ad, const AdObject &object) {
 
     const QString value = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
     edit->setText(value);
+}
+
+// NOTE: requirements are from here
+// https://social.technet.microsoft.com/wiki/contents/articles/11216.active-directory-requirements-for-creating-objects.aspx#Note_Regarding_the_quot_quot_Character_in_sAMAccountName
+bool SamNameEdit::verify(AdInterface &ad, const QString &dn) const {
+    UNUSED_ARG(ad);
+    UNUSED_ARG(dn);
+
+    const QString new_value = edit->text();
+
+    const bool contains_bad_chars = [&]() {
+        const QRegularExpression sam_name_regexp = [&]() {
+            const QString sam_name_bad_chars_escaped = QRegularExpression::escape(SAM_NAME_BAD_CHARS);
+            const QString regexp_string = QString("[%1]").arg(sam_name_bad_chars_escaped);
+            const QRegularExpression out = QRegularExpression(regexp_string);
+    
+            return out;
+        }();
+
+        const bool out = new_value.contains(sam_name_regexp);
+
+        return out;
+    }();
+
+    const bool ends_with_dot = new_value.endsWith(".");
+
+    const bool value_is_valid = (!contains_bad_chars && !ends_with_dot);
+
+    if (!value_is_valid) {
+        message_box_warning(edit, tr("Error"), "bad!");
+    }
+
+    return value_is_valid;
 }
 
 bool SamNameEdit::apply(AdInterface &ad, const QString &dn) const {

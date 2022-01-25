@@ -71,6 +71,7 @@ set(TEST_TARGETS
     admc_test_rename_object_dialog
     admc_test_create_object_dialog
     admc_test_select_classes_widget
+    admc_test_sam_name_edit
 )
 
 foreach(target ${TEST_TARGETS})

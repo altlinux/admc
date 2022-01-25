@@ -18,24 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SAM_NAME_EDIT_H
-#define SAM_NAME_EDIT_H
+#ifndef ADMC_TEST_SAM_NAME_EDIT_H
+#define ADMC_TEST_SAM_NAME_EDIT_H
 
-#include "attribute_edits/attribute_edit.h"
+#include "admc_test.h"
 
+class SamNameEdit;
 class QLineEdit;
 
-class SamNameEdit final : public AttributeEdit {
+class ADMCTestSamNameEdit : public ADMCTest {
     Q_OBJECT
-public:
-    SamNameEdit(QLineEdit *edit, QLineEdit *domain_edit_arg, QObject *parent);
 
-    void load(AdInterface &ad, const AdObject &object) override;
-    bool verify(AdInterface &ad, const QString &dn) const override;
-    bool apply(AdInterface &ad, const QString &dn) const override;
+private slots:
+    void init() override;
+
+    void verify_data();
+    void verify();
 
 private:
-    QLineEdit *edit;
+    SamNameEdit *edit;
+    QLineEdit *line_edit;
 };
 
-#endif /* SAM_NAME_EDIT_H */
+#endif /* ADMC_TEST_SAM_NAME_EDIT_H */
