@@ -64,6 +64,13 @@ bool RenameObjectHelper::accept() const {
     const QString old_dn = target;
     const QString old_name = dn_get_name(target);
 
+    const QString new_name = get_new_name();
+
+    const bool verify_name_success = verify_object_name(new_name, parent_dialog);
+    if (!verify_name_success) {
+        return false;
+    }
+
     const bool verify_success = AttributeEdit::verify(edits, ad, target);
     if (!verify_success) {
         return false;
@@ -71,7 +78,6 @@ bool RenameObjectHelper::accept() const {
 
     show_busy_indicator();
 
-    const QString new_name = get_new_name();
     const QString new_dn = get_new_dn();
 
     const bool rename_success = ad.object_rename(target, new_name);

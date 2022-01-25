@@ -118,4 +118,6 @@ QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list);
 
 bool string_contains_bad_chars(const QString &string, const QString &bad_chars);
 
+bool verify_object_name(const QString &name, QWidget *parent);
+
 #endif /* UTILS_H */

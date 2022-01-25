@@ -249,6 +249,9 @@ const long long MILLIS_TO_100_NANOS = 10000LL;
 
 #define SAM_NAME_BAD_CHARS "@\"[]:;|=+*?<>/\\,"
 #define UPN_BAD_CHARS "#,+\"\\<>"
+// NOTE: names technically can contain these chars but
+// we choose to be more strict about it
+#define NAME_BAD_CHARS ",\\#+<>;\"="
 
 enum SearchScope {
     SearchScope_Object,

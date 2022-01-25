@@ -67,6 +67,11 @@ bool CreateObjectHelper::accept() const {
     const QString name = get_created_name();
     const QString dn = get_created_dn();
 
+    const bool verify_name_success = verify_object_name(name, parent_dialog);
+    if (!verify_name_success) {
+        return false;
+    }
+
     // Verify edits
     const bool verify_success = AttributeEdit::verify(m_edit_list, ad, dn);
 
