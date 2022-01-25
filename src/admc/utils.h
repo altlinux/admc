@@ -116,4 +116,6 @@ QString generate_new_name(const QList<QString> &existing_name_list, const QStrin
 QList<QString> variant_list_to_string_list(const QList<QVariant> &variant_list);
 QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list);
 
+bool string_contains_bad_chars(const QString &string, const QString &bad_chars);
+
 #endif /* UTILS_H */

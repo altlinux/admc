@@ -40,7 +40,9 @@ private slots:
     void test_apply_prefix();
     void test_apply_prefix_and_suffix();
     void test_reset();
-    void test_verify();
+    void verify_bad_chars_data();
+    void verify_bad_chars();
+    void verify_conflict();
 
 private:
     UpnEdit *upn_edit;

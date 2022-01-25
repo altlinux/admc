@@ -76,30 +76,20 @@ bool SamNameEdit::verify(AdInterface &ad, const QString &dn) const {
 
     const QString new_value = edit->text();
 
-    const bool contains_bad_chars = [&]() {
-        const QRegularExpression sam_name_regexp = [&]() {
-            const QString sam_name_bad_chars_escaped = QRegularExpression::escape(SAM_NAME_BAD_CHARS);
-            const QString regexp_string = QString("[%1]").arg(sam_name_bad_chars_escaped);
-            const QRegularExpression out = QRegularExpression(regexp_string);
-    
-            return out;
-        }();
-
-        const bool out = new_value.contains(sam_name_regexp);
-
-        return out;
-    }();
+    const bool contains_bad_chars = string_contains_bad_chars(new_value, SAM_NAME_BAD_CHARS);
 
     const bool ends_with_dot = new_value.endsWith(".");
 
     const bool value_is_valid = (!contains_bad_chars && !ends_with_dot);
 
     if (!value_is_valid) {
-        const QString error_text = QString(tr("Input field for Logon name (pre-Windows 2000) contains illegal characters: @\"[]:;|=+*?<>/\\, ."));
+        const QString error_text = QString(tr("Input field for Logon name (pre-Windows 2000) contains one or more of the following illegal characters: @ \" [ ] : ; | = + * ? < > / \\ ,"));
         message_box_warning(edit, tr("Error"), error_text);
+
+        return false;
     }
 
-    return value_is_valid;
+    return true;
 }
 
 bool SamNameEdit::apply(AdInterface &ad, const QString &dn) const {

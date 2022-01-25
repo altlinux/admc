@@ -248,6 +248,7 @@ const long long MILLIS_TO_100_NANOS = 10000LL;
 #define DACL_SECURITY_INFORMATION 0x10
 
 #define SAM_NAME_BAD_CHARS "@\"[]:;|=+*?<>/\\,"
+#define UPN_BAD_CHARS "#,+\"\\<>"
 
 enum SearchScope {
     SearchScope_Object,

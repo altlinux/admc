@@ -169,9 +169,43 @@ void ADMCTestUpnEdit::change_suffix_in_edit() {
     suffix_edit->setCurrentIndex(new_suffix_index);
 }
 
+
+void ADMCTestUpnEdit::verify_bad_chars_data() {
+    QTest::addColumn<QString>("value");
+    QTest::addColumn<bool>("correct_result");
+
+    const QString bad_chars_string = UPN_BAD_CHARS;
+
+    for (int i = 0; i < bad_chars_string.length(); i++) {
+        const QChar bad_char = bad_chars_string.at(i);
+
+        const QString bad_char_string = QString(bad_char);
+        const QByteArray bad_char_bytes = bad_char_string.toUtf8();
+
+        const QString value = QString("test%1value").arg(bad_char);
+
+        QTest::newRow(bad_char_bytes.constData()) << value << false;
+    }
+
+    QTest::newRow("starts with space") << " testvalue" << false;
+    QTest::newRow("ends with space") << "testvalue " << false;
+    QTest::newRow("contains space inside") << "test value" << true;
+}
+
+void ADMCTestUpnEdit::verify_bad_chars() {
+    QFETCH(QString, value);
+    QFETCH(bool, correct_result);
+
+    prefix_edit->setText(value);
+
+    const bool actual_result = upn_edit->verify(ad, QString());
+
+    QCOMPARE(actual_result, correct_result);
+}
+
 // verify() must return false if there's a user with the
 // same upn
-void ADMCTestUpnEdit::test_verify() {
+void ADMCTestUpnEdit::verify_conflict() {
     // Create user with conflicting upn
     const QString conflict_name = "conflicting-upn-test-user";
     const QString conflict_dn = test_object_dn(conflict_name, CLASS_USER);

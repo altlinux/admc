@@ -58,9 +58,20 @@ void UpnEdit::load(AdInterface &ad, const AdObject &object) {
 
 bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
     const QString new_value = get_new_value();
+    const QString new_prefix = prefix_edit->text();
 
-    if (new_value.isEmpty()) {
-        const QString text = tr("UPN may not be empty.");
+    const bool contains_bad_chars = [&]() {
+        const bool some_bad_chars = string_contains_bad_chars(new_prefix, UPN_BAD_CHARS);
+        const bool starts_with_space = new_prefix.startsWith(" ");
+        const bool ends_with_space = new_prefix.endsWith(" ");
+
+        const bool out = (some_bad_chars || starts_with_space || ends_with_space);
+
+        return out;
+    }();
+
+    if (contains_bad_chars) {
+        const QString text = tr("Input field for User Principal Name contains one or more of the following illegal characters: # , + \" \\ < > (leading space) (trailing space)");
         message_box_warning(prefix_edit, tr("Error"), text);
 
         return false;
