@@ -366,9 +366,9 @@ AttributeDialog *AttributesTabEdit::get_attribute_dialog(const bool read_only) {
     const QString title = [&]() {
         const QString title_action = [&]() {
             if (read_only) {
-                return tr("Edit");
-            } else {
                 return tr("View");
+            } else {
+                return tr("Edit");
             }
         }();
 
