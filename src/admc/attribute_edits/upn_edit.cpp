@@ -33,18 +33,18 @@ UpnEdit::UpnEdit(QLineEdit *prefix_edit_arg, QComboBox *upn_suffix_combo_arg, QO
     prefix_edit = prefix_edit_arg;
     upn_suffix_combo = upn_suffix_combo_arg;
 
-    limit_edit(prefix_edit, ATTRIBUTE_USER_PRINCIPAL_NAME);
-
     connect(
         prefix_edit, &QLineEdit::textChanged,
         this, &AttributeEdit::edited);
     connect(
         upn_suffix_combo, &QComboBox::currentTextChanged,
-        this, &AttributeEdit::edited);
+        this, &UpnEdit::on_suffix_combo_changed);
 }
 
 void UpnEdit::init_suffixes(AdInterface &ad) {
     upn_suffix_combo_init(upn_suffix_combo, ad);
+
+    on_suffix_combo_changed();
 }
 
 void UpnEdit::load(AdInterface &ad, const AdObject &object) {
@@ -114,4 +114,18 @@ QString UpnEdit::get_new_value() const {
     const QString prefix = prefix_edit->text();
     const QString suffix = upn_suffix_combo->currentText();
     return QString("%1@%2").arg(prefix, suffix);
+}
+
+void UpnEdit::on_suffix_combo_changed() {
+    const int prefix_range_upper = [&]() {
+        const int total_range_upper = g_adconfig->get_attribute_range_upper(ATTRIBUTE_USER_PRINCIPAL_NAME);
+        const int at_length = QString("@").length();
+        const int suffix_length = upn_suffix_combo->currentText().length();
+        const int out = total_range_upper - at_length - suffix_length;
+
+        return out;
+    }();
+    prefix_edit->setMaxLength(prefix_range_upper);
+
+    emit edited();
 }

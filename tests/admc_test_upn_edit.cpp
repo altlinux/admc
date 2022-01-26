@@ -50,6 +50,19 @@ void ADMCTestUpnEdit::init() {
     upn_edit->load(ad, object);
 }
 
+void ADMCTestUpnEdit::length_limit() {
+    const int prefix_max_length = prefix_edit->maxLength();
+    const int correct_prefix_max_length = [&]() {
+        const int total_range_upper = ad.adconfig()->get_attribute_range_upper(ATTRIBUTE_USER_PRINCIPAL_NAME);
+        const int suffix_length = suffix_edit->currentText().length();
+        const int out = total_range_upper - 1 - suffix_length;
+
+        return out;
+    }();
+
+    QCOMPARE(prefix_max_length, correct_prefix_max_length);
+}
+
 // Edit should load prefix and suffix into widgets correctly
 void ADMCTestUpnEdit::test_load() {
     const QString prefix = prefix_edit->text();

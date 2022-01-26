@@ -33,6 +33,7 @@ class ADMCTestUpnEdit : public ADMCTest {
 private slots:
     void init() override;
 
+    void length_limit();
     void test_load();
     void test_emit_edited();
     void apply_unmodified();

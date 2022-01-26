@@ -45,6 +45,8 @@ private:
     friend class StringOtherEdit;
 
     QString get_new_value() const;
+    void on_suffix_combo_changed();
+    void update_prefix_limit();
 };
 
 #endif /* UPN_EDIT_H */
