@@ -765,6 +765,16 @@ void ObjectImpl::on_edit_upn_suffixes() {
     const bool read_only = false;
     auto dialog = new ListAttributeDialog(current_values, attribute, read_only, console);
     dialog->setWindowTitle(tr("Edit UPN Suffixes"));
+    // NOTE: arbitrarily use half of total max length
+    // of upn. Just a decent choice in absence of any
+    // "official" value.
+    const int upn_suffix_max_length = [&]() {
+        const int upn_max_length = g_adconfig->get_attribute_range_upper(ATTRIBUTE_USER_PRINCIPAL_NAME);
+        const int out = upn_max_length / 2;
+
+        return out;
+    }();
+    dialog->set_value_max_length(upn_suffix_max_length);
     dialog->open();
 
     connect(

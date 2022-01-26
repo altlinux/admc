@@ -37,6 +37,11 @@ public:
     ~StringAttributeDialog();
 
     QList<QByteArray> get_value_list() const override;
+
+    // NOTE: by default, most (not all) attributes have
+    // a pre-defined max length that is obtained from
+    // schema. Calling this f-n overrides it.
+    void set_max_length(const int max_length);
 };
 
 #endif /* STRING_ATTRIBUTE_DIALOG_H */

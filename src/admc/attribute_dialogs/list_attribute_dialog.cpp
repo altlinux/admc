@@ -37,6 +37,9 @@ ListAttributeDialog::ListAttributeDialog(const QList<QByteArray> &value_list, co
 
     setAttribute(Qt::WA_DeleteOnClose);
 
+    // Default value indiciating no max length
+    max_length = 0;
+
     AttributeDialog::load_attribute_label(ui->attribute_label);
 
     ui->add_button->setVisible(!read_only);
@@ -70,7 +73,10 @@ void ListAttributeDialog::on_add_button() {
         if (is_bool) {
             return new BoolAttributeDialog(value_list, attribute, read_only, this);
         } else {
-            return new StringAttributeDialog(value_list, attribute, read_only, this);
+            auto string_dialog = new StringAttributeDialog(value_list, attribute, read_only, this);
+            string_dialog->set_max_length(max_length);
+
+            return string_dialog;
         }
     }();
 
@@ -110,6 +116,10 @@ QList<QByteArray> ListAttributeDialog::get_value_list() const {
     }
 
     return new_values;
+}
+
+void ListAttributeDialog::set_value_max_length(const int max_length_arg) {
+    max_length = max_length_arg;
 }
 
 void ListAttributeDialog::add_value(const QByteArray value) {
