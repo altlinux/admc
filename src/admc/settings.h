@@ -108,8 +108,6 @@ DEFINE_SETTING(SETTING_confirm_actions);
 DEFINE_SETTING(SETTING_dev_mode);
 DEFINE_SETTING(SETTING_show_non_containers_in_console_tree);
 DEFINE_SETTING(SETTING_last_name_before_first_name);
-DEFINE_SETTING(SETTING_show_console_tree);
-DEFINE_SETTING(SETTING_show_results_header);
 DEFINE_SETTING(SETTING_log_searches);
 DEFINE_SETTING(SETTING_timestamp_log);
 DEFINE_SETTING(SETTING_sasl_nocanon);

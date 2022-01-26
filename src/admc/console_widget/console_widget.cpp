@@ -458,10 +458,12 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
     const QByteArray splitter_state = state.value(SPLITTER_STATE, QVariant()).toByteArray();
     d->splitter->restoreState(splitter_state);
 
-    d->actions.toggle_console_tree->setChecked(state[CONSOLE_TREE_STATE].toBool());
+    const bool toggle_console_tree_value = state.value(CONSOLE_TREE_STATE, true).toBool();
+    d->actions.toggle_console_tree->setChecked(toggle_console_tree_value);
     d->on_toggle_console_tree();
 
-    d->actions.toggle_description_bar->setChecked(state[DESCRIPTION_BAR_STATE].toBool());
+    const bool toggle_description_bar_value = state.value(DESCRIPTION_BAR_STATE, true).toBool();
+    d->actions.toggle_description_bar->setChecked(toggle_description_bar_value);
     d->on_toggle_description_bar();
 
     for (const int type : d->impl_map.keys()) {

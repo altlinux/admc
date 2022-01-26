@@ -43,8 +43,6 @@ const QHash<QString, QVariant> setting_default_map = {
                 return false;
             }
         }()},
-    {SETTING_show_console_tree, true},
-    {SETTING_show_results_header, true},
     {SETTING_log_searches, false},
     {SETTING_timestamp_log, true},
     {SETTING_sasl_nocanon, true},
