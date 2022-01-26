@@ -27,9 +27,28 @@
 #include <QLineEdit>
 #include <QRegularExpression>
 
-SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QObject *parent)
+// NOTE: object class arg is required by ctor to set
+// edit length limit. Can't do this in load() because
+// create dialogs use sam name edit but never call
+// load() (because there's no object).
+SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, const QString &object_class, QObject *parent)
 : AttributeEdit(parent) {
     edit = edit_arg;
+
+    // NOTE: not using limit_edit() here because need
+    // custom length here different from the upper
+    // range defined in schema. According to microsoft,
+    // it's 16 for computers and 20 for users, but
+    // groups can also have sam names so defaulting to
+    // value for users.
+    const int max_length = [&]() {
+        if (object_class == CLASS_COMPUTER) {
+            return 16;
+        } else {
+            return 20;
+        }
+    }();
+    edit->setMaxLength(max_length);
 
     const QString domain_text = []() {
         const QString domain = g_adconfig->domain();
@@ -48,21 +67,6 @@ SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QObject *p
 
 void SamNameEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
-
-    // NOTE: not using limit_edit() here because need
-    // custom length here different from the upper
-    // range defined in schema. According to microsoft,
-    // it's 16 for computers and 20 for users, but
-    // groups can also have sam names so defaulting to
-    // value for users.
-    const int max_length = [&]() {
-        if (object.is_class(CLASS_COMPUTER)) {
-            return 16;
-        } else {
-            return 20;
-        }
-    }();
-    edit->setMaxLength(max_length);
 
     const QString value = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
     edit->setText(value);

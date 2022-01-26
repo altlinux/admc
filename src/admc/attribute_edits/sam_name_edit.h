@@ -28,7 +28,7 @@ class QLineEdit;
 class SamNameEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    SamNameEdit(QLineEdit *edit, QLineEdit *domain_edit_arg, QObject *parent);
+    SamNameEdit(QLineEdit *edit, QLineEdit *domain_edit, const QString &object_class, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool verify(AdInterface &ad, const QString &dn) const override;

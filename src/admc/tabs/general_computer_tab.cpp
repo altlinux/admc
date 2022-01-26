@@ -32,7 +32,7 @@ GeneralComputerTab::GeneralComputerTab(QList<AttributeEdit *> *edit_list, QWidge
     ui->setupUi(this);
 
     auto name_edit = new GeneralNameEdit(ui->name_label, this);
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, CLASS_COMPUTER, this);
     auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, this);
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
     auto location_edit = new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, this);

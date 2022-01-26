@@ -40,7 +40,7 @@ CreateComputerDialog::CreateComputerDialog(const QString &parent_dn, QWidget *pa
     // "The following user or group may join this computer to a domain". Tried to figure out how this is implemented and couldn't see any easy ways via attributes, so probably something to do with setting ACL'S.
     // "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
 
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, CLASS_COMPUTER, this);
 
     const QList<AttributeEdit *> edit_list = {
         sam_name_edit,

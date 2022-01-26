@@ -24,13 +24,14 @@
 #include "rename_object_helper.h"
 #include "attribute_edits/sam_name_edit.h"
 #include "settings.h"
+#include "ad_defines.h"
 
 RenameGroupDialog::RenameGroupDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {
     ui = new Ui::RenameGroupDialog();
     ui->setupUi(this);
 
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, CLASS_GROUP, this);
 
     const QList<AttributeEdit *> edit_list = {
         sam_name_edit,

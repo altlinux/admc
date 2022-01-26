@@ -34,7 +34,7 @@ GeneralGroupTab::GeneralGroupTab(QList<AttributeEdit *> *edit_list, QWidget *par
     ui->setupUi(this);
 
     auto name_edit = new GeneralNameEdit(ui->name_label, this);
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, CLASS_GROUP, this);
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
     auto email_edit = new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, this);
     auto notes_edit = new StringEdit(ui->notes_edit, ATTRIBUTE_INFO, this);
