@@ -801,6 +801,14 @@
     </message>
 </context>
 <context>
+    <name>ErrorTab</name>
+    <message>
+        <location filename="tabs/error_tab.ui" line="20"/>
+        <source>Failed to load object information. Check your connection.</source>
+        <translation>Не удалось загрузить информацию об объекте. Проверьте соединение.</translation>
+    </message>
+</context>
+<context>
     <name>ExpiryWidget</name>
     <message>
         <location filename="attribute_edits/expiry_widget.ui" line="20"/>
@@ -1020,32 +1028,32 @@
         <translation>Искать в:</translation>
     </message>
     <message>
-        <location filename="find_widget.cpp" line="42"/>
+        <location filename="find_widget.cpp" line="43"/>
         <source>Icons</source>
         <translation>Значки</translation>
     </message>
     <message>
-        <location filename="find_widget.cpp" line="44"/>
+        <location filename="find_widget.cpp" line="45"/>
         <source>List</source>
         <translation>Список</translation>
     </message>
     <message>
-        <location filename="find_widget.cpp" line="46"/>
+        <location filename="find_widget.cpp" line="47"/>
         <source>Detail</source>
         <translation>Подробно</translation>
     </message>
     <message>
-        <location filename="find_widget.cpp" line="48"/>
+        <location filename="find_widget.cpp" line="49"/>
         <source>Customize Columns</source>
         <translation>Настроить колонки</translation>
     </message>
     <message>
-        <location filename="find_widget.cpp" line="49"/>
+        <location filename="find_widget.cpp" line="50"/>
         <source>Description Bar</source>
         <translation>Область описания</translation>
     </message>
     <message>
-        <location filename="find_widget.cpp" line="87"/>
+        <location filename="find_widget.cpp" line="88"/>
         <source>Find results</source>
         <translation>Результаты поиска</translation>
     </message>
@@ -1105,14 +1113,6 @@
         <location filename="tabs/general_group_tab.ui" line="94"/>
         <source>Group Type:</source>
         <translation>Тип группы:</translation>
-    </message>
-</context>
-<context>
-    <name>GeneralNameEdit</name>
-    <message>
-        <location filename="attribute_edits/general_name_edit.cpp" line="38"/>
-        <source>Failed to load object information. Check your connection.</source>
-        <translation>Не удалось загрузить информацию об объекте. Проверьте соединение.</translation>
     </message>
 </context>
 <context>
@@ -2280,93 +2280,93 @@
     <name>PropertiesDialog</name>
     <message>
         <location filename="properties_dialog.ui" line="14"/>
-        <location filename="properties_dialog.cpp" line="136"/>
+        <location filename="properties_dialog.cpp" line="137"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="134"/>
+        <location filename="properties_dialog.cpp" line="135"/>
         <source>%1 Properties</source>
         <oldsource>&quot;%1&quot; Properties</oldsource>
         <translation>%1 — свойства</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="162"/>
+        <location filename="properties_dialog.cpp" line="165"/>
         <source>General</source>
         <translation>Общее</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="170"/>
+        <location filename="properties_dialog.cpp" line="173"/>
         <source>Object</source>
         <translation>Объект</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="171"/>
+        <location filename="properties_dialog.cpp" line="174"/>
         <source>Attributes</source>
         <translation>Атрибуты</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="183"/>
+        <location filename="properties_dialog.cpp" line="186"/>
         <source>Account</source>
         <translation>Учётная запись</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="185"/>
+        <location filename="properties_dialog.cpp" line="188"/>
         <source>Organization</source>
         <translation>Организация</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="186"/>
+        <location filename="properties_dialog.cpp" line="189"/>
         <source>Telephones</source>
         <translation>Телефоны</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="187"/>
+        <location filename="properties_dialog.cpp" line="190"/>
         <source>Profile</source>
         <translation>Профиль</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="224"/>
+        <location filename="properties_dialog.cpp" line="227"/>
         <source>LAPS</source>
         <translation>LAPS</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="231"/>
+        <location filename="properties_dialog.cpp" line="234"/>
         <source>Security</source>
         <translation>Безопасность</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="191"/>
+        <location filename="properties_dialog.cpp" line="194"/>
         <source>Members</source>
         <translation>Участники</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="195"/>
+        <location filename="properties_dialog.cpp" line="198"/>
         <source>Member of</source>
         <translation>Группы</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="200"/>
+        <location filename="properties_dialog.cpp" line="203"/>
         <source>Managed by</source>
         <translation>Руководство</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="205"/>
+        <location filename="properties_dialog.cpp" line="208"/>
         <source>Group policy</source>
         <translation>Групповая политика</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="212"/>
+        <location filename="properties_dialog.cpp" line="215"/>
         <source>Operating System</source>
         <translation>Операционная система</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="213"/>
+        <location filename="properties_dialog.cpp" line="216"/>
         <source>Delegation</source>
         <translation>Делегирование</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="184"/>
+        <location filename="properties_dialog.cpp" line="187"/>
         <source>Address</source>
         <translation>Адрес</translation>
     </message>
@@ -2903,7 +2903,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1507"/>
+        <location filename="console_impls/object_impl.cpp" line="1508"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
@@ -2915,12 +2915,12 @@
 <context>
     <name>object_impl.cpp</name>
     <message>
-        <location filename="search_thread.cpp" line="106"/>
+        <location filename="search_thread.cpp" line="112"/>
         <source>Failed to connect to server while searching for objects.</source>
         <translation>Не удалось подключиться к серверу во время поиска объектов.</translation>
     </message>
     <message>
-        <location filename="search_thread.cpp" line="108"/>
+        <location filename="search_thread.cpp" line="114"/>
         <source>Could not load all objects. Increase object display limit in Filter Options or reduce number of objects by applying a filter. Filter Options is accessible from main window&apos;s menubar via the &quot;View&quot; menu.</source>
         <translation>Не удалось загрузить все объекты. Увеличьте лимит отображения объектов в опциях или уменьшите количество объектов, применив фильтр. Параметры фильтра доступны в меню «Вид».</translation>
     </message>
