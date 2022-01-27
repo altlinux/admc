@@ -350,7 +350,7 @@ AttributeDialog *AttributesTabEdit::get_attribute_dialog(const bool read_only) {
             case AttributeType_LargeInteger: return string_attribute_dialog();
             case AttributeType_UTCTime: return datetime_attribute_dialog();
             case AttributeType_GeneralizedTime: return datetime_attribute_dialog();
-            case AttributeType_NTSecDesc: return string_attribute_dialog();
+            case AttributeType_NTSecDesc: return octet_attribute_dialog();
             case AttributeType_Numeric: return string_attribute_dialog();
             case AttributeType_Printable: return string_attribute_dialog();
             case AttributeType_DNString: return string_attribute_dialog();
