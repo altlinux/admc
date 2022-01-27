@@ -174,10 +174,24 @@ void ResultsView::restore_state(const QVariant &state_variant, const QList<int> 
         const ResultsViewType view_type = (ResultsViewType) state["view_type"].toInt();
         set_view_type(view_type);
     } else {
+        // Set default state in absence of saved state
         for (int i = 0; i < header->count(); i++) {
             const bool hidden = !default_columns.contains(i);
             header->setSectionHidden(i, hidden);
         }
+
+        // NOTE: it is important to set default sort
+        // state here by modifying header of detail
+        // view, NOT the detail view itself. If we
+        // modify detail view only, then by default
+        // header will be in unsorted state, that state
+        // will get saved and overwrite sorted state
+        // the next time the app is run. Also, setting
+        // sort state for header is enough, because it
+        // propagates to detail view itself and
+        // icons/list views, because they share
+        // model/proxy
+        header->setSortIndicator(0, Qt::AscendingOrder);
     }
 }
 
