@@ -2985,6 +2985,14 @@
     </message>
 </context>
 <context>
+    <name>query_folder_impl.cpp</name>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="513"/>
+        <source>Are you sure you want to delete this item?</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>query_item_impl.cpp</name>
     <message>
         <location filename="console_impls/query_folder_impl.cpp" line="238"/>
