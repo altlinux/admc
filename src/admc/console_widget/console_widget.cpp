@@ -480,6 +480,30 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
 
         impl->restore_state(results_state);
     }
+
+    // Restore displayed of currently selected view
+    // type setting
+    QAction *current_view_type_action = [&]() -> QAction * {
+        const ResultsViewType current_results_view_type = [&]() {
+            ConsoleImpl *current_impl = d->get_current_scope_impl();
+            ResultsView *current_results_view = current_impl->view();
+            const ResultsViewType out = current_results_view->current_view_type();
+
+            return out;
+        }();
+
+        switch (current_results_view_type) {
+            case ResultsViewType_Icons: return d->actions.view_icons;
+            case ResultsViewType_List: return d->actions.view_list;
+            case ResultsViewType_Detail: return d->actions.view_detail;
+        }
+
+        return nullptr;
+    }();
+
+    if (current_view_type_action != nullptr) {
+        current_view_type_action->setChecked(true);
+    }
 }
 
 void ConsoleWidget::set_scope_view_visible(const bool visible) {
