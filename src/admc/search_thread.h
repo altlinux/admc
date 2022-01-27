@@ -38,6 +38,7 @@
 #include "ad_defines.h"
 
 class AdObject;
+class AdMessage;
 
 class SearchThread final : public QThread {
     Q_OBJECT
@@ -49,6 +50,7 @@ public:
     int get_id() const;
     bool failed_to_connect() const;
     bool hit_object_display_limit() const;
+    QList<AdMessage> get_ad_messages() const;
 
 signals:
     void results_ready(const QHash<QString, AdObject> &results);
@@ -63,6 +65,7 @@ private:
     int id;
     bool m_failed_to_connect;
     bool m_hit_object_display_limit;
+    QList<AdMessage> ad_messages;
 
     void run() override;
 };

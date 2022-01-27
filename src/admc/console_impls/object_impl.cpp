@@ -1430,6 +1430,7 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
                 return;
             }
 
+            g_status->display_ad_messages(search_thread->get_ad_messages(), console);
             search_thread_display_errors(search_thread, console);
 
             QStandardItem *item_now = console->get_item(persistent_index);

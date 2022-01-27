@@ -28,6 +28,7 @@
 #include "console_widget/results_view.h"
 #include "search_thread.h"
 #include "settings.h"
+#include "status.h"
 #include "utils.h"
 #include "globals.h"
 
@@ -178,6 +179,7 @@ void FindWidget::find() {
         find_thread, &SearchThread::finished,
         this,
         [this, find_thread]() {
+            g_status->display_ad_messages(find_thread->get_ad_messages(), this);
             search_thread_display_errors(find_thread, this);
 
             ui->find_button->setEnabled(true);

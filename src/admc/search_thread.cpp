@@ -76,6 +76,8 @@ void SearchThread::run() {
             break;
         }
 
+        ad_messages = ad.messages();
+
         emit results_ready(results);
 
         const bool search_interrupted = (!success || stop_flag);
@@ -99,6 +101,10 @@ bool SearchThread::failed_to_connect() const {
 
 bool SearchThread::hit_object_display_limit() const {
     return m_hit_object_display_limit;
+}
+
+QList<AdMessage> SearchThread::get_ad_messages() const {
+    return ad_messages;
 }
 
 void search_thread_display_errors(SearchThread *thread, QWidget *parent) {

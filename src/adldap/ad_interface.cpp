@@ -518,23 +518,6 @@ QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchSc
     AdCookie cookie;
     QHash<QString, AdObject> results;
 
-    if (AdInterfacePrivate::s_log_searches) {
-        const QString attributes_string = "{" + attributes.join(",") + "}";
-
-        const QString scope_string = [&scope]() -> QString {
-            switch (scope) {
-                case SearchScope_Object: return "object";
-                case SearchScope_Children: return "children";
-                case SearchScope_Descendants: return "descendants";
-                case SearchScope_All: return "all";
-                default: break;
-            }
-            return QString();
-        }();
-
-        d->success_message(QString(tr("Search:\n\tfilter = \"%1\"\n\tattributes = %2\n\tscope = \"%3\"\n\tbase = \"%4\"")).arg(filter, attributes_string, scope_string, base));
-    }
-
     while (true) {
         const bool success = search_paged(base, scope, filter, attributes, &results, &cookie, get_sacl);
 
@@ -551,6 +534,27 @@ QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchSc
 }
 
 bool AdInterface::search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl) {
+    // NOTE: only log once per cycle of search pages,
+    // to avoid duplicate messages
+    const bool is_first_page = results->isEmpty();
+    const bool need_to_log = (AdInterfacePrivate::s_log_searches && is_first_page);
+    if (need_to_log) {
+        const QString attributes_string = "{" + attributes.join(",") + "}";
+
+        const QString scope_string = [&scope]() -> QString {
+            switch (scope) {
+                case SearchScope_Object: return "object";
+                case SearchScope_Children: return "children";
+                case SearchScope_Descendants: return "descendants";
+                case SearchScope_All: return "all";
+                default: break;
+            }
+            return QString();
+        }();
+
+        d->success_message(QString(tr("Search:\n\tfilter = \"%1\"\n\tattributes = %2\n\tscope = \"%3\"\n\tbase = \"%4\"")).arg(filter, attributes_string, scope_string, base));
+    }
+
     const char *base_cstr = cstr(base);
 
     const int scope_int = [&]() {
