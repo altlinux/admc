@@ -50,6 +50,7 @@
 #include "tabs/security_tab.h"
 #include "tabs/telephones_tab.h"
 #include "tabs/laps_tab.h"
+#include "tabs/error_tab.h"
 #include "utils.h"
 
 #include <QAbstractItemView>
@@ -154,8 +155,10 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
             return new GeneralComputerTab(&edit_list, this);
         } else if (object.is_class(CLASS_GP_CONTAINER)) {
             return new GeneralPolicyTab(&edit_list, this);
-        } else {
+        } else if (!object.is_empty()) {
             return new GeneralOtherTab(&edit_list, this);
+        } else {
+            return new ErrorTab(this);
         }
     }();
 
@@ -163,7 +166,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
 
     const bool advanced_view_ON = settings_get_variant(SETTING_advanced_features).toBool();
 
-    if (advanced_view_ON) {
+    if (advanced_view_ON && !object.is_empty()) {
         auto object_tab = new ObjectTab(&edit_list, this);
         attributes_tab = new AttributesTab(&edit_list, this);
 

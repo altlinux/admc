@@ -110,6 +110,7 @@ set(ADMC_SOURCES
     tabs/delegation_tab.cpp
     tabs/select_well_known_trustee_dialog.cpp
     tabs/laps_tab.cpp
+    tabs/error_tab.cpp
 
     multi_tabs/general_user_multi_tab.cpp
     multi_tabs/general_other_multi_tab.cpp

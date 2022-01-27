@@ -18,36 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/general_name_edit.h"
+#include "tabs/error_tab.h"
+#include "tabs/ui_error_tab.h"
 
-#include "adldap.h"
-#include "utils.h"
-
-#include <QLabel>
-
-GeneralNameEdit::GeneralNameEdit(QLabel *label_arg, QObject *parent)
-: AttributeEdit(parent) {
-    label = label_arg;
+ErrorTab::ErrorTab(QWidget *parent)
+: QWidget(parent) {
+    ui = new Ui::ErrorTab();
+    ui->setupUi(this);
 }
 
-void GeneralNameEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
-
-    const QString label_text = [&]() {
-        const QString name_attribute = [&]() {
-            const bool is_gpc = object.is_class(CLASS_GP_CONTAINER);
-
-            if (is_gpc) {
-                return ATTRIBUTE_DISPLAY_NAME;
-            } else {
-                return ATTRIBUTE_NAME;
-            }
-        }();
-
-        const QString name = object.get_string(name_attribute);
-
-        return name;
-    }();
-
-    label->setText(label_text);
+ErrorTab::~ErrorTab() {
+    delete ui;
 }
