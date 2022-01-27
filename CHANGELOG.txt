@@ -15,6 +15,8 @@ CHANGELOG
 - Console: Fixed being able to move an object onto it's
   current parent via action menu or drag and drop. This
   caused visual glitches. (#336, #338)
+- Console: Improved default sort setting for results
+  view (for all view types - details, icons, list).
 - Security Tab: Fixed handling of inherited rights.
   Inherited rights will now correctly display as grayed
   out checkboxes and will not be editable. (#327)
@@ -29,6 +31,9 @@ CHANGELOG
 - Propeties: Added LAPS(Local Administration Password
   Solution) tab for computer objects. This tab is
   accessible only if LAPS is enabled in the domain. (#312)
+- Properties: Improved how properties dialog responds
+  to failing to load a user due to connection error or
+  absence of object.
 - Policies: Fixed permission check incorrectly
   complaining about policies made by RSAT. (#333)
 - Find dialog: Added class filtering by all classes,
@@ -37,6 +42,9 @@ CHANGELOG
   list. (#341)
 - Menubar: Fixed checkboxes for view types (Icons,
   List, Details) not being exclusive. (#329)
+- Menubar: Fixed search logging, now correctly works
+  when browsing the object tree, in find dialog and
+  other UI elements.
 - Misc: Fixed class filters not working correctly until
   class selection dialog was opened. Occured in find
   dialog, query creation/editing and others. (#322)
@@ -48,6 +56,13 @@ CHANGELOG
 - Misc: Fixed group icons not displaying on some DE's. (#330)
 - Misc: Added app icon which is displayed next to in
   app lists and on the title bar.
+- Misc: Empty password input is now allowed when
+  creating users.
+- Misc: Fixed incorrect value for length limit of the
+  field "Logon name (pre-Windows 2000)".
+- Misc: Improved handling of illegal characters in
+  dialogs that create objects and those that rename
+  objects.
 
 -----------------------------------------------------------------------
  VERSION 0.8.0
