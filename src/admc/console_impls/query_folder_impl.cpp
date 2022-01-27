@@ -510,6 +510,11 @@ bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex
 }
 
 void query_action_delete(ConsoleWidget *console, const QList<QModelIndex> &index_list) {
+    const bool confirmed = confirmation_dialog(QCoreApplication::translate("query_folder_impl.cpp", "Are you sure you want to delete this item?"), console);
+    if (!confirmed) {
+        return;
+    }
+
     const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
     for (const QPersistentModelIndex &index : persistent_list) {
