@@ -31,7 +31,6 @@
 class RightsSortModel;
 class QStandardItemModel;
 class QStandardItem;
-class SecurityTabPrivate;
 class SecurityDescriptor;
 struct security_descriptor;
 
@@ -83,7 +82,6 @@ public:
 
 private:
     Ui::SecurityTab *ui;
-    SecurityTabPrivate *d;
     QStandardItemModel *trustee_model;
     QStandardItemModel *rights_model;
     RightsSortModel *rights_sort_model;
