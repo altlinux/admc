@@ -66,5 +66,7 @@ QList<QByteArray> StringAttributeDialog::get_value_list() const {
 }
 
 void StringAttributeDialog::set_max_length(const int max_length) {
-    ui->edit->setMaxLength(max_length);
+    if (max_length > 0) {
+        ui->edit->setMaxLength(max_length);
+    }
 }
