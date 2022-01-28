@@ -25,12 +25,12 @@
 #include "attribute_edits/ui_expiry_widget.h"
 #include "globals.h"
 
-#include <QCheckBox>
+#include <QRadioButton>
 #include <QDateEdit>
 #include <QFormLayout>
 
 void ADMCTestExpiryEdit::initTestCase_data() {
-    QTest::addColumn<QString>("check_name");
+    QTest::addColumn<QString>("button_name");
     QTest::addColumn<QDate>("date");
     QTest::addColumn<QString>("value");
 
@@ -48,12 +48,12 @@ void ADMCTestExpiryEdit::init() {
 
     date_edit = widget->ui->date_edit;
 
-    QFETCH_GLOBAL(QString, check_name);
-    const QHash<QString, QCheckBox *> check_map = {
+    QFETCH_GLOBAL(QString, button_name);
+    const QHash<QString, QRadioButton *> button_map = {
         {"end_of_check", widget->ui->end_of_check},
         {"never_check", widget->ui->never_check},
     };
-    check = check_map[check_name];
+    button = button_map[button_name];
 
     // Create test user
     const QString name = TEST_USER;
@@ -71,7 +71,7 @@ void ADMCTestExpiryEdit::edited_signal() {
             edited_signal_emitted = true;
         });
 
-    check->setChecked(true);
+    button->setChecked(true);
     QVERIFY(edited_signal_emitted);
 }
 
@@ -83,7 +83,7 @@ void ADMCTestExpiryEdit::load() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    QVERIFY(check->isChecked());
+    QVERIFY(button->isChecked());
     if (date_edit->isEnabled()) {
         QCOMPARE(date_edit->date(), date);
     }
@@ -100,7 +100,7 @@ void ADMCTestExpiryEdit::apply() {
     // Replace value into something different before testing
     ad.attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, "129655295400000001");
 
-    check->setChecked(true);
+    button->setChecked(true);
     date_edit->setDate(date);
 
     const bool apply_success = edit->apply(ad, dn);
