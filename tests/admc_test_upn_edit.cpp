@@ -26,8 +26,6 @@
 #include <QFormLayout>
 #include <QLineEdit>
 
-#define TEST_SUFFIX "test.com"
-
 void ADMCTestUpnEdit::init() {
     ADMCTest::init();
 
@@ -37,14 +35,21 @@ void ADMCTestUpnEdit::init() {
     upn_edit = new UpnEdit(prefix_edit, suffix_edit, parent_widget);
     upn_edit->init_suffixes(ad);
 
+    // Get default suffix that will be used for tests
+    // from default value that was loaded into suffix
+    // combo when upn edit's init_suffixes() was called
+    const QString test_suffix = suffix_edit->currentText();
+    QVERIFY(!test_suffix.isEmpty());
+
     // Create test user
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
     const bool create_success = ad.object_add(dn, CLASS_USER);
     QVERIFY(create_success);
 
-    const QString test_upn = QString("%1@%2").arg(name, TEST_SUFFIX);
-    ad.attribute_replace_string(dn, ATTRIBUTE_USER_PRINCIPAL_NAME, test_upn);
+    const QString test_upn = QString("%1@%2").arg(name, test_suffix);
+    const bool replace_success = ad.attribute_replace_string(dn, ATTRIBUTE_USER_PRINCIPAL_NAME, test_upn);
+    QVERIFY(replace_success);
 
     const AdObject object = ad.search_object(dn);
     upn_edit->load(ad, object);
@@ -67,9 +72,6 @@ void ADMCTestUpnEdit::length_limit() {
 void ADMCTestUpnEdit::test_load() {
     const QString prefix = prefix_edit->text();
     QCOMPARE(prefix, TEST_USER);
-
-    const QString suffix = suffix_edit->currentText();
-    QCOMPARE(suffix, TEST_SUFFIX);
 }
 
 // edited() signal should be emitted when prefix or suffix
@@ -224,8 +226,10 @@ void ADMCTestUpnEdit::verify_conflict() {
     const QString conflict_dn = test_object_dn(conflict_name, CLASS_USER);
     const bool create_success = ad.object_add(conflict_dn, CLASS_USER);
     QVERIFY(create_success);
+
     const QString conflicting_upn = get_current_upn();
-    ad.attribute_replace_string(conflict_dn, ATTRIBUTE_USER_PRINCIPAL_NAME, conflicting_upn);
+    const bool replace_success = ad.attribute_replace_string(conflict_dn, ATTRIBUTE_USER_PRINCIPAL_NAME, conflicting_upn);
+    QVERIFY(replace_success);
 
     // Verify should fail
     const bool verify_success = upn_edit->verify(ad, dn);
