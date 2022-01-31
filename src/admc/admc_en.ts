@@ -527,7 +527,8 @@
     </message>
     <message>
         <location filename="create_group_dialog.ui" line="32"/>
-        <source>Logon name (pre-Windows 2000):</source>
+        <source>Group name (pre-Windows 2000):</source>
+        <oldsource>Logon name (pre-Windows 2000):</oldsource>
         <translation></translation>
     </message>
     <message>
@@ -1086,7 +1087,8 @@
     <name>GeneralGroupTab</name>
     <message>
         <location filename="tabs/general_group_tab.ui" line="36"/>
-        <source>Logon name (pre-Windows 2000):</source>
+        <source>Group name (pre-Windows 2000):</source>
+        <oldsource>Logon name (pre-Windows 2000):</oldsource>
         <translation></translation>
     </message>
     <message>
@@ -2501,7 +2503,8 @@
     </message>
     <message>
         <location filename="rename_group_dialog.ui" line="32"/>
-        <source>Logon name (pre-Windows 2000):</source>
+        <source>Group name (pre-Windows 2000):</source>
+        <oldsource>Logon name (pre-Windows 2000):</oldsource>
         <translation></translation>
     </message>
 </context>

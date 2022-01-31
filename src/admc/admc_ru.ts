@@ -527,8 +527,9 @@
     </message>
     <message>
         <location filename="create_group_dialog.ui" line="32"/>
-        <source>Logon name (pre-Windows 2000):</source>
-        <translation>Имя для входа (до Windows 2000):</translation>
+        <source>Group name (pre-Windows 2000):</source>
+        <oldsource>Logon name (pre-Windows 2000):</oldsource>
+        <translation>Имя группы (до Windows 2000):</translation>
     </message>
     <message>
         <location filename="create_group_dialog.ui" line="53"/>
@@ -1086,8 +1087,9 @@
     <name>GeneralGroupTab</name>
     <message>
         <location filename="tabs/general_group_tab.ui" line="36"/>
-        <source>Logon name (pre-Windows 2000):</source>
-        <translation>Имя для входа (до Windows 2000):</translation>
+        <source>Group name (pre-Windows 2000):</source>
+        <oldsource>Logon name (pre-Windows 2000):</oldsource>
+        <translation>Имя группы (до Windows 2000):</translation>
     </message>
     <message>
         <location filename="tabs/general_group_tab.ui" line="57"/>
@@ -2501,8 +2503,9 @@
     </message>
     <message>
         <location filename="rename_group_dialog.ui" line="32"/>
-        <source>Logon name (pre-Windows 2000):</source>
-        <translation>Имя для входа (до Windows 2000):</translation>
+        <source>Group name (pre-Windows 2000):</source>
+        <oldsource>Logon name (pre-Windows 2000):</oldsource>
+        <translation>Имя группы (до Windows 2000):</translation>
     </message>
 </context>
 <context>
