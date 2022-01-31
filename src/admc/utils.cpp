@@ -166,19 +166,22 @@ void limit_edit(QLineEdit *edit, const QString &attribute) {
 }
 
 QIcon get_object_icon(const AdObject &object) {
-    static const QMap<QString, QString> class_to_icon = {
-        {CLASS_DOMAIN, "network-server"},
-        {CLASS_CONTAINER, "folder"},
-        {CLASS_OU, "folder-documents"},
-        {CLASS_GROUP, "system-users"},
-        {CLASS_PERSON, "avatar-default"},
-        {CLASS_COMPUTER, "computer"},
-        {CLASS_GP_CONTAINER, "folder-templates"},
+    // NOTE: use a list of possible icons because
+    // default icon themes for different DE's don't
+    // fully intersect
+    static const QMap<QString, QList<QString>> class_to_icon = {
+        {CLASS_DOMAIN, {"network-server"}},
+        {CLASS_CONTAINER, {"folder"}},
+        {CLASS_OU, {"folder-documents"}},
+        {CLASS_GROUP, {"system-users"}},
+        {CLASS_PERSON, {"avatar-default", "avatar-default-symbolic"}},
+        {CLASS_COMPUTER, {"computer"}},
+        {CLASS_GP_CONTAINER, {"folder-templates"}},
 
         // Some custom icons for one-off objects
-        {"builtinDomain", "emblem-system"},
-        {"configuration", "emblem-system"},
-        {"lostAndFound", "emblem-system"},
+        {"builtinDomain", {"emblem-system", "emblem-system-symbolic"}},
+        {"configuration", {"emblem-system", "emblem-system-symbolic"}},
+        {"lostAndFound", {"emblem-system", "emblem-system-symbolic"}},
     };
 
     // Iterate over object classes in reverse, starting from most inherited class
@@ -188,7 +191,13 @@ QIcon get_object_icon(const AdObject &object) {
     const QString icon_name = [object_classes]() -> QString {
         for (auto object_class : object_classes) {
             if (class_to_icon.contains(object_class)) {
-                return class_to_icon[object_class];
+                const QList<QString> icon_name_list = class_to_icon[object_class];
+
+                for (const QString &icon : icon_name_list) {
+                    if (QIcon::hasThemeIcon(icon)) {
+                        return icon;
+                    }
+                }
             }
         }
 
