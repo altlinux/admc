@@ -1692,6 +1692,11 @@
 <context>
     <name>MainWindowConnectionError</name>
     <message>
+        <location filename="main_window_connection_error.ui" line="14"/>
+        <source>Connection Error</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="main_window_connection_error.ui" line="34"/>
         <source>Failed to connect to domain.</source>
         <translation></translation>
@@ -2903,7 +2908,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1508"/>
+        <location filename="console_impls/object_impl.cpp" line="1511"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
@@ -3014,12 +3019,12 @@
 <context>
     <name>utils.cpp</name>
     <message>
-        <location filename="utils.cpp" line="386"/>
+        <location filename="utils.cpp" line="398"/>
         <source>Input field for Name contains one or more of the following illegal characters: # , + &quot; \ &lt; &gt; ; = (leading space) (trailing space)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="utils.cpp" line="387"/>
+        <location filename="utils.cpp" line="399"/>
         <source>Error</source>
         <translation></translation>
     </message>
