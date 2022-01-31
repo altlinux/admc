@@ -169,39 +169,42 @@ QIcon get_object_icon(const AdObject &object) {
     // NOTE: use a list of possible icons because
     // default icon themes for different DE's don't
     // fully intersect
-    static const QMap<QString, QList<QString>> class_to_icon = {
-        {CLASS_DOMAIN, {"network-server"}},
-        {CLASS_CONTAINER, {"folder"}},
-        {CLASS_OU, {"folder-documents"}},
-        {CLASS_GROUP, {"system-users"}},
-        {CLASS_PERSON, {"avatar-default", "avatar-default-symbolic"}},
-        {CLASS_COMPUTER, {"computer"}},
-        {CLASS_GP_CONTAINER, {"folder-templates"}},
+    static const QMap<QString, QList<QString>> category_to_icon_list = {
+        {"Domain-DNS", {"network-server"}},
+        {"Container", {"folder"}},
+        {"Organizational-Unit", {"folder-documents"}},
+        {"Group", {"system-users"}},
+        {"Person", {"avatar-default", "avatar-default-symbolic"}},
+        {"Computer", {"computer"}},
+        {"Group-Policy-Container", {"folder-templates"}},
 
         // Some custom icons for one-off objects
-        {"builtinDomain", {"emblem-system", "emblem-system-symbolic"}},
-        {"configuration", {"emblem-system", "emblem-system-symbolic"}},
-        {"lostAndFound", {"emblem-system", "emblem-system-symbolic"}},
+        {"Builtin-Domain", {"emblem-system", "emblem-system-symbolic"}},
+        {"Configuration", {"emblem-system", "emblem-system-symbolic"}},
+        {"Lost-And-Found", {"emblem-system", "emblem-system-symbolic"}},
     };
 
-    // Iterate over object classes in reverse, starting from most inherited class
-    QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    std::reverse(object_classes.begin(), object_classes.end());
+    // NOTE: This is the icon used when no icon is
+    // defined for some object category
+    const QString error_icon = "dialog-question";
 
-    const QString icon_name = [object_classes]() -> QString {
-        for (auto object_class : object_classes) {
-            if (class_to_icon.contains(object_class)) {
-                const QList<QString> icon_name_list = class_to_icon[object_class];
+    const QString icon_name = [&]() -> QString {
+        const QString object_category = [&]() {
+            const QString category_dn = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
+            const QString out = dn_get_name(category_dn);
 
-                for (const QString &icon : icon_name_list) {
-                    if (QIcon::hasThemeIcon(icon)) {
-                        return icon;
-                    }
-                }
+            return out;
+        }();
+
+        const QList<QString> icon_name_list = category_to_icon_list.value(object_category, {error_icon});
+
+        for (const QString &icon : icon_name_list) {
+            if (QIcon::hasThemeIcon(icon)) {
+                return icon;
             }
         }
 
-        return "dialog-question";
+        return error_icon;
     }();
 
     const QIcon icon = QIcon::fromTheme(icon_name);

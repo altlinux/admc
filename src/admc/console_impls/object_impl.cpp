@@ -1337,6 +1337,9 @@ QList<QString> console_object_search_attributes() {
     attributes += ATTRIBUTE_SYSTEM_FLAGS;
 
     attributes += ATTRIBUTE_USER_ACCOUNT_CONTROL;
+    
+    // NOTE: needed to know which icon to use for object
+    attributes += ATTRIBUTE_OBJECT_CATEGORY;
 
     return attributes;
 }

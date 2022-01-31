@@ -86,6 +86,7 @@ QString is_container_filter();
 
 void limit_edit(QLineEdit *edit, const QString &attribute);
 
+// NOTE: object must contain "objectCategory" attribute
 QIcon get_object_icon(const AdObject &object);
 
 QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes);
