@@ -59,7 +59,7 @@ void StringEdit::load(AdInterface &ad, const AdObject &object) {
 }
 
 bool StringEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value = edit->text();
+    const QString new_value = edit->text().trimmed();
     const bool success = ad.attribute_replace_string(dn, attribute, new_value);
 
     return success;
