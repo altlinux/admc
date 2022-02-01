@@ -403,3 +403,12 @@ bool verify_object_name(const QString &name, QWidget *parent) {
 
     return true;
 }
+
+void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest) {
+    QObject::connect(
+        src, &QLineEdit::textChanged,
+        [src, dest]() {
+            const QString src_input = src->text();
+            dest->setText(src_input);
+        });
+}

@@ -73,10 +73,7 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, QW
         ui->last_name_edit, &QLineEdit::textChanged,
         this, &CreateUserDialog::autofill_full_name);
 
-    // upn -> sam account name
-    connect(
-        ui->upn_prefix_edit, &QLineEdit::textChanged,
-        this, &CreateUserDialog::autofill_sam_name);
+    setup_lineedit_autofill(ui->upn_prefix_edit, ui->sam_name_edit);
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
@@ -144,9 +141,4 @@ void CreateUserDialog::autofill_full_name() {
     }();
 
     ui->name_edit->setText(full_name_value);
-}
-
-void CreateUserDialog::autofill_sam_name() {
-    const QString upn_input = ui->upn_prefix_edit->text();
-    ui->sam_name_edit->setText(upn_input);
 }

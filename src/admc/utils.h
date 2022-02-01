@@ -121,4 +121,9 @@ bool string_contains_bad_chars(const QString &string, const QString &bad_chars);
 
 bool verify_object_name(const QString &name, QWidget *parent);
 
+// Setup an autofill of from one line edit into
+// another, so that when src is edited, input is copied
+// into dest.
+void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest);
+
 #endif /* UTILS_H */
