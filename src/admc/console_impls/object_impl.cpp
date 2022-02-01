@@ -451,6 +451,18 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
             for (const QString &dn : dn_list) {
                 const AdObject object = ad2.search_object(dn);
 
+                // TODO: band-aid for the situations
+                // where properties dialog interacts
+                // with deleted objects. Bad stuff can
+                // still happen if properties is opened
+                // while object exists, then object is
+                // deleted and properties is applied.
+                // Remove this or improve it when you
+                // tackle this issue head-on.
+                if (object.is_empty()) {
+                    continue;
+                }
+
                 // NOTE: search for indexes instead of using the
                 // list given to f-n because we want to update
                 // objects in both object and query tree
