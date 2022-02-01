@@ -26,6 +26,11 @@
 #include <QFormLayout>
 #include <QLineEdit>
 
+// NOTE: we have to make sure that test suffix doesn't
+// already exist on the test domain, hence the wacky
+// name
+#define TEST_SUFFIX "totally-unique-test-suffix.zone"
+
 void ADMCTestUpnEdit::init() {
     ADMCTest::init();
 
@@ -35,19 +40,13 @@ void ADMCTestUpnEdit::init() {
     upn_edit = new UpnEdit(prefix_edit, suffix_edit, parent_widget);
     upn_edit->init_suffixes(ad);
 
-    // Get default suffix that will be used for tests
-    // from default value that was loaded into suffix
-    // combo when upn edit's init_suffixes() was called
-    const QString test_suffix = suffix_edit->currentText();
-    QVERIFY(!test_suffix.isEmpty());
-
     // Create test user
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
     const bool create_success = ad.object_add(dn, CLASS_USER);
     QVERIFY(create_success);
 
-    const QString test_upn = QString("%1@%2").arg(name, test_suffix);
+    const QString test_upn = QString("%1@%2").arg(name, TEST_SUFFIX);
     const bool replace_success = ad.attribute_replace_string(dn, ATTRIBUTE_USER_PRINCIPAL_NAME, test_upn);
     QVERIFY(replace_success);
 
@@ -72,6 +71,9 @@ void ADMCTestUpnEdit::length_limit() {
 void ADMCTestUpnEdit::test_load() {
     const QString prefix = prefix_edit->text();
     QCOMPARE(prefix, TEST_USER);
+
+    const QString suffix = suffix_edit->currentText();
+    QCOMPARE(suffix, TEST_SUFFIX);
 }
 
 // edited() signal should be emitted when prefix or suffix
@@ -227,11 +229,15 @@ void ADMCTestUpnEdit::verify_conflict() {
     const bool create_success = ad.object_add(conflict_dn, CLASS_USER);
     QVERIFY(create_success);
 
-    const QString conflicting_upn = get_current_upn();
+    const QString conflicting_upn = QString("%1@%2").arg(conflict_name, TEST_SUFFIX);
     const bool replace_success = ad.attribute_replace_string(conflict_dn, ATTRIBUTE_USER_PRINCIPAL_NAME, conflicting_upn);
     QVERIFY(replace_success);
 
-    // Verify should fail
+    // Set input of upn edit so that it conflicts with
+    // the conflicting user that we have setup. After
+    // that verify should fail.
+    prefix_edit->setText(conflict_name);
+    suffix_edit->setCurrentText(TEST_SUFFIX);
     const bool verify_success = upn_edit->verify(ad, dn);
 
     QVERIFY2(!verify_success, "verify() didn't notice upn conflict");
