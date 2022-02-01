@@ -87,10 +87,34 @@ void ADMCTestUpnEdit::test_emit_edited() {
 
     prefix_edit->setText("test");
     QVERIFY(edited_signal_emitted);
+
+    edited_signal_emitted = false;
+
+    const int suffix_count = suffix_edit->count();
+    QVERIFY((suffix_count > 1));
+    const int changed_index = [this]() {
+        if (suffix_edit->currentIndex() == 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }();
+    suffix_edit->setCurrentIndex(changed_index);
+    QVERIFY(edited_signal_emitted);
 }
 
 void ADMCTestUpnEdit::apply_unmodified() {
     test_edit_apply_unmodified(upn_edit, dn);
+}
+
+// Edit should apply changes to suffix
+void ADMCTestUpnEdit::test_apply_suffix() {
+    change_suffix_in_edit();
+
+    const bool apply_success = upn_edit->apply(ad, dn);
+    QVERIFY(apply_success);
+
+    QVERIFY2(edit_state_equals_to_server_state(), "Failed to change upn suffix");
 }
 
 // Edit should apply changes to prefix
@@ -105,6 +129,7 @@ void ADMCTestUpnEdit::test_apply_prefix() {
 
 // Edit should apply changes to prefix
 void ADMCTestUpnEdit::test_apply_prefix_and_suffix() {
+    change_suffix_in_edit();
     prefix_edit->setText("test-new-prefix2");
 
     const bool apply_success = upn_edit->apply(ad, dn);
@@ -115,6 +140,7 @@ void ADMCTestUpnEdit::test_apply_prefix_and_suffix() {
 
 // Edit should reset to server state after load() call
 void ADMCTestUpnEdit::test_reset() {
+    change_suffix_in_edit();
     prefix_edit->setText("test-new-prefix3");
 
     const AdObject object = ad.search_object(dn);
@@ -138,6 +164,26 @@ bool ADMCTestUpnEdit::edit_state_equals_to_server_state() {
 
     return (edit_upn == server_upn);
 }
+
+// Change to next suffix, not equal to current one
+void ADMCTestUpnEdit::change_suffix_in_edit() {
+    const int new_suffix_index = [this]() {
+        const QString current_suffix = suffix_edit->currentText();
+
+        for (int i = 0; i < suffix_edit->count(); i++) {
+            const QString suffix = suffix_edit->itemText(i);
+
+            if (suffix != current_suffix) {
+                return i;
+            }
+        }
+        return -1;
+    }();
+    QVERIFY2((new_suffix_index != -1), "Failed to find different suffix");
+
+    suffix_edit->setCurrentIndex(new_suffix_index);
+}
+
 
 void ADMCTestUpnEdit::verify_bad_chars_data() {
     QTest::addColumn<QString>("value");

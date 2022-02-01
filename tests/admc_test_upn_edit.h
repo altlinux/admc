@@ -37,6 +37,7 @@ private slots:
     void test_load();
     void test_emit_edited();
     void apply_unmodified();
+    void test_apply_suffix();
     void test_apply_prefix();
     void test_apply_prefix_and_suffix();
     void test_reset();
@@ -53,6 +54,7 @@ private:
     QString get_upn();
     QString get_current_upn();
     bool edit_state_equals_to_server_state();
+    void change_suffix_in_edit();
 };
 
 #endif /* ADMC_TEST_UPN_EDIT_H */
