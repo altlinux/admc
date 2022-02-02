@@ -63,6 +63,7 @@ public:
 
 private:
     QStandardItemModel *model;
+    QByteArray original_value;
 
     void load(const QByteArray &value);
     void switch_to_local_time();

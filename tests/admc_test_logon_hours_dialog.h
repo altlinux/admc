@@ -36,7 +36,7 @@ private slots:
     void conversion_funs();
     void load_data();
     void load();
-    void load_undefined();
+    void load_empty();
     void select();
     void handle_timezone();
 

@@ -55,8 +55,13 @@ void LogonHoursEdit::open_dialog() {
         dialog, &QDialog::accepted,
         this,
         [this, dialog]() {
-            current_value = dialog->get();
+            const QByteArray new_value = dialog->get();
+            const bool value_changed = (new_value != current_value);
 
-            emit edited();
+            if (value_changed) {
+                current_value = dialog->get();
+
+                emit edited();
+            }
         });
 }
