@@ -253,6 +253,9 @@ const long long MILLIS_TO_100_NANOS = 10000LL;
 // we choose to be more strict about it
 #define NAME_BAD_CHARS ",\\#+<>;\"="
 
+#define UAC_PASSWD_NOTREQD 0x00000020
+#define UAC_NORMAL_ACCOUNT 0x00000200
+
 enum SearchScope {
     SearchScope_Object,
     SearchScope_Children,
