@@ -34,6 +34,7 @@ class ADMCTestLogonComputersEdit : public ADMCTest {
 private slots:
     void init() override;
 
+    void load_empty();
     void load();
     void emit_edited_signal();
     void add();
@@ -46,11 +47,14 @@ private:
     LogonComputersDialog *dialog;
     QListWidget *list;
     QLineEdit *value_edit;
+    QPushButton *open_dialog_button;
     QPushButton *add_button;
     QPushButton *remove_button;
     QString dn;
 
     void test_list_item(const int row, const QString &text);
+    void load_and_open_dialog();
+    void open_dialog();
 };
 
 #endif /* ADMC_TEST_LOGON_COMPUTERS_EDIT_H */
