@@ -44,6 +44,7 @@ QString octet_display_value(const QByteArray &bytes);
 QString guid_to_display_value(const QByteArray &bytes);
 QString uac_to_display_value(const QByteArray &bytes);
 QString samaccounttype_to_display_value(const QByteArray &bytes);
+QString primarygrouptype_to_display_value(const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig) {
     if (adconfig == nullptr) {
@@ -58,6 +59,8 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
                 return uac_to_display_value(value);
             } else if (attribute == ATTRIBUTE_SAM_ACCOUNT_TYPE) {
                 return samaccounttype_to_display_value(value);
+            } else if (attribute == ATTRIBUTE_PRIMARY_GROUP_ID) {
+                return primarygrouptype_to_display_value(value);
             } else {
                 return QString(value);
             }
@@ -381,4 +384,38 @@ QString samaccounttype_to_display_value(const QByteArray &bytes) {
     const QString out = QString("%1 = ( %2 )").arg(QString(bytes), mask_name);
 
     return out;
+}
+
+QString primarygrouptype_to_display_value(const QByteArray &bytes) {
+    bool toInt_ok;
+    const int value_int = bytes.toInt(&toInt_ok);
+
+    if (!toInt_ok) {
+        return QCoreApplication::translate("attribute_display", "<invalid value>");
+    }
+
+    // NOTE: builtin group rid's are not included
+    // because they can't be primary
+    const QHash<int, QString> mask_name_map = {
+        {DOMAIN_RID_ADMINS, "GROUP_RID_ADMINS"},
+        {DOMAIN_RID_USERS, "GROUP_RID_USERS"},
+        {DOMAIN_RID_GUESTS, "GROUP_RID_GUESTS"},
+        {DOMAIN_RID_DOMAIN_MEMBERS, "GROUP_RID_DOMAIN_MEMBERS"},
+        {DOMAIN_RID_DCS, "GROUP_RID_DCS"},
+        {DOMAIN_RID_CERT_ADMINS, "GROUP_RID_CERT_ADMINS"},
+        {DOMAIN_RID_SCHEMA_ADMINS, "GROUP_RID_SCHEMA_ADMINS"},
+        {DOMAIN_RID_ENTERPRISE_ADMINS, "GROUP_RID_ENTERPRISE_ADMINS"},
+        {DOMAIN_RID_POLICY_ADMINS, "GROUP_RID_POLICY_ADMINS"},
+        {DOMAIN_RID_READONLY_DCS, "GROUP_RID_READONLY_DCS"},
+        {DOMAIN_RID_RAS_SERVERS, "GROUP_RID_RAS_SERVERS"},
+    };
+
+    if (mask_name_map.contains(value_int)) {
+        const QString mask_name = mask_name_map[value_int];
+        const QString out = QString("%1 = ( %2 )").arg(QString(bytes), mask_name);
+
+        return out;
+    } else {
+        return QString::number(value_int);
+    }
 }
