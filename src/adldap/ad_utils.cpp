@@ -142,18 +142,18 @@ QString account_option_string(const AccountOption &option) {
 int account_option_bit(const AccountOption &option) {
     switch (option) {
         case AccountOption_Disabled:
-            return 0x00000002;
+            return UAC_ACCOUNTDISABLE;
         case AccountOption_DontExpirePassword:
-            return 0x00010000;
+            return UAC_DONT_EXPIRE_PASSWORD;
         case AccountOption_UseDesKey:
-            return 0x00200000;
+            return UAC_USE_DES_KEY_ONLY;
         case AccountOption_SmartcardRequired:
-            return 0x00040000;
+            return UAC_SMARTCARD_REQUIRED;
         case AccountOption_DontRequirePreauth:
-            return 0x00400000;
-        case AccountOption_CantDelegate: return 0x00100000;
+            return UAC_DONT_REQUIRE_PREAUTH;
+        case AccountOption_CantDelegate: return UAC_NOT_DELEGATED;
         case AccountOption_TrustedForDelegation:
-            return 0x00080000;
+            return UAC_TRUSTED_FOR_DELEGATION;
 
         // NOTE: not all account options can be directly
         // mapped to bits

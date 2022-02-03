@@ -42,6 +42,7 @@ QString datetime_display_value(const QString &attribute, const QByteArray &bytes
 QString timespan_display_value(const QByteArray &bytes);
 QString octet_display_value(const QByteArray &bytes);
 QString guid_to_display_value(const QByteArray &bytes);
+QString uac_to_display_value(const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig) {
     if (adconfig == nullptr) {
@@ -51,6 +52,13 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
     const AttributeType type = adconfig->get_attribute_type(attribute);
 
     switch (type) {
+        case AttributeType_Integer: {
+            if (attribute == ATTRIBUTE_USER_ACCOUNT_CONTROL) {
+                return uac_to_display_value(value);
+            } else {
+                return QString(value);
+            }
+        }
         case AttributeType_LargeInteger: {
             const LargeIntegerSubtype subtype = adconfig->get_attribute_large_integer_subtype(attribute);
 
@@ -249,4 +257,95 @@ QString octet_display_value(const QByteArray &bytes) {
     }
 
     return QString(out);
+}
+
+QString uac_to_display_value(const QByteArray &bytes) {
+    bool uac_toInt_ok;
+    const int uac = bytes.toInt(&uac_toInt_ok);
+
+    if (!uac_toInt_ok) {
+        return QCoreApplication::translate("attribute_display", "<invalid UAC value>");
+    }
+
+    // Create string of the form "X | Y | Z", where X,
+    // Y, Z are names of masks that are set in given UAC
+    const QString masks_string = [&]() {
+        // NOTE: using separate list instead of map's
+        // keys() because keys() is unordered and we need
+        // order so that display string is consistent
+        const QList<int> mask_list = {
+            UAC_SCRIPT,
+            UAC_ACCOUNTDISABLE,
+            UAC_HOMEDIR_REQUIRED,
+            UAC_LOCKOUT,
+            UAC_PASSWD_NOTREQD,
+            UAC_PASSWD_CANT_CHANGE,
+            UAC_ENCRYPTED_TEXT_PASSWORD_ALLOWED,
+            UAC_TEMP_DUPLICATE_ACCOUNT,
+            UAC_NORMAL_ACCOUNT,
+            UAC_INTERDOMAIN_TRUST_ACCOUNT,
+            UAC_WORKSTATION_TRUST_ACCOUNT,
+            UAC_SERVER_TRUST_ACCOUNT,
+            UAC_DONT_EXPIRE_PASSWORD,
+            UAC_MNS_LOGON_ACCOUNT,
+            UAC_SMARTCARD_REQUIRED,
+            UAC_TRUSTED_FOR_DELEGATION,
+            UAC_NOT_DELEGATED,
+            UAC_USE_DES_KEY_ONLY,
+            UAC_DONT_REQUIRE_PREAUTH,
+            UAC_ERROR_PASSWORD_EXPIRED,
+            UAC_TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION,
+            UAC_PARTIAL_SECRETS_ACCOUNT,
+            UAC_USER_USE_AES_KEYS,
+        };
+
+        const QHash<int, QString> mask_name_map = {
+            {UAC_SCRIPT, "SCRIPT"},
+            {UAC_ACCOUNTDISABLE, "ACCOUNTDISABLE"},
+            {UAC_HOMEDIR_REQUIRED, "HOMEDIR_REQUIRED"},
+            {UAC_LOCKOUT, "LOCKOUT"},
+            {UAC_PASSWD_NOTREQD, "PASSWD_NOTREQD"},
+            {UAC_PASSWD_CANT_CHANGE, "PASSWD_CANT_CHANGE"},
+            {UAC_ENCRYPTED_TEXT_PASSWORD_ALLOWED, "ENCRYPTED_TEXT_PASSWORD_ALLOWED"},
+            {UAC_TEMP_DUPLICATE_ACCOUNT, "TEMP_DUPLICATE_ACCOUNT"},
+            {UAC_NORMAL_ACCOUNT, "NORMAL_ACCOUNT"},
+            {UAC_INTERDOMAIN_TRUST_ACCOUNT, "INTERDOMAIN_TRUST_ACCOUNT"},
+            {UAC_WORKSTATION_TRUST_ACCOUNT, "WORKSTATION_TRUST_ACCOUNT"},
+            {UAC_SERVER_TRUST_ACCOUNT, "SERVER_TRUST_ACCOUNT"},
+            {UAC_DONT_EXPIRE_PASSWORD, "DONT_EXPIRE_PASSWORD"},
+            {UAC_MNS_LOGON_ACCOUNT, "MNS_LOGON_ACCOUNT"},
+            {UAC_SMARTCARD_REQUIRED, "SMARTCARD_REQUIRED"},
+            {UAC_TRUSTED_FOR_DELEGATION, "TRUSTED_FOR_DELEGATION"},
+            {UAC_NOT_DELEGATED, "NOT_DELEGATED"},
+            {UAC_USE_DES_KEY_ONLY, "USE_DES_KEY_ONLY"},
+            {UAC_DONT_REQUIRE_PREAUTH, "DONT_REQUIRE_PREAUTH"},
+            {UAC_ERROR_PASSWORD_EXPIRED, "ERROR_PASSWORD_EXPIRED"},
+            {UAC_TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION, "TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION"},
+            {UAC_PARTIAL_SECRETS_ACCOUNT, "PARTIAL_SECRETS_ACCOUNT"},
+            {UAC_USER_USE_AES_KEYS, "USER_USE_AES_KEYS"},
+        };
+
+        const QList<QString> set_mask_name_list = [&]() { 
+            QList<QString> out_list;
+
+            for (const int mask : mask_list) {
+                const bool mask_is_set = bitmask_is_set(uac, mask);
+
+                if (mask_is_set) {
+                    const QString mask_name = mask_name_map[mask];
+                    out_list.append(mask_name);
+                }
+            }
+
+            return out_list;
+        }();
+
+        const QString out_string = set_mask_name_list.join(" | ");
+
+        return out_string;
+    }();
+
+    const QString out = QString("%1 = ( %2 )").arg(QString(bytes), masks_string);
+
+    return out;
 }
