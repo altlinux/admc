@@ -43,6 +43,7 @@ QString timespan_display_value(const QByteArray &bytes);
 QString octet_display_value(const QByteArray &bytes);
 QString guid_to_display_value(const QByteArray &bytes);
 QString uac_to_display_value(const QByteArray &bytes);
+QString samaccounttype_to_display_value(const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig) {
     if (adconfig == nullptr) {
@@ -55,6 +56,8 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
         case AttributeType_Integer: {
             if (attribute == ATTRIBUTE_USER_ACCOUNT_CONTROL) {
                 return uac_to_display_value(value);
+            } else if (attribute == ATTRIBUTE_SAM_ACCOUNT_TYPE) {
+                return samaccounttype_to_display_value(value);
             } else {
                 return QString(value);
             }
@@ -346,6 +349,36 @@ QString uac_to_display_value(const QByteArray &bytes) {
     }();
 
     const QString out = QString("%1 = ( %2 )").arg(QString(bytes), masks_string);
+
+    return out;
+}
+
+QString samaccounttype_to_display_value(const QByteArray &bytes) {
+    bool toInt_ok;
+    const int value_int = bytes.toInt(&toInt_ok);
+
+    if (!toInt_ok) {
+        return QCoreApplication::translate("attribute_display", "<invalid value>");
+    }
+
+    const QHash<int, QString> mask_name_map = {
+        {SAM_DOMAIN_OBJECT, "DOMAIN_OBJECT"},
+        {SAM_GROUP_OBJECT, "GROUP_OBJECT"},
+        {SAM_NON_SECURITY_GROUP_OBJECT, "NON_SECURITY_GROUP_OBJECT"},
+        {SAM_ALIAS_OBJECT, "ALIAS_OBJECT"},
+        {SAM_NON_SECURITY_ALIAS_OBJECT, "NON_SECURITY_ALIAS_OBJECT"},
+        {SAM_USER_OBJECT, "USER_OBJECT"},
+        {SAM_NORMAL_USER_ACCOUNT, "NORMAL_USER_ACCOUNT"},
+        {SAM_MACHINE_ACCOUNT, "MACHINE_ACCOUNT"},
+        {SAM_TRUST_ACCOUNT, "TRUST_ACCOUNT"},
+        {SAM_APP_BASIC_GROUP, "APP_BASIC_GROUP"},
+        {SAM_APP_QUERY_GROUP, "APP_QUERY_GROUP"},
+        {SAM_ACCOUNT_TYPE_MAX, "ACCOUNT_TYPE_MAX"},
+    };
+
+    const QString mask_name = mask_name_map.value(value_int, "");
+
+    const QString out = QString("%1 = ( %2 )").arg(QString(bytes), mask_name);
 
     return out;
 }
