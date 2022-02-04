@@ -141,11 +141,16 @@
     </message>
     <message>
         <location filename="tabs/account_tab.ui" line="194"/>
+        <source>Use Kerberos DES encryption types for this account</source>
+        <translation>Использовать Керберос DES тип шифрования для этой учетной записи</translation>
+    </message>
+    <message>
+        <location filename="tabs/account_tab.ui" line="201"/>
         <source>Don&apos;t require Kerberos pre-authentication</source>
         <translation>Не требовать предварительной аутентификации Kerberos</translation>
     </message>
     <message>
-        <location filename="tabs/account_tab.ui" line="201"/>
+        <location filename="tabs/account_tab.ui" line="208"/>
         <source>Trusted for delegation</source>
         <translation>Доверять делегирование</translation>
     </message>
@@ -568,7 +573,7 @@
         <translation>Не удалось создать объект %1</translation>
     </message>
     <message>
-        <location filename="create_object_helper.cpp" line="103"/>
+        <location filename="create_object_helper.cpp" line="118"/>
         <source>Object %1 was created</source>
         <translation>Объект %1 был создан</translation>
     </message>
@@ -1483,12 +1488,12 @@
         <translation>Суббота</translation>
     </message>
     <message>
-        <location filename="attribute_edits/logon_hours_dialog.ui" line="23"/>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="30"/>
         <source>Local time</source>
         <translation>Местное время</translation>
     </message>
     <message>
-        <location filename="attribute_edits/logon_hours_dialog.ui" line="30"/>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="37"/>
         <source>UTC time</source>
         <translation>Время UTC</translation>
     </message>
@@ -1949,22 +1954,22 @@
         <translation> [Фильтр включён]</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="519"/>
+        <location filename="console_impls/object_impl.cpp" line="531"/>
         <source>Are you sure you want to delete this object?</source>
         <translation>Удалить этот объект?</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="699"/>
+        <location filename="console_impls/object_impl.cpp" line="711"/>
         <source>Add to Group</source>
         <translation>Добавить в группу</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="767"/>
+        <location filename="console_impls/object_impl.cpp" line="779"/>
         <source>Edit UPN Suffixes</source>
         <translation>Изменить суффиксы UPN</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="1115"/>
+        <location filename="console_impls/object_impl.cpp" line="1127"/>
         <source>Query may be out of date</source>
         <translation>Запрос может быть устаревшим</translation>
     </message>
@@ -2555,7 +2560,7 @@
         <translation>Переименовать пользователя</translation>
     </message>
     <message>
-        <location filename="rename_user_dialog.ui" line="22"/>
+        <location filename="rename_user_dialog.ui" line="52"/>
         <source>Display name:</source>
         <oldsource>Display name</oldsource>
         <translation>Отображаемое имя:</translation>
@@ -2571,7 +2576,7 @@
         <translation>Фамилия:</translation>
     </message>
     <message>
-        <location filename="rename_user_dialog.ui" line="52"/>
+        <location filename="rename_user_dialog.ui" line="22"/>
         <source>Full name:</source>
         <translation>Полное имя:</translation>
     </message>
@@ -2911,7 +2916,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1511"/>
+        <location filename="console_impls/object_impl.cpp" line="1523"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>

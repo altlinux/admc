@@ -141,11 +141,16 @@
     </message>
     <message>
         <location filename="tabs/account_tab.ui" line="194"/>
-        <source>Don&apos;t require Kerberos pre-authentication</source>
+        <source>Use Kerberos DES encryption types for this account</source>
         <translation></translation>
     </message>
     <message>
         <location filename="tabs/account_tab.ui" line="201"/>
+        <source>Don&apos;t require Kerberos pre-authentication</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="tabs/account_tab.ui" line="208"/>
         <source>Trusted for delegation</source>
         <translation></translation>
     </message>
@@ -568,7 +573,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_helper.cpp" line="103"/>
+        <location filename="create_object_helper.cpp" line="118"/>
         <source>Object %1 was created</source>
         <translation></translation>
     </message>
@@ -1483,12 +1488,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_edits/logon_hours_dialog.ui" line="23"/>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="30"/>
         <source>Local time</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_edits/logon_hours_dialog.ui" line="30"/>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="37"/>
         <source>UTC time</source>
         <translation></translation>
     </message>
@@ -1949,22 +1954,22 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="519"/>
+        <location filename="console_impls/object_impl.cpp" line="531"/>
         <source>Are you sure you want to delete this object?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="699"/>
+        <location filename="console_impls/object_impl.cpp" line="711"/>
         <source>Add to Group</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="767"/>
+        <location filename="console_impls/object_impl.cpp" line="779"/>
         <source>Edit UPN Suffixes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="1115"/>
+        <location filename="console_impls/object_impl.cpp" line="1127"/>
         <source>Query may be out of date</source>
         <translation></translation>
     </message>
@@ -2555,7 +2560,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_user_dialog.ui" line="22"/>
+        <location filename="rename_user_dialog.ui" line="52"/>
         <source>Display name:</source>
         <oldsource>Display name</oldsource>
         <translation></translation>
@@ -2571,7 +2576,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="rename_user_dialog.ui" line="52"/>
+        <location filename="rename_user_dialog.ui" line="22"/>
         <source>Full name:</source>
         <translation></translation>
     </message>
@@ -2911,7 +2916,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1511"/>
+        <location filename="console_impls/object_impl.cpp" line="1523"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
