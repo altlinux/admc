@@ -52,7 +52,7 @@ AccountTab::AccountTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QWidg
         {AccountOption_CantChangePassword, ui->cant_change_pass_check},
         {AccountOption_PasswordExpired, ui->pass_expired_check},
         {AccountOption_DontExpirePassword, ui->dont_expire_pass_check},
-        {AccountOption_UseDesKey, ui->des_key_check},
+        {AccountOption_AllowReversibleEncryption, ui->des_key_check},
         {AccountOption_SmartcardRequired, ui->smartcard_check},
         {AccountOption_CantDelegate, ui->cant_delegate_check},
         {AccountOption_DontRequirePreauth, ui->require_preauth_check},

@@ -126,6 +126,7 @@ QString account_option_string(const AccountOption &option) {
     switch (option) {
         case AccountOption_Disabled: return QCoreApplication::translate("ad_utils", "Account disabled");
         case AccountOption_CantChangePassword: return QCoreApplication::translate("ad_utils", "User cannot change password");
+        case AccountOption_AllowReversibleEncryption: return QCoreApplication::translate("ad_utils", "Store password using reversible encryption");
         case AccountOption_PasswordExpired: return QCoreApplication::translate("ad_utils", "User must change password on next logon");
         case AccountOption_DontExpirePassword: return QCoreApplication::translate("ad_utils", "Don't expire password");
         case AccountOption_UseDesKey: return QCoreApplication::translate("ad_utils", "Store password using reversible encryption");
@@ -143,6 +144,8 @@ int account_option_bit(const AccountOption &option) {
     switch (option) {
         case AccountOption_Disabled:
             return UAC_ACCOUNTDISABLE;
+        case AccountOption_AllowReversibleEncryption:
+            return UAC_ENCRYPTED_TEXT_PASSWORD_ALLOWED;
         case AccountOption_DontExpirePassword:
             return UAC_DONT_EXPIRE_PASSWORD;
         case AccountOption_UseDesKey:

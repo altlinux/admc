@@ -60,6 +60,7 @@ enum LargeIntegerSubtype {
 enum AccountOption {
     AccountOption_Disabled,
     AccountOption_CantChangePassword,
+    AccountOption_AllowReversibleEncryption,
     AccountOption_PasswordExpired,
     AccountOption_DontExpirePassword,
     AccountOption_UseDesKey,
