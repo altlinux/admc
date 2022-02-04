@@ -168,7 +168,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="des_key_check">
+       <widget class="QCheckBox" name="reversible_encrypt_check">
         <property name="text">
          <string>Store password using reversible encryption</string>
         </property>
@@ -185,6 +185,13 @@
        <widget class="QCheckBox" name="cant_delegate_check">
         <property name="text">
          <string>Account is sensitive and cannot be delegated</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="des_key_check">
+        <property name="text">
+         <string>Use Kerberos DES encryption types for this account</string>
         </property>
        </widget>
       </item>

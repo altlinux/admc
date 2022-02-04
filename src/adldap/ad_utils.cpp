@@ -129,7 +129,7 @@ QString account_option_string(const AccountOption &option) {
         case AccountOption_AllowReversibleEncryption: return QCoreApplication::translate("ad_utils", "Store password using reversible encryption");
         case AccountOption_PasswordExpired: return QCoreApplication::translate("ad_utils", "User must change password on next logon");
         case AccountOption_DontExpirePassword: return QCoreApplication::translate("ad_utils", "Don't expire password");
-        case AccountOption_UseDesKey: return QCoreApplication::translate("ad_utils", "Store password using reversible encryption");
+        case AccountOption_UseDesKey: return QCoreApplication::translate("ad_utils", "Use Kerberos DES encryption types for this account");
         case AccountOption_SmartcardRequired: return QCoreApplication::translate("ad_utils", "Smartcard is required for interactive logon");
         case AccountOption_CantDelegate: return QCoreApplication::translate("ad_utils", "Account is sensitive and cannot be delegated");
         case AccountOption_DontRequirePreauth: return QCoreApplication::translate("ad_utils", "Don't require Kerberos preauthentication");
