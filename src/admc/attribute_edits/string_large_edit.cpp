@@ -22,6 +22,7 @@
 
 #include "adldap.h"
 #include "utils.h"
+#include "globals.h"
 
 #include <QPlainTextEdit>
 
@@ -29,10 +30,14 @@ StringLargeEdit::StringLargeEdit(QPlainTextEdit *edit_arg, const QString &attrib
 : AttributeEdit(parent) {
     attribute = attribute_arg;
     edit = edit_arg;
+    ignore_on_text_changed = false;
 
     connect(
         edit, &QPlainTextEdit::textChanged,
         this, &AttributeEdit::edited);
+    connect(
+        edit, &QPlainTextEdit::textChanged,
+        this, &StringLargeEdit::on_text_changed);
 }
 
 void StringLargeEdit::load(AdInterface &ad, const AdObject &object) {
@@ -48,4 +53,21 @@ bool StringLargeEdit::apply(AdInterface &ad, const QString &dn) const {
     const bool success = ad.attribute_replace_string(dn, attribute, new_value);
 
     return success;
+}
+
+// NOTE: this is a custom length limit mechanism
+// because QPlainText doesn't have it built-in
+void StringLargeEdit::on_text_changed() {
+    ignore_on_text_changed = true;
+    {
+        const int range_upper = g_adconfig->get_attribute_range_upper(attribute);
+
+        const QString value = edit->toPlainText();
+
+        if (value.length() > range_upper) {
+            const QString shortened_value = value.left(range_upper);
+            edit->setPlainText(shortened_value);
+        }
+    }
+    ignore_on_text_changed = false;
 }
