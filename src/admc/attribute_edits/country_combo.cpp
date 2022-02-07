@@ -22,6 +22,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
@@ -38,6 +39,7 @@ QList<QString> all_countries;
 QHash<QString, int> string_to_code;
 QHash<int, QString> country_strings;
 QHash<int, QString> country_abbreviations;
+QHash<QString, int> abbreviation_to_code;
 
 void country_combo_load_data() {
     if (loaded_country_data) {
@@ -74,6 +76,7 @@ void country_combo_load_data() {
 
             country_strings[code] = country_string;
             country_abbreviations[code] = abbreviation;
+            abbreviation_to_code[abbreviation] = code;
 
             all_countries.append(country_string);
             string_to_code[country_string] = code;
@@ -96,9 +99,40 @@ void country_combo_load_data() {
 }
 
 void country_combo_init(QComboBox *combo) {
-    // Fill combo with country names. Add country codes to
-    // item data.
-    for (auto country_string : all_countries) {
+    // Fill combo with country names. Add country codes
+    // to item data. Move up current country to the
+    // start of the combo box for ease of use.
+    const QList<QString> country_list_sorted = []() {
+        const QString current_country = [&]() {
+            const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
+            const QString locale_name = current_locale.name();
+            const QList<QString> locale_name_split = locale_name.split("_");
+
+            if (locale_name_split.size() == 2) {
+                const QString abbreviation = locale_name_split[1];
+                const int country_code = abbreviation_to_code[abbreviation];
+                const QString country_string = country_strings[country_code];
+
+                return country_string;
+            } else {
+                return QString();
+            }
+        }();
+
+        if (all_countries.contains(current_country)) {
+            // Place at index 1 so that it's after
+            // "None"
+            QList<QString> out = all_countries;
+            out.removeAll(current_country);
+            out.insert(1, current_country);
+
+            return out;
+        } else {
+            return all_countries;
+        }
+    }();
+
+    for (auto country_string : country_list_sorted) {
         const int code = string_to_code[country_string];
 
         combo->addItem(country_string, code);
