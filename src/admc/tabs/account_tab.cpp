@@ -57,7 +57,6 @@ AccountTab::AccountTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QWidg
         {AccountOption_CantDelegate, ui->cant_delegate_check},
         {AccountOption_UseDesKey, ui->des_key_check},
         {AccountOption_DontRequirePreauth, ui->require_preauth_check},
-        {AccountOption_TrustedForDelegation, ui->trusted_check},
     };
 
     for (const AccountOption &option : check_map.keys()) {

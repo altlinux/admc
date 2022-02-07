@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>431</width>
-    <height>619</height>
+    <width>486</width>
+    <height>581</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -199,13 +199,6 @@
        <widget class="QCheckBox" name="require_preauth_check">
         <property name="text">
          <string>Don't require Kerberos pre-authentication</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="trusted_check">
-        <property name="text">
-         <string>Trusted for delegation</string>
         </property>
        </widget>
       </item>
