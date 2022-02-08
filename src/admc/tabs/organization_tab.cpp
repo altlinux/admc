@@ -46,9 +46,19 @@ OrganizationTab::OrganizationTab(QList<AttributeEdit *> *edit_list, QWidget *par
     ui = new Ui::OrganizationTab();
     ui->setupUi(this);
 
+    auto title_edit = new StringEdit(ui->job_title_edit, ATTRIBUTE_TITLE, this);
+    auto department_edit = new StringEdit(ui->department_edit, ATTRIBUTE_DEPARTMENT, this);
+    auto company_edit = new StringEdit(ui->company_edit, ATTRIBUTE_COMPANY, this);
+    auto manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGER, this);
+
     auto tab_edit = new OrganizationTabEdit(ui, this);
 
     edit_list->append({
+        title_edit,
+        department_edit,
+        company_edit,
+        manager_edit,
+    
         tab_edit,
     });
 }
@@ -56,12 +66,6 @@ OrganizationTab::OrganizationTab(QList<AttributeEdit *> *edit_list, QWidget *par
 OrganizationTabEdit::OrganizationTabEdit(Ui::OrganizationTab *ui_arg, QObject *parent)
 : AttributeEdit(parent) {
     ui = ui_arg;
-
-    new StringEdit(ui->job_title_edit, ATTRIBUTE_TITLE, this);
-    new StringEdit(ui->department_edit, ATTRIBUTE_DEPARTMENT, this);
-    new StringEdit(ui->company_edit, ATTRIBUTE_COMPANY, this);
-
-    new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGER, this);
 
     reports_model = new QStandardItemModel(0, ReportsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(reports_model,
