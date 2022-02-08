@@ -65,6 +65,7 @@ bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {
 
 void StringOtherEdit::on_other_button() {
     auto dialog = new ListAttributeDialog(other_values, other_attribute, read_only, other_button);
+    dialog->setWindowTitle(tr("Edit other values"));
     dialog->open();
 
     connect(
