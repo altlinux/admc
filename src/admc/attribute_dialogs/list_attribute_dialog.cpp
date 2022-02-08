@@ -124,7 +124,12 @@ void ListAttributeDialog::set_value_max_length(const int max_length_arg) {
 
 void ListAttributeDialog::add_value(const QByteArray value) {
     const QString text = bytes_to_string(value);
-    ui->list_widget->addItem(text);
+    const QList<QListWidgetItem *> find_results = ui->list_widget->findItems(text, Qt::MatchExactly);
+    const bool value_already_exists = !find_results.isEmpty();
+
+    if (!value_already_exists) {
+        ui->list_widget->addItem(text);
+    }
 }
 
 ListAttributeDialogType ListAttributeDialog::get_type() const {
