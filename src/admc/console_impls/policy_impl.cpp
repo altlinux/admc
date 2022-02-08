@@ -303,40 +303,35 @@ void PolicyImpl::on_add_link() {
 void PolicyImpl::on_edit() {
     const QString dn = get_action_target_dn(console, ItemType_Policy, PolicyRole_DN);
 
-    QString filesys_path = [&]() {
+    const QString path = [&]() {
         AdInterface ad;
         if (ad_failed(ad, console)) {
             return QString();
         }
 
         const AdObject object = ad.search_object(dn);
-        const QString out = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+        QString filesys_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
 
-        return out;
+        const QString current_dc = ad.get_dc();
+
+        filesys_path.replace(QString("\\"),QString("/"));
+        auto contents = filesys_path.split("/", QString::KeepEmptyParts);
+        if (contents.size() > 3 && !current_dc.isEmpty())
+        {
+            contents[2] = current_dc;
+        }
+        filesys_path = contents.join("/");
+        filesys_path.prepend(QString("smb:"));
+
+        return filesys_path;
     }();
 
     auto process = new QProcess(console);
     process->setProgram("gpui-main");
 
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
-
-    const QString current_dc = ad.get_dc();
-
-    filesys_path.replace(QString("\\"),QString("/"));
-    auto contents = filesys_path.split("/", QString::KeepEmptyParts);
-    if (contents.size() > 3 && !current_dc.isEmpty())
-    {
-        contents[2] = current_dc;
-    }
-    filesys_path = contents.join("/");
-    filesys_path.prepend(QString("smb:"));
-
     const QList<QString> args = {
         QString("-p"),
-        filesys_path
+        path
     };
 
     process->setArguments(args);
