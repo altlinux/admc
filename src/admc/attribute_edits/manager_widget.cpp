@@ -32,6 +32,8 @@ ManagerWidget::ManagerWidget(QWidget *parent)
     ui = new Ui::ManagerWidget();
     ui->setupUi(this);
 
+    ui->manager_display->setReadOnly(true);
+
     connect(
         ui->change_button, &QPushButton::clicked,
         this, &ManagerWidget::on_change);
