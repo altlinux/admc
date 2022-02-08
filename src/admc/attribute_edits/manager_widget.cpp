@@ -109,8 +109,8 @@ void ManagerWidget::on_clear() {
 void ManagerWidget::load_value(const QString &value) {
     current_value = value;
 
-    const QString rdn = dn_get_name(current_value);
-    ui->manager_display->setText(current_value);
+    const QString name = dn_get_name(current_value);
+    ui->manager_display->setText(name);
 
     const bool have_manager = !current_value.isEmpty();
     ui->properties_button->setEnabled(have_manager);
