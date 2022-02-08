@@ -303,7 +303,7 @@ void PolicyImpl::on_add_link() {
 void PolicyImpl::on_edit() {
     const QString dn = get_action_target_dn(console, ItemType_Policy, PolicyRole_DN);
 
-    const QString filesys_path = [&]() {
+    QString filesys_path = [&]() {
         AdInterface ad;
         if (ad_failed(ad, console)) {
             return QString();
@@ -316,12 +316,29 @@ void PolicyImpl::on_edit() {
     }();
 
     auto process = new QProcess(console);
-    process->setProgram("gpui");
+    process->setProgram("gpui-main");
+
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    const QString current_dc = ad.get_dc();
+
+    filesys_path.replace(QString("\\"),QString("/"));
+    auto contents = filesys_path.split("/", QString::KeepEmptyParts);
+    if (contents.size() > 3 && !current_dc.isEmpty())
+    {
+        contents[2] = current_dc;
+    }
+    filesys_path = contents.join("/");
+    filesys_path.prepend(QString("smb:"));
 
     const QList<QString> args = {
-        dn,
-        filesys_path,
+        QString("-p"),
+        filesys_path
     };
+
     process->setArguments(args);
 
     connect(
