@@ -37,8 +37,17 @@
 bool loaded_country_data = false;
 QHash<QString, int> string_to_code;
 QHash<int, QString> country_strings;
+QHash<int, QString> country_strings_ru;
 QHash<int, QString> country_abbreviations;
 QHash<QString, int> abbreviation_to_code;
+
+enum CountryColumn {
+    CountryColumn_Country,
+    CountryColumn_CountryRu,
+    CountryColumn_Abbreviation,
+    CountryColumn_Code,
+    CountryColumn_COUNT,
+};
 
 void country_combo_load_data() {
     if (loaded_country_data) {
@@ -61,7 +70,8 @@ void country_combo_load_data() {
 
         while (!file.atEnd()) {
             const QByteArray line_array = file.readLine();
-            const QString line(line_array);
+            const QString line = QString(line_array);
+
             // Split line by comma's, taking into
             // account that some comma's are inside
             // quoted parts and ignoring those.
@@ -91,16 +101,20 @@ void country_combo_load_data() {
                 }
             }();
 
-            if (line_split.size() != 3) {
+            if (line_split.size() != CountryColumn_COUNT) {
+                qDebug() << "country.csv contains malformed line: " << line;
+
                 continue;
             }
 
-            const QString country_string = line_split[0];
-            const QString abbreviation = line_split[1];
-            const QString code_string = line_split[2];
+            const QString country_string = line_split[CountryColumn_Country];
+            const QString country_string_ru = line_split[CountryColumn_CountryRu];
+            const QString abbreviation = line_split[CountryColumn_Abbreviation];
+            const QString code_string = line_split[CountryColumn_Code];
             const int code = code_string.toInt();
 
             country_strings[code] = country_string;
+            country_strings_ru[code] = country_string_ru;
             country_abbreviations[code] = abbreviation;
             abbreviation_to_code[abbreviation] = code;
 
@@ -114,10 +128,25 @@ void country_combo_load_data() {
 }
 
 void country_combo_init(QComboBox *combo) {
+    const QHash<int, QString> name_map = [&]() {
+        const bool locale_is_ru = [&]() {
+            const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
+            const bool out = (locale.language() == QLocale::Russian);
+
+            return out;
+        }();
+
+        if (locale_is_ru) {
+            return country_strings_ru;
+        } else {
+            return country_strings;
+        }
+    }();
+
     // Generate order of countries that will be used to
     // fill the combo. Country of the current locale is
     // moved up to the start of the list.
-    const QList<QString> country_list = []() {
+    const QList<QString> country_list = [&]() {
         const QString current_country = [&]() {
             const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
             const QString locale_name = current_locale.name();
@@ -126,7 +155,7 @@ void country_combo_init(QComboBox *combo) {
             if (locale_name_split.size() == 2) {
                 const QString abbreviation = locale_name_split[1];
                 const int code = abbreviation_to_code[abbreviation];
-                const QString country_name = country_strings[code];
+                const QString country_name = name_map[code];
 
                 return country_name;
             } else {
@@ -134,7 +163,7 @@ void country_combo_init(QComboBox *combo) {
             }
         }();
 
-        QList<QString> out = country_strings.values();
+        QList<QString> out = name_map.values();
         std::sort(out.begin(), out.end());
         out.removeAll(current_country);
         out.prepend(current_country);
@@ -146,7 +175,7 @@ void country_combo_init(QComboBox *combo) {
     combo->addItem(QCoreApplication::translate("country_widget", "None"), COUNTRY_CODE_NONE);
 
     for (const QString &country : country_list) {
-        const int code = string_to_code[country];
+        const int code = name_map.key(country);
 
         combo->addItem(country, code);
     }
