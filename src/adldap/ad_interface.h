@@ -104,7 +104,6 @@ public:
     static void set_sasl_nocanon(const bool is_on);
     static void set_port(const int port);
     static void set_cert_strategy(const CertStrategy strategy);
-    static QString get_dc();
 
     bool is_connected() const;
     QList<AdMessage> messages() const;
@@ -113,6 +112,7 @@ public:
     AdConfig *adconfig() const;
     QString client_user() const;
     bool logged_in_as_admin();
+    QString get_dc() const;
 
     // NOTE: If request attributes list is empty, all
     // attributes are returned

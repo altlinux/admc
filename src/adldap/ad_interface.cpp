@@ -326,10 +326,6 @@ void AdInterface::set_cert_strategy(const CertStrategy strategy) {
     AdInterfacePrivate::s_cert_strat = strategy;
 }
 
-QString AdInterface::get_dc() {
-    return AdInterfacePrivate::s_dc;
-}
-
 AdInterfacePrivate::AdInterfacePrivate(AdInterface *q_arg) {
     q = q_arg;
 }
@@ -1980,6 +1976,10 @@ bool AdInterface::logged_in_as_admin() {
     }();
 
     return user_is_admin;
+}
+
+QString AdInterface::get_dc() const {
+    return d->dc;
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
