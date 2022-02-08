@@ -62,7 +62,34 @@ void country_combo_load_data() {
         while (!file.atEnd()) {
             const QByteArray line_array = file.readLine();
             const QString line(line_array);
-            const QList<QString> line_split = line.split(',');
+            // Split line by comma's, taking into
+            // account that some comma's are inside
+            // quoted parts and ignoring those.
+            // 
+            // NOTE: there's definitely a better way to
+            // do this
+            const QList<QString> line_split = [&]() -> QList<QString> {
+
+                if (line.contains('\"')) {
+                    QList<QString> split_by_quotes = line.split('\"');
+                    split_by_quotes.removeAll("");
+
+                    if (split_by_quotes.size() == 2) {
+                        QList<QString> split_rest = split_by_quotes[1].split(',');
+                        split_rest.removeAll("");
+
+                        QList<QString> out;
+                        out.append(split_by_quotes[0]);
+                        out.append(split_rest);
+
+                        return out;
+                    } else {
+                        return QList<QString>();
+                    }
+                } else {
+                    return line.split(',');
+                }
+            }();
 
             if (line_split.size() != 3) {
                 continue;
