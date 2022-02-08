@@ -109,6 +109,13 @@ void SelectObjectDialog::accept() {
     const bool selected_multiple_when_single_selection = (multi_selection == SelectObjectDialogMultiSelection_No && selected.size() > 1);
     if (selected_multiple_when_single_selection) {
         message_box_warning(this, tr("Error"), tr("This selection accepts only one object. Remove extra objects to proceed."));
+    } else if (selected.isEmpty()) {
+        // TODO: replace with "ok" button turning off
+        // if selection is empty. but the
+        // "selected_multiple_when_single_selection"
+        // should still be done via warning, otherwise
+        // would be confusing
+        message_box_warning(this, tr("Error"), tr("You must select at least one object."));
     } else {
         QDialog::accept();
     }
