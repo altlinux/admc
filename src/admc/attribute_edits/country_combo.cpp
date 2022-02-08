@@ -35,7 +35,6 @@
 #define COUNTRY_CODE_NONE 0
 
 bool loaded_country_data = false;
-QList<QString> all_countries;
 QHash<QString, int> string_to_code;
 QHash<int, QString> country_strings;
 QHash<int, QString> country_abbreviations;
@@ -78,31 +77,20 @@ void country_combo_load_data() {
             country_abbreviations[code] = abbreviation;
             abbreviation_to_code[abbreviation] = code;
 
-            all_countries.append(country_string);
             string_to_code[country_string] = code;
         }
 
         file.close();
     }
 
-    // Sort countries by name
-    std::sort(all_countries.begin(), all_countries.end());
-
-    // Special case for "None" country
-    const QString none_string = QCoreApplication::translate("country_widget", "None");
-    string_to_code[none_string] = COUNTRY_CODE_NONE;
-    all_countries.insert(0, none_string);
-    country_strings[COUNTRY_CODE_NONE] = "";
-    country_abbreviations[COUNTRY_CODE_NONE] = "";
-
     loaded_country_data = true;
 }
 
 void country_combo_init(QComboBox *combo) {
-    // Fill combo with country names. Add country codes
-    // to item data. Move up current country to the
-    // start of the combo box for ease of use.
-    const QList<QString> country_list_sorted = []() {
+    // Generate order of countries that will be used to
+    // fill the combo. Country of the current locale is
+    // moved up to the start of the list.
+    const QList<QString> country_list = []() {
         const QString current_country = [&]() {
             const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
             const QString locale_name = current_locale.name();
@@ -110,32 +98,30 @@ void country_combo_init(QComboBox *combo) {
 
             if (locale_name_split.size() == 2) {
                 const QString abbreviation = locale_name_split[1];
-                const int country_code = abbreviation_to_code[abbreviation];
-                const QString country_string = country_strings[country_code];
+                const int code = abbreviation_to_code[abbreviation];
+                const QString country_name = country_strings[code];
 
-                return country_string;
+                return country_name;
             } else {
                 return QString();
             }
         }();
 
-        if (all_countries.contains(current_country)) {
-            // Place at index 1 so that it's after
-            // "None"
-            QList<QString> out = all_countries;
-            out.removeAll(current_country);
-            out.insert(1, current_country);
+        QList<QString> out = country_strings.values();
+        std::sort(out.begin(), out.end());
+        out.removeAll(current_country);
+        out.prepend(current_country);
 
-            return out;
-        } else {
-            return all_countries;
-        }
+        return out;
     }();
 
-    for (auto country_string : country_list_sorted) {
-        const int code = string_to_code[country_string];
+    // Add "None" at the start
+    combo->addItem(QCoreApplication::translate("country_widget", "None"), COUNTRY_CODE_NONE);
 
-        combo->addItem(country_string, code);
+    for (const QString &country : country_list) {
+        const int code = string_to_code[country];
+
+        combo->addItem(country, code);
     }
 }
 
@@ -157,17 +143,11 @@ void country_combo_load(QComboBox *combo, const AdObject &object) {
 bool country_combo_apply(const QComboBox *combo, AdInterface &ad, const QString &dn) {
     const int code = combo->currentData().toInt();
 
-    const bool country_code_is_known = (country_strings.contains(code) && country_abbreviations.contains(code));
-
-    if (!country_code_is_known) {
-        qDebug() << "Unknown country code:" << code;
-
-        return false;
-    }
-
+    // NOTE: this handles the COUNTRY_CODE_NONE case by
+    // using empty strings for it's values
     const QString code_string = QString::number(code);
-    const QString country_string = country_strings[code];
-    const QString abbreviation = country_abbreviations[code];
+    const QString country_string = country_strings.value(code, QString());
+    const QString abbreviation = country_abbreviations.value(code, QString());
 
     bool success = true;
     success = success && ad.attribute_replace_string(dn, ATTRIBUTE_COUNTRY_CODE, code_string);
