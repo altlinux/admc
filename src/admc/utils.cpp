@@ -241,7 +241,7 @@ QString advanced_features_filter(const QString &filter) {
 // they don't show up in regular searches. Have to use
 // search_object() and manually add them to search results.
 void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base) {
-    const bool dev_mode = settings_get_variant(SETTING_dev_mode).toBool();
+    const bool dev_mode = settings_get_variant(SETTING_feature_dev_mode).toBool();
     if (!dev_mode) {
         return;
     }

@@ -32,7 +32,6 @@
 const QHash<QString, QVariant> setting_default_map = {
     {SETTING_advanced_features, false},
     {SETTING_confirm_actions, true},
-    {SETTING_dev_mode, false},
     {SETTING_show_non_containers_in_console_tree, false},
     {SETTING_last_name_before_first_name,
         []() {
@@ -52,6 +51,8 @@ const QHash<QString, QVariant> setting_default_map = {
     {SETTING_object_filter_enabled, false},
     {SETTING_cert_strategy, CERT_STRATEGY_NEVER_define},
     {SETTING_object_display_limit, 1000},
+
+    {SETTING_feature_dev_mode, false},
 };
 
 void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {

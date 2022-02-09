@@ -176,7 +176,7 @@ void ObjectImpl::fetch(const QModelIndex &index) {
 
     // NOTE: do an extra search before real search for
     // objects that should be visible in dev mode
-    const bool dev_mode = settings_get_variant(SETTING_dev_mode).toBool();
+    const bool dev_mode = settings_get_variant(SETTING_feature_dev_mode).toBool();
     if (dev_mode) {
         AdInterface ad;
         if (ad_connected(ad, console)) {
