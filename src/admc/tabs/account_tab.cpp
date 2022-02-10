@@ -28,6 +28,7 @@
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/unlock_edit.h"
 #include "attribute_edits/upn_edit.h"
+#include "settings.h"
 
 // NOTE: the "can't change password" checkbox does not
 // affect the permission in the security tab, even though
@@ -52,11 +53,11 @@ AccountTab::AccountTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QWidg
         {AccountOption_CantChangePassword, ui->cant_change_pass_check},
         {AccountOption_PasswordExpired, ui->pass_expired_check},
         {AccountOption_DontExpirePassword, ui->dont_expire_pass_check},
-        {AccountOption_UseDesKey, ui->des_key_check},
+        {AccountOption_AllowReversibleEncryption, ui->reversible_encrypt_check},
         {AccountOption_SmartcardRequired, ui->smartcard_check},
         {AccountOption_CantDelegate, ui->cant_delegate_check},
+        {AccountOption_UseDesKey, ui->des_key_check},
         {AccountOption_DontRequirePreauth, ui->require_preauth_check},
-        {AccountOption_TrustedForDelegation, ui->trusted_check},
     };
 
     for (const AccountOption &option : check_map.keys()) {
@@ -75,6 +76,11 @@ AccountTab::AccountTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QWidg
         logon_hours_edit,
         logon_computers_edit,
     });
+
+    const bool logon_computers_enabled = settings_get_variant(SETTING_feature_logon_computers).toBool();
+    if (!logon_computers_enabled) {
+        ui->logon_computers_button->hide();
+    }
 }
 
 AccountTab::~AccountTab() {

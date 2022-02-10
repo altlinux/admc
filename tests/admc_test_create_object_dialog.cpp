@@ -51,6 +51,15 @@ void ADMCTestCreateObjectDialog::create_user() {
 
     QVERIFY2(object_exists(dn), "Created user doesn't exist");
     QCOMPARE(create_dialog->get_created_dn(), dn);
+
+    const int actual_uac = [&]() {
+        const AdObject object = ad.search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
+        const int out = object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
+
+        return out;
+    }();
+    const int expected_uac = UAC_NORMAL_ACCOUNT;
+    QCOMPARE(actual_uac, expected_uac);
 }
 
 void ADMCTestCreateObjectDialog::create_ou() {

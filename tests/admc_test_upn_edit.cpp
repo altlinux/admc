@@ -227,11 +227,15 @@ void ADMCTestUpnEdit::verify_conflict() {
     const bool create_success = ad.object_add(conflict_dn, CLASS_USER);
     QVERIFY(create_success);
 
-    const QString conflicting_upn = get_current_upn();
+    const QString conflicting_upn = QString("%1@%2").arg(conflict_name, TEST_SUFFIX);
     const bool replace_success = ad.attribute_replace_string(conflict_dn, ATTRIBUTE_USER_PRINCIPAL_NAME, conflicting_upn);
     QVERIFY(replace_success);
 
-    // Verify should fail
+    // Set input of upn edit so that it conflicts with
+    // the conflicting user that we have setup. After
+    // that verify should fail.
+    prefix_edit->setText(conflict_name);
+    suffix_edit->setCurrentText(TEST_SUFFIX);
     const bool verify_success = upn_edit->verify(ad, dn);
 
     QVERIFY2(!verify_success, "verify() didn't notice upn conflict");

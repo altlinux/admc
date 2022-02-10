@@ -53,6 +53,8 @@ RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, Q
 
     helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, edit_list, this);
 
+    setup_lineedit_autofill(ui->upn_prefix_edit, ui->sam_name_edit);
+
     settings_setup_dialog_geometry(SETTING_rename_user_dialog_geometry, this);
 }
 

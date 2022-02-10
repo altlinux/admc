@@ -176,7 +176,7 @@ void ObjectImpl::fetch(const QModelIndex &index) {
 
     // NOTE: do an extra search before real search for
     // objects that should be visible in dev mode
-    const bool dev_mode = settings_get_variant(SETTING_dev_mode).toBool();
+    const bool dev_mode = settings_get_variant(SETTING_feature_dev_mode).toBool();
     if (dev_mode) {
         AdInterface ad;
         if (ad_connected(ad, console)) {
@@ -450,6 +450,18 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
         auto apply_changes = [&ad2, &dn_list](ConsoleWidget *target_console) {
             for (const QString &dn : dn_list) {
                 const AdObject object = ad2.search_object(dn);
+
+                // TODO: band-aid for the situations
+                // where properties dialog interacts
+                // with deleted objects. Bad stuff can
+                // still happen if properties is opened
+                // while object exists, then object is
+                // deleted and properties is applied.
+                // Remove this or improve it when you
+                // tackle this issue head-on.
+                if (object.is_empty()) {
+                    continue;
+                }
 
                 // NOTE: search for indexes instead of using the
                 // list given to f-n because we want to update
@@ -1337,6 +1349,9 @@ QList<QString> console_object_search_attributes() {
     attributes += ATTRIBUTE_SYSTEM_FLAGS;
 
     attributes += ATTRIBUTE_USER_ACCOUNT_CONTROL;
+    
+    // NOTE: needed to know which icon to use for object
+    attributes += ATTRIBUTE_OBJECT_CATEGORY;
 
     return attributes;
 }

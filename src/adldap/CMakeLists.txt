@@ -12,6 +12,7 @@ pkg_check_modules(Smbclient REQUIRED IMPORTED_TARGET smbclient)
 pkg_check_modules(Krb5 REQUIRED IMPORTED_TARGET krb5)
 pkg_check_modules(Glib REQUIRED IMPORTED_TARGET glib-2.0)
 pkg_check_modules(Uuid REQUIRED IMPORTED_TARGET uuid)
+pkg_check_modules(Sasl REQUIRED IMPORTED_TARGET libsasl2)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -48,6 +49,7 @@ target_link_libraries(adldap
     PkgConfig::Krb5
     Ldap::Ldap
     PkgConfig::NdrStandard
+    PkgConfig::Sasl
     resolv
 )
 

@@ -89,4 +89,18 @@ void ADMCTestStringEdit::apply_modified() {
     QCOMPARE(current_value, new_value);
 }
 
+// Apply should trim leading and trailing spaces
+void ADMCTestStringEdit::apply_trim() {
+    const QString new_value = " new value ";
+    line_edit->setText(new_value);
+
+    const bool apply_success = edit->apply(ad, dn);
+    QVERIFY(apply_success);
+
+    const AdObject object = ad.search_object(dn);
+    const QString current_value = object.get_string(TEST_ATTRIBUTE);
+
+    QCOMPARE(current_value, new_value.trimmed());
+}
+
 QTEST_MAIN(ADMCTestStringEdit)

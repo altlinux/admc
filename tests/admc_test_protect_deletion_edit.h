@@ -32,7 +32,9 @@ class ADMCTestProtectDeletionEdit : public ADMCTest {
 private slots:
     void init() override;
 
-    void emit_edited_signal();
+    void edited_signal_data();
+    void edited_signal();
+    void apply_data();
     void apply();
 
 private:

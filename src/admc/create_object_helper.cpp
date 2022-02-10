@@ -88,6 +88,21 @@ bool CreateObjectHelper::accept() const {
 
     bool final_success = false;
     if (add_success) {
+        const bool is_user = (m_object_class == CLASS_USER);
+        if (is_user) {
+            const int uac = [this, dn, &ad]() {
+                const AdObject object = ad.search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
+                const int out = object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
+
+                return out;
+            }();
+
+            const int bit = UAC_PASSWD_NOTREQD;
+            const int updated_uac = bitmask_set(uac, bit, false);
+
+            final_success &= ad.attribute_replace_int(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, updated_uac, DoStatusMsg_No);
+        }
+
         const bool apply_success = AttributeEdit::apply(m_edit_list, ad, dn);
 
         if (apply_success) {

@@ -106,10 +106,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     // console
     ui->console->setup_menubar_action_menu(ui->menu_action);
 
-#ifndef QT_DEBUG
-    ui->action_dev_mode->setVisible(false);
-#endif
-
     // NOTE: toolbar and message log(dock widget) have built
     // in toggle actions, but there's no way to add them
     // through designer so add them here.
@@ -245,7 +241,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         {SETTING_show_login, ui->action_show_login},
         {SETTING_show_non_containers_in_console_tree, ui->action_show_noncontainers},
         {SETTING_advanced_features, ui->action_advanced_features},
-        {SETTING_dev_mode, ui->action_dev_mode},
     };
 
     const QList<QString> simple_setting_list = {
@@ -283,7 +278,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     const QList<QString> complex_setting_list = {
         SETTING_show_non_containers_in_console_tree,
         SETTING_advanced_features,
-        SETTING_dev_mode,
     };
 
     for (const QString &setting : complex_setting_list) {

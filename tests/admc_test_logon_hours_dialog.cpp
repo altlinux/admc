@@ -121,13 +121,14 @@ void ADMCTestLogonHoursDialog::select() {
     QCOMPARE(selected_set, correct_selected_set);
 }
 
-// Dialog should handle loading undefined value, where
-// bytearray is empty
-void ADMCTestLogonHoursDialog::load_undefined() {
+// Dialog should treat unset value as value that
+// "allows all logon times"
+void ADMCTestLogonHoursDialog::load_empty() {
     open_dialog(QByteArray());
     
     const QByteArray actual_value = dialog->get();
-    QCOMPARE(actual_value, empty_bytes);
+    const QByteArray expected_value = QByteArray(LOGON_HOURS_SIZE, (char) 0xFF);
+    QCOMPARE(actual_value, expected_value);
 }
 
 void ADMCTestLogonHoursDialog::handle_timezone() {

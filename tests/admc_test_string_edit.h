@@ -36,6 +36,7 @@ private slots:
     void load();
     void apply_unmodified();
     void apply_modified();
+    void apply_trim();
 
 private:
     StringEdit *edit;

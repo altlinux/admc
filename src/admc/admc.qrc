@@ -3,5 +3,6 @@
     <file alias="countries.csv">data/countries.csv</file>
     <file>admc_ru.qm</file>
     <file>admc_en.qm</file>
+    <file alias="admc.svg">data/admc.svg</file>
 </qresource>
 </RCC>

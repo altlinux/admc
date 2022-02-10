@@ -41,6 +41,9 @@ public:
 private:
     QPlainTextEdit *edit;
     QString attribute;
+    bool ignore_on_text_changed;
+
+    void on_text_changed();
 };
 
 #endif /* STRING_LARGE_EDIT_H */

@@ -70,7 +70,6 @@
     <addaction name="action_timestamps"/>
     <addaction name="action_show_noncontainers"/>
     <addaction name="menu_language"/>
-    <addaction name="action_dev_mode"/>
    </widget>
    <widget class="QMenu" name="menu_help">
     <property name="title">
@@ -310,14 +309,6 @@
    </property>
    <property name="text">
     <string>Refresh</string>
-   </property>
-  </action>
-  <action name="action_dev_mode">
-   <property name="text">
-    <string>Dev mode</string>
-   </property>
-   <property name="checkable">
-    <bool>true</bool>
    </property>
   </action>
   <action name="action_show_login">

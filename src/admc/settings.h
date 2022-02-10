@@ -105,7 +105,6 @@ DEFINE_SETTING(SETTING_select_object_match_header_state);
 // Bool
 DEFINE_SETTING(SETTING_advanced_features);
 DEFINE_SETTING(SETTING_confirm_actions);
-DEFINE_SETTING(SETTING_dev_mode);
 DEFINE_SETTING(SETTING_show_non_containers_in_console_tree);
 DEFINE_SETTING(SETTING_last_name_before_first_name);
 DEFINE_SETTING(SETTING_log_searches);
@@ -124,6 +123,15 @@ DEFINE_SETTING(SETTING_last_opened_version);
 DEFINE_SETTING(SETTING_object_filter);
 DEFINE_SETTING(SETTING_object_filter_enabled);
 DEFINE_SETTING(SETTING_object_display_limit);
+
+// Feature flags
+//
+// NOTE: this set of settings is not editable anywhere
+// within the app. Instead it should be manually edited
+// by hand in ADMC.conf
+DEFINE_SETTING(SETTING_feature_logon_computers);
+DEFINE_SETTING(SETTING_feature_profile_tab);
+DEFINE_SETTING(SETTING_feature_dev_mode);
 
 QVariant settings_get_variant(const QString setting);
 void settings_set_variant(const QString setting, const QVariant &value);

@@ -4,8 +4,25 @@ CHANGELOG
 -----------------------------------------------------------------------
  VERSION 0.9.0
 -----------------------------------------------------------------------
+- Account Tab: Improved editor for "Logon Hours".
+- Account Tab: Fixed "Logon Computers" editor
+  incorrectly adding empty entry when being opened.
+- Account Tab: Fixed incorrect flag value for
+  "Reversible encryption" account option.
+- Attributes Tab: Added special display format for some
+  bitfield attributes, so that both the value and names
+  of bitfields are displayed. Includes
+  "userAccountControl", "sAMAccountType" and
+  "primaryGroupId".
+- Account Tab: Added missing "DES key" account option.
+- Account Tab: Removed "Trusted for delegation" option
+  because it should be in "Delegation" tab only.
+- Account Tab: Fixed some options using incorrect flags.
 - Console: Added object display limit option. Applies
   to main window and find dialog. (#319)
+- Address Tab: Changed order of country list so that
+  the country of current locale is always first, for
+  ease of use.
 - Console: Implemented opening action menu by right
   clicking on empty space in results pane. In this
   case, currently selected scope item is treated as
@@ -17,6 +34,7 @@ CHANGELOG
   caused visual glitches. (#336, #338)
 - Console: Improved default sort setting for results
   view (for all view types - details, icons, list).
+- Create dialog: Fix incorrect field labels.
 - Security Tab: Fixed handling of inherited rights.
   Inherited rights will now correctly display as grayed
   out checkboxes and will not be editable. (#327)
@@ -34,6 +52,10 @@ CHANGELOG
 - Properties: Improved how properties dialog responds
   to failing to load a user due to connection error or
   absence of object.
+- Properties: Disabled "Profile" tab, not usable
+  because not implemented in backend.
+- Properties: Disabled "Logon Computers" feature, not
+  usable because not implemented in backend.
 - Policies: Fixed permission check incorrectly
   complaining about policies made by RSAT. (#333)
 - Find dialog: Added class filtering by all classes,
@@ -63,6 +85,11 @@ CHANGELOG
 - Misc: Improved handling of illegal characters in
   dialogs that create objects and those that rename
   objects.
+- Misc: Added automatic trimming of leading and
+  trailing spaces in most fields for inputting string
+  values.
+
+>>>>>>> master
 
 -----------------------------------------------------------------------
  VERSION 0.8.0

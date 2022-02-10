@@ -86,6 +86,7 @@ QString is_container_filter();
 
 void limit_edit(QLineEdit *edit, const QString &attribute);
 
+// NOTE: object must contain "objectCategory" attribute
 QIcon get_object_icon(const AdObject &object);
 
 QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes);
@@ -119,5 +120,10 @@ QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list);
 bool string_contains_bad_chars(const QString &string, const QString &bad_chars);
 
 bool verify_object_name(const QString &name, QWidget *parent);
+
+// Setup an autofill of from one line edit into
+// another, so that when src is edited, input is copied
+// into dest.
+void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest);
 
 #endif /* UTILS_H */

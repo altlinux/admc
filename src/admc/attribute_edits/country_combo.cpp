@@ -22,6 +22,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
@@ -34,10 +35,19 @@
 #define COUNTRY_CODE_NONE 0
 
 bool loaded_country_data = false;
-QList<QString> all_countries;
 QHash<QString, int> string_to_code;
 QHash<int, QString> country_strings;
+QHash<int, QString> country_strings_ru;
 QHash<int, QString> country_abbreviations;
+QHash<QString, int> abbreviation_to_code;
+
+enum CountryColumn {
+    CountryColumn_Country,
+    CountryColumn_CountryRu,
+    CountryColumn_Abbreviation,
+    CountryColumn_Code,
+    CountryColumn_COUNT,
+};
 
 void country_combo_load_data() {
     if (loaded_country_data) {
@@ -60,48 +70,114 @@ void country_combo_load_data() {
 
         while (!file.atEnd()) {
             const QByteArray line_array = file.readLine();
-            const QString line(line_array);
-            const QList<QString> line_split = line.split(',');
+            const QString line = QString(line_array);
 
-            if (line_split.size() != 3) {
+            // Split line by comma's, taking into
+            // account that some comma's are inside
+            // quoted parts and ignoring those.
+            // 
+            // NOTE: there's definitely a better way to
+            // do this
+            const QList<QString> line_split = [&]() -> QList<QString> {
+
+                if (line.contains('\"')) {
+                    QList<QString> split_by_quotes = line.split('\"');
+                    split_by_quotes.removeAll("");
+
+                    if (split_by_quotes.size() == 2) {
+                        QList<QString> split_rest = split_by_quotes[1].split(',');
+                        split_rest.removeAll("");
+
+                        QList<QString> out;
+                        out.append(split_by_quotes[0]);
+                        out.append(split_rest);
+
+                        return out;
+                    } else {
+                        return QList<QString>();
+                    }
+                } else {
+                    return line.split(',');
+                }
+            }();
+
+            if (line_split.size() != CountryColumn_COUNT) {
+                qDebug() << "country.csv contains malformed line: " << line;
+
                 continue;
             }
 
-            const QString country_string = line_split[0];
-            const QString abbreviation = line_split[1];
-            const QString code_string = line_split[2];
+            const QString country_string = line_split[CountryColumn_Country];
+            const QString country_string_ru = line_split[CountryColumn_CountryRu];
+            const QString abbreviation = line_split[CountryColumn_Abbreviation];
+            const QString code_string = line_split[CountryColumn_Code];
             const int code = code_string.toInt();
 
             country_strings[code] = country_string;
+            country_strings_ru[code] = country_string_ru;
             country_abbreviations[code] = abbreviation;
+            abbreviation_to_code[abbreviation] = code;
 
-            all_countries.append(country_string);
             string_to_code[country_string] = code;
         }
 
         file.close();
     }
 
-    // Sort countries by name
-    std::sort(all_countries.begin(), all_countries.end());
-
-    // Special case for "None" country
-    const QString none_string = QCoreApplication::translate("country_widget", "None");
-    string_to_code[none_string] = COUNTRY_CODE_NONE;
-    all_countries.insert(0, none_string);
-    country_strings[COUNTRY_CODE_NONE] = "";
-    country_abbreviations[COUNTRY_CODE_NONE] = "";
-
     loaded_country_data = true;
 }
 
 void country_combo_init(QComboBox *combo) {
-    // Fill combo with country names. Add country codes to
-    // item data.
-    for (auto country_string : all_countries) {
-        const int code = string_to_code[country_string];
+    const QHash<int, QString> name_map = [&]() {
+        const bool locale_is_ru = [&]() {
+            const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
+            const bool out = (locale.language() == QLocale::Russian);
 
-        combo->addItem(country_string, code);
+            return out;
+        }();
+
+        if (locale_is_ru) {
+            return country_strings_ru;
+        } else {
+            return country_strings;
+        }
+    }();
+
+    // Generate order of countries that will be used to
+    // fill the combo. Country of the current locale is
+    // moved up to the start of the list.
+    const QList<QString> country_list = [&]() {
+        const QString current_country = [&]() {
+            const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
+            const QString locale_name = current_locale.name();
+            const QList<QString> locale_name_split = locale_name.split("_");
+
+            if (locale_name_split.size() == 2) {
+                const QString abbreviation = locale_name_split[1];
+                const int code = abbreviation_to_code[abbreviation];
+                const QString country_name = name_map[code];
+
+                return country_name;
+            } else {
+                return QString();
+            }
+        }();
+
+        QList<QString> out = name_map.values();
+        std::sort(out.begin(), out.end());
+        out.removeAll(current_country);
+        out.prepend(current_country);
+
+        return out;
+    }();
+
+    // Add "None" at the start
+    combo->addItem(QCoreApplication::translate("country_widget", "None"), COUNTRY_CODE_NONE);
+
+    for (const QString &country : country_list) {
+        const int code = name_map.key(country);
+
+        combo->addItem(country, code);
     }
 }
 
@@ -123,17 +199,11 @@ void country_combo_load(QComboBox *combo, const AdObject &object) {
 bool country_combo_apply(const QComboBox *combo, AdInterface &ad, const QString &dn) {
     const int code = combo->currentData().toInt();
 
-    const bool country_code_is_known = (country_strings.contains(code) && country_abbreviations.contains(code));
-
-    if (!country_code_is_known) {
-        qDebug() << "Unknown country code:" << code;
-
-        return false;
-    }
-
+    // NOTE: this handles the COUNTRY_CODE_NONE case by
+    // using empty strings for it's values
     const QString code_string = QString::number(code);
-    const QString country_string = country_strings[code];
-    const QString abbreviation = country_abbreviations[code];
+    const QString country_string = country_strings.value(code, QString());
+    const QString abbreviation = country_abbreviations.value(code, QString());
 
     bool success = true;
     success = success && ad.attribute_replace_string(dn, ATTRIBUTE_COUNTRY_CODE, code_string);
