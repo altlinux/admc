@@ -129,6 +129,8 @@ DEFINE_SETTING(SETTING_object_display_limit);
 // NOTE: this set of settings is not editable anywhere
 // within the app. Instead it should be manually edited
 // by hand in ADMC.conf
+DEFINE_SETTING(SETTING_feature_logon_computers);
+DEFINE_SETTING(SETTING_feature_profile_tab);
 DEFINE_SETTING(SETTING_feature_dev_mode);
 
 QVariant settings_get_variant(const QString setting);

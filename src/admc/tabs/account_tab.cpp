@@ -28,6 +28,7 @@
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/unlock_edit.h"
 #include "attribute_edits/upn_edit.h"
+#include "settings.h"
 
 // NOTE: the "can't change password" checkbox does not
 // affect the permission in the security tab, even though
@@ -75,6 +76,11 @@ AccountTab::AccountTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QWidg
         logon_hours_edit,
         logon_computers_edit,
     });
+
+    const bool logon_computers_enabled = settings_get_variant(SETTING_feature_logon_computers).toBool();
+    if (!logon_computers_enabled) {
+        ui->logon_computers_button->hide();
+    }
 }
 
 AccountTab::~AccountTab() {

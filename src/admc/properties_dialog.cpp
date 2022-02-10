@@ -181,13 +181,17 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         auto address_tab = new AddressTab(&edit_list, this);
         auto organization_tab = new OrganizationTab(&edit_list, this);
         auto telephones_tab = new TelephonesTab(&edit_list, this);
-        auto profile_tab = new ProfileTab(&edit_list, this);
 
         ui->tab_widget->add_tab(account_tab, tr("Account"));
         ui->tab_widget->add_tab(address_tab, tr("Address"));
         ui->tab_widget->add_tab(organization_tab, tr("Organization"));
         ui->tab_widget->add_tab(telephones_tab, tr("Telephones"));
-        ui->tab_widget->add_tab(profile_tab, tr("Profile"));
+
+        const bool profile_tab_enabled = settings_get_variant(SETTING_feature_profile_tab).toBool();
+        if (profile_tab_enabled) {
+            auto profile_tab = new ProfileTab(&edit_list, this);
+            ui->tab_widget->add_tab(profile_tab, tr("Profile"));
+        }
     }
     if (object.is_class(CLASS_GROUP)) {
         auto members_tab = new MembershipTab(&edit_list, MembershipTabType_Members, this);
