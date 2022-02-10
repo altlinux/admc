@@ -15,8 +15,14 @@ CHANGELOG
   "userAccountControl", "sAMAccountType" and
   "primaryGroupId".
 - Account Tab: Added missing "DES key" account option.
+- Account Tab: Removed "Trusted for delegation" option
+  because it should be in "Delegation" tab only.
+- Account Tab: Fixed some options using incorrect flags.
 - Console: Added object display limit option. Applies
   to main window and find dialog. (#319)
+- Address Tab: Changed order of country list so that
+  the country of current locale is always first, for
+  ease of use.
 - Console: Implemented opening action menu by right
   clicking on empty space in results pane. In this
   case, currently selected scope item is treated as
@@ -46,6 +52,10 @@ CHANGELOG
 - Properties: Improved how properties dialog responds
   to failing to load a user due to connection error or
   absence of object.
+- Properties: Disabled "Profile" tab, not usable
+  because not implemented in backend.
+- Properties: Disabled "Logon Computers" feature, not
+  usable because not implemented in backend.
 - Policies: Fixed permission check incorrectly
   complaining about policies made by RSAT. (#333)
 - Find dialog: Added class filtering by all classes,
