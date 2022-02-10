@@ -63,6 +63,35 @@ ListAttributeDialog::~ListAttributeDialog() {
     delete ui;
 }
 
+void ListAttributeDialog::accept() {
+    const bool contains_empty_values = [&]() {
+        const bool is_bool = (g_adconfig->get_attribute_type(get_attribute()) == AttributeType_Boolean);
+        if (is_bool) {
+            return false;
+        }
+
+        const QList<QByteArray> value_list = get_value_list();
+
+        for (const QByteArray &value : value_list) {
+            const QString value_string = QString(value);
+            const bool value_is_all_spaces = (value.count(' ') == value.length());
+            const bool value_is_empty = value.isEmpty() || value_is_all_spaces;
+
+            if (value_is_empty) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    if (contains_empty_values) {
+        message_box_warning(this, tr("Error"), tr("One or more values are empty. Edit or remove them to proceed."));
+    } else {
+        QDialog::accept();
+    }
+}
+
 void ListAttributeDialog::on_add_button() {
     AttributeDialog *dialog = [this]() -> AttributeDialog * {
         const bool is_bool = (g_adconfig->get_attribute_type(get_attribute()) == AttributeType_Boolean);

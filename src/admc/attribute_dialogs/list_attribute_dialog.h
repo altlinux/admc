@@ -44,6 +44,8 @@ public:
     ListAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent);
     ~ListAttributeDialog();
 
+    void accept() override;
+
     QList<QByteArray> get_value_list() const override;
 
     // Sets max length for input of individual values
