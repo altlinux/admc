@@ -33,9 +33,6 @@
  * finished.
  */
 
-// NOTE: use Qt::QueuedConnection when connecting to
-// thread's signals from another thread
-
 #include <QThread>
 
 #include "ad_defines.h"
