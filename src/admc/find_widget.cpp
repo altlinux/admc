@@ -168,7 +168,8 @@ void FindWidget::find() {
 
     connect(
         find_thread, &SearchThread::results_ready,
-        this, &FindWidget::handle_find_thread_results);
+        this, &FindWidget::handle_find_thread_results,
+        Qt::QueuedConnection);
     connect(
         this, &QObject::destroyed,
         find_thread, &SearchThread::stop);
@@ -186,7 +187,8 @@ void FindWidget::find() {
             ui->clear_button->setEnabled(true);
 
             hide_busy_indicator();
-        });
+        },
+        Qt::QueuedConnection);
 
     show_busy_indicator();
 
