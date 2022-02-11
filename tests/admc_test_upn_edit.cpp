@@ -26,6 +26,11 @@
 #include <QFormLayout>
 #include <QLineEdit>
 
+// NOTE: we have to make sure that test suffix doesn't
+// already exist on the test domain, hence the wacky
+// name
+#define TEST_SUFFIX "totally-unique-test-suffix.zone"
+
 void ADMCTestUpnEdit::init() {
     ADMCTest::init();
 
