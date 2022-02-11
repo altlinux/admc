@@ -832,20 +832,8 @@ bool security_descriptor_verify_acl_order(security_descriptor *sd) {
     return order_is_correct;
 }
 
-QString ad_security_get_right_name(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type) {
-    // TODO: translate object type name. How to: object
-    // type guid -> extended right CN -> map of cn's to
-    // translations (both english and russian!)
-    // 
-    // TODO: Add "translated" to decl comment when
-    // done.
-    // 
-    // TODO: also add this note explaning *why* we need
-    // to translate these ourselves. 
-    // Predefined schema classes use the localizationDisplayId attribute of a controlAccessRight object to specify a message identifier used to retrieve a localized display name from Dssec.dll.
-    // we don't have dssec.dll!
-
-    const QString object_type_name = adconfig->get_right_name(object_type);
+QString ad_security_get_right_name(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type, const QLocale::Language language) {
+    const QString object_type_name = adconfig->get_right_name(object_type, language);
 
     if (access_mask == SEC_ADS_CONTROL_ACCESS) {
         return object_type_name;
@@ -855,12 +843,12 @@ QString ad_security_get_right_name(AdConfig *adconfig, const uint32_t access_mas
         return QString(QCoreApplication::translate("ad_security.cpp", "Write %1")).arg(object_type_name);
     } else {
         const QHash<uint32_t, QString> common_right_name_map = {
-            {SEC_ADS_GENERIC_ALL, "Full control"},
-            {SEC_ADS_GENERIC_READ, "Read"},
-            {SEC_ADS_GENERIC_WRITE, "Write"},
-            {SEC_STD_DELETE, "Delete"},
-            {SEC_ADS_CREATE_CHILD, "Create all child objects"},
-            {SEC_ADS_DELETE_CHILD, "Delete all child objects"},
+            {SEC_ADS_GENERIC_ALL, QCoreApplication::translate("ad_security.cpp", "Full control")},
+            {SEC_ADS_GENERIC_READ, QCoreApplication::translate("ad_security.cpp", "Read")},
+            {SEC_ADS_GENERIC_WRITE, QCoreApplication::translate("ad_security.cpp", "Write")},
+            {SEC_STD_DELETE, QCoreApplication::translate("ad_security.cpp", "Delete")},
+            {SEC_ADS_CREATE_CHILD, QCoreApplication::translate("ad_security.cpp", "Create all child objects")},
+            {SEC_ADS_DELETE_CHILD, QCoreApplication::translate("ad_security.cpp", "Delete all child objects")},
         };
 
         return common_right_name_map.value(access_mask, QCoreApplication::translate("ad_security.cpp", "<unknown right>"));
