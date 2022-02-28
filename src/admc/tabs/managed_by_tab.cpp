@@ -90,6 +90,8 @@ void ManagedByTabEdit::on_manager_edited() {
     }
 
     load_manager_edits(ad);
+
+    emit edited();
 }
 
 void ManagedByTabEdit::load(AdInterface &ad, const AdObject &object) {
@@ -98,6 +100,12 @@ void ManagedByTabEdit::load(AdInterface &ad, const AdObject &object) {
     // NOTE: load AFTER loading manager! because manager
     // edits use current value of manager edit
     load_manager_edits(ad);
+}
+
+bool ManagedByTabEdit::apply(AdInterface &ad, const QString &dn) const {
+    const bool success = manager_edit->apply(ad, dn);
+
+    return success;
 }
 
 void ManagedByTabEdit::load_manager_edits(AdInterface &ad) {
