@@ -811,11 +811,17 @@ void ObjectImpl::on_reset_account() {
         return;
     }
 
+    show_busy_indicator();
+
     const QList<QString> target_list = get_action_target_dn_list_object(console);
 
     for (const QString &target : target_list) {
         ad.computer_reset_account(target);
     }
+
+    hide_busy_indicator();
+
+    g_status->display_ad_messages(ad, console);
 }
 
 void ObjectImpl::new_object(const QString &object_class) {
