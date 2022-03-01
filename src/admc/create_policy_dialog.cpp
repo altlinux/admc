@@ -61,6 +61,7 @@ CreatePolicyDialog::CreatePolicyDialog(AdInterface &ad, QWidget *parent)
 
     ui->name_edit->setText(default_name);
     ui->name_edit->selectAll();
+    limit_edit(ui->name_edit, ATTRIBUTE_DISPLAY_NAME);
 
     settings_setup_dialog_geometry(SETTING_create_policy_dialog_geometry, this);
 }

@@ -44,6 +44,7 @@ RenamePolicyDialog::RenamePolicyDialog(AdInterface &ad, const QString &target_dn
     }();
 
     ui->name_edit->setText(target_name);
+    limit_edit(ui->name_edit, ATTRIBUTE_DISPLAY_NAME);
 
     settings_setup_dialog_geometry(SETTING_rename_policy_dialog_geometry, this);
 }
