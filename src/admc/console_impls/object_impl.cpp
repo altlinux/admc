@@ -806,6 +806,11 @@ void ObjectImpl::on_edit_upn_suffixes() {
 }
 
 void ObjectImpl::on_reset_account() {
+    const bool confirmed = confirmation_dialog(tr("Are you sure you want to reset this account?"), console);
+    if (!confirmed) {
+        return;
+    }
+
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
