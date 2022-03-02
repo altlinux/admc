@@ -33,7 +33,7 @@ GeneralOUTab::GeneralOUTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 
     auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
-    auto street_edit = new StringEdit(ui->street_edit, ATTRIBUTE_STREET, this);
+    auto street_edit = new StringEdit(ui->street_edit, ATTRIBUTE_STREET_OU, this);
     auto city_edit = new StringEdit(ui->city_edit, ATTRIBUTE_CITY, this);
     auto state_edit = new StringEdit(ui->state_edit, ATTRIBUTE_STATE, this);
     auto postal_code_edit = new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, this);
