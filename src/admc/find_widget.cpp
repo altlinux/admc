@@ -186,6 +186,8 @@ void FindWidget::find() {
             ui->clear_button->setEnabled(true);
 
             hide_busy_indicator();
+
+            find_thread->deleteLater();
         });
 
     show_busy_indicator();

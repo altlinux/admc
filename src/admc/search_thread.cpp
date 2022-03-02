@@ -39,10 +39,6 @@ SearchThread::SearchThread(const QString base_arg, const SearchScope scope_arg, 
     static int id_max = 0;
     id = id_max;
     id_max++;
-
-    connect(
-        this, &SearchThread::finished,
-        this, &QObject::deleteLater);
 }
 
 void SearchThread::stop() {
