@@ -158,6 +158,12 @@ bool QueryFolderImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list,
     UNUSED_ARG(target);
     UNUSED_ARG(target_type);
 
+    const bool dropped_is_target = dropped_list.contains(target);
+
+    if (dropped_is_target) {
+        return false;
+    }
+
     const bool dropped_are_query_item_or_folder = (dropped_type_list - QSet<int>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
 
     return dropped_are_query_item_or_folder;
