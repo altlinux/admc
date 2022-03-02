@@ -257,6 +257,31 @@ void QueryFolderImpl::copy(const QList<QModelIndex> &index_list) {
 void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
     const QModelIndex parent_index = index_list[0];
 
+    const bool parent_is_same = [&]() {
+        for (const QModelIndex &index : copied_list) {
+            const QModelIndex this_parent = index.parent();
+
+            if (this_parent == parent_index) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    // TODO: this is a band-aid on top of name conflict
+    // check inside move(), try to make this
+    // centralized if possible
+
+    // Prohibit copy+paste into same parent.
+    // console_query_move() does check for name
+    // conflicts but doesn't handle this edge case.
+    if (!copied_is_cut && parent_is_same) {
+        message_box_warning(console, tr("Error"), tr("Can't paste here."));
+
+        return;
+    }
+
     const bool delete_old_branch = copied_is_cut;
     console_query_move(console, copied_list, parent_index, delete_old_branch);
 }
