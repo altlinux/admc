@@ -29,8 +29,8 @@
  * has multiple pages, then results_ready() will be emitted
  * multiple times. Use stop() to stop search. Note that search is
  * not stopped immediately but when current results page is
- * done processing. SearchThread deletes itself when it's
- * finished.
+ * done processing. Note that creator of thread should call
+ * thread's deleteLater() in the finished() slot.
  */
 
 #include <QThread>

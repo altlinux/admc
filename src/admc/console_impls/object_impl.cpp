@@ -1467,6 +1467,8 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
 
             item_now->setData(false, ObjectRole_Fetching);
             item_now->setDragEnabled(true);
+
+            search_thread->deleteLater();
         },
         Qt::QueuedConnection);
 
