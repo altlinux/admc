@@ -40,14 +40,14 @@ FindWidget::FindWidget(QWidget *parent)
     ui = new Ui::FindWidget();
     ui->setupUi(this);
 
-    action_view_icons = new QAction(tr("Icons"), this);
+    action_view_icons = new QAction(tr("&Icons"), this);
     action_view_icons->setCheckable(true);
-    action_view_list = new QAction(tr("List"), this);
+    action_view_list = new QAction(tr("&List"), this);
     action_view_list->setCheckable(true);
-    action_view_detail = new QAction(tr("Detail"), this);
+    action_view_detail = new QAction(tr("&Detail"), this);
     action_view_detail->setCheckable(true);
-    action_customize_columns = new QAction(tr("Customize Columns"), this);
-    action_toggle_description_bar = new QAction(tr("Description Bar"), this);
+    action_customize_columns = new QAction(tr("&Customize Columns"), this);
+    action_toggle_description_bar = new QAction(tr("&Description Bar"), this);
     action_toggle_description_bar->setCheckable(true);
 
     const ConsoleWidgetActions console_actions = [&]() {
