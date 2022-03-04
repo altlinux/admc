@@ -500,11 +500,6 @@
         <translation>Не удалось подключиться.</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="118"/>
-        <source>Failed to get a domain.</source>
-        <translation>Не удалось получить домен.</translation>
-    </message>
-    <message>
         <location filename="ad_interface.cpp" line="129"/>
         <source>Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational.</source>
         <translation>Не удалось найти контроллеры домена. Убедитесь, что ваш компьютер находится в домене и что контроллеры домена работают.</translation>
@@ -824,6 +819,11 @@
         <source>Attribute %1 of object %2 was changed from &quot;%3&quot; to &quot;%4&quot;.</source>
         <oldsource>Failed to change attribute &quot;%1&quot; of object &quot;%2&quot; from &quot;%3&quot; to &quot;%4&quot;</oldsource>
         <translation>Атрибут %1 объекта %2 был изменен с &quot;%3&quot; на &quot;%4&quot;.</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="118"/>
+        <source>Failed to get a domain. Check that you have initialized kerberos credentials (kinit).</source>
+        <translation>Не удалось получить домен. Проверьте что вы инициализировали kerberos (kinit).</translation>
     </message>
     <message>
         <location filename="ad_interface.cpp" line="760"/>
