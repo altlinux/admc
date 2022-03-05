@@ -77,6 +77,14 @@ int main(int argc, char **argv) {
         qDebug() << "Failed to load qt translation";
     }
 
+    QTranslator qtbase_translator;
+    const bool loaded_qtbase_translation = qtbase_translator.load(saved_locale, "qtbase", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(&qtbase_translator);
+
+    if (!loaded_qtbase_translation) {
+        qDebug() << "Failed to load qt base translation";
+    }
+
     load_connection_options();
 
     // In case of failure to connect to AD and load
