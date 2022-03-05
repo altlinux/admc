@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 
     // NOTE: these translations are for qt-defined text, like standard dialog buttons
     QTranslator qt_translator;
-    const bool loaded_qt_translation = qt_translator.load("qt_" + saved_locale.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    const bool loaded_qt_translation = qt_translator.load(saved_locale, "qt", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qt_translator);
 
     if (!loaded_qt_translation) {
