@@ -34,6 +34,8 @@ public:
     bool verify(AdInterface &ad, const QString &dn) const override;
     bool apply(AdInterface &ad, const QString &dn) const override;
 
+    void set_enabled(const bool enabled);
+
 private:
     QLineEdit *edit;
 };
