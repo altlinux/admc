@@ -100,7 +100,7 @@ bool CreateObjectHelper::accept() const {
             const int bit = UAC_PASSWD_NOTREQD;
             const int updated_uac = bitmask_set(uac, bit, false);
 
-            final_success &= ad.attribute_replace_int(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, updated_uac, DoStatusMsg_No);
+            final_success = (final_success && ad.attribute_replace_int(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, updated_uac, DoStatusMsg_No));
         }
 
         const bool apply_success = AttributeEdit::apply(m_edit_list, ad, dn);

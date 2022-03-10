@@ -460,10 +460,10 @@ bool SecurityTabEdit::verify(AdInterface &ad, const QString &target) const {
 bool SecurityTabEdit::apply(AdInterface &ad, const QString &target) const {
     bool total_success = true;
 
-    total_success &= ad_security_replace_security_descriptor(ad, target, sd);
+    total_success = (total_success && ad_security_replace_security_descriptor(ad, target, sd));
 
     if (is_policy) {
-        total_success &= ad.gpo_sync_perms(target);
+        total_success = (total_success && ad.gpo_sync_perms(target));
     }
 
     return total_success;
