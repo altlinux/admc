@@ -293,6 +293,11 @@ const long long MILLIS_TO_100_NANOS = 10000LL;
 #define SAM_APP_QUERY_GROUP 0x40000001
 #define SAM_ACCOUNT_TYPE_MAX 0x7fffffff
 
+// NOTE: this is according to Microsoft, haven't found
+// any better source
+#define SAM_NAME_MAX_LENGTH 20
+#define SAM_NAME_COMPUTER_MAX_LENGTH 16
+
 enum SearchScope {
     SearchScope_Object,
     SearchScope_Children,

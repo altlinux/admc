@@ -124,6 +124,7 @@ set(ADMC_SOURCES
     attribute_edits/string_other_edit.cpp
     attribute_edits/string_large_edit.cpp
     attribute_edits/sam_name_edit.cpp
+    attribute_edits/computer_sam_name_edit.cpp
     attribute_edits/country_edit.cpp
     attribute_edits/expiry_edit.cpp
     attribute_edits/expiry_widget.cpp

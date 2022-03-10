@@ -41,7 +41,7 @@ RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, Q
     auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, this);
     upn_edit->init_suffixes(ad);
 
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, CLASS_USER, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
 
     const QList<AttributeEdit *> edit_list = {
         first_name_edit,
