@@ -84,11 +84,16 @@ bool CreateObjectHelper::accept() const {
         g_status->add_message(message, StatusType_Error);
     };
 
+    bool final_success = true;
+
     const bool add_success = ad.object_add(dn, m_object_class);
 
-    bool final_success = false;
+    final_success = (final_success && add_success);
+
     if (add_success) {
         const bool is_user = (m_object_class == CLASS_USER);
+        const bool is_computer = (m_object_class == CLASS_COMPUTER);
+
         if (is_user) {
             const int uac = [this, dn, &ad]() {
                 const AdObject object = ad.search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
@@ -101,15 +106,22 @@ bool CreateObjectHelper::accept() const {
             const int updated_uac = bitmask_set(uac, bit, false);
 
             final_success = (final_success && ad.attribute_replace_int(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, updated_uac, DoStatusMsg_No));
+        } else if (is_computer) {
+            // NOTE: other attributes like primary
+            // group and sam account type are
+            // automatically changed by the server when
+            // we set UAC to the correct value
+            const int uac = (UAC_PASSWD_NOTREQD | UAC_WORKSTATION_TRUST_ACCOUNT);
+            final_success = (final_success && ad.attribute_replace_int(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, uac));
         }
 
         const bool apply_success = AttributeEdit::apply(m_edit_list, ad, dn);
 
-        if (apply_success) {
-            final_success = true;
-        } else {
-            ad.object_delete(dn);
-        }
+        final_success = (final_success && apply_success);
+    }
+
+    if (!final_success && add_success) {
+        ad.object_delete(dn);
     }
 
     g_status->display_ad_messages(ad, parent_dialog);
