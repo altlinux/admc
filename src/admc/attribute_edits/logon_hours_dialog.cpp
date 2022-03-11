@@ -75,6 +75,8 @@ LogonHoursDialog::~LogonHoursDialog() {
 void LogonHoursDialog::load(const QByteArray &value) {
     ui->view->clearSelection();
 
+    original_value = value;
+
     const QList<QList<bool>> bools = logon_hours_to_bools(value, get_offset());
 
     for (int day = 0; day < DAYS_IN_WEEK; day++) {
