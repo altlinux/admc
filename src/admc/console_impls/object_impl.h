@@ -126,6 +126,7 @@ private:
     QAction *reset_account_action;
     QAction *edit_upn_suffixes_action;
     QAction *new_action;
+    QHash<QString, QAction *> new_action_map;
 
     bool find_action_enabled;
     bool refresh_action_enabled;

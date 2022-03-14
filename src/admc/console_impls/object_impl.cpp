@@ -54,6 +54,8 @@
 #include <QSet>
 #include <QStandardItemModel>
 
+#include <algorithm>
+
 enum DropType {
     DropType_Move,
     DropType_AddToGroup,
@@ -79,10 +81,10 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     object_filter = settings_get_variant(SETTING_object_filter).toString();
     object_filter_enabled = settings_get_variant(SETTING_object_filter_enabled).toBool();
 
-    auto new_user_action = new QAction(tr("User"), this);
-    auto new_computer_action = new QAction(tr("Computer"), this);
-    auto new_ou_action = new QAction(tr("OU"), this);
-    auto new_group_action = new QAction(tr("Group"), this);
+    new_action_map[CLASS_USER] = new QAction(tr("User"), this);
+    new_action_map[CLASS_COMPUTER] = new QAction(tr("Computer"), this);
+    new_action_map[CLASS_OU] = new QAction(tr("OU"), this);
+    new_action_map[CLASS_GROUP] = new QAction(tr("Group"), this);
     find_action = new QAction(tr("Find..."), this);
     move_action = new QAction(tr("Move..."), this);
     add_to_group_action = new QAction(tr("Add to group..."), this);
@@ -95,22 +97,28 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     auto new_menu = new QMenu(tr("New"), console_arg);
     new_action = new_menu->menuAction();
 
-    new_menu->addAction(new_user_action);
-    new_menu->addAction(new_computer_action);
-    new_menu->addAction(new_ou_action);
-    new_menu->addAction(new_group_action);
+    const QList<QString> new_action_keys_sorted = [&]() {
+        QList<QString> out = new_action_map.keys();
+        std::sort(out.begin(), out.end());
+
+        return out;
+    }();
+    for (const QString &key : new_action_keys_sorted) {
+        QAction *action = new_action_map[key];
+        new_menu->addAction(action);
+    }
 
     connect(
-        new_user_action, &QAction::triggered,
+        new_action_map[CLASS_USER], &QAction::triggered,
         this, &ObjectImpl::on_new_user);
     connect(
-        new_computer_action, &QAction::triggered,
+        new_action_map[CLASS_COMPUTER], &QAction::triggered,
         this, &ObjectImpl::on_new_computer);
     connect(
-        new_ou_action, &QAction::triggered,
+        new_action_map[CLASS_OU], &QAction::triggered,
         this, &ObjectImpl::on_new_ou);
     connect(
-        new_group_action, &QAction::triggered,
+        new_action_map[CLASS_GROUP], &QAction::triggered,
         this, &ObjectImpl::on_new_group);
     connect(
         move_action, &QAction::triggered,
