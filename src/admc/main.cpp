@@ -70,11 +70,19 @@ int main(int argc, char **argv) {
 
     // NOTE: these translations are for qt-defined text, like standard dialog buttons
     QTranslator qt_translator;
-    const bool loaded_qt_translation = qt_translator.load("qt_" + saved_locale.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    const bool loaded_qt_translation = qt_translator.load(saved_locale, "qt", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qt_translator);
 
     if (!loaded_qt_translation) {
         qDebug() << "Failed to load qt translation";
+    }
+
+    QTranslator qtbase_translator;
+    const bool loaded_qtbase_translation = qtbase_translator.load(saved_locale, "qtbase", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(&qtbase_translator);
+
+    if (!loaded_qtbase_translation) {
+        qDebug() << "Failed to load qt base translation";
     }
 
     load_connection_options();

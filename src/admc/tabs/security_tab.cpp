@@ -279,15 +279,22 @@ void SecurityTabEdit::load(AdInterface &ad, const AdObject &object) {
 
     rights_model->removeRows(0, rights_model->rowCount());
 
+    const QLocale::Language language = []() {
+        const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
+        const QLocale::Language out = saved_locale.language();
+
+        return out;
+    }();
+
     for (const SecurityRight &right : right_list) {
         const QList<QStandardItem *> row = make_item_row(AceColumn_COUNT);
 
         // TODO: for russian, probably do "read/write
         // property - [property name]" to avoid having
         // to do suffixes properties
-        const QString right_name = ad_security_get_right_name(g_adconfig, right.access_mask, right.object_type);
+        const QString right_name = ad_security_get_right_name(g_adconfig, right.access_mask, right.object_type, language);
 
-        const QString object_type_name = g_adconfig->get_right_name(right.object_type);
+        const QString object_type_name = g_adconfig->get_right_name(right.object_type, language);
 
         row[AceColumn_Name]->setText(right_name);
         row[AceColumn_Allowed]->setCheckable(true);
@@ -453,10 +460,10 @@ bool SecurityTabEdit::verify(AdInterface &ad, const QString &target) const {
 bool SecurityTabEdit::apply(AdInterface &ad, const QString &target) const {
     bool total_success = true;
 
-    total_success &= ad_security_replace_security_descriptor(ad, target, sd);
+    total_success = (total_success && ad_security_replace_security_descriptor(ad, target, sd));
 
     if (is_policy) {
-        total_success &= ad.gpo_sync_perms(target);
+        total_success = (total_success && ad.gpo_sync_perms(target));
     }
 
     return total_success;

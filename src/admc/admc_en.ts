@@ -592,12 +592,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="100"/>
+        <location filename="create_policy_dialog.cpp" line="101"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="100"/>
+        <location filename="create_policy_dialog.cpp" line="101"/>
         <source>Group Policy Object with this name already exists.</source>
         <translation></translation>
     </message>
@@ -1030,27 +1030,32 @@
     </message>
     <message>
         <location filename="find_widget.cpp" line="43"/>
-        <source>Icons</source>
+        <source>&amp;Icons</source>
+        <oldsource>Icons</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="45"/>
-        <source>List</source>
+        <source>&amp;List</source>
+        <oldsource>List</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="47"/>
-        <source>Detail</source>
+        <source>&amp;Detail</source>
+        <oldsource>Detail</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="49"/>
-        <source>Customize Columns</source>
+        <source>&amp;Customize Columns</source>
+        <oldsource>Customize Columns</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="50"/>
-        <source>Description Bar</source>
+        <source>&amp;Description Bar</source>
+        <oldsource>Description Bar</oldsource>
         <translation></translation>
     </message>
     <message>
@@ -1507,32 +1512,38 @@
     <name>MainWindow</name>
     <message>
         <location filename="main_window.ui" line="28"/>
-        <source>File</source>
+        <source>&amp;File</source>
+        <oldsource>File</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="38"/>
-        <source>Action</source>
+        <source>&amp;Action</source>
+        <oldsource>Action</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="43"/>
-        <source>View</source>
+        <source>&amp;View</source>
+        <oldsource>View</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="59"/>
-        <source>Preferences</source>
+        <source>&amp;Preferences</source>
+        <oldsource>Preferences</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="63"/>
-        <source>Language</source>
+        <source>&amp;Language</source>
+        <oldsource>Language</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="76"/>
-        <source>Help</source>
+        <source>&amp;Help</source>
+        <oldsource>Help</oldsource>
         <translation></translation>
     </message>
     <message>
@@ -1547,12 +1558,14 @@
     </message>
     <message>
         <location filename="main_window.ui" line="125"/>
-        <source>Connection Options</source>
+        <source>&amp;Connection Options</source>
+        <oldsource>Connection Options</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="130"/>
-        <source>Quit</source>
+        <source>&amp;Quit</source>
+        <oldsource>Quit</oldsource>
         <translation></translation>
     </message>
     <message>
@@ -1562,82 +1575,98 @@
     </message>
     <message>
         <location filename="main_window.ui" line="142"/>
-        <source>Manual</source>
+        <source>&amp;Manual</source>
+        <oldsource>Manual</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="147"/>
-        <source>Changelog</source>
+        <source>&amp;Changelog</source>
+        <oldsource>Changelog</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="152"/>
-        <source>About ADMC</source>
+        <source>&amp;About ADMC</source>
+        <oldsource>About ADMC</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="160"/>
-        <source>Icons</source>
+        <source>&amp;Icons</source>
+        <oldsource>Icons</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="168"/>
-        <source>List</source>
+        <source>&amp;List</source>
+        <oldsource>List</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="176"/>
-        <source>Detail</source>
+        <source>&amp;Detail</source>
+        <oldsource>Detail</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="200"/>
-        <source>Console Tree</source>
+        <source>&amp;Console Tree</source>
+        <oldsource>Console Tree</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="208"/>
-        <source>Description Bar</source>
+        <source>Description &amp;Bar</source>
+        <oldsource>Description Bar</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="213"/>
-        <source>Customize Columns...</source>
+        <source>C&amp;ustomize Columns...</source>
+        <oldsource>Customize Columns...</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="218"/>
-        <source>Filter Objects...</source>
+        <source>&amp;Filter Objects...</source>
+        <oldsource>Filter Objects...</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="226"/>
-        <source>Advanced Features</source>
+        <source>&amp;Advanced Features</source>
+        <oldsource>Advanced Features</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="234"/>
-        <source>Confirm Actions</source>
+        <source>&amp;Confirm Actions</source>
+        <oldsource>Confirm Actions</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="242"/>
-        <source>Put Last Name Before First Name</source>
+        <source>&amp;Put Last Name Before First Name</source>
+        <oldsource>Put Last Name Before First Name</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="250"/>
-        <source>Log Searches</source>
+        <source>&amp;Log Searches</source>
+        <oldsource>Log Searches</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="258"/>
-        <source>Timestamps in Message Log</source>
+        <source>&amp;Timestamps in Message Log</source>
+        <oldsource>Timestamps in Message Log</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="main_window.ui" line="266"/>
-        <source>Show Non-Container Objects in Console Tree</source>
+        <source>&amp;Show Non-Container Objects in Console Tree</source>
+        <oldsource>Show Non-Container Objects in Console Tree</oldsource>
         <translation></translation>
     </message>
     <message>
@@ -1647,7 +1676,8 @@
     </message>
     <message>
         <location filename="main_window.ui" line="324"/>
-        <source>Operations Masters</source>
+        <source>&amp;Operations Masters</source>
+        <oldsource>Operations Masters</oldsource>
         <translation></translation>
     </message>
     <message>
@@ -1886,16 +1916,19 @@
     <message>
         <location filename="console_impls/object_impl.cpp" line="82"/>
         <source>User</source>
+        <oldsource>&amp;User</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="console_impls/object_impl.cpp" line="83"/>
         <source>Computer</source>
+        <oldsource>&amp;Computer</oldsource>
         <translation></translation>
     </message>
     <message>
         <location filename="console_impls/object_impl.cpp" line="84"/>
         <source>OU</source>
+        <oldsource>&amp;OU</oldsource>
         <translation></translation>
     </message>
     <message>
@@ -1969,7 +2002,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="1127"/>
+        <location filename="console_impls/object_impl.cpp" line="809"/>
+        <source>Are you sure you want to reset this account?</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1138"/>
         <source>Query may be out of date</source>
         <translation></translation>
     </message>
@@ -2480,6 +2518,16 @@
         <source>&amp;Import query...</source>
         <translation></translation>
     </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="280"/>
+        <source>Error</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="280"/>
+        <source>Can&apos;t paste here.</source>
+        <translation></translation>
+    </message>
 </context>
 <context>
     <name>QueryItemImpl</name>
@@ -2668,17 +2716,17 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="467"/>
+        <location filename="tabs/security_tab.cpp" line="474"/>
         <source>Add Trustee</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="579"/>
+        <location filename="tabs/security_tab.cpp" line="586"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="579"/>
+        <location filename="tabs/security_tab.cpp" line="586"/>
         <source>Failed to add some trustee&apos;s because they are already in the list.</source>
         <translation></translation>
     </message>
@@ -2930,7 +2978,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1523"/>
+        <location filename="console_impls/object_impl.cpp" line="1536"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
@@ -2941,12 +2989,12 @@
 <context>
     <name>object_impl.cpp</name>
     <message>
-        <location filename="search_thread.cpp" line="112"/>
+        <location filename="search_thread.cpp" line="108"/>
         <source>Failed to connect to server while searching for objects.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="search_thread.cpp" line="114"/>
+        <location filename="search_thread.cpp" line="110"/>
         <source>Could not load all objects. Increase object display limit in Filter Options or reduce number of objects by applying a filter. Filter Options is accessible from main window&apos;s menubar via the &quot;View&quot; menu.</source>
         <translation></translation>
     </message>
@@ -2962,7 +3010,7 @@
 <context>
     <name>query</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="278"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="333"/>
         <source>Saved Queries</source>
         <translation></translation>
     </message>
@@ -2970,30 +3018,30 @@
 <context>
     <name>query.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="484"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="539"/>
         <source>Name may not be empty</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="260"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="485"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="495"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="498"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="315"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="540"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="550"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="553"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="494"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="549"/>
         <source>There&apos;s already an item with this name.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="497"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="552"/>
         <source>Names cannot contain &quot;/&quot;.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="259"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="314"/>
         <source>Query file is corrupted.</source>
         <translation></translation>
     </message>
@@ -3001,12 +3049,12 @@
 <context>
     <name>query_folder.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="407"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="462"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="408"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="463"/>
         <source>Description</source>
         <translation></translation>
     </message>
@@ -3014,7 +3062,7 @@
 <context>
     <name>query_folder_impl.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="513"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="568"/>
         <source>Are you sure you want to delete this item?</source>
         <translation></translation>
     </message>
@@ -3022,12 +3070,12 @@
 <context>
     <name>query_item_impl.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="238"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="293"/>
         <source>Import Query</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="240"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="295"/>
         <location filename="console_impls/query_item_impl.cpp" line="174"/>
         <source>JSON (*.json)</source>
         <translation></translation>

@@ -364,7 +364,19 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(const QModelIndex &index, 
         out.insert(StandardAction_Refresh);
     }
 
-    if (single_selection) {
+    const bool can_rename = [&]() {
+        const QList<QString> renamable_class_list = {
+            CLASS_USER,
+            CLASS_GROUP,
+            CLASS_OU,
+        };
+        const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
+        const bool can_rename_out = (single_selection && renamable_class_list.contains(object_class));
+
+        return can_rename_out;
+    }();
+
+    if (can_rename) {
         out.insert(StandardAction_Rename);
     }
 
@@ -806,16 +818,27 @@ void ObjectImpl::on_edit_upn_suffixes() {
 }
 
 void ObjectImpl::on_reset_account() {
+    const bool confirmed = confirmation_dialog(tr("Are you sure you want to reset this account?"), console);
+    if (!confirmed) {
+        return;
+    }
+
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
     }
+
+    show_busy_indicator();
 
     const QList<QString> target_list = get_action_target_dn_list_object(console);
 
     for (const QString &target : target_list) {
         ad.computer_reset_account(target);
     }
+
+    hide_busy_indicator();
+
+    g_status->display_ad_messages(ad, console);
 }
 
 void ObjectImpl::new_object(const QString &object_class) {

@@ -115,7 +115,7 @@ AdInterface::AdInterface() {
 
     d->domain = get_default_domain_from_krb5();
     if (d->domain.isEmpty()) {
-        d->error_message(connect_error_context, tr("Failed to get a domain."));
+        d->error_message(connect_error_context, tr("Failed to get a domain. Check that you have initialized kerberos credentials (kinit)."));
         return;
     }
 

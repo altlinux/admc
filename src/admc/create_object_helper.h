@@ -39,9 +39,6 @@ class CreateObjectHelper : public QObject {
 public:
     CreateObjectHelper(QLineEdit *name_edit, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QString &object_class, const QString &parent_dn, QDialog *parent_dialog);
 
-    static void success_msg(const QString &old_name);
-    static void fail_msg(const QString &old_name);
-
     bool accept() const;
     void on_edited();
     QString get_created_name() const;

@@ -31,7 +31,7 @@ RenameGroupDialog::RenameGroupDialog(AdInterface &ad, const QString &target_arg,
     ui = new Ui::RenameGroupDialog();
     ui->setupUi(this);
 
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, CLASS_GROUP, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
 
     const QList<AttributeEdit *> edit_list = {
         sam_name_edit,

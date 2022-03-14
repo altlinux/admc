@@ -330,6 +330,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             const int valid_accesses = object.get_int(ATTRIBUTE_VALID_ACCESSES);
 
             d->right_to_guid_map[cn] = guid;
+            d->right_guid_to_cn_map[guid] = cn;
             d->rights_guid_to_name_map[guid] = display_name;
             d->rights_name_to_guid_map[cn] = guid;
             d->rights_applies_to_map[guid] = applies_to;
@@ -589,8 +590,106 @@ QByteArray AdConfig::get_right_guid(const QString &right_cn) const {
     return out;
 }
 
-QString AdConfig::get_right_name(const QByteArray &right_guid) const {
-    const QString out = d->rights_guid_to_name_map.value(right_guid, "<unknown rights>");
+
+// NOTE: technically, Active Directory provides
+// translations for right names but it's not
+// accessible, so have to translate these ourselves. On
+// Windows, you would use the localizationDisplayId
+// retrieved from schema to get translation from
+// dssec.dll. And we don't have dssec.dll, nor do we
+// have the ability to interact with it!
+QString AdConfig::get_right_name(const QByteArray &right_guid, const QLocale::Language language) const {
+    const QHash<QString, QString> cn_to_map_russian = {
+        {"DS-Replication-Get-Changes", QCoreApplication::translate("AdConfig", "DS Replication Get Changes")},
+        {"DS-Replication-Get-Changes-All", QCoreApplication::translate("AdConfig", "DS Replication Get Changes All")},
+        {"Email-Information", QCoreApplication::translate("AdConfig", "Phone and Mail Options")},
+        {"DS-Bypass-Quota", QCoreApplication::translate("AdConfig", "Bypass the quota restrictions during creation.")},
+        {"Receive-As", QCoreApplication::translate("AdConfig", "Receive As")},
+        {"Unexpire-Password", QCoreApplication::translate("AdConfig", "Unexpire Password")},
+        {"Do-Garbage-Collection", QCoreApplication::translate("AdConfig", "Do Garbage Collection")},
+        {"Allowed-To-Authenticate", QCoreApplication::translate("AdConfig", "Allowed To Authenticate")},
+        {"Change-PDC", QCoreApplication::translate("AdConfig", "Change PDC")},
+        {"Reanimate-Tombstones", QCoreApplication::translate("AdConfig", "Reanimate Tombstones")},
+        {"msmq-Peek-Dead-Letter", QCoreApplication::translate("AdConfig", "msmq Peek Dead Letter")},
+        {"Certificate-AutoEnrollment", QCoreApplication::translate("AdConfig", "AutoEnrollment")},
+        {"DS-Install-Replica", QCoreApplication::translate("AdConfig", "DS Install Replica")},
+        {"Domain-Password", QCoreApplication::translate("AdConfig", "Domain Password & Lockout Policies")},
+        {"Generate-RSoP-Logging", QCoreApplication::translate("AdConfig", "Generate RSoP Logging")},
+        {"Run-Protect-Admin-Groups-Task", QCoreApplication::translate("AdConfig", "Run Protect Admin Groups Task")},
+        {"Self-Membership", QCoreApplication::translate("AdConfig", "Self Membership")},
+        {"DS-Clone-Domain-Controller", QCoreApplication::translate("AdConfig", "Allow a DC to create a clone of itself")},
+        {"Domain-Other-Parameters", QCoreApplication::translate("AdConfig", "Other Domain Parameters (for use by SAM)")},
+        {"SAM-Enumerate-Entire-Domain", QCoreApplication::translate("AdConfig", "SAM Enumerate Entire Domain")},
+        {"DS-Write-Partition-Secrets", QCoreApplication::translate("AdConfig", "Write secret attributes of objects in a Partition")},
+        {"Send-As", QCoreApplication::translate("AdConfig", "Send As")},
+        {"DS-Replication-Manage-Topology", QCoreApplication::translate("AdConfig", "DS Replication Manage Topology")},
+        {"DS-Set-Owner", QCoreApplication::translate("AdConfig", "Set Owner of an object during creation.")},
+        {"Generate-RSoP-Planning", QCoreApplication::translate("AdConfig", "Generate RSoP Planning")},
+        {"Certificate-Enrollment", QCoreApplication::translate("AdConfig", "Certificate Enrollment")},
+        {"Web-Information", QCoreApplication::translate("AdConfig", "Web Information")},
+        {"Create-Inbound-Forest-Trust", QCoreApplication::translate("AdConfig", "Create Inbound Forest Trust")},
+        {"Migrate-SID-History", QCoreApplication::translate("AdConfig", "Migrate SID History")},
+        {"Update-Password-Not-Required-Bit", QCoreApplication::translate("AdConfig", "Update Password Not Required Bit")},
+        {"MS-TS-GatewayAccess", QCoreApplication::translate("AdConfig", "MS-TS-GatewayAccess")},
+        {"Validated-MS-DS-Additional-DNS-Host-Name", QCoreApplication::translate("AdConfig", "Validated write to MS DS Additional DNS Host Name")},
+        {"msmq-Receive", QCoreApplication::translate("AdConfig", "msmq Receive")},
+        {"Validated-DNS-Host-Name", QCoreApplication::translate("AdConfig", "Validated DNS Host Name")},
+        {"Send-To", QCoreApplication::translate("AdConfig", "Send To")},
+        {"DS-Replication-Get-Changes-In-Filtered-Set", QCoreApplication::translate("AdConfig", "DS Replication Get Changes In Filtered Set")},
+        {"Read-Only-Replication-Secret-Synchronization", QCoreApplication::translate("AdConfig", "Read Only Replication Secret Synchronization")},
+        {"Validated-MS-DS-Behavior-Version", QCoreApplication::translate("AdConfig", "Validated write to MS DS behavior version")},
+        {"msmq-Open-Connector", QCoreApplication::translate("AdConfig", "msmq Open Connector")},
+        {"Terminal-Server-License-Server", QCoreApplication::translate("AdConfig", "Terminal Server License Server")},
+        {"Change-Schema-Master", QCoreApplication::translate("AdConfig", "Change Schema Master")},
+        {"Recalculate-Hierarchy", QCoreApplication::translate("AdConfig", "Recalculate Hierarchy")},
+        {"DS-Check-Stale-Phantoms", QCoreApplication::translate("AdConfig", "DS Check Stale Phantoms")},
+        {"msmq-Receive-computer-Journal", QCoreApplication::translate("AdConfig", "msmq Receive computer Journal")},
+        {"User-Force-Change-Password", QCoreApplication::translate("AdConfig", "User Force Change Password")},
+        {"Domain-Administer-Server", QCoreApplication::translate("AdConfig", "Domain Administer Server")},
+        {"DS-Replication-Synchronize", QCoreApplication::translate("AdConfig", "DS Replication Synchronize")},
+        {"Personal-Information", QCoreApplication::translate("AdConfig", "Personal Information")},
+        {"msmq-Peek", QCoreApplication::translate("AdConfig", "msmq Peek")},
+        {"General-Information", QCoreApplication::translate("AdConfig", "General Information")},
+        {"Membership", QCoreApplication::translate("AdConfig", "Group Membership")},
+        {"Add-GUID", QCoreApplication::translate("AdConfig", "Add GUID")},
+        {"RAS-Information", QCoreApplication::translate("AdConfig", "Remote Access Information")},
+        {"DS-Execute-Intentions-Script", QCoreApplication::translate("AdConfig", "DS Execute Intentions Script")},
+        {"Allocate-Rids", QCoreApplication::translate("AdConfig", "Allocate Rids")},
+        {"Update-Schema-Cache", QCoreApplication::translate("AdConfig", "Update Schema Cache")},
+        {"Apply-Group-Policy", QCoreApplication::translate("AdConfig", "Apply Group Policy")},
+        {"User-Account-Restrictions", QCoreApplication::translate("AdConfig", "Account Restrictions")},
+        {"Validated-SPN", QCoreApplication::translate("AdConfig", "Validated SPN")},
+        {"DS-Read-Partition-Secrets", QCoreApplication::translate("AdConfig", "Read secret attributes of objects in a Partition")},
+        {"User-Logon", QCoreApplication::translate("AdConfig", "Logon Information")},
+        {"DS-Query-Self-Quota", QCoreApplication::translate("AdConfig", "DS Query Self Quota")},
+        {"Change-Infrastructure-Master", QCoreApplication::translate("AdConfig", "Change Infrastructure Master")},
+        {"Open-Address-Book", QCoreApplication::translate("AdConfig", "Open Address Book")},
+        {"User-Change-Password", QCoreApplication::translate("AdConfig", "User Change Password")},
+        {"msmq-Peek-computer-Journal", QCoreApplication::translate("AdConfig", "msmq Peek computer Journal")},
+        {"Change-Domain-Master", QCoreApplication::translate("AdConfig", "Change Domain Master")},
+        {"msmq-Send", QCoreApplication::translate("AdConfig", "msmq Send")},
+        {"Change-Rid-Master", QCoreApplication::translate("AdConfig", "Change Rid Master")},
+        {"Recalculate-Security-Inheritance", QCoreApplication::translate("AdConfig", "Recalculate Security Inheritance")},
+        {"Refresh-Group-Cache", QCoreApplication::translate("AdConfig", "Refresh Group Cache")},
+        {"Manage-Optional-Features", QCoreApplication::translate("AdConfig", "Manage Optional Features")},
+        {"Reload-SSL-Certificate", QCoreApplication::translate("AdConfig", "Reload SSL Certificate")},
+        {"Enable-Per-User-Reversibly-Encrypted-Password", QCoreApplication::translate("AdConfig", "Enable Per User Reversibly Encrypted Password")},
+        {"DS-Replication-Monitor-Topology", QCoreApplication::translate("AdConfig", "DS Replication Monitor Topology")},
+        {"Public-Information", QCoreApplication::translate("AdConfig", "Public Information")},
+        {"Private-Information", QCoreApplication::translate("AdConfig", "Private Information")},
+        {"msmq-Receive-Dead-Letter", QCoreApplication::translate("AdConfig", "msmq Receive Dead Letter")},
+        {"msmq-Receive-journal", QCoreApplication::translate("AdConfig", "msmq Receive journal")},
+        {"DNS-Host-Name-Attributes", QCoreApplication::translate("AdConfig", "DNS Host Name Attributes")},
+    };
+
+    const QString right_cn = d->right_guid_to_cn_map[right_guid];
+    if (language == QLocale::Russian && cn_to_map_russian.contains(right_cn)) {
+        const QString out = cn_to_map_russian[right_cn];
+        
+        return out;
+    }
+
+    const QString out = d->rights_guid_to_name_map.value(right_guid, QCoreApplication::translate("AdConfig", "<unknown rights>"));
     return out;
 }
 

@@ -29,6 +29,7 @@
 #include "ad_defines.h"
 
 #include <QByteArray>
+#include <QLocale>
 
 class AdInterface;
 class AdConfig;
@@ -78,7 +79,7 @@ bool ad_security_replace_security_descriptor(AdInterface &ad, const QString &dn,
 
 // Returns the full right name, adding "Write" or
 // "Read" depending on access mask.
-QString ad_security_get_right_name(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type);
+QString ad_security_get_right_name(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type, QLocale::Language language);
 
 // NOTE: returned sd needs to be free'd with
 // security_descriptor_free()

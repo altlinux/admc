@@ -592,12 +592,12 @@
         <translation>Новый объект групповой политики</translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="100"/>
+        <location filename="create_policy_dialog.cpp" line="101"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="create_policy_dialog.cpp" line="100"/>
+        <location filename="create_policy_dialog.cpp" line="101"/>
         <source>Group Policy Object with this name already exists.</source>
         <translation>Объект групповой политики с этим именем уже существует.</translation>
     </message>
@@ -1030,28 +1030,33 @@
     </message>
     <message>
         <location filename="find_widget.cpp" line="43"/>
-        <source>Icons</source>
-        <translation>Значки</translation>
+        <source>&amp;Icons</source>
+        <oldsource>Icons</oldsource>
+        <translation>&amp;Значки</translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="45"/>
-        <source>List</source>
-        <translation>Список</translation>
+        <source>&amp;List</source>
+        <oldsource>List</oldsource>
+        <translation>&amp;Список</translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="47"/>
-        <source>Detail</source>
-        <translation>Подробно</translation>
+        <source>&amp;Detail</source>
+        <oldsource>Detail</oldsource>
+        <translation>&amp;Подробно</translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="49"/>
-        <source>Customize Columns</source>
-        <translation>Настроить колонки</translation>
+        <source>&amp;Customize Columns</source>
+        <oldsource>Customize Columns</oldsource>
+        <translation>&amp;Настроить колонки</translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="50"/>
-        <source>Description Bar</source>
-        <translation>Область описания</translation>
+        <source>&amp;Description Bar</source>
+        <oldsource>Description Bar</oldsource>
+        <translation>&amp;Область описания</translation>
     </message>
     <message>
         <location filename="find_widget.cpp" line="88"/>
@@ -1507,33 +1512,39 @@
     <name>MainWindow</name>
     <message>
         <location filename="main_window.ui" line="28"/>
-        <source>File</source>
-        <translation>Файл</translation>
+        <source>&amp;File</source>
+        <oldsource>File</oldsource>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="38"/>
-        <source>Action</source>
-        <translation>Действие</translation>
+        <source>&amp;Action</source>
+        <oldsource>Action</oldsource>
+        <translation>&amp;Действие</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="43"/>
-        <source>View</source>
-        <translation>Вид</translation>
+        <source>&amp;View</source>
+        <oldsource>View</oldsource>
+        <translation>&amp;Вид</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="59"/>
-        <source>Preferences</source>
-        <translation>Настройки</translation>
+        <source>&amp;Preferences</source>
+        <oldsource>Preferences</oldsource>
+        <translation>&amp;Настройки</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="63"/>
-        <source>Language</source>
-        <translation>Язык</translation>
+        <source>&amp;Language</source>
+        <oldsource>Language</oldsource>
+        <translation>&amp;Язык</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="76"/>
-        <source>Help</source>
-        <translation>Помощь</translation>
+        <source>&amp;Help</source>
+        <oldsource>Help</oldsource>
+        <translation>&amp;Помощь</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="95"/>
@@ -1547,13 +1558,15 @@
     </message>
     <message>
         <location filename="main_window.ui" line="125"/>
-        <source>Connection Options</source>
-        <translation>Параметры подключения</translation>
+        <source>&amp;Connection Options</source>
+        <oldsource>Connection Options</oldsource>
+        <translation>&amp;Параметры подключения</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="130"/>
-        <source>Quit</source>
-        <translation>Выйти</translation>
+        <source>&amp;Quit</source>
+        <oldsource>Quit</oldsource>
+        <translation>&amp;Выйти</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="133"/>
@@ -1562,83 +1575,99 @@
     </message>
     <message>
         <location filename="main_window.ui" line="142"/>
-        <source>Manual</source>
-        <translation>Руководство</translation>
+        <source>&amp;Manual</source>
+        <oldsource>Manual</oldsource>
+        <translation>&amp;Руководство</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="147"/>
-        <source>Changelog</source>
-        <translation>Журнал изменений</translation>
+        <source>&amp;Changelog</source>
+        <oldsource>Changelog</oldsource>
+        <translation>&amp;Журнал изменений</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="152"/>
-        <source>About ADMC</source>
-        <translation>О приложении ADMC</translation>
+        <source>&amp;About ADMC</source>
+        <oldsource>About ADMC</oldsource>
+        <translation>&amp;О приложении ADMC</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="160"/>
-        <source>Icons</source>
-        <translation>Значки</translation>
+        <source>&amp;Icons</source>
+        <oldsource>Icons</oldsource>
+        <translation>&amp;Значки</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="168"/>
-        <source>List</source>
-        <translation>Список</translation>
+        <source>&amp;List</source>
+        <oldsource>List</oldsource>
+        <translation>&amp;Список</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="176"/>
-        <source>Detail</source>
-        <translation>Подробно</translation>
+        <source>&amp;Detail</source>
+        <oldsource>Detail</oldsource>
+        <translation>&amp;Подробно</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="200"/>
-        <source>Console Tree</source>
-        <translation>Дерево консоли</translation>
+        <source>&amp;Console Tree</source>
+        <oldsource>Console Tree</oldsource>
+        <translation>&amp;Дерево консоли</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="208"/>
-        <source>Description Bar</source>
-        <translation>Область описания</translation>
+        <source>Description &amp;Bar</source>
+        <oldsource>Description Bar</oldsource>
+        <translation>&amp;Область описания</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="213"/>
-        <source>Customize Columns...</source>
-        <translation>Настроить колонки...</translation>
+        <source>C&amp;ustomize Columns...</source>
+        <oldsource>Customize Columns...</oldsource>
+        <translation>&amp;Настроить колонки...</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="218"/>
-        <source>Filter Objects...</source>
-        <translation>Фильтровать объекты...</translation>
+        <source>&amp;Filter Objects...</source>
+        <oldsource>Filter Objects...</oldsource>
+        <translation>&amp;Фильтровать объекты...</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="226"/>
-        <source>Advanced Features</source>
-        <translation>Дополнительные возможности</translation>
+        <source>&amp;Advanced Features</source>
+        <oldsource>Advanced Features</oldsource>
+        <translation>&amp;Дополнительные возможности</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="234"/>
-        <source>Confirm Actions</source>
-        <translation>Подтверждать действия</translation>
+        <source>&amp;Confirm Actions</source>
+        <oldsource>Confirm Actions</oldsource>
+        <translation>&amp;Подтверждать действия</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="242"/>
-        <source>Put Last Name Before First Name</source>
-        <translation>Ставить фамилию перед именем</translation>
+        <source>&amp;Put Last Name Before First Name</source>
+        <oldsource>Put Last Name Before First Name</oldsource>
+        <translation>&amp;Ставить фамилию перед именем</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="250"/>
-        <source>Log Searches</source>
-        <translation>Вносить информацию о поиске в журнал сообщений</translation>
+        <source>&amp;Log Searches</source>
+        <oldsource>Log Searches</oldsource>
+        <translation>&amp;Вносить информацию о поиске в журнал сообщений</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="258"/>
-        <source>Timestamps in Message Log</source>
-        <translation>Метки времени в журнале сообщений</translation>
+        <source>&amp;Timestamps in Message Log</source>
+        <oldsource>Timestamps in Message Log</oldsource>
+        <translation>&amp;Метки времени в журнале сообщений</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="266"/>
-        <source>Show Non-Container Objects in Console Tree</source>
-        <translation>Показывать неконтейнерные объекты в дереве консоли</translation>
+        <source>&amp;Show Non-Container Objects in Console Tree</source>
+        <oldsource>Show Non-Container Objects in Console Tree</oldsource>
+        <translation>П&amp;оказывать неконтейнерные объекты в дереве консоли</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="319"/>
@@ -1647,8 +1676,9 @@
     </message>
     <message>
         <location filename="main_window.ui" line="324"/>
-        <source>Operations Masters</source>
-        <translation>Мастера Операций</translation>
+        <source>&amp;Operations Masters</source>
+        <oldsource>Operations Masters</oldsource>
+        <translation>&amp;Мастера Операций</translation>
     </message>
     <message>
         <location filename="main_window.ui" line="275"/>
@@ -1886,16 +1916,19 @@
     <message>
         <location filename="console_impls/object_impl.cpp" line="82"/>
         <source>User</source>
+        <oldsource>&amp;User</oldsource>
         <translation>Пользователь</translation>
     </message>
     <message>
         <location filename="console_impls/object_impl.cpp" line="83"/>
         <source>Computer</source>
+        <oldsource>&amp;Computer</oldsource>
         <translation>Компьютер</translation>
     </message>
     <message>
         <location filename="console_impls/object_impl.cpp" line="84"/>
         <source>OU</source>
+        <oldsource>&amp;OU</oldsource>
         <translation>Подразделение</translation>
     </message>
     <message>
@@ -1969,7 +2002,12 @@
         <translation>Изменить суффиксы UPN</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="1127"/>
+        <location filename="console_impls/object_impl.cpp" line="809"/>
+        <source>Are you sure you want to reset this account?</source>
+        <translation>Вы точно хотиту сбросить эту учетную запись?</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1138"/>
         <source>Query may be out of date</source>
         <translation>Запрос может быть устаревшим</translation>
     </message>
@@ -2480,6 +2518,16 @@
         <source>&amp;Import query...</source>
         <translation>&amp;Импортировать запрос...</translation>
     </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="280"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="280"/>
+        <source>Can&apos;t paste here.</source>
+        <translation>Невозможно вставить здесь.</translation>
+    </message>
 </context>
 <context>
     <name>QueryItemImpl</name>
@@ -2668,17 +2716,17 @@
         <translation>Запрещено</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="467"/>
+        <location filename="tabs/security_tab.cpp" line="474"/>
         <source>Add Trustee</source>
         <translation>Добавить доверенное лицо</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="579"/>
+        <location filename="tabs/security_tab.cpp" line="586"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="579"/>
+        <location filename="tabs/security_tab.cpp" line="586"/>
         <source>Failed to add some trustee&apos;s because they are already in the list.</source>
         <translation>Не удалось добавить некоторых доверенных лиц, так как они уже имеются в списке.</translation>
     </message>
@@ -2930,7 +2978,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1523"/>
+        <location filename="console_impls/object_impl.cpp" line="1536"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
@@ -2942,12 +2990,12 @@
 <context>
     <name>object_impl.cpp</name>
     <message>
-        <location filename="search_thread.cpp" line="112"/>
+        <location filename="search_thread.cpp" line="108"/>
         <source>Failed to connect to server while searching for objects.</source>
         <translation>Не удалось подключиться к серверу во время поиска объектов.</translation>
     </message>
     <message>
-        <location filename="search_thread.cpp" line="114"/>
+        <location filename="search_thread.cpp" line="110"/>
         <source>Could not load all objects. Increase object display limit in Filter Options or reduce number of objects by applying a filter. Filter Options is accessible from main window&apos;s menubar via the &quot;View&quot; menu.</source>
         <translation>Не удалось загрузить все объекты. Увеличьте лимит отображения объектов в опциях или уменьшите количество объектов, применив фильтр. Параметры фильтра доступны в меню «Вид».</translation>
     </message>
@@ -2963,7 +3011,7 @@
 <context>
     <name>query</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="278"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="333"/>
         <source>Saved Queries</source>
         <translation>Сохранённые запросы</translation>
     </message>
@@ -2971,30 +3019,30 @@
 <context>
     <name>query.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="484"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="539"/>
         <source>Name may not be empty</source>
         <translation>Имя не может быть пустым</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="260"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="485"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="495"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="498"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="315"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="540"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="550"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="553"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="494"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="549"/>
         <source>There&apos;s already an item with this name.</source>
         <translation>Элемент с этим именем уже существует.</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="497"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="552"/>
         <source>Names cannot contain &quot;/&quot;.</source>
         <translation>Имена не могут содержать «/».</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="259"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="314"/>
         <source>Query file is corrupted.</source>
         <translation>Файл запроса повреждён.</translation>
     </message>
@@ -3002,12 +3050,12 @@
 <context>
     <name>query_folder.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="407"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="462"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="408"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="463"/>
         <source>Description</source>
         <translation>Описание</translation>
     </message>
@@ -3015,7 +3063,7 @@
 <context>
     <name>query_folder_impl.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="513"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="568"/>
         <source>Are you sure you want to delete this item?</source>
         <translation>Вы точно хотиту удалить этот предмет?</translation>
     </message>
@@ -3023,12 +3071,12 @@
 <context>
     <name>query_item_impl.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="238"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="293"/>
         <source>Import Query</source>
         <translation>Импортировать запрос</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="240"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="295"/>
         <location filename="console_impls/query_item_impl.cpp" line="174"/>
         <source>JSON (*.json)</source>
         <translation>JSON (*.json)</translation>

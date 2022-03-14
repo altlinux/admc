@@ -18,17 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SAM_NAME_EDIT_H
-#define SAM_NAME_EDIT_H
+#ifndef COMPUTER_SAM_NAME_EDIT_H
+#define COMPUTER_SAM_NAME_EDIT_H
 
 #include "attribute_edits/attribute_edit.h"
 
 class QLineEdit;
 
-class SamNameEdit final : public AttributeEdit {
+class ComputerSamNameEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    SamNameEdit(QLineEdit *edit, QLineEdit *domain_edit, QObject *parent);
+    ComputerSamNameEdit(QLineEdit *edit, QLineEdit *domain_edit, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool verify(AdInterface &ad, const QString &dn) const override;
@@ -40,6 +40,4 @@ private:
     QLineEdit *edit;
 };
 
-bool sam_name_edit_verify(QLineEdit *edit);
-
-#endif /* SAM_NAME_EDIT_H */
+#endif /* COMPUTER_SAM_NAME_EDIT_H */

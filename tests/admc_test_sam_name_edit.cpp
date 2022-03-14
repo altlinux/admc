@@ -32,7 +32,7 @@ void ADMCTestSamNameEdit::init() {
     line_edit = new QLineEdit(parent_widget);
     auto domain_edit = new QLineEdit(parent_widget);
 
-    edit = new SamNameEdit(line_edit, domain_edit, CLASS_USER, parent_widget);
+    edit = new SamNameEdit(line_edit, domain_edit, parent_widget);
 }
 
 void ADMCTestSamNameEdit::verify_data() {

@@ -121,13 +121,11 @@ void ADMCTestLogonHoursDialog::select() {
     QCOMPARE(selected_set, correct_selected_set);
 }
 
-// Dialog should treat unset value as value that
-// "allows all logon times"
 void ADMCTestLogonHoursDialog::load_empty() {
     open_dialog(QByteArray());
     
     const QByteArray actual_value = dialog->get();
-    const QByteArray expected_value = QByteArray(LOGON_HOURS_SIZE, (char) 0xFF);
+    const QByteArray expected_value = QByteArray();
     QCOMPARE(actual_value, expected_value);
 }
 

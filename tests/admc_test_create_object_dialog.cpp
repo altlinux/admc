@@ -21,6 +21,7 @@
 #include "admc_test_create_object_dialog.h"
 
 #include "adldap.h"
+#include "samba/dom_sid.h"
 #include "create_computer_dialog.h"
 #include "create_group_dialog.h"
 #include "create_ou_dialog.h"
@@ -96,8 +97,28 @@ void ADMCTestCreateObjectDialog::create_computer() {
 
     create_dialog->accept();
 
+    const QString actual_dn = create_dialog->get_created_dn();
+
     QVERIFY2(object_exists(dn), "Created computer doesn't exist");
-    QCOMPARE(create_dialog->get_created_dn(), dn);
+    QCOMPARE(actual_dn, dn);
+
+    const AdObject object = ad.search_object(actual_dn);
+
+    const int actual_sam_type = object.get_int(ATTRIBUTE_SAM_ACCOUNT_TYPE);
+    const int expected_sam_type = SAM_MACHINE_ACCOUNT;
+    QCOMPARE(actual_sam_type, expected_sam_type);
+
+    const int actual_primary_group_rid = object.get_int(ATTRIBUTE_PRIMARY_GROUP_ID);
+    const int expected_primary_group_rid = DOMAIN_RID_DOMAIN_MEMBERS;
+    QCOMPARE(actual_primary_group_rid, expected_primary_group_rid);
+
+    const int actual_uac = object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
+    const int expected_uac = (UAC_PASSWD_NOTREQD | UAC_WORKSTATION_TRUST_ACCOUNT);
+    QCOMPARE(actual_uac, expected_uac);
+
+    const QString actual_sam_name = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
+    const QString expected_sam_name = QString("%1$").arg(name);
+    QCOMPARE(actual_sam_name, expected_sam_name);
 }
 
 void ADMCTestCreateObjectDialog::create_group() {

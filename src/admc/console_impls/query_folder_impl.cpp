@@ -158,6 +158,12 @@ bool QueryFolderImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list,
     UNUSED_ARG(target);
     UNUSED_ARG(target_type);
 
+    const bool dropped_is_target = dropped_list.contains(target);
+
+    if (dropped_is_target) {
+        return false;
+    }
+
     const bool dropped_are_query_item_or_folder = (dropped_type_list - QSet<int>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
 
     return dropped_are_query_item_or_folder;
@@ -183,12 +189,23 @@ QList<QAction *> QueryFolderImpl::get_all_custom_actions() const {
 QSet<QAction *> QueryFolderImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
     UNUSED_ARG(index);
 
+    const bool is_root = [&]() {
+        QStandardItem *item = console->get_item(index);
+        const bool out = item->data(QueryItemRole_IsRoot).toBool();
+
+        return out;
+    }();
+
     QSet<QAction *> out;
 
     if (single_selection) {
-        out.insert(new_action);
-        out.insert(edit_action);
-        out.insert(import_action);
+        if (is_root) {
+            out.insert(new_action);
+        } else {
+            out.insert(new_action);
+            out.insert(edit_action);
+            out.insert(import_action);
+        }
     }
 
     return out;
@@ -197,14 +214,27 @@ QSet<QAction *> QueryFolderImpl::get_custom_actions(const QModelIndex &index, co
 QSet<StandardAction> QueryFolderImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     UNUSED_ARG(index);
 
+    const bool is_root = [&]() {
+        QStandardItem *item = console->get_item(index);
+        const bool out = item->data(QueryItemRole_IsRoot).toBool();
+
+        return out;
+    }();
+
     QSet<StandardAction> out;
 
-    out.insert(StandardAction_Delete);
+    if (!is_root) {
+        out.insert(StandardAction_Delete);
+    }
 
     if (single_selection) {
-        out.insert(StandardAction_Cut);
-        out.insert(StandardAction_Copy);
-        out.insert(StandardAction_Paste);
+        if (is_root) {
+            out.insert(StandardAction_Paste);
+        } else {
+            out.insert(StandardAction_Cut);
+            out.insert(StandardAction_Copy);
+            out.insert(StandardAction_Paste);
+        }
     }
 
     return out;

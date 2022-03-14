@@ -18,20 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/sam_name_edit.h"
+#include "attribute_edits/computer_sam_name_edit.h"
 
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
+#include "attribute_edits/sam_name_edit.h"
 
 #include <QLineEdit>
 #include <QRegularExpression>
 
-SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QObject *parent)
+ComputerSamNameEdit::ComputerSamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QObject *parent)
 : AttributeEdit(parent) {
     edit = edit_arg;
 
-    edit->setMaxLength(SAM_NAME_MAX_LENGTH);
+    edit->setMaxLength(SAM_NAME_COMPUTER_MAX_LENGTH);
 
     const QString domain_text = []() {
         const QString domain = g_adconfig->domain();
@@ -48,14 +49,25 @@ SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QObject *p
         this, &AttributeEdit::edited);
 }
 
-void SamNameEdit::load(AdInterface &ad, const AdObject &object) {
+void ComputerSamNameEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
-    const QString value = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
+    // NOTE: display value without the '$' at the end
+    const QString value = [&]() {
+        QString out = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
+
+        if (out.endsWith('$')) {
+            out.chop(1);
+        }
+
+        return out;
+    }();
     edit->setText(value);
 }
 
-bool SamNameEdit::verify(AdInterface &ad, const QString &dn) const {
+// NOTE: requirements are from here
+// https://social.technet.microsoft.com/wiki/contents/articles/11216.active-directory-requirements-for-creating-objects.aspx#Note_Regarding_the_quot_quot_Character_in_sAMAccountName
+bool ComputerSamNameEdit::verify(AdInterface &ad, const QString &dn) const {
     UNUSED_ARG(ad);
     UNUSED_ARG(dn);
 
@@ -64,34 +76,13 @@ bool SamNameEdit::verify(AdInterface &ad, const QString &dn) const {
     return out;
 }
 
-// NOTE: requirements are from here
-// https://social.technet.microsoft.com/wiki/contents/articles/11216.active-directory-requirements-for-creating-objects.aspx#Note_Regarding_the_quot_quot_Character_in_sAMAccountName
-bool sam_name_edit_verify(QLineEdit *edit) {
-    const QString new_value = edit->text();
-
-    const bool contains_bad_chars = string_contains_bad_chars(new_value, SAM_NAME_BAD_CHARS);
-
-    const bool ends_with_dot = new_value.endsWith(".");
-
-    const bool value_is_valid = (!contains_bad_chars && !ends_with_dot);
-
-    if (!value_is_valid) {
-        const QString error_text = QString(QCoreApplication::translate("SamNameEdit", "Input field for Logon name (pre-Windows 2000) contains one or more of the following illegal characters: @ \" [ ] : ; | = + * ? < > / \\ ,"));
-        message_box_warning(edit, QCoreApplication::translate("SamNameEdit", "Error"), error_text);
-
-        return false;
-    }
-
-    return true;
-}
-
-bool SamNameEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value = edit->text();
+bool ComputerSamNameEdit::apply(AdInterface &ad, const QString &dn) const {
+    const QString new_value = QString("%1$").arg(edit->text());
     const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
 
     return success;
 }
 
-void SamNameEdit::set_enabled(const bool enabled) {
+void ComputerSamNameEdit::set_enabled(const bool enabled) {
     edit->setEnabled(enabled);
 }

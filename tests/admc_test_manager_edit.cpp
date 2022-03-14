@@ -66,7 +66,10 @@ void ADMCTestManagerEdit::load() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    QCOMPARE(manager_display->text(), manager_dn);
+    const QString actual_value = manager_display->text();
+    const QString expected_value = dn_get_name(manager_dn);
+
+    QCOMPARE(actual_value, expected_value);
 }
 
 void ADMCTestManagerEdit::apply_unmodified() {

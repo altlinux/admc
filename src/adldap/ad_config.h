@@ -29,6 +29,8 @@
 
 #include "ad_defines.h"
 
+#include <QLocale>
+
 class AdConfigPrivate;
 class AdInterface;
 class QLocale;
@@ -88,7 +90,7 @@ public:
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
     QByteArray get_right_guid(const QString &right_cn) const;
-    QString get_right_name(const QByteArray &right_guid) const;
+    QString get_right_name(const QByteArray &right_guid, const QLocale::Language language) const;
     int get_rights_valid_accesses(const QString &rights_cn) const;
 
     // Returns extended rights that apply to given
