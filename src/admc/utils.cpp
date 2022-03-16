@@ -177,6 +177,7 @@ QIcon get_object_icon(const AdObject &object) {
         {"Person", {"avatar-default", "avatar-default-symbolic"}},
         {"Computer", {"computer"}},
         {"Group-Policy-Container", {"folder-templates"}},
+        {"Volume", {"folder-templates"}},
 
         // Some custom icons for one-off objects
         {"Builtin-Domain", {"emblem-system", "emblem-system-symbolic"}},
