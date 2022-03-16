@@ -31,7 +31,7 @@
 #include "utils.h"
 #include "create_object_helper.h"
 
-CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, QWidget *parent)
+CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, const QString &user_class, QWidget *parent)
 : CreateObjectDialog(parent) {
     ui = new Ui::CreateUserDialog();
     ui->setupUi(this);
@@ -98,7 +98,11 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, QW
         return out;
     }();
 
-    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_USER, parent_dn, this);
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, user_class, parent_dn, this);
+
+    if (user_class != CLASS_USER) {
+        setWindowTitle(QString(tr("Create %1")).arg(user_class));
+    }
 
     settings_setup_dialog_geometry(SETTING_create_user_dialog_geometry, this);
 }
