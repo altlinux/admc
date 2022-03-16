@@ -347,6 +347,27 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
 
     out.insert(move_action);
 
+    // NOTE: have to manually call setVisible here
+    // because "New" actions are contained inside "New"
+    // sub-menu, so console widget can't manage them
+    for (const QString &action_object_class : new_action_map.keys()) {
+        QAction *action = new_action_map[action_object_class];
+
+        const bool is_visible = [&action_object_class, &object_class]() {
+            // NOTE: to get full list of possible
+            // superiors, need to use the all of the parent
+            // classes too, not just the leaf class
+            const QList<QString> action_object_class_list = g_adconfig->get_inherit_chain(action_object_class);
+            const QList<QString> possible_superiors = g_adconfig->get_possible_superiors(QList<QString>(action_object_class_list));
+            const bool is_visible_out = possible_superiors.contains(object_class);
+
+            return is_visible_out;
+        }();
+
+
+        action->setVisible(is_visible);
+    }
+
     return out;
 }
 

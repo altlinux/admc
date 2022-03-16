@@ -54,6 +54,7 @@
 #define ATTRIBUTE_SYSTEM_FLAGS "systemFlags"
 #define ATTRIBUTE_LINK_ID "linkID"
 #define ATTRIBUTE_SYSTEM_AUXILIARY_CLASS "systemAuxiliaryClass"
+#define ATTRIBUTE_SUB_CLASS_OF "subClassOf"
 
 #define CLASS_ATTRIBUTE_SCHEMA "attributeSchema"
 #define CLASS_CLASS_SCHEMA "classSchema"
@@ -145,6 +146,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_AUXILIARY_CLASS,
             ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
             ATTRIBUTE_SCHEMA_ID_GUID,
+            ATTRIBUTE_SUB_CLASS_OF,
         };
 
         const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
@@ -155,6 +157,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
 
             const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
             d->guid_to_class_map[guid] = object_class;
+
+            const QString sub_class_of = object.get_string(ATTRIBUTE_SUB_CLASS_OF);
+            d->sub_class_of_map[object_class] = sub_class_of;
         }
     }
 
@@ -433,6 +438,34 @@ QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object
     }
 
     out.removeDuplicates();
+
+    return out;
+}
+
+ObjectClass AdConfig::get_parent_class(const ObjectClass &object_class) const {
+    const ObjectClass out = d->sub_class_of_map.value(object_class);
+
+    return out;
+}
+
+QList<ObjectClass> AdConfig::get_inherit_chain(const ObjectClass &object_class) const {
+    QList<QString> out;
+
+    ObjectClass current_class = object_class;
+
+    while (true) {
+        out.append(current_class);
+
+        const QString parent_class = get_parent_class(current_class);
+
+        const bool chain_ended = (parent_class == current_class);
+
+        if (chain_ended) {
+            break;
+        } else {
+            current_class = parent_class;
+        }
+    }
 
     return out;
 }
