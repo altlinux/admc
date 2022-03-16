@@ -49,7 +49,7 @@ CreateContactDialog::CreateContactDialog(const QString &parent_dn, QWidget *pare
     const QList<QLineEdit *> required_list = {
         ui->first_name_edit,
         ui->last_name_edit,
-        ui->initials_edit,
+        ui->full_name_edit,
         ui->display_name_edit,
     };
 
