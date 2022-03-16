@@ -31,6 +31,7 @@
 #include "create_group_dialog.h"
 #include "create_ou_dialog.h"
 #include "create_user_dialog.h"
+#include "create_shared_folder_dialog.h"
 #include "attribute_dialogs/list_attribute_dialog.h"
 #include "find_object_dialog.h"
 #include "globals.h"
@@ -85,6 +86,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     new_action_map[CLASS_COMPUTER] = new QAction(tr("Computer"), this);
     new_action_map[CLASS_OU] = new QAction(tr("OU"), this);
     new_action_map[CLASS_GROUP] = new QAction(tr("Group"), this);
+    new_action_map[CLASS_SHARED_FOLDER] = new QAction(tr("Shared Folder"), this);
     find_action = new QAction(tr("Find..."), this);
     move_action = new QAction(tr("Move..."), this);
     add_to_group_action = new QAction(tr("Add to group..."), this);
@@ -120,6 +122,9 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     connect(
         new_action_map[CLASS_GROUP], &QAction::triggered,
         this, &ObjectImpl::on_new_group);
+    connect(
+        new_action_map[CLASS_SHARED_FOLDER], &QAction::triggered,
+        this, &ObjectImpl::on_new_shared_folder);
     connect(
         move_action, &QAction::triggered,
         this, &ObjectImpl::on_move);
@@ -670,6 +675,10 @@ void ObjectImpl::on_new_group() {
     new_object(CLASS_GROUP);
 }
 
+void ObjectImpl::on_new_shared_folder() {
+    new_object(CLASS_SHARED_FOLDER);
+}
+
 void ObjectImpl::on_move() {
     AdInterface ad;
     if (ad_failed(ad, console)) {
@@ -862,6 +871,7 @@ void ObjectImpl::new_object(const QString &object_class) {
         const bool is_group = (object_class == CLASS_GROUP);
         const bool is_computer = (object_class == CLASS_COMPUTER);
         const bool is_ou = (object_class == CLASS_OU);
+        const bool is_shared_folder = (object_class == CLASS_SHARED_FOLDER);
 
         if (is_user) {
             return new CreateUserDialog(ad, parent_dn, console);
@@ -871,6 +881,8 @@ void ObjectImpl::new_object(const QString &object_class) {
             return new CreateComputerDialog(parent_dn, console);
         } else if (is_ou) {
             return new CreateOUDialog(parent_dn, console);
+        } else if (is_shared_folder) {
+            return new CreateSharedFolderDialog(parent_dn, console);
         } else {
             return nullptr;
         }

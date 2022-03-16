@@ -102,6 +102,7 @@ private slots:
     void on_new_computer();
     void on_new_ou();
     void on_new_group();
+    void on_new_shared_folder();
     void on_move();
     void on_enable();
     void on_disable();

@@ -86,7 +86,23 @@ bool CreateObjectHelper::accept() const {
 
     bool final_success = true;
 
-    const bool add_success = ad.object_add(dn, m_object_class);
+    const QHash<QString, QList<QString>> attr_map = [&]() {
+        if (m_object_class == CLASS_SHARED_FOLDER) {
+            // NOTE: for shared folders, UNC name must
+            // be defined on creation because it's a
+            // mandatory attribute
+            return QHash<QString, QList<QString>>({
+                {ATTRIBUTE_OBJECT_CLASS, {m_object_class}},
+                {ATTRIBUTE_UNC_NAME, {"placeholder"}},
+            });
+        } else {
+            return QHash<QString, QList<QString>>({
+                {ATTRIBUTE_OBJECT_CLASS, {m_object_class}},
+            });
+        }
+    }();
+
+    const bool add_success = ad.object_add(dn, attr_map);
 
     final_success = (final_success && add_success);
 
