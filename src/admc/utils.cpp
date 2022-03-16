@@ -412,3 +412,36 @@ void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest) {
             dest->setText(src_input);
         });
 }
+
+void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit) {
+    auto autofill_full_name = [=]() {
+        const QString full_name_value = [=]() {
+            const QString first_name = first_name_edit->text();
+            const QString last_name = last_name_edit->text();
+
+            const bool last_name_first = settings_get_variant(SETTING_last_name_before_first_name).toBool();
+            if (!first_name.isEmpty() && !last_name.isEmpty()) {
+                if (last_name_first) {
+                    return last_name + " " + first_name;
+                } else {
+                    return first_name + " " + last_name;
+                }
+            } else if (!first_name.isEmpty()) {
+                return first_name;
+            } else if (!last_name.isEmpty()) {
+                return last_name;
+            } else {
+                return QString();
+            }
+        }();
+
+        full_name_edit->setText(full_name_value);
+    };
+
+    QObject::connect(
+        first_name_edit, &QLineEdit::textChanged,
+        first_name_edit, autofill_full_name);
+    QObject::connect(
+        last_name_edit, &QLineEdit::textChanged,
+        last_name_edit, autofill_full_name);
+}

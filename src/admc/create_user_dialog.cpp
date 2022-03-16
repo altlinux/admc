@@ -65,13 +65,7 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, co
 
     account_option_setup_conflicts(check_map);
 
-    // (first name + last name) -> full name
-    connect(
-        ui->first_name_edit, &QLineEdit::textChanged,
-        this, &CreateUserDialog::autofill_full_name);
-    connect(
-        ui->last_name_edit, &QLineEdit::textChanged,
-        this, &CreateUserDialog::autofill_full_name);
+    setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->name_edit);
 
     setup_lineedit_autofill(ui->upn_prefix_edit, ui->sam_name_edit);
 
@@ -121,28 +115,4 @@ void CreateUserDialog::accept() {
 
 QString CreateUserDialog::get_created_dn() const {
     return helper->get_created_dn();
-}
-
-void CreateUserDialog::autofill_full_name() {
-    const QString full_name_value = [=]() {
-        const QString first_name = ui->first_name_edit->text();
-        const QString last_name = ui->last_name_edit->text();
-
-        const bool last_name_first = settings_get_variant(SETTING_last_name_before_first_name).toBool();
-        if (!first_name.isEmpty() && !last_name.isEmpty()) {
-            if (last_name_first) {
-                return last_name + " " + first_name;
-            } else {
-                return first_name + " " + last_name;
-            }
-        } else if (!first_name.isEmpty()) {
-            return first_name;
-        } else if (!last_name.isEmpty()) {
-            return last_name;
-        } else {
-            return QString();
-        }
-    }();
-
-    ui->name_edit->setText(full_name_value);
 }

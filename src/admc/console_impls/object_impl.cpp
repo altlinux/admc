@@ -32,6 +32,7 @@
 #include "create_ou_dialog.h"
 #include "create_user_dialog.h"
 #include "create_shared_folder_dialog.h"
+#include "create_contact_dialog.h"
 #include "attribute_dialogs/list_attribute_dialog.h"
 #include "find_object_dialog.h"
 #include "globals.h"
@@ -88,6 +89,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     new_action_map[CLASS_GROUP] = new QAction(tr("Group"), this);
     new_action_map[CLASS_SHARED_FOLDER] = new QAction(tr("Shared Folder"), this);
     new_action_map[CLASS_INET_ORG_PERSON] = new QAction(tr("inetOrgPerson"), this);
+    new_action_map[CLASS_CONTACT] = new QAction(tr("Contact"), this);
     find_action = new QAction(tr("Find..."), this);
     move_action = new QAction(tr("Move..."), this);
     add_to_group_action = new QAction(tr("Add to group..."), this);
@@ -129,6 +131,9 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     connect(
         new_action_map[CLASS_INET_ORG_PERSON], &QAction::triggered,
         this, &ObjectImpl::on_new_inet_org_person);
+    connect(
+        new_action_map[CLASS_CONTACT], &QAction::triggered,
+        this, &ObjectImpl::on_new_contact);
     connect(
         move_action, &QAction::triggered,
         this, &ObjectImpl::on_move);
@@ -708,6 +713,10 @@ void ObjectImpl::on_new_inet_org_person() {
     new_object(CLASS_INET_ORG_PERSON);
 }
 
+void ObjectImpl::on_new_contact() {
+    new_object(CLASS_CONTACT);
+}
+
 void ObjectImpl::on_move() {
     AdInterface ad;
     if (ad_failed(ad, console)) {
@@ -902,6 +911,7 @@ void ObjectImpl::new_object(const QString &object_class) {
         const bool is_ou = (object_class == CLASS_OU);
         const bool is_shared_folder = (object_class == CLASS_SHARED_FOLDER);
         const bool is_inet_org_person = (object_class == CLASS_INET_ORG_PERSON);
+        const bool is_contact = (object_class == CLASS_CONTACT);
 
         if (is_user) {
             return new CreateUserDialog(ad, parent_dn, CLASS_USER, console);
@@ -915,6 +925,8 @@ void ObjectImpl::new_object(const QString &object_class) {
             return new CreateSharedFolderDialog(parent_dn, console);
         } else if (is_inet_org_person) {
             return new CreateUserDialog(ad, parent_dn, CLASS_INET_ORG_PERSON, console);
+        } else if (is_contact) {
+            return new CreateContactDialog(parent_dn, console);
         } else {
             return nullptr;
         }

@@ -57,6 +57,7 @@ set(ADMC_SOURCES
     create_computer_dialog.cpp
     create_ou_dialog.cpp
     create_shared_folder_dialog.cpp
+    create_contact_dialog.cpp
     create_policy_dialog.cpp
     create_query_item_dialog.cpp
     create_query_folder_dialog.cpp
