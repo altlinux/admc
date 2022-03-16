@@ -904,6 +904,11 @@ void ObjectImpl::new_object(const QString &object_class) {
 
     const QString parent_dn = get_action_target_dn_object(console);
 
+    // NOTE: creating dialogs here instead of directly
+    // in "on_new_x" slots looks backwards but it's
+    // necessary to avoid even more code duplication
+    // due to having to pass "ad" and "parent_dn" args
+    // to dialog ctors
     CreateObjectDialog *dialog = [&]() -> CreateObjectDialog * {
         const bool is_user = (object_class == CLASS_USER);
         const bool is_group = (object_class == CLASS_GROUP);
