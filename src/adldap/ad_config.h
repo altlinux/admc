@@ -71,6 +71,10 @@ public:
     QList<ObjectClass> get_filter_containers() const;
 
     QList<ObjectClass> get_possible_superiors(const QList<ObjectClass> &object_classes) const;
+    ObjectClass get_parent_class(const ObjectClass &object_class) const;
+    // Returns all ancestors of given class and the
+    // given class itself
+    QList<ObjectClass> get_inherit_chain(const ObjectClass &object_class) const;
 
     QList<Attribute> get_optional_attributes(const QList<ObjectClass> &object_classes) const;
     QList<Attribute> get_mandatory_attributes(const QList<ObjectClass> &object_classes) const;

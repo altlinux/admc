@@ -68,6 +68,8 @@ public:
     QHash<QByteArray, QString> guid_to_class_map;
 
     QList<QString> supported_control_list;
+
+    QHash<QString, QString> sub_class_of_map;
 };
 
 #endif /* AD_CONFIG_P_H */

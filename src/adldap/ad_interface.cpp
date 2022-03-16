@@ -785,17 +785,39 @@ bool AdInterface::attribute_replace_datetime(const QString &dn, const QString &a
     return result;
 }
 
-bool AdInterface::object_add(const QString &dn, const QString &object_class) {
-    const char *classes[2] = {cstr(object_class), NULL};
+bool AdInterface::object_add(const QString &dn, const QHash<QString, QList<QString>> &attrs_map) {
+    LDAPMod **attrs = [&attrs_map]() {
+        LDAPMod **out = (LDAPMod **) malloc((attrs_map.size() + 1) * sizeof(LDAPMod *));
 
-    LDAPMod attr;
-    attr.mod_op = LDAP_MOD_ADD;
-    attr.mod_type = (char *) "objectClass";
-    attr.mod_values = (char **) classes;
+        const QList<QString> attrs_map_keys = attrs_map.keys();
+        for (int i = 0; i < attrs_map_keys.size(); i++) {
+            LDAPMod *attr = (LDAPMod *) malloc(sizeof(LDAPMod));
 
-    LDAPMod *attrs[] = {&attr, NULL};
+            const QString attr_name = attrs_map_keys[i];
+            const QList<QString> value_list = attrs_map[attr_name];
+
+            char **value_array = (char **) malloc((value_list.size() + 1) * sizeof(char *));
+            for (int j = 0; j < value_list.size(); j++) {
+                const QString value = value_list[j];
+                value_array[j] = (char *) strdup(cstr(value));
+            }
+            value_array[value_list.size()] = NULL;
+
+            attr->mod_type = (char *) strdup(cstr(attr_name));
+            attr->mod_op = LDAP_MOD_ADD;
+            attr->mod_values = value_array;
+
+            out[i] = attr;
+        }
+
+        out[attrs_map.size()] = NULL;
+
+        return out;
+    }();
 
     const int result = ldap_add_ext_s(d->ld, cstr(dn), attrs, NULL, NULL);
+
+    ldap_mods_free(attrs, 1);
 
     if (result == LDAP_SUCCESS) {
         d->success_message(QString(tr("Object %1 was created.")).arg(dn));
@@ -828,6 +850,16 @@ bool AdInterface::object_add(const QString &dn, const QString &object_class) {
 
         return false;
     }
+}
+
+bool AdInterface::object_add(const QString &dn, const QString &object_class) {
+    const QHash<QString, QList<QString>> attrs_map = {
+        {"objectClass", {object_class}},
+    };
+
+    const bool success = object_add(dn, attrs_map);
+
+    return success;
 }
 
 bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {

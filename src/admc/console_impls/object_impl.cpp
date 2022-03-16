@@ -31,6 +31,8 @@
 #include "create_group_dialog.h"
 #include "create_ou_dialog.h"
 #include "create_user_dialog.h"
+#include "create_shared_folder_dialog.h"
+#include "create_contact_dialog.h"
 #include "attribute_dialogs/list_attribute_dialog.h"
 #include "find_object_dialog.h"
 #include "globals.h"
@@ -53,6 +55,8 @@
 #include <QMenu>
 #include <QSet>
 #include <QStandardItemModel>
+
+#include <algorithm>
 
 enum DropType {
     DropType_Move,
@@ -79,10 +83,13 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     object_filter = settings_get_variant(SETTING_object_filter).toString();
     object_filter_enabled = settings_get_variant(SETTING_object_filter_enabled).toBool();
 
-    auto new_user_action = new QAction(tr("User"), this);
-    auto new_computer_action = new QAction(tr("Computer"), this);
-    auto new_ou_action = new QAction(tr("OU"), this);
-    auto new_group_action = new QAction(tr("Group"), this);
+    new_action_map[CLASS_USER] = new QAction(tr("User"), this);
+    new_action_map[CLASS_COMPUTER] = new QAction(tr("Computer"), this);
+    new_action_map[CLASS_OU] = new QAction(tr("OU"), this);
+    new_action_map[CLASS_GROUP] = new QAction(tr("Group"), this);
+    new_action_map[CLASS_SHARED_FOLDER] = new QAction(tr("Shared Folder"), this);
+    new_action_map[CLASS_INET_ORG_PERSON] = new QAction(tr("inetOrgPerson"), this);
+    new_action_map[CLASS_CONTACT] = new QAction(tr("Contact"), this);
     find_action = new QAction(tr("Find..."), this);
     move_action = new QAction(tr("Move..."), this);
     add_to_group_action = new QAction(tr("Add to group..."), this);
@@ -95,23 +102,38 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     auto new_menu = new QMenu(tr("New"), console_arg);
     new_action = new_menu->menuAction();
 
-    new_menu->addAction(new_user_action);
-    new_menu->addAction(new_computer_action);
-    new_menu->addAction(new_ou_action);
-    new_menu->addAction(new_group_action);
+    const QList<QString> new_action_keys_sorted = [&]() {
+        QList<QString> out = new_action_map.keys();
+        std::sort(out.begin(), out.end());
+
+        return out;
+    }();
+    for (const QString &key : new_action_keys_sorted) {
+        QAction *action = new_action_map[key];
+        new_menu->addAction(action);
+    }
 
     connect(
-        new_user_action, &QAction::triggered,
+        new_action_map[CLASS_USER], &QAction::triggered,
         this, &ObjectImpl::on_new_user);
     connect(
-        new_computer_action, &QAction::triggered,
+        new_action_map[CLASS_COMPUTER], &QAction::triggered,
         this, &ObjectImpl::on_new_computer);
     connect(
-        new_ou_action, &QAction::triggered,
+        new_action_map[CLASS_OU], &QAction::triggered,
         this, &ObjectImpl::on_new_ou);
     connect(
-        new_group_action, &QAction::triggered,
+        new_action_map[CLASS_GROUP], &QAction::triggered,
         this, &ObjectImpl::on_new_group);
+    connect(
+        new_action_map[CLASS_SHARED_FOLDER], &QAction::triggered,
+        this, &ObjectImpl::on_new_shared_folder);
+    connect(
+        new_action_map[CLASS_INET_ORG_PERSON], &QAction::triggered,
+        this, &ObjectImpl::on_new_inet_org_person);
+    connect(
+        new_action_map[CLASS_CONTACT], &QAction::triggered,
+        this, &ObjectImpl::on_new_contact);
     connect(
         move_action, &QAction::triggered,
         this, &ObjectImpl::on_move);
@@ -333,6 +355,27 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
     }
 
     out.insert(move_action);
+
+    // NOTE: have to manually call setVisible here
+    // because "New" actions are contained inside "New"
+    // sub-menu, so console widget can't manage them
+    for (const QString &action_object_class : new_action_map.keys()) {
+        QAction *action = new_action_map[action_object_class];
+
+        const bool is_visible = [&action_object_class, &object_class]() {
+            // NOTE: to get full list of possible
+            // superiors, need to use the all of the parent
+            // classes too, not just the leaf class
+            const QList<QString> action_object_class_list = g_adconfig->get_inherit_chain(action_object_class);
+            const QList<QString> possible_superiors = g_adconfig->get_possible_superiors(QList<QString>(action_object_class_list));
+            const bool is_visible_out = possible_superiors.contains(object_class);
+
+            return is_visible_out;
+        }();
+
+
+        action->setVisible(is_visible);
+    }
 
     return out;
 }
@@ -662,6 +705,18 @@ void ObjectImpl::on_new_group() {
     new_object(CLASS_GROUP);
 }
 
+void ObjectImpl::on_new_shared_folder() {
+    new_object(CLASS_SHARED_FOLDER);
+}
+
+void ObjectImpl::on_new_inet_org_person() {
+    new_object(CLASS_INET_ORG_PERSON);
+}
+
+void ObjectImpl::on_new_contact() {
+    new_object(CLASS_CONTACT);
+}
+
 void ObjectImpl::on_move() {
     AdInterface ad;
     if (ad_failed(ad, console)) {
@@ -849,20 +904,34 @@ void ObjectImpl::new_object(const QString &object_class) {
 
     const QString parent_dn = get_action_target_dn_object(console);
 
+    // NOTE: creating dialogs here instead of directly
+    // in "on_new_x" slots looks backwards but it's
+    // necessary to avoid even more code duplication
+    // due to having to pass "ad" and "parent_dn" args
+    // to dialog ctors
     CreateObjectDialog *dialog = [&]() -> CreateObjectDialog * {
         const bool is_user = (object_class == CLASS_USER);
         const bool is_group = (object_class == CLASS_GROUP);
         const bool is_computer = (object_class == CLASS_COMPUTER);
         const bool is_ou = (object_class == CLASS_OU);
+        const bool is_shared_folder = (object_class == CLASS_SHARED_FOLDER);
+        const bool is_inet_org_person = (object_class == CLASS_INET_ORG_PERSON);
+        const bool is_contact = (object_class == CLASS_CONTACT);
 
         if (is_user) {
-            return new CreateUserDialog(ad, parent_dn, console);
+            return new CreateUserDialog(ad, parent_dn, CLASS_USER, console);
         } else if (is_group) {
             return new CreateGroupDialog(parent_dn, console);
         } else if (is_computer) {
             return new CreateComputerDialog(parent_dn, console);
         } else if (is_ou) {
             return new CreateOUDialog(parent_dn, console);
+        } else if (is_shared_folder) {
+            return new CreateSharedFolderDialog(parent_dn, console);
+        } else if (is_inet_org_person) {
+            return new CreateUserDialog(ad, parent_dn, CLASS_INET_ORG_PERSON, console);
+        } else if (is_contact) {
+            return new CreateContactDialog(parent_dn, console);
         } else {
             return nullptr;
         }

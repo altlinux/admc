@@ -36,7 +36,10 @@ class CreateUserDialog final : public CreateObjectDialog {
 public:
     Ui::CreateUserDialog *ui;
 
-    CreateUserDialog(AdInterface &ad, const QString &parent_dn, QWidget *parent);
+    // NOTE: user_class can be either CLASS_USER or
+    // CLASS_INET_ORG_PERSON. This is so that this
+    // dialog can be reused for both classes.
+    CreateUserDialog(AdInterface &ad, const QString &parent_dn, const QString &user_class, QWidget *parent);
     ~CreateUserDialog();
 
     void accept() override;

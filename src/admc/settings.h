@@ -90,6 +90,8 @@ DEFINE_SETTING(SETTING_list_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_octet_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_string_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_fsmo_dialog_geometry);
+DEFINE_SETTING(SETTING_create_shared_folder_dialog_geometry);
+DEFINE_SETTING(SETTING_create_contact_dialog_geometry);
 
 // Header state
 DEFINE_SETTING(SETTING_results_header);
