@@ -45,6 +45,7 @@ class AttributeEdit;
 // NOTE: use shorter length for computer to fit within
 // 16 char length limit for sam account name
 #define TEST_COMPUTER "ADMCTEST-pc"
+#define TEST_OBJECT "ADMCTEST-object"
 
 class ADMCTest : public QObject {
     Q_OBJECT
