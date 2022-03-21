@@ -63,6 +63,24 @@ LogonHoursDialog::LogonHoursDialog(const QByteArray &value, QWidget *parent)
 
     settings_setup_dialog_geometry(SETTING_logon_hours_dialog_geometry, this);
 
+    const QString allowed_style_sheet = [&]() {
+        const QPalette palette = ui->view->palette();
+        const QColor color = palette.highlight().color();
+        const QString out = QString("background-color: rgb(%1, %2, %3);").arg(QString::number(color.red()), QString::number(color.green()), QString::number(color.blue()));
+
+        return out;
+    }();
+    ui->legend_allowed->setStyleSheet(allowed_style_sheet);
+
+    const QString denied_style_sheet = [&]() {
+        const QPalette palette = ui->view->palette();
+        const QColor color = palette.base().color();
+        const QString out = QString("background-color: rgb(%1, %2, %3);").arg(QString::number(color.red()), QString::number(color.green()), QString::number(color.blue()));
+
+        return out;
+    }();
+    ui->legend_denied->setStyleSheet(denied_style_sheet);
+
     connect(
         ui->local_time_button, &QRadioButton::toggled,
         this, &LogonHoursDialog::on_local_time_button_toggled);
