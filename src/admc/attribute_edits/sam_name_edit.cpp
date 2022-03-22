@@ -67,7 +67,7 @@ bool SamNameEdit::verify(AdInterface &ad, const QString &dn) const {
 // NOTE: requirements are from here
 // https://social.technet.microsoft.com/wiki/contents/articles/11216.active-directory-requirements-for-creating-objects.aspx#Note_Regarding_the_quot_quot_Character_in_sAMAccountName
 bool sam_name_edit_verify(QLineEdit *edit) {
-    const QString new_value = edit->text();
+    const QString new_value = get_new_value();
 
     const bool contains_bad_chars = string_contains_bad_chars(new_value, SAM_NAME_BAD_CHARS);
 
@@ -86,7 +86,7 @@ bool sam_name_edit_verify(QLineEdit *edit) {
 }
 
 bool SamNameEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value = edit->text();
+    const QString new_value = get_new_value();
     const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
 
     return success;
@@ -94,4 +94,10 @@ bool SamNameEdit::apply(AdInterface &ad, const QString &dn) const {
 
 void SamNameEdit::set_enabled(const bool enabled) {
     edit->setEnabled(enabled);
+}
+
+QString SamNameEdit::get_new_value() const {
+    const QString out = edit->text().trimmed();
+
+    return out;
 }
