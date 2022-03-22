@@ -42,7 +42,7 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, co
     auto last_name_edit = new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
     auto initials_edit = new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, this);
     auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
-    auto password_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, this);
+    auto password_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, ui->show_password_check, this);
 
     auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, this);
     upn_edit->init_suffixes(ad);

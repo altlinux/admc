@@ -39,7 +39,7 @@ PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidg
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    auto password_main_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, this);
+    auto password_main_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, ui->show_password_check, this);
 
     pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, this);
 
