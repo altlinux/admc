@@ -111,7 +111,7 @@ bool UpnEdit::apply(AdInterface &ad, const QString &dn) const {
 }
 
 QString UpnEdit::get_new_value() const {
-    const QString prefix = prefix_edit->text();
+    const QString prefix = prefix_edit->text().trimmed();
     const QString suffix = upn_suffix_combo->currentText();
     return QString("%1@%2").arg(prefix, suffix);
 }

@@ -38,6 +38,8 @@ public:
 
 private:
     QLineEdit *edit;
+
+    QString get_new_value() const;
 };
 
 bool sam_name_edit_verify(QLineEdit *edit);
