@@ -22,12 +22,14 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "settings.h"
 #include "utils.h"
 
 #include <QLineEdit>
+#include <QCheckBox>
 #include <QTextCodec>
 
-PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QObject *parent)
+PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QCheckBox *show_password_check, QObject *parent)
 : AttributeEdit(parent) {
     edit = edit_arg;
     confirm_edit = confirm_edit_arg;
@@ -38,6 +40,12 @@ PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QOb
     connect(
         edit, &QLineEdit::textChanged,
         this, &AttributeEdit::edited);
+    connect(
+        show_password_check, &QCheckBox::toggled,
+        this, &PasswordEdit::on_show_password_check);
+
+    const bool show_password_is_ON = settings_get_variant(SETTING_show_password).toBool();
+    show_password_check->setChecked(show_password_is_ON);
 }
 
 void PasswordEdit::load(AdInterface &ad, const AdObject &object) {
@@ -93,4 +101,19 @@ QLineEdit *PasswordEdit::get_edit() const {
 
 QLineEdit *PasswordEdit::get_confirm_edit() const {
     return confirm_edit;
+}
+
+void PasswordEdit::on_show_password_check(bool checked) {
+    const QLineEdit::EchoMode echo_mode = [&]() {
+        if (checked) {
+            return QLineEdit::Normal;
+        } else {
+            return QLineEdit::Password;
+        }
+    }();
+
+    edit->setEchoMode(echo_mode);
+    confirm_edit->setEchoMode(echo_mode);
+
+    settings_set_variant(SETTING_show_password, checked);
 }
