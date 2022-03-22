@@ -144,12 +144,12 @@ void country_combo_init(QComboBox *combo) {
     }();
 
     // Generate order of countries that will be used to
-    // fill the combo. Country of the current locale is
-    // moved up to the start of the list.
+    // fill the combo. Put Russia at the top of the
+    // list, because userbase is mostly Russian.
     const QList<QString> country_list = [&]() {
-        const QString current_country = [&]() {
-            const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
-            const QString locale_name = current_locale.name();
+        const QString country_russia = [&]() {
+            const QLocale locale_russia = QLocale(QLocale::Russian, QLocale::Russia);
+            const QString locale_name = locale_russia.name();
             const QList<QString> locale_name_split = locale_name.split("_");
 
             if (locale_name_split.size() == 2) {
@@ -165,8 +165,8 @@ void country_combo_init(QComboBox *combo) {
 
         QList<QString> out = name_map.values();
         std::sort(out.begin(), out.end());
-        out.removeAll(current_country);
-        out.prepend(current_country);
+        out.removeAll(country_russia);
+        out.prepend(country_russia);
 
         return out;
     }();
