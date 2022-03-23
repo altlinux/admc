@@ -76,16 +76,14 @@ void SelectBaseWidget::open_browse_dialog() {
             const QString selected = browse_dialog->get_selected();
             const QString name = dn_get_name(selected);
 
-            const bool base_already_added = [&]() {
-                const int find_result = ui->combo->findText(name);
-                const bool out = (find_result != -1);
+            const int added_base_index = ui->combo->findText(name);
+            const bool base_already_added = (added_base_index != -1);
 
-                return out;
-            }();
+            if (base_already_added) {
+                ui->combo->setCurrentIndex(added_base_index);
+            } else {
+                ui->combo->addItem(name, selected);
 
-            if (!base_already_added) {
-
-            ui->combo->addItem(name, selected);
                 // Select newly added search base in combobox
                 const int new_base_index = ui->combo->count() - 1;
                 ui->combo->setCurrentIndex(new_base_index);
