@@ -233,7 +233,13 @@ QSet<StandardAction> QueryFolderImpl::get_standard_actions(const QModelIndex &in
         } else {
             out.insert(StandardAction_Cut);
             out.insert(StandardAction_Copy);
-            out.insert(StandardAction_Paste);
+
+            // NOTE: don't allowing cutting and pasting
+            // a folder into itself
+            const bool can_paste = !(copied_list.contains(index) && copied_is_cut);
+            if (can_paste) {
+                out.insert(StandardAction_Paste);
+            }
         }
     }
 
@@ -599,6 +605,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
         new_parent_map[old_index.parent()] = new_parent_index;
 
         QStack<QPersistentModelIndex> stack;
+        QList<QPersistentModelIndex> created_list;
         stack.append(old_index);
         while (!stack.isEmpty()) {
             const QPersistentModelIndex index = stack.pop();
@@ -614,11 +621,15 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
                 const QString name = index.data(Qt::DisplayRole).toString();
                 const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
 
-                console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, new_parent);
+                const QModelIndex item_index = console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, new_parent);
+
+                created_list.append(item_index);
             } else if (type == ItemType_QueryFolder) {
                 const QString name = index.data(Qt::DisplayRole).toString();
                 const QString description = index.data(QueryItemRole_Description).toString();
                 const QModelIndex folder_index = console_query_folder_create(console, name, description, new_parent);
+
+                created_list.append(folder_index);
 
                 new_parent_map[index] = QPersistentModelIndex(folder_index);
             }
@@ -626,7 +637,16 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
             QAbstractItemModel *index_model = (QAbstractItemModel *) index.model();
             for (int row = 0; row < index_model->rowCount(index); row++) {
                 const QModelIndex child = index_model->index(row, 0, index);
-                stack.append(QPersistentModelIndex(child));
+
+                // NOTE: don't add indexes that were
+                // created during the move process, to
+                // avoid infinite loop. This can happen
+                // when copying and pasting a folder
+                // into itself.
+                const bool child_was_created = created_list.contains(QPersistentModelIndex(child));
+                if (!child_was_created) {
+                    stack.append(QPersistentModelIndex(child));
+                }
             }
         }
 

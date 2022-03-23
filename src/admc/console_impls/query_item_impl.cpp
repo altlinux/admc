@@ -203,10 +203,12 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
     row[QueryColumn_Description]->setText(description);
 }
 
-void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
+QModelIndex console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
     const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, parent);
 
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+
+    return row[0]->index();
 }
 
 QHash<QString, QVariant> console_query_item_save_hash(const QModelIndex &index) {
