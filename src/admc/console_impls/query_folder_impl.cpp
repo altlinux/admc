@@ -233,14 +233,22 @@ QSet<StandardAction> QueryFolderImpl::get_standard_actions(const QModelIndex &in
         } else {
             out.insert(StandardAction_Cut);
             out.insert(StandardAction_Copy);
-
-            // NOTE: don't allowing cutting and pasting
-            // a folder into itself
-            const bool can_paste = !(copied_list.contains(index) && copied_is_cut);
-            if (can_paste) {
-                out.insert(StandardAction_Paste);
-            }
+            out.insert(StandardAction_Paste);
         }
+    }
+
+    return out;
+}
+
+QSet<StandardAction> QueryFolderImpl::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    QSet<StandardAction> out;
+
+
+    // NOTE: don't allowing cutting and pasting a
+    // folder into itself
+    const bool cant_paste = (single_selection && copied_list.contains(index) && copied_is_cut);
+    if (cant_paste) {
+        out.insert(StandardAction_Paste);
     }
 
     return out;
