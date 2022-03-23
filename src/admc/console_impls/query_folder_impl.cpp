@@ -291,7 +291,7 @@ void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
     // console_query_move() does check for name
     // conflicts but doesn't handle this edge case.
     if (!copied_is_cut && parent_is_same) {
-        message_box_warning(console, tr("Error"), tr("Can't paste here."));
+        message_box_warning(console, tr("Error"), tr("There's already an item with this name."));
 
         return;
     }
