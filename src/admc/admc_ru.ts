@@ -3065,7 +3065,7 @@
     <message>
         <location filename="console_impls/query_folder_impl.cpp" line="568"/>
         <source>Are you sure you want to delete this item?</source>
-        <translation>Вы точно хотиту удалить этот предмет?</translation>
+        <translation>Вы точно хотиту удалить этот элемент?</translation>
     </message>
 </context>
 <context>
