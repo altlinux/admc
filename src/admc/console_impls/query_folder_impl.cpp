@@ -233,13 +233,7 @@ QSet<StandardAction> QueryFolderImpl::get_standard_actions(const QModelIndex &in
         } else {
             out.insert(StandardAction_Cut);
             out.insert(StandardAction_Copy);
-
-            // NOTE: don't allowing cutting and pasting
-            // a folder into itself
-            const bool can_paste = !(copied_list.contains(index) && copied_is_cut);
-            if (can_paste) {
-                out.insert(StandardAction_Paste);
-            }
+            out.insert(StandardAction_Paste);
         }
     }
 
@@ -262,6 +256,13 @@ void QueryFolderImpl::copy(const QList<QModelIndex> &index_list) {
 
 void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
     const QModelIndex parent_index = index_list[0];
+
+    const bool recursive_cut_and_paste = (copied_is_cut && copied_list.contains(parent_index));
+    if (recursive_cut_and_paste) {
+        message_box_warning(console, tr("Error"), tr("Can't cut and paste query folder into itself."));
+
+        return;
+    } 
 
     const bool parent_is_same = [&]() {
         for (const QModelIndex &index : copied_list) {
