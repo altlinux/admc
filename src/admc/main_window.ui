@@ -141,6 +141,12 @@
    <property name="text">
     <string>&amp;Manual</string>
    </property>
+   <property name="toolTip">
+    <string>Manual (Alt + 8)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+8</string>
+   </property>
   </action>
   <action name="action_changelog">
    <property name="text">
@@ -286,6 +292,9 @@
    <property name="text">
     <string>Navigate Back</string>
    </property>
+   <property name="toolTip">
+    <string>Navigate Back (Alt + -)</string>
+   </property>
    <property name="shortcut">
     <string>Alt+-</string>
    </property>
@@ -298,6 +307,9 @@
    <property name="text">
     <string>Navigate Forward</string>
    </property>
+   <property name="toolTip">
+    <string>Navigate Forward (Alt + =)</string>
+   </property>
    <property name="shortcut">
     <string>Alt+=</string>
    </property>
@@ -309,6 +321,12 @@
    </property>
    <property name="text">
     <string>Refresh</string>
+   </property>
+   <property name="toolTip">
+    <string>Refresh (Alt + 9)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+9</string>
    </property>
   </action>
   <action name="action_show_login">
