@@ -35,7 +35,6 @@ public:
     QList<QAction *> get_all_custom_actions() const override;
     QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
-    QSet<StandardAction> get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const override;
 
     void delete_action(const QList<QModelIndex> &index_list) override;
     void cut(const QList<QModelIndex> &index_list) override;
