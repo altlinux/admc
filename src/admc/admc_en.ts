@@ -514,6 +514,39 @@
     </message>
 </context>
 <context>
+    <name>CreateContactDialog</name>
+    <message>
+        <location filename="create_contact_dialog.ui" line="14"/>
+        <source>Create Contact</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="create_contact_dialog.ui" line="22"/>
+        <source>First name:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="create_contact_dialog.ui" line="29"/>
+        <source>Last name:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="create_contact_dialog.ui" line="36"/>
+        <source>Initials:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="create_contact_dialog.ui" line="43"/>
+        <source>Full name:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="create_contact_dialog.ui" line="50"/>
+        <source>Display name:</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>CreateGroupDialog</name>
     <message>
         <location filename="create_group_dialog.ui" line="14"/>
@@ -568,7 +601,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="create_object_helper.cpp" line="118"/>
+        <location filename="create_object_helper.cpp" line="146"/>
         <source>Object %1 was created</source>
         <translation></translation>
     </message>
@@ -626,7 +659,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="create_query_folder_dialog.cpp" line="36"/>
+        <location filename="create_query_folder_dialog.cpp" line="54"/>
         <source>New Folder</source>
         <translation></translation>
     </message>
@@ -636,6 +669,24 @@
     <message>
         <location filename="create_query_item_dialog.ui" line="14"/>
         <source>Create Query</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>CreateSharedFolderDialog</name>
+    <message>
+        <location filename="create_shared_folder_dialog.ui" line="14"/>
+        <source>Create Shared Folder</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="create_shared_folder_dialog.ui" line="25"/>
+        <source>Name:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="create_shared_folder_dialog.ui" line="32"/>
+        <source>Network path:</source>
         <translation></translation>
     </message>
 </context>
@@ -687,28 +738,38 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="130"/>
+        <location filename="create_user_dialog.ui" line="128"/>
+        <source>Show password</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="create_user_dialog.ui" line="137"/>
         <source>Account options:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="136"/>
+        <location filename="create_user_dialog.ui" line="143"/>
         <source>User must change password on next logon</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="146"/>
+        <location filename="create_user_dialog.ui" line="153"/>
         <source>User cannot change password</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="153"/>
+        <location filename="create_user_dialog.ui" line="160"/>
         <source>Don&apos;t expire password</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="160"/>
+        <location filename="create_user_dialog.ui" line="167"/>
         <source>Account disabled</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="create_user_dialog.cpp" line="98"/>
+        <source>Create %1</source>
         <translation></translation>
     </message>
 </context>
@@ -1463,6 +1524,16 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="79"/>
+        <source>Logon allowed:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="102"/>
+        <source>Logon denied:</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="attribute_edits/logon_hours_dialog.cpp" line="42"/>
         <source>Sunday</source>
         <translation></translation>
@@ -1498,12 +1569,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_edits/logon_hours_dialog.ui" line="30"/>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="47"/>
         <source>Local time</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_edits/logon_hours_dialog.ui" line="37"/>
+        <location filename="attribute_edits/logon_hours_dialog.ui" line="40"/>
         <source>UTC time</source>
         <translation></translation>
     </message>
@@ -1580,138 +1651,168 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="147"/>
+        <location filename="main_window.ui" line="145"/>
+        <source>Manual (Alt + 8)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="148"/>
+        <source>Alt+8</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="153"/>
         <source>&amp;Changelog</source>
         <oldsource>Changelog</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="152"/>
+        <location filename="main_window.ui" line="158"/>
         <source>&amp;About ADMC</source>
         <oldsource>About ADMC</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="160"/>
+        <location filename="main_window.ui" line="166"/>
         <source>&amp;Icons</source>
         <oldsource>Icons</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="168"/>
+        <location filename="main_window.ui" line="174"/>
         <source>&amp;List</source>
         <oldsource>List</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="176"/>
+        <location filename="main_window.ui" line="182"/>
         <source>&amp;Detail</source>
         <oldsource>Detail</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="200"/>
+        <location filename="main_window.ui" line="206"/>
         <source>&amp;Console Tree</source>
         <oldsource>Console Tree</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="208"/>
+        <location filename="main_window.ui" line="214"/>
         <source>Description &amp;Bar</source>
         <oldsource>Description Bar</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="213"/>
+        <location filename="main_window.ui" line="219"/>
         <source>C&amp;ustomize Columns...</source>
         <oldsource>Customize Columns...</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="218"/>
+        <location filename="main_window.ui" line="224"/>
         <source>&amp;Filter Objects...</source>
         <oldsource>Filter Objects...</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="226"/>
+        <location filename="main_window.ui" line="232"/>
         <source>&amp;Advanced Features</source>
         <oldsource>Advanced Features</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="234"/>
+        <location filename="main_window.ui" line="240"/>
         <source>&amp;Confirm Actions</source>
         <oldsource>Confirm Actions</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="242"/>
+        <location filename="main_window.ui" line="248"/>
         <source>&amp;Put Last Name Before First Name</source>
         <oldsource>Put Last Name Before First Name</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="250"/>
+        <location filename="main_window.ui" line="256"/>
         <source>&amp;Log Searches</source>
         <oldsource>Log Searches</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="258"/>
+        <location filename="main_window.ui" line="264"/>
         <source>&amp;Timestamps in Message Log</source>
         <oldsource>Timestamps in Message Log</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="266"/>
+        <location filename="main_window.ui" line="272"/>
         <source>&amp;Show Non-Container Objects in Console Tree</source>
         <oldsource>Show Non-Container Objects in Console Tree</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="319"/>
+        <location filename="main_window.ui" line="296"/>
+        <source>Navigate Back (Alt + -)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="311"/>
+        <source>Navigate Forward (Alt + =)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="326"/>
+        <source>Refresh (Alt + 9)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="329"/>
+        <source>Alt+9</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="337"/>
         <source>Show Login</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="324"/>
+        <location filename="main_window.ui" line="342"/>
         <source>&amp;Operations Masters</source>
         <oldsource>Operations Masters</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="275"/>
+        <location filename="main_window.ui" line="281"/>
         <source>Navigate Up</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="278"/>
+        <location filename="main_window.ui" line="284"/>
         <source>Alt+0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="287"/>
+        <location filename="main_window.ui" line="293"/>
         <source>Navigate Back</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="290"/>
+        <location filename="main_window.ui" line="299"/>
         <source>Alt+-</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="299"/>
+        <location filename="main_window.ui" line="308"/>
         <source>Navigate Forward</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="302"/>
+        <location filename="main_window.ui" line="314"/>
         <source>Alt+=</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="311"/>
+        <location filename="main_window.ui" line="323"/>
         <source>Refresh</source>
         <translation></translation>
     </message>
@@ -1914,100 +2015,115 @@
 <context>
     <name>ObjectImpl</name>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="82"/>
+        <location filename="console_impls/object_impl.cpp" line="86"/>
         <source>User</source>
         <oldsource>&amp;User</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="83"/>
+        <location filename="console_impls/object_impl.cpp" line="87"/>
         <source>Computer</source>
         <oldsource>&amp;Computer</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="84"/>
+        <location filename="console_impls/object_impl.cpp" line="88"/>
         <source>OU</source>
         <oldsource>&amp;OU</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="85"/>
+        <location filename="console_impls/object_impl.cpp" line="89"/>
         <source>Group</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="86"/>
-        <source>Find...</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_impls/object_impl.cpp" line="87"/>
-        <source>Move...</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_impls/object_impl.cpp" line="88"/>
-        <source>Add to group...</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_impls/object_impl.cpp" line="89"/>
-        <source>Enable</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="console_impls/object_impl.cpp" line="90"/>
-        <source>Disable</source>
+        <source>Shared Folder</source>
         <translation></translation>
     </message>
     <message>
         <location filename="console_impls/object_impl.cpp" line="91"/>
-        <source>Reset password</source>
+        <source>inetOrgPerson</source>
         <translation></translation>
     </message>
     <message>
         <location filename="console_impls/object_impl.cpp" line="92"/>
-        <source>Reset account</source>
+        <source>Contact</source>
         <translation></translation>
     </message>
     <message>
         <location filename="console_impls/object_impl.cpp" line="93"/>
-        <source>Edit UPN suffixes</source>
+        <source>Find...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="94"/>
+        <source>Move...</source>
         <translation></translation>
     </message>
     <message>
         <location filename="console_impls/object_impl.cpp" line="95"/>
+        <source>Add to group...</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="96"/>
+        <source>Enable</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="97"/>
+        <source>Disable</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="98"/>
+        <source>Reset password</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="99"/>
+        <source>Reset account</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="100"/>
+        <source>Edit UPN suffixes</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="102"/>
         <source>New</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="244"/>
+        <location filename="console_impls/object_impl.cpp" line="266"/>
         <source> [Filtering enabled]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="531"/>
+        <location filename="console_impls/object_impl.cpp" line="586"/>
         <source>Are you sure you want to delete this object?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="711"/>
+        <location filename="console_impls/object_impl.cpp" line="778"/>
         <source>Add to Group</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="779"/>
+        <location filename="console_impls/object_impl.cpp" line="846"/>
         <source>Edit UPN Suffixes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="809"/>
+        <location filename="console_impls/object_impl.cpp" line="876"/>
         <source>Are you sure you want to reset this account?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="1138"/>
+        <location filename="console_impls/object_impl.cpp" line="1219"/>
         <source>Query may be out of date</source>
         <translation></translation>
     </message>
@@ -2192,6 +2308,11 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="password_dialog.ui" line="70"/>
+        <source>Show password</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="password_dialog.cpp" line="72"/>
         <source>Option is unavailable because a conflicting account option is currently enabled.</source>
         <translation></translation>
@@ -2200,18 +2321,18 @@
 <context>
     <name>PasswordEdit</name>
     <message>
-        <location filename="attribute_edits/password_edit.cpp" line="57"/>
+        <location filename="attribute_edits/password_edit.cpp" line="65"/>
         <source>Passwords don&apos;t match!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_edits/password_edit.cpp" line="58"/>
-        <location filename="attribute_edits/password_edit.cpp" line="67"/>
+        <location filename="attribute_edits/password_edit.cpp" line="66"/>
+        <location filename="attribute_edits/password_edit.cpp" line="75"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_edits/password_edit.cpp" line="66"/>
+        <location filename="attribute_edits/password_edit.cpp" line="74"/>
         <source>Password contains invalid characters</source>
         <translation></translation>
     </message>
@@ -2519,13 +2640,19 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="280"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="262"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="287"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="280"/>
-        <source>Can&apos;t paste here.</source>
+        <location filename="console_impls/query_folder_impl.cpp" line="262"/>
+        <source>Can&apos;t cut and paste query folder into itself.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="287"/>
+        <source>There&apos;s already an item with this name.</source>
         <translation></translation>
     </message>
 </context>
@@ -2642,12 +2769,12 @@
 <context>
     <name>SamNameEdit</name>
     <message>
-        <location filename="attribute_edits/sam_name_edit.cpp" line="90"/>
+        <location filename="attribute_edits/sam_name_edit.cpp" line="79"/>
         <source>Input field for Logon name (pre-Windows 2000) contains one or more of the following illegal characters: @ &quot; [ ] : ; | = + * ? &lt; &gt; / \ ,</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_edits/sam_name_edit.cpp" line="91"/>
+        <location filename="attribute_edits/sam_name_edit.cpp" line="80"/>
         <source>Error</source>
         <translation></translation>
     </message>
@@ -2978,7 +3105,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1536"/>
+        <location filename="console_impls/object_impl.cpp" line="1617"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
@@ -3010,7 +3137,7 @@
 <context>
     <name>query</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="333"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="340"/>
         <source>Saved Queries</source>
         <translation></translation>
     </message>
@@ -3018,30 +3145,30 @@
 <context>
     <name>query.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="539"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="546"/>
         <source>Name may not be empty</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="315"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="540"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="550"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="553"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="322"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="547"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="557"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="560"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="549"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="556"/>
         <source>There&apos;s already an item with this name.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="552"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="559"/>
         <source>Names cannot contain &quot;/&quot;.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="314"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="321"/>
         <source>Query file is corrupted.</source>
         <translation></translation>
     </message>
@@ -3049,12 +3176,12 @@
 <context>
     <name>query_folder.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="462"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="469"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="463"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="470"/>
         <source>Description</source>
         <translation></translation>
     </message>
@@ -3062,7 +3189,7 @@
 <context>
     <name>query_folder_impl.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="568"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="575"/>
         <source>Are you sure you want to delete this item?</source>
         <translation></translation>
     </message>
@@ -3070,12 +3197,12 @@
 <context>
     <name>query_item_impl.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="293"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="300"/>
         <source>Import Query</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="295"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="302"/>
         <location filename="console_impls/query_item_impl.cpp" line="174"/>
         <source>JSON (*.json)</source>
         <translation></translation>
@@ -3089,12 +3216,12 @@
 <context>
     <name>utils.cpp</name>
     <message>
-        <location filename="utils.cpp" line="398"/>
-        <source>Input field for Name contains one or more of the following illegal characters: # , + &quot; \ &lt; &gt; ; = (leading space) (trailing space)</source>
+        <location filename="utils.cpp" line="400"/>
+        <source>Input field for Name contains one or more of the following illegal characters: # , + &quot; \ &lt; &gt; ; = (leading space) (trailing space) (leading question mark)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="utils.cpp" line="399"/>
+        <location filename="utils.cpp" line="401"/>
         <source>Error</source>
         <translation></translation>
     </message>
