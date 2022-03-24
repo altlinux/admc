@@ -40,19 +40,13 @@ void ADMCTestUpnEdit::init() {
     upn_edit = new UpnEdit(prefix_edit, suffix_edit, parent_widget);
     upn_edit->init_suffixes(ad);
 
-    // Get default suffix that will be used for tests
-    // from default value that was loaded into suffix
-    // combo when upn edit's init_suffixes() was called
-    const QString test_suffix = suffix_edit->currentText();
-    QVERIFY(!test_suffix.isEmpty());
-
     // Create test user
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
     const bool create_success = ad.object_add(dn, CLASS_USER);
     QVERIFY(create_success);
 
-    const QString test_upn = QString("%1@%2").arg(name, test_suffix);
+    const QString test_upn = QString("%1@%2").arg(name, TEST_SUFFIX);
     const bool replace_success = ad.attribute_replace_string(dn, ATTRIBUTE_USER_PRINCIPAL_NAME, test_upn);
     QVERIFY(replace_success);
 
