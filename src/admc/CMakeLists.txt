@@ -94,6 +94,7 @@ set(ADMC_SOURCES
     tabs/general_ou_tab.cpp
     tabs/general_computer_tab.cpp
     tabs/general_policy_tab.cpp
+    tabs/general_shared_folder_tab.cpp
     tabs/general_other_tab.cpp
     tabs/object_tab.cpp
     tabs/attributes_tab.cpp
@@ -124,6 +125,7 @@ set(ADMC_SOURCES
     attribute_edits/attribute_edit.cpp
     attribute_edits/string_edit.cpp
     attribute_edits/string_other_edit.cpp
+    attribute_edits/string_list_edit.cpp
     attribute_edits/string_large_edit.cpp
     attribute_edits/sam_name_edit.cpp
     attribute_edits/computer_sam_name_edit.cpp

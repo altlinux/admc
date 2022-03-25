@@ -40,6 +40,7 @@
 #include "tabs/general_policy_tab.h"
 #include "tabs/general_user_tab.h"
 #include "tabs/general_computer_tab.h"
+#include "tabs/general_shared_folder_tab.h"
 #include "tabs/group_policy_tab.h"
 #include "tabs/managed_by_tab.h"
 #include "tabs/membership_tab.h"
@@ -157,6 +158,8 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
             return new GeneralComputerTab(&edit_list, this);
         } else if (object.is_class(CLASS_GP_CONTAINER)) {
             return new GeneralPolicyTab(&edit_list, this);
+        } else if (object.is_class(CLASS_SHARED_FOLDER)) {
+            return new GeneralSharedFolderTab(&edit_list, this);
         } else if (!object.is_empty()) {
             return new GeneralOtherTab(&edit_list, this);
         } else {
@@ -215,7 +218,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         ui->tab_widget->add_tab(delegation_tab, tr("Delegation"));
     }
 
-    if (object.is_class(CLASS_OU) || object.is_class(CLASS_COMPUTER)) {
+    if (object.is_class(CLASS_OU) || object.is_class(CLASS_COMPUTER) || object.is_class(CLASS_SHARED_FOLDER)) {
         auto managed_by_tab = new ManagedByTab(&edit_list, this);
         ui->tab_widget->add_tab(managed_by_tab, tr("Managed by"));
     }

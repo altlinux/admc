@@ -196,6 +196,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_APPLIES_TO "appliesTo"
 #define ATTRIBUTE_VALID_ACCESSES "validAccesses"
 #define ATTRIBUTE_UNC_NAME "uNCName"
+#define ATTRIBUTE_KEYWORDS "keywords"
 
 #define CLASS_GROUP "group"
 #define CLASS_USER "user"
