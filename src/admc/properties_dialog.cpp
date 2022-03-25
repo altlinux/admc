@@ -141,11 +141,13 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
 
     const AdObject object = ad.search_object(target);
 
+    const bool is_person = (object.is_class(CLASS_USER) || object.is_class(CLASS_INET_ORG_PERSON));
+
     //
     // Create tabs
     //
     QWidget *general_tab = [&]() -> QWidget * {
-        if (object.is_class(CLASS_USER)) {
+        if (is_person) {
             return new GeneralUserTab(&edit_list, this);
         } else if (object.is_class(CLASS_GROUP)) {
             return new GeneralGroupTab(&edit_list, this);
@@ -176,7 +178,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         attributes_tab = nullptr;
     }
 
-    if (object.is_class(CLASS_USER)) {
+    if (is_person) {
         auto account_tab = new AccountTab(ad, &edit_list, this);
         auto address_tab = new AddressTab(&edit_list, this);
         auto organization_tab = new OrganizationTab(&edit_list, this);
@@ -197,7 +199,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         auto members_tab = new MembershipTab(&edit_list, MembershipTabType_Members, this);
         ui->tab_widget->add_tab(members_tab, tr("Members"));
     }
-    if (object.is_class(CLASS_USER) || object.is_class(CLASS_COMPUTER)) {
+    if (is_person || object.is_class(CLASS_COMPUTER)) {
         auto member_of_tab = new MembershipTab(&edit_list, MembershipTabType_MemberOf, this);
         ui->tab_widget->add_tab(member_of_tab, tr("Member of"));
 
