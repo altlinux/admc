@@ -147,7 +147,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     // Create tabs
     //
     QWidget *general_tab = [&]() -> QWidget * {
-        if (is_person) {
+        if (is_person || object.is_class(CLASS_CONTACT)) {
             return new GeneralUserTab(&edit_list, this);
         } else if (object.is_class(CLASS_GROUP)) {
             return new GeneralGroupTab(&edit_list, this);
@@ -178,16 +178,20 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         attributes_tab = nullptr;
     }
 
-    if (is_person) {
-        auto account_tab = new AccountTab(ad, &edit_list, this);
+    if (is_person || object.is_class(CLASS_CONTACT)) {
         auto address_tab = new AddressTab(&edit_list, this);
         auto organization_tab = new OrganizationTab(&edit_list, this);
         auto telephones_tab = new TelephonesTab(&edit_list, this);
 
-        ui->tab_widget->add_tab(account_tab, tr("Account"));
         ui->tab_widget->add_tab(address_tab, tr("Address"));
         ui->tab_widget->add_tab(organization_tab, tr("Organization"));
         ui->tab_widget->add_tab(telephones_tab, tr("Telephones"));
+    }
+
+    if (is_person) {
+        auto account_tab = new AccountTab(ad, &edit_list, this);
+
+        ui->tab_widget->add_tab(account_tab, tr("Account"));
 
         const bool profile_tab_enabled = settings_get_variant(SETTING_feature_profile_tab).toBool();
         if (profile_tab_enabled) {
@@ -195,14 +199,18 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
             ui->tab_widget->add_tab(profile_tab, tr("Profile"));
         }
     }
+
     if (object.is_class(CLASS_GROUP)) {
         auto members_tab = new MembershipTab(&edit_list, MembershipTabType_Members, this);
         ui->tab_widget->add_tab(members_tab, tr("Members"));
     }
-    if (is_person || object.is_class(CLASS_COMPUTER)) {
+
+    if (is_person || object.is_class(CLASS_COMPUTER) || object.is_class(CLASS_CONTACT)) {
         auto member_of_tab = new MembershipTab(&edit_list, MembershipTabType_MemberOf, this);
         ui->tab_widget->add_tab(member_of_tab, tr("Member of"));
+    }
 
+    if (is_person || object.is_class(CLASS_COMPUTER)) {
         auto delegation_tab = new DelegationTab(&edit_list, this);
         ui->tab_widget->add_tab(delegation_tab, tr("Delegation"));
     }
