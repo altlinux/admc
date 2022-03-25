@@ -201,6 +201,7 @@ QSet<QAction *> QueryFolderImpl::get_custom_actions(const QModelIndex &index, co
     if (single_selection) {
         if (is_root) {
             out.insert(new_action);
+            out.insert(import_action);
         } else {
             out.insert(new_action);
             out.insert(edit_action);

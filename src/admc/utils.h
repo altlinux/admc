@@ -126,4 +126,7 @@ bool verify_object_name(const QString &name, QWidget *parent);
 // into dest.
 void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest);
 
+// (first name + last name) -> full name
+void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit);
+
 #endif /* UTILS_H */

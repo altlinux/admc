@@ -18,22 +18,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_CREATE_OBJECT_DIALOG_H
-#define ADMC_TEST_CREATE_OBJECT_DIALOG_H
+#ifndef CREATE_CONTACT_DIALOG_H
+#define CREATE_CONTACT_DIALOG_H
 
-#include "admc_test.h"
+#include "create_object_dialog.h"
 
-class ADMCTestCreateObjectDialog : public ADMCTest {
+class CreateObjectHelper;
+
+namespace Ui {
+class CreateContactDialog;
+}
+
+class CreateContactDialog final : public CreateObjectDialog {
     Q_OBJECT
 
-private slots:
-    void create_user_data();
-    void create_user();
-    void create_ou();
-    void create_computer();
-    void create_group();
-    void create_shared_folder();
-    void create_contact();
+public:
+    Ui::CreateContactDialog *ui;
+
+    CreateContactDialog(const QString &parent_dn, QWidget *parent);
+    ~CreateContactDialog();
+
+    void accept() override;
+    QString get_created_dn() const override;
+
+private:
+    CreateObjectHelper *helper;
 };
 
-#endif /* ADMC_TEST_CREATE_OBJECT_DIALOG_H */
+#endif /* CREATE_CONTACT_DIALOG_H */

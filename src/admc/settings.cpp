@@ -55,6 +55,7 @@ const QHash<QString, QVariant> setting_default_map = {
     {SETTING_feature_logon_computers, false},
     {SETTING_feature_profile_tab, false},
     {SETTING_feature_dev_mode, false},
+    {SETTING_feature_current_locale_first, false},
 };
 
 void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {

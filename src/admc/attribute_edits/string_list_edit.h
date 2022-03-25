@@ -18,22 +18,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADMC_TEST_CREATE_OBJECT_DIALOG_H
-#define ADMC_TEST_CREATE_OBJECT_DIALOG_H
+#ifndef STRING_LIST_EDIT_H
+#define STRING_LIST_EDIT_H
 
-#include "admc_test.h"
+#include "attribute_edits/attribute_edit.h"
 
-class ADMCTestCreateObjectDialog : public ADMCTest {
+class QPushButton;
+
+class StringListEdit final : public AttributeEdit {
     Q_OBJECT
+public:
+    StringListEdit(QPushButton *button, const QString &attribute, QObject *parent);
 
-private slots:
-    void create_user_data();
-    void create_user();
-    void create_ou();
-    void create_computer();
-    void create_group();
-    void create_shared_folder();
-    void create_contact();
+    void load(AdInterface &ad, const AdObject &object) override;
+
+    bool apply(AdInterface &ad, const QString &dn) const override;
+
+private:
+    QPushButton *button;
+    QString attribute;
+    QList<QByteArray> values;
+
+    void on_button();
 };
 
-#endif /* ADMC_TEST_CREATE_OBJECT_DIALOG_H */
+#endif /* STRING_LIST_EDIT_H */

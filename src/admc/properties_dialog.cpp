@@ -40,6 +40,7 @@
 #include "tabs/general_policy_tab.h"
 #include "tabs/general_user_tab.h"
 #include "tabs/general_computer_tab.h"
+#include "tabs/general_shared_folder_tab.h"
 #include "tabs/group_policy_tab.h"
 #include "tabs/managed_by_tab.h"
 #include "tabs/membership_tab.h"
@@ -141,11 +142,13 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
 
     const AdObject object = ad.search_object(target);
 
+    const bool is_person = (object.is_class(CLASS_USER) || object.is_class(CLASS_INET_ORG_PERSON));
+
     //
     // Create tabs
     //
     QWidget *general_tab = [&]() -> QWidget * {
-        if (object.is_class(CLASS_USER)) {
+        if (is_person || object.is_class(CLASS_CONTACT)) {
             return new GeneralUserTab(&edit_list, this);
         } else if (object.is_class(CLASS_GROUP)) {
             return new GeneralGroupTab(&edit_list, this);
@@ -155,6 +158,8 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
             return new GeneralComputerTab(&edit_list, this);
         } else if (object.is_class(CLASS_GP_CONTAINER)) {
             return new GeneralPolicyTab(&edit_list, this);
+        } else if (object.is_class(CLASS_SHARED_FOLDER)) {
+            return new GeneralSharedFolderTab(&edit_list, this);
         } else if (!object.is_empty()) {
             return new GeneralOtherTab(&edit_list, this);
         } else {
@@ -176,16 +181,20 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
         attributes_tab = nullptr;
     }
 
-    if (object.is_class(CLASS_USER)) {
-        auto account_tab = new AccountTab(ad, &edit_list, this);
+    if (is_person || object.is_class(CLASS_CONTACT)) {
         auto address_tab = new AddressTab(&edit_list, this);
         auto organization_tab = new OrganizationTab(&edit_list, this);
         auto telephones_tab = new TelephonesTab(&edit_list, this);
 
-        ui->tab_widget->add_tab(account_tab, tr("Account"));
         ui->tab_widget->add_tab(address_tab, tr("Address"));
         ui->tab_widget->add_tab(organization_tab, tr("Organization"));
         ui->tab_widget->add_tab(telephones_tab, tr("Telephones"));
+    }
+
+    if (is_person) {
+        auto account_tab = new AccountTab(ad, &edit_list, this);
+
+        ui->tab_widget->add_tab(account_tab, tr("Account"));
 
         const bool profile_tab_enabled = settings_get_variant(SETTING_feature_profile_tab).toBool();
         if (profile_tab_enabled) {
@@ -193,19 +202,23 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
             ui->tab_widget->add_tab(profile_tab, tr("Profile"));
         }
     }
+
     if (object.is_class(CLASS_GROUP)) {
         auto members_tab = new MembershipTab(&edit_list, MembershipTabType_Members, this);
         ui->tab_widget->add_tab(members_tab, tr("Members"));
     }
-    if (object.is_class(CLASS_USER) || object.is_class(CLASS_COMPUTER)) {
+
+    if (is_person || object.is_class(CLASS_COMPUTER) || object.is_class(CLASS_CONTACT)) {
         auto member_of_tab = new MembershipTab(&edit_list, MembershipTabType_MemberOf, this);
         ui->tab_widget->add_tab(member_of_tab, tr("Member of"));
+    }
 
+    if (is_person || object.is_class(CLASS_COMPUTER)) {
         auto delegation_tab = new DelegationTab(&edit_list, this);
         ui->tab_widget->add_tab(delegation_tab, tr("Delegation"));
     }
 
-    if (object.is_class(CLASS_OU) || object.is_class(CLASS_COMPUTER)) {
+    if (object.is_class(CLASS_OU) || object.is_class(CLASS_COMPUTER) || object.is_class(CLASS_SHARED_FOLDER)) {
         auto managed_by_tab = new ManagedByTab(&edit_list, this);
         ui->tab_widget->add_tab(managed_by_tab, tr("Managed by"));
     }

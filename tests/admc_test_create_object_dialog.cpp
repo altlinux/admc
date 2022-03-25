@@ -26,12 +26,26 @@
 #include "create_group_dialog.h"
 #include "create_ou_dialog.h"
 #include "create_user_dialog.h"
+#include "create_shared_folder_dialog.h"
+#include "create_contact_dialog.h"
 #include "ui_create_computer_dialog.h"
 #include "ui_create_group_dialog.h"
 #include "ui_create_ou_dialog.h"
 #include "ui_create_user_dialog.h"
+#include "ui_create_shared_folder_dialog.h"
+#include "ui_create_contact_dialog.h"
+
+void ADMCTestCreateObjectDialog::create_user_data() {
+    QTest::addColumn<QString>("user_class");
+    QTest::addColumn<int>("exptected_uac");
+
+    QTest::newRow("user") << CLASS_USER;
+    QTest::newRow("inetOrgPerson") << CLASS_INET_ORG_PERSON;
+}
 
 void ADMCTestCreateObjectDialog::create_user() {
+    QFETCH(QString, user_class);
+
     const QString name = TEST_USER;
     const QString logon_name = TEST_USER_LOGON;
     const QString password = TEST_PASSWORD;
@@ -39,7 +53,7 @@ void ADMCTestCreateObjectDialog::create_user() {
     const QString dn = test_object_dn(name, CLASS_USER);
 
     // Create user
-    auto create_dialog = new CreateUserDialog(ad, parent, parent_widget);
+    auto create_dialog = new CreateUserDialog(ad, parent, user_class, parent_widget);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -138,6 +152,48 @@ void ADMCTestCreateObjectDialog::create_group() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created group doesn't exist");
+    QCOMPARE(create_dialog->get_created_dn(), dn);
+}
+
+void ADMCTestCreateObjectDialog::create_shared_folder() {
+    const QString object_class = CLASS_SHARED_FOLDER;
+    const QString name = TEST_OBJECT;
+    const QString parent = test_arena_dn();
+    const QString dn = test_object_dn(name, object_class);
+
+    // Open create dialog
+    auto create_dialog = new CreateSharedFolderDialog(parent, parent_widget);
+    create_dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
+
+    create_dialog->ui->name_edit->setText(name);
+    create_dialog->ui->path_edit->setText("path");
+
+    create_dialog->accept();
+
+    QVERIFY2(object_exists(dn), "Created shared folder doesn't exist");
+    QCOMPARE(create_dialog->get_created_dn(), dn);
+}
+
+void ADMCTestCreateObjectDialog::create_contact() {
+    const QString object_class = CLASS_CONTACT;
+    const QString name = TEST_OBJECT;
+    const QString parent = test_arena_dn();
+    const QString dn = test_object_dn(name, object_class);
+
+    // Open create dialog
+    auto create_dialog = new CreateContactDialog(parent, parent_widget);
+    create_dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
+
+    create_dialog->ui->first_name_edit->setText("first");
+    create_dialog->ui->last_name_edit->setText("last");
+    create_dialog->ui->full_name_edit->setText(name);
+    create_dialog->ui->display_name_edit->setText("display");
+
+    create_dialog->accept();
+
+    QVERIFY2(object_exists(dn), "Created contact doesn't exist");
     QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
