@@ -131,10 +131,14 @@ DEFINE_SETTING(SETTING_object_display_limit);
 //
 // NOTE: this set of settings is not editable anywhere
 // within the app. Instead it should be manually edited
-// by hand in ADMC.conf
+// by hand in ADMC.conf. If you want to forcefully
+// enable it for a new version, set it manually in
+// main.cpp so that it overwrites default value as well
+// as any values defined in .conf file.
 DEFINE_SETTING(SETTING_feature_logon_computers);
 DEFINE_SETTING(SETTING_feature_profile_tab);
 DEFINE_SETTING(SETTING_feature_dev_mode);
+DEFINE_SETTING(SETTING_feature_current_locale_first);
 
 QVariant settings_get_variant(const QString setting);
 void settings_set_variant(const QString setting, const QVariant &value);
