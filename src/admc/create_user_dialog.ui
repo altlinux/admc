@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>533</width>
-    <height>548</height>
+    <height>581</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -183,6 +183,23 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>first_name_edit</tabstop>
+  <tabstop>last_name_edit</tabstop>
+  <tabstop>name_edit</tabstop>
+  <tabstop>initials_edit</tabstop>
+  <tabstop>upn_prefix_edit</tabstop>
+  <tabstop>upn_suffix_edit</tabstop>
+  <tabstop>sam_name_edit</tabstop>
+  <tabstop>sam_name_domain_edit</tabstop>
+  <tabstop>password_main_edit</tabstop>
+  <tabstop>password_confirm_edit</tabstop>
+  <tabstop>show_password_check</tabstop>
+  <tabstop>must_change_pass_check</tabstop>
+  <tabstop>cant_change_pass_check</tabstop>
+  <tabstop>dont_expire_pass_check</tabstop>
+  <tabstop>disabled_check</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -61,6 +61,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>name_edit</tabstop>
+  <tabstop>sam_name_edit</tabstop>
+  <tabstop>sam_name_domain_edit</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

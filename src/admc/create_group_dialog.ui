@@ -81,6 +81,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>name_edit</tabstop>
+  <tabstop>sam_name_edit</tabstop>
+  <tabstop>sam_name_domain_edit</tabstop>
+  <tabstop>scope_combo</tabstop>
+  <tabstop>type_combo</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
