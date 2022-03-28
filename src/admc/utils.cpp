@@ -183,6 +183,8 @@ QIcon get_object_icon(const AdObject &object) {
         {"Builtin-Domain", {"emblem-system", "emblem-system-symbolic"}},
         {"Configuration", {"emblem-system", "emblem-system-symbolic"}},
         {"Lost-And-Found", {"emblem-system", "emblem-system-symbolic"}},
+        {"Infrastructure-Update", {"emblem-system", "emblem-system-symbolic"}},
+        {"ms-DS-Quota-Container", {"emblem-system", "emblem-system-symbolic"}},
     };
 
     // NOTE: This is the icon used when no icon is
