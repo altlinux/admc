@@ -48,6 +48,18 @@ LogonHoursDialog::LogonHoursDialog(const QByteArray &value, QWidget *parent)
         tr("Saturday"),
     });
 
+    const QList<QString> horizontalheader_labels = []() {
+        QList<QString> out;
+
+        for (int i = 0; i < HOURS_IN_DAY; i++) {
+            const QString label = QString::number(i);
+            out.append(label);
+        }
+
+        return out;
+    }();
+    model->setHorizontalHeaderLabels(horizontalheader_labels);
+
     ui->view->setModel(model);
     ui->view->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     ui->view->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);

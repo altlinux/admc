@@ -1279,6 +1279,19 @@
     </message>
 </context>
 <context>
+    <name>GeneralSharedFolderTab</name>
+    <message>
+        <location filename="tabs/general_shared_folder_tab.ui" line="36"/>
+        <source>Description:</source>
+        <translation>Описание:</translation>
+    </message>
+    <message>
+        <location filename="tabs/general_shared_folder_tab.ui" line="46"/>
+        <source>Keywords</source>
+        <translation>Ключевые слова</translation>
+    </message>
+</context>
+<context>
     <name>GeneralUserMultiTab</name>
     <message>
         <location filename="multi_tabs/general_user_multi_tab.ui" line="20"/>
@@ -2451,93 +2464,93 @@
     <name>PropertiesDialog</name>
     <message>
         <location filename="properties_dialog.ui" line="14"/>
-        <location filename="properties_dialog.cpp" line="137"/>
+        <location filename="properties_dialog.cpp" line="138"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="135"/>
+        <location filename="properties_dialog.cpp" line="136"/>
         <source>%1 Properties</source>
         <oldsource>&quot;%1&quot; Properties</oldsource>
         <translation>%1 — свойства</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="165"/>
+        <location filename="properties_dialog.cpp" line="170"/>
         <source>General</source>
         <translation>Общее</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="173"/>
+        <location filename="properties_dialog.cpp" line="178"/>
         <source>Object</source>
         <translation>Объект</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="174"/>
+        <location filename="properties_dialog.cpp" line="179"/>
         <source>Attributes</source>
         <translation>Атрибуты</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="185"/>
+        <location filename="properties_dialog.cpp" line="197"/>
         <source>Account</source>
         <translation>Учётная запись</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="187"/>
+        <location filename="properties_dialog.cpp" line="190"/>
         <source>Organization</source>
         <translation>Организация</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="188"/>
+        <location filename="properties_dialog.cpp" line="191"/>
         <source>Telephones</source>
         <translation>Телефоны</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="193"/>
+        <location filename="properties_dialog.cpp" line="202"/>
         <source>Profile</source>
         <translation>Профиль</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="232"/>
+        <location filename="properties_dialog.cpp" line="245"/>
         <source>LAPS</source>
         <translation>LAPS</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="239"/>
+        <location filename="properties_dialog.cpp" line="252"/>
         <source>Security</source>
         <translation>Безопасность</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="198"/>
+        <location filename="properties_dialog.cpp" line="208"/>
         <source>Members</source>
         <translation>Участники</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="202"/>
+        <location filename="properties_dialog.cpp" line="213"/>
         <source>Member of</source>
         <translation>Группы</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="210"/>
+        <location filename="properties_dialog.cpp" line="223"/>
         <source>Managed by</source>
         <translation>Руководство</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="215"/>
+        <location filename="properties_dialog.cpp" line="228"/>
         <source>Group policy</source>
         <translation>Групповая политика</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="221"/>
+        <location filename="properties_dialog.cpp" line="234"/>
         <source>Operating System</source>
         <translation>Операционная система</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="205"/>
+        <location filename="properties_dialog.cpp" line="218"/>
         <source>Delegation</source>
         <translation>Делегирование</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="186"/>
+        <location filename="properties_dialog.cpp" line="189"/>
         <source>Address</source>
         <translation>Адрес</translation>
     </message>
@@ -2640,18 +2653,18 @@
         <translation>&amp;Импортировать запрос...</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="262"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="287"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="263"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="288"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="262"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="263"/>
         <source>Can&apos;t cut and paste query folder into itself.</source>
         <translation>Невозможно вырезать и вставить папку запросов в саму себя.</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="287"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="288"/>
         <source>There&apos;s already an item with this name.</source>
         <translation>Элемент с этим именем уже существует.</translation>
     </message>
@@ -3018,6 +3031,14 @@
     </message>
 </context>
 <context>
+    <name>StringListEdit</name>
+    <message>
+        <location filename="attribute_edits/string_list_edit.cpp" line="54"/>
+        <source>Edit values</source>
+        <translation>Редактировать значения</translation>
+    </message>
+</context>
+<context>
     <name>StringOtherEdit</name>
     <message>
         <location filename="attribute_edits/string_other_edit.cpp" line="68"/>
@@ -3097,7 +3118,7 @@
 <context>
     <name>country_widget</name>
     <message>
-        <location filename="attribute_edits/country_combo.cpp" line="175"/>
+        <location filename="attribute_edits/country_combo.cpp" line="192"/>
         <source>None</source>
         <translation>Нет</translation>
     </message>
@@ -3138,7 +3159,7 @@
 <context>
     <name>query</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="340"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="341"/>
         <source>Saved Queries</source>
         <translation>Сохранённые запросы</translation>
     </message>
@@ -3146,30 +3167,30 @@
 <context>
     <name>query.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="546"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="547"/>
         <source>Name may not be empty</source>
         <translation>Имя не может быть пустым</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="322"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="547"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="557"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="560"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="323"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="548"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="558"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="561"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="556"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="557"/>
         <source>There&apos;s already an item with this name.</source>
         <translation>Элемент с этим именем уже существует.</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="559"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="560"/>
         <source>Names cannot contain &quot;/&quot;.</source>
         <translation>Имена не могут содержать «/».</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="321"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="322"/>
         <source>Query file is corrupted.</source>
         <translation>Файл запроса повреждён.</translation>
     </message>
@@ -3177,12 +3198,12 @@
 <context>
     <name>query_folder.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="469"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="470"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="470"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="471"/>
         <source>Description</source>
         <translation>Описание</translation>
     </message>
@@ -3190,7 +3211,7 @@
 <context>
     <name>query_folder_impl.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="575"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="576"/>
         <source>Are you sure you want to delete this item?</source>
         <translation>Вы точно хотиту удалить этот элемент?</translation>
     </message>
@@ -3198,12 +3219,12 @@
 <context>
     <name>query_item_impl.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="300"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="301"/>
         <source>Import Query</source>
         <translation>Импортировать запрос</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="302"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="303"/>
         <location filename="console_impls/query_item_impl.cpp" line="174"/>
         <source>JSON (*.json)</source>
         <translation>JSON (*.json)</translation>
