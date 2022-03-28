@@ -74,6 +74,40 @@ void ADMCTestSelectBaseWidget::select_base() {
     QCOMPARE(base, select_dn);
 }
 
+// Adding a base more than once should not create duplicates
+void ADMCTestSelectBaseWidget::no_duplicates() {
+    QCOMPARE(combo->count(), 1);
+
+    const QString alpha = dn_list[0];
+    const QString beta = dn_list[1];
+
+    select_base_widget_add(select_base_widget, alpha);
+    QCOMPARE(combo->count(), 2);
+
+    select_base_widget_add(select_base_widget, beta);
+    QCOMPARE(combo->count(), 3);
+
+    select_base_widget_add(select_base_widget, alpha);
+    QCOMPARE(combo->count(), 3);
+}
+
+// Adding a base that has already been added while
+// another base is selected should change selection to
+// that base.
+void ADMCTestSelectBaseWidget::select_base_of_already_added() {
+    const QString alpha = dn_list[0];
+    const QString beta = dn_list[1];
+
+    select_base_widget_add(select_base_widget, alpha);
+    QCOMPARE(select_base_widget->get_base(), alpha);
+    
+    select_base_widget_add(select_base_widget, beta);
+    QCOMPARE(select_base_widget->get_base(), beta);
+
+    select_base_widget_add(select_base_widget, alpha);
+    QCOMPARE(select_base_widget->get_base(), alpha);
+}
+
 // Adding multiple search bases to combo box, then selecting
 // one of them in the combobox should make the widget return
 // that search base.

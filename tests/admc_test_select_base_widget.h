@@ -35,6 +35,8 @@ private slots:
 
     void default_to_domain_dn();
     void select_base();
+    void no_duplicates();
+    void select_base_of_already_added();
     void select_base_multiple();
     void save_state();
 
