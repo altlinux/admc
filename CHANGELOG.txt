@@ -112,8 +112,7 @@ CHANGELOG
 - Misc: Fixed group icons not displaying on some DE's. (#330)
 - Misc: Added app icon which is displayed next to in
   app lists and on the title bar.
-- Misc: Empty password input is now allowed when
-  creating users.
+- Misc: Empty password input is now not allowed.
 - Misc: Fixed incorrect value for length limit of the
   field "Logon name (pre-Windows 2000)".
 - Misc: Improved handling of illegal characters in
