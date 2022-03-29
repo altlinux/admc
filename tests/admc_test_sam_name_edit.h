@@ -34,6 +34,7 @@ private slots:
 
     void verify_data();
     void verify();
+    void trim();
 
 private:
     SamNameEdit *edit;

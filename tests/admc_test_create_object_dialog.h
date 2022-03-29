@@ -38,6 +38,7 @@ private slots:
     void create_shared_folder();
     void create_contact();
     void create_contact_autofill();
+    void trim();
 };
 
 #endif /* ADMC_TEST_CREATE_OBJECT_DIALOG_H */

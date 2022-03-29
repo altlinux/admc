@@ -273,6 +273,24 @@ void ADMCTestCreateObjectDialog::create_contact_autofill() {
     test_full_name_autofill(create_dialog->ui->first_name_edit, create_dialog->ui->last_name_edit, create_dialog->ui->full_name_edit);
 }
 
+void ADMCTestCreateObjectDialog::trim() {
+    const QString name = TEST_OU;
+    const QString name_untrimmed = QString(" %1 ").arg(name);
+    const QString parent = test_arena_dn();
+    const QString dn = test_object_dn(name, CLASS_OU);
+
+    auto create_dialog = new CreateOUDialog(parent, parent_widget);
+    create_dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
+
+    create_dialog->ui->name_edit->setText(name_untrimmed);
+
+    create_dialog->accept();
+
+    QVERIFY(object_exists(dn));
+    QCOMPARE(create_dialog->get_created_dn(), dn);
+}
+
 void test_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit) {
     const QString first_name = "first";
     const QString last_name = "last";

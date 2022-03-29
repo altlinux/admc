@@ -67,4 +67,29 @@ void ADMCTestSamNameEdit::verify() {
     QCOMPARE(actual_result, correct_result);
 }
 
+void ADMCTestSamNameEdit::trim() {
+    const QString dn = test_object_dn(TEST_USER, CLASS_USER);
+    const bool create_success = ad.object_add(dn, CLASS_USER);
+    QVERIFY(create_success);
+    QVERIFY(object_exists(dn));
+
+    const AdObject object = ad.search_object(dn);
+
+    edit->load(ad, object);
+
+    line_edit->setText(" trim-test ");
+
+    const bool apply_success = edit->apply(ad, dn);
+    QVERIFY(apply_success);
+
+    const QString actual_sam_name = [&]() {
+        const AdObject object_after_apply = ad.search_object(dn);
+        const QString out = object_after_apply.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
+
+        return out;
+    }();
+    const QString expected_sam_name = "trim-test";
+    QCOMPARE(actual_sam_name, expected_sam_name);
+}
+
 QTEST_MAIN(ADMCTestSamNameEdit)
