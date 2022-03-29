@@ -2334,18 +2334,24 @@
 <context>
     <name>PasswordEdit</name>
     <message>
-        <location filename="attribute_edits/password_edit.cpp" line="65"/>
+        <location filename="attribute_edits/password_edit.cpp" line="73"/>
         <source>Passwords don&apos;t match!</source>
         <translation>Пароли не совпадают!</translation>
     </message>
     <message>
-        <location filename="attribute_edits/password_edit.cpp" line="66"/>
-        <location filename="attribute_edits/password_edit.cpp" line="75"/>
+        <location filename="attribute_edits/password_edit.cpp" line="67"/>
+        <location filename="attribute_edits/password_edit.cpp" line="74"/>
+        <location filename="attribute_edits/password_edit.cpp" line="83"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="attribute_edits/password_edit.cpp" line="74"/>
+        <location filename="attribute_edits/password_edit.cpp" line="66"/>
+        <source>Password cannot be empty.</source>
+        <translation>Пароль не может быть пустым.</translation>
+    </message>
+    <message>
+        <location filename="attribute_edits/password_edit.cpp" line="82"/>
         <source>Password contains invalid characters</source>
         <translation>Пароль содержит недопустимые символы</translation>
     </message>
@@ -3238,12 +3244,12 @@
 <context>
     <name>utils.cpp</name>
     <message>
-        <location filename="utils.cpp" line="400"/>
+        <location filename="utils.cpp" line="402"/>
         <source>Input field for Name contains one or more of the following illegal characters: # , + &quot; \ &lt; &gt; ; = (leading space) (trailing space) (leading question mark)</source>
         <translation>Поле ввода &quot;Имя&quot; содержит один или несколько из следующих недопустимых символов: # , + &quot; \ &lt; &gt; ; = (пробел в начале) (пробел в конце) (? в начале)</translation>
     </message>
     <message>
-        <location filename="utils.cpp" line="401"/>
+        <location filename="utils.cpp" line="403"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
