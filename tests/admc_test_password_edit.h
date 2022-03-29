@@ -34,6 +34,7 @@ private slots:
 
     void edited_signal();
     void load();
+    void verify_data();
     void verify();
     void apply();
 

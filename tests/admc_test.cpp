@@ -198,6 +198,13 @@ void ADMCTest::close_message_box() {
     }
 }
 
+bool ADMCTest::message_box_is_open() const {
+    auto message_box = parent_widget->findChild<QMessageBox *>();
+    const bool out = (message_box != nullptr);
+
+    return out;
+}
+
 void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &dn) {
     QPushButton *add_button = select_dialog->ui->add_button;
     add_button->click();

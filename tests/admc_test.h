@@ -101,6 +101,8 @@ protected:
     // open(). Won't work for QMessageBox static f-ns
     void close_message_box();
 
+    bool message_box_is_open() const;
+
     // Selects an object via an already open select object
     // dialog. Object must be inside test arena
     void select_object_dialog_select(const QString &dn);

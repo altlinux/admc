@@ -37,18 +37,23 @@
 
 void ADMCTestCreateObjectDialog::create_user_data() {
     QTest::addColumn<QString>("user_class");
-    QTest::addColumn<int>("exptected_uac");
+    QTest::addColumn<QString>("password");
+    QTest::addColumn<bool>("expected_object_exists");
+    QTest::addColumn<bool>("expected_message_box_is_open");
 
-    QTest::newRow("user") << CLASS_USER;
-    QTest::newRow("inetOrgPerson") << CLASS_INET_ORG_PERSON;
+    QTest::newRow("user") << CLASS_USER << TEST_PASSWORD << true << false;
+    QTest::newRow("inetOrgPerson") << CLASS_INET_ORG_PERSON << TEST_PASSWORD << true << false;
+    QTest::newRow("user empty password") << CLASS_USER << QString() << false << true;
 }
 
 void ADMCTestCreateObjectDialog::create_user() {
     QFETCH(QString, user_class);
+    QFETCH(QString, password);
+    QFETCH(bool, expected_object_exists);
+    QFETCH(bool, expected_message_box_is_open);
 
     const QString name = TEST_USER;
     const QString logon_name = TEST_USER_LOGON;
-    const QString password = TEST_PASSWORD;
     const QString parent = test_arena_dn();
     const QString dn = test_object_dn(name, CLASS_USER);
 
@@ -64,17 +69,24 @@ void ADMCTestCreateObjectDialog::create_user() {
 
     create_dialog->accept();
 
-    QVERIFY2(object_exists(dn), "Created user doesn't exist");
-    QCOMPARE(create_dialog->get_created_dn(), dn);
+    const bool actual_message_box_is_open = message_box_is_open();
+    QCOMPARE(actual_message_box_is_open, expected_message_box_is_open);
 
-    const int actual_uac = [&]() {
-        const AdObject object = ad.search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
-        const int out = object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
+    const bool actual_object_exists = object_exists(dn);
+    QCOMPARE(actual_object_exists, expected_object_exists);
 
-        return out;
-    }();
-    const int expected_uac = UAC_NORMAL_ACCOUNT;
-    QCOMPARE(actual_uac, expected_uac);
+    if (actual_object_exists) {
+        QCOMPARE(create_dialog->get_created_dn(), dn);
+
+        const int actual_uac = [&]() {
+            const AdObject object = ad.search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
+            const int out = object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
+
+            return out;
+        }();
+        const int expected_uac = UAC_NORMAL_ACCOUNT;
+        QCOMPARE(actual_uac, expected_uac);
+    }
 }
 
 void ADMCTestCreateObjectDialog::create_ou() {
