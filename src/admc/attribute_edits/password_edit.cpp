@@ -61,6 +61,14 @@ bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
 
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();
+
+    if (pass.isEmpty()) {
+        const QString error_text = QString(tr("Password cannot be empty."));
+        message_box_warning(edit, tr("Error"), error_text);
+
+        return false;
+    }
+
     if (pass != confirm_pass) {
         const QString error_text = QString(tr("Passwords don't match!"));
         message_box_warning(edit, tr("Error"), error_text);
@@ -82,17 +90,10 @@ bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
 
 bool PasswordEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = edit->text();
-    const bool input_is_not_empty = !new_value.isEmpty();
 
-    if (input_is_not_empty) {
-        const bool success = ad.user_set_pass(dn, new_value);
-        
-        return success;
-    } else {
-        // If no password was entered, don't change
-        // password at all
-        return true;
-    }
+    const bool success = ad.user_set_pass(dn, new_value);
+    
+    return success;
 }
 
 QLineEdit *PasswordEdit::get_edit() const {
