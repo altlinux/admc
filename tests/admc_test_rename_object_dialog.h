@@ -28,6 +28,7 @@ class ADMCTestRenameObjectDialog : public ADMCTest {
 
 private slots:
     void rename();
+    void rename_user_autofill();
 };
 
 #endif /* ADMC_TEST_RENAME_OBJECT_DIALOG_H */

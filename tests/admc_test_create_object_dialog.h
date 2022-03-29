@@ -29,11 +29,15 @@ class ADMCTestCreateObjectDialog : public ADMCTest {
 private slots:
     void create_user_data();
     void create_user();
+    void create_user_autofill();
     void create_ou();
     void create_computer();
+    void create_computer_autofill();
     void create_group();
+    void create_group_autofill();
     void create_shared_folder();
     void create_contact();
+    void create_contact_autofill();
 };
 
 #endif /* ADMC_TEST_CREATE_OBJECT_DIALOG_H */

@@ -49,4 +49,19 @@ void ADMCTestRenameObjectDialog::rename() {
     QCOMPARE(rename_object_dialog->get_new_dn(), new_dn);
 }
 
+void ADMCTestRenameObjectDialog::rename_user_autofill() {
+    const QString old_name = TEST_USER;
+    const QString old_dn = test_object_dn(old_name, CLASS_USER);
+
+    const bool create_success = ad.object_add(old_dn, CLASS_USER);
+    QVERIFY(create_success);
+    QVERIFY(object_exists(old_dn));
+
+    auto rename_object_dialog = new RenameUserDialog(ad, old_dn, parent_widget);
+    rename_object_dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(rename_object_dialog, 1000));
+
+    test_lineedit_autofill(rename_object_dialog->ui->upn_prefix_edit, rename_object_dialog->ui->sam_name_edit);
+}
+
 QTEST_MAIN(ADMCTestRenameObjectDialog)

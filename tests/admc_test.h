@@ -121,5 +121,6 @@ private:
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
+void test_lineedit_autofill(QLineEdit *src_edit, QLineEdit *dest_edit);
 
 #endif /* ADMC_TEST_H */

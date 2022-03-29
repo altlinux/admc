@@ -289,3 +289,12 @@ void ADMCTest::select_base_widget_add(SelectBaseWidget *widget, const QString &d
     select_container_dialog->accept();
     QVERIFY(QTest::qWaitForWindowExposed(widget, 1000));
 }
+
+void test_lineedit_autofill(QLineEdit *src_edit, QLineEdit *dest_edit) {
+    const QString expected_dest_text = "test";
+
+    src_edit->setText(expected_dest_text);
+
+    const QString actual_dest_text = dest_edit->text();
+    QCOMPARE(actual_dest_text, expected_dest_text);
+}
