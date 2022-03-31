@@ -2276,7 +2276,7 @@
     <message>
         <location filename="tabs/organization_tab.ui" line="60"/>
         <source>Reports:</source>
-        <translation>Отчёты:</translation>
+        <translation>Прямые подчинненые:</translation>
     </message>
 </context>
 <context>
