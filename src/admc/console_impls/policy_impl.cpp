@@ -303,6 +303,18 @@ void PolicyImpl::on_add_link() {
 void PolicyImpl::on_edit() {
     const QString dn = get_action_target_dn(console, ItemType_Policy, PolicyRole_DN);
 
+    // TODO: remove this when gpui is able to load
+    // policy name on their own
+    const QString policy_name = [&]() {
+        AdInterface ad;
+        if (ad_failed(ad, console)) {
+            return QString();
+        }
+
+        const AdObject object = ad.search_object(dn);
+        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    }();
+
     const QString path = [&]() {
         AdInterface ad;
         if (ad_failed(ad, console)) {
@@ -331,7 +343,9 @@ void PolicyImpl::on_edit() {
 
     const QList<QString> args = {
         QString("-p"),
-        path
+        path,
+        QString("-n"),
+        policy_name
     };
 
     process->setArguments(args);
