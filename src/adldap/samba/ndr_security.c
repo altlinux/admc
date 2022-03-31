@@ -25,6 +25,8 @@
 
 #include "samba/ndr_misc.h"
 
+#include "adldap_config.h"
+
 #define UNUSED_ARG(x) (void)(x)
 
 static void ndr_print_flags_dom_sid(struct ndr_print *ndr, const char *name, int unused, const struct dom_sid *r)
@@ -1102,7 +1104,11 @@ _PUBLIC_ enum ndr_err_code ndr_pull_security_token(struct ndr_pull *ndr, int ndr
         NDR_CHECK(ndr_pull_align(ndr, 8));
         NDR_CHECK(ndr_pull_uint32(ndr, NDR_SCALARS, &r->num_sids));
         NDR_CHECK(ndr_pull_array_size(ndr, &r->sids));
+#ifdef NDR_VERSION_GREATER_THAN_1_0_1
+        ndr_get_array_size(ndr, &r->sids, &size_sids_0);
+#else
         size_sids_0 = ndr_get_array_size(ndr, &r->sids);
+#endif
         NDR_PULL_ALLOC_N(ndr, r->sids, size_sids_0);
         _mem_save_sids_0 = NDR_PULL_GET_MEM_CTX(ndr);
         NDR_PULL_SET_MEM_CTX(ndr, r->sids, 0);
@@ -1179,7 +1185,11 @@ _PUBLIC_ enum ndr_err_code ndr_pull_security_unix_token(struct ndr_pull *ndr, in
         NDR_CHECK(ndr_pull_uid_t(ndr, NDR_SCALARS, &r->uid));
         NDR_CHECK(ndr_pull_gid_t(ndr, NDR_SCALARS, &r->gid));
         NDR_CHECK(ndr_pull_uint32(ndr, NDR_SCALARS, &r->ngroups));
+#ifdef NDR_VERSION_GREATER_THAN_1_0_1
+        ndr_get_array_size(ndr, &r->groups, &size_groups_0);
+#else
         size_groups_0 = ndr_get_array_size(ndr, &r->groups);
+#endif
         NDR_PULL_ALLOC_N(ndr, r->groups, size_groups_0);
         _mem_save_groups_0 = NDR_PULL_GET_MEM_CTX(ndr);
         NDR_PULL_SET_MEM_CTX(ndr, r->groups, 0);
