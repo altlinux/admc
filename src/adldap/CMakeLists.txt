@@ -13,6 +13,12 @@ pkg_check_modules(Krb5 REQUIRED IMPORTED_TARGET krb5)
 pkg_check_modules(Glib REQUIRED IMPORTED_TARGET glib-2.0)
 pkg_check_modules(Uuid REQUIRED IMPORTED_TARGET uuid)
 
+pkg_check_modules(Ndr REQUIRED IMPORTED_TARGET ndr)
+if(Ndr_VERSION VERSION_GREATER "1.0.1")
+    set(NDR_VERSION_GREATER_THAN_1_0_1 ON)
+endif()
+configure_file("adldap_config.h.in" "adldap_config.h")
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -39,6 +45,7 @@ add_library(adldap SHARED
 
 target_include_directories(adldap PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(adldap
