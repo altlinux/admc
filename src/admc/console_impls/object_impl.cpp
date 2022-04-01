@@ -69,6 +69,7 @@ QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list);
 QList<QString> get_selected_dn_list_object(ConsoleWidget *console);
 QString get_selected_target_dn_object(ConsoleWidget *console);
 void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root);
+bool can_create_class_at_parent(const QString &create_class, const QString &parent_class);
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -79,6 +80,10 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 
     find_action_enabled = true;
     refresh_action_enabled = true;
+
+    toolbar_create_user = nullptr;
+    toolbar_create_group = nullptr;
+    toolbar_create_ou = nullptr;
 
     object_filter = settings_get_variant(SETTING_object_filter).toString();
     object_filter_enabled = settings_get_variant(SETTING_object_filter_enabled).toBool();
@@ -158,6 +163,9 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     connect(
         edit_upn_suffixes_action, &QAction::triggered,
         this, &ObjectImpl::on_edit_upn_suffixes);
+    connect(
+        console, &ConsoleWidget::selection_changed,
+        this, &ObjectImpl::update_toolbar_actions);
 }
 
 void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
@@ -362,18 +370,7 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
     for (const QString &action_object_class : new_action_map.keys()) {
         QAction *action = new_action_map[action_object_class];
 
-        const bool is_visible = [&action_object_class, &object_class]() {
-            // NOTE: to get full list of possible
-            // superiors, need to use the all of the parent
-            // classes too, not just the leaf class
-            const QList<QString> action_object_class_list = g_adconfig->get_inherit_chain(action_object_class);
-            const QList<QString> possible_superiors = g_adconfig->get_possible_superiors(QList<QString>(action_object_class_list));
-            const bool is_visible_out = possible_superiors.contains(object_class);
-
-            return is_visible_out;
-        }();
-
-
+        const bool is_visible = can_create_class_at_parent(action_object_class, object_class);
         action->setVisible(is_visible);
     }
 
@@ -642,6 +639,22 @@ void ObjectImpl::set_find_action_enabled(const bool enabled) {
 
 void ObjectImpl::set_refresh_action_enabled(const bool enabled) {
     refresh_action_enabled = enabled;
+}
+
+void ObjectImpl::set_toolbar_actions(QAction *toolbar_create_user_arg, QAction *toolbar_create_group_arg, QAction *toolbar_create_ou_arg) {
+    toolbar_create_user = toolbar_create_user_arg;
+    toolbar_create_group = toolbar_create_group_arg;
+    toolbar_create_ou = toolbar_create_ou_arg;
+
+    connect(
+        toolbar_create_user, &QAction::triggered,
+        this, &ObjectImpl::on_new_user);
+    connect(
+        toolbar_create_group, &QAction::triggered,
+        this, &ObjectImpl::on_new_group);
+    connect(
+        toolbar_create_ou, &QAction::triggered,
+        this, &ObjectImpl::on_new_ou);
 }
 
 QList<QString> ObjectImpl::column_labels() const {
@@ -1284,6 +1297,47 @@ void ObjectImpl::move(AdInterface &ad, const QList<QString> &old_dn_list, const 
     move_and_rename(ad, old_to_new_dn_map, new_parent_dn);
 }
 
+void ObjectImpl::update_toolbar_actions() {
+    const QHash<QString, QAction *> toolbar_action_map = {
+        {CLASS_USER, toolbar_create_user},
+        {CLASS_GROUP, toolbar_create_group},
+        {CLASS_OU, toolbar_create_ou},
+    };
+
+    // Disable all actions by default
+    for (const QString &action_object_class : toolbar_action_map.keys()) {
+        QAction *action = toolbar_action_map[action_object_class];
+
+        if (action == nullptr) {
+            continue;
+        }
+
+        action->setEnabled(false);
+    }
+
+    // Then enable them depending on current selection
+    const QList<QModelIndex> target_list = console->get_selected_items(ItemType_Object);
+
+    const bool single_selection = (target_list.size() == 1);
+    if (!single_selection) {
+        return;
+    }
+
+    const QModelIndex target = target_list[0];
+    const QString object_class = target.data(ObjectRole_ObjectClasses).toStringList().last();
+
+    for (const QString &action_object_class : toolbar_action_map.keys()) {
+        QAction *action = toolbar_action_map[action_object_class];
+
+        if (action == nullptr) {
+            continue;
+        }
+
+        const bool is_enabled = can_create_class_at_parent(action_object_class, object_class);
+        action->setEnabled(is_enabled);
+    }
+}
+
 void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
     if (!parent.isValid()) {
         return;
@@ -1693,4 +1747,15 @@ void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list
             console->delete_item(index);
         }
     }
+}
+
+bool can_create_class_at_parent(const QString &create_class, const QString &parent_class) {
+    // NOTE: to get full list of possible
+    // superiors, need to use the all of the parent
+    // classes too, not just the leaf class
+    const QList<QString> action_object_class_list = g_adconfig->get_inherit_chain(create_class);
+    const QList<QString> possible_superiors = g_adconfig->get_possible_superiors(QList<QString>(action_object_class_list));
+    const bool out = possible_superiors.contains(parent_class);
+
+    return out;
 }

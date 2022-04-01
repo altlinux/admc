@@ -89,6 +89,7 @@ public:
 
     void set_find_action_enabled(const bool enabled);
     void set_refresh_action_enabled(const bool enabled);
+    void set_toolbar_actions(QAction *create_user, QAction *create_group, QAction *create_ou);
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
@@ -131,6 +132,10 @@ private:
     QAction *new_action;
     QHash<QString, QAction *> new_action_map;
 
+    QAction *toolbar_create_user;
+    QAction *toolbar_create_group;
+    QAction *toolbar_create_ou;
+
     bool find_action_enabled;
     bool refresh_action_enabled;
 
@@ -140,6 +145,7 @@ private:
     void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
     void move_and_rename(AdInterface &ad, const QHash<QString, QString> &old_dn_list, const QString &new_parent_dn);
     void move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
+    void update_toolbar_actions();
 };
 
 void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
