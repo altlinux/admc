@@ -129,10 +129,10 @@ public:
     // are returned instead.
     QList<QModelIndex> get_selected_items(const int type) const;
 
-    // Get a single action target. Use if you are sure
+    // Get a single selected item. Use if you are sure
     // that there's only one (dialog that uses one
-    // target item for example).
-    QModelIndex get_action_target(const int type) const;
+    // selected item for example).
+    QModelIndex get_selected_item(const int type) const;
 
     // NOTE: Search is inclusive, examining the given parent
     // and all of it's descendants. Pass QModelIndex()

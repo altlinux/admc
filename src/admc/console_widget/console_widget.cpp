@@ -302,7 +302,7 @@ QList<QModelIndex> ConsoleWidget::get_selected_items(const int type) const {
     return out;
 }
 
-QModelIndex ConsoleWidget::get_action_target(const int type) const {
+QModelIndex ConsoleWidget::get_selected_item(const int type) const {
     const QList<QModelIndex> index_list = get_selected_items(type);
 
     if (!index_list.isEmpty()) {
