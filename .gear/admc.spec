@@ -110,6 +110,9 @@ Tests for ADMC
 %_bindir/admc_test_sam_name_edit
 
 %changelog
+* Fri Apr 01 2022 Dmitry Degtyarev <kevl@altlinux.org> 0.9.0-alt1
+- 0.9.0 (See CHANGELOG.txt for details)
+
 * Thu Mar 31 2022 Dmitry Degtyarev <kevl@altlinux.org> 0.8.3-alt1
 - 0.8.3 (See CHANGELOG.txt for details)
 - Removed auto-generated changelog entry in .spec
