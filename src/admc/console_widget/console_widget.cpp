@@ -313,14 +313,7 @@ QModelIndex ConsoleWidget::get_action_target(const int type) const {
 }
 
 QList<QModelIndex> ConsoleWidget::get_action_target_items(const int type) const {
-    QList<QModelIndex> out;
-
-    for (const QModelIndex &index : d->action_target_list) {
-        const int this_type = console_item_get_type(index);
-        if (this_type == type) {
-            out.append(index);
-        }
-    }
+    const QList<QModelIndex> out = get_selected_items(type);
 
     return out;
 }
@@ -521,7 +514,7 @@ void ConsoleWidget::setup_menubar_action_menu(QMenu *menu) {
 
     connect(
         menu, &QMenu::aboutToShow,
-        d, &ConsoleWidgetPrivate::on_menubar_action_menu_open);
+        d, &ConsoleWidgetPrivate::update_actions);
 }
 
 void ConsoleWidgetPrivate::add_actions(QMenu *menu) {
@@ -546,16 +539,9 @@ void ConsoleWidgetPrivate::add_actions(QMenu *menu) {
     menu->addAction(standard_action_map[StandardAction_Properties]);
 }
 
-void ConsoleWidgetPrivate::on_menubar_action_menu_open() {
-    // Action menu opened from menubar, so use regular
-    // selected items
-    action_target_list = get_all_selected_items();
-
-    update_actions();
-}
-
 // Returns whether any action is visible
 bool ConsoleWidgetPrivate::update_actions() {
+    const QList<QModelIndex> action_target_list = get_all_selected_items();
     if (!action_target_list.isEmpty() && !action_target_list[0].isValid()) {
         return false;
     }
@@ -869,6 +855,9 @@ QList<QModelIndex> ConsoleWidgetPrivate::get_all_selected_items() const {
     } else if (focused_results) {
         const QList<QModelIndex> results_selected = results_view->get_selected_indexes();
 
+        // NOTE: this is necessary for the "context
+        // menu targets current scope if clicked on
+        // empty space in results view" feature.
         if (!results_selected.isEmpty()) {
             return results_selected;
         } else {
@@ -1154,6 +1143,8 @@ void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) 
     const QSet<int> type_set = [&]() {
         QSet<int> out;
 
+        const QList<QModelIndex> action_target_list = get_all_selected_items();
+
         for (const QModelIndex &index : action_target_list) {
             const int type = index.data(ConsoleRole_Type).toInt();
             out.insert(type);
@@ -1213,10 +1204,6 @@ void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) 
     }
 }
 
-// NOTE: when action menu is opened as context menu
-// from results pane, treat clicking on empty space in
-// results pane as clicking on it's parent, which is
-// current scope.
 void ConsoleWidgetPrivate::on_results_context_menu(const QPoint &pos) {
     const QAbstractItemView *results_view = [&]() {
         ConsoleImpl *current_impl = get_current_scope_impl();
@@ -1226,21 +1213,16 @@ void ConsoleWidgetPrivate::on_results_context_menu(const QPoint &pos) {
         return out;
     }();
 
-    action_target_list = [&]() {
-        const QModelIndex index = results_view->indexAt(pos);
-        const bool clicked_empty_space = !index.isValid();
-
-        if (clicked_empty_space) {
-            const QModelIndex current_scope_item = q->get_current_scope_item();
-            const QList<QModelIndex> out = {current_scope_item};
-
-            return out;
-        } else {
-            const QList<QModelIndex> out = get_all_selected_items();
-
-            return out;
-        }
-    }();
+    // NOTE: have to manually clear selection when
+    // clicking on empty space in view because by
+    // default Qt doesn't do it. This is necessary for
+    // the "context menu targets current scope if
+    // clicked on empty space in results view" feature
+    const QModelIndex index = results_view->indexAt(pos);
+    const bool clicked_empty_space = !index.isValid();
+    if (clicked_empty_space) {
+        results_view->selectionModel()->clear();
+    }
 
     const QPoint global_pos = results_view->mapToGlobal(pos);
     open_context_menu(global_pos);
@@ -1252,11 +1234,6 @@ void ConsoleWidgetPrivate::on_scope_context_menu(const QPoint &pos) {
     if (!index.isValid()) {
         return;
     }
-
-    // Scope uses real selection as target of action
-    // menu. If clicked on empty space, action menu
-    // doesn't open.
-    action_target_list = get_all_selected_items();
 
     const QPoint global_pos = focused_view->mapToGlobal(pos);
     open_context_menu(global_pos);

@@ -84,8 +84,6 @@ public:
     QList<QPersistentModelIndex> targets_past;
     QList<QPersistentModelIndex> targets_future;
 
-    QList<QModelIndex> action_target_list;
-
     QHash<StandardAction, QAction *> standard_action_map;
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
@@ -105,7 +103,6 @@ public:
     void open_context_menu(const QPoint &global_pos);
     void add_actions(QMenu *menu);
     bool update_actions();
-    void on_menubar_action_menu_open();
 
 public slots:
     void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
