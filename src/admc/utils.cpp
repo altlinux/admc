@@ -301,7 +301,7 @@ QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list, const
 }
 
 QList<QString> get_action_target_dn_list(ConsoleWidget *console, const int type, const int dn_role) {
-    const QList<QModelIndex> indexes = console->get_action_target_items(type);
+    const QList<QModelIndex> indexes = console->get_selected_items(type);
     const QList<QString> out = index_list_to_dn_list(indexes, dn_role);
 
     return out;

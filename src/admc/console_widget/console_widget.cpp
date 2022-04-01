@@ -303,19 +303,13 @@ QList<QModelIndex> ConsoleWidget::get_selected_items(const int type) const {
 }
 
 QModelIndex ConsoleWidget::get_action_target(const int type) const {
-    const QList<QModelIndex> index_list = get_action_target_items(type);
+    const QList<QModelIndex> index_list = get_selected_items(type);
 
     if (!index_list.isEmpty()) {
         return index_list[0];
     } else {
         return QModelIndex();
     }
-}
-
-QList<QModelIndex> ConsoleWidget::get_action_target_items(const int type) const {
-    const QList<QModelIndex> out = get_selected_items(type);
-
-    return out;
 }
 
 QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int role, const QVariant &value, const int type) const {
@@ -1156,7 +1150,7 @@ void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) 
     // Call impl's action f-n for all present types
     for (const int type : type_set) {
         // Filter selected list so that it only contains indexes of this type
-        const QList<QModelIndex> selected_of_type = q->get_action_target_items(type);
+        const QList<QModelIndex> selected_of_type = q->get_selected_items(type);
 
         ConsoleImpl *impl = impl_map[type];
         switch (action_enum) {
