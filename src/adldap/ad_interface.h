@@ -104,7 +104,6 @@ public:
     static void set_sasl_nocanon(const bool is_on);
     static void set_port(const int port);
     static void set_cert_strategy(const CertStrategy strategy);
-    static QString get_dc();
 
     bool is_connected() const;
     QList<AdMessage> messages() const;
@@ -113,6 +112,7 @@ public:
     AdConfig *adconfig() const;
     QString client_user() const;
     bool logged_in_as_admin();
+    QString get_dc() const;
 
     // NOTE: If request attributes list is empty, all
     // attributes are returned
@@ -143,7 +143,15 @@ public:
     bool attribute_replace_int(const QString &dn, const QString &attribute, const int value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime);
 
+    // NOTE: attrs_map should contain attribute values
+    // that will be added to the newly created object.
+    // Note that it *must* contain a valid value for
+    // objectClass attribute.
+    bool object_add(const QString &dn, const QHash<QString, QList<QString>> &attrs_map);
+    // Simplified version that only only adds one
+    // objectClass value
     bool object_add(const QString &dn, const QString &object_class);
+
     bool object_delete(const QString &dn, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool object_move(const QString &dn, const QString &new_container);
     bool object_rename(const QString &dn, const QString &new_name);

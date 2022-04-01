@@ -30,7 +30,9 @@
 
 #include <QDialog>
 
-class PropertiesMultiTab;
+class AttributeEdit;
+class AdInterface;
+class QCheckBox;
 
 namespace Ui {
 class PropertiesMultiDialog;
@@ -42,7 +44,7 @@ class PropertiesMultiDialog final : public QDialog {
 public:
     Ui::PropertiesMultiDialog *ui;
 
-    PropertiesMultiDialog(const QList<QString> &target_list_arg, const QList<QString> &class_list);
+    PropertiesMultiDialog(AdInterface &ad, const QList<QString> &target_list_arg, const QList<QString> &class_list);
     ~PropertiesMultiDialog();
 
 signals:
@@ -50,11 +52,13 @@ signals:
 
 private slots:
     void accept() override;
-    void reset();
+    void on_edited();
 
 private:
     QList<QString> target_list;
-    QList<PropertiesMultiTab *> tab_list;
+    QList<AttributeEdit *> edit_list;
+    QHash<AttributeEdit *, QCheckBox *> check_map;
+    QPushButton *apply_button;
 
     bool apply();
 };

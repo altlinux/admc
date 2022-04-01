@@ -31,6 +31,7 @@
 class QTreeView;
 class QStandardItemModel;
 class QSortFilterProxyModel;
+class AdInterface;
 
 namespace Ui {
 class SelectContainerDialog;
@@ -47,10 +48,8 @@ class SelectContainerDialog : public QDialog {
 public:
     Ui::SelectContainerDialog *ui;
 
-    SelectContainerDialog(QWidget *parent);
+    SelectContainerDialog(AdInterface &ad, QWidget *parent);
     ~SelectContainerDialog();
-
-    void open() override;
 
     QString get_selected() const;
 

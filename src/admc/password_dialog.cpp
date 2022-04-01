@@ -30,37 +30,32 @@
 #include "status.h"
 #include "utils.h"
 
-PasswordDialog::PasswordDialog(QWidget *parent)
+#include <QPushButton>
+
+PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::PasswordDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edits, this);
+    auto password_main_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, ui->show_password_check, this);
 
-    pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, &edits, this);
+    pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, this);
 
-    new UnlockEdit(ui->unlock_check, &edits, this);
-
-    settings_setup_dialog_geometry(SETTING_password_dialog_geometry, this);
-}
-
-PasswordDialog::~PasswordDialog() {
-    delete ui;
-}
-
-void PasswordDialog::set_target(const QString &target_arg) {
+    auto unlock_edit = new UnlockEdit(ui->unlock_check, this);
+    
     target = target_arg;
 
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
+    edits = {
+        password_main_edit,
+        pass_expired_edit,
+        unlock_edit,
+    };
 
     const AdObject object = ad.search_object(target);
 
-    edits_load(edits, ad, object);
+    AttributeEdit::load(edits, ad, object);
 
     const bool expired_check_enabled = [&]() {
         const bool dont_expire_pass = object.get_account_option(AccountOption_DontExpirePassword, g_adconfig);
@@ -72,34 +67,44 @@ void PasswordDialog::set_target(const QString &target_arg) {
 
     if (expired_check_enabled) {
         ui->expired_check->setChecked(true);
-
-        // NOTE: always set expired option to modified, so that
-        // it always applies, even if this option is already
-        // turned on. This is for consistent and understandable
-        // messaging to user.
-        pass_expired_edit->set_modified(true);
     } else {
         ui->expired_check->setEnabled(false);
         ui->expired_check->setToolTip(tr("Option is unavailable because a conflicting account option is currently enabled."));
     }
 
-    g_status->display_ad_messages(ad, this);
+    required_list = {
+        ui->password_main_edit,
+        ui->password_confirm_edit,
+    };
+
+    for (QLineEdit *edit : required_list) {
+        connect(
+            edit, &QLineEdit::textChanged,
+            this, &PasswordDialog::on_edited);
+    }
+    on_edited();
+
+    settings_setup_dialog_geometry(SETTING_password_dialog_geometry, this);
+}
+
+PasswordDialog::~PasswordDialog() {
+    delete ui;
 }
 
 void PasswordDialog::accept() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
     show_busy_indicator();
 
-    const bool verify_success = edits_verify(ad, edits, target);
+    const bool verify_success = AttributeEdit::verify(edits, ad, target);
     if (!verify_success) {
         return;
     }
 
-    const bool apply_success = edits_apply(ad, edits, target);
+    const bool apply_success = AttributeEdit::apply(edits, ad, target);
 
     hide_busy_indicator();
 
@@ -108,4 +113,19 @@ void PasswordDialog::accept() {
     if (apply_success) {
         QDialog::accept();
     }
+}
+
+void PasswordDialog::on_edited() {
+    const bool all_required_filled = [this]() {
+        for (QLineEdit *edit : required_list) {
+            if (edit->text().isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }();
+
+    auto ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    ok_button->setEnabled(all_required_filled);
 }

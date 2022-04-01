@@ -47,7 +47,7 @@ StringAttributeDialog::StringAttributeDialog(const QList<QByteArray> &value_list
     const QString value_string = QString(value);
     ui->edit->setText(value_string);
 
-    settings_setup_dialog_geometry(SETTING_list_attribute_dialog_geometry, this);
+    settings_setup_dialog_geometry(SETTING_string_attribute_dialog_geometry, this);
 }
 
 StringAttributeDialog::~StringAttributeDialog() {
@@ -62,5 +62,11 @@ QList<QByteArray> StringAttributeDialog::get_value_list() const {
     } else {
         const QByteArray new_value = new_value_string.toUtf8();
         return {new_value};
+    }
+}
+
+void StringAttributeDialog::set_max_length(const int max_length) {
+    if (max_length > 0) {
+        ui->edit->setMaxLength(max_length);
     }
 }

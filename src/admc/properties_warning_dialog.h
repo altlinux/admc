@@ -47,6 +47,14 @@ public:
 
     PropertiesWarningDialog(const PropertiesWarningType type, QWidget *parent);
     ~PropertiesWarningDialog();
+
+signals:
+    void applied();
+    void discarded();
+
+private:
+    void on_apply_button();
+    void on_discard_button();
 };
 
 #endif /* PROPERTIES_WARNING_DIALOG_H */

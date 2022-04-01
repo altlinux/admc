@@ -32,7 +32,7 @@ void ADMCTestStringLargeEdit::init() {
 
     text_edit = new QPlainTextEdit(parent_widget);
 
-    edit = new StringLargeEdit(text_edit, TEST_ATTRIBUTE, &edits, parent_widget);
+    edit = new StringLargeEdit(text_edit, TEST_ATTRIBUTE, parent_widget);
 
     // Create test user
     const QString name = TEST_USER;
@@ -46,6 +46,7 @@ void ADMCTestStringLargeEdit::test_emit_edited_signal() {
     bool edited_signal_emitted = false;
     connect(
         edit, &AttributeEdit::edited,
+        this,
         [&edited_signal_emitted]() {
             edited_signal_emitted = true;
         });

@@ -28,8 +28,10 @@ class QCheckBox;
 class GpoptionsEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    GpoptionsEdit(QCheckBox *check, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    GpoptionsEdit(QCheckBox *check, QObject *parent);
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
     QCheckBox *check;

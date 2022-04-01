@@ -25,19 +25,22 @@
    </property>
    <widget class="QMenu" name="menu_file">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="action_connection_options"/>
+    <addaction name="action_edit_fsmo_roles"/>
+    <addaction name="separator"/>
     <addaction name="action_quit"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menu_action">
     <property name="title">
-     <string>Action</string>
+     <string>&amp;Action</string>
     </property>
    </widget>
    <widget class="QMenu" name="menu_view">
     <property name="title">
-     <string>View</string>
+     <string>&amp;View</string>
     </property>
     <addaction name="action_view_icons"/>
     <addaction name="action_view_list"/>
@@ -53,11 +56,11 @@
    </widget>
    <widget class="QMenu" name="menu_preferences">
     <property name="title">
-     <string>Preferences</string>
+     <string>&amp;Preferences</string>
     </property>
     <widget class="QMenu" name="menu_language">
      <property name="title">
-      <string>Language</string>
+      <string>&amp;Language</string>
      </property>
     </widget>
     <addaction name="action_advanced_features"/>
@@ -67,11 +70,10 @@
     <addaction name="action_timestamps"/>
     <addaction name="action_show_noncontainers"/>
     <addaction name="menu_language"/>
-    <addaction name="action_dev_mode"/>
    </widget>
    <widget class="QMenu" name="menu_help">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="action_manual"/>
     <addaction name="action_changelog"/>
@@ -120,12 +122,12 @@
   </widget>
   <action name="action_connection_options">
    <property name="text">
-    <string>Connection Options</string>
+    <string>&amp;Connection Options</string>
    </property>
   </action>
   <action name="action_quit">
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -137,17 +139,23 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Manual</string>
+    <string>&amp;Manual</string>
+   </property>
+   <property name="toolTip">
+    <string>Manual (Alt + 8)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+8</string>
    </property>
   </action>
   <action name="action_changelog">
    <property name="text">
-    <string>Changelog</string>
+    <string>&amp;Changelog</string>
    </property>
   </action>
   <action name="action_about">
    <property name="text">
-    <string>About ADMC</string>
+    <string>&amp;About ADMC</string>
    </property>
   </action>
   <action name="action_view_icons">
@@ -155,7 +163,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Icons</string>
+    <string>&amp;Icons</string>
    </property>
   </action>
   <action name="action_view_list">
@@ -163,7 +171,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>List</string>
+    <string>&amp;List</string>
    </property>
   </action>
   <action name="action_view_detail">
@@ -171,7 +179,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Detail</string>
+    <string>&amp;Detail</string>
    </property>
   </action>
   <action name="action_toggle_message_log">
@@ -195,7 +203,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Console Tree</string>
+    <string>&amp;Console Tree</string>
    </property>
   </action>
   <action name="action_toggle_description_bar">
@@ -203,17 +211,17 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Description Bar</string>
+    <string>Description &amp;Bar</string>
    </property>
   </action>
   <action name="action_customize_columns">
    <property name="text">
-    <string>Customize Columns...</string>
+    <string>C&amp;ustomize Columns...</string>
    </property>
   </action>
   <action name="action_filter_objects">
    <property name="text">
-    <string>Filter Objects...</string>
+    <string>&amp;Filter Objects...</string>
    </property>
   </action>
   <action name="action_advanced_features">
@@ -221,7 +229,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Advanced Features</string>
+    <string>&amp;Advanced Features</string>
    </property>
   </action>
   <action name="action_confirm_actions">
@@ -229,7 +237,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Confirm Actions</string>
+    <string>&amp;Confirm Actions</string>
    </property>
   </action>
   <action name="action_last_name_order">
@@ -237,7 +245,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Put Last Name Before First Name</string>
+    <string>&amp;Put Last Name Before First Name</string>
    </property>
   </action>
   <action name="action_log_searches">
@@ -245,7 +253,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Log Searches</string>
+    <string>&amp;Log Searches</string>
    </property>
   </action>
   <action name="action_timestamps">
@@ -253,7 +261,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Timestamps in Message Log</string>
+    <string>&amp;Timestamps in Message Log</string>
    </property>
   </action>
   <action name="action_show_noncontainers">
@@ -261,7 +269,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Non-Container Objects in Console Tree</string>
+    <string>&amp;Show Non-Container Objects in Console Tree</string>
    </property>
   </action>
   <action name="action_navigate_up">
@@ -284,6 +292,9 @@
    <property name="text">
     <string>Navigate Back</string>
    </property>
+   <property name="toolTip">
+    <string>Navigate Back (Alt + -)</string>
+   </property>
    <property name="shortcut">
     <string>Alt+-</string>
    </property>
@@ -295,6 +306,9 @@
    </property>
    <property name="text">
     <string>Navigate Forward</string>
+   </property>
+   <property name="toolTip">
+    <string>Navigate Forward (Alt + =)</string>
    </property>
    <property name="shortcut">
     <string>Alt+=</string>
@@ -308,10 +322,11 @@
    <property name="text">
     <string>Refresh</string>
    </property>
-  </action>
-  <action name="action_dev_mode">
-   <property name="text">
-    <string>Dev mode</string>
+   <property name="toolTip">
+    <string>Refresh (Alt + 9)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+9</string>
    </property>
   </action>
   <action name="action_show_login">
@@ -320,6 +335,11 @@
    </property>
    <property name="text">
     <string>Show Login</string>
+   </property>
+  </action>
+  <action name="action_edit_fsmo_roles">
+   <property name="text">
+    <string>&amp;Operations Masters</string>
    </property>
   </action>
  </widget>

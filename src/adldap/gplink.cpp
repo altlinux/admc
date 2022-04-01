@@ -205,7 +205,7 @@ bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) cons
     }
 
     const int option_bits = options[gpo];
-    const bool is_set = bit_is_set(option_bits, (int) option);
+    const bool is_set = bitmask_is_set(option_bits, (int) option);
 
     return is_set;
 }
@@ -218,7 +218,7 @@ void Gplink::set_option(const QString &gpo_case, const GplinkOption option, cons
     }
 
     const int option_bits = options[gpo];
-    const int option_bits_new = bit_set(option_bits, (int) option, value);
+    const int option_bits_new = bitmask_set(option_bits, (int) option, value);
     options[gpo] = option_bits_new;
 }
 

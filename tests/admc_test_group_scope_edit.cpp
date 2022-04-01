@@ -30,7 +30,7 @@ void ADMCTestGroupScopeEdit::init() {
 
     combo = new QComboBox(parent_widget);
 
-    edit = new GroupScopeEdit(combo, &edits, parent_widget);
+    edit = new GroupScopeEdit(combo, parent_widget);
 
     const QString name = TEST_GROUP;
     dn = test_object_dn(name, CLASS_GROUP);
@@ -42,6 +42,7 @@ void ADMCTestGroupScopeEdit::edited_signal() {
     bool edited_signal_emitted = false;
     connect(
         edit, &AttributeEdit::edited,
+        this,
         [&edited_signal_emitted]() {
             edited_signal_emitted = true;
         });

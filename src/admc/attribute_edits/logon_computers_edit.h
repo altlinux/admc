@@ -28,8 +28,10 @@ class QPushButton;
 class LogonComputersEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    LogonComputersEdit(QPushButton *button, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    LogonComputersEdit(QPushButton *button, QObject *parent);
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
     QPushButton *button;

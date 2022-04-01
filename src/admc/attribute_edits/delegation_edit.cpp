@@ -26,8 +26,8 @@
 
 #include <QRadioButton>
 
-DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_button_arg, QObject *parent)
+: AttributeEdit(parent) {
     off_button = off_button_arg;
     on_button = on_button_arg;
 
@@ -39,7 +39,7 @@ DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_bu
         this, &AttributeEdit::edited);
 }
 
-void DelegationEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void DelegationEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const bool is_on = object.get_account_option(AccountOption_TrustedForDelegation, g_adconfig);
@@ -49,11 +49,6 @@ void DelegationEdit::load_internal(AdInterface &ad, const AdObject &object) {
     } else {
         off_button->setChecked(true);
     }
-}
-
-void DelegationEdit::set_read_only(const bool read_only) {
-    on_button->setEnabled(read_only);
-    off_button->setEnabled(read_only);
 }
 
 bool DelegationEdit::apply(AdInterface &ad, const QString &dn) const {

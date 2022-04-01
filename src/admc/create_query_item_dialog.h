@@ -35,7 +35,7 @@ class CreateQueryItemDialog : public QDialog {
 public:
     Ui::CreateQueryItemDialog *ui;
 
-    CreateQueryItemDialog(QWidget *parent);
+    CreateQueryItemDialog(const QList<QString> &sibling_name_list, QWidget *parent);
     ~CreateQueryItemDialog();
 
     QString name() const;
@@ -45,9 +45,6 @@ public:
     bool scope_is_children() const;
     QByteArray filter_state() const;
 
-    void set_sibling_name_list(const QList<QString> &list);
-
-    void open() override;
     void accept() override;
 
 private:

@@ -25,38 +25,51 @@
 #include "attribute_edits/sam_name_edit.h"
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/upn_edit.h"
+#include "rename_object_helper.h"
 #include "utils.h"
 #include "settings.h"
 
-RenameUserDialog::RenameUserDialog(QWidget *parent)
+RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {
     ui = new Ui::RenameUserDialog();
     ui->setupUi(this);
 
-    QList<AttributeEdit *> edit_list;
-    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
-    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);
-    new StringEdit(ui->full_name_edit, ATTRIBUTE_DISPLAY_NAME, &edit_list, this);
-    upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
-    sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
+    auto first_name_edit = new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
+    auto last_name_edit = new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
+    auto display_name_edit = new StringEdit(ui->full_name_edit, ATTRIBUTE_DISPLAY_NAME, this);
 
-    init(ui->name_edit, ui->button_box, edit_list);
+    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, this);
+    upn_edit->init_suffixes(ad);
+
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+
+    const QList<AttributeEdit *> edit_list = {
+        first_name_edit,
+        last_name_edit,
+        display_name_edit,
+        upn_edit,
+        sam_name_edit,
+    };
+
+    helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, edit_list, this);
+
+    setup_lineedit_autofill(ui->upn_prefix_edit, ui->sam_name_edit);
 
     settings_setup_dialog_geometry(SETTING_rename_user_dialog_geometry, this);
 }
 
-RenameUserDialog::~RenameUserDialog() {
-    delete ui;
+void RenameUserDialog::accept() {
+    const bool accepted = helper->accept();
+
+    if (accepted) {
+        QDialog::accept();
+    }
 }
 
-void RenameUserDialog::open() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
+QString RenameUserDialog::get_new_dn() const {
+    return helper->get_new_dn();
+}
 
-    upn_edit->init_suffixes(ad);
-    sam_name_edit->load_domain();
-
-    RenameObjectDialog::open();
+RenameUserDialog::~RenameUserDialog() {
+    delete ui;
 }

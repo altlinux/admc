@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QCheckBox" name="never_check">
+    <widget class="QRadioButton" name="never_check">
      <property name="text">
       <string>Never</string>
      </property>
@@ -24,7 +24,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QCheckBox" name="end_of_check">
+      <widget class="QRadioButton" name="end_of_check">
        <property name="text">
         <string>End of:</string>
        </property>

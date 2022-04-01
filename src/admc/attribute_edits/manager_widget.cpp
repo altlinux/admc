@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 #include "properties_dialog.h"
 #include "select_object_dialog.h"
 
@@ -30,6 +31,8 @@ ManagerWidget::ManagerWidget(QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::ManagerWidget();
     ui->setupUi(this);
+
+    ui->manager_display->setReadOnly(true);
 
     connect(
         ui->change_button, &QPushButton::clicked,
@@ -76,6 +79,7 @@ void ManagerWidget::on_change() {
 
     connect(
         dialog, &SelectObjectDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected();
 
@@ -88,7 +92,12 @@ void ManagerWidget::on_change() {
 }
 
 void ManagerWidget::on_properties() {
-    PropertiesDialog::open_for_target(current_value);
+    AdInterface ad;
+    if (ad_failed(ad, this)) {
+        return;
+    }
+
+    PropertiesDialog::open_for_target(ad, current_value);
 }
 
 void ManagerWidget::on_clear() {
@@ -100,8 +109,8 @@ void ManagerWidget::on_clear() {
 void ManagerWidget::load_value(const QString &value) {
     current_value = value;
 
-    const QString rdn = dn_get_name(current_value);
-    ui->manager_display->setText(current_value);
+    const QString name = dn_get_name(current_value);
+    ui->manager_display->setText(name);
 
     const bool have_manager = !current_value.isEmpty();
     ui->properties_button->setEnabled(have_manager);

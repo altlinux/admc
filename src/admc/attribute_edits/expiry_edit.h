@@ -28,8 +28,11 @@ class ExpiryWidget;
 class ExpiryEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    ExpiryEdit(ExpiryWidget *edit_widget, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    ExpiryEdit(ExpiryWidget *edit_widget, QObject *parent);
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
+    void set_enabled(const bool enabled) override;
 
 private:
     ExpiryWidget *edit_widget;

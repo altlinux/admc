@@ -33,8 +33,10 @@ class QCheckBox;
 class ProtectDeletionEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    ProtectDeletionEdit(QCheckBox *check, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    ProtectDeletionEdit(QCheckBox *check, QObject *parent);
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
     void set_enabled(const bool enabled);
 

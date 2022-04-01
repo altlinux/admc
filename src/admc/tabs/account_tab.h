@@ -21,21 +21,22 @@
 #ifndef ACCOUNT_TAB_H
 #define ACCOUNT_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
 
 class AdInterface;
+class AttributeEdit;
 
 namespace Ui {
 class AccountTab;
 }
 
-class AccountTab final : public PropertiesTab {
+class AccountTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::AccountTab *ui;
 
-    AccountTab(AdInterface &ad);
+    AccountTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~AccountTab();
 };
 

@@ -22,25 +22,31 @@
 #include "tabs/ui_general_computer_tab.h"
 
 #include "adldap.h"
-#include "attribute_edits/sam_name_edit.h"
+#include "attribute_edits/general_name_edit.h"
+#include "attribute_edits/computer_sam_name_edit.h"
 #include "attribute_edits/string_edit.h"
-#include "tabs/general_other_tab.h"
 
-GeneralComputerTab::GeneralComputerTab(const AdObject &object) {
+GeneralComputerTab::GeneralComputerTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralComputerTab();
     ui->setupUi(this);
 
-    load_name_label(ui->name_label, object);
+    auto name_edit = new GeneralNameEdit(ui->name_label, this);
+    auto sam_name_edit = new ComputerSamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, this);
+    auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
+    auto location_edit = new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, this);
 
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edits, this);
-    auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, &edits, this);
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
-    new StringEdit(ui->location_edit, ATTRIBUTE_LOCATION, &edits, this);
+    sam_name_edit->set_enabled(false);
+    dns_edit->set_enabled(false);
 
-    sam_name_edit->set_read_only(true);
-    dns_edit->set_read_only(true);
-
-    edits_connect_to_tab(edits, this);
+    edit_list->append({
+        name_edit,
+        sam_name_edit,
+        dns_edit,
+        description_edit,
+        location_edit,
+    });
 }
 
 GeneralComputerTab::~GeneralComputerTab() {

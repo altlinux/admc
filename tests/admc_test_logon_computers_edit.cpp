@@ -29,46 +29,47 @@
 #include <QListWidget>
 #include <QPushButton>
 
+// TODO: make this less messy, maybe test dialog
+// separately. Should end up without needing to use
+// load_and_open_dialog()
+
 void ADMCTestLogonComputersEdit::init() {
     ADMCTest::init();
 
-    auto open_dialog_button = new QPushButton(parent_widget);
+    open_dialog_button = new QPushButton(parent_widget);
 
-    edit = new LogonComputersEdit(open_dialog_button, &edits, parent_widget);
+    edit = new LogonComputersEdit(open_dialog_button, parent_widget);
 
     const QString name = TEST_USER;
     dn = test_object_dn(name, CLASS_USER);
     const bool create_success = ad.object_add(dn, CLASS_USER);
     QVERIFY(create_success);
+}
 
-    const QString test_value = "test,value";
-    ad.attribute_replace_string(dn, ATTRIBUTE_USER_WORKSTATIONS, test_value);
-
+void ADMCTestLogonComputersEdit::load_empty() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    open_dialog_button->click();
+    open_dialog();
 
-    dialog = parent_widget->findChild<LogonComputersDialog *>();
-    QVERIFY(dialog);
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
-    list = dialog->ui->list;
-    value_edit = dialog->ui->edit;
-    add_button = dialog->ui->add_button;
-    remove_button = dialog->ui->remove_button;
+    QCOMPARE(list->count(), 0);
 }
 
 void ADMCTestLogonComputersEdit::load() {
+    load_and_open_dialog();
+
     QCOMPARE(list->count(), 2);
     test_list_item(0, "test");
     test_list_item(1, "value");
 }
 
 void ADMCTestLogonComputersEdit::emit_edited_signal() {
+    load_and_open_dialog();
+
     bool edited_signal_emitted = false;
     connect(
         edit, &AttributeEdit::edited,
+        this,
         [&edited_signal_emitted]() {
             edited_signal_emitted = true;
         });
@@ -79,6 +80,8 @@ void ADMCTestLogonComputersEdit::emit_edited_signal() {
 }
 
 void ADMCTestLogonComputersEdit::add() {
+    load_and_open_dialog();
+
     value_edit->setText("new");
 
     add_button->click();
@@ -90,6 +93,8 @@ void ADMCTestLogonComputersEdit::add() {
 }
 
 void ADMCTestLogonComputersEdit::remove() {
+    load_and_open_dialog();
+
     list->setCurrentRow(0);
 
     remove_button->click();
@@ -99,16 +104,22 @@ void ADMCTestLogonComputersEdit::remove() {
 }
 
 void ADMCTestLogonComputersEdit::test_list_item(const int row, const QString &text) {
+    load_and_open_dialog();
+
     auto item = list->item(row);
     QVERIFY(item);
     QCOMPARE(item->text(), text);
 }
 
 void ADMCTestLogonComputersEdit::apply_unmodified() {
+    load_and_open_dialog();
+
     test_edit_apply_unmodified(edit, dn);
 }
 
 void ADMCTestLogonComputersEdit::apply() {
+    load_and_open_dialog();
+
     value_edit->setText("new");
 
     add_button->click();
@@ -120,6 +131,29 @@ void ADMCTestLogonComputersEdit::apply() {
     const AdObject updated_object = ad.search_object(dn);
     const QString updated_value = updated_object.get_string(ATTRIBUTE_USER_WORKSTATIONS);
     QCOMPARE(updated_value, "test,value,new");
+}
+
+void ADMCTestLogonComputersEdit::load_and_open_dialog() {
+    const QString test_value = "test,value";
+    ad.attribute_replace_string(dn, ATTRIBUTE_USER_WORKSTATIONS, test_value);
+
+    const AdObject object = ad.search_object(dn);
+    edit->load(ad, object);
+
+    open_dialog();
+}
+
+void ADMCTestLogonComputersEdit::open_dialog() {
+    open_dialog_button->click();
+
+    dialog = parent_widget->findChild<LogonComputersDialog *>();
+    QVERIFY(dialog);
+    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    list = dialog->ui->list;
+    value_edit = dialog->ui->edit;
+    add_button = dialog->ui->add_button;
+    remove_button = dialog->ui->remove_button;
 }
 
 QTEST_MAIN(ADMCTestLogonComputersEdit)

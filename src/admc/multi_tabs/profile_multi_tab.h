@@ -21,19 +21,22 @@
 #ifndef PROFILE_MULTI_TAB_H
 #define PROFILE_MULTI_TAB_H
 
-#include "multi_tabs/properties_multi_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
+class QCheckBox;
 
 namespace Ui {
 class ProfileMultiTab;
 }
 
-class ProfileMultiTab final : public PropertiesMultiTab {
+class ProfileMultiTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::ProfileMultiTab *ui;
 
-    ProfileMultiTab();
+    ProfileMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent);
     ~ProfileMultiTab();
 };
 

@@ -41,11 +41,9 @@ void ADMCTestAccountOptionEdit::init() {
         return out;
     }();
 
-    QList<AttributeEdit *> edit_list;
-
     for (const AccountOption &option : option_list) {
         auto check = new QCheckBox(parent_widget);
-        auto edit = new AccountOptionEdit(check, option, &edit_list, parent_widget);
+        auto edit = new AccountOptionEdit(check, option, parent_widget);
 
         check_map[option] = check;
         edit_map[option] = edit;
@@ -66,6 +64,7 @@ void ADMCTestAccountOptionEdit::test_emit_edited_signal() {
     bool edited_signal_emitted = false;
     connect(
         edit, &AttributeEdit::edited,
+        this,
         [&edited_signal_emitted]() {
             edited_signal_emitted = true;
         });

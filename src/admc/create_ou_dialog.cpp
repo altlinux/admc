@@ -27,31 +27,42 @@
 #include "attribute_edits/upn_edit.h"
 #include "utils.h"
 #include "settings.h"
+#include "create_object_helper.h"
 
-CreateOUDialog::CreateOUDialog(QWidget *parent)
+CreateOUDialog::CreateOUDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {
     ui = new Ui::CreateOUDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QList<AttributeEdit *> edit_list;
-    new ProtectDeletionEdit(ui->deletion_check, &edit_list, this);
+    auto deletion_edit = new ProtectDeletionEdit(ui->deletion_check, this);
+
+    const QList<AttributeEdit *> edit_list = {
+        deletion_edit,
+    };
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
     };
 
-    const QList<QWidget *> widget_list = {
-        ui->name_edit,
-        ui->deletion_check,
-    };
-
-    init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_OU);
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_OU, parent_dn, this);
 
     settings_setup_dialog_geometry(SETTING_create_ou_dialog_geometry, this);
 }
 
 CreateOUDialog::~CreateOUDialog() {
     delete ui;
+}
+
+void CreateOUDialog::accept() {
+    const bool accepted = helper->accept();
+
+    if (accepted) {
+        QDialog::accept();
+    }
+}
+
+QString CreateOUDialog::get_created_dn() const {
+    return helper->get_created_dn();
 }

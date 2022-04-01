@@ -29,8 +29,8 @@
 #include <QGroupBox>
 #include <QMap>
 
-AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption option_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption option_arg, QObject *parent)
+: AttributeEdit(parent) {
     option = option_arg;
     check = check_arg;
 
@@ -39,15 +39,11 @@ AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption o
         this, &AttributeEdit::edited);
 }
 
-void AccountOptionEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void AccountOptionEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const bool option_is_set = object.get_account_option(option, g_adconfig);
     check->setChecked(option_is_set);
-}
-
-void AccountOptionEdit::set_read_only(const bool read_only) {
-    check->setDisabled(read_only);
 }
 
 bool AccountOptionEdit::apply(AdInterface &ad, const QString &dn) const {
@@ -74,6 +70,7 @@ void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &che
 
         QObject::connect(
             subject, &QCheckBox::clicked,
+            blocker,
             [subject, blocker, subject_option, blocker_option]() {
                 const bool conflict = (subject->isChecked() && blocker->isChecked());
                 if (conflict) {

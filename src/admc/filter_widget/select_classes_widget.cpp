@@ -23,12 +23,16 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 #include "filter_widget/class_filter_dialog.h"
 
 SelectClassesWidget::SelectClassesWidget(QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::SelectClassesWidget();
     ui->setupUi(this);
+
+    filtering_all_classes_is_enabled = false;
+    m_all_is_checked = false;
 
     connect(
         ui->select_button, &QAbstractButton::clicked,
@@ -42,20 +46,31 @@ SelectClassesWidget::~SelectClassesWidget() {
 void SelectClassesWidget::set_classes(const QList<QString> &class_list_arg, const QList<QString> &selected_list_arg) {
     class_list = class_list_arg;
 
-    set_selected_list(selected_list_arg);
+    m_selected_list = selected_list_arg;
+    update_class_display();
+}
+
+void SelectClassesWidget::enable_filtering_all_classes() {
+    filtering_all_classes_is_enabled = true;
 }
 
 QString SelectClassesWidget::get_filter() const {
-    return filter;
+    if (m_all_is_checked) {
+        return QString();
+    } else {
+        const QString out = get_classes_filter(m_selected_list);
+
+        return out;
+    }
 }
 
 QVariant SelectClassesWidget::save_state() const {
     QHash<QString, QVariant> state;
 
-    state["dialog_state"] = dialog_state;
+    const QList<QVariant> selected_list_variant = string_list_to_variant_list(m_selected_list);
+    state["selected_list"] = selected_list_variant;
 
-    const QString classes_display_text = ui->classes_display->text();
-    state["classes_display_text"] = classes_display_text;
+    state["m_all_is_checked"] = m_all_is_checked;
 
     return state;
 }
@@ -64,48 +79,52 @@ void SelectClassesWidget::restore_state(const QVariant &state_variant) {
     QHash<QString, QVariant> state = state_variant.toHash();
 
     const QList<QVariant> saved_selected_list_variant = state["selected_list"].toList();
-    QList<QString> saved_selected_list;
-    for (const QVariant &v : saved_selected_list_variant) {
-        saved_selected_list.append(v.toString());
-    }
+    const QList<QString> saved_selected_list = variant_list_to_string_list(saved_selected_list_variant);
 
-    set_selected_list(saved_selected_list);
+    m_selected_list = saved_selected_list;
+
+    m_all_is_checked = state["m_all_is_checked"].toBool();
+
+    update_class_display();
 }
 
 void SelectClassesWidget::open_dialog() {
-    auto dialog = new ClassFilterDialog(this);
-    dialog->set_classes(class_list, selected_list);
+    auto dialog = new ClassFilterDialog(class_list, m_selected_list, filtering_all_classes_is_enabled, m_all_is_checked, this);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QString> new_selected_list = dialog->get_selected_classes();
-            set_selected_list(new_selected_list);
-
-            filter = dialog->get_filter();
+            m_selected_list = new_selected_list;
+            m_all_is_checked = dialog->get_all_is_checked();
+            update_class_display();
         });
 }
 
-void SelectClassesWidget::set_selected_list(const QList<QString> &new_selected_list) {
-    selected_list = new_selected_list;
-
+// Use current state to generate class display string
+void SelectClassesWidget::update_class_display() {
     // Convert class list to list of class display strings,
     // then sort it and finally join by comma's
     const QString display_string = [&]() {
-        QList<QString> class_display_list;
+        if (m_all_is_checked) {
+            return tr("All");
+        } else {
+            QList<QString> class_display_list;
 
-        for (const QString &object_class : selected_list) {
-            const QString class_display = g_adconfig->get_class_display_name(object_class);
+            for (const QString &object_class : m_selected_list) {
+                const QString class_display = g_adconfig->get_class_display_name(object_class);
 
-            class_display_list.append(class_display);
+                class_display_list.append(class_display);
+            }
+
+            std::sort(class_display_list.begin(), class_display_list.end());
+
+            const QString joined = class_display_list.join(", ");
+
+            return joined;
         }
-
-        std::sort(class_display_list.begin(), class_display_list.end());
-
-        const QString joined = class_display_list.join(", ");
-
-        return joined;
     }();
 
     ui->classes_display->setText(display_string);

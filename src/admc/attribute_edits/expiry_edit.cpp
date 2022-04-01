@@ -25,8 +25,8 @@
 #include "globals.h"
 #include "utils.h"
 
-ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QObject *parent)
+: AttributeEdit(parent) {
     edit_widget = edit_widget_arg;
 
     connect(
@@ -34,16 +34,16 @@ ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QList<AttributeEdit *> *ed
         this, &AttributeEdit::edited);
 }
 
-void ExpiryEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void ExpiryEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     edit_widget->load(object);
 }
 
-void ExpiryEdit::set_read_only(const bool read_only) {
-    edit_widget->set_read_only(read_only);
-}
-
 bool ExpiryEdit::apply(AdInterface &ad, const QString &dn) const {
     return edit_widget->apply(ad, dn);
+}
+
+void ExpiryEdit::set_enabled(const bool enabled) {
+    edit_widget->setEnabled(enabled);
 }

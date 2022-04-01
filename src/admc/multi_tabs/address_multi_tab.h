@@ -26,19 +26,22 @@
  * attributes.
  */
 
-#include "multi_tabs/properties_multi_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
+class QCheckBox;
 
 namespace Ui {
 class AddressMultiTab;
 }
 
-class AddressMultiTab final : public PropertiesMultiTab {
+class AddressMultiTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::AddressMultiTab *ui;
 
-    AddressMultiTab();
+    AddressMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent);
     ~AddressMultiTab();
 };
 

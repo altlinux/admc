@@ -30,12 +30,13 @@ class QComboBox;
 class UpnEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    UpnEdit(QLineEdit *prefix_edit, QComboBox *suffix_combo, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    UpnEdit(QLineEdit *prefix_edit, QComboBox *suffix_combo, QObject *parent);
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool verify(AdInterface &ad, const QString &dn) const override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
     void init_suffixes(AdInterface &ad);
-
-    bool verify(AdInterface &ad, const QString &dn) const override;
 
 private:
     QLineEdit *prefix_edit;
@@ -44,6 +45,8 @@ private:
     friend class StringOtherEdit;
 
     QString get_new_value() const;
+    void on_suffix_combo_changed();
+    void update_prefix_limit();
 };
 
 #endif /* UPN_EDIT_H */

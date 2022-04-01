@@ -26,8 +26,8 @@
 
 #include <QDateTimeEdit>
 
-DateTimeEdit::DateTimeEdit(QDateTimeEdit *edit_arg, const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+DateTimeEdit::DateTimeEdit(QDateTimeEdit *edit_arg, const QString &attribute_arg, QObject *parent)
+: AttributeEdit(parent) {
     edit = edit_arg;
     attribute = attribute_arg;
     attribute = attribute_arg;
@@ -39,17 +39,13 @@ DateTimeEdit::DateTimeEdit(QDateTimeEdit *edit_arg, const QString &attribute_arg
         this, &AttributeEdit::edited);
 }
 
-void DateTimeEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void DateTimeEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const QDateTime datetime = object.get_datetime(attribute, g_adconfig);
     const QDateTime datetime_local = datetime.toLocalTime();
 
     edit->setDateTime(datetime_local);
-}
-
-void DateTimeEdit::set_read_only(const bool read_only) {
-    edit->setDisabled(read_only);
 }
 
 bool DateTimeEdit::apply(AdInterface &ad, const QString &dn) const {

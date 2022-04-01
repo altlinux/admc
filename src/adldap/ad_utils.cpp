@@ -126,9 +126,10 @@ QString account_option_string(const AccountOption &option) {
     switch (option) {
         case AccountOption_Disabled: return QCoreApplication::translate("ad_utils", "Account disabled");
         case AccountOption_CantChangePassword: return QCoreApplication::translate("ad_utils", "User cannot change password");
+        case AccountOption_AllowReversibleEncryption: return QCoreApplication::translate("ad_utils", "Store password using reversible encryption");
         case AccountOption_PasswordExpired: return QCoreApplication::translate("ad_utils", "User must change password on next logon");
         case AccountOption_DontExpirePassword: return QCoreApplication::translate("ad_utils", "Don't expire password");
-        case AccountOption_UseDesKey: return QCoreApplication::translate("ad_utils", "Store password using reversible encryption");
+        case AccountOption_UseDesKey: return QCoreApplication::translate("ad_utils", "Use Kerberos DES encryption types for this account");
         case AccountOption_SmartcardRequired: return QCoreApplication::translate("ad_utils", "Smartcard is required for interactive logon");
         case AccountOption_CantDelegate: return QCoreApplication::translate("ad_utils", "Account is sensitive and cannot be delegated");
         case AccountOption_DontRequirePreauth: return QCoreApplication::translate("ad_utils", "Don't require Kerberos preauthentication");
@@ -142,18 +143,20 @@ QString account_option_string(const AccountOption &option) {
 int account_option_bit(const AccountOption &option) {
     switch (option) {
         case AccountOption_Disabled:
-            return 0x00000002;
+            return UAC_ACCOUNTDISABLE;
+        case AccountOption_AllowReversibleEncryption:
+            return UAC_ENCRYPTED_TEXT_PASSWORD_ALLOWED;
         case AccountOption_DontExpirePassword:
-            return 0x00010000;
+            return UAC_DONT_EXPIRE_PASSWORD;
         case AccountOption_UseDesKey:
-            return 0x00200000;
+            return UAC_USE_DES_KEY_ONLY;
         case AccountOption_SmartcardRequired:
-            return 0x00040000;
+            return UAC_SMARTCARD_REQUIRED;
         case AccountOption_DontRequirePreauth:
-            return 0x00400000;
-        case AccountOption_CantDelegate: return 0x00100000;
+            return UAC_DONT_REQUIRE_PREAUTH;
+        case AccountOption_CantDelegate: return UAC_NOT_DELEGATED;
         case AccountOption_TrustedForDelegation:
-            return 0x00080000;
+            return UAC_TRUSTED_FOR_DELEGATION;
 
         // NOTE: not all account options can be directly
         // mapped to bits
@@ -344,28 +347,16 @@ QString get_default_domain_from_krb5() {
     return out;
 }
 
-// Transform domain to domain DN
-// "DOMAIN.COM" => "DC=domain,DC=com"
-QString domain_to_domain_dn(const QString &domain) {
-    QString domain_dn = domain;
-
-    domain_dn = domain_dn.toLower();
-    domain_dn = "DC=" + domain_dn;
-    domain_dn = domain_dn.replace(".", ",DC=");
-
-    return domain_dn;
-}
-
-int bit_set(int bitmask, int bit, bool set) {
-    if (set) {
-        return bitmask | bit;
+int bitmask_set(const int input_mask, const int mask_to_set, const bool is_set) {
+    if (is_set) {
+        return input_mask | mask_to_set;
     } else {
-        return bitmask & ~bit;
+        return input_mask & ~mask_to_set;
     }
 }
 
-bool bit_is_set(int bitmask, int bit) {
-    return ((bitmask & bit) != 0);
+bool bitmask_is_set(const int input_mask, const int mask_to_read) {
+    return ((input_mask & mask_to_read) == mask_to_read);
 }
 
 const char *cstr(const QString &qstr) {
@@ -451,4 +442,8 @@ QString attribute_type_display_string(const AttributeType type) {
         case AttributeType_DSDN: return QCoreApplication::translate("ad_utils.cpp", "Distinguished Name");
     }
     return QString();
+}
+
+QString int_to_hex_string(const int n) {
+    return QString("0x%1").arg(n, 8, 16, QLatin1Char('0'));
 }

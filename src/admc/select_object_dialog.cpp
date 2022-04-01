@@ -57,6 +57,8 @@ SelectObjectDialog::SelectObjectDialog(const QList<QString> class_list_arg, cons
 
     ui->view->setModel(model);
 
+    enable_widget_on_selection(ui->remove_button, ui->view);
+
     settings_setup_dialog_geometry(SETTING_select_object_dialog_geometry, this);
 
     settings_restore_header_state(SETTING_select_object_header_state, ui->view->header());
@@ -107,6 +109,13 @@ void SelectObjectDialog::accept() {
     const bool selected_multiple_when_single_selection = (multi_selection == SelectObjectDialogMultiSelection_No && selected.size() > 1);
     if (selected_multiple_when_single_selection) {
         message_box_warning(this, tr("Error"), tr("This selection accepts only one object. Remove extra objects to proceed."));
+    } else if (selected.isEmpty()) {
+        // TODO: replace with "ok" button turning off
+        // if selection is empty. but the
+        // "selected_multiple_when_single_selection"
+        // should still be done via warning, otherwise
+        // would be confusing
+        message_box_warning(this, tr("Error"), tr("You must select at least one object."));
     } else {
         QDialog::accept();
     }
@@ -118,7 +127,7 @@ void SelectObjectDialog::on_add_button() {
     }
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
@@ -151,12 +160,12 @@ void SelectObjectDialog::on_add_button() {
         add_objects_to_list({dn}, ad);
     } else if (search_results.size() > 1) {
         // Open dialog where you can select one of the matches
-        auto dialog = new SelectObjectMatchDialog(this);
-        dialog->set_search_results(search_results);
+        auto dialog = new SelectObjectMatchDialog(search_results, this);
         dialog->open();
 
         connect(
             dialog, &QDialog::accepted,
+            this,
             [this, dialog]() {
                 const QList<QString> selected_matches = dialog->get_selected();
 
@@ -182,6 +191,7 @@ void SelectObjectDialog::open_advanced_dialog() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected_dns();
 
@@ -191,7 +201,7 @@ void SelectObjectDialog::open_advanced_dialog() {
 
 void SelectObjectDialog::add_objects_to_list(const QList<QString> &dn_list) {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

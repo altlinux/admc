@@ -89,6 +89,9 @@ DEFINE_SETTING(SETTING_datetime_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_list_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_octet_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_string_attribute_dialog_geometry);
+DEFINE_SETTING(SETTING_fsmo_dialog_geometry);
+DEFINE_SETTING(SETTING_create_shared_folder_dialog_geometry);
+DEFINE_SETTING(SETTING_create_contact_dialog_geometry);
 
 // Header state
 DEFINE_SETTING(SETTING_results_header);
@@ -97,7 +100,6 @@ DEFINE_SETTING(SETTING_attributes_tab_header_state);
 DEFINE_SETTING(SETTING_select_object_header_state);
 DEFINE_SETTING(SETTING_membership_tab_header_state);
 DEFINE_SETTING(SETTING_organization_tab_header_state);
-DEFINE_SETTING(SETTING_gpo_links_tab_header_state);
 DEFINE_SETTING(SETTING_group_policy_tab_header_state);
 DEFINE_SETTING(SETTING_security_tab_header_state);
 DEFINE_SETTING(SETTING_select_object_match_header_state);
@@ -105,15 +107,13 @@ DEFINE_SETTING(SETTING_select_object_match_header_state);
 // Bool
 DEFINE_SETTING(SETTING_advanced_features);
 DEFINE_SETTING(SETTING_confirm_actions);
-DEFINE_SETTING(SETTING_dev_mode);
 DEFINE_SETTING(SETTING_show_non_containers_in_console_tree);
 DEFINE_SETTING(SETTING_last_name_before_first_name);
-DEFINE_SETTING(SETTING_show_console_tree);
-DEFINE_SETTING(SETTING_show_results_header);
 DEFINE_SETTING(SETTING_log_searches);
 DEFINE_SETTING(SETTING_timestamp_log);
 DEFINE_SETTING(SETTING_sasl_nocanon);
 DEFINE_SETTING(SETTING_show_login);
+DEFINE_SETTING(SETTING_show_password);
 
 // Other
 DEFINE_SETTING(SETTING_host);
@@ -125,14 +125,23 @@ DEFINE_SETTING(SETTING_cert_strategy);
 DEFINE_SETTING(SETTING_last_opened_version);
 DEFINE_SETTING(SETTING_object_filter);
 DEFINE_SETTING(SETTING_object_filter_enabled);
+DEFINE_SETTING(SETTING_object_display_limit);
 
-QVariant settings_get_variant(const QString setting, const QVariant &default_value = QVariant());
+// Feature flags
+//
+// NOTE: this set of settings is not editable anywhere
+// within the app. Instead it should be manually edited
+// by hand in ADMC.conf. If you want to forcefully
+// enable it for a new version, set it manually in
+// main.cpp so that it overwrites default value as well
+// as any values defined in .conf file.
+DEFINE_SETTING(SETTING_feature_logon_computers);
+DEFINE_SETTING(SETTING_feature_profile_tab);
+DEFINE_SETTING(SETTING_feature_dev_mode);
+DEFINE_SETTING(SETTING_feature_current_locale_first);
+
+QVariant settings_get_variant(const QString setting);
 void settings_set_variant(const QString setting, const QVariant &value);
-
-// NOTE: returns default value if it's defined in
-// settings.cpp
-bool settings_get_bool(const QString setting);
-void settings_set_bool(const QString setting, const bool value);
 
 // Does two things. First it restores previously saved
 // geometry, if it exists. Then it connects to dialogs

@@ -57,11 +57,11 @@ void PolicyRootImpl::fetch(const QModelIndex &index) {
     UNUSED_ARG(index);
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
-    const QString base = g_adconfig->domain_head();
+    const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
     const QList<QString> attributes = console_policy_search_attributes();
@@ -118,14 +118,20 @@ QList<int> PolicyRootImpl::default_columns() const {
 }
 
 void PolicyRootImpl::create_policy() {
-    auto dialog = new CreatePolicyDialog(console);
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    auto dialog = new CreatePolicyDialog(ad, console);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
+            AdInterface ad2;
+            if (ad_failed(ad2, console)) {
                 return;
             }
 
@@ -133,7 +139,7 @@ void PolicyRootImpl::create_policy() {
             const SearchScope scope = SearchScope_Object;
             const QString filter = QString();
             const QList<QString> attributes = console_policy_search_attributes();
-            const QHash<QString, AdObject> results = ad.search(dn, scope, filter, attributes);
+            const QHash<QString, AdObject> results = ad2.search(dn, scope, filter, attributes);
 
             const AdObject object = results[dn];
 

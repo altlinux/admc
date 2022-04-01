@@ -29,11 +29,14 @@
 
 #include "ad_defines.h"
 
+#include <QLocale>
+
 class AdConfigPrivate;
 class AdInterface;
 class QLocale;
 class QString;
 class QLineEdit;
+class QByteArray;
 template <typename T>
 class QList;
 
@@ -50,11 +53,12 @@ public:
     void load(AdInterface &ad, const QLocale &locale);
 
     QString domain() const;
-    QString domain_head() const;
+    QString domain_dn() const;
     QString configuration_dn() const;
     QString schema_dn() const;
     QString partitions_dn() const;
     QString extended_rights_dn() const;
+    bool control_is_supported(const QString &control_oid) const;
 
     QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
 
@@ -67,6 +71,10 @@ public:
     QList<ObjectClass> get_filter_containers() const;
 
     QList<ObjectClass> get_possible_superiors(const QList<ObjectClass> &object_classes) const;
+    ObjectClass get_parent_class(const ObjectClass &object_class) const;
+    // Returns all ancestors of given class and the
+    // given class itself
+    QList<ObjectClass> get_inherit_chain(const ObjectClass &object_class) const;
 
     QList<Attribute> get_optional_attributes(const QList<ObjectClass> &object_classes) const;
     QList<Attribute> get_mandatory_attributes(const QList<ObjectClass> &object_classes) const;
@@ -81,11 +89,25 @@ public:
     bool get_attribute_is_backlink(const Attribute &attribute) const;
     bool get_attribute_is_constructed(const Attribute &attribute) const;
 
+    // Limit's edit's max valid input length based on
+    // the upper range defined for attribute in schema
     void limit_edit(QLineEdit *edit, const QString &attribute);
 
-    QString get_right_guid(const QString &right_cn) const;
+    QByteArray get_right_guid(const QString &right_cn) const;
+    QString get_right_name(const QByteArray &right_guid, const QLocale::Language language) const;
+    int get_rights_valid_accesses(const QString &rights_cn) const;
+
+    // Returns extended rights that apply to given
+    // classes
+    QList<QString> get_extended_rights_list(const QList<QString> &class_list) const;
+
+    QString guid_to_attribute(const QByteArray &guid) const;
+
+    QString guid_to_class(const QByteArray &guid) const;
 
     QList<QString> get_noncontainer_classes();
+
+    bool rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const;
 
 private:
     AdConfigPrivate *d;

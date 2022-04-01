@@ -25,8 +25,8 @@
 
 #include <QCheckBox>
 
-GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QObject *parent)
+: AttributeEdit(parent) {
     check = check_arg;
 
     connect(
@@ -34,17 +34,13 @@ GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits
         this, &AttributeEdit::edited);
 }
 
-void GpoptionsEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void GpoptionsEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
     const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);
 
     check->setChecked(checked);
-}
-
-void GpoptionsEdit::set_read_only(const bool read_only) {
-    check->setDisabled(read_only);
 }
 
 bool GpoptionsEdit::apply(AdInterface &ad, const QString &dn) const {

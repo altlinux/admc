@@ -28,6 +28,7 @@ enum ItemType {
     ItemType_Policy,
     ItemType_QueryFolder,
     ItemType_QueryItem,
+    ItemType_FindRoot,
 
     ItemType_LAST,
 };

@@ -84,6 +84,8 @@ public:
     QList<QPersistentModelIndex> targets_past;
     QList<QPersistentModelIndex> targets_future;
 
+    QList<QModelIndex> action_target_list;
+
     QHash<StandardAction, QAction *> standard_action_map;
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
@@ -99,8 +101,11 @@ public:
     ConsoleImpl *get_impl(const QModelIndex &index) const;
     void update_description();
     QList<QModelIndex> get_all_selected_items() const;
-    QSet<int> get_selected_types() const;
     QList<QAction *> get_custom_action_list() const;
+    void open_context_menu(const QPoint &global_pos);
+    void add_actions(QMenu *menu);
+    bool update_actions();
+    void on_menubar_action_menu_open();
 
 public slots:
     void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);
@@ -117,7 +122,8 @@ public slots:
     void on_toggle_console_tree();
     void on_toggle_description_bar();
     void on_standard_action(const StandardAction action_enum);
-    void on_context_menu(const QPoint &pos);
+    void on_results_context_menu(const QPoint &pos);
+    void on_scope_context_menu(const QPoint &pos);
     void on_scope_expanded(const QModelIndex &index);
     void on_results_activated(const QModelIndex &index);
 };

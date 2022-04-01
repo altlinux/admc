@@ -23,7 +23,10 @@
 
 #include "ad_security.h"
 #include "ad_utils.h"
+#include "utils.h"
 #include "settings.h"
+
+#include <QPushButton>
 
 SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
 : QDialog(parent) {
@@ -43,6 +46,9 @@ SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
 
         ui->list->addItem(item);
     }
+
+    QPushButton *ok_button = ui->button_box->button(QDialogButtonBox::Ok);
+    enable_widget_on_selection(ok_button, ui->list);
 
     settings_setup_dialog_geometry(SETTING_select_well_known_trustee_dialog_geometry, this);
 }

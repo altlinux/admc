@@ -47,6 +47,11 @@ ConsoleFilterDialog::ConsoleFilterDialog(QWidget *parent)
     };
     ui->class_filter_widget->set_classes(class_list_for_widget, class_list_for_widget);
 
+    custom_filter = settings_get_variant(SETTING_object_filter).toString();
+
+    const int object_display_limit = settings_get_variant(SETTING_object_display_limit).toInt();
+    ui->limit_spinbox->setValue(object_display_limit);
+
     settings_setup_dialog_geometry(SETTING_console_filter_dialog_geometry, this);
 
     button_state_name_map = {
@@ -76,6 +81,13 @@ bool ConsoleFilterDialog::get_filter_enabled() const {
 
 ConsoleFilterDialog::~ConsoleFilterDialog() {
     delete ui;
+}
+
+void ConsoleFilterDialog::accept() {
+    const int object_display_limit = ui->limit_spinbox->value();
+    settings_set_variant(SETTING_object_display_limit, object_display_limit);
+
+    QDialog::accept();
 }
 
 QVariant ConsoleFilterDialog::save_state() const {
@@ -120,12 +132,11 @@ QString ConsoleFilterDialog::get_filter() const {
 }
 
 void ConsoleFilterDialog::open_custom_dialog() {
-    auto dialog = new FilterDialog(this);
-
     // NOTE: Using only non-container classes for filtering
     // because container classes need to always be visible
     const QList<QString> noncontainer_classes = g_adconfig->get_noncontainer_classes();
-    dialog->set_classes(noncontainer_classes, noncontainer_classes);
+
+    auto dialog = new FilterDialog(noncontainer_classes, noncontainer_classes, this);
 
     dialog->restore_state(filter_dialog_state);
 
@@ -133,6 +144,7 @@ void ConsoleFilterDialog::open_custom_dialog() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             filter_dialog_state = dialog->save_state();
 

@@ -41,17 +41,31 @@ enum ReportsRole {
     ReportsRole_DN = Qt::UserRole + 1,
 };
 
-OrganizationTab::OrganizationTab() {
+OrganizationTab::OrganizationTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::OrganizationTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->job_title_edit, ATTRIBUTE_TITLE, &edits, this);
-    new StringEdit(ui->department_edit, ATTRIBUTE_DEPARTMENT, &edits, this);
-    new StringEdit(ui->company_edit, ATTRIBUTE_COMPANY, &edits, this);
+    auto title_edit = new StringEdit(ui->job_title_edit, ATTRIBUTE_TITLE, this);
+    auto department_edit = new StringEdit(ui->department_edit, ATTRIBUTE_DEPARTMENT, this);
+    auto company_edit = new StringEdit(ui->company_edit, ATTRIBUTE_COMPANY, this);
+    auto manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGER, this);
 
-    new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGER, &edits, this);
+    auto tab_edit = new OrganizationTabEdit(ui, this);
 
-    edits_connect_to_tab(edits, this);
+    edit_list->append({
+        title_edit,
+        department_edit,
+        company_edit,
+        manager_edit,
+    
+        tab_edit,
+    });
+}
+
+OrganizationTabEdit::OrganizationTabEdit(Ui::OrganizationTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
+    ui = ui_arg;
 
     reports_model = new QStandardItemModel(0, ReportsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(reports_model,
@@ -73,7 +87,9 @@ OrganizationTab::~OrganizationTab() {
     delete ui;
 }
 
-void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
+void OrganizationTabEdit::load(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     const QList<QString> reports = object.get_strings(ATTRIBUTE_DIRECT_REPORTS);
 
     reports_model->removeRows(0, reports_model->rowCount());
@@ -89,6 +105,4 @@ void OrganizationTab::load(AdInterface &ad, const AdObject &object) {
 
         reports_model->appendRow(row);
     }
-
-    PropertiesTab::load(ad, object);
 }

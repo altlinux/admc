@@ -54,7 +54,7 @@ add_subdirectory(src)
 if(NOT ADMC_BUILD_DEB)
     add_subdirectory(tests)
 endif(NOT ADMC_BUILD_DEB)
-add_subdirectory(doc)
+add_subdirectory(share)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CHANGELOG.txt
     ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)

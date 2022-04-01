@@ -28,14 +28,18 @@ class QLineEdit;
 class SamNameEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    SamNameEdit(QLineEdit *edit, QLineEdit *domain_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    SamNameEdit(QLineEdit *edit, QLineEdit *domain_edit, QObject *parent);
 
-    void load_domain();
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool verify(AdInterface &ad, const QString &dn) const override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
+
+    void set_enabled(const bool enabled);
 
 private:
     QLineEdit *edit;
-    QLineEdit *domain_edit;
 };
+
+bool sam_name_edit_verify(QLineEdit *edit);
 
 #endif /* SAM_NAME_EDIT_H */

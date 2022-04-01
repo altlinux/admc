@@ -34,7 +34,7 @@ void ADMCTestManagerEdit::init() {
 
     auto manager_widget = new ManagerWidget(parent_widget);
 
-    edit = new ManagerEdit(manager_widget, ATTRIBUTE_MANAGER, &edits, parent_widget);
+    edit = new ManagerEdit(manager_widget, ATTRIBUTE_MANAGER, parent_widget);
 
     manager_display = manager_widget->ui->manager_display;
     change_button = manager_widget->ui->change_button;
@@ -66,7 +66,10 @@ void ADMCTestManagerEdit::load() {
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    QCOMPARE(manager_display->text(), manager_dn);
+    const QString actual_value = manager_display->text();
+    const QString expected_value = dn_get_name(manager_dn);
+
+    QCOMPARE(actual_value, expected_value);
 }
 
 void ADMCTestManagerEdit::apply_unmodified() {

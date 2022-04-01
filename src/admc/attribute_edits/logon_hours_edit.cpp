@@ -26,8 +26,8 @@
 
 #include <QPushButton>
 
-LogonHoursEdit::LogonHoursEdit(QPushButton *button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+LogonHoursEdit::LogonHoursEdit(QPushButton *button_arg, QObject *parent)
+: AttributeEdit(parent) {
     button = button_arg;
 
     connect(
@@ -35,14 +35,10 @@ LogonHoursEdit::LogonHoursEdit(QPushButton *button_arg, QList<AttributeEdit *> *
         this, &LogonHoursEdit::open_dialog);
 }
 
-void LogonHoursEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void LogonHoursEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     current_value = object.get_value(ATTRIBUTE_LOGON_HOURS);
-}
-
-void LogonHoursEdit::set_read_only(const bool read_only) {
-    button->setEnabled(read_only);
 }
 
 bool LogonHoursEdit::apply(AdInterface &ad, const QString &dn) const {
@@ -52,15 +48,20 @@ bool LogonHoursEdit::apply(AdInterface &ad, const QString &dn) const {
 }
 
 void LogonHoursEdit::open_dialog() {
-    auto dialog = new LogonHoursDialog(button);
-    dialog->load(current_value);
+    auto dialog = new LogonHoursDialog(current_value, button);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
-            current_value = dialog->get();
+            const QByteArray new_value = dialog->get();
+            const bool value_changed = (new_value != current_value);
 
-            emit edited();
+            if (value_changed) {
+                current_value = dialog->get();
+
+                emit edited();
+            }
         });
 }

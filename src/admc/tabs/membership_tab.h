@@ -21,40 +21,56 @@
 #ifndef MEMBERS_TAB_H
 #define MEMBERS_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+#include "attribute_edits/attribute_edit.h"
 
 #include <QSet>
 
 class QStandardItemModel;
+class QTreeView;
+class QPushButton;
+class QLabel;
 
 // Displays and edits membership info which can go both ways
 // 1. users that are members of group
 // 2. groups of user is member of
 // MembersTab and MemberOfTab implement both of those
 
+enum MembershipTabType {
+    MembershipTabType_Members,
+    MembershipTabType_MemberOf
+};
+
 namespace Ui {
 class MembershipTab;
 }
 
-class MembershipTab : public PropertiesTab {
+class MembershipTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::MembershipTab *ui;
 
-    void load(AdInterface &ad, const AdObject &object) override;
-    bool apply(AdInterface &ad, const QString &target) override;
-
-protected:
-    enum MembershipTabType {
-        MembershipTabType_Members,
-        MembershipTabType_MemberOf
-    };
-
-    MembershipTab(const MembershipTabType type_arg);
+    MembershipTab(QList<AttributeEdit *> *edit_list, const MembershipTabType &type, QWidget *parent);
     ~MembershipTab();
+};
+
+class MembershipTabEdit final : public AttributeEdit {
+    Q_OBJECT
+
+public:
+    MembershipTabEdit(QTreeView *view, QPushButton *primary_button, QPushButton *add_button, QPushButton *remove_button, QPushButton *properties_button, QLabel *primary_group_label, const MembershipTabType &type, QObject *parent);
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
+    QTreeView *view;
+    QPushButton *primary_button;
+    QPushButton *add_button;
+    QPushButton *remove_button;
+    QPushButton *properties_button;
+    QLabel *primary_group_label;
     MembershipTabType type;
     QStandardItemModel *model;
 
@@ -72,16 +88,6 @@ private:
     void add_values(QList<QString> values);
     void remove_values(QList<QString> values);
     QString get_membership_attribute();
-};
-
-class MembersTab final : public MembershipTab {
-public:
-    MembersTab();
-};
-
-class MemberOfTab final : public MembershipTab {
-public:
-    MemberOfTab();
 };
 
 #endif /* MEMBERS_TAB_H */

@@ -24,6 +24,8 @@
 #include <QDialog>
 
 class AttributeEdit;
+class AdInterface;
+class QLineEdit;
 
 namespace Ui {
 class PasswordDialog;
@@ -36,10 +38,8 @@ class PasswordDialog final : public QDialog {
 public:
     Ui::PasswordDialog *ui;
 
-    PasswordDialog(QWidget *parent);
+    PasswordDialog(AdInterface &ad, const QString &dn, QWidget *parent);
     ~PasswordDialog();
-
-    void set_target(const QString &dn);
 
 public slots:
     void accept();
@@ -48,6 +48,9 @@ private:
     QString target;
     QList<AttributeEdit *> edits;
     AttributeEdit *pass_expired_edit;
+    QList<QLineEdit *> required_list;
+
+    void on_edited();
 };
 
 #endif /* PASSWORD_DIALOG_H */

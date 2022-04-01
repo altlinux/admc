@@ -59,9 +59,23 @@ const QHash<GplinkColumn, GplinkOption> column_to_option = {
 
 QString gplink_option_to_display_string(const QString &option);
 
-GroupPolicyTab::GroupPolicyTab() {
+GroupPolicyTab::GroupPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GroupPolicyTab();
     ui->setupUi(this);
+
+    auto tab_edit = new GroupPolicyTabEdit(ui, this);
+    auto options_edit = new GpoptionsEdit(ui->gpo_options_check, this);
+
+    edit_list->append({
+        tab_edit,
+        options_edit,
+    });
+}
+
+GroupPolicyTabEdit::GroupPolicyTabEdit(Ui::GroupPolicyTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
+    ui = ui_arg;
 
     model = new QStandardItemModel(0, GplinkColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -73,25 +87,22 @@ GroupPolicyTab::GroupPolicyTab() {
 
     ui->view->setModel(model);
 
-    new GpoptionsEdit(ui->gpo_options_check, &edits, this);
-    edits_connect_to_tab(edits, this);
-
     settings_restore_header_state(SETTING_group_policy_tab_header_state, ui->view->header());
 
     enable_widget_on_selection(ui->remove_button, ui->view);
 
     connect(
         ui->remove_button, &QAbstractButton::clicked,
-        this, &GroupPolicyTab::on_remove_button);
+        this, &GroupPolicyTabEdit::on_remove_button);
     connect(
         ui->add_button, &QAbstractButton::clicked,
-        this, &GroupPolicyTab::on_add_button);
+        this, &GroupPolicyTabEdit::on_add_button);
     connect(
         ui->view, &QWidget::customContextMenuRequested,
-        this, &GroupPolicyTab::on_context_menu);
+        this, &GroupPolicyTabEdit::on_context_menu);
     connect(
         model, &QStandardItemModel::itemChanged,
-        this, &GroupPolicyTab::on_item_changed);
+        this, &GroupPolicyTabEdit::on_item_changed);
 }
 
 GroupPolicyTab::~GroupPolicyTab() {
@@ -100,17 +111,17 @@ GroupPolicyTab::~GroupPolicyTab() {
     delete ui;
 }
 
-void GroupPolicyTab::load(AdInterface &ad, const AdObject &object) {
+void GroupPolicyTabEdit::load(AdInterface &ad, const AdObject &object) {
+    UNUSED_ARG(ad);
+
     const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
     gplink = Gplink(gplink_string);
     original_gplink_string = gplink_string;
 
     reload_gplink();
-
-    PropertiesTab::load(ad, object);
 }
 
-bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
+bool GroupPolicyTabEdit::apply(AdInterface &ad, const QString &target) const {
     bool total_success = true;
 
     const bool gplink_changed = !gplink.equals(original_gplink_string);
@@ -122,28 +133,19 @@ bool GroupPolicyTab::apply(AdInterface &ad, const QString &target) {
         if (!replace_success) {
             total_success = false;
         }
-
-        if (replace_success) {
-            original_gplink_string = gplink_string;
-        }
-    }
-
-    const bool apply_success = PropertiesTab::apply(ad, target);
-    if (!apply_success) {
-        total_success = false;
     }
 
     return total_success;
 }
 
-void GroupPolicyTab::on_context_menu(const QPoint pos) {
+void GroupPolicyTabEdit::on_context_menu(const QPoint pos) {
     const QModelIndex index = ui->view->indexAt(pos);
     const QString gpo = index.data(GplinkRole_DN).toString();
     if (gpo.isEmpty()) {
         return;
     }
 
-    auto menu = new QMenu(this);
+    auto menu = new QMenu(ui->view);
     menu->setAttribute(Qt::WA_DeleteOnClose);
 
     menu->addAction(tr("Remove link"), [this, gpo]() {
@@ -160,12 +162,18 @@ void GroupPolicyTab::on_context_menu(const QPoint pos) {
     menu->popup(pos);
 }
 
-void GroupPolicyTab::on_add_button() {
-    auto dialog = new SelectPolicyDialog(this);
+void GroupPolicyTabEdit::on_add_button() {
+    AdInterface ad;
+    if (ad_failed(ad, ui->view)) {
+        return;
+    }
+
+    auto dialog = new SelectPolicyDialog(ad, ui->view);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected_dns();
 
@@ -173,7 +181,7 @@ void GroupPolicyTab::on_add_button() {
         });
 }
 
-void GroupPolicyTab::on_remove_button() {
+void GroupPolicyTabEdit::on_remove_button() {
     const QItemSelectionModel *selection_model = ui->view->selectionModel();
     const QList<QModelIndex> selected_raw = selection_model->selectedRows();
 
@@ -187,7 +195,7 @@ void GroupPolicyTab::on_remove_button() {
     remove_link(selected);
 }
 
-void GroupPolicyTab::add_link(QList<QString> gps) {
+void GroupPolicyTabEdit::add_link(QList<QString> gps) {
     for (auto gp : gps) {
         gplink.add(gp);
     }
@@ -197,7 +205,7 @@ void GroupPolicyTab::add_link(QList<QString> gps) {
     emit edited();
 }
 
-void GroupPolicyTab::remove_link(QList<QString> gps) {
+void GroupPolicyTabEdit::remove_link(QList<QString> gps) {
     for (auto gp : gps) {
         gplink.remove(gp);
     }
@@ -207,7 +215,7 @@ void GroupPolicyTab::remove_link(QList<QString> gps) {
     emit edited();
 }
 
-void GroupPolicyTab::move_link_up(const QString &gpo) {
+void GroupPolicyTabEdit::move_link_up(const QString &gpo) {
     gplink.move_up(gpo);
 
     reload_gplink();
@@ -215,7 +223,7 @@ void GroupPolicyTab::move_link_up(const QString &gpo) {
     emit edited();
 }
 
-void GroupPolicyTab::move_link_down(const QString &gpo) {
+void GroupPolicyTabEdit::move_link_down(const QString &gpo) {
     gplink.move_down(gpo);
 
     reload_gplink();
@@ -223,15 +231,15 @@ void GroupPolicyTab::move_link_down(const QString &gpo) {
     emit edited();
 }
 
-void GroupPolicyTab::reload_gplink() {
+void GroupPolicyTabEdit::reload_gplink() {
     model->removeRows(0, model->rowCount());
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, ui->view)) {
         return;
     }
 
-    const QString base = g_adconfig->domain_head();
+    const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
     const QList<QString> attributes = {ATTRIBUTE_DISPLAY_NAME};
@@ -303,7 +311,7 @@ void GroupPolicyTab::reload_gplink() {
     model->sort(GplinkColumn_Name);
 }
 
-void GroupPolicyTab::on_item_changed(QStandardItem *item) {
+void GroupPolicyTabEdit::on_item_changed(QStandardItem *item) {
     const GplinkColumn column = (GplinkColumn) item->column();
 
     if (option_columns.contains(column)) {

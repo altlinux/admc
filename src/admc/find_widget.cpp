@@ -24,11 +24,11 @@
 #include "adldap.h"
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
-#include "console_impls/query_folder_impl.h"
-#include "console_impls/query_item_impl.h"
+#include "console_impls/find_root_impl.h"
 #include "console_widget/results_view.h"
 #include "search_thread.h"
 #include "settings.h"
+#include "status.h"
 #include "utils.h"
 #include "globals.h"
 
@@ -40,14 +40,14 @@ FindWidget::FindWidget(QWidget *parent)
     ui = new Ui::FindWidget();
     ui->setupUi(this);
 
-    action_view_icons = new QAction(tr("Icons"));
+    action_view_icons = new QAction(tr("&Icons"), this);
     action_view_icons->setCheckable(true);
-    action_view_list = new QAction(tr("List"));
+    action_view_list = new QAction(tr("&List"), this);
     action_view_list->setCheckable(true);
-    action_view_detail = new QAction(tr("Detail"));
+    action_view_detail = new QAction(tr("&Detail"), this);
     action_view_detail->setCheckable(true);
-    action_customize_columns = new QAction(tr("Customize Columns"));
-    action_toggle_description_bar = new QAction(tr("Description Bar"));
+    action_customize_columns = new QAction(tr("&Customize Columns"), this);
+    action_toggle_description_bar = new QAction(tr("&Description Bar"), this);
     action_toggle_description_bar->setCheckable(true);
 
     const ConsoleWidgetActions console_actions = [&]() {
@@ -57,14 +57,14 @@ FindWidget::FindWidget(QWidget *parent)
         out.view_list = action_view_list;
         out.view_detail = action_view_detail;
         out.toggle_description_bar = action_toggle_description_bar;
+        out.customize_columns = action_customize_columns;
 
         // Use placeholders for unused actions
-        out.navigate_up = new QAction();
-        out.navigate_back = new QAction();
-        out.navigate_forward = new QAction();
-        out.refresh = new QAction();
-        out.customize_columns = new QAction();
-        out.toggle_console_tree = new QAction();
+        out.navigate_up = new QAction(this);
+        out.navigate_back = new QAction(this);
+        out.navigate_forward = new QAction(this);
+        out.refresh = new QAction(this);
+        out.toggle_console_tree = new QAction(this);
 
         return out;
     }();
@@ -77,22 +77,13 @@ FindWidget::FindWidget(QWidget *parent)
     object_impl->set_find_action_enabled(false);
     object_impl->set_refresh_action_enabled(false);
 
-    // NOTE: registering impl so that it supplies text to
-    // the description bar
-    auto query_item_impl = new QueryItemImpl(ui->console);
-    ui->console->register_impl(ItemType_QueryItem, query_item_impl);
+    auto find_root_impl = new FindRootImpl(ui->console);
+    ui->console->register_impl(ItemType_FindRoot, find_root_impl);
 
-    auto query_folder_impl = new QueryFolderImpl(ui->console);
-    ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
+    ResultsView *find_root_view = find_root_impl->view();
+    find_root_view->set_drag_drop_enabled(false);
 
-    ResultsView *query_results = query_item_impl->view();
-    query_results->set_drag_drop_enabled(false);
-
-    const QList<QStandardItem *> root_row = ui->console->add_scope_item(ItemType_QueryFolder, QModelIndex());
-    QStandardItem *root_item = root_row[0];
-    root_item->setData(true, QueryItemRole_IsRoot);
-
-    const QList<QStandardItem *> row = ui->console->add_scope_item(ItemType_QueryItem, root_item->index());
+    const QList<QStandardItem *> row = ui->console->add_scope_item(ItemType_FindRoot, QModelIndex());
     head_item = row[0];
     head_item->setText(tr("Find results"));
 
@@ -113,6 +104,7 @@ FindWidget::FindWidget(QWidget *parent)
     // indicator stays on.
     connect(
         this, &QObject::destroyed,
+        this,
         []() {
             hide_busy_indicator();
         });
@@ -124,6 +116,10 @@ FindWidget::~FindWidget() {
 
 void FindWidget::set_classes(const QList<QString> &class_list, const QList<QString> &selected_list) {
     ui->filter_widget->set_classes(class_list, selected_list);
+}
+
+void FindWidget::enable_filtering_all_classes() {
+    ui->filter_widget->enable_filtering_all_classes();
 }
 
 void FindWidget::set_default_base(const QString &default_base) {
@@ -145,11 +141,7 @@ void FindWidget::restore_console_state(const QVariant &state) {
 }
 
 void FindWidget::setup_action_menu(QMenu *menu) {
-    ui->console->add_actions(menu);
-
-    connect(
-        menu, &QMenu::aboutToShow,
-        ui->console, &ConsoleWidget::update_actions);
+    ui->console->setup_menubar_action_menu(menu);
 }
 
 void FindWidget::setup_view_menu(QMenu *menu) {
@@ -187,14 +179,15 @@ void FindWidget::find() {
         find_thread, &SearchThread::finished,
         this,
         [this, find_thread]() {
-            if (find_thread->failed_to_connect()) {
-                search_thread_error_log(this);
-            }
-                    
+            g_status->display_ad_messages(find_thread->get_ad_messages(), this);
+            search_thread_display_errors(find_thread, this);
+
             ui->find_button->setEnabled(true);
             ui->clear_button->setEnabled(true);
 
             hide_busy_indicator();
+
+            find_thread->deleteLater();
         });
 
     show_busy_indicator();
@@ -221,7 +214,8 @@ void FindWidget::handle_find_thread_results(const QHash<QString, AdObject> &resu
 }
 
 QList<QString> FindWidget::get_selected_dns() const {
-    const QList<QString> out = get_selected_dn_list(ui->console, ItemType_Object, ObjectRole_DN);
+    const QList<QModelIndex> indexes = ui->console->get_selected_items(ItemType_Object);
+    const QList<QString> out = index_list_to_dn_list(indexes, ObjectRole_DN);
 
     return out;
 }

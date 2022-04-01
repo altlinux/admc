@@ -41,7 +41,6 @@ public:
 
     void set_sibling_name_list(const QList<QString> &list);
 
-    void open() override;
     void accept() override;
 
 private:

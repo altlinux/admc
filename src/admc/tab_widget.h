@@ -42,13 +42,26 @@ public:
     TabWidget(QWidget *parent = nullptr);
     ~TabWidget();
 
+    QWidget *get_tab(const int index) const;
+    QWidget *get_current_tab() const;
+    void set_current_tab(const int index);
     void add_tab(QWidget *tab, const QString &title);
 
+    // By default tab is automatically switches when
+    // user selects different tab in tab list. If this
+    // is disabled, then parent widget needs to connect
+    // to current_changed() signal and manually change
+    // tab using set_current_tab(). This is useful in
+    // cases where you want to forbid switching tabs.
+    void enable_auto_switch_tab(const bool enabled);
+
 signals:
-    void current_changed(QWidget *prev_tab, QWidget *new_tab);
+    void current_changed(const int prev, const int current);
 
 private:
     void on_list_current_row_changed(int index);
+    bool auto_switch_tab;
+    bool ignore_current_row_signal;
 };
 
 #endif /* TAB_WIDGET_H */

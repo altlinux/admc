@@ -64,10 +64,9 @@ QString dn_canonical(const QString &dn);
 QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class);
 
 QString get_default_domain_from_krb5();
-QString domain_to_domain_dn(const QString &domain);
 
-int bit_set(int bitmask, int bit, bool set);
-bool bit_is_set(int bitmask, int bit);
+int bitmask_set(const int input_mask, const int mask_to_set, const bool is_set);
+bool bitmask_is_set(const int input_mask, const int mask_to_read);
 
 // NOTE: uses a buffer that is capped at 100 strings, so
 // pointers returned from this become invalid after 99 more
@@ -83,5 +82,7 @@ QByteArray guid_string_to_bytes(const QString &guid_string);
 QByteArray sid_string_to_bytes(const QString &sid_string);
 
 QString attribute_type_display_string(const AttributeType type);
+
+QString int_to_hex_string(const int n);
 
 #endif /* AD_UTILS_H */

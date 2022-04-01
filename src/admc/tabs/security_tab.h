@@ -21,14 +21,18 @@
 #ifndef SECURITY_TAB_H
 #define SECURITY_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+#include "attribute_edits/attribute_edit.h"
 
 #include "ad_defines.h"
 
 #include <QDialog>
 
+class RightsSortModel;
 class QStandardItemModel;
 class QStandardItem;
+class SecurityDescriptor;
+struct security_descriptor;
 
 enum AceColumn {
     AceColumn_Name,
@@ -38,47 +42,64 @@ enum AceColumn {
     AceColumn_COUNT,
 };
 
+class SecurityTabEdit;
+
 namespace Ui {
 class SecurityTab;
 }
 
-class SecurityTab final : public PropertiesTab {
+class SecurityTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::SecurityTab *ui;
 
-    SecurityTab();
+    SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~SecurityTab();
 
-    static QHash<AcePermission, QString> ace_permission_to_name_map();
-
-    void load(AdInterface &ad, const AdObject &object) override;
-    bool verify(AdInterface &ad, const QString &target) const override;
-    bool apply(AdInterface &ad, const QString &target) override;
-
-    // NOTE: f-ns for testings
-    QStandardItem *get_item(const AcePermission permission, const AceColumn column);
-    bool set_trustee(const QString &trustee_name);
-
-private slots:
-    void load_trustee_acl();
+    void fix_acl_order();
+    void set_read_only();
+    bool verify_acl_order() const;
 
 private:
+    SecurityTabEdit *tab_edit;
+};
+
+class SecurityTabEdit final : public AttributeEdit {
+    Q_OBJECT
+
+public:
+    SecurityTabEdit(Ui::SecurityTab *ui, QObject *parent);
+    ~SecurityTabEdit();
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool verify(AdInterface &ad, const QString &dn) const override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
+
+    void fix_acl_order();
+    void set_read_only();
+    bool verify_acl_order() const;
+
+private:
+    Ui::SecurityTab *ui;
     QStandardItemModel *trustee_model;
-    QStandardItemModel *ace_model;
-    QHash<AcePermission, QHash<AceColumn, QStandardItem *>> permission_item_map;
-    QHash<QByteArray, QHash<AcePermission, PermissionState>> original_permission_state_map;
-    QHash<QByteArray, QHash<AcePermission, PermissionState>> permission_state_map;
-    bool ignore_item_changed_signal;
+    QStandardItemModel *rights_model;
+    RightsSortModel *rights_sort_model;
     bool is_policy;
+    bool ignore_item_changed_signal;
+    security_descriptor *sd;
+    QList<QString> target_class_list;
+    bool read_only;
 
     void on_item_changed(QStandardItem *item);
     void on_add_trustee_button();
     void on_remove_trustee_button();
-    void apply_current_state_to_items();
     void add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad);
     void on_add_well_known_trustee();
+    void load_current_sd(AdInterface &ad);
+    void load_rights_model();
+    void make_rights_model_read_only();
+    QByteArray get_current_trustee() const;
 };
 
 #endif /* SECURITY_TAB_H */

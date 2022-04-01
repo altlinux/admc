@@ -28,6 +28,7 @@
 #include <QDialog>
 
 class QLineEdit;
+class AdInterface;
 
 namespace Ui {
 class CreatePolicyDialog;
@@ -39,13 +40,12 @@ class CreatePolicyDialog : public QDialog {
 public:
     Ui::CreatePolicyDialog *ui;
 
-    CreatePolicyDialog(QWidget *parent);
+    CreatePolicyDialog(AdInterface &ad, QWidget *parent);
     ~CreatePolicyDialog();
 
     QString get_created_dn() const;
 
 public slots:
-    void open() override;
     void accept() override;
 
 private:

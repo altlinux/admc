@@ -23,67 +23,74 @@
 #include "attribute_edits/protect_deletion_edit.h"
 
 #include <QCheckBox>
-#include <QFormLayout>
-
-// NOTE: this doesn't really "lock" accounts. Accounts can
-// only be locked by the server and lockout time only
-// displays the state. Since unlock edit modifies lockout
-// time, test it like this.
-#define LOCKOUT_LOCKED_VALUE "1"
 
 void ADMCTestProtectDeletionEdit::init() {
     ADMCTest::init();
 
     checkbox = new QCheckBox(parent_widget);
 
-    edit = new ProtectDeletionEdit(checkbox, &edits, parent_widget);
+    edit = new ProtectDeletionEdit(checkbox, parent_widget);
 
     dn = test_object_dn(TEST_OU, CLASS_OU);
     const bool create_success = ad.object_add(dn, CLASS_OU);
     QVERIFY(create_success);
 }
 
-// edited() signal should be emitted when checkbox is toggled
-void ADMCTestProtectDeletionEdit::emit_edited_signal() {
+void ADMCTestProtectDeletionEdit::edited_signal_data() {
+    QTest::addColumn<bool>("start_state");
+
+    QTest::newRow("when checked") << false;
+    QTest::newRow("when unchecked") << true;
+}
+
+void ADMCTestProtectDeletionEdit::edited_signal() {
+    QFETCH(bool, start_state);
+    const bool end_state = !start_state;
+
+    checkbox->setChecked(start_state);
+
     bool edited_signal_emitted = false;
     connect(
         edit, &AttributeEdit::edited,
+        this,
         [&edited_signal_emitted]() {
             edited_signal_emitted = true;
         });
 
-    // Check checkbox
-    checkbox->setChecked(true);
-    QVERIFY(edited_signal_emitted);
-
-    // Unheck checkbox
-    edited_signal_emitted = false;
-    checkbox->setChecked(false);
+    checkbox->setChecked(end_state);
     QVERIFY(edited_signal_emitted);
 }
 
-// Edit should unlock locked user if checkbox is checked
+void ADMCTestProtectDeletionEdit::apply_data() {
+    QTest::addColumn<bool>("is_checked");
+    QTest::addColumn<bool>("expected_delete_success");
+
+    QTest::newRow("protected") << true << false;
+    QTest::newRow("not protected") << false << true;
+}
+
 void ADMCTestProtectDeletionEdit::apply() {
+    QFETCH(bool, is_checked);
+    QFETCH(bool, expected_delete_success);
+    
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 
-    // Enable protection against deletion
-    checkbox->setChecked(true);
+    checkbox->setChecked(is_checked);
     const bool apply_success = edit->apply(ad, dn);
     QVERIFY(apply_success);
 
-    // Try to delete, should fail
     qInfo() << "Error relating to \"Insufficient access\" is part of the test";
-    const bool delete_success = ad.object_delete(dn);
-    QCOMPARE(delete_success, false);
+    const bool actual_delete_success = ad.object_delete(dn);
+    QCOMPARE(actual_delete_success, expected_delete_success);
 
-    // Disable protection against deletion
-    checkbox->setChecked(false);
-    const bool apply_2_success = edit->apply(ad, dn);
-    QVERIFY(apply_2_success);
-
-    const bool delete_2_success = ad.object_delete(dn);
-    QVERIFY(delete_2_success);
+    // Finally, disable protection so test suite can
+    // delete this object to clean up
+    if (!actual_delete_success) {
+        checkbox->setChecked(false);
+        const bool apply_2_success = edit->apply(ad, dn);
+        QVERIFY(apply_2_success);
+    }
 }
 
 QTEST_MAIN(ADMCTestProtectDeletionEdit)

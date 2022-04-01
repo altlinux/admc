@@ -36,7 +36,7 @@ void ADMCTestUnlockEdit::init() {
 
     checkbox = new QCheckBox(parent_widget);
 
-    unlock_edit = new UnlockEdit(checkbox, &edits, parent_widget);
+    unlock_edit = new UnlockEdit(checkbox, parent_widget);
 
     // Create test user
     const QString name = TEST_USER;
@@ -50,6 +50,7 @@ void ADMCTestUnlockEdit::test_emit_edited_signal() {
     bool edited_signal_emitted = false;
     connect(
         unlock_edit, &AttributeEdit::edited,
+        this,
         [&edited_signal_emitted]() {
             edited_signal_emitted = true;
         });

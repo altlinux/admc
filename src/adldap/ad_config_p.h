@@ -38,7 +38,9 @@ public:
     AdConfigPrivate();
 
     QString domain;
-    QString domain_head;
+    QString domain_dn;
+    QString configuration_dn;
+    QString schema_dn;
 
     QList<ObjectClass> filter_containers;
 
@@ -54,7 +56,20 @@ public:
 
     QList<ObjectClass> add_auxiliary_classes(const QList<QString> &object_classes) const;
 
-    QHash<QString, QString> right_to_guid_map;
+    QHash<QString, QByteArray> right_to_guid_map;
+    QHash<QByteArray, QString> right_guid_to_cn_map;
+    QHash<QByteArray, QString> rights_guid_to_name_map;
+    QHash<QString, QByteArray> rights_name_to_guid_map;
+    QHash<QByteArray, QList<QString>> rights_applies_to_map;
+    QList<QString> extended_rights_list;
+    QHash<QString, int> rights_valid_accesses_map;
+
+    QHash<QByteArray, QString> guid_to_attribute_map;
+    QHash<QByteArray, QString> guid_to_class_map;
+
+    QList<QString> supported_control_list;
+
+    QHash<QString, QString> sub_class_of_map;
 };
 
 #endif /* AD_CONFIG_P_H */

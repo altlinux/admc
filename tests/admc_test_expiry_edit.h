@@ -24,7 +24,7 @@
 #include "admc_test.h"
 
 class ExpiryEdit;
-class QCheckBox;
+class QRadioButton;
 class QDateEdit;
 
 class ADMCTestExpiryEdit : public ADMCTest {
@@ -42,7 +42,7 @@ private slots:
 private:
     ExpiryEdit *edit;
     QString dn;
-    QCheckBox *check;
+    QRadioButton *button;
     QDateEdit *date_edit;
 };
 

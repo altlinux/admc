@@ -57,11 +57,11 @@ void ADMCTestSelectBaseWidget::init() {
 }
 
 // By default, domain head should be selected
-void ADMCTestSelectBaseWidget::default_to_domain_head() {
-    const QString domain_head = g_adconfig->domain_head();
+void ADMCTestSelectBaseWidget::default_to_domain_dn() {
+    const QString domain_dn = g_adconfig->domain_dn();
 
     const QString base = select_base_widget->get_base();
-    QCOMPARE(base, domain_head);
+    QCOMPARE(base, domain_dn);
 }
 
 // After selecting a search base, the widget should return

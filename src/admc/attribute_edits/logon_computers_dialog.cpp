@@ -25,12 +25,24 @@
 #include "utils.h"
 #include "settings.h"
 
-LogonComputersDialog::LogonComputersDialog(QWidget *parent)
+#include <QPushButton>
+
+LogonComputersDialog::LogonComputersDialog(const QString &value, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::LogonComputersDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
+
+    if (!value.isEmpty()) {
+        const QList<QString> value_list = value.split(",");
+
+        for (const QString &subvalue : value_list) {
+            ui->list->addItem(subvalue);
+        }
+    }
+
+    enable_widget_on_selection(ui->remove_button, ui->list);
 
     settings_setup_dialog_geometry(SETTING_logon_computers_dialog_geometry, this);
 
@@ -44,20 +56,6 @@ LogonComputersDialog::LogonComputersDialog(QWidget *parent)
 
 LogonComputersDialog::~LogonComputersDialog() {
     delete ui;
-}
-
-void LogonComputersDialog::load(const QString &value) {
-    ui->list->clear();
-
-    if (value.isEmpty()) {
-        return;
-    }
-
-    const QList<QString> value_list = value.split(",");
-
-    for (const QString &subvalue : value_list) {
-        ui->list->addItem(subvalue);
-    }
 }
 
 QString LogonComputersDialog::get() const {

@@ -28,8 +28,10 @@ class QComboBox;
 class GroupScopeEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    GroupScopeEdit(QComboBox *combo, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    GroupScopeEdit(QComboBox *combo, QObject *parent);
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
     QComboBox *combo;

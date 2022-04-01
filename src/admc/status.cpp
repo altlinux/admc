@@ -56,7 +56,7 @@ void Status::add_message(const QString &msg, const StatusType &type) {
 
     const QString timestamped_msg = QString("%1 %2").arg(timestamp, msg);
 
-    const bool timestamps_ON = settings_get_bool(SETTING_timestamp_log);
+    const bool timestamps_ON = settings_get_variant(SETTING_timestamp_log).toBool();
 
     const QColor color = [type]() {
         switch (type) {
@@ -93,14 +93,13 @@ void Status::add_message(const QString &msg, const StatusType &type) {
     m_message_log->setTextCursor(end_cursor);
 }
 
-void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
+void Status::display_ad_messages(const QList<AdMessage> &messages, QWidget *parent) {
     if (m_status_bar == nullptr || m_message_log == nullptr) {
         return;
     }
     //
     // Display all messages in status log
     //
-    const QList<AdMessage> messages = ad.messages();
     for (const AdMessage &message : messages) {
         const StatusType status_type = [message]() {
             switch (message.type()) {
@@ -113,14 +112,18 @@ void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
         add_message(message.text(), status_type);
     }
 
-    ad_error_log(ad, parent);
+    ad_error_log(messages, parent);
 }
 
-void ad_error_log(const AdInterface &ad, QWidget *parent) {
+void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
+    const QList<AdMessage> messages = ad.messages();
+
+    display_ad_messages(messages, parent);
+}
+
+void ad_error_log(const QList<AdMessage> &messages, QWidget *parent) {
     const QList<QString> error_list = [&]() {
         QList<QString> out;
-
-        const QList<AdMessage> messages = ad.messages();
 
         for (const auto &message : messages) {
             if (message.type() == AdMessageType_Error) {
@@ -132,6 +135,12 @@ void ad_error_log(const AdInterface &ad, QWidget *parent) {
     }();
 
     error_log(error_list, parent);
+}
+
+void ad_error_log(const AdInterface &ad, QWidget *parent) {
+    const QList<AdMessage> messages = ad.messages();
+
+    ad_error_log(messages, parent);
 }
 
 void error_log(const QList<QString> error_list, QWidget *parent) {

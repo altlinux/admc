@@ -35,7 +35,10 @@ class QAbstractItemView;
 class QPushButton;
 class AttributesTab;
 class AdInterface;
+class AdObject;
 class PropertiesWarningDialog;
+class AttributeEdit;
+class SecurityTab;
 
 namespace Ui {
 class PropertiesDialog;
@@ -53,7 +56,7 @@ public:
     // newly created dialog and false if a dialog was
     // already open for given target and reused. Use to know
     // whether to connect to applied() signal
-    static PropertiesDialog *open_for_target(const QString &target, bool *dialog_is_new = nullptr);
+    static PropertiesDialog *open_for_target(AdInterface &ad, const QString &target, bool *dialog_is_new = nullptr);
     static void open_when_view_item_activated(QAbstractItemView *view, const int dn_role);
 
     ~PropertiesDialog();
@@ -68,23 +71,27 @@ private slots:
     void done(int r) override;
     void apply();
     void reset();
-    void on_edited();
 
 private:
-    QList<PropertiesTab *> tabs;
+    QList<AttributeEdit *> edit_list;
+    QList<AttributeEdit *> apply_list;
     QString target;
     QPushButton *apply_button;
     QPushButton *reset_button;
     AttributesTab *attributes_tab;
     PropertiesWarningDialog *warning_dialog;
-    bool is_modified;
+    bool security_warning_was_rejected;
+    SecurityTab *security_tab;
 
     // NOTE: ctor is private, use open_for_target() instead
-    PropertiesDialog(const QString &target_arg);
+    PropertiesDialog(AdInterface &ad, const QString &target_arg);
     bool apply_internal(AdInterface &ad);
-    void reset_internal(AdInterface &ad);
+    void reset_internal(AdInterface &ad, const AdObject &object);
 
-    void on_current_tab_changed(QWidget *prev_tab, QWidget *new_tab);
+    void on_current_tab_changed(const int prev, const int current);
+    void open_security_warning();
+    void on_security_warning_accepted();
+    void on_security_warning_rejected();
 };
 
 #endif /* PROPERTIES_DIALOG_H */

@@ -48,7 +48,7 @@ void ADMCTestPolicyResultsWidget::cleanupTestCase() {
     ADMCTest::cleanupTestCase();
 
     // Delete old test-policy, if needed
-    const QString base = g_adconfig->domain_head();
+    const QString base = g_adconfig->domain_dn();
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, gpo_name);
     const QList<QString> attributes = QList<QString>();
     const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, attributes);

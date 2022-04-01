@@ -22,25 +22,33 @@
 #include "tabs/ui_general_ou_tab.h"
 
 #include "adldap.h"
+#include "attribute_edits/general_name_edit.h"
 #include "attribute_edits/country_edit.h"
 #include "attribute_edits/string_edit.h"
-#include "tabs/general_other_tab.h"
 
-GeneralOUTab::GeneralOUTab(const AdObject &object) {
+GeneralOUTab::GeneralOUTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralOUTab();
     ui->setupUi(this);
 
-    load_name_label(ui->name_label, object);
+    auto name_edit = new GeneralNameEdit(ui->name_label, this);
+    auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
+    auto street_edit = new StringEdit(ui->street_edit, ATTRIBUTE_STREET_OU, this);
+    auto city_edit = new StringEdit(ui->city_edit, ATTRIBUTE_CITY, this);
+    auto state_edit = new StringEdit(ui->state_edit, ATTRIBUTE_STATE, this);
+    auto postal_code_edit = new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, this);
 
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
-    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, &edits, this);
-    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, &edits, this);
-    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, &edits, this);
-    new StringEdit(ui->postal_code_edit, ATTRIBUTE_POSTAL_CODE, &edits, this);
+    auto country_edit = new CountryEdit(ui->country_combo, this);
 
-    new CountryEdit(ui->country_combo, &edits, this);
-
-    edits_connect_to_tab(edits, this);
+    edit_list->append({
+        name_edit,
+        description_edit,
+        street_edit,
+        city_edit,
+        state_edit,
+        postal_code_edit,
+        country_edit,
+    });
 }
 
 GeneralOUTab::~GeneralOUTab() {

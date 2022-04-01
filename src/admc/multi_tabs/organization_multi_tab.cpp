@@ -21,20 +21,31 @@
 #include "multi_tabs/organization_multi_tab.h"
 #include "multi_tabs/ui_organization_multi_tab.h"
 
-#include "adldap.h"
-#include "attribute_multi_edits/manager_multi_edit.h"
-#include "attribute_multi_edits/string_multi_edit.h"
+#include "ad_defines.h"
+#include "attribute_edits/manager_edit.h"
+#include "attribute_edits/string_edit.h"
 
-OrganizationMultiTab::OrganizationMultiTab() {
+OrganizationMultiTab::OrganizationMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::OrganizationMultiTab();
     ui->setupUi(this);
 
-    new StringMultiEdit(ui->title_edit, ui->title_check, ATTRIBUTE_TITLE, edit_list, this);
-    new StringMultiEdit(ui->department_edit, ui->department_check, ATTRIBUTE_DEPARTMENT, edit_list, this);
-    new StringMultiEdit(ui->company_edit, ui->company_check, ATTRIBUTE_COMPANY, edit_list, this);
-    new ManagerMultiEdit(ui->manager_edit, ui->manager_check, edit_list, this);
+    auto title_edit = new StringEdit(ui->title_edit, ATTRIBUTE_TITLE, this);
+    auto department_edit = new StringEdit(ui->department_edit, ATTRIBUTE_DEPARTMENT, this);
+    auto company_edit = new StringEdit(ui->company_edit, ATTRIBUTE_COMPANY, this);
+    auto manager_edit = new ManagerEdit(ui->manager_edit, ATTRIBUTE_MANAGER, this);
 
-    multi_edits_connect_to_tab(edit_list, this);
+    edit_list->append({
+        title_edit,
+        department_edit,
+        company_edit,
+        manager_edit,
+    });
+
+    check_map->insert(title_edit, ui->title_check);
+    check_map->insert(department_edit, ui->department_check);
+    check_map->insert(company_edit, ui->company_check);
+    check_map->insert(manager_edit, ui->manager_check);
 }
 
 OrganizationMultiTab::~OrganizationMultiTab() {

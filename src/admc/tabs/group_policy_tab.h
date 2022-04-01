@@ -21,7 +21,8 @@
 #ifndef GROUP_POLICY_TAB_H
 #define GROUP_POLICY_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+#include "attribute_edits/attribute_edit.h"
 
 #include "gplink.h"
 
@@ -29,6 +30,7 @@ class QString;
 class QStandardItemModel;
 class QStandardItem;
 class QPoint;
+class GroupPolicyTabEdit;
 
 /**
  * Tab for displaying, modifying group policy related
@@ -40,19 +42,27 @@ namespace Ui {
 class GroupPolicyTab;
 }
 
-class GroupPolicyTab final : public PropertiesTab {
+class GroupPolicyTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::GroupPolicyTab *ui;
 
-    GroupPolicyTab();
+    GroupPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GroupPolicyTab();
+};
+
+class GroupPolicyTabEdit final : public AttributeEdit {
+    Q_OBJECT
+
+public:
+    GroupPolicyTabEdit(Ui::GroupPolicyTab *ui, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
-    bool apply(AdInterface &ad, const QString &target) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
+    Ui::GroupPolicyTab *ui;
     QStandardItemModel *model;
     Gplink gplink;
     QString original_gplink_string;

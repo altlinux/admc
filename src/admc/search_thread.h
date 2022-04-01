@@ -29,8 +29,8 @@
  * has multiple pages, then results_ready() will be emitted
  * multiple times. Use stop() to stop search. Note that search is
  * not stopped immediately but when current results page is
- * done processing. SearchThread deletes itself when it's
- * finished.
+ * done processing. Note that creator of thread should call
+ * thread's deleteLater() in the finished() slot.
  */
 
 #include <QThread>
@@ -38,6 +38,7 @@
 #include "ad_defines.h"
 
 class AdObject;
+class AdMessage;
 
 class SearchThread final : public QThread {
     Q_OBJECT
@@ -48,9 +49,12 @@ public:
     void stop();
     int get_id() const;
     bool failed_to_connect() const;
+    bool hit_object_display_limit() const;
+    QList<AdMessage> get_ad_messages() const;
 
 signals:
     void results_ready(const QHash<QString, AdObject> &results);
+    void over_object_display_limit();
 
 private:
     bool stop_flag;
@@ -60,10 +64,15 @@ private:
     QList<QString> attributes;
     int id;
     bool m_failed_to_connect;
+    bool m_hit_object_display_limit;
+    QList<AdMessage> ad_messages;
 
     void run() override;
 };
 
-void search_thread_error_log(QWidget *parent);
+// Call this in your finished() slot to display any
+// error dialogs. Search thread can't display them
+// because it is run in non-GUI thread.
+void search_thread_display_errors(SearchThread *thread, QWidget *parent);
 
 #endif /* SEARCH_THREAD_H */

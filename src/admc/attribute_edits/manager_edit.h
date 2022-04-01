@@ -36,8 +36,11 @@ class ManagerWidget;
 class ManagerEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QObject *parent);
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
+    void set_enabled(const bool enabled) override;
 
     QString get_manager() const;
 

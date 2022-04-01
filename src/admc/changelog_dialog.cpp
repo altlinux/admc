@@ -59,9 +59,15 @@ ChangelogDialog::ChangelogDialog(QWidget *parent)
             return fail_text;
         }
 
-        const QString out = file.readAll();
+        QString out = file.readAll();
 
         file.close();
+
+        // Remove forced word wrap contained in
+        // CHANGELOG.txt so that resizing the dialog
+        // expands text width (all wrapped lines start
+        // with 2 spaces)
+        out.replace("\n  ", " ");
 
         return out;
     }();

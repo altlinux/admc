@@ -29,33 +29,16 @@
 #include "status.h"
 #include "utils.h"
 
-CreatePolicyDialog::CreatePolicyDialog(QWidget *parent)
+CreatePolicyDialog::CreatePolicyDialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::CreatePolicyDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    settings_setup_dialog_geometry(SETTING_create_policy_dialog_geometry, this);
-}
-
-CreatePolicyDialog::~CreatePolicyDialog() {
-    delete ui;
-}
-
-QString CreatePolicyDialog::get_created_dn() const {
-    return created_dn;
-}
-
-void CreatePolicyDialog::open() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
-    }
-
     const QString default_name = [&]() {
         const QList<QString> existing_name_list = [&]() {
-            const QString base = g_adconfig->domain_head();
+            const QString base = g_adconfig->domain_dn();
             const SearchScope scope = SearchScope_All;
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
             const QList<QString> attributes = {ATTRIBUTE_DISPLAY_NAME};
@@ -78,13 +61,22 @@ void CreatePolicyDialog::open() {
 
     ui->name_edit->setText(default_name);
     ui->name_edit->selectAll();
+    limit_edit(ui->name_edit, ATTRIBUTE_DISPLAY_NAME);
 
-    QDialog::open();
+    settings_setup_dialog_geometry(SETTING_create_policy_dialog_geometry, this);
+}
+
+CreatePolicyDialog::~CreatePolicyDialog() {
+    delete ui;
+}
+
+QString CreatePolicyDialog::get_created_dn() const {
+    return created_dn;
 }
 
 void CreatePolicyDialog::accept() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
@@ -96,7 +88,7 @@ void CreatePolicyDialog::accept() {
     // have to manually check for conflict. Server wouldn't
     // catch this.
     const bool name_conflict = [&]() {
-        const QString base = g_adconfig->domain_head();
+        const QString base = g_adconfig->domain_dn();
         const SearchScope scope = SearchScope_All;
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, name);
         const QList<QString> attributes = QList<QString>();

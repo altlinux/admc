@@ -22,13 +22,15 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "settings.h"
 #include "utils.h"
 
 #include <QLineEdit>
+#include <QCheckBox>
 #include <QTextCodec>
 
-PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QCheckBox *show_password_check, QObject *parent)
+: AttributeEdit(parent) {
     edit = edit_arg;
     confirm_edit = confirm_edit_arg;
 
@@ -38,9 +40,15 @@ PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QLi
     connect(
         edit, &QLineEdit::textChanged,
         this, &AttributeEdit::edited);
+    connect(
+        show_password_check, &QCheckBox::toggled,
+        this, &PasswordEdit::on_show_password_check);
+
+    const bool show_password_is_ON = settings_get_variant(SETTING_show_password).toBool();
+    show_password_check->setChecked(show_password_is_ON);
 }
 
-void PasswordEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void PasswordEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
     UNUSED_ARG(object);
 
@@ -48,16 +56,19 @@ void PasswordEdit::load_internal(AdInterface &ad, const AdObject &object) {
     confirm_edit->clear();
 }
 
-void PasswordEdit::set_read_only(const bool read_only) {
-    edit->setDisabled(read_only);
-    confirm_edit->setDisabled(read_only);
-}
-
 bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
     UNUSED_ARG(ad);
 
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();
+
+    if (pass.isEmpty()) {
+        const QString error_text = QString(tr("Password cannot be empty."));
+        message_box_warning(edit, tr("Error"), error_text);
+
+        return false;
+    }
+
     if (pass != confirm_pass) {
         const QString error_text = QString(tr("Passwords don't match!"));
         message_box_warning(edit, tr("Error"), error_text);
@@ -81,7 +92,7 @@ bool PasswordEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = edit->text();
 
     const bool success = ad.user_set_pass(dn, new_value);
-
+    
     return success;
 }
 
@@ -91,4 +102,19 @@ QLineEdit *PasswordEdit::get_edit() const {
 
 QLineEdit *PasswordEdit::get_confirm_edit() const {
     return confirm_edit;
+}
+
+void PasswordEdit::on_show_password_check(bool checked) {
+    const QLineEdit::EchoMode echo_mode = [&]() {
+        if (checked) {
+            return QLineEdit::Normal;
+        } else {
+            return QLineEdit::Password;
+        }
+    }();
+
+    edit->setEchoMode(echo_mode);
+    confirm_edit->setEchoMode(echo_mode);
+
+    settings_set_variant(SETTING_show_password, checked);
 }

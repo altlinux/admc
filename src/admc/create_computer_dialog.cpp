@@ -22,37 +22,33 @@
 #include "ui_create_computer_dialog.h"
 
 #include "adldap.h"
-#include "attribute_edits/sam_name_edit.h"
+#include "attribute_edits/computer_sam_name_edit.h"
 #include "attribute_edits/upn_edit.h"
 #include "utils.h"
 #include "settings.h"
+#include "create_object_helper.h"
 
-CreateComputerDialog::CreateComputerDialog(QWidget *parent)
+CreateComputerDialog::CreateComputerDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {
     ui = new Ui::CreateComputerDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QList<AttributeEdit *> edit_list;
-
     // NOTE: some obscure missing features:
     // "Assign this computer account as a pre-Windows 2000 computer". Is this needed?
     // "The following user or group may join this computer to a domain". Tried to figure out how this is implemented and couldn't see any easy ways via attributes, so probably something to do with setting ACL'S.
     // "This is a managed computer" checkbox and an edit for guid/uuid which I assume modifies objectGUID?
 
-    sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
+    auto sam_name_edit = new ComputerSamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+
+    const QList<AttributeEdit *> edit_list = {
+        sam_name_edit,
+    };
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
         ui->sam_name_edit,
-    };
-
-    const QList<QWidget *> widget_list = {
-        ui->name_edit,
-        ui->sam_name_edit,
-        // NOTE: not restoring sam domain state is intended
-        // ui->sam_name_domain_edit,
     };
 
     // Autofill name -> sam account name
@@ -60,7 +56,7 @@ CreateComputerDialog::CreateComputerDialog(QWidget *parent)
         ui->name_edit, &QLineEdit::textChanged,
         this, &CreateComputerDialog::autofill_sam_name);
 
-    init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_COMPUTER);
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_COMPUTER, parent_dn, this);
 
     settings_setup_dialog_geometry(SETTING_create_computer_dialog_geometry, this);
 }
@@ -69,12 +65,20 @@ CreateComputerDialog::~CreateComputerDialog() {
     delete ui;
 }
 
-void CreateComputerDialog::open() {
-    sam_name_edit->load_domain();
+void CreateComputerDialog::accept() {
+    const bool accepted = helper->accept();
 
-    CreateObjectDialog::open();
+    if (accepted) {
+        QDialog::accept();
+    }
 }
 
+QString CreateComputerDialog::get_created_dn() const {
+    return helper->get_created_dn();
+}
+
+// NOTE: can't use setup_lineedit_autofill() because
+// need to make input uppercase
 void CreateComputerDialog::autofill_sam_name() {
     const QString name_input = ui->name_edit->text();
     ui->sam_name_edit->setText(name_input.toUpper());

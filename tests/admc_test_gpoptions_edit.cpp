@@ -32,7 +32,7 @@ void ADMCTestGpoptionsEdit::init() {
 
     check = new QCheckBox(parent_widget);
 
-    edit = new GpoptionsEdit(check, &edits, parent_widget);
+    edit = new GpoptionsEdit(check, parent_widget);
 
     const QString name = TEST_OU;
     dn = test_object_dn(name, CLASS_OU);

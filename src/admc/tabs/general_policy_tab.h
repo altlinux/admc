@@ -21,24 +21,37 @@
 #ifndef GENERAL_POLICY_TAB_H
 #define GENERAL_POLICY_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+#include "attribute_edits/attribute_edit.h"
 
 class AdObject;
+class GeneralPolicyTabEdit;
+class AttributeEdit;
 
 namespace Ui {
 class GeneralPolicyTab;
 }
 
-class GeneralPolicyTab final : public PropertiesTab {
+class GeneralPolicyTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::GeneralPolicyTab *ui;
 
-    GeneralPolicyTab();
+    GeneralPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralPolicyTab();
+};
+
+class GeneralPolicyTabEdit final : public AttributeEdit {
+    Q_OBJECT
+
+public:
+    GeneralPolicyTabEdit(Ui::GeneralPolicyTab *ui, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
+
+private:
+    Ui::GeneralPolicyTab *ui;
 };
 
 #endif /* GENERAL_POLICY_TAB_H */

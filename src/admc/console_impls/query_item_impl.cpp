@@ -164,7 +164,7 @@ QList<int> QueryItemImpl::default_columns() const {
 }
 
 void QueryItemImpl::on_export() {
-    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
+    const QModelIndex index = console->get_action_target(ItemType_QueryItem);
 
     const QString file_path = [&]() {
         const QString query_name = index.data(Qt::DisplayRole).toString();
@@ -203,10 +203,12 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
     row[QueryColumn_Description]->setText(description);
 }
 
-void console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
+QModelIndex console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
     const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, parent);
 
     console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+
+    return row[0]->index();
 }
 
 QHash<QString, QVariant> console_query_item_save_hash(const QModelIndex &index) {
@@ -248,13 +250,12 @@ void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, Q
 }
 
 void QueryItemImpl::on_edit_query_item() {
-    auto dialog = new EditQueryItemDialog(console);
-
-    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
+    const QModelIndex index = console->get_action_target(ItemType_QueryItem);
 
     const QModelIndex parent_index = index.parent();
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);
-    dialog->set_sibling_name_list(sibling_name_list);
+
+    auto dialog = new EditQueryItemDialog(sibling_name_list, console);
 
     {
         QString name;
@@ -270,6 +271,7 @@ void QueryItemImpl::on_edit_query_item() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, index]() {
             const QString name = dialog->name();
             const QString description = dialog->description();

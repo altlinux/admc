@@ -23,7 +23,7 @@
 
 #include "create_object_dialog.h"
 
-class SamNameEdit;
+class CreateObjectHelper;
 
 namespace Ui {
 class CreateGroupDialog;
@@ -35,13 +35,16 @@ class CreateGroupDialog final : public CreateObjectDialog {
 public:
     Ui::CreateGroupDialog *ui;
 
-    CreateGroupDialog(QWidget *parent);
+    CreateGroupDialog(const QString &parent_dn, QWidget *parent);
     ~CreateGroupDialog();
 
-    void open() override;
+    void accept() override;
+    QString get_created_dn() const override;
 
 private:
-    SamNameEdit *sam_name_edit;
+    CreateObjectHelper *helper;
+
+    void autofill_sam_name();
 };
 
 #endif /* CREATE_GROUP_DIALOG_H */

@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "utils.h"
 #include "status.h"
+#include "settings.h"
 
 #include <QHash>
 
@@ -33,14 +34,11 @@ SearchThread::SearchThread(const QString base_arg, const SearchScope scope_arg, 
     filter = filter_arg;
     attributes = attributes_arg;
     m_failed_to_connect = false;
+    m_hit_object_display_limit = false;
 
     static int id_max = 0;
     id = id_max;
     id_max++;
-
-    connect(
-        this, &SearchThread::finished,
-        this, &QObject::deleteLater);
 }
 
 void SearchThread::stop() {
@@ -57,10 +55,24 @@ void SearchThread::run() {
 
     AdCookie cookie;
 
+    const int object_display_limit = settings_get_variant(SETTING_object_display_limit).toInt();
+
+    int total_results_count = 0;
+
     while (true) {
         QHash<QString, AdObject> results;
 
         const bool success = ad.search_paged(base, scope, filter, attributes, &results, &cookie);
+
+        total_results_count += results.count();
+
+        if (total_results_count > object_display_limit) {
+            m_hit_object_display_limit = true;
+
+            break;
+        }
+
+        ad_messages = ad.messages();
 
         emit results_ready(results);
 
@@ -83,6 +95,18 @@ bool SearchThread::failed_to_connect() const {
     return m_failed_to_connect;
 }
 
-void search_thread_error_log(QWidget *parent) {
-    error_log({QCoreApplication::translate("object_impl.cpp", "Failed to connect to server while searching for objects.")}, parent);
+bool SearchThread::hit_object_display_limit() const {
+    return m_hit_object_display_limit;
+}
+
+QList<AdMessage> SearchThread::get_ad_messages() const {
+    return ad_messages;
+}
+
+void search_thread_display_errors(SearchThread *thread, QWidget *parent) {
+    if (thread->failed_to_connect()) {
+        error_log({QCoreApplication::translate("object_impl.cpp", "Failed to connect to server while searching for objects.")}, parent);
+    } else if (thread->hit_object_display_limit()) {
+        error_log({QCoreApplication::translate("object_impl.cpp", "Could not load all objects. Increase object display limit in Filter Options or reduce number of objects by applying a filter. Filter Options is accessible from main window's menubar via the \"View\" menu.")}, parent);
+    }
 }

@@ -23,30 +23,28 @@
 
 #include "adldap.h"
 #include "globals.h"
-#include "rename_object_dialog.h"
+#include "rename_object_helper.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
 
-#include <QPushButton>
-
-RenamePolicyDialog::RenamePolicyDialog(QWidget *parent)
+RenamePolicyDialog::RenamePolicyDialog(AdInterface &ad, const QString &target_dn_arg, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::RenamePolicyDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    ok_button = ui->button_box->button(QDialogButtonBox::Ok);
-    reset_button = ui->button_box->button(QDialogButtonBox::Reset);
+    target_dn = target_dn_arg;
 
-    connect(
-        reset_button, &QPushButton::clicked,
-        this, &RenamePolicyDialog::reset);
-    connect(
-        ui->name_edit, &QLineEdit::textChanged,
-        this, &RenamePolicyDialog::on_edited);
-    on_edited();
+    target_name = [&]() {
+        const AdObject object = ad.search_object(target_dn);
+
+        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    }();
+
+    ui->name_edit->setText(target_name);
+    limit_edit(ui->name_edit, ATTRIBUTE_DISPLAY_NAME);
 
     settings_setup_dialog_geometry(SETTING_rename_policy_dialog_geometry, this);
 }
@@ -55,15 +53,9 @@ RenamePolicyDialog::~RenamePolicyDialog() {
     delete ui;
 }
 
-void RenamePolicyDialog::open() {
-    reset();
-
-    QDialog::open();
-}
-
 void RenamePolicyDialog::accept() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
@@ -71,9 +63,9 @@ void RenamePolicyDialog::accept() {
     const bool apply_success = ad.attribute_replace_string(target_dn, ATTRIBUTE_DISPLAY_NAME, new_name);
 
     if (apply_success) {
-        RenameObjectDialog::success_msg(target_old_name);
+        RenameObjectHelper::success_msg(target_name);
     } else {
-        RenameObjectDialog::fail_msg(target_old_name);
+        RenameObjectHelper::fail_msg(target_name);
     }
 
     g_status->display_ad_messages(ad, this);
@@ -81,31 +73,4 @@ void RenamePolicyDialog::accept() {
     if (apply_success) {
         QDialog::accept();
     }
-}
-
-void RenamePolicyDialog::set_target(const QString &dn) {
-    target_dn = dn;
-
-    target_old_name = [&]() {
-        AdInterface ad;
-        if (ad_failed(ad)) {
-            return QString();
-        }
-
-        const AdObject object = ad.search_object(target_dn);
-
-        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
-    }();
-}
-
-void RenamePolicyDialog::on_edited() {
-    reset_button->setEnabled(true);
-    ok_button->setEnabled(true);
-}
-
-void RenamePolicyDialog::reset() {
-    reset_button->setEnabled(false);
-    ok_button->setEnabled(false);
-
-    ui->name_edit->setText(target_old_name);
 }

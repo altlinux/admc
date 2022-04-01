@@ -29,41 +29,56 @@
 #include "attribute_edits/upn_edit.h"
 #include "utils.h"
 #include "settings.h"
+#include "create_object_helper.h"
 
-CreateGroupDialog::CreateGroupDialog(QWidget *parent)
+CreateGroupDialog::CreateGroupDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {
     ui = new Ui::CreateGroupDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
+    
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto scope_edit = new GroupScopeEdit(ui->scope_combo, this);
+    auto type_edit = new GroupTypeEdit(ui->type_combo, this);
 
-    QList<AttributeEdit *> edit_list;
-    sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
-    new GroupScopeEdit(ui->scope_combo, &edit_list, this);
-    new GroupTypeEdit(ui->type_combo, &edit_list, this);
+    const QList<AttributeEdit *> edit_list = {
+        sam_name_edit,
+        scope_edit,
+        type_edit,
+    };
 
     const QList<QLineEdit *> required_edits = {
         ui->sam_name_edit,
     };
 
-    const QList<QWidget *> widget_list = {
-        ui->name_edit,
-        ui->sam_name_edit,
-        ui->scope_combo,
-        ui->type_combo,
-    };
-
-    init(ui->name_edit, ui->button_box, edit_list, required_edits, widget_list, CLASS_GROUP);
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_edits, CLASS_GROUP, parent_dn, this);
 
     settings_setup_dialog_geometry(SETTING_create_group_dialog_geometry, this);
+
+    // name -> sam account name
+    connect(
+        ui->name_edit, &QLineEdit::textChanged,
+        this, &CreateGroupDialog::autofill_sam_name);
 }
 
 CreateGroupDialog::~CreateGroupDialog() {
     delete ui;
 }
 
-void CreateGroupDialog::open() {
-    sam_name_edit->load_domain();
+void CreateGroupDialog::accept() {
+    const bool accepted = helper->accept();
 
-    CreateObjectDialog::open();
+    if (accepted) {
+        QDialog::accept();
+    }
+}
+
+QString CreateGroupDialog::get_created_dn() const {
+    return helper->get_created_dn();
+}
+
+void CreateGroupDialog::autofill_sam_name() {
+    const QString name_input = ui->name_edit->text();
+    ui->sam_name_edit->setText(name_input);
 }

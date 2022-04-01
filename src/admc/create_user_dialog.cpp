@@ -29,23 +29,23 @@
 #include "attribute_edits/upn_edit.h"
 #include "settings.h"
 #include "utils.h"
+#include "create_object_helper.h"
 
-CreateUserDialog::CreateUserDialog(QWidget *parent)
+CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, const QString &user_class, QWidget *parent)
 : CreateObjectDialog(parent) {
     ui = new Ui::CreateUserDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    QList<AttributeEdit *> edit_list;
-    new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, &edit_list, this);
-    new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, &edit_list, this);
-    new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, &edit_list, this);
-    sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edit_list, this);
+    auto first_name_edit = new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
+    auto last_name_edit = new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
+    auto initials_edit = new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto password_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, ui->show_password_check, this);
 
-    new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, &edit_list, this);
-
-    upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, &edit_list, this);
+    auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, this);
+    upn_edit->init_suffixes(ad);
 
     const QHash<AccountOption, QCheckBox *> check_map = {
         {AccountOption_PasswordExpired, ui->must_change_pass_check},
@@ -54,25 +54,20 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
         {AccountOption_Disabled, ui->disabled_check},
     };
 
+    QList<AttributeEdit *> option_edit_list;
+
     for (const AccountOption &option : check_map.keys()) {
         QCheckBox *check = check_map[option];
-        new AccountOptionEdit(check, option, &edit_list, this);
+        auto edit = new AccountOptionEdit(check, option, this);
+
+        option_edit_list.append(edit);
     }
 
     account_option_setup_conflicts(check_map);
 
-    // (first name + last name) -> full name
-    connect(
-        ui->first_name_edit, &QLineEdit::textChanged,
-        this, &CreateUserDialog::autofill_full_name);
-    connect(
-        ui->last_name_edit, &QLineEdit::textChanged,
-        this, &CreateUserDialog::autofill_full_name);
+    setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->name_edit);
 
-    // upn -> sam account name
-    connect(
-        ui->upn_prefix_edit, &QLineEdit::textChanged,
-        this, &CreateUserDialog::autofill_sam_name);
+    setup_lineedit_autofill(ui->upn_prefix_edit, ui->sam_name_edit);
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
@@ -80,26 +75,28 @@ CreateUserDialog::CreateUserDialog(QWidget *parent)
         ui->sam_name_edit,
     };
 
-    const QList<QWidget *> widget_list = {
-        ui->name_edit,
-        ui->first_name_edit,
-        ui->last_name_edit,
-        ui->initials_edit,
-        ui->sam_name_edit,
-        // NOTE: not restoring sam account name domain state
-        // is intended
-        // ui->sam_name_domain_edit,
-        ui->password_confirm_edit,
-        ui->upn_prefix_edit,
-        // NOTE: not restoring upn suffix state is intended
-        // ui->upn_suffix_edit,
-        ui->must_change_pass_check,
-        ui->cant_change_pass_check,
-        ui->dont_expire_pass_check,
-        ui->disabled_check,
-    };
+    const QList<AttributeEdit *> edit_list = [&]() {
+        QList<AttributeEdit *> out;
 
-    init(ui->name_edit, ui->button_box, edit_list, required_list, widget_list, CLASS_USER);
+        out = {
+            first_name_edit,
+            last_name_edit,
+            initials_edit,
+            sam_name_edit,
+            password_edit,
+            upn_edit,
+        };
+
+        out.append(option_edit_list);
+
+        return out;
+    }();
+
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, user_class, parent_dn, this);
+
+    if (user_class != CLASS_USER) {
+        setWindowTitle(QString(tr("Create %1")).arg(user_class));
+    }
 
     settings_setup_dialog_geometry(SETTING_create_user_dialog_geometry, this);
 }
@@ -108,43 +105,14 @@ CreateUserDialog::~CreateUserDialog() {
     delete ui;
 }
 
-void CreateUserDialog::open() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        return;
+void CreateUserDialog::accept() {
+    const bool accepted = helper->accept();
+
+    if (accepted) {
+        QDialog::accept();
     }
-
-    upn_edit->init_suffixes(ad);
-    sam_name_edit->load_domain();
-
-    CreateObjectDialog::open();
 }
 
-void CreateUserDialog::autofill_full_name() {
-    const QString full_name_value = [=]() {
-        const QString first_name = ui->first_name_edit->text();
-        const QString last_name = ui->last_name_edit->text();
-
-        const bool last_name_first = settings_get_bool(SETTING_last_name_before_first_name);
-        if (!first_name.isEmpty() && !last_name.isEmpty()) {
-            if (last_name_first) {
-                return last_name + " " + first_name;
-            } else {
-                return first_name + " " + last_name;
-            }
-        } else if (!first_name.isEmpty()) {
-            return first_name;
-        } else if (!last_name.isEmpty()) {
-            return last_name;
-        } else {
-            return QString();
-        }
-    }();
-
-    ui->name_edit->setText(full_name_value);
-}
-
-void CreateUserDialog::autofill_sam_name() {
-    const QString upn_input = ui->upn_prefix_edit->text();
-    ui->sam_name_edit->setText(upn_input);
+QString CreateUserDialog::get_created_dn() const {
+    return helper->get_created_dn();
 }

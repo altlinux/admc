@@ -20,7 +20,7 @@
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
      <property name="sortingEnabled">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="headerHidden">
       <bool>true</bool>
@@ -76,7 +76,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QTreeView" name="ace_view">
+    <widget class="QTreeView" name="rights_view">
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>

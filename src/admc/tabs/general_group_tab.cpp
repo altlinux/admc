@@ -22,33 +22,35 @@
 #include "tabs/ui_general_group_tab.h"
 
 #include "adldap.h"
+#include "attribute_edits/general_name_edit.h"
 #include "attribute_edits/group_scope_edit.h"
 #include "attribute_edits/group_type_edit.h"
 #include "attribute_edits/sam_name_edit.h"
 #include "attribute_edits/string_edit.h"
-#include "tabs/general_other_tab.h"
 
-GeneralGroupTab::GeneralGroupTab(const AdObject &object) {
+GeneralGroupTab::GeneralGroupTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralGroupTab();
     ui->setupUi(this);
 
-    load_name_label(ui->name_label, object);
+    auto name_edit = new GeneralNameEdit(ui->name_label, this);
+    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
+    auto email_edit = new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, this);
+    auto notes_edit = new StringEdit(ui->notes_edit, ATTRIBUTE_INFO, this);
 
-    new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, &edits, this);
-    new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, &edits, this);
-    new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, &edits, this);
-    new StringEdit(ui->notes_edit, ATTRIBUTE_INFO, &edits, this);
+    auto scope_edit = new GroupScopeEdit(ui->scope_combo, this);
+    auto type_edit = new GroupTypeEdit(ui->type_combo, this);
 
-    auto scope_edit = new GroupScopeEdit(ui->scope_combo, &edits, this);
-    auto type_edit = new GroupTypeEdit(ui->type_combo, &edits, this);
-
-    const bool is_critical_system_object = object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT);
-    if (is_critical_system_object) {
-        scope_edit->set_read_only(true);
-        type_edit->set_read_only(true);
-    }
-
-    edits_connect_to_tab(edits, this);
+    edit_list->append({
+        name_edit,
+        sam_name_edit,
+        description_edit,
+        email_edit,
+        notes_edit,
+        scope_edit,
+        type_edit,
+    });
 }
 
 GeneralGroupTab::~GeneralGroupTab() {

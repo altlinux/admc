@@ -21,14 +21,21 @@
 #include "multi_tabs/general_other_multi_tab.h"
 #include "multi_tabs/ui_general_other_multi_tab.h"
 
-#include "adldap.h"
-#include "attribute_multi_edits/string_multi_edit.h"
+#include "ad_defines.h"
+#include "attribute_edits/string_edit.h"
 
-GeneralOtherMultiTab::GeneralOtherMultiTab() {
+#include <QHash>
+
+GeneralOtherMultiTab::GeneralOtherMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralOtherMultiTab();
     ui->setupUi(this);
 
-    new StringMultiEdit(ui->description_edit, ui->description_check, ATTRIBUTE_DESCRIPTION, edit_list, this);
+    auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
 
-    multi_edits_connect_to_tab(edit_list, this);
+    edit_list->append({
+        description_edit,
+    });
+
+    check_map->insert(description_edit, ui->description_check);
 }

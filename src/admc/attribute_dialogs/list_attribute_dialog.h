@@ -44,9 +44,21 @@ public:
     ListAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent);
     ~ListAttributeDialog();
 
+    void accept() override;
+
     QList<QByteArray> get_value_list() const override;
 
+    // Sets max length for input of individual values
+    // of the list attribute, if it's of string type.
+    // Note that this *does not* apply to the list
+    // attribute itself. By default the limit from
+    // schema is used, but most list attributes are
+    // unlimited.
+    void set_value_max_length(const int max_length);
+
 private:
+    int max_length;
+
     void on_add_button();
     void on_remove_button();
     void add_value(const QByteArray value);

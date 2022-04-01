@@ -21,7 +21,8 @@
 #ifndef ORGANIZATION_TAB_H
 #define ORGANIZATION_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+#include "attribute_edits/attribute_edit.h"
 
 class QStandardItemModel;
 
@@ -29,18 +30,26 @@ namespace Ui {
 class OrganizationTab;
 }
 
-class OrganizationTab final : public PropertiesTab {
+class OrganizationTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::OrganizationTab *ui;
 
-    OrganizationTab();
+    OrganizationTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~OrganizationTab();
+};
+
+class OrganizationTabEdit final : public AttributeEdit {
+    Q_OBJECT
+
+public:
+    OrganizationTabEdit(Ui::OrganizationTab *ui, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
 
 private:
+    Ui::OrganizationTab *ui;
     QStandardItemModel *reports_model;
 };
 

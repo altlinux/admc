@@ -32,14 +32,17 @@
 void ADMCTestMembersTab::init() {
     ADMCTest::init();
 
-    members_tab = new MembersTab();
-    add_widget(members_tab);
+    view = new QTreeView(parent_widget);
+    auto primary_button = new QPushButton(parent_widget);
+    add_button = new QPushButton(parent_widget);
+    remove_button = new QPushButton(parent_widget);
+    auto properties_button = new QPushButton(parent_widget);
+    auto primary_group_label = new QLabel(parent_widget);
 
-    view = members_tab->ui->view;
-    model = members_tab->findChild<QStandardItemModel *>();
+    edit = new MembershipTabEdit(view, primary_button, add_button, remove_button, properties_button, primary_group_label, MembershipTabType_Members, parent_widget);
+
+    model = edit->findChild<QStandardItemModel *>();
     QVERIFY(model);
-    add_button = members_tab->ui->add_button;
-    remove_button = members_tab->ui->remove_button;
 
     // Create test user
     const QString user_name = TEST_USER;
@@ -55,7 +58,7 @@ void ADMCTestMembersTab::init() {
 
     // Load it into the tab
     const AdObject object = ad.search_object(group_dn);
-    members_tab->load(ad, object);
+    edit->load(ad, object);
 }
 
 // Loading a group without members should result in empty
@@ -71,7 +74,7 @@ void ADMCTestMembersTab::load() {
     QVERIFY(add_success);
 
     const AdObject object = ad.search_object(group_dn);
-    members_tab->load(ad, object);
+    edit->load(ad, object);
 
     QCOMPARE(model->rowCount(), 1);
 
@@ -88,7 +91,7 @@ void ADMCTestMembersTab::remove() {
 
     remove_button->click();
 
-    members_tab->apply(ad, group_dn);
+    edit->apply(ad, group_dn);
 
     const AdObject updated_object = ad.search_object(group_dn);
     const QList<QString> member_list = updated_object.get_strings(ATTRIBUTE_MEMBER);
@@ -107,7 +110,7 @@ void ADMCTestMembersTab::add() {
     QCOMPARE(model->item(0, 0)->text(), dn_get_name(user_dn));
 
     // Apply and check object state
-    members_tab->apply(ad, group_dn);
+    edit->apply(ad, group_dn);
     const AdObject object = ad.search_object(group_dn);
     const QList<QString> member_list = object.get_strings(ATTRIBUTE_MEMBER);
     QCOMPARE(member_list, QList<QString>({user_dn}));

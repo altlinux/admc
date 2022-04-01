@@ -28,26 +28,26 @@
 #include <QComboBox>
 #include <QLineEdit>
 
-UpnEdit::UpnEdit(QLineEdit *prefix_edit_arg, QComboBox *upn_suffix_combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+UpnEdit::UpnEdit(QLineEdit *prefix_edit_arg, QComboBox *upn_suffix_combo_arg, QObject *parent)
+: AttributeEdit(parent) {
     prefix_edit = prefix_edit_arg;
     upn_suffix_combo = upn_suffix_combo_arg;
-
-    limit_edit(prefix_edit, ATTRIBUTE_USER_PRINCIPAL_NAME);
 
     connect(
         prefix_edit, &QLineEdit::textChanged,
         this, &AttributeEdit::edited);
     connect(
         upn_suffix_combo, &QComboBox::currentTextChanged,
-        this, &AttributeEdit::edited);
+        this, &UpnEdit::on_suffix_combo_changed);
 }
 
 void UpnEdit::init_suffixes(AdInterface &ad) {
     upn_suffix_combo_init(upn_suffix_combo, ad);
+
+    on_suffix_combo_changed();
 }
 
-void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void UpnEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     upn_suffix_combo_load(upn_suffix_combo, object);
@@ -56,15 +56,22 @@ void UpnEdit::load_internal(AdInterface &ad, const AdObject &object) {
     prefix_edit->setText(prefix);
 }
 
-void UpnEdit::set_read_only(const bool read_only) {
-    prefix_edit->setDisabled(read_only);
-}
-
 bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
     const QString new_value = get_new_value();
+    const QString new_prefix = prefix_edit->text();
 
-    if (new_value.isEmpty()) {
-        const QString text = tr("UPN may not be empty.");
+    const bool contains_bad_chars = [&]() {
+        const bool some_bad_chars = string_contains_bad_chars(new_prefix, UPN_BAD_CHARS);
+        const bool starts_with_space = new_prefix.startsWith(" ");
+        const bool ends_with_space = new_prefix.endsWith(" ");
+
+        const bool out = (some_bad_chars || starts_with_space || ends_with_space);
+
+        return out;
+    }();
+
+    if (contains_bad_chars) {
+        const QString text = tr("Input field for User Principal Name contains one or more of the following illegal characters: # , + \" \\ < > (leading space) (trailing space)");
         message_box_warning(prefix_edit, tr("Error"), text);
 
         return false;
@@ -72,7 +79,7 @@ bool UpnEdit::verify(AdInterface &ad, const QString &dn) const {
 
     // Check that new upn is unique
     // NOTE: filter has to also check that it's not the same object because of attribute edit weirdness. If user edits logon name, then retypes original, then applies, the edit will apply because it was modified by the user, even if the value didn't change. Without "not_object_itself", this check would determine that object's logon name conflicts with itself.
-    const QString base = g_adconfig->domain_head();
+    const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QString filter = [=]() {
         const QString not_object_itself = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_DN, dn);
@@ -104,7 +111,21 @@ bool UpnEdit::apply(AdInterface &ad, const QString &dn) const {
 }
 
 QString UpnEdit::get_new_value() const {
-    const QString prefix = prefix_edit->text();
+    const QString prefix = prefix_edit->text().trimmed();
     const QString suffix = upn_suffix_combo->currentText();
     return QString("%1@%2").arg(prefix, suffix);
+}
+
+void UpnEdit::on_suffix_combo_changed() {
+    const int prefix_range_upper = [&]() {
+        const int total_range_upper = g_adconfig->get_attribute_range_upper(ATTRIBUTE_USER_PRINCIPAL_NAME);
+        const int at_length = QString("@").length();
+        const int suffix_length = upn_suffix_combo->currentText().length();
+        const int out = total_range_upper - at_length - suffix_length;
+
+        return out;
+    }();
+    prefix_edit->setMaxLength(prefix_range_upper);
+
+    emit edited();
 }

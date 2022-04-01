@@ -65,6 +65,10 @@ void FilterWidgetNormalTab::set_classes(const QList<QString> &class_list, const 
 
 }
 
+void FilterWidgetNormalTab::enable_filtering_all_classes() {
+    ui->select_classes_widget->enable_filtering_all_classes();
+}
+
 QString FilterWidgetNormalTab::get_filter() const {
     const QString attribute_filter = [this]() {
         QList<QString> filters;

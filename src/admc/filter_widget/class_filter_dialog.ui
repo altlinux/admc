@@ -6,14 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>282</width>
+    <height>103</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Select Classes</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QCheckBox" name="all_checkbox">
+     <property name="text">
+      <string>All</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="ClassFilterWidget" name="class_filter_widget" native="true"/>
    </item>

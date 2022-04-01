@@ -27,8 +27,8 @@
 
 #include <QComboBox>
 
-CountryEdit::CountryEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+CountryEdit::CountryEdit(QComboBox *combo_arg, QObject *parent)
+: AttributeEdit(parent) {
     combo = combo_arg;
 
     country_combo_init(combo);
@@ -38,16 +38,16 @@ CountryEdit::CountryEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out
         this, &AttributeEdit::edited);
 }
 
-void CountryEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void CountryEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     country_combo_load(combo, object);
 }
 
-void CountryEdit::set_read_only(const bool read_only) {
-    combo->setEnabled(!read_only);
-}
-
 bool CountryEdit::apply(AdInterface &ad, const QString &dn) const {
     return country_combo_apply(combo, ad, dn);
+}
+
+void CountryEdit::set_enabled(const bool enabled) {
+    combo->setEnabled(enabled);
 }

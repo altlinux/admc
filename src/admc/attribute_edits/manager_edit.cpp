@@ -25,8 +25,8 @@
 #include "globals.h"
 #include "utils.h"
 
-ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QObject *parent)
+: AttributeEdit(parent) {
     manager_attribute = manager_attribute_arg;
 
     widget = widget_arg;
@@ -37,18 +37,18 @@ ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attri
         this, &AttributeEdit::edited);
 }
 
-void ManagerEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void ManagerEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     widget->load(object);
 }
 
-void ManagerEdit::set_read_only(const bool read_only) {
-    widget->setEnabled(!read_only);
-}
-
 bool ManagerEdit::apply(AdInterface &ad, const QString &dn) const {
     return widget->apply(ad, dn);
+}
+
+void ManagerEdit::set_enabled(const bool enabled) {
+    widget->setEnabled(enabled);
 }
 
 QString ManagerEdit::get_manager() const {

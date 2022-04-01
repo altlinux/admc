@@ -26,7 +26,10 @@
 #include <QFormLayout>
 #include <QLineEdit>
 
-#define TEST_SUFFIX "test.com"
+// NOTE: we have to make sure that test suffix doesn't
+// already exist on the test domain, hence the wacky
+// name
+#define TEST_SUFFIX "totally-unique-test-suffix.zone"
 
 void ADMCTestUpnEdit::init() {
     ADMCTest::init();
@@ -34,7 +37,7 @@ void ADMCTestUpnEdit::init() {
     prefix_edit = new QLineEdit();
     suffix_edit = new QComboBox();
 
-    upn_edit = new UpnEdit(prefix_edit, suffix_edit, &edits, parent_widget);
+    upn_edit = new UpnEdit(prefix_edit, suffix_edit, parent_widget);
     upn_edit->init_suffixes(ad);
 
     // Create test user
@@ -44,19 +47,30 @@ void ADMCTestUpnEdit::init() {
     QVERIFY(create_success);
 
     const QString test_upn = QString("%1@%2").arg(name, TEST_SUFFIX);
-    ad.attribute_replace_string(dn, ATTRIBUTE_USER_PRINCIPAL_NAME, test_upn);
+    const bool replace_success = ad.attribute_replace_string(dn, ATTRIBUTE_USER_PRINCIPAL_NAME, test_upn);
+    QVERIFY(replace_success);
 
     const AdObject object = ad.search_object(dn);
     upn_edit->load(ad, object);
+}
+
+void ADMCTestUpnEdit::length_limit() {
+    const int prefix_max_length = prefix_edit->maxLength();
+    const int correct_prefix_max_length = [&]() {
+        const int total_range_upper = ad.adconfig()->get_attribute_range_upper(ATTRIBUTE_USER_PRINCIPAL_NAME);
+        const int suffix_length = suffix_edit->currentText().length();
+        const int out = total_range_upper - 1 - suffix_length;
+
+        return out;
+    }();
+
+    QCOMPARE(prefix_max_length, correct_prefix_max_length);
 }
 
 // Edit should load prefix and suffix into widgets correctly
 void ADMCTestUpnEdit::test_load() {
     const QString prefix = prefix_edit->text();
     QCOMPARE(prefix, TEST_USER);
-
-    const QString suffix = suffix_edit->currentText();
-    QCOMPARE(suffix, TEST_SUFFIX);
 }
 
 // edited() signal should be emitted when prefix or suffix
@@ -65,6 +79,7 @@ void ADMCTestUpnEdit::test_emit_edited() {
     bool edited_signal_emitted = false;
     connect(
         upn_edit, &AttributeEdit::edited,
+        this,
         [&edited_signal_emitted]() {
             edited_signal_emitted = true;
         });
@@ -168,18 +183,58 @@ void ADMCTestUpnEdit::change_suffix_in_edit() {
     suffix_edit->setCurrentIndex(new_suffix_index);
 }
 
+
+void ADMCTestUpnEdit::verify_bad_chars_data() {
+    QTest::addColumn<QString>("value");
+    QTest::addColumn<bool>("correct_result");
+
+    const QString bad_chars_string = UPN_BAD_CHARS;
+
+    for (int i = 0; i < bad_chars_string.length(); i++) {
+        const QChar bad_char = bad_chars_string.at(i);
+
+        const QString bad_char_string = QString(bad_char);
+        const QByteArray bad_char_bytes = bad_char_string.toUtf8();
+
+        const QString value = QString("test%1value").arg(bad_char);
+
+        QTest::newRow(bad_char_bytes.constData()) << value << false;
+    }
+
+    QTest::newRow("starts with space") << " testvalue" << false;
+    QTest::newRow("ends with space") << "testvalue " << false;
+    QTest::newRow("contains space inside") << "test value" << true;
+}
+
+void ADMCTestUpnEdit::verify_bad_chars() {
+    QFETCH(QString, value);
+    QFETCH(bool, correct_result);
+
+    prefix_edit->setText(value);
+
+    const bool actual_result = upn_edit->verify(ad, QString());
+
+    QCOMPARE(actual_result, correct_result);
+}
+
 // verify() must return false if there's a user with the
 // same upn
-void ADMCTestUpnEdit::test_verify() {
+void ADMCTestUpnEdit::verify_conflict() {
     // Create user with conflicting upn
     const QString conflict_name = "conflicting-upn-test-user";
     const QString conflict_dn = test_object_dn(conflict_name, CLASS_USER);
     const bool create_success = ad.object_add(conflict_dn, CLASS_USER);
     QVERIFY(create_success);
-    const QString conflicting_upn = get_current_upn();
-    ad.attribute_replace_string(conflict_dn, ATTRIBUTE_USER_PRINCIPAL_NAME, conflicting_upn);
 
-    // Verify should fail
+    const QString conflicting_upn = QString("%1@%2").arg(conflict_name, TEST_SUFFIX);
+    const bool replace_success = ad.attribute_replace_string(conflict_dn, ATTRIBUTE_USER_PRINCIPAL_NAME, conflicting_upn);
+    QVERIFY(replace_success);
+
+    // Set input of upn edit so that it conflicts with
+    // the conflicting user that we have setup. After
+    // that verify should fail.
+    prefix_edit->setText(conflict_name);
+    suffix_edit->setCurrentText(TEST_SUFFIX);
     const bool verify_success = upn_edit->verify(ad, dn);
 
     QVERIFY2(!verify_success, "verify() didn't notice upn conflict");

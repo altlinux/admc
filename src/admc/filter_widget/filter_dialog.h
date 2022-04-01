@@ -39,13 +39,12 @@ class FilterDialog final : public QDialog {
 public:
     Ui::FilterDialog *ui;
 
-    FilterDialog(QWidget *parent);
+    FilterDialog(const QList<QString> &class_list, const QList<QString> &selected_list, QWidget *parent);
     ~FilterDialog();
-
-    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
 
     QVariant save_state() const;
     void restore_state(const QVariant &state);
+    void enable_filtering_all_classes();
 
     QString get_filter() const;
 

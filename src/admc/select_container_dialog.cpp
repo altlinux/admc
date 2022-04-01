@@ -37,7 +37,7 @@
 
 QStandardItem *make_container_node(const AdObject &object);
 
-SelectContainerDialog::SelectContainerDialog(QWidget *parent)
+SelectContainerDialog::SelectContainerDialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::SelectContainerDialog();
     ui->setupUi(this);
@@ -64,6 +64,12 @@ SelectContainerDialog::SelectContainerDialog(QWidget *parent)
     QPushButton *ok_button = ui->button_box->button(QDialogButtonBox::Ok);
     enable_widget_on_selection(ok_button, ui->view);
 
+    // Load head object
+    const QString head_dn = g_adconfig->domain_dn();
+    const AdObject head_object = ad.search_object(head_dn);
+    QStandardItem *item = make_container_node(head_object);
+    model->appendRow(item);
+
     // NOTE: geometry is shared with the subclass
     // MoveObjectDialog but that is intended.
     settings_setup_dialog_geometry(SETTING_select_container_dialog_geometry, this);
@@ -77,27 +83,6 @@ SelectContainerDialog::~SelectContainerDialog() {
     delete ui;
 }
 
-void SelectContainerDialog::open() {
-    AdInterface ad;
-    if (ad_failed(ad)) {
-        close();
-
-        return;
-    }
-
-    model->removeRows(0, model->rowCount());
-
-    // Load head object
-    const QString head_dn = g_adconfig->domain_head();
-    const AdObject head_object = ad.search_object(head_dn);
-    auto item = make_container_node(head_object);
-    model->appendRow(item);
-
-    g_status->display_ad_messages(ad, this);
-
-    QDialog::open();
-}
-
 QString SelectContainerDialog::get_selected() const {
     const QModelIndex selected_index = ui->view->selectionModel()->currentIndex();
     const QString dn = selected_index.data(ContainerRole_DN).toString();
@@ -109,7 +94,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
     const QModelIndex index = proxy_model->mapToSource(proxy_index);
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
@@ -124,9 +109,7 @@ void SelectContainerDialog::fetch_node(const QModelIndex &proxy_index) {
         QString out;
 
         out = is_container_filter();
-
-        advanced_features_filter(out);
-        dev_mode_filter(out);
+        out = advanced_features_filter(out);
 
         return out;
     }();

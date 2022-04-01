@@ -75,20 +75,24 @@ void set_data_for_row(const QList<QStandardItem *> &row, const QVariant &data, c
 // Wrappers over is_connected() that also open an error
 // messagebox if failed to connect. You should generally use
 // these in GUI code instead of is_connected().
-bool ad_connected(const AdInterface &ad);
-bool ad_failed(const AdInterface &ad);
+bool ad_connected(const AdInterface &ad, QWidget *parent);
+bool ad_failed(const AdInterface &ad, QWidget *parent);
 
+// Filter that accepts only given classes
+QString get_classes_filter(const QList<QString> &class_list);
+
+// Filter that accepts only container classes
 QString is_container_filter();
 
 void limit_edit(QLineEdit *edit, const QString &attribute);
 
+// NOTE: object must contain "objectCategory" attribute
 QIcon get_object_icon(const AdObject &object);
 
 QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes);
 
-void advanced_features_filter(QString &filter);
+QString advanced_features_filter(const QString &filter);
 
-void dev_mode_filter(QString &filter);
 void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base);
 
 // NOTE: these f-ns replace QMessageBox static f-ns. The
@@ -99,8 +103,9 @@ QMessageBox *message_box_information(QWidget *parent, const QString &title, cons
 QMessageBox *message_box_question(QWidget *parent, const QString &title, const QString &text);
 QMessageBox *message_box_warning(QWidget *parent, const QString &title, const QString &text);
 
-QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role);
-QString get_selected_dn(ConsoleWidget *console, const int type, const int dn_role);
+QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list, const int dn_role);
+QList<QString> get_action_target_dn_list(ConsoleWidget *console, const int type, const int dn_role);
+QString get_action_target_dn(ConsoleWidget *console, const int type, const int dn_role);
 
 void center_widget(QWidget *widget);
 
@@ -108,5 +113,20 @@ void center_widget(QWidget *widget);
 // "New X (n)" where this name won't conflict with any
 // existing names. For example "New Folder (7)"
 QString generate_new_name(const QList<QString> &existing_name_list, const QString &base_name);
+
+QList<QString> variant_list_to_string_list(const QList<QVariant> &variant_list);
+QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list);
+
+bool string_contains_bad_chars(const QString &string, const QString &bad_chars);
+
+bool verify_object_name(const QString &name, QWidget *parent);
+
+// Setup an autofill of from one line edit into
+// another, so that when src is edited, input is copied
+// into dest.
+void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest);
+
+// (first name + last name) -> full name
+void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit);
 
 #endif /* UTILS_H */

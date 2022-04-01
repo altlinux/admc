@@ -28,10 +28,12 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_button_arg, const QString &main_attribute, const QString &other_attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent)
+StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_button_arg, const QString &main_attribute, const QString &other_attribute_arg, QObject *parent)
+: AttributeEdit(parent)
 , other_attribute(other_attribute_arg) {
-    main_edit = new StringEdit(line_edit_arg, main_attribute, nullptr, parent);
+    main_edit = new StringEdit(line_edit_arg, main_attribute, parent);
+
+    line_edit = line_edit_arg;
 
     other_button = other_button_arg;
 
@@ -43,7 +45,7 @@ StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_bu
         this, &StringOtherEdit::on_other_button);
 }
 
-void StringOtherEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void StringOtherEdit::load(AdInterface &ad, const AdObject &object) {
     main_edit->load(ad, object);
 
     other_values = object.get_values(other_attribute);
@@ -51,7 +53,7 @@ void StringOtherEdit::load_internal(AdInterface &ad, const AdObject &object) {
 
 void StringOtherEdit::set_read_only(const bool read_only_arg) {
     read_only = read_only_arg;
-    main_edit->set_read_only(read_only);
+    line_edit->setReadOnly(read_only);
 }
 
 bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {
@@ -63,10 +65,12 @@ bool StringOtherEdit::apply(AdInterface &ad, const QString &dn) const {
 
 void StringOtherEdit::on_other_button() {
     auto dialog = new ListAttributeDialog(other_values, other_attribute, read_only, other_button);
+    dialog->setWindowTitle(tr("Edit other values"));
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             other_values = dialog->get_value_list();
 

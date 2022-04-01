@@ -22,6 +22,7 @@
 #include "tabs/ui_general_policy_tab.h"
 
 #include "adldap.h"
+#include "attribute_edits/general_name_edit.h"
 #include "attribute_edits/datetime_edit.h"
 #include "utils.h"
 
@@ -34,24 +35,34 @@
 // is stored somewhere on sysvol. Owner, not sure, might be
 // in security descriptor?
 
-GeneralPolicyTab::GeneralPolicyTab() {
+GeneralPolicyTab::GeneralPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::GeneralPolicyTab();
     ui->setupUi(this);
 
-    auto created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, &edits, this);
-    auto modified_edit = new DateTimeEdit(ui->modified_edit, ATTRIBUTE_WHEN_CHANGED, &edits, this);
+    auto name_edit = new GeneralNameEdit(ui->name_label, this);
+    auto created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, this);
+    auto modified_edit = new DateTimeEdit(ui->modified_edit, ATTRIBUTE_WHEN_CHANGED, this);
+    auto tab_edit = new GeneralPolicyTabEdit(ui, this);
 
-    created_edit->set_read_only(true);
-    modified_edit->set_read_only(true);
-
-    edits_connect_to_tab(edits, this);
+    edit_list->append({
+        name_edit,    
+        created_edit,    
+        modified_edit,    
+        tab_edit,    
+    });
 }
 
 GeneralPolicyTab::~GeneralPolicyTab() {
     delete ui;
 }
 
-void GeneralPolicyTab::load(AdInterface &ad, const AdObject &object) {
+GeneralPolicyTabEdit::GeneralPolicyTabEdit(Ui::GeneralPolicyTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
+    ui = ui_arg;
+}
+
+void GeneralPolicyTabEdit::load(AdInterface &ad, const AdObject &object) {
     // Load version strings
     const int ad_version = object.get_int(ATTRIBUTE_VERSION_NUMBER);
 
@@ -105,6 +116,4 @@ void GeneralPolicyTab::load(AdInterface &ad, const AdObject &object) {
 
     const QString id = object.get_string(ATTRIBUTE_CN);
     ui->unique_id_label->setText(id);
-
-    PropertiesTab::load(ad, object);
 }

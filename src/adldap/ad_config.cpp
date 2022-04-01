@@ -25,6 +25,9 @@
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_utils.h"
+#include "ad_security.h"
+
+#include "samba/ndr_security.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -51,6 +54,7 @@
 #define ATTRIBUTE_SYSTEM_FLAGS "systemFlags"
 #define ATTRIBUTE_LINK_ID "linkID"
 #define ATTRIBUTE_SYSTEM_AUXILIARY_CLASS "systemAuxiliaryClass"
+#define ATTRIBUTE_SUB_CLASS_OF "subClassOf"
 
 #define CLASS_ATTRIBUTE_SCHEMA "attributeSchema"
 #define CLASS_CLASS_SCHEMA "classSchema"
@@ -71,7 +75,6 @@ AdConfig::~AdConfig() {
 
 void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->domain = get_default_domain_from_krb5();
-    d->domain_head = domain_to_domain_dn(d->domain);
 
     d->filter_containers.clear();
     d->columns.clear();
@@ -81,6 +84,12 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->attribute_display_names.clear();
     d->attribute_schemas.clear();
     d->class_schemas.clear();
+
+    const AdObject rootDSE_object = ad.search_object(ROOT_DSE);
+    d->domain_dn = rootDSE_object.get_string(ATTRIBUTE_ROOT_DOMAIN_NAMING_CONTEXT);
+    d->schema_dn = rootDSE_object.get_string(ATTRIBUTE_SCHEMA_NAMING_CONTEXT);
+    d->configuration_dn = rootDSE_object.get_string(ATTRIBUTE_CONFIGURATION_NAMING_CONTEXT);
+    d->supported_control_list = rootDSE_object.get_strings(ATTRIBUTE_SUPPORTED_CONTROL);
 
     const QString locale_dir = [this, locale]() {
         const QString locale_code = [locale]() {
@@ -108,6 +117,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_RANGE_UPPER,
             ATTRIBUTE_LINK_ID,
             ATTRIBUTE_SYSTEM_FLAGS,
+            ATTRIBUTE_SCHEMA_ID_GUID,
         };
 
         const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
@@ -115,6 +125,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         for (const AdObject &object : results.values()) {
             const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             d->attribute_schemas[attribute] = object;
+
+            const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
+            d->guid_to_attribute_map[guid] = attribute;
         }
     }
 
@@ -132,6 +145,8 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             ATTRIBUTE_SYSTEM_MUST_CONTAIN,
             ATTRIBUTE_AUXILIARY_CLASS,
             ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
+            ATTRIBUTE_SCHEMA_ID_GUID,
+            ATTRIBUTE_SUB_CLASS_OF,
         };
 
         const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
@@ -139,6 +154,12 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         for (const AdObject &object : results.values()) {
             const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
             d->class_schemas[object_class] = object;
+
+            const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
+            d->guid_to_class_map[guid] = object_class;
+
+            const QString sub_class_of = object.get_string(ATTRIBUTE_SUB_CLASS_OF);
+            d->sub_class_of_map[object_class] = sub_class_of;
         }
     }
 
@@ -277,14 +298,16 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         return out;
     }();
 
-    d->right_to_guid_map = [&]() {
-        QHash<QString, QString> out;
-
+    // Extended rights
+    {
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);
 
         const QList<QString> attributes = {
             ATTRIBUTE_CN,
+            ATTRIBUTE_DISPLAY_NAME,
             ATTRIBUTE_RIGHTS_GUID,
+            ATTRIBUTE_APPLIES_TO,
+            ATTRIBUTE_VALID_ACCESSES,
         };
 
         const QString search_base = extended_rights_dn();
@@ -293,37 +316,63 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
 
         for (const AdObject &object : search_results.values()) {
             const QString cn = object.get_string(ATTRIBUTE_CN);
-            const QString guid = object.get_string(ATTRIBUTE_RIGHTS_GUID);
+            const QString guid_string = object.get_string(ATTRIBUTE_RIGHTS_GUID);
+            const QByteArray guid = guid_string_to_bytes(guid_string);
+            const QByteArray display_name = object.get_value(ATTRIBUTE_DISPLAY_NAME);
+            const QList<QString> applies_to = [this, object]() {
+                QList<QString> out;
+                
+                const QList<QString> class_guid_string_list = object.get_strings(ATTRIBUTE_APPLIES_TO);
+                for (const QString &class_guid_string : class_guid_string_list) {
+                    const QByteArray class_guid = guid_string_to_bytes(class_guid_string);
+                    const QString object_class = guid_to_class(class_guid);
 
-            out[cn] = guid;
+                    out.append(object_class);
+                }
+
+                return out;
+            }();
+            const int valid_accesses = object.get_int(ATTRIBUTE_VALID_ACCESSES);
+
+            d->right_to_guid_map[cn] = guid;
+            d->right_guid_to_cn_map[guid] = cn;
+            d->rights_guid_to_name_map[guid] = display_name;
+            d->rights_name_to_guid_map[cn] = guid;
+            d->rights_applies_to_map[guid] = applies_to;
+            d->extended_rights_list.append(cn);
+            d->rights_valid_accesses_map[cn] = valid_accesses;
         }
-
-        return out;
-    }();
+    }
 }
 
 QString AdConfig::domain() const {
     return d->domain;
 }
 
-QString AdConfig::domain_head() const {
-    return d->domain_head;
+QString AdConfig::domain_dn() const {
+    return d->domain_dn;
 }
 
 QString AdConfig::configuration_dn() const {
-    return QString("CN=Configuration,%1").arg(domain_head());
+    return d->configuration_dn;
 }
 
 QString AdConfig::schema_dn() const {
-    return QString("CN=Schema,%1").arg(configuration_dn());
+    return d->schema_dn;
 }
 
 QString AdConfig::partitions_dn() const {
-    return QString("CN=Partitions,CN=Configuration,%1").arg(domain_head());
+    return QString("CN=Partitions,%1").arg(configuration_dn());
 }
 
 QString AdConfig::extended_rights_dn() const {
     return QString("CN=Extended-Rights,%1").arg(configuration_dn());
+}
+
+bool AdConfig::control_is_supported(const QString &control_oid) const {
+    const bool supported = d->supported_control_list.contains(control_oid);
+
+    return supported;
 }
 
 QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {
@@ -389,6 +438,34 @@ QList<QString> AdConfig::get_possible_superiors(const QList<ObjectClass> &object
     }
 
     out.removeDuplicates();
+
+    return out;
+}
+
+ObjectClass AdConfig::get_parent_class(const ObjectClass &object_class) const {
+    const ObjectClass out = d->sub_class_of_map.value(object_class);
+
+    return out;
+}
+
+QList<ObjectClass> AdConfig::get_inherit_chain(const ObjectClass &object_class) const {
+    QList<QString> out;
+
+    ObjectClass current_class = object_class;
+
+    while (true) {
+        out.append(current_class);
+
+        const QString parent_class = get_parent_class(current_class);
+
+        const bool chain_ended = (parent_class == current_class);
+
+        if (chain_ended) {
+            break;
+        } else {
+            current_class = parent_class;
+        }
+    }
 
     return out;
 }
@@ -538,11 +615,151 @@ bool AdConfig::get_attribute_is_backlink(const QString &attribute) const {
 
 bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
     const int system_flags = d->attribute_schemas[attribute].get_int(ATTRIBUTE_SYSTEM_FLAGS);
-    return bit_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);
+    return bitmask_is_set(system_flags, FLAG_ATTR_IS_CONSTRUCTED);
 }
 
-QString AdConfig::get_right_guid(const QString &right_cn) const {
-    const QString out = d->right_to_guid_map.value(right_cn, QString());
+QByteArray AdConfig::get_right_guid(const QString &right_cn) const {
+    const QByteArray out = d->right_to_guid_map.value(right_cn, QByteArray());
+    return out;
+}
+
+
+// NOTE: technically, Active Directory provides
+// translations for right names but it's not
+// accessible, so have to translate these ourselves. On
+// Windows, you would use the localizationDisplayId
+// retrieved from schema to get translation from
+// dssec.dll. And we don't have dssec.dll, nor do we
+// have the ability to interact with it!
+QString AdConfig::get_right_name(const QByteArray &right_guid, const QLocale::Language language) const {
+    const QHash<QString, QString> cn_to_map_russian = {
+        {"DS-Replication-Get-Changes", QCoreApplication::translate("AdConfig", "DS Replication Get Changes")},
+        {"DS-Replication-Get-Changes-All", QCoreApplication::translate("AdConfig", "DS Replication Get Changes All")},
+        {"Email-Information", QCoreApplication::translate("AdConfig", "Phone and Mail Options")},
+        {"DS-Bypass-Quota", QCoreApplication::translate("AdConfig", "Bypass the quota restrictions during creation.")},
+        {"Receive-As", QCoreApplication::translate("AdConfig", "Receive As")},
+        {"Unexpire-Password", QCoreApplication::translate("AdConfig", "Unexpire Password")},
+        {"Do-Garbage-Collection", QCoreApplication::translate("AdConfig", "Do Garbage Collection")},
+        {"Allowed-To-Authenticate", QCoreApplication::translate("AdConfig", "Allowed To Authenticate")},
+        {"Change-PDC", QCoreApplication::translate("AdConfig", "Change PDC")},
+        {"Reanimate-Tombstones", QCoreApplication::translate("AdConfig", "Reanimate Tombstones")},
+        {"msmq-Peek-Dead-Letter", QCoreApplication::translate("AdConfig", "msmq Peek Dead Letter")},
+        {"Certificate-AutoEnrollment", QCoreApplication::translate("AdConfig", "AutoEnrollment")},
+        {"DS-Install-Replica", QCoreApplication::translate("AdConfig", "DS Install Replica")},
+        {"Domain-Password", QCoreApplication::translate("AdConfig", "Domain Password & Lockout Policies")},
+        {"Generate-RSoP-Logging", QCoreApplication::translate("AdConfig", "Generate RSoP Logging")},
+        {"Run-Protect-Admin-Groups-Task", QCoreApplication::translate("AdConfig", "Run Protect Admin Groups Task")},
+        {"Self-Membership", QCoreApplication::translate("AdConfig", "Self Membership")},
+        {"DS-Clone-Domain-Controller", QCoreApplication::translate("AdConfig", "Allow a DC to create a clone of itself")},
+        {"Domain-Other-Parameters", QCoreApplication::translate("AdConfig", "Other Domain Parameters (for use by SAM)")},
+        {"SAM-Enumerate-Entire-Domain", QCoreApplication::translate("AdConfig", "SAM Enumerate Entire Domain")},
+        {"DS-Write-Partition-Secrets", QCoreApplication::translate("AdConfig", "Write secret attributes of objects in a Partition")},
+        {"Send-As", QCoreApplication::translate("AdConfig", "Send As")},
+        {"DS-Replication-Manage-Topology", QCoreApplication::translate("AdConfig", "DS Replication Manage Topology")},
+        {"DS-Set-Owner", QCoreApplication::translate("AdConfig", "Set Owner of an object during creation.")},
+        {"Generate-RSoP-Planning", QCoreApplication::translate("AdConfig", "Generate RSoP Planning")},
+        {"Certificate-Enrollment", QCoreApplication::translate("AdConfig", "Certificate Enrollment")},
+        {"Web-Information", QCoreApplication::translate("AdConfig", "Web Information")},
+        {"Create-Inbound-Forest-Trust", QCoreApplication::translate("AdConfig", "Create Inbound Forest Trust")},
+        {"Migrate-SID-History", QCoreApplication::translate("AdConfig", "Migrate SID History")},
+        {"Update-Password-Not-Required-Bit", QCoreApplication::translate("AdConfig", "Update Password Not Required Bit")},
+        {"MS-TS-GatewayAccess", QCoreApplication::translate("AdConfig", "MS-TS-GatewayAccess")},
+        {"Validated-MS-DS-Additional-DNS-Host-Name", QCoreApplication::translate("AdConfig", "Validated write to MS DS Additional DNS Host Name")},
+        {"msmq-Receive", QCoreApplication::translate("AdConfig", "msmq Receive")},
+        {"Validated-DNS-Host-Name", QCoreApplication::translate("AdConfig", "Validated DNS Host Name")},
+        {"Send-To", QCoreApplication::translate("AdConfig", "Send To")},
+        {"DS-Replication-Get-Changes-In-Filtered-Set", QCoreApplication::translate("AdConfig", "DS Replication Get Changes In Filtered Set")},
+        {"Read-Only-Replication-Secret-Synchronization", QCoreApplication::translate("AdConfig", "Read Only Replication Secret Synchronization")},
+        {"Validated-MS-DS-Behavior-Version", QCoreApplication::translate("AdConfig", "Validated write to MS DS behavior version")},
+        {"msmq-Open-Connector", QCoreApplication::translate("AdConfig", "msmq Open Connector")},
+        {"Terminal-Server-License-Server", QCoreApplication::translate("AdConfig", "Terminal Server License Server")},
+        {"Change-Schema-Master", QCoreApplication::translate("AdConfig", "Change Schema Master")},
+        {"Recalculate-Hierarchy", QCoreApplication::translate("AdConfig", "Recalculate Hierarchy")},
+        {"DS-Check-Stale-Phantoms", QCoreApplication::translate("AdConfig", "DS Check Stale Phantoms")},
+        {"msmq-Receive-computer-Journal", QCoreApplication::translate("AdConfig", "msmq Receive computer Journal")},
+        {"User-Force-Change-Password", QCoreApplication::translate("AdConfig", "User Force Change Password")},
+        {"Domain-Administer-Server", QCoreApplication::translate("AdConfig", "Domain Administer Server")},
+        {"DS-Replication-Synchronize", QCoreApplication::translate("AdConfig", "DS Replication Synchronize")},
+        {"Personal-Information", QCoreApplication::translate("AdConfig", "Personal Information")},
+        {"msmq-Peek", QCoreApplication::translate("AdConfig", "msmq Peek")},
+        {"General-Information", QCoreApplication::translate("AdConfig", "General Information")},
+        {"Membership", QCoreApplication::translate("AdConfig", "Group Membership")},
+        {"Add-GUID", QCoreApplication::translate("AdConfig", "Add GUID")},
+        {"RAS-Information", QCoreApplication::translate("AdConfig", "Remote Access Information")},
+        {"DS-Execute-Intentions-Script", QCoreApplication::translate("AdConfig", "DS Execute Intentions Script")},
+        {"Allocate-Rids", QCoreApplication::translate("AdConfig", "Allocate Rids")},
+        {"Update-Schema-Cache", QCoreApplication::translate("AdConfig", "Update Schema Cache")},
+        {"Apply-Group-Policy", QCoreApplication::translate("AdConfig", "Apply Group Policy")},
+        {"User-Account-Restrictions", QCoreApplication::translate("AdConfig", "Account Restrictions")},
+        {"Validated-SPN", QCoreApplication::translate("AdConfig", "Validated SPN")},
+        {"DS-Read-Partition-Secrets", QCoreApplication::translate("AdConfig", "Read secret attributes of objects in a Partition")},
+        {"User-Logon", QCoreApplication::translate("AdConfig", "Logon Information")},
+        {"DS-Query-Self-Quota", QCoreApplication::translate("AdConfig", "DS Query Self Quota")},
+        {"Change-Infrastructure-Master", QCoreApplication::translate("AdConfig", "Change Infrastructure Master")},
+        {"Open-Address-Book", QCoreApplication::translate("AdConfig", "Open Address Book")},
+        {"User-Change-Password", QCoreApplication::translate("AdConfig", "User Change Password")},
+        {"msmq-Peek-computer-Journal", QCoreApplication::translate("AdConfig", "msmq Peek computer Journal")},
+        {"Change-Domain-Master", QCoreApplication::translate("AdConfig", "Change Domain Master")},
+        {"msmq-Send", QCoreApplication::translate("AdConfig", "msmq Send")},
+        {"Change-Rid-Master", QCoreApplication::translate("AdConfig", "Change Rid Master")},
+        {"Recalculate-Security-Inheritance", QCoreApplication::translate("AdConfig", "Recalculate Security Inheritance")},
+        {"Refresh-Group-Cache", QCoreApplication::translate("AdConfig", "Refresh Group Cache")},
+        {"Manage-Optional-Features", QCoreApplication::translate("AdConfig", "Manage Optional Features")},
+        {"Reload-SSL-Certificate", QCoreApplication::translate("AdConfig", "Reload SSL Certificate")},
+        {"Enable-Per-User-Reversibly-Encrypted-Password", QCoreApplication::translate("AdConfig", "Enable Per User Reversibly Encrypted Password")},
+        {"DS-Replication-Monitor-Topology", QCoreApplication::translate("AdConfig", "DS Replication Monitor Topology")},
+        {"Public-Information", QCoreApplication::translate("AdConfig", "Public Information")},
+        {"Private-Information", QCoreApplication::translate("AdConfig", "Private Information")},
+        {"msmq-Receive-Dead-Letter", QCoreApplication::translate("AdConfig", "msmq Receive Dead Letter")},
+        {"msmq-Receive-journal", QCoreApplication::translate("AdConfig", "msmq Receive journal")},
+        {"DNS-Host-Name-Attributes", QCoreApplication::translate("AdConfig", "DNS Host Name Attributes")},
+    };
+
+    const QString right_cn = d->right_guid_to_cn_map[right_guid];
+    if (language == QLocale::Russian && cn_to_map_russian.contains(right_cn)) {
+        const QString out = cn_to_map_russian[right_cn];
+        
+        return out;
+    }
+
+    const QString out = d->rights_guid_to_name_map.value(right_guid, QCoreApplication::translate("AdConfig", "<unknown rights>"));
+    return out;
+}
+
+QList<QString> AdConfig::get_extended_rights_list(const QList<QString> &class_list) const {
+    QList<QString> out;
+    
+    for (const QString &rights : d->extended_rights_list) {
+        const bool applies_to = rights_applies_to_class(rights, class_list);
+        if (applies_to) {
+            out.append(rights);
+        }
+    }
+
+    return out;
+}
+
+int AdConfig::get_rights_valid_accesses(const QString &rights_cn) const {
+    // NOTE: awkward exception. Can't write group
+    // membership because target attribute is
+    // constructed. For some reason valid accesses for
+    // membership right does allow writing.
+    if (rights_cn == "Membership") {
+        return SEC_ADS_READ_PROP;
+    }
+
+    const int out = d->rights_valid_accesses_map.value(rights_cn, 0);
+
+    return out;
+}
+
+QString AdConfig::guid_to_attribute(const QByteArray &guid) const {
+    const QString out = d->guid_to_attribute_map.value(guid, "<unknown attribute>");
+    return out;
+}
+
+QString AdConfig::guid_to_class(const QByteArray &guid) const {
+    const QString out = d->guid_to_class_map.value(guid, "<unknown class>");
     return out;
 }
 
@@ -556,6 +773,14 @@ QList<QString> AdConfig::get_noncontainer_classes() {
     }
 
     return out;
+}
+
+bool AdConfig::rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const {
+    const QByteArray rights_guid = d->rights_name_to_guid_map[rights_cn];
+    const QSet<QString> applies_to = d->rights_applies_to_map[rights_guid].toSet();
+    const bool applies = applies_to.intersects(class_list.toSet());
+
+    return applies;
 }
 
 QList<QString> AdConfigPrivate::add_auxiliary_classes(const QList<QString> &object_classes) const {

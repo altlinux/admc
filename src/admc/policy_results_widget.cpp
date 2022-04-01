@@ -135,7 +135,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
     gpo = new_gpo;
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
@@ -148,13 +148,20 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
     if (!perms_ok && ok) {
         const QString title = tr("Incorrect permissions detected");
         const QString text = tr("Permissions for this policy's GPT don't match the permissions for it's GPC object. Would you like to update GPT permissions?");
-        QMessageBox *sync_warning_dialog =message_box_warning(this, title, text);
+
+        auto sync_warning_dialog = new QMessageBox(this);
+        sync_warning_dialog->setAttribute(Qt::WA_DeleteOnClose);
+        sync_warning_dialog->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        sync_warning_dialog->setWindowTitle(title);
+        sync_warning_dialog->setText(text);
+        sync_warning_dialog->setIcon(QMessageBox::Warning);
 
         connect(
             sync_warning_dialog, &QDialog::accepted,
+            this,
             [this]() {
                 AdInterface ad_inner;
-                if (ad_failed(ad_inner)) {
+                if (ad_failed(ad_inner, this)) {
                     return;
                 }
 
@@ -168,7 +175,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
     model->removeRows(0, model->rowCount());
 
-    const QString base = g_adconfig->domain_head();
+    const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QList<QString> attributes = {ATTRIBUTE_NAME, ATTRIBUTE_GPLINK};
     const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, gpo);
@@ -248,7 +255,7 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
     }
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 
@@ -286,7 +293,7 @@ void PolicyResultsWidget::open_context_menu(const QPoint &pos) {
 
 void PolicyResultsWidget::delete_link() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, this)) {
         return;
     }
 

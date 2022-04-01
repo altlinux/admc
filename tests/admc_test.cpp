@@ -117,7 +117,7 @@ void ADMCTest::cleanup() {
 }
 
 QString ADMCTest::test_arena_dn() {
-    const QString head_dn = g_adconfig->domain_head();
+    const QString head_dn = g_adconfig->domain_dn();
     const QString dn = QString("OU=test-arena,%1").arg(head_dn);
 
     return dn;

@@ -21,20 +21,22 @@
 #ifndef ADDRESS_TAB_H
 #define ADDRESS_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
 
 namespace Ui {
 class AddressTab;
 }
 
 // Address related attributes
-class AddressTab final : public PropertiesTab {
+class AddressTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::AddressTab *ui;
 
-    AddressTab();
+    AddressTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~AddressTab();
 };
 

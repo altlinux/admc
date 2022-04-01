@@ -21,19 +21,22 @@
 #ifndef GENERAL_USER_TAB_H
 #define GENERAL_USER_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AdObject;
+class AttributeEdit;
 
 namespace Ui {
 class GeneralUserTab;
 }
 
-class GeneralUserTab final : public PropertiesTab {
+class GeneralUserTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::GeneralUserTab *ui;
 
-    GeneralUserTab(const AdObject &object);
+    GeneralUserTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralUserTab();
 };
 

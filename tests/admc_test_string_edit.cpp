@@ -32,7 +32,7 @@ void ADMCTestStringEdit::init() {
 
     line_edit = new QLineEdit(parent_widget);
 
-    edit = new StringEdit(line_edit, TEST_ATTRIBUTE, &edits, parent_widget);
+    edit = new StringEdit(line_edit, TEST_ATTRIBUTE, parent_widget);
 
     // Create test user
     const QString name = TEST_USER;
@@ -46,6 +46,7 @@ void ADMCTestStringEdit::test_emit_edited_signal() {
     bool edited_signal_emitted = false;
     connect(
         edit, &AttributeEdit::edited,
+        this,
         [&edited_signal_emitted]() {
             edited_signal_emitted = true;
         });
@@ -86,6 +87,20 @@ void ADMCTestStringEdit::apply_modified() {
     const QString current_value = object.get_string(TEST_ATTRIBUTE);
 
     QCOMPARE(current_value, new_value);
+}
+
+// Apply should trim leading and trailing spaces
+void ADMCTestStringEdit::apply_trim() {
+    const QString new_value = " new value ";
+    line_edit->setText(new_value);
+
+    const bool apply_success = edit->apply(ad, dn);
+    QVERIFY(apply_success);
+
+    const AdObject object = ad.search_object(dn);
+    const QString current_value = object.get_string(TEST_ATTRIBUTE);
+
+    QCOMPARE(current_value, new_value.trimmed());
 }
 
 QTEST_MAIN(ADMCTestStringEdit)

@@ -35,14 +35,17 @@
 void ADMCTestMemberOfTab::init() {
     ADMCTest::init();
 
-    member_of_tab = new MemberOfTab();
-    add_widget(member_of_tab);
+    view = new QTreeView(parent_widget);
+    auto primary_button = new QPushButton(parent_widget);
+    add_button = new QPushButton(parent_widget);
+    remove_button = new QPushButton(parent_widget);
+    auto properties_button = new QPushButton(parent_widget);
+    auto primary_group_label = new QLabel(parent_widget);
 
-    view = member_of_tab->ui->view;
-    model = member_of_tab->findChild<QStandardItemModel *>();
+    edit = new MembershipTabEdit(view, primary_button, add_button, remove_button, properties_button, primary_group_label, MembershipTabType_MemberOf, parent_widget);
+
+    model = edit->findChild<QStandardItemModel *>();
     QVERIFY(model);
-    add_button = member_of_tab->ui->add_button;
-    remove_button = member_of_tab->ui->remove_button;
 
     // Create test user
     const QString user_name = TEST_USER;
@@ -58,7 +61,7 @@ void ADMCTestMemberOfTab::init() {
 
     // Load it into the tab
     const AdObject object = ad.search_object(user_dn);
-    member_of_tab->load(ad, object);
+    edit->load(ad, object);
 }
 
 // Loading a group without members should result in empty
@@ -74,7 +77,7 @@ void ADMCTestMemberOfTab::load() {
     QVERIFY(add_success);
 
     const AdObject object = ad.search_object(user_dn);
-    member_of_tab->load(ad, object);
+    edit->load(ad, object);
 
     QCOMPARE(model->rowCount(), 2);
 
@@ -105,7 +108,7 @@ void ADMCTestMemberOfTab::remove() {
 
     remove_button->click();
 
-    member_of_tab->apply(ad, user_dn);
+    edit->apply(ad, user_dn);
 
     const AdObject updated_object = ad.search_object(user_dn);
     const QList<QString> member_list = updated_object.get_strings(ATTRIBUTE_MEMBER_OF);
@@ -120,7 +123,7 @@ void ADMCTestMemberOfTab::add() {
     select_object_dialog_select(group_dn);
 
     // Apply and check object state
-    member_of_tab->apply(ad, user_dn);
+    edit->apply(ad, user_dn);
     const AdObject object = ad.search_object(user_dn);
     const QList<QString> member_of_list = object.get_strings(ATTRIBUTE_MEMBER_OF);
     QVERIFY(member_of_list.contains(group_dn));

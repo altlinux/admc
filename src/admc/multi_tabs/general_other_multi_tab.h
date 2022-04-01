@@ -25,19 +25,22 @@
  * General multi tab for all non-user objects.
  */
 
-#include "multi_tabs/properties_multi_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
+class QCheckBox;
 
 namespace Ui {
 class GeneralOtherMultiTab;
 }
 
-class GeneralOtherMultiTab final : public PropertiesMultiTab {
+class GeneralOtherMultiTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::GeneralOtherMultiTab *ui;
 
-    GeneralOtherMultiTab();
+    GeneralOtherMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent);
 };
 
 #endif /* GENERAL_OTHER_MULTI_TAB_H */

@@ -24,7 +24,11 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="dn_edit"/>
+      <widget class="QLineEdit" name="dn_edit">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="objectClassLabel">
@@ -34,7 +38,11 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="class_edit"/>
+      <widget class="QLineEdit" name="class_edit">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="createdLabel">
@@ -44,7 +52,11 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QDateTimeEdit" name="created_edit"/>
+      <widget class="QDateTimeEdit" name="created_edit">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="changedLabel">
@@ -54,7 +66,11 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QDateTimeEdit" name="changed_edit"/>
+      <widget class="QDateTimeEdit" name="changed_edit">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="uSNCreatedLabel">
@@ -64,7 +80,11 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QLineEdit" name="usn_created_edit"/>
+      <widget class="QLineEdit" name="usn_created_edit">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="uSNChangedLabel">
@@ -74,7 +94,11 @@
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QLineEdit" name="usn_changed_edit"/>
+      <widget class="QLineEdit" name="usn_changed_edit">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item row="6" column="0">
       <widget class="QLabel" name="protectAgainstDeletionLabel">

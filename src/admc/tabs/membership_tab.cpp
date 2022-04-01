@@ -48,18 +48,26 @@ enum MembersRole {
     MembersRole_Primary = Qt::UserRole + 2,
 };
 
-MembersTab::MembersTab()
-: MembershipTab(MembershipTabType_Members) {
-}
-
-MemberOfTab::MemberOfTab()
-: MembershipTab(MembershipTabType_MemberOf) {
-}
-
-MembershipTab::MembershipTab(const MembershipTabType type_arg) {
+MembershipTab::MembershipTab(QList<AttributeEdit *> *edit_list, const MembershipTabType &type, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::MembershipTab();
     ui->setupUi(this);
 
+    auto tab_edit = new MembershipTabEdit(ui->view, ui->primary_button, ui->add_button, ui->remove_button, ui->properties_button, ui->primary_group_label, type, this);
+
+    edit_list->append({
+        tab_edit,
+    });
+}
+
+MembershipTabEdit::MembershipTabEdit(QTreeView *view_arg, QPushButton *primary_button_arg, QPushButton *add_button_arg, QPushButton *remove_button_arg, QPushButton *properties_button_arg, QLabel *primary_group_label_arg, const MembershipTabType &type_arg, QObject *parent)
+: AttributeEdit(parent) {
+    view = view_arg;
+    primary_button = primary_button_arg;
+    add_button = add_button_arg;
+    remove_button = remove_button_arg;
+    properties_button = properties_button_arg;
+    primary_group_label = primary_group_label_arg;
     type = type_arg;
 
     model = new QStandardItemModel(0, MembersColumn_COUNT, this);
@@ -69,39 +77,39 @@ MembershipTab::MembershipTab(const MembershipTabType type_arg) {
             {MembersColumn_Parent, tr("Folder")},
         });
 
-    ui->view->setModel(model);
+    view->setModel(model);
 
     // Primary group widgets are visible only in Member of version
     if (type == MembershipTabType_Members) {
-        ui->primary_button->hide();
-        ui->primary_group_label->hide();
+        primary_button->hide();
+        primary_group_label->hide();
     }
 
-    settings_restore_header_state(SETTING_membership_tab_header_state, ui->view->header());
+    settings_restore_header_state(SETTING_membership_tab_header_state, view->header());
 
-    enable_widget_on_selection(ui->remove_button, ui->view);
-    enable_widget_on_selection(ui->properties_button, ui->view);
+    enable_widget_on_selection(remove_button, view);
+    enable_widget_on_selection(properties_button, view);
 
-    const QItemSelectionModel *selection_model = ui->view->selectionModel();
+    const QItemSelectionModel *selection_model = view->selectionModel();
     connect(
         selection_model, &QItemSelectionModel::selectionChanged,
-        this, &MembershipTab::enable_primary_button_on_valid_selection);
+        this, &MembershipTabEdit::enable_primary_button_on_valid_selection);
     enable_primary_button_on_valid_selection();
 
     connect(
-        ui->remove_button, &QAbstractButton::clicked,
-        this, &MembershipTab::on_remove_button);
+        remove_button, &QAbstractButton::clicked,
+        this, &MembershipTabEdit::on_remove_button);
     connect(
-        ui->add_button, &QAbstractButton::clicked,
-        this, &MembershipTab::on_add_button);
+        add_button, &QAbstractButton::clicked,
+        this, &MembershipTabEdit::on_add_button);
     connect(
-        ui->properties_button, &QAbstractButton::clicked,
-        this, &MembershipTab::on_properties_button);
+        properties_button, &QAbstractButton::clicked,
+        this, &MembershipTabEdit::on_properties_button);
     connect(
-        ui->primary_button, &QAbstractButton::clicked,
-        this, &MembershipTab::on_primary_button);
+        primary_button, &QAbstractButton::clicked,
+        this, &MembershipTabEdit::on_primary_button);
 
-    PropertiesDialog::open_when_view_item_activated(ui->view, MembersRole_DN);
+    PropertiesDialog::open_when_view_item_activated(view, MembersRole_DN);
 }
 
 MembershipTab::~MembershipTab() {
@@ -110,7 +118,7 @@ MembershipTab::~MembershipTab() {
     delete ui;
 }
 
-void MembershipTab::load(AdInterface &ad, const AdObject &object) {
+void MembershipTabEdit::load(AdInterface &ad, const AdObject &object) {
     const QList<QString> values = object.get_strings(get_membership_attribute());
     original_values = values.toSet();
     current_values = original_values;
@@ -123,7 +131,7 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
             const QByteArray group_sid = object.get_value(ATTRIBUTE_OBJECT_SID);
             const QString group_rid = extract_rid_from_sid(group_sid, g_adconfig);
 
-            const QString base = g_adconfig->domain_head();
+            const QString base = g_adconfig->domain_dn();
             const SearchScope scope = SearchScope_All;
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_PRIMARY_GROUP_ID, group_rid);
             const QList<QString> attributes = QList<QString>();
@@ -150,7 +158,7 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
             const int cut_index = user_sid_string.lastIndexOf("-") + 1;
             const QString group_sid = user_sid_string.left(cut_index) + group_rid;
 
-            const QString base = g_adconfig->domain_head();
+            const QString base = g_adconfig->domain_dn();
             const SearchScope scope = SearchScope_All;
             const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, group_sid);
             const QList<QString> attributes = QList<QString>();
@@ -170,13 +178,8 @@ void MembershipTab::load(AdInterface &ad, const AdObject &object) {
     reload_model();
 }
 
-bool MembershipTab::apply(AdInterface &ad, const QString &target) {
+bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) const {
     bool total_success = true;
-
-    // NOTE: need temp copy because can't edit the set
-    // during iteration
-    QSet<QString> new_original_values = original_values;
-    QSet<QString> new_original_primary_values = original_primary_values;
 
     // NOTE: logic is kinda duplicated but switching on behavior within iterations would be very confusing
     switch (type) {
@@ -187,9 +190,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
                 const bool removed = !current_values.contains(user);
                 if (removed) {
                     const bool success = ad.group_remove_member(group, user);
-                    if (success) {
-                        new_original_values.remove(user);
-                    } else {
+                    if (!success) {
                         total_success = false;
                     }
                 }
@@ -199,9 +200,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
                 const bool added = !original_values.contains(user);
                 if (added) {
                     const bool success = ad.group_add_member(group, user);
-                    if (success) {
-                        new_original_values.insert(user);
-                    } else {
+                    if (!success) {
                         total_success = false;
                     }
                 }
@@ -222,17 +221,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
                 const QString group_dn = current_primary_values.values()[0];
 
                 const bool success = ad.user_set_primary_group(group_dn, target);
-                if (success) {
-                    new_original_primary_values = {group_dn};
-
-                    // Server adds old primary group to
-                    // normal membership
-                    new_original_values.insert(original_primary_group);
-
-                    // Server removes new primary group from
-                    // normal membership
-                    new_original_values.remove(group_dn);
-                } else {
+                if (!success) {
                     total_success = false;
                 }
             }
@@ -254,9 +243,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
                 const bool removed = !current_values.contains(group);
                 if (removed) {
                     const bool success = ad.group_remove_member(group, user);
-                    if (success) {
-                        new_original_values.remove(group);
-                    } else {
+                    if (!success) {
                         total_success = false;
                     }
                 }
@@ -271,9 +258,7 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
                 const bool added = !original_values.contains(group);
                 if (added) {
                     const bool success = ad.group_add_member(group, user);
-                    if (success) {
-                        new_original_values.insert(group);
-                    } else {
+                    if (!success) {
                         total_success = false;
                     }
                 }
@@ -283,13 +268,10 @@ bool MembershipTab::apply(AdInterface &ad, const QString &target) {
         }
     }
 
-    original_values = new_original_values;
-    original_primary_values = new_original_primary_values;
-
     return total_success;
 }
 
-void MembershipTab::on_add_button() {
+void MembershipTabEdit::on_add_button() {
     const QList<QString> classes = [this]() -> QList<QString> {
         switch (type) {
             case MembershipTabType_Members: return {
@@ -303,7 +285,7 @@ void MembershipTab::on_add_button() {
         return QList<QString>();
     }();
 
-    auto dialog = new SelectObjectDialog(classes, SelectObjectDialogMultiSelection_Yes, this);
+    auto dialog = new SelectObjectDialog(classes, SelectObjectDialogMultiSelection_Yes, view);
 
     const QString title = [&]() {
         switch (type) {
@@ -318,6 +300,7 @@ void MembershipTab::on_add_button() {
 
     connect(
         dialog, &SelectObjectDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QString> selected = dialog->get_selected();
 
@@ -325,8 +308,8 @@ void MembershipTab::on_add_button() {
         });
 }
 
-void MembershipTab::on_remove_button() {
-    const QItemSelectionModel *selection_model = ui->view->selectionModel();
+void MembershipTabEdit::on_remove_button() {
+    const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selected = selection_model->selectedRows();
 
     QList<QString> removed_values;
@@ -355,15 +338,15 @@ void MembershipTab::on_remove_button() {
             return QString();
         }();
 
-        message_box_warning(this, tr("Error"), error_text);
+        message_box_warning(view, tr("Error"), error_text);
     } else {
         remove_values(removed_values);
     }
 }
 
-void MembershipTab::on_primary_button() {
+void MembershipTabEdit::on_primary_button() {
     // Make selected group primary
-    const QItemSelectionModel *selection_model = ui->view->selectionModel();
+    const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selecteds = selection_model->selectedRows();
     const QModelIndex selected = selecteds[0];
     const QString group_dn = selected.data(MembersRole_DN).toString();
@@ -380,19 +363,24 @@ void MembershipTab::on_primary_button() {
     emit edited();
 }
 
-void MembershipTab::on_properties_button() {
-    const QModelIndex current = ui->view->selectionModel()->currentIndex();
-    const QString dn = current.data(MembersRole_DN).toString();
-
-    PropertiesDialog::open_for_target(dn);
-}
-
-void MembershipTab::enable_primary_button_on_valid_selection() {
-    if (ui->primary_button == nullptr) {
+void MembershipTabEdit::on_properties_button() {
+    AdInterface ad;
+    if (ad_failed(ad, view)) {
         return;
     }
 
-    const QItemSelectionModel *selection_model = ui->view->selectionModel();
+    const QModelIndex current = view->selectionModel()->currentIndex();
+    const QString dn = current.data(MembersRole_DN).toString();
+
+    PropertiesDialog::open_for_target(ad, dn);
+}
+
+void MembershipTabEdit::enable_primary_button_on_valid_selection() {
+    if (primary_button == nullptr) {
+        return;
+    }
+
+    const QItemSelectionModel *selection_model = view->selectionModel();
     const QList<QModelIndex> selecteds = selection_model->selectedRows();
 
     // Enable "set primary group" button if
@@ -411,13 +399,13 @@ void MembershipTab::enable_primary_button_on_valid_selection() {
         const QString dn = selected_dns.values()[0];
         const bool is_primary = current_primary_values.contains(dn);
 
-        ui->primary_button->setEnabled(!is_primary);
+        primary_button->setEnabled(!is_primary);
     } else {
-        ui->primary_button->setEnabled(false);
+        primary_button->setEnabled(false);
     }
 }
 
-void MembershipTab::reload_model() {
+void MembershipTabEdit::reload_model() {
     // Load primary group name into label
     if (type == MembershipTabType_MemberOf) {
         const QString primary_group_label_text = [this]() {
@@ -433,7 +421,7 @@ void MembershipTab::reload_model() {
             return out;
         }();
 
-        ui->primary_group_label->setText(primary_group_label_text);
+        primary_group_label->setText(primary_group_label_text);
     }
 
     model->removeRows(0, model->rowCount());
@@ -456,7 +444,7 @@ void MembershipTab::reload_model() {
     model->sort(MembersColumn_Name);
 }
 
-void MembershipTab::add_values(QList<QString> values) {
+void MembershipTabEdit::add_values(QList<QString> values) {
     for (auto value : values) {
         current_values.insert(value);
     }
@@ -466,7 +454,7 @@ void MembershipTab::add_values(QList<QString> values) {
     emit edited();
 }
 
-void MembershipTab::remove_values(QList<QString> values) {
+void MembershipTabEdit::remove_values(QList<QString> values) {
     for (auto value : values) {
         current_values.remove(value);
     }
@@ -476,7 +464,7 @@ void MembershipTab::remove_values(QList<QString> values) {
     emit edited();
 }
 
-QString MembershipTab::get_membership_attribute() {
+QString MembershipTabEdit::get_membership_attribute() {
     switch (type) {
         case MembershipTabType_Members: return ATTRIBUTE_MEMBER;
         case MembershipTabType_MemberOf: return ATTRIBUTE_MEMBER_OF;

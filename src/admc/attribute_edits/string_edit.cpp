@@ -26,8 +26,8 @@
 
 #include <QLineEdit>
 
-StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QObject *parent)
+: AttributeEdit(parent) {
     attribute = attribute_arg;
     edit = edit_arg;
 
@@ -42,7 +42,7 @@ StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QList<
         this, &AttributeEdit::edited);
 }
 
-void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void StringEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const QString value = [=]() {
@@ -58,13 +58,13 @@ void StringEdit::load_internal(AdInterface &ad, const AdObject &object) {
     edit->setText(value);
 }
 
-void StringEdit::set_read_only(const bool read_only) {
-    edit->setDisabled(read_only);
-}
-
 bool StringEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value = edit->text();
+    const QString new_value = edit->text().trimmed();
     const bool success = ad.attribute_replace_string(dn, attribute, new_value);
 
     return success;
+}
+
+void StringEdit::set_enabled(const bool enabled) {
+    edit->setEnabled(enabled);
 }

@@ -21,10 +21,22 @@
 #include "tab_widget.h"
 #include "ui_tab_widget.h"
 
+// TODO: a lot of code has grown here that is used only
+// by properties dialog. Other places(fsmo and multi
+// properties) only use add_tab() and connection of
+// list widget to stacked widget. Should separate those
+// two into free f-ns. Properties dialog should
+// implement all of the extra stuff inside it. UI files
+// for users of this file will need to be updated to
+// contain list/stacked widget.
+
 TabWidget::TabWidget(QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::TabWidget();
     ui->setupUi(this);
+
+    auto_switch_tab = true;
+    ignore_current_row_signal = false;
 
     connect(
         ui->list_widget, &QListWidget::currentRowChanged,
@@ -35,17 +47,53 @@ TabWidget::~TabWidget() {
     delete ui;
 }
 
+QWidget *TabWidget::get_tab(const int index) const {
+    QWidget *out = ui->stacked_widget->widget(index);
+
+    return out;
+}
+
+QWidget *TabWidget::get_current_tab() const {
+    QWidget *out = ui->stacked_widget->currentWidget();
+
+    return out;
+}
+
+void TabWidget::set_current_tab(const int index) {
+    ignore_current_row_signal = true;
+    ui->list_widget->setCurrentRow(index, QItemSelectionModel::Clear | QItemSelectionModel::SelectCurrent);
+    ignore_current_row_signal = false;
+    ui->stacked_widget->setCurrentIndex(index);
+}
+
 void TabWidget::add_tab(QWidget *tab, const QString &title) {
     ui->list_widget->addItem(title);
+
     ui->stacked_widget->addWidget(tab);
 }
 
+void TabWidget::enable_auto_switch_tab(const bool enabled) {
+    auto_switch_tab = enabled;
+}
+
 void TabWidget::on_list_current_row_changed(int index) {
-    QWidget *prev_tab = ui->stacked_widget->currentWidget();
+    if (ignore_current_row_signal) {
+        return;
+    }
 
-    ui->stacked_widget->setCurrentIndex(index);
+    // NOTE: since tab wasn't change yet in stacked
+    // widget, we may use it to get previous tab index
+    const int prev = ui->stacked_widget->currentIndex();
 
-    QWidget *new_tab = ui->stacked_widget->currentWidget();
+    if (auto_switch_tab) {
+        ui->stacked_widget->setCurrentIndex(index);
+    } else {
+        // Restore prev index so current in list widget
+        // is the same as in stacked widget
+        ignore_current_row_signal = true;
+        ui->list_widget->setCurrentRow(prev, QItemSelectionModel::Clear | QItemSelectionModel::SelectCurrent);
+        ignore_current_row_signal = false;
+    }
 
-    emit current_changed(prev_tab, new_tab);
+    emit current_changed(prev, index);
 }

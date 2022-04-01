@@ -24,6 +24,7 @@
 #include "main_window.h"
 #include "main_window_connection_error.h"
 #include "settings.h"
+#include "status.h"
 #include "utils.h"
 #include "connection_options_dialog.h"
 
@@ -47,6 +48,7 @@ int main(int argc, char **argv) {
     app.setApplicationVersion(ADMC_VERSION);
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
+    app.setWindowIcon(QIcon(":/admc/admc.svg"));
 
     const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
 
@@ -68,11 +70,19 @@ int main(int argc, char **argv) {
 
     // NOTE: these translations are for qt-defined text, like standard dialog buttons
     QTranslator qt_translator;
-    const bool loaded_qt_translation = qt_translator.load("qt_" + saved_locale.name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    const bool loaded_qt_translation = qt_translator.load(saved_locale, "qt", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qt_translator);
 
     if (!loaded_qt_translation) {
         qDebug() << "Failed to load qt translation";
+    }
+
+    QTranslator qtbase_translator;
+    const bool loaded_qtbase_translation = qtbase_translator.load(saved_locale, "qtbase", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(&qtbase_translator);
+
+    if (!loaded_qtbase_translation) {
+        qDebug() << "Failed to load qt base translation";
     }
 
     load_connection_options();
@@ -89,19 +99,31 @@ int main(int argc, char **argv) {
     //   is needed because many child widgets used by
     //   MainWindow require adconfig to load their UI
     //   elements.
-    QMainWindow *first_main_window = [&]() -> QMainWindow * {
+    // 
+    // Control flow here is awkward for multiple
+    // reasons. First, the ad error log has to be
+    // displayed *after* main window is shown and
+    // parented to it to be modal. Secondly, we need
+    // adinterface to stay in this scope so that it is
+    // destroyed when scope is over. If it's created
+    // outside the scope, then it will stay alive for
+    // the whole duration of the app which is bad.
+    QMainWindow *first_main_window = nullptr;
+    {
         AdInterface ad;
 
-        if (ad_connected(ad)) {
+        if (ad.is_connected()) {
             load_g_adconfig(ad);
             
-            return new MainWindow(ad);
+            first_main_window = new MainWindow(ad);
+            first_main_window->show();
         } else {
-            return new MainWindowConnectionError();
-        }
-    }();
+            first_main_window = new MainWindowConnectionError();
+            first_main_window->show();
 
-    first_main_window->show();
+            ad_error_log(ad, first_main_window);
+        }
+    }
 
     const int retval = app.exec();
 

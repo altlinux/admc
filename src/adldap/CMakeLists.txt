@@ -12,6 +12,13 @@ pkg_check_modules(Smbclient REQUIRED IMPORTED_TARGET smbclient)
 pkg_check_modules(Krb5 REQUIRED IMPORTED_TARGET krb5)
 pkg_check_modules(Glib REQUIRED IMPORTED_TARGET glib-2.0)
 pkg_check_modules(Uuid REQUIRED IMPORTED_TARGET uuid)
+pkg_check_modules(Sasl REQUIRED IMPORTED_TARGET libsasl2)
+
+pkg_check_modules(Ndr REQUIRED IMPORTED_TARGET ndr)
+if(Ndr_VERSION VERSION_GREATER "1.0.1")
+    set(NDR_VERSION_GREATER_THAN_1_0_1 ON)
+endif()
+configure_file("adldap_config.h.in" "adldap_config.h")
 
 pkg_check_modules(Ndr REQUIRED IMPORTED_TARGET ndr)
 if(Ndr_VERSION VERSION_GREATER "1.0.1")
@@ -52,10 +59,10 @@ target_link_libraries(adldap
     Qt5::Core
     PkgConfig::Uuid
     PkgConfig::Smbclient
-    PkgConfig::Smbclient
     PkgConfig::Krb5
     Ldap::Ldap
     PkgConfig::NdrStandard
+    PkgConfig::Sasl
     resolv
 )
 

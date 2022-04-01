@@ -25,8 +25,8 @@
 
 #include <QCheckBox>
 
-UnlockEdit::UnlockEdit(QCheckBox *check_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+UnlockEdit::UnlockEdit(QCheckBox *check_arg, QObject *parent)
+: AttributeEdit(parent) {
     check = check_arg;
 
     connect(
@@ -38,15 +38,11 @@ QString UnlockEdit::label_text() {
     return tr("Unlock account");
 }
 
-void UnlockEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void UnlockEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
     UNUSED_ARG(object);
 
     check->setChecked(false);
-}
-
-void UnlockEdit::set_read_only(const bool read_only) {
-    check->setDisabled(read_only);
 }
 
 bool UnlockEdit::apply(AdInterface &ad, const QString &dn) const {

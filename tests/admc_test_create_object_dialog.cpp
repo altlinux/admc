@@ -21,16 +21,31 @@
 #include "admc_test_create_object_dialog.h"
 
 #include "adldap.h"
+#include "samba/dom_sid.h"
 #include "create_computer_dialog.h"
 #include "create_group_dialog.h"
 #include "create_ou_dialog.h"
 #include "create_user_dialog.h"
+#include "create_shared_folder_dialog.h"
+#include "create_contact_dialog.h"
 #include "ui_create_computer_dialog.h"
 #include "ui_create_group_dialog.h"
 #include "ui_create_ou_dialog.h"
 #include "ui_create_user_dialog.h"
+#include "ui_create_shared_folder_dialog.h"
+#include "ui_create_contact_dialog.h"
+
+void ADMCTestCreateObjectDialog::create_user_data() {
+    QTest::addColumn<QString>("user_class");
+    QTest::addColumn<int>("exptected_uac");
+
+    QTest::newRow("user") << CLASS_USER;
+    QTest::newRow("inetOrgPerson") << CLASS_INET_ORG_PERSON;
+}
 
 void ADMCTestCreateObjectDialog::create_user() {
+    QFETCH(QString, user_class);
+
     const QString name = TEST_USER;
     const QString logon_name = TEST_USER_LOGON;
     const QString password = TEST_PASSWORD;
@@ -38,8 +53,7 @@ void ADMCTestCreateObjectDialog::create_user() {
     const QString dn = test_object_dn(name, CLASS_USER);
 
     // Create user
-    auto create_dialog = new CreateUserDialog(parent_widget);
-    create_dialog->set_parent_dn(parent);
+    auto create_dialog = new CreateUserDialog(ad, parent, user_class, parent_widget);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -51,8 +65,16 @@ void ADMCTestCreateObjectDialog::create_user() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created user doesn't exist");
-    QCOMPARE(create_dialog->get_created_name(), name);
     QCOMPARE(create_dialog->get_created_dn(), dn);
+
+    const int actual_uac = [&]() {
+        const AdObject object = ad.search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
+        const int out = object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
+
+        return out;
+    }();
+    const int expected_uac = UAC_NORMAL_ACCOUNT;
+    QCOMPARE(actual_uac, expected_uac);
 }
 
 void ADMCTestCreateObjectDialog::create_ou() {
@@ -61,8 +83,7 @@ void ADMCTestCreateObjectDialog::create_ou() {
     const QString dn = test_object_dn(name, CLASS_OU);
 
     // Create ou
-    auto create_dialog = new CreateOUDialog(parent_widget);
-    create_dialog->set_parent_dn(parent);
+    auto create_dialog = new CreateOUDialog(parent, parent_widget);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -71,7 +92,6 @@ void ADMCTestCreateObjectDialog::create_ou() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created OU doesn't exist");
-    QCOMPARE(create_dialog->get_created_name(), name);
     QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
@@ -82,8 +102,7 @@ void ADMCTestCreateObjectDialog::create_computer() {
     const QString dn = test_object_dn(name, object_class);
 
     // Open create dialog
-    auto create_dialog = new CreateComputerDialog(parent_widget);
-    create_dialog->set_parent_dn(parent);
+    auto create_dialog = new CreateComputerDialog(parent, parent_widget);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -92,9 +111,28 @@ void ADMCTestCreateObjectDialog::create_computer() {
 
     create_dialog->accept();
 
+    const QString actual_dn = create_dialog->get_created_dn();
+
     QVERIFY2(object_exists(dn), "Created computer doesn't exist");
-    QCOMPARE(create_dialog->get_created_name(), name);
-    QCOMPARE(create_dialog->get_created_dn(), dn);
+    QCOMPARE(actual_dn, dn);
+
+    const AdObject object = ad.search_object(actual_dn);
+
+    const int actual_sam_type = object.get_int(ATTRIBUTE_SAM_ACCOUNT_TYPE);
+    const int expected_sam_type = SAM_MACHINE_ACCOUNT;
+    QCOMPARE(actual_sam_type, expected_sam_type);
+
+    const int actual_primary_group_rid = object.get_int(ATTRIBUTE_PRIMARY_GROUP_ID);
+    const int expected_primary_group_rid = DOMAIN_RID_DOMAIN_MEMBERS;
+    QCOMPARE(actual_primary_group_rid, expected_primary_group_rid);
+
+    const int actual_uac = object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
+    const int expected_uac = (UAC_PASSWD_NOTREQD | UAC_WORKSTATION_TRUST_ACCOUNT);
+    QCOMPARE(actual_uac, expected_uac);
+
+    const QString actual_sam_name = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
+    const QString expected_sam_name = QString("%1$").arg(name);
+    QCOMPARE(actual_sam_name, expected_sam_name);
 }
 
 void ADMCTestCreateObjectDialog::create_group() {
@@ -104,8 +142,7 @@ void ADMCTestCreateObjectDialog::create_group() {
     const QString dn = test_object_dn(name, object_class);
 
     // Open create dialog
-    auto create_dialog = new CreateGroupDialog(parent_widget);
-    create_dialog->set_parent_dn(parent);
+    auto create_dialog = new CreateGroupDialog(parent, parent_widget);
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
@@ -115,7 +152,48 @@ void ADMCTestCreateObjectDialog::create_group() {
     create_dialog->accept();
 
     QVERIFY2(object_exists(dn), "Created group doesn't exist");
-    QCOMPARE(create_dialog->get_created_name(), name);
+    QCOMPARE(create_dialog->get_created_dn(), dn);
+}
+
+void ADMCTestCreateObjectDialog::create_shared_folder() {
+    const QString object_class = CLASS_SHARED_FOLDER;
+    const QString name = TEST_OBJECT;
+    const QString parent = test_arena_dn();
+    const QString dn = test_object_dn(name, object_class);
+
+    // Open create dialog
+    auto create_dialog = new CreateSharedFolderDialog(parent, parent_widget);
+    create_dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
+
+    create_dialog->ui->name_edit->setText(name);
+    create_dialog->ui->path_edit->setText("path");
+
+    create_dialog->accept();
+
+    QVERIFY2(object_exists(dn), "Created shared folder doesn't exist");
+    QCOMPARE(create_dialog->get_created_dn(), dn);
+}
+
+void ADMCTestCreateObjectDialog::create_contact() {
+    const QString object_class = CLASS_CONTACT;
+    const QString name = TEST_OBJECT;
+    const QString parent = test_arena_dn();
+    const QString dn = test_object_dn(name, object_class);
+
+    // Open create dialog
+    auto create_dialog = new CreateContactDialog(parent, parent_widget);
+    create_dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
+
+    create_dialog->ui->first_name_edit->setText("first");
+    create_dialog->ui->last_name_edit->setText("last");
+    create_dialog->ui->full_name_edit->setText(name);
+    create_dialog->ui->display_name_edit->setText("display");
+
+    create_dialog->accept();
+
+    QVERIFY2(object_exists(dn), "Created contact doesn't exist");
     QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 

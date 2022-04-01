@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "globals.h"
+#include "utils.h"
 #include "select_container_dialog.h"
 
 SelectBaseWidget::SelectBaseWidget(QWidget *parent)
@@ -30,7 +31,7 @@ SelectBaseWidget::SelectBaseWidget(QWidget *parent)
     ui = new Ui::SelectBaseWidget();
     ui->setupUi(this);
 
-    const QString domain_dn = g_adconfig->domain_head();
+    const QString domain_dn = g_adconfig->domain_dn();
     const QString domain_name = dn_get_name(domain_dn);
     ui->combo->addItem(domain_name, domain_dn);
 
@@ -60,20 +61,33 @@ QString SelectBaseWidget::get_base() const {
 }
 
 void SelectBaseWidget::open_browse_dialog() {
-    auto browse_dialog = new SelectContainerDialog(this);
+    AdInterface ad;
+    if (ad_failed(ad, this)) {
+        return;
+    }
+
+    auto browse_dialog = new SelectContainerDialog(ad, this);
     browse_dialog->open();
 
     connect(
         browse_dialog, &QDialog::accepted,
+        this,
         [this, browse_dialog]() {
             const QString selected = browse_dialog->get_selected();
             const QString name = dn_get_name(selected);
 
-            ui->combo->addItem(name, selected);
+            const int added_base_index = ui->combo->findText(name);
+            const bool base_already_added = (added_base_index != -1);
 
-            // Select newly added search base in combobox
-            const int new_base_index = ui->combo->count() - 1;
-            ui->combo->setCurrentIndex(new_base_index);
+            if (base_already_added) {
+                ui->combo->setCurrentIndex(added_base_index);
+            } else {
+                ui->combo->addItem(name, selected);
+
+                // Select newly added search base in combobox
+                const int new_base_index = ui->combo->count() - 1;
+                ui->combo->setCurrentIndex(new_base_index);
+            }
         });
 }
 

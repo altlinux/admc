@@ -21,19 +21,21 @@
 #ifndef TELEPHONES_TAB_H
 #define TELEPHONES_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
 
 namespace Ui {
 class TelephonesTab;
 }
 
-class TelephonesTab final : public PropertiesTab {
+class TelephonesTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::TelephonesTab *ui;
 
-    TelephonesTab();
+    TelephonesTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~TelephonesTab();
 };
 

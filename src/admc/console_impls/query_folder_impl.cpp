@@ -79,7 +79,7 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 void QueryFolderImpl::on_create_query_folder() {
     auto dialog = new CreateQueryFolderDialog(console);
 
-    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
+    const QModelIndex parent_index = console->get_action_target(ItemType_QueryFolder);
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, QModelIndex());
 
     dialog->set_sibling_name_list(sibling_name_list);
@@ -88,6 +88,7 @@ void QueryFolderImpl::on_create_query_folder() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, parent_index]() {
             const QString name = dialog->name();
             const QString description = dialog->description();
@@ -99,17 +100,15 @@ void QueryFolderImpl::on_create_query_folder() {
 }
 
 void QueryFolderImpl::on_create_query_item() {
-    auto dialog = new CreateQueryItemDialog(console);
-
-    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
+    const QModelIndex parent_index = console->get_action_target(ItemType_QueryFolder);
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, QModelIndex());
 
-    dialog->set_sibling_name_list(sibling_name_list);
-
+    auto dialog = new CreateQueryItemDialog(sibling_name_list, console);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, parent_index]() {
             const QString name = dialog->name();
             const QString description = dialog->description();
@@ -127,7 +126,7 @@ void QueryFolderImpl::on_create_query_item() {
 void QueryFolderImpl::on_edit_query_folder() {
     auto dialog = new EditQueryFolderDialog(console);
 
-    const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
+    const QModelIndex index = console->get_action_target(ItemType_QueryFolder);
 
     {
         const QString name = index.data(Qt::DisplayRole).toString();
@@ -142,6 +141,7 @@ void QueryFolderImpl::on_edit_query_folder() {
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog, index]() {
             const QString name = dialog->name();
             const QString description = dialog->description();
@@ -157,6 +157,12 @@ bool QueryFolderImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list,
     UNUSED_ARG(dropped_list);
     UNUSED_ARG(target);
     UNUSED_ARG(target_type);
+
+    const bool dropped_is_target = dropped_list.contains(target);
+
+    if (dropped_is_target) {
+        return false;
+    }
 
     const bool dropped_are_query_item_or_folder = (dropped_type_list - QSet<int>({ItemType_QueryItem, ItemType_QueryFolder})).isEmpty();
 
@@ -183,12 +189,24 @@ QList<QAction *> QueryFolderImpl::get_all_custom_actions() const {
 QSet<QAction *> QueryFolderImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
     UNUSED_ARG(index);
 
+    const bool is_root = [&]() {
+        QStandardItem *item = console->get_item(index);
+        const bool out = item->data(QueryItemRole_IsRoot).toBool();
+
+        return out;
+    }();
+
     QSet<QAction *> out;
 
     if (single_selection) {
-        out.insert(new_action);
-        out.insert(edit_action);
-        out.insert(import_action);
+        if (is_root) {
+            out.insert(new_action);
+            out.insert(import_action);
+        } else {
+            out.insert(new_action);
+            out.insert(edit_action);
+            out.insert(import_action);
+        }
     }
 
     return out;
@@ -197,14 +215,27 @@ QSet<QAction *> QueryFolderImpl::get_custom_actions(const QModelIndex &index, co
 QSet<StandardAction> QueryFolderImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     UNUSED_ARG(index);
 
+    const bool is_root = [&]() {
+        QStandardItem *item = console->get_item(index);
+        const bool out = item->data(QueryItemRole_IsRoot).toBool();
+
+        return out;
+    }();
+
     QSet<StandardAction> out;
 
-    out.insert(StandardAction_Delete);
+    if (!is_root) {
+        out.insert(StandardAction_Delete);
+    }
 
     if (single_selection) {
-        out.insert(StandardAction_Cut);
-        out.insert(StandardAction_Copy);
-        out.insert(StandardAction_Paste);
+        if (is_root) {
+            out.insert(StandardAction_Paste);
+        } else {
+            out.insert(StandardAction_Cut);
+            out.insert(StandardAction_Copy);
+            out.insert(StandardAction_Paste);
+        }
     }
 
     return out;
@@ -227,12 +258,44 @@ void QueryFolderImpl::copy(const QList<QModelIndex> &index_list) {
 void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
     const QModelIndex parent_index = index_list[0];
 
+    const bool recursive_cut_and_paste = (copied_is_cut && copied_list.contains(parent_index));
+    if (recursive_cut_and_paste) {
+        message_box_warning(console, tr("Error"), tr("Can't cut and paste query folder into itself."));
+
+        return;
+    } 
+
+    const bool parent_is_same = [&]() {
+        for (const QModelIndex &index : copied_list) {
+            const QModelIndex this_parent = index.parent();
+
+            if (this_parent == parent_index) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    // TODO: this is a band-aid on top of name conflict
+    // check inside move(), try to make this
+    // centralized if possible
+
+    // Prohibit copy+paste into same parent.
+    // console_query_move() does check for name
+    // conflicts but doesn't handle this edge case.
+    if (!copied_is_cut && parent_is_same) {
+        message_box_warning(console, tr("Error"), tr("There's already an item with this name."));
+
+        return;
+    }
+
     const bool delete_old_branch = copied_is_cut;
     console_query_move(console, copied_list, parent_index, delete_old_branch);
 }
 
 void QueryFolderImpl::on_import() {
-    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
+    const QModelIndex parent_index = console->get_action_target(ItemType_QueryFolder);
 
     const QString file_path = [&]() {
         const QString caption = QCoreApplication::translate("query_item_impl.cpp", "Import Query");
@@ -510,6 +573,11 @@ bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex
 }
 
 void query_action_delete(ConsoleWidget *console, const QList<QModelIndex> &index_list) {
+    const bool confirmed = confirmation_dialog(QCoreApplication::translate("query_folder_impl.cpp", "Are you sure you want to delete this item?"), console);
+    if (!confirmed) {
+        return;
+    }
+
     const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
     for (const QPersistentModelIndex &index : persistent_list) {
@@ -539,6 +607,7 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
         new_parent_map[old_index.parent()] = new_parent_index;
 
         QStack<QPersistentModelIndex> stack;
+        QList<QPersistentModelIndex> created_list;
         stack.append(old_index);
         while (!stack.isEmpty()) {
             const QPersistentModelIndex index = stack.pop();
@@ -554,11 +623,15 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
                 const QString name = index.data(Qt::DisplayRole).toString();
                 const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
 
-                console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, new_parent);
+                const QModelIndex item_index = console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, new_parent);
+
+                created_list.append(item_index);
             } else if (type == ItemType_QueryFolder) {
                 const QString name = index.data(Qt::DisplayRole).toString();
                 const QString description = index.data(QueryItemRole_Description).toString();
                 const QModelIndex folder_index = console_query_folder_create(console, name, description, new_parent);
+
+                created_list.append(folder_index);
 
                 new_parent_map[index] = QPersistentModelIndex(folder_index);
             }
@@ -566,7 +639,16 @@ void console_query_move(ConsoleWidget *console, const QList<QPersistentModelInde
             QAbstractItemModel *index_model = (QAbstractItemModel *) index.model();
             for (int row = 0; row < index_model->rowCount(index); row++) {
                 const QModelIndex child = index_model->index(row, 0, index);
-                stack.append(QPersistentModelIndex(child));
+
+                // NOTE: don't add indexes that were
+                // created during the move process, to
+                // avoid infinite loop. This can happen
+                // when copying and pasting a folder
+                // into itself.
+                const bool child_was_created = created_list.contains(QPersistentModelIndex(child));
+                if (!child_was_created) {
+                    stack.append(QPersistentModelIndex(child));
+                }
             }
         }
 

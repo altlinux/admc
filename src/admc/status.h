@@ -32,6 +32,7 @@ class QStatusBar;
 class QString;
 class QWidget;
 class AdInterface;
+class AdMessage;
 template <typename T>
 class QList;
 
@@ -47,6 +48,7 @@ public:
 
     void add_message(const QString &msg, const StatusType &type);
 
+    void display_ad_messages(const QList<AdMessage> &messages, QWidget *parent);
     void display_ad_messages(const AdInterface &ad, QWidget *parent);
 
 private:
@@ -56,6 +58,7 @@ private:
 
 // Opens a dialog containing ad error messages in a
 // scrollable list. Nothing is done if no errors occured.
+void ad_error_log(const QList<AdMessage> &messages, QWidget *parent);
 void ad_error_log(const AdInterface &ad, QWidget *parent);
 void error_log(const QList<QString> error_list, QWidget *parent);
 

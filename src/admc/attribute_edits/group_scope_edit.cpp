@@ -26,8 +26,8 @@
 #include <QComboBox>
 #include <QFormLayout>
 
-GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QObject *parent)
+: AttributeEdit(parent) {
     combo = combo_arg;
 
     for (int i = 0; i < GroupScope_COUNT; i++) {
@@ -42,16 +42,18 @@ GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edi
         this, &AttributeEdit::edited);
 }
 
-void GroupScopeEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void GroupScopeEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const GroupScope scope = object.get_group_scope();
 
     combo->setCurrentIndex((int) scope);
-}
 
-void GroupScopeEdit::set_read_only(const bool read_only) {
-    combo->setDisabled(read_only);
+    const bool is_critical_system_object = object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT);
+
+    if (is_critical_system_object) {
+        combo->setDisabled(true);
+    }
 }
 
 bool GroupScopeEdit::apply(AdInterface &ad, const QString &dn) const {

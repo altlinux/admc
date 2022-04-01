@@ -51,8 +51,13 @@ public:
     QVariant save_state() const;
     void restore_state(const QVariant &state);
 
+signals:
+    // Emitted when any of the checkboxes are touched
+    void changed();
+
 private:
     QHash<QString, QCheckBox *> checkbox_map;
+    QList<QString> class_list;
 
     void clear_selection();
     void select_all();

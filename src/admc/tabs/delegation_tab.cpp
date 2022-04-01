@@ -23,15 +23,17 @@
 
 #include "adldap.h"
 #include "attribute_edits/delegation_edit.h"
-#include "globals.h"
 
-DelegationTab::DelegationTab() {
+DelegationTab::DelegationTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::DelegationTab();
     ui->setupUi(this);
 
-    new DelegationEdit(ui->off_button, ui->on_button, &edits, this);
+    auto tab_edit = new DelegationEdit(ui->off_button, ui->on_button, this);
 
-    edits_connect_to_tab(edits, this);
+    edit_list->append({
+        tab_edit,
+    });
 }
 
 DelegationTab::~DelegationTab() {

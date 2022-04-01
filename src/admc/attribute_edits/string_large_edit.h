@@ -33,12 +33,17 @@ class QPlainTextEdit;
 class StringLargeEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    StringLargeEdit(QPlainTextEdit *edit, const QString &attribute_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    StringLargeEdit(QPlainTextEdit *edit, const QString &attribute_arg, QObject *parent);
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
     QPlainTextEdit *edit;
     QString attribute;
+    bool ignore_on_text_changed;
+
+    void on_text_changed();
 };
 
 #endif /* STRING_LARGE_EDIT_H */

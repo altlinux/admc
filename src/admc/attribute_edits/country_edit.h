@@ -28,8 +28,11 @@ class QComboBox;
 class CountryEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    CountryEdit(QComboBox *combo, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    CountryEdit(QComboBox *combo, QObject *parent);
+
+    void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
+    void set_enabled(const bool enabled) override;
 
 private:
     QComboBox *combo;

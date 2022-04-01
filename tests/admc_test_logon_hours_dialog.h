@@ -33,12 +33,11 @@ class ADMCTestLogonHoursDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
-    void init() override;
-
     void conversion_funs();
+    void load_data();
     void load();
-    void load_undefined();
-    void get_unchanged();
+    void load_empty();
+    void select();
     void handle_timezone();
 
 private:
@@ -48,6 +47,8 @@ private:
     QItemSelectionModel *selection_model;
     QRadioButton *local_time_button;
     QRadioButton *utc_time_button;
+
+    void open_dialog(const QByteArray &value);
 };
 
 #endif /* ADMC_TEST_LOGON_HOURS_DIALOG_H */

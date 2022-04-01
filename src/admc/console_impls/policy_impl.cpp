@@ -151,22 +151,27 @@ QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, 
 void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 
-    const QModelIndex index = console->get_selected_item(ItemType_Policy);
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    const QModelIndex index = console->get_action_target(ItemType_Policy);
     const QString dn = index.data(PolicyRole_DN).toString();
 
-    auto dialog = new RenamePolicyDialog(console);
-    dialog->set_target(dn);
+    auto dialog = new RenamePolicyDialog(ad, dn, console);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, index, dn]() {
-            AdInterface ad;
-            if (ad_failed(ad)) {
+            AdInterface ad_inner;
+            if (ad_failed(ad_inner, console)) {
                 return;
             }
 
-            const AdObject object = ad.search_object(dn);
+            const AdObject object = ad_inner.search_object(dn);
 
             const QList<QStandardItem *> row = console->get_row(index);
             console_policy_load(row, object);
@@ -180,7 +185,7 @@ void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
     }
 
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -215,11 +220,16 @@ void PolicyImpl::refresh(const QList<QModelIndex> &index_list) {
 }
 
 void PolicyImpl::properties(const QList<QModelIndex> &index_list) {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
     const QModelIndex index = index_list[0];
     const QString dn = index.data(PolicyRole_DN).toString();
 
     bool dialog_is_new;
-    PropertiesDialog *dialog = PropertiesDialog::open_for_target(dn, &dialog_is_new);
+    PropertiesDialog *dialog = PropertiesDialog::open_for_target(ad, dn, &dialog_is_new);
 
     // Need to update results when properties are applied,
     // in case links were modified in links tab
@@ -237,7 +247,7 @@ void PolicyImpl::properties(const QList<QModelIndex> &index_list) {
 
 void PolicyImpl::add_link(const QList<QString> &policy_list, const QList<QString> &ou_list) {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
@@ -277,8 +287,9 @@ void PolicyImpl::on_add_link() {
 
     connect(
         dialog, &SelectObjectDialog::accepted,
-        [=]() {
-            const QList<QString> gpos = get_selected_dn_list(console, ItemType_Policy, PolicyRole_DN);
+        this,
+        [this, dialog]() {
+            const QList<QString> gpos = get_action_target_dn_list(console, ItemType_Policy, PolicyRole_DN);
 
             const QList<QString> ou_list = dialog->get_selected();
 
@@ -290,27 +301,53 @@ void PolicyImpl::on_add_link() {
 }
 
 void PolicyImpl::on_edit() {
-    const QString dn = get_selected_dn(console, ItemType_Policy, PolicyRole_DN);
+    const QString dn = get_action_target_dn(console, ItemType_Policy, PolicyRole_DN);
 
-    const QString filesys_path = [&]() {
+    // TODO: remove this when gpui is able to load
+    // policy name on their own
+    const QString policy_name = [&]() {
         AdInterface ad;
-        if (ad_failed(ad)) {
+        if (ad_failed(ad, console)) {
             return QString();
         }
 
         const AdObject object = ad.search_object(dn);
-        const QString out = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    }();
 
-        return out;
+    const QString path = [&]() {
+        AdInterface ad;
+        if (ad_failed(ad, console)) {
+            return QString();
+        }
+
+        const AdObject object = ad.search_object(dn);
+        QString filesys_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+
+        const QString current_dc = ad.get_dc();
+
+        filesys_path.replace(QString("\\"),QString("/"));
+        auto contents = filesys_path.split("/", QString::KeepEmptyParts);
+        if (contents.size() > 3 && !current_dc.isEmpty())
+        {
+            contents[2] = current_dc;
+        }
+        filesys_path = contents.join("/");
+        filesys_path.prepend(QString("smb:"));
+
+        return filesys_path;
     }();
 
     auto process = new QProcess(console);
-    process->setProgram("gpui");
+    process->setProgram("gpui-main");
 
     const QList<QString> args = {
-        dn,
-        filesys_path,
+        QString("-p"),
+        path,
+        QString("-n"),
+        policy_name
     };
+
     process->setArguments(args);
 
     connect(

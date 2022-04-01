@@ -60,6 +60,7 @@ enum LargeIntegerSubtype {
 enum AccountOption {
     AccountOption_Disabled,
     AccountOption_CantChangePassword,
+    AccountOption_AllowReversibleEncryption,
     AccountOption_PasswordExpired,
     AccountOption_DontExpirePassword,
     AccountOption_UseDesKey,
@@ -89,6 +90,8 @@ enum SystemFlagsBit {
     SystemFlagsBit_CannotDelete = 0x80000000
 };
 
+#define ROOT_DSE ""
+
 #define ATTRIBUTE_CN "cn"
 #define ATTRIBUTE_USER_ACCOUNT_CONTROL "userAccountControl"
 #define ATTRIBUTE_LOCKOUT_TIME "lockoutTime"
@@ -97,6 +100,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_NAME "name"
 #define ATTRIBUTE_INITIALS "initials"
 #define ATTRIBUTE_SAM_ACCOUNT_NAME "sAMAccountName"
+#define ATTRIBUTE_SAM_ACCOUNT_TYPE "sAMAccountType"
 #define ATTRIBUTE_DISPLAY_NAME "displayName"
 #define ATTRIBUTE_DESCRIPTION "description"
 #define ATTRIBUTE_USER_PRINCIPAL_NAME "userPrincipalName"
@@ -114,6 +118,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_POSTAL_CODE "postalCode"
 #define ATTRIBUTE_STATE "st"
 #define ATTRIBUTE_STREET "streetAddress"
+#define ATTRIBUTE_STREET_OU "street"
 #define ATTRIBUTE_DN "distinguishedName"
 #define ATTRIBUTE_OBJECT_CLASS "objectClass"
 #define ATTRIBUTE_WHEN_CREATED "whenCreated"
@@ -158,7 +163,8 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_PROFILE_PATH "profilePath"
 #define ATTRIBUTE_SCRIPT_PATH "scriptPath"
 #define ATTRIBUTE_HOME_DIRECTORY "homeDirectory"
-
+#define ATTRIBUTE_LAPS_PASSWORD "ms-Mcs-AdmPwd"
+#define ATTRIBUTE_LAPS_EXPIRATION "ms-Mcs-AdmPwdExpirationTime"
 #define ATTRIBUTE_HOME_PHONE "homePhone"
 #define ATTRIBUTE_OTHER_HOME_PHONE "otherHomePhone"
 #define ATTRIBUTE_PAGER "pager"
@@ -179,6 +185,18 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_LOGON_HOURS "logonHours"
 #define ATTRIBUTE_USER_WORKSTATIONS "userWorkstations"
 #define ATTRIBUTE_VERSION_NUMBER "versionNumber"
+#define ATTRIBUTE_SUPPORTED_CONTROL "supportedControl"
+#define ATTRIBUTE_DS_SERVICE_NAME "dsServiceName"
+#define ATTRIBUTE_SCHEMA_NAMING_CONTEXT "schemaNamingContext"
+#define ATTRIBUTE_CONFIGURATION_NAMING_CONTEXT "configurationNamingContext"
+#define ATTRIBUTE_ROOT_DOMAIN_NAMING_CONTEXT "rootDomainNamingContext"
+#define ATTRIBUTE_FSMO_ROLE_OWNER "fSMORoleOwner"
+#define ATTRIBUTE_SERVER_NAME "serverName"
+#define ATTRIBUTE_SCHEMA_ID_GUID "schemaIDGUID"
+#define ATTRIBUTE_APPLIES_TO "appliesTo"
+#define ATTRIBUTE_VALID_ACCESSES "validAccesses"
+#define ATTRIBUTE_UNC_NAME "uNCName"
+#define ATTRIBUTE_KEYWORDS "keywords"
 
 #define CLASS_GROUP "group"
 #define CLASS_USER "user"
@@ -234,49 +252,53 @@ const long long MILLIS_TO_100_NANOS = 10000LL;
 #define SACL_SECURITY_INFORMATION 0x08
 #define DACL_SECURITY_INFORMATION 0x10
 
-enum PermissionState {
-    PermissionState_None,
-    PermissionState_Allowed,
-    PermissionState_Denied,
-};
+#define SAM_NAME_BAD_CHARS "@\"[]:;|=+*?<>/\\,"
+#define UPN_BAD_CHARS "#,+\"\\<>"
+// NOTE: names technically can contain these chars but
+// we choose to be more strict about it
+#define NAME_BAD_CHARS ",\\#+<>;\"="
 
-enum AcePermission {
-    AcePermission_FullControl,
-    AcePermission_Read,
-    AcePermission_Write,
-    AcePermission_Delete,
-    AcePermission_DeleteSubtree,
-    AcePermission_CreateChild,
-    AcePermission_DeleteChild,
-    AcePermission_AllowedToAuthenticate,
-    AcePermission_ChangePassword,
-    AcePermission_ReceiveAs,
-    AcePermission_ResetPassword,
-    AcePermission_SendAs,
-    AcePermission_ReadAccountRestrictions,
-    AcePermission_WriteAccountRestrictions,
-    AcePermission_ReadGeneralInfo,
-    AcePermission_WriteGeneralInfo,
-    AcePermission_ReadGroupMembership,
-    AcePermission_ReadLogonInfo,
-    AcePermission_WriteLogonInfo,
-    AcePermission_ReadPersonalInfo,
-    AcePermission_WritePersonalInfo,
-    AcePermission_ReadPhoneAndMailOptions,
-    AcePermission_WritePhoneAndMailOptions,
-    AcePermission_ReadPrivateInfo,
-    AcePermission_WritePrivateInfo,
-    AcePermission_ReadPublicInfo,
-    AcePermission_WritePublicInfo,
-    AcePermission_ReadRemoteAccessInfo,
-    AcePermission_WriteRemoteAccessInfo,
-    AcePermission_ReadTerminalServerLicenseServer,
-    AcePermission_WriteTerminalServerLicenseServer,
-    AcePermission_ReadWebInfo,
-    AcePermission_WriteWebInfo,
+#define UAC_SCRIPT 0x00000001
+#define UAC_ACCOUNTDISABLE 0x00000002
+#define UAC_HOMEDIR_REQUIRED 0x00000008
+#define UAC_LOCKOUT 0x00000010
+#define UAC_PASSWD_NOTREQD 0x00000020
+#define UAC_PASSWD_CANT_CHANGE 0x00000040
+#define UAC_ENCRYPTED_TEXT_PASSWORD_ALLOWED 0x00000080
+#define UAC_TEMP_DUPLICATE_ACCOUNT 0x00000100
+#define UAC_NORMAL_ACCOUNT 0x00000200
+#define UAC_INTERDOMAIN_TRUST_ACCOUNT 0x00000800
+#define UAC_WORKSTATION_TRUST_ACCOUNT 0x00001000
+#define UAC_SERVER_TRUST_ACCOUNT 0x00002000
+#define UAC_DONT_EXPIRE_PASSWORD 0x00010000
+#define UAC_MNS_LOGON_ACCOUNT 0x00020000
+#define UAC_SMARTCARD_REQUIRED 0x00040000
+#define UAC_TRUSTED_FOR_DELEGATION 0x00080000
+#define UAC_NOT_DELEGATED 0x00100000
+#define UAC_USE_DES_KEY_ONLY 0x00200000
+#define UAC_DONT_REQUIRE_PREAUTH 0x00400000
+#define UAC_ERROR_PASSWORD_EXPIRED 0x00800000
+#define UAC_TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION 0x01000000
+#define UAC_PARTIAL_SECRETS_ACCOUNT 0x04000000
+#define UAC_USER_USE_AES_KEYS 0x08000000
 
-    AcePermission_COUNT,
-};
+#define SAM_DOMAIN_OBJECT 0x0
+#define SAM_GROUP_OBJECT 0x10000000
+#define SAM_NON_SECURITY_GROUP_OBJECT 0x10000001
+#define SAM_ALIAS_OBJECT 0x20000000
+#define SAM_NON_SECURITY_ALIAS_OBJECT 0x20000001
+#define SAM_USER_OBJECT 0x30000000
+#define SAM_NORMAL_USER_ACCOUNT 0x30000000
+#define SAM_MACHINE_ACCOUNT 0x30000001
+#define SAM_TRUST_ACCOUNT 0x30000002
+#define SAM_APP_BASIC_GROUP 0x40000000
+#define SAM_APP_QUERY_GROUP 0x40000001
+#define SAM_ACCOUNT_TYPE_MAX 0x7fffffff
+
+// NOTE: this is according to Microsoft, haven't found
+// any better source
+#define SAM_NAME_MAX_LENGTH 20
+#define SAM_NAME_COMPUTER_MAX_LENGTH 16
 
 enum SearchScope {
     SearchScope_Object,

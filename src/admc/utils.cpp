@@ -101,7 +101,7 @@ void hide_busy_indicator() {
 }
 
 bool confirmation_dialog(const QString &text, QWidget *parent) {
-    const bool confirm_actions = settings_get_bool(SETTING_confirm_actions);
+    const bool confirm_actions = settings_get_variant(SETTING_confirm_actions).toBool();
     if (!confirm_actions) {
         return true;
     }
@@ -122,32 +122,40 @@ void set_data_for_row(const QList<QStandardItem *> &row, const QVariant &data, c
     }
 }
 
-bool ad_connected_base(const AdInterface &ad) {
+bool ad_connected_base(const AdInterface &ad, QWidget *parent) {
     if (!ad.is_connected()) {
-        ad_error_log(ad, nullptr);
+        ad_error_log(ad, parent);
     }
 
     return ad.is_connected();
 }
 
-bool ad_connected(const AdInterface &ad) {
-    return ad_connected_base(ad);
+bool ad_connected(const AdInterface &ad, QWidget *parent) {
+    return ad_connected_base(ad, parent);
 }
 
-bool ad_failed(const AdInterface &ad) {
-    return !ad_connected_base(ad);
+bool ad_failed(const AdInterface &ad, QWidget *parent) {
+    return !ad_connected_base(ad, parent);
+}
+
+QString get_classes_filter(const QList<QString> &class_list) {
+    QList<QString> class_filters;
+    for (const QString &object_class : class_list) {
+        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
+        class_filters.append(class_filter);
+    }
+
+    const QString out = filter_OR(class_filters);
+
+    return out;
 }
 
 QString is_container_filter() {
     const QList<QString> accepted_classes = g_adconfig->get_filter_containers();
 
-    QList<QString> class_filters;
-    for (const QString &object_class : accepted_classes) {
-        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
-        class_filters.append(class_filter);
-    }
+    const QString out = get_classes_filter(accepted_classes);
 
-    return filter_OR(class_filters);
+    return out;
 }
 
 void limit_edit(QLineEdit *edit, const QString &attribute) {
@@ -158,33 +166,48 @@ void limit_edit(QLineEdit *edit, const QString &attribute) {
 }
 
 QIcon get_object_icon(const AdObject &object) {
-    static const QMap<QString, QString> class_to_icon = {
-        {CLASS_DOMAIN, "network-server"},
-        {CLASS_CONTAINER, "folder"},
-        {CLASS_OU, "folder-documents"},
-        {CLASS_GROUP, "application-x-smb-workgroup"},
-        {CLASS_PERSON, "avatar-default"},
-        {CLASS_COMPUTER, "computer"},
-        {CLASS_GP_CONTAINER, "folder-templates"},
+    // NOTE: use a list of possible icons because
+    // default icon themes for different DE's don't
+    // fully intersect
+    static const QMap<QString, QList<QString>> category_to_icon_list = {
+        {"Domain-DNS", {"network-server"}},
+        {"Container", {"folder"}},
+        {"Organizational-Unit", {"folder-documents"}},
+        {"Group", {"system-users"}},
+        {"Person", {"avatar-default", "avatar-default-symbolic"}},
+        {"Computer", {"computer"}},
+        {"Group-Policy-Container", {"folder-templates"}},
+        {"Volume", {"folder-templates"}},
 
         // Some custom icons for one-off objects
-        {"builtinDomain", "emblem-system"},
-        {"configuration", "emblem-system"},
-        {"lostAndFound", "emblem-system"},
+        {"Builtin-Domain", {"emblem-system", "emblem-system-symbolic"}},
+        {"Configuration", {"emblem-system", "emblem-system-symbolic"}},
+        {"Lost-And-Found", {"emblem-system", "emblem-system-symbolic"}},
+        {"Infrastructure-Update", {"emblem-system", "emblem-system-symbolic"}},
+        {"ms-DS-Quota-Container", {"emblem-system", "emblem-system-symbolic"}},
     };
 
-    // Iterate over object classes in reverse, starting from most inherited class
-    QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    std::reverse(object_classes.begin(), object_classes.end());
+    // NOTE: This is the icon used when no icon is
+    // defined for some object category
+    const QString error_icon = "dialog-question";
 
-    const QString icon_name = [object_classes]() -> QString {
-        for (auto object_class : object_classes) {
-            if (class_to_icon.contains(object_class)) {
-                return class_to_icon[object_class];
+    const QString icon_name = [&]() -> QString {
+        const QString object_category = [&]() {
+            const QString category_dn = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
+            const QString out = dn_get_name(category_dn);
+
+            return out;
+        }();
+
+        const QList<QString> icon_name_list = category_to_icon_list.value(object_category, {error_icon});
+
+        for (const QString &icon : icon_name_list) {
+            if (QIcon::hasThemeIcon(icon)) {
+                return icon;
             }
         }
 
-        return "dialog-question";
+        return error_icon;
     }();
 
     const QIcon icon = QIcon::fromTheme(icon_name);
@@ -204,52 +227,33 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
 
 // Hide advanced view only" objects if advanced view setting
 // is off
-void advanced_features_filter(QString &filter) {
-    const bool advanced_features_OFF = !settings_get_bool(SETTING_advanced_features);
+QString advanced_features_filter(const QString &filter) {
+    const bool advanced_features_OFF = !settings_get_variant(SETTING_advanced_features).toBool();
 
     if (advanced_features_OFF) {
         const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, LDAP_BOOL_TRUE);
-        filter = filter_AND({filter, advanced_features});
+        const QString out = filter_AND({filter, advanced_features});
+
+        return out;
+    } else {
+        return filter;
     }
-}
-
-// OR filter with some dev mode object classes, so that they
-// show up no matter what when dev mode is on
-void dev_mode_filter(QString &filter) {
-    const bool dev_mode = settings_get_bool(SETTING_dev_mode);
-    if (!dev_mode) {
-        return;
-    }
-
-    const QList<QString> schema_classes = {
-        "classSchema",
-        "attributeSchema",
-        "displaySpecifier",
-    };
-
-    QList<QString> class_filters;
-    for (const QString &object_class : schema_classes) {
-        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
-        class_filters.append(class_filter);
-    }
-
-    filter = filter_OR({filter, filter_OR(class_filters)});
 }
 
 // NOTE: configuration and schema objects are hidden so that
 // they don't show up in regular searches. Have to use
 // search_object() and manually add them to search results.
 void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base) {
-    const bool dev_mode = settings_get_bool(SETTING_dev_mode);
+    const bool dev_mode = settings_get_variant(SETTING_feature_dev_mode).toBool();
     if (!dev_mode) {
         return;
     }
 
-    const QString domain_head = g_adconfig->domain_head();
+    const QString domain_dn = g_adconfig->domain_dn();
     const QString configuration_dn = g_adconfig->configuration_dn();
     const QString schema_dn = g_adconfig->schema_dn();
 
-    if (base == domain_head) {
+    if (base == domain_dn) {
         results[configuration_dn] = ad.search_object(configuration_dn);
     } else if (base == configuration_dn) {
         results[schema_dn] = ad.search_object(schema_dn);
@@ -285,11 +289,10 @@ QMessageBox *message_box_warning(QWidget *parent, const QString &title, const QS
     return message_box_generic(QMessageBox::Warning, title, text, parent);
 }
 
-QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role) {
+QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list, const int dn_role) {
     QList<QString> out;
 
-    const QList<QModelIndex> indexes = console->get_selected_items(type);
-    for (const QModelIndex &index : indexes) {
+    for (const QModelIndex &index : index_list) {
         const QString dn = index.data(dn_role).toString();
         out.append(dn);
     }
@@ -297,8 +300,15 @@ QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, cons
     return out;
 }
 
-QString get_selected_dn(ConsoleWidget *console, const int type, const int dn_role) {
-    const QList<QString> dn_list = get_selected_dn_list(console, type, dn_role);
+QList<QString> get_action_target_dn_list(ConsoleWidget *console, const int type, const int dn_role) {
+    const QList<QModelIndex> indexes = console->get_action_target_items(type);
+    const QList<QString> out = index_list_to_dn_list(indexes, dn_role);
+
+    return out;
+}
+
+QString get_action_target_dn(ConsoleWidget *console, const int type, const int dn_role) {
+    const QList<QString> dn_list = get_action_target_dn_list(console, type, dn_role);
 
     if (!dn_list.isEmpty()) {
         return dn_list[0];
@@ -338,4 +348,104 @@ QString generate_new_name(const QList<QString> &existing_name_list, const QStrin
     }
 
     return get_name();
+}
+
+QList<QString> variant_list_to_string_list(const QList<QVariant> &variant_list) {
+    QList<QString> out;
+
+    for (const QVariant &variant : variant_list) {
+        const QString string = variant.toString();
+        out.append(string);
+    }
+
+    return out;
+}
+
+QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list) {
+    QList<QVariant> out;
+
+    for (const QString &string : string_list) {
+        const QVariant variant = QVariant(string);
+        out.append(variant);
+    }
+
+    return out;
+}
+
+bool string_contains_bad_chars(const QString &string, const QString &bad_chars) {
+    const QRegularExpression regexp = [&]() {
+        const QString bad_chars_escaped = QRegularExpression::escape(bad_chars);
+        const QString regexp_string = QString("[%1]").arg(bad_chars_escaped);
+        const QRegularExpression out = QRegularExpression(regexp_string);
+
+        return out;
+    }();
+
+    const bool out = string.contains(regexp);
+
+    return out;
+}
+
+bool verify_object_name(const QString &name, QWidget *parent) {
+    const bool contains_bad_chars = [&]() {
+        const bool some_bad_chars = string_contains_bad_chars(name, NAME_BAD_CHARS);
+        const bool starts_with_space = name.startsWith(" ");
+        const bool ends_with_space = name.endsWith(" ");
+        const bool starts_with_question_mark = name.startsWith("?");
+
+        const bool out = (some_bad_chars || starts_with_space || ends_with_space || starts_with_question_mark);
+
+        return out;
+    }();
+
+    if (contains_bad_chars) {
+        const QString error_text = QString(QCoreApplication::translate("utils.cpp", "Input field for Name contains one or more of the following illegal characters: # , + \" \\ < > ; = (leading space) (trailing space) (leading question mark)"));
+        message_box_warning(parent, QCoreApplication::translate("utils.cpp", "Error"), error_text);
+
+        return false;
+    }
+
+    return true;
+}
+
+void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest) {
+    QObject::connect(
+        src, &QLineEdit::textChanged,
+        [src, dest]() {
+            const QString src_input = src->text();
+            dest->setText(src_input);
+        });
+}
+
+void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit) {
+    auto autofill_full_name = [=]() {
+        const QString full_name_value = [=]() {
+            const QString first_name = first_name_edit->text();
+            const QString last_name = last_name_edit->text();
+
+            const bool last_name_first = settings_get_variant(SETTING_last_name_before_first_name).toBool();
+            if (!first_name.isEmpty() && !last_name.isEmpty()) {
+                if (last_name_first) {
+                    return last_name + " " + first_name;
+                } else {
+                    return first_name + " " + last_name;
+                }
+            } else if (!first_name.isEmpty()) {
+                return first_name;
+            } else if (!last_name.isEmpty()) {
+                return last_name;
+            } else {
+                return QString();
+            }
+        }();
+
+        full_name_edit->setText(full_name_value);
+    };
+
+    QObject::connect(
+        first_name_edit, &QLineEdit::textChanged,
+        first_name_edit, autofill_full_name);
+    QObject::connect(
+        last_name_edit, &QLineEdit::textChanged,
+        last_name_edit, autofill_full_name);
 }

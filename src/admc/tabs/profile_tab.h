@@ -21,19 +21,21 @@
 #ifndef PROFILE_TAB_H
 #define PROFILE_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+
+class AttributeEdit;
 
 namespace Ui {
 class ProfileTab;
 }
 
-class ProfileTab final : public PropertiesTab {
+class ProfileTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::ProfileTab *ui;
 
-    ProfileTab();
+    ProfileTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~ProfileTab();
 };
 

@@ -23,6 +23,9 @@
 
 #include "rename_object_dialog.h"
 
+class AdInterface;
+class RenameObjectHelper;
+
 namespace Ui {
 class RenameOtherDialog;
 }
@@ -33,8 +36,14 @@ class RenameOtherDialog final : public RenameObjectDialog {
 public:
     Ui::RenameOtherDialog *ui;
 
-    RenameOtherDialog(QWidget *parent);
+    RenameOtherDialog(AdInterface &ad, const QString &target, QWidget *parent);
     ~RenameOtherDialog();
+
+    void accept() override;
+    QString get_new_dn() const override;
+
+private:
+    RenameObjectHelper *helper;
 };
 
 #endif /* RENAME_OTHER_DIALOG_H */

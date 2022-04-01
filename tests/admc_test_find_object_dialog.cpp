@@ -44,7 +44,7 @@ void ADMCTestFindObjectDialog::simple_tab() {
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
 
-    auto find_dialog = new FindObjectDialog(parent, parent_widget);
+    auto find_dialog = new FindObjectDialog(nullptr, parent, parent_widget);
     find_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(find_dialog, 1000));
 
@@ -77,7 +77,7 @@ void ADMCTestFindObjectDialog::advanced_tab() {
     QVERIFY2(create_user_success, "Failed to create user");
     QVERIFY2(object_exists(user_dn), "Created user doesn't exist");
 
-    auto find_dialog = new FindObjectDialog(parent, parent_widget);
+    auto find_dialog = new FindObjectDialog(nullptr, parent, parent_widget);
     find_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(find_dialog, 1000));
 

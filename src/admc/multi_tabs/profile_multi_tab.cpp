@@ -21,18 +21,29 @@
 #include "multi_tabs/profile_multi_tab.h"
 #include "ui_profile_multi_tab.h"
 
-#include "adldap.h"
-#include "attribute_multi_edits/string_multi_edit.h"
+#include "ad_defines.h"
+#include "attribute_edits/string_edit.h"
 
-ProfileMultiTab::ProfileMultiTab() {
+#include <QHash>
+
+ProfileMultiTab::ProfileMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::ProfileMultiTab();
     ui->setupUi(this);
 
-    new StringMultiEdit(ui->profile_edit, ui->profile_check, ATTRIBUTE_PROFILE_PATH, edit_list, this);
-    new StringMultiEdit(ui->script_edit, ui->script_check, ATTRIBUTE_SCRIPT_PATH, edit_list, this);
-    new StringMultiEdit(ui->home_edit, ui->home_check, ATTRIBUTE_HOME_DIRECTORY, edit_list, this);
+    auto profile_edit = new StringEdit(ui->profile_edit, ATTRIBUTE_PROFILE_PATH, this);
+    auto script_edit = new StringEdit(ui->script_edit, ATTRIBUTE_SCRIPT_PATH, this);
+    auto home_edit = new StringEdit(ui->home_edit, ATTRIBUTE_HOME_DIRECTORY, this);
 
-    multi_edits_connect_to_tab(edit_list, this);
+    edit_list->append({
+        profile_edit,
+        script_edit,
+        home_edit,
+    });
+
+    check_map->insert(profile_edit, ui->profile_check);
+    check_map->insert(script_edit, ui->script_check);
+    check_map->insert(home_edit, ui->home_check);
 }
 
 ProfileMultiTab::~ProfileMultiTab() {

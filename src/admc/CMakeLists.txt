@@ -35,7 +35,6 @@ set(ADMC_SOURCES
     globals.cpp
     utils.cpp
     settings.cpp
-    widget_state.cpp
 
     main_window.cpp
     main_window_connection_error.cpp
@@ -43,19 +42,22 @@ set(ADMC_SOURCES
     tab_widget.cpp
     policy_results_widget.cpp
     edit_query_item_widget.cpp
+    fsmo_tab.cpp
 
     console_filter_dialog.cpp
     password_dialog.cpp
-    rename_object_dialog.cpp
+    rename_object_helper.cpp
     rename_other_dialog.cpp
     rename_policy_dialog.cpp
     rename_user_dialog.cpp
     rename_group_dialog.cpp
-    create_object_dialog.cpp
+    create_object_helper.cpp
     create_user_dialog.cpp
     create_group_dialog.cpp
     create_computer_dialog.cpp
     create_ou_dialog.cpp
+    create_shared_folder_dialog.cpp
+    create_contact_dialog.cpp
     create_policy_dialog.cpp
     create_query_item_dialog.cpp
     create_query_folder_dialog.cpp
@@ -71,9 +73,11 @@ set(ADMC_SOURCES
     properties_dialog.cpp
     properties_multi_dialog.cpp
     properties_warning_dialog.cpp
+    security_sort_warning_dialog.cpp
     connection_options_dialog.cpp
     changelog_dialog.cpp
     error_log_dialog.cpp
+    fsmo_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_dialog.cpp
@@ -85,12 +89,12 @@ set(ADMC_SOURCES
     filter_widget/class_filter_dialog.cpp
     filter_widget/select_base_widget.cpp
     
-    tabs/properties_tab.cpp
     tabs/general_user_tab.cpp
     tabs/general_group_tab.cpp
     tabs/general_ou_tab.cpp
     tabs/general_computer_tab.cpp
     tabs/general_policy_tab.cpp
+    tabs/general_shared_folder_tab.cpp
     tabs/general_other_tab.cpp
     tabs/object_tab.cpp
     tabs/attributes_tab.cpp
@@ -100,7 +104,6 @@ set(ADMC_SOURCES
     tabs/membership_tab.cpp
     tabs/address_tab.cpp
     tabs/group_policy_tab.cpp
-    tabs/gpo_links_tab.cpp
     tabs/organization_tab.cpp
     tabs/telephones_tab.cpp
     tabs/profile_tab.cpp
@@ -109,8 +112,9 @@ set(ADMC_SOURCES
     tabs/os_tab.cpp
     tabs/delegation_tab.cpp
     tabs/select_well_known_trustee_dialog.cpp
+    tabs/laps_tab.cpp
+    tabs/error_tab.cpp
 
-    multi_tabs/properties_multi_tab.cpp
     multi_tabs/general_user_multi_tab.cpp
     multi_tabs/general_other_multi_tab.cpp
     multi_tabs/account_multi_tab.cpp
@@ -121,8 +125,10 @@ set(ADMC_SOURCES
     attribute_edits/attribute_edit.cpp
     attribute_edits/string_edit.cpp
     attribute_edits/string_other_edit.cpp
+    attribute_edits/string_list_edit.cpp
     attribute_edits/string_large_edit.cpp
     attribute_edits/sam_name_edit.cpp
+    attribute_edits/computer_sam_name_edit.cpp
     attribute_edits/country_edit.cpp
     attribute_edits/expiry_edit.cpp
     attribute_edits/expiry_widget.cpp
@@ -144,14 +150,11 @@ set(ADMC_SOURCES
     attribute_edits/logon_computers_edit.cpp
     attribute_edits/logon_computers_dialog.cpp
     attribute_edits/protect_deletion_edit.cpp
+    attribute_edits/laps_expiry_edit.cpp
+    attribute_edits/general_name_edit.cpp
 
-    attribute_multi_edits/attribute_multi_edit.cpp
-    attribute_multi_edits/string_multi_edit.cpp
-    attribute_multi_edits/expiry_multi_edit.cpp
-    attribute_multi_edits/upn_multi_edit.cpp
-    attribute_multi_edits/account_option_multi_edit.cpp
-    attribute_multi_edits/country_multi_edit.cpp
-    attribute_multi_edits/manager_multi_edit.cpp
+    attribute_edits/upn_multi_edit.cpp
+    attribute_edits/account_option_multi_edit.cpp
 
     attribute_dialogs/attribute_dialog.cpp
     attribute_dialogs/list_attribute_dialog.cpp
@@ -172,6 +175,7 @@ set(ADMC_SOURCES
     console_impls/query_item_impl.cpp
     console_impls/query_folder_impl.cpp
     console_impls/policy_root_impl.cpp
+    console_impls/find_root_impl.cpp
 
     admc.qrc
 )
@@ -211,3 +215,9 @@ if(NOT ADMC_BUILD_DEB)
     install(TARGETS admctest DESTINATION ${CMAKE_INSTALL_LIBDIR}
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif(NOT ADMC_BUILD_DEB)
+
+install(
+    FILES data/admc.svg
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
+    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+)

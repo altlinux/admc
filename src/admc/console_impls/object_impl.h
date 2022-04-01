@@ -35,7 +35,6 @@ template <typename T>
 class QList;
 class PolicyImpl;
 class ConsoleWidget;
-class CreateObjectDialog;
 class ConsoleFilterDialog;
 
 /**
@@ -103,6 +102,9 @@ private slots:
     void on_new_computer();
     void on_new_ou();
     void on_new_group();
+    void on_new_shared_folder();
+    void on_new_inet_org_person();
+    void on_new_contact();
     void on_move();
     void on_enable();
     void on_disable();
@@ -127,11 +129,12 @@ private:
     QAction *reset_account_action;
     QAction *edit_upn_suffixes_action;
     QAction *new_action;
+    QHash<QString, QAction *> new_action_map;
 
     bool find_action_enabled;
     bool refresh_action_enabled;
 
-    void new_object(CreateObjectDialog *dialog);
+    void new_object(const QString &object_class);
     void set_disabled(const bool disabled);
     void drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
     void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);

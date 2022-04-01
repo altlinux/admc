@@ -28,25 +28,31 @@
 
 #include <QFormLayout>
 
-ObjectTab::ObjectTab() {
+ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::ObjectTab();
     ui->setupUi(this);
 
-    new StringEdit(ui->dn_edit, ATTRIBUTE_DN, &edits, this);
-    new StringEdit(ui->class_edit, ATTRIBUTE_OBJECT_CLASS, &edits, this);
+    auto dn_edit = new StringEdit(ui->dn_edit, ATTRIBUTE_DN, this);
+    auto class_edit = new StringEdit(ui->class_edit, ATTRIBUTE_OBJECT_CLASS, this);
 
-    new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, &edits, this);
-    new DateTimeEdit(ui->changed_edit, ATTRIBUTE_WHEN_CHANGED, &edits, this);
+    auto when_created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, this);
+    auto when_changed_edit = new DateTimeEdit(ui->changed_edit, ATTRIBUTE_WHEN_CHANGED, this);
 
-    new StringEdit(ui->usn_created_edit, ATTRIBUTE_USN_CREATED, &edits, this);
-    new StringEdit(ui->usn_changed_edit, ATTRIBUTE_USN_CHANGED, &edits, this);
+    auto usn_created_edit = new StringEdit(ui->usn_created_edit, ATTRIBUTE_USN_CREATED, this);
+    auto usn_changed_edit = new StringEdit(ui->usn_changed_edit, ATTRIBUTE_USN_CHANGED, this);
 
-    auto deletion_edit = new ProtectDeletionEdit(ui->deletion_check, &edits, this);
+    auto deletion_edit = new ProtectDeletionEdit(ui->deletion_check, this);
 
-    edits_set_read_only(edits, true);
-    deletion_edit->set_read_only(false);
-
-    edits_connect_to_tab(edits, this);
+    edit_list->append({
+        dn_edit,
+        class_edit,
+        when_created_edit,
+        when_changed_edit,
+        usn_created_edit,
+        usn_changed_edit,
+        deletion_edit,
+    });
 }
 
 ObjectTab::~ObjectTab() {

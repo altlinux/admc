@@ -21,26 +21,37 @@
 #ifndef MANAGED_BY_TAB_H
 #define MANAGED_BY_TAB_H
 
-#include "tabs/properties_tab.h"
+#include <QWidget>
+#include "attribute_edits/attribute_edit.h"
 
 class ManagerEdit;
+class ManagedByTabEdit;
 
 namespace Ui {
 class ManagedByTab;
 }
 
-class ManagedByTab final : public PropertiesTab {
+class ManagedByTab final : public QWidget {
     Q_OBJECT
 
 public:
     Ui::ManagedByTab *ui;
 
-    ManagedByTab();
+    ManagedByTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~ManagedByTab();
+};
+
+class ManagedByTabEdit final : public AttributeEdit {
+    Q_OBJECT
+
+public:
+    ManagedByTabEdit(Ui::ManagedByTab *ui, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
 private:
+    Ui::ManagedByTab *ui;
     QList<AttributeEdit *> manager_edits;
     ManagerEdit *manager_edit;
 

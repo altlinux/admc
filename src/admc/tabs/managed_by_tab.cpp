@@ -33,46 +33,68 @@
 // NOTE: store manager's edits in separate list because they
 // don't apply to the target of properties.
 
-ManagedByTab::ManagedByTab() {
+ManagedByTab::ManagedByTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
+: QWidget(parent) {
     ui = new Ui::ManagedByTab();
     ui->setupUi(this);
 
-    manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGED_BY, &edits, this);
+    auto tab_edit = new ManagedByTabEdit(ui, this);
 
-    new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, &manager_edits, this);
-    new StringEdit(ui->street_edit, ATTRIBUTE_STREET, &manager_edits, this);
-    new StringEdit(ui->city_edit, ATTRIBUTE_CITY, &manager_edits, this);
-    new StringEdit(ui->state_edit, ATTRIBUTE_STATE, &manager_edits, this);
+    edit_list->append({
+        tab_edit,
+    });
+}
 
-    new CountryEdit(ui->country_combo, &manager_edits, this);
+ManagedByTabEdit::ManagedByTabEdit(Ui::ManagedByTab *ui_arg, QObject *parent)
+: AttributeEdit(parent) {
+    ui = ui_arg;
 
-    new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, &manager_edits, this);
-    new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, &manager_edits, this);
+    manager_edit = new ManagerEdit(ui->manager_widget, ATTRIBUTE_MANAGED_BY, this);
 
-    edits_set_read_only(manager_edits, true);
+    auto office_edit = new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, this);
+    auto street_edit = new StringEdit(ui->street_edit, ATTRIBUTE_STREET, this);
+    auto city_edit = new StringEdit(ui->city_edit, ATTRIBUTE_CITY, this);
+    auto state_edit = new StringEdit(ui->state_edit, ATTRIBUTE_STATE, this);
 
-    edits_connect_to_tab(edits, this);
-    edits_connect_to_tab(manager_edits, this);
+    auto country_edit = new CountryEdit(ui->country_combo, this);
+
+    auto telephone_edit = new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, this);
+    auto fax_edit = new StringOtherEdit(ui->fax_edit, ui->fax_button, ATTRIBUTE_FAX_NUMBER, ATTRIBUTE_OTHER_FAX_NUMBER, this);
+
+    manager_edits = {
+        office_edit,
+        street_edit,
+        city_edit,
+        state_edit,
+        country_edit,
+        telephone_edit,
+        fax_edit,
+    };
+
+    telephone_edit->set_read_only(true);
+    fax_edit->set_read_only(true);
 
     connect(
         manager_edit, &ManagerEdit::edited,
-        this, &ManagedByTab::on_manager_edited);
+        this, &ManagedByTabEdit::on_manager_edited);
 }
 
 ManagedByTab::~ManagedByTab() {
     delete ui;
 }
 
-void ManagedByTab::on_manager_edited() {
+void ManagedByTabEdit::on_manager_edited() {
     AdInterface ad;
-    if (ad_failed(ad)) {
+    if (ad_failed(ad, ui->manager_widget)) {
         return;
     }
 
     load_manager_edits(ad);
+
+    emit edited();
 }
 
-void ManagedByTab::load(AdInterface &ad, const AdObject &object) {
+void ManagedByTabEdit::load(AdInterface &ad, const AdObject &object) {
     manager_edit->load(ad, object);
 
     // NOTE: load AFTER loading manager! because manager
@@ -80,14 +102,20 @@ void ManagedByTab::load(AdInterface &ad, const AdObject &object) {
     load_manager_edits(ad);
 }
 
-void ManagedByTab::load_manager_edits(AdInterface &ad) {
+bool ManagedByTabEdit::apply(AdInterface &ad, const QString &dn) const {
+    const bool success = manager_edit->apply(ad, dn);
+
+    return success;
+}
+
+void ManagedByTabEdit::load_manager_edits(AdInterface &ad) {
     const QString manager = manager_edit->get_manager();
 
     if (!manager.isEmpty()) {
         const AdObject manager_object = ad.search_object(manager);
-        edits_load(manager_edits, ad, manager_object);
+        AttributeEdit::load(manager_edits, ad, manager_object);
     } else {
         AdObject empty_object;
-        edits_load(manager_edits, ad, empty_object);
+        AttributeEdit::load(manager_edits, ad, empty_object);
     }
 }

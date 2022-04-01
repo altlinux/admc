@@ -24,14 +24,16 @@
 #include "attribute_edits/attribute_edit.h"
 
 class QLineEdit;
+class QCheckBox;
 
 class PasswordEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QList<AttributeEdit *> *edits_out, QObject *parent);
-    DECL_ATTRIBUTE_EDIT_VIRTUALS();
+    PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QCheckBox *show_password_check, QObject *parent);
 
+    void load(AdInterface &ad, const AdObject &object) override;
     bool verify(AdInterface &ad, const QString &dn) const override;
+    bool apply(AdInterface &ad, const QString &dn) const override;
 
     QLineEdit *get_edit() const;
     QLineEdit *get_confirm_edit() const;
@@ -39,6 +41,8 @@ public:
 private:
     QLineEdit *edit;
     QLineEdit *confirm_edit;
+
+    void on_show_password_check(bool checked);
 };
 
 #endif /* PASSWORD_EDIT_H */

@@ -25,8 +25,8 @@
 
 #include <QComboBox>
 
-GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QObject *parent)
+: AttributeEdit(parent) {
     combo = combo_arg;
 
     for (int i = 0; i < GroupType_COUNT; i++) {
@@ -41,16 +41,18 @@ GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QList<AttributeEdit *> *edits
         this, &AttributeEdit::edited);
 }
 
-void GroupTypeEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void GroupTypeEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     const GroupType type = object.get_group_type();
 
     combo->setCurrentIndex((int) type);
-}
 
-void GroupTypeEdit::set_read_only(const bool read_only) {
-    combo->setDisabled(read_only);
+    const bool is_critical_system_object = object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT);
+
+    if (is_critical_system_object) {
+        combo->setDisabled(true);
+    }
 }
 
 bool GroupTypeEdit::apply(AdInterface &ad, const QString &dn) const {

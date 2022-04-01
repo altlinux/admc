@@ -24,7 +24,7 @@
 #include "admc_test.h"
 
 class QTreeView;
-class MemberOfTab;
+class AttributeEdit;
 class QStandardItemModel;
 class QPushButton;
 
@@ -40,7 +40,7 @@ private slots:
     void add();
 
 private:
-    MemberOfTab *member_of_tab;
+    AttributeEdit *edit;
     QTreeView *view;
     QStandardItemModel *model;
     QString user_dn;

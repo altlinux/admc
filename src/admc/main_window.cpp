@@ -39,6 +39,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "fsmo_dialog.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -103,11 +104,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     // NOTE: "Action" menu actions need to be filled by the
     // console
-    ui->console->add_actions(ui->menu_action);
-
-#ifndef QT_DEBUG
-    ui->action_dev_mode->setVisible(false);
-#endif
+    ui->console->setup_menubar_action_menu(ui->menu_action);
 
     // NOTE: toolbar and message log(dock widget) have built
     // in toggle actions, but there's no way to add them
@@ -193,7 +190,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         const bool is_checked = [=]() {
             const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
 
-            return (current_locale == locale);
+            return (current_locale.language() == locale.language());
         }();
         action->setChecked(is_checked);
 
@@ -201,6 +198,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
         connect(
             action, &QAction::triggered,
+            this,
             [this, language](bool checked) {
                 if (checked) {
                     settings_set_variant(SETTING_locale, QLocale(language));
@@ -217,6 +215,9 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         ui->action_connection_options, &QAction::triggered,
         this, &MainWindow::open_connection_options);
     connect(
+        ui->action_edit_fsmo_roles, &QAction::triggered,
+        this, &MainWindow::edit_fsmo_roles);
+    connect(
         ui->action_quit, &QAction::triggered,
         this, &MainWindow::close);
     connect(
@@ -231,9 +232,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     connect(
         ui->action_filter_objects, &QAction::triggered,
         object_impl, &ObjectImpl::open_console_filter_dialog);
-    connect(
-        ui->menu_action, &QMenu::aboutToShow,
-        ui->console, &ConsoleWidget::update_actions);
 
     const QHash<QString, QAction *> bool_action_map = {
         {SETTING_confirm_actions, ui->action_confirm_actions},
@@ -243,7 +241,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         {SETTING_show_login, ui->action_show_login},
         {SETTING_show_non_containers_in_console_tree, ui->action_show_noncontainers},
         {SETTING_advanced_features, ui->action_advanced_features},
-        {SETTING_dev_mode, ui->action_dev_mode},
     };
 
     const QList<QString> simple_setting_list = {
@@ -257,7 +254,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     for (const QString &setting : bool_action_map.keys()) {
         QAction *action = bool_action_map[setting];
 
-        const bool setting_enabled = settings_get_bool(setting);
+        const bool setting_enabled = settings_get_variant(setting).toBool();
         action->setChecked(setting_enabled);
     }
 
@@ -268,8 +265,9 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
         connect(
             action, &QAction::toggled,
+            this,
             [setting](bool checked) {
-                settings_set_bool(setting, checked);
+                settings_set_variant(setting, checked);
             });
     }
 
@@ -280,7 +278,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     const QList<QString> complex_setting_list = {
         SETTING_show_non_containers_in_console_tree,
         SETTING_advanced_features,
-        SETTING_dev_mode,
     };
 
     for (const QString &setting : complex_setting_list) {
@@ -288,8 +285,9 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
         connect(
             action, &QAction::toggled,
+            this,
             [setting, object_impl](bool checked) {
-                settings_set_bool(setting, checked);
+                settings_set_variant(setting, checked);
 
                 object_impl->refresh_tree();
             });
@@ -351,4 +349,14 @@ void MainWindow::open_changelog() {
 void MainWindow::open_about() {
     auto about_dialog = new AboutDialog(this);
     about_dialog->open();
+}
+
+void MainWindow::edit_fsmo_roles() {
+    AdInterface ad;
+    if (ad_failed(ad, this)) {
+        return;
+    }
+
+    auto dialog = new FSMODialog(ad, this);
+    dialog->open();
 }

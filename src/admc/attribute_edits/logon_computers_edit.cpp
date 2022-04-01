@@ -27,8 +27,8 @@
 
 #include <QPushButton>
 
-LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QList<AttributeEdit *> *edits_out, QObject *parent)
-: AttributeEdit(edits_out, parent) {
+LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QObject *parent)
+: AttributeEdit(parent) {
     button = button_arg;
 
     connect(
@@ -36,14 +36,10 @@ LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QList<AttributeE
         this, &LogonComputersEdit::open_dialog);
 }
 
-void LogonComputersEdit::load_internal(AdInterface &ad, const AdObject &object) {
+void LogonComputersEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     current_value = object.get_value(ATTRIBUTE_USER_WORKSTATIONS);
-}
-
-void LogonComputersEdit::set_read_only(const bool read_only) {
-    button->setEnabled(read_only);
 }
 
 bool LogonComputersEdit::apply(AdInterface &ad, const QString &dn) const {
@@ -53,12 +49,12 @@ bool LogonComputersEdit::apply(AdInterface &ad, const QString &dn) const {
 }
 
 void LogonComputersEdit::open_dialog() {
-    auto dialog = new LogonComputersDialog(button);
-    dialog->load(current_value);
+    auto dialog = new LogonComputersDialog(current_value, button);
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             current_value = dialog->get();
 

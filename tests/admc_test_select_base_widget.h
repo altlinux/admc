@@ -33,7 +33,7 @@ class ADMCTestSelectBaseWidget : public ADMCTest {
 private slots:
     void init() override;
 
-    void default_to_domain_head();
+    void default_to_domain_dn();
     void select_base();
     void select_base_multiple();
     void save_state();

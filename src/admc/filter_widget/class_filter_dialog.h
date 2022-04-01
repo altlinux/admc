@@ -41,22 +41,20 @@ class ClassFilterDialog final : public QDialog {
 public:
     Ui::ClassFilterDialog *ui;
 
-    ClassFilterDialog(QWidget *parent);
+    ClassFilterDialog(const QList<QString> &class_list, const QList<QString> &selected_list, const bool filtering_all_classes_is_enabled, const bool all_is_checked, QWidget *parent);
     ~ClassFilterDialog();
 
-    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
     QString get_filter() const;
     QList<QString> get_selected_classes() const;
-    QVariant save_state() const;
-    void restore_state(const QVariant &state);
-
-    void open() override;
-    void reject() override;
+    bool get_all_is_checked() const;
 
 private:
-    QVariant state_to_restore;
+    QVariant original_state;
 
     void reset();
+
+    void on_input_changed();
+    void on_all_checkbox();
 };
 
 #endif /* CLASS_FILTER_DIALOG_H */

@@ -38,6 +38,7 @@ class ADMCTestAttributesTab : public ADMCTest {
 
 private slots:
     void init() override;
+    void cleanup() override;
 
     void apply();
     void load();
@@ -45,7 +46,7 @@ private slots:
     void filter();
 
 private:
-    AttributesTab *attributes_tab;
+    AttributeEdit *edit;
     AttributesTabFilterMenu *filter_menu;
     QTreeView *view;
     QStandardItemModel *model;
@@ -53,6 +54,7 @@ private:
     QPushButton *filter_button;
     QPushButton *edit_button;
     QString dn;
+    QList<AttributeEdit *> edit_list;
 
     void set_filter(const QList<AttributeFilter> &filter_list, const bool state);
 };

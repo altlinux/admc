@@ -45,6 +45,8 @@ public:
     ConsoleFilterDialog(QWidget *parent);
     ~ConsoleFilterDialog();
 
+    void accept() override;
+
     QVariant save_state() const;
     void restore_state(const QVariant &state);
 

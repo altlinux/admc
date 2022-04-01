@@ -37,6 +37,9 @@ ListAttributeDialog::ListAttributeDialog(const QList<QByteArray> &value_list, co
 
     setAttribute(Qt::WA_DeleteOnClose);
 
+    // Default value indiciating no max length
+    max_length = 0;
+
     AttributeDialog::load_attribute_label(ui->attribute_label);
 
     ui->add_button->setVisible(!read_only);
@@ -60,6 +63,35 @@ ListAttributeDialog::~ListAttributeDialog() {
     delete ui;
 }
 
+void ListAttributeDialog::accept() {
+    const bool contains_empty_values = [&]() {
+        const bool is_bool = (g_adconfig->get_attribute_type(get_attribute()) == AttributeType_Boolean);
+        if (is_bool) {
+            return false;
+        }
+
+        const QList<QByteArray> value_list = get_value_list();
+
+        for (const QByteArray &value : value_list) {
+            const QString value_string = QString(value);
+            const bool value_is_all_spaces = (value.count(' ') == value.length());
+            const bool value_is_empty = value.isEmpty() || value_is_all_spaces;
+
+            if (value_is_empty) {
+                return true;
+            }
+        }
+
+        return false;
+    }();
+
+    if (contains_empty_values) {
+        message_box_warning(this, tr("Error"), tr("One or more values are empty. Edit or remove them to proceed."));
+    } else {
+        QDialog::accept();
+    }
+}
+
 void ListAttributeDialog::on_add_button() {
     AttributeDialog *dialog = [this]() -> AttributeDialog * {
         const bool is_bool = (g_adconfig->get_attribute_type(get_attribute()) == AttributeType_Boolean);
@@ -70,14 +102,19 @@ void ListAttributeDialog::on_add_button() {
         if (is_bool) {
             return new BoolAttributeDialog(value_list, attribute, read_only, this);
         } else {
-            return new StringAttributeDialog(value_list, attribute, read_only, this);
+            auto string_dialog = new StringAttributeDialog(value_list, attribute, read_only, this);
+            string_dialog->set_max_length(max_length);
+
+            return string_dialog;
         }
     }();
 
+    dialog->setWindowTitle(tr("Add Value"));
     dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
+        this,
         [this, dialog]() {
             const QList<QByteArray> new_values = dialog->get_value_list();
 
@@ -110,9 +147,18 @@ QList<QByteArray> ListAttributeDialog::get_value_list() const {
     return new_values;
 }
 
+void ListAttributeDialog::set_value_max_length(const int max_length_arg) {
+    max_length = max_length_arg;
+}
+
 void ListAttributeDialog::add_value(const QByteArray value) {
     const QString text = bytes_to_string(value);
-    ui->list_widget->addItem(text);
+    const QList<QListWidgetItem *> find_results = ui->list_widget->findItems(text, Qt::MatchExactly);
+    const bool value_already_exists = !find_results.isEmpty();
+
+    if (!value_already_exists) {
+        ui->list_widget->addItem(text);
+    }
 }
 
 ListAttributeDialogType ListAttributeDialog::get_type() const {

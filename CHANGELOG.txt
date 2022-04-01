@@ -2,6 +2,137 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.9.0
+-----------------------------------------------------------------------
+- Account Tab: Improved editor for "Logon Hours".
+- Account Tab: Fixed "Logon Computers" editor
+  incorrectly adding empty entry when being opened.
+- Account Tab: Fixed incorrect flag value for
+  "Reversible encryption" account option.
+- Attributes Tab: Added special display format for some
+  bitfield attributes, so that both the value and names
+  of bitfields are displayed. Includes
+  "userAccountControl", "sAMAccountType" and
+  "primaryGroupId".
+- Account Tab: Added missing "DES key" account option.
+- Account Tab: Removed "Trusted for delegation" option
+  because it should be in "Delegation" tab only.
+- Account Tab: Fixed some options using incorrect flags.
+- Action menu: Added creation of more object types:
+  "Contact", "inetOrgPerson" and "Shared Folder".
+- Action menu: Fixed "New" sub-menu in action menu so
+  that it contains only those object types that can be
+  children of target object. (#343)
+- Action menu: Removed "Rename" action from computer
+  objects because computer objects must be renamed from
+  the machine itself in system configuration.
+- Console: Added object display limit option. Applies
+  to main window and find dialog. (#319)
+- Address Tab: Changed order of country list so that
+  the country of current locale is always first, for
+  ease of use.
+- Console: Implemented opening action menu by right
+  clicking on empty space in results pane. In this
+  case, currently selected scope item is treated as
+  target object for the menu. (#334)
+- Console: Fixed action menu being empty on startup
+  until user selected another console item. (#340)
+- Console: Fixed being able to move an object onto it's
+  current parent via action menu or drag and drop. This
+  caused visual glitches. (#336, #338)
+- Console: Improved default sort setting for results
+  view (for all view types - details, icons, list).
+- Create dialog: Fix incorrect field labels.
+- Logon Hours: Improved usability.
+- Logon Hours: Added legend that explains how dialog
+  works.
+- Security Tab: Fixed handling of inherited rights.
+  Inherited rights will now correctly display as grayed
+  out checkboxes and will not be editable. (#327)
+- Security Tab: Fixed all objects having the same kinds
+  of rights. Security tab will now correctly show
+  rights that are appropriate for the object type.
+  (#328)
+- Security Tab: Added verification of ACL order. When
+  switching to security tab, order will be verified and
+  if it's incorrect, a warning dialog will open
+  offering to fix it. (#339)
+- Toolbar: Added keyboard shortcuts to all actions.
+- Propeties: Added LAPS(Local Administration Password
+  Solution) tab for computer objects. This tab is
+  accessible only if LAPS is enabled in the domain. (#312)
+- Properties: Improved how properties dialog responds
+  to failing to load a user due to connection error or
+  absence of object.
+- Properties: Disabled "Profile" tab, not usable
+  because not implemented in backend.
+- Properties: Disabled "Logon Computers" feature, not
+  usable because not implemented in backend.
+- Policies: Fixed permission check incorrectly
+  complaining about policies made by RSAT. (#333)
+- Policies: Implemented "Edit" action for policies.
+  Installation of "gpui" package is required for
+  correct functioning.
+- Queries: Removed "Cut" and "Copy" actions from Query
+  root, because they don't apply to it. (#350)
+- Queries: Remove ability to recursively cut and paste
+  query folders into themselves.
+- Queries: Fixed program freezing when copying and
+  pasting a query folder into itself.
+- Queries: Fixed default name for query folders when
+  making them.
+- Queries: Fixed "Copy" and "Paste" of query folder
+  into same parent.
+- Queries: Remove ability to drag and drop query
+  folders onto themselves.
+- Find dialog: Added class filtering by all classes,
+  implemented as a separate checkbox. This filtering
+  will accept all classes, not just the ones in the
+  list. (#341)
+- Managed by tab: Fixed tab not applying.
+- Managed by tab: Fixed some fields being editable when
+  they shouldn't be.
+- Menubar: Fixed checkboxes for view types (Icons,
+  List, Details) not being exclusive. (#329)
+- Menubar: Fixed search logging, now correctly works
+  when browsing the object tree, in find dialog and
+  other UI elements.
+- Menubar: Added keyboard shortcuts to all actions,
+  except for the "Action" menu.
+- Menubar: Added keyboard navigation for all sub-menu's
+  except "Action" menu.
+- Misc: Fixed class filters not working correctly until
+  class selection dialog was opened. Occured in find
+  dialog, query creation/editing and others. (#322)
+- Misc: Added "Operations Masters" dialog for viewing
+  and editing FSMO roles. Opened from
+  Menubar->File->Operations Masters. (#313)
+- Misc: Changed AD error dialogs to be modal.
+- Misc: Removed "Reset" button from rename dialogs.
+- Misc: Fixed group icons not displaying on some DE's. (#330)
+- Misc: Added app icon which is displayed next to in
+  app lists and on the title bar.
+- Misc: Empty password input is now not allowed.
+- Misc: Fixed incorrect value for length limit of the
+  field "Logon name (pre-Windows 2000)".
+- Misc: Improved handling of illegal characters in
+  dialogs that create objects and those that rename
+  objects.
+- Misc: Added automatic trimming of leading and
+  trailing spaces in most fields for inputting string
+  values.
+- Misc: Fixed creation of computer objects so that
+  attributes are set correctly.
+- Misc: Added "Show password" checkbox to all password
+  fields, which toggles password visibility when
+  entering.
+- Misc: Fixed crash that sometimes happened when
+  loading objects from server.
+- Misc: Fixed incorrect "Street" field for OU objects.
+  Was using the wrong attribute.
+- Misc: Improved translation.
+
+-----------------------------------------------------------------------
  VERSION 0.8.3
 -----------------------------------------------------------------------
 - Misc: Fixed build compatibility with new Samba
@@ -107,11 +238,14 @@ CHANGELOG
   connection options.
 
 -----------------------------------------------------------------------
+<<<<<<< HEAD
  VERSION 0.7.1
 -----------------------------------------------------------------------
 - Misc: Fix stack smashing on 32 bit systems. (#294)
 
 -----------------------------------------------------------------------
+=======
+>>>>>>> release/0-9-0-test
  VERSION 0.7.0
 -----------------------------------------------------------------------
 - Manual: Fixed manual not opening when app is installed
