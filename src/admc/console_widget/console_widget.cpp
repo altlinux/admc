@@ -149,6 +149,9 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
         d, &ConsoleWidgetPrivate::on_current_scope_item_changed);
     connect(
+        d->scope_view->selectionModel(), &QItemSelectionModel::selectionChanged,
+        this, &ConsoleWidget::selection_changed);
+    connect(
         d->model, &QStandardItemModel::rowsAboutToBeRemoved,
         d, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
 
@@ -205,6 +208,9 @@ void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
         connect(
             results_view, &ResultsView::context_menu,
             d, &ConsoleWidgetPrivate::on_results_context_menu);
+        connect(
+            results_view, &ResultsView::selection_changed,
+            this, &ConsoleWidget::selection_changed);
     }
 }
 
@@ -784,6 +790,12 @@ void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
 
     if (impl->view() != nullptr) {
         impl->view()->set_view_type(type);
+
+        // NOTE: changing results type causes a
+        // selection change because selection is there
+        // is a separate selection for each type of
+        // results view
+        emit q->selection_changed();
     }
 }
 
@@ -1019,6 +1031,8 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
 
         if (new_focused_view == scope_view || new_focused_view == results_view) {
             focused_view = new_focused_view;
+
+            emit q->selection_changed();
         }
     }
 }
