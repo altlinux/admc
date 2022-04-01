@@ -289,7 +289,7 @@ void PolicyImpl::on_add_link() {
         dialog, &SelectObjectDialog::accepted,
         this,
         [this, dialog]() {
-            const QList<QString> gpos = get_action_target_dn_list(console, ItemType_Policy, PolicyRole_DN);
+            const QList<QString> gpos = get_selected_dn_list(console, ItemType_Policy, PolicyRole_DN);
 
             const QList<QString> ou_list = dialog->get_selected();
 
@@ -301,7 +301,7 @@ void PolicyImpl::on_add_link() {
 }
 
 void PolicyImpl::on_edit() {
-    const QString dn = get_action_target_dn(console, ItemType_Policy, PolicyRole_DN);
+    const QString dn = get_selected_target_dn(console, ItemType_Policy, PolicyRole_DN);
 
     const QString path = [&]() {
         AdInterface ad;

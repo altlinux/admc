@@ -535,12 +535,12 @@ void ConsoleWidgetPrivate::add_actions(QMenu *menu) {
 
 // Returns whether any action is visible
 bool ConsoleWidgetPrivate::update_actions() {
-    const QList<QModelIndex> action_target_list = get_all_selected_items();
-    if (!action_target_list.isEmpty() && !action_target_list[0].isValid()) {
+    const QList<QModelIndex> selected_list = get_all_selected_items();
+    if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
         return false;
     }
 
-    const bool single_selection = (action_target_list.size() == 1);
+    const bool single_selection = (selected_list.size() == 1);
 
     //
     // Collect information about action state from impl's
@@ -549,8 +549,8 @@ bool ConsoleWidgetPrivate::update_actions() {
     const QSet<QAction *> visible_custom_action_set = [&]() {
         QSet<QAction *> out;
 
-        for (int i = 0; i < action_target_list.size(); i++) {
-            const QModelIndex index = action_target_list[i];
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
             QSet<QAction *> for_this_index = impl->get_custom_actions(index, single_selection);
@@ -571,8 +571,8 @@ bool ConsoleWidgetPrivate::update_actions() {
     const QSet<QAction *> disabled_custom_action_set = [&]() {
         QSet<QAction *> out;
 
-        for (int i = 0; i < action_target_list.size(); i++) {
-            const QModelIndex index = action_target_list[i];
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
             QSet<QAction *> for_this_index = impl->get_disabled_custom_actions(index, single_selection);
@@ -593,8 +593,8 @@ bool ConsoleWidgetPrivate::update_actions() {
     const QSet<StandardAction> visible_standard_actions = [&]() {
         QSet<StandardAction> out;
 
-        for (int i = 0; i < action_target_list.size(); i++) {
-            const QModelIndex index = action_target_list[i];
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
             QSet<StandardAction> for_this_index = impl->get_standard_actions(index, single_selection);
@@ -615,8 +615,8 @@ bool ConsoleWidgetPrivate::update_actions() {
     const QSet<StandardAction> disabled_standard_actions = [&]() {
         QSet<StandardAction> out;
 
-        for (int i = 0; i < action_target_list.size(); i++) {
-            const QModelIndex index = action_target_list[i];
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
             QSet<StandardAction> for_this_index = impl->get_disabled_standard_actions(index, single_selection);
@@ -1137,9 +1137,9 @@ void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) 
     const QSet<int> type_set = [&]() {
         QSet<int> out;
 
-        const QList<QModelIndex> action_target_list = get_all_selected_items();
+        const QList<QModelIndex> selected_list = get_all_selected_items();
 
-        for (const QModelIndex &index : action_target_list) {
+        for (const QModelIndex &index : selected_list) {
             const int type = index.data(ConsoleRole_Type).toInt();
             out.insert(type);
         }
