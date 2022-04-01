@@ -82,6 +82,8 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     object_impl->set_policy_impl(policy_impl);
     query_item_impl->set_query_folder_impl(query_folder_impl);
 
+    object_impl->set_toolbar_actions(ui->action_create_user, ui->action_create_group, ui->action_create_ou);
+
     // Setup console
     const ConsoleWidgetActions console_actions = [&]() {
         ConsoleWidgetActions out;

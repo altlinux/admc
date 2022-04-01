@@ -72,6 +72,7 @@ public:
 signals:
     void activated(const QModelIndex &index);
     void context_menu(const QPoint pos);
+    void selection_changed();
 
 private:
     QStackedWidget *stacked_widget;

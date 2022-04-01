@@ -64,6 +64,10 @@ ResultsView::ResultsView(QWidget *parent)
         // are connected directly, deletion of results
         // models becomes extremely slow.
         view->setModel(proxy_model);
+
+        connect(
+            view->selectionModel(), &QItemSelectionModel::selectionChanged,
+            this, &ResultsView::selection_changed);
     }
 
     set_drag_drop_enabled(true);

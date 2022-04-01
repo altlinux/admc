@@ -161,6 +161,13 @@ public:
     // opened by right click is setup automatically.
     void setup_menubar_action_menu(QMenu *menu);
 
+signals:
+    // Emitted when selection in the whole console
+    // widget changes, both in scope and results panes.
+    // Can be caused by selection change in focused
+    // view or change of which view is focused.
+    void selection_changed();
+
 private:
     ConsoleWidgetPrivate *d;
 
