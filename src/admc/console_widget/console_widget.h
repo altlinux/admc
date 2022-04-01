@@ -126,23 +126,13 @@ public:
     // selected row. There is always at least one
     // selected item. If results is currently focused
     // but has no selection, selected items from scope
-    // are returned instead. Note that this shouldn't
-    // be use for as targets of actions, use
-    // get_action_target_items() instead.
+    // are returned instead.
     QList<QModelIndex> get_selected_items(const int type) const;
 
-    // Get list of action targets. These are the items
-    // that should be the target of console actions,
-    // both default and extra from console impl's.
-    // Targets are equal to currently selected items or
-    // to current scope if context menu was opened by
-    // clicking on empty space in results.
-    QList<QModelIndex> get_action_target_items(const int type) const;
-
-    // Get a single action target. Use if you are sure
+    // Get a single selected item. Use if you are sure
     // that there's only one (dialog that uses one
-    // target item for example).
-    QModelIndex get_action_target(const int type) const;
+    // selected item for example).
+    QModelIndex get_selected_item(const int type) const;
 
     // NOTE: Search is inclusive, examining the given parent
     // and all of it's descendants. Pass QModelIndex()

@@ -104,8 +104,8 @@ QMessageBox *message_box_question(QWidget *parent, const QString &title, const Q
 QMessageBox *message_box_warning(QWidget *parent, const QString &title, const QString &text);
 
 QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list, const int dn_role);
-QList<QString> get_action_target_dn_list(ConsoleWidget *console, const int type, const int dn_role);
-QString get_action_target_dn(ConsoleWidget *console, const int type, const int dn_role);
+QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role);
+QString get_selected_target_dn(ConsoleWidget *console, const int type, const int dn_role);
 
 void center_widget(QWidget *widget);
 
