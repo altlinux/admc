@@ -61,6 +61,7 @@ Tests for ADMC
 %files
 %doc README.md
 %doc CHANGELOG.txt
+%doc CHANGELOG_ru.txt
 %_bindir/admc
 %_libdir/libadldap.so
 %_man1dir/admc*
