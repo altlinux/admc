@@ -240,6 +240,9 @@ QString dn_get_name(const QString &dn) {
 
     QString name = dn.mid(equals_i, segment_length);
 
+    // Unescape name
+    name.replace("\\?", "?");
+
     return name;
 }
 
@@ -301,7 +304,15 @@ QString dn_from_name_and_parent(const QString &name, const QString &parent, cons
             return "CN";
         }
     }();
-    const QString dn = QString("%1=%2,%3").arg(suffix, name, parent);
+
+    const QString name_escaped = [&]() {
+        QString out = name;
+        out.replace("?", "\\?");
+
+        return out;
+    }();
+
+    const QString dn = QString("%1=%2,%3").arg(suffix, name_escaped, parent);
 
     return dn;
 }
