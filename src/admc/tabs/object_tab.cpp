@@ -25,6 +25,7 @@
 #include "attribute_edits/datetime_edit.h"
 #include "attribute_edits/protect_deletion_edit.h"
 #include "attribute_edits/string_edit.h"
+#include "attribute_edits/dn_edit.h"
 
 #include <QFormLayout>
 
@@ -33,7 +34,7 @@ ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::ObjectTab();
     ui->setupUi(this);
 
-    auto dn_edit = new StringEdit(ui->dn_edit, ATTRIBUTE_DN, this);
+    auto dn_edit = new DNEdit(ui->dn_edit, this);
     auto class_edit = new StringEdit(ui->class_edit, ATTRIBUTE_OBJECT_CLASS, this);
 
     auto when_created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, this);

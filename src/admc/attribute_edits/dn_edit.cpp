@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2022 BaseALT Ltd.
- * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2020-2021 BaseALT Ltd.
+ * Copyright (C) 2020-2021 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,44 +18,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/string_edit.h"
+#include "attribute_edits/dn_edit.h"
 
 #include "adldap.h"
-#include "globals.h"
 #include "utils.h"
 
 #include <QLineEdit>
 
-StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QObject *parent)
+DNEdit::DNEdit(QLineEdit *edit_arg, QObject *parent)
 : AttributeEdit(parent) {
-    attribute = attribute_arg;
     edit = edit_arg;
 
-    if (g_adconfig->get_attribute_is_number(attribute)) {
-        set_line_edit_to_numbers_only(edit);
-    }
-
-    limit_edit(edit, attribute);
+    limit_edit(edit, ATTRIBUTE_DN);
 
     connect(
         edit, &QLineEdit::textChanged,
         this, &AttributeEdit::edited);
 }
 
-void StringEdit::load(AdInterface &ad, const AdObject &object) {
+void DNEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
-    const QString value = object.get_string(attribute);
-    edit->setText(value);
-}
+    const QString dn = object.get_dn();
+    const QString dn_as_canonical = dn_canonical(dn);
 
-bool StringEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value = edit->text().trimmed();
-    const bool success = ad.attribute_replace_string(dn, attribute, new_value);
-
-    return success;
-}
-
-void StringEdit::set_enabled(const bool enabled) {
-    edit->setEnabled(enabled);
+    edit->setText(dn_as_canonical);
 }

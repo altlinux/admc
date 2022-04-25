@@ -72,6 +72,7 @@ set(TEST_TARGETS
     admc_test_create_object_dialog
     admc_test_select_classes_widget
     admc_test_sam_name_edit
+    admc_test_dn_edit
 )
 
 foreach(target ${TEST_TARGETS})
