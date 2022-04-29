@@ -142,7 +142,7 @@
     <message>
         <location filename="tabs/account_tab.ui" line="194"/>
         <source>Use Kerberos DES encryption types for this account</source>
-        <translation>Использовать Керберос DES тип шифрования для этой учетной записи</translation>
+        <translation>Использовать Kerberos DES тип шифрования для этой учетной записи</translation>
     </message>
     <message>
         <location filename="tabs/account_tab.ui" line="201"/>
