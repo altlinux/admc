@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
     app.setApplicationVersion(ADMC_VERSION);
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
-    app.setWindowIcon(QIcon(":/admc/admc.svg"));
+    app.setWindowIcon(QIcon(":/admc/admc.ico"));
 
     const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
 

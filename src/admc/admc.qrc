@@ -4,5 +4,6 @@
     <file>admc_ru.qm</file>
     <file>admc_en.qm</file>
     <file alias="admc.svg">data/admc.svg</file>
+    <file alias="admc.ico">data/admc.ico</file>
 </qresource>
 </RCC>
