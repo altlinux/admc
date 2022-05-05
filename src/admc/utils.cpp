@@ -199,7 +199,12 @@ QIcon get_object_icon(const AdObject &object) {
             return out;
         }();
 
-        const QList<QString> icon_name_list = category_to_icon_list.value(object_category, {error_icon});
+        const QList<QString> fallback_icon_list = {
+            "emblem-system",
+            "emblem-system-symbolic",
+            "dialog-question"
+        };
+        const QList<QString> icon_name_list = category_to_icon_list.value(object_category, fallback_icon_list);
 
         for (const QString &icon : icon_name_list) {
             if (QIcon::hasThemeIcon(icon)) {
