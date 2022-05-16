@@ -25,6 +25,7 @@ enum ItemType {
     ItemType_Unassigned,
     ItemType_Object,
     ItemType_PolicyRoot,
+    ItemType_AllPoliciesFolder,
     ItemType_Policy,
     ItemType_QueryFolder,
     ItemType_QueryItem,

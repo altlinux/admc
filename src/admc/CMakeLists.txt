@@ -177,6 +177,7 @@ set(ADMC_SOURCES
     console_impls/query_folder_impl.cpp
     console_impls/policy_root_impl.cpp
     console_impls/find_root_impl.cpp
+    console_impls/all_policies_folder_impl.cpp
 
     admc.qrc
 )

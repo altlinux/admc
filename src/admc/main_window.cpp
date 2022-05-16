@@ -31,6 +31,7 @@
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/policy_root_impl.h"
+#include "console_impls/all_policies_folder_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_widget/console_widget.h"
@@ -69,6 +70,9 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     auto policy_root_impl = new PolicyRootImpl(ui->console);
     ui->console->register_impl(ItemType_PolicyRoot, policy_root_impl);
+
+    auto all_policies_folder_impl = new AllPoliciesFolderImpl(ui->console);
+    ui->console->register_impl(ItemType_AllPoliciesFolder, all_policies_folder_impl);
 
     auto policy_impl = new PolicyImpl(ui->console);
     ui->console->register_impl(ItemType_Policy, policy_impl);

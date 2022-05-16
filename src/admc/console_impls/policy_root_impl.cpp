@@ -24,6 +24,7 @@
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
+#include "console_impls/all_policies_folder_impl.h"
 #include "console_widget/results_view.h"
 #include "create_policy_dialog.h"
 #include "globals.h"
@@ -45,31 +46,13 @@
 PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));
-
-    create_policy_action = new QAction(tr("Create policy"), this);
-
-    connect(
-        create_policy_action, &QAction::triggered,
-        this, &PolicyRootImpl::create_policy);
 }
 
 void PolicyRootImpl::fetch(const QModelIndex &index) {
-    UNUSED_ARG(index);
-
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
-
-    const QString base = g_adconfig->domain_dn();
-    const SearchScope scope = SearchScope_All;
-    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QList<QString> attributes = console_policy_search_attributes();
-    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
-
-    for (const AdObject &object : results.values()) {
-        create_policy_in_console(object);
-    }
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_AllPoliciesFolder, index);
+    QStandardItem *item = row[0];
+    item->setText(tr("All policies"));
+    item->setIcon(QIcon::fromTheme("folder"));
 }
 
 void PolicyRootImpl::refresh(const QList<QModelIndex> &index_list) {
@@ -77,25 +60,6 @@ void PolicyRootImpl::refresh(const QList<QModelIndex> &index_list) {
 
     console->delete_children(index);
     fetch(index);
-}
-
-QList<QAction *> PolicyRootImpl::get_all_custom_actions() const {
-    QList<QAction *> out;
-
-    out.append(create_policy_action);
-
-    return out;
-}
-
-QSet<QAction *> PolicyRootImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
-    UNUSED_ARG(single_selection);
-
-    QSet<QAction *> out;
-
-    out.insert(create_policy_action);
-
-    return out;
 }
 
 QSet<StandardAction> PolicyRootImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
@@ -115,58 +79,6 @@ QList<QString> PolicyRootImpl::column_labels() const {
 
 QList<int> PolicyRootImpl::default_columns() const {
     return {0};
-}
-
-void PolicyRootImpl::create_policy() {
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
-
-    auto dialog = new CreatePolicyDialog(ad, console);
-    dialog->open();
-
-    connect(
-        dialog, &QDialog::accepted,
-        this,
-        [this, dialog]() {
-            AdInterface ad2;
-            if (ad_failed(ad2, console)) {
-                return;
-            }
-
-            const QString dn = dialog->get_created_dn();
-            const SearchScope scope = SearchScope_Object;
-            const QString filter = QString();
-            const QList<QString> attributes = console_policy_search_attributes();
-            const QHash<QString, AdObject> results = ad2.search(dn, scope, filter, attributes);
-
-            const AdObject object = results[dn];
-
-            create_policy_in_console(object);
-        });
-}
-
-void PolicyRootImpl::create_policy_in_console(const AdObject &object) {
-    const QModelIndex policy_root_index = [&]() {
-        const QList<QModelIndex> search_results = console->search_items(QModelIndex(), ConsoleRole_Type, ItemType_PolicyRoot, ItemType_PolicyRoot);
-
-        if (!search_results.isEmpty()) {
-            return search_results[0];
-        } else {
-            return QModelIndex();
-        }
-    }();
-
-    if (!policy_root_index.isValid()) {
-        qDebug() << "Policy tree head index is invalid";
-
-        return;
-    }
-
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, policy_root_index);
-
-    console_policy_load(row, object);
 }
 
 void console_policy_tree_init(ConsoleWidget *console) {
