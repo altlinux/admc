@@ -68,7 +68,7 @@ void ADMCTestGplink::contains_data() {
     QTest::newRow("a") << dn_A << true;
     QTest::newRow("b") << dn_B << true;
     QTest::newRow("c") << dn_C << true;
-    QTest::newRow("shouldn't contains") << "CN={00000000-016D-11D2-945F-00C04FB984F9},CN=Policies,CN=Dystem,DC=domain,DC=alt" << false;
+    QTest::newRow("shouldn't contains") << "CN={00000000-016D-11D2-945F-00C04FB984F9},CN=Policies,CN=System,DC=domain,DC=alt" << false;
 }
 
 void ADMCTestGplink::contains() {
