@@ -1,0 +1,124 @@
+/*
+ * ADMC - AD Management Center
+ *
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "console_impls/policy_ou_impl.h"
+
+#include "adldap.h"
+#include "console_impls/item_type.h"
+#include "console_impls/object_impl.h"
+#include "console_impls/policy_impl.h"
+#include "console_impls/all_policies_folder_impl.h"
+#include "console_widget/results_view.h"
+#include "create_policy_dialog.h"
+#include "globals.h"
+#include "gplink.h"
+#include "policy_results_widget.h"
+#include "rename_policy_dialog.h"
+#include "select_object_dialog.h"
+#include "settings.h"
+#include "status.h"
+#include "utils.h"
+#include "search_thread.h"
+
+#include <QCoreApplication>
+#include <QDebug>
+#include <QList>
+#include <QMenu>
+#include <QProcess>
+#include <QStandardItem>
+
+// TODO: Duplicating code related to object search in
+// object_impl, but there are some differences that
+// complicate code sharing.
+
+void console_policy_ou_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
+void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
+
+PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
+: ConsoleImpl(console_arg) {
+    set_results_view(new ResultsView(console_arg));
+}
+
+// TODO: perform searches in separate threads
+void PolicyOUImpl::fetch(const QModelIndex &index) {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    const QString dn = index.data(ObjectRole_DN).toString();
+    const QString domain_dn = g_adconfig->domain_dn();
+    const bool is_domain = (dn == domain_dn);
+
+    // Add child OU's
+    {
+        const QString base = dn;
+        const SearchScope scope = SearchScope_Children;
+        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_OU);
+        const QList<QString> attributes = console_object_search_attributes();
+
+        const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+        for (const AdObject &object : results.values()) {
+            const QList<QStandardItem *> row = console->add_scope_item(ItemType_PolicyOU, index);
+            console_object_item_data_load(row[0], object);
+
+            const QString item_text = object.get_string(ATTRIBUTE_NAME);
+            row[0]->setText(item_text);
+        }
+    }
+
+    // Add "All policies" folder if this is domain
+    if (is_domain) {
+        const QList<QStandardItem *> all_policies_row = console->add_scope_item(ItemType_AllPoliciesFolder, index);
+        QStandardItem *all_policies_item = all_policies_row[0];
+        all_policies_item->setText(tr("All policies"));
+        all_policies_item->setIcon(QIcon::fromTheme("folder"));
+        // Set sort index for "All policies" to 1 so it's always
+        // at the bottom of the policy tree
+        console->set_item_sort_index(all_policies_item->index(), 1);
+    }
+}
+
+void PolicyOUImpl::refresh(const QList<QModelIndex> &index_list) {
+    const QModelIndex index = index_list[0];
+
+    console->delete_children(index);
+    fetch(index);
+}
+
+QSet<StandardAction> PolicyOUImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+    UNUSED_ARG(single_selection);
+
+    QSet<StandardAction> out;
+
+    out.insert(StandardAction_Refresh);
+
+    return out;
+}
+
+QList<QString> PolicyOUImpl::column_labels() const {
+    return {tr("Name")};
+}
+
+QList<int> PolicyOUImpl::default_columns() const {
+    return {0};
+}

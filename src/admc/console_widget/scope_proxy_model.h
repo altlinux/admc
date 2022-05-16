@@ -38,6 +38,7 @@ public:
 
     bool hasChildren(const QModelIndex &parent) const override;
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
+    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
 };
 
 #endif /* SCOPE_PROXY_MODEL_H */

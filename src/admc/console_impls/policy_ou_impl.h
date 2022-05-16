@@ -18,21 +18,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ITEM_TYPE_H
-#define ITEM_TYPE_H
+#ifndef POLICY_OU_IMPL_H
+#define POLICY_OU_IMPL_H
 
-enum ItemType {
-    ItemType_Unassigned,
-    ItemType_Object,
-    ItemType_PolicyRoot,
-    ItemType_PolicyOU,
-    ItemType_AllPoliciesFolder,
-    ItemType_Policy,
-    ItemType_QueryFolder,
-    ItemType_QueryItem,
-    ItemType_FindRoot,
+#include "console_widget/console_impl.h"
+#include "console_widget/console_widget.h"
 
-    ItemType_LAST,
+class PolicyOUImpl final : public ConsoleImpl {
+    Q_OBJECT
+
+public:
+    PolicyOUImpl(ConsoleWidget *console_arg);
+
+    void fetch(const QModelIndex &index) override;
+    void refresh(const QList<QModelIndex> &index_list) override;
+
+    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+
+    QList<QString> column_labels() const override;
+    QList<int> default_columns() const override;
 };
 
-#endif /* ITEM_TYPE_H */
+#endif /* POLICY_OU_IMPL_H */

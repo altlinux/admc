@@ -44,3 +44,18 @@ bool ScopeProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source
 
     return is_scope;
 }
+
+bool ScopeProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const {
+    const int left_sort_index = left.data(ConsoleRole_SortIndex).toInt();
+    const int right_sort_index = right.data(ConsoleRole_SortIndex).toInt();
+
+    if (left_sort_index != right_sort_index) {
+        const bool out = (left_sort_index < right_sort_index);
+
+        return out;
+    }
+
+    const bool out = QSortFilterProxyModel::lessThan(left, right);
+
+    return out;
+}

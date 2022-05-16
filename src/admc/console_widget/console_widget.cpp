@@ -517,6 +517,10 @@ void ConsoleWidget::setup_menubar_action_menu(QMenu *menu) {
         d, &ConsoleWidgetPrivate::update_actions);
 }
 
+void ConsoleWidget::set_item_sort_index(const QModelIndex &index, const int sort_index) {
+    d->model->setData(index, sort_index, ConsoleRole_SortIndex);
+}
+
 void ConsoleWidgetPrivate::add_actions(QMenu *menu) {
     // Add custom actions
     const QList<QAction *> custom_action_list = get_custom_action_list();

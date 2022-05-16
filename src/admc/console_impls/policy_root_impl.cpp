@@ -25,6 +25,7 @@
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/all_policies_folder_impl.h"
+#include "console_impls/policy_ou_impl.h"
 #include "console_widget/results_view.h"
 #include "create_policy_dialog.h"
 #include "globals.h"
@@ -49,10 +50,20 @@ PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
 }
 
 void PolicyRootImpl::fetch(const QModelIndex &index) {
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_AllPoliciesFolder, index);
-    QStandardItem *item = row[0];
-    item->setText(tr("All policies"));
-    item->setIcon(QIcon::fromTheme("folder"));
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    // Add domain object
+    const QList<QStandardItem *> domain_row = console->add_scope_item(ItemType_PolicyOU, index);
+    QStandardItem *domain_item = domain_row[0];
+    const QString domain_dn = g_adconfig->domain_dn();
+    const AdObject domain_object = ad.search_object(domain_dn);
+    console_object_item_data_load(domain_item, domain_object);
+
+    const QString domain_item_text = g_adconfig->domain().toLower();
+    domain_item->setText(domain_item_text);
 }
 
 void PolicyRootImpl::refresh(const QList<QModelIndex> &index_list) {
