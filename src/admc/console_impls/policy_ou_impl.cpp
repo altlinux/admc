@@ -95,6 +95,51 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
         // at the bottom of the policy tree
         console->set_item_sort_index(all_policies_item->index(), 1);
     }
+
+    // Add policies linked to this OU
+    if (!is_domain) {
+        const QList<QString> gpo_list = [&]() {
+            const AdObject parent_object = ad.search_object(dn);
+            const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
+            const Gplink gplink = Gplink(gplink_string);
+            const QList<QString> out = gplink.get_gpo_list();
+
+            return out;
+        }();
+
+        if (!gpo_list.isEmpty()) {
+            const QString base = g_adconfig->policies_dn();
+            const SearchScope scope = SearchScope_Children;
+            const QString filter = [&]() {
+
+                const QList<QString> subfilter_list = [&]() {
+                    QList<QString> out;
+
+                    for (const QString &gpo : gpo_list) {
+                        const QString subfilter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, gpo);
+                        out.append(subfilter);
+                    }
+
+                    return out;
+                }();
+
+                const QString out = filter_OR(subfilter_list);
+
+                return out;
+            }();
+            const QList<QString> attributes = {
+                ATTRIBUTE_DISPLAY_NAME
+            };
+
+            const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+            for (const AdObject &object : results.values()) {
+                const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, index);
+
+                console_policy_load(row, object);
+            }
+        }
+    }
 }
 
 void PolicyOUImpl::refresh(const QList<QModelIndex> &index_list) {

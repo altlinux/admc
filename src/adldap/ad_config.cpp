@@ -369,6 +369,10 @@ QString AdConfig::extended_rights_dn() const {
     return QString("CN=Extended-Rights,%1").arg(configuration_dn());
 }
 
+QString AdConfig::policies_dn() const {
+    return QString("CN=Policies,CN=System,%1").arg(domain_dn());
+}
+
 bool AdConfig::control_is_supported(const QString &control_oid) const {
     const bool supported = d->supported_control_list.contains(control_oid);
 
