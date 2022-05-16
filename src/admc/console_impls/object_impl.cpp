@@ -910,12 +910,16 @@ void ObjectImpl::on_reset_account() {
 }
 
 void ObjectImpl::new_object(const QString &object_class) {
+    const QString parent_dn = get_selected_target_dn_object(console);
+  
+    console_new_object(console, buddy_console, object_class, parent_dn);
+}
+
+void console_new_object(ConsoleWidget *console, ConsoleWidget *buddy_console, const QString &object_class, const QString &parent_dn) {
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
     }
-
-    const QString parent_dn = get_selected_target_dn_object(console);
 
     // NOTE: creating dialogs here instead of directly
     // in "on_new_x" slots looks backwards but it's
@@ -956,10 +960,10 @@ void ObjectImpl::new_object(const QString &object_class) {
 
     dialog->open();
 
-    connect(
+    QObject::connect(
         dialog, &QDialog::accepted,
-        this,
-        [this, dialog, parent_dn]() {
+        console,
+        [console, buddy_console, dialog, parent_dn]() {
             AdInterface ad_inner;
             if (ad_failed(ad_inner, console)) {
                 return;

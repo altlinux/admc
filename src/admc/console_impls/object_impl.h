@@ -162,5 +162,6 @@ bool console_object_is_ou(const QModelIndex &index);
 // of objects setup
 QModelIndex get_object_tree_root(ConsoleWidget *console);
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
+void console_new_object(ConsoleWidget *console, ConsoleWidget *buddy_console, const QString &object_class, const QString &parent_dn);
 
 #endif /* OBJECT_IMPL_H */

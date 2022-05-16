@@ -54,6 +54,12 @@ void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<A
 PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));
+
+    create_ou_action = new QAction(tr("Create OU"), this);
+
+    connect(
+        create_ou_action, &QAction::triggered,
+        this, &PolicyOUImpl::create_ou);
 }
 
 // TODO: perform searches in separate threads
@@ -149,6 +155,26 @@ void PolicyOUImpl::refresh(const QList<QModelIndex> &index_list) {
     fetch(index);
 }
 
+QList<QAction *> PolicyOUImpl::get_all_custom_actions() const {
+    QList<QAction *> out;
+
+    out.append(create_ou_action);
+
+    return out;
+}
+
+QSet<QAction *> PolicyOUImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+
+    QSet<QAction *> out;
+
+    if (single_selection) {
+        out.insert(create_ou_action);
+    }
+
+    return out;
+}
+
 QSet<StandardAction> PolicyOUImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     UNUSED_ARG(index);
     UNUSED_ARG(single_selection);
@@ -166,4 +192,10 @@ QList<QString> PolicyOUImpl::column_labels() const {
 
 QList<int> PolicyOUImpl::default_columns() const {
     return {0};
+}
+
+void PolicyOUImpl::create_ou() {
+    const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
+
+    console_new_object(console, nullptr, CLASS_OU, parent_dn);
 }

@@ -33,10 +33,17 @@ public:
     void fetch(const QModelIndex &index) override;
     void refresh(const QList<QModelIndex> &index_list) override;
 
+    QList<QAction *> get_all_custom_actions() const override;
+    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
+
+private:
+    QAction *create_ou_action;
+
+    void create_ou();
 };
 
 #endif /* POLICY_OU_IMPL_H */
