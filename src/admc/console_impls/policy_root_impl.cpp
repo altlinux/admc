@@ -101,7 +101,7 @@ void console_policy_tree_init(ConsoleWidget *console) {
 }
 
 QModelIndex get_policy_tree_root(ConsoleWidget *console) {
-    const QList<QModelIndex> index_list = console->search_items(QModelIndex(), ItemType_PolicyRoot);
+    const QList<QModelIndex> index_list = console->search_items(QModelIndex(), {ItemType_PolicyRoot});
 
     if (!index_list.isEmpty()) {
         return index_list[0];

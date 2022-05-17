@@ -176,6 +176,7 @@ QSet<StandardAction> PolicyOUImpl::get_standard_actions(const QModelIndex &index
 
     out.insert(StandardAction_Refresh);
     out.insert(StandardAction_Rename);
+    out.insert(StandardAction_Delete);
 
     return out;
 }
@@ -196,6 +197,10 @@ void PolicyOUImpl::create_ou() {
 
 void PolicyOUImpl::rename(const QList<QModelIndex> &index_list) {
     console_object_rename(console, nullptr, index_list);
+}
+
+void PolicyOUImpl::delete_action(const QList<QModelIndex> &index_list) {
+    console_object_delete(console, nullptr, index_list);
 }
 
 void policy_ou_impl_add_ou_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {

@@ -70,8 +70,9 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
 QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list);
 QList<QString> get_selected_dn_list_object(ConsoleWidget *console);
 QString get_selected_target_dn_object(ConsoleWidget *console);
-void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const ItemType type);
+void console_object_delete_dn_list(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const QList<int> &type);
 bool can_create_class_at_parent(const QString &create_class, const QString &parent_class);
+void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, AdInterface &ad, const QHash<QString, QString> &old_to_new_dn_map_arg, const QString &new_parent_dn);
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -533,7 +534,7 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
                 // NOTE: search for indexes instead of using the
                 // list given to f-n because we want to update
                 // objects in both object and query tree
-                const QList<QModelIndex> indexes_for_this_object = target_console->search_items(QModelIndex(), ObjectRole_DN, dn, ItemType_Object);
+                const QList<QModelIndex> indexes_for_this_object = target_console->search_items(QModelIndex(), ObjectRole_DN, dn, {ItemType_Object});
                 for (const QModelIndex &index : indexes_for_this_object) {
                     const QList<QStandardItem *> row = target_console->get_row(index);
                     console_object_load(row, object);
@@ -595,7 +596,11 @@ void ObjectImpl::refresh(const QList<QModelIndex> &index_list) {
 }
 
 void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
-    const bool confirmed = confirmation_dialog(tr("Are you sure you want to delete this object?"), console);
+    console_object_delete(console, buddy_console, index_list);
+}
+
+void console_object_delete(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list) {
+    const bool confirmed = confirmation_dialog(QCoreApplication::translate("ObjectImpl", "Are you sure you want to delete this object?"), console);
     if (!confirmed) {
         return;
     }
@@ -623,16 +628,20 @@ void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
         return out;
     }();
 
+    // TODO: this is a GREAT apply_changes(), should do
+    // it in this style in all other cases. Though there
+    // are some complications in other cases.
     auto apply_changes = [&ad, &deleted_list](ConsoleWidget *target_console) {
         const QList<QModelIndex> root_list = {
             get_object_tree_root(target_console),
             get_query_tree_root(target_console),
             get_find_tree_root(target_console),
+            get_policy_tree_root(target_console),
         };
         
         for (const QModelIndex &root : root_list) {
             if (root.isValid()) {
-                console_object_delete(target_console, deleted_list, root, ItemType_Object);
+                console_object_delete_dn_list(target_console, deleted_list, root, {ItemType_Object, ItemType_PolicyOU});
             }
         }
     };
@@ -999,7 +1008,7 @@ void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console,
                     return;
                 }
 
-                const QList<QModelIndex> search_parent = target_console->search_items(root, ObjectRole_DN, parent_dn, ItemType_Object);
+                const QList<QModelIndex> search_parent = target_console->search_items(root, ObjectRole_DN, parent_dn, {ItemType_Object});
 
                 if (search_parent.isEmpty()) {
                     hide_busy_indicator();
@@ -1021,7 +1030,7 @@ void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console,
                 // Apply changes to policy tree
                 const QModelIndex policy_root = get_policy_tree_root(target_console);
                 if (policy_root.isValid() && object_class == CLASS_OU) {
-                    const QList<QModelIndex> parent_in_policy_tree_list = target_console->search_items(policy_root, ObjectRole_DN, parent_dn, ItemType_PolicyOU);
+                    const QList<QModelIndex> parent_in_policy_tree_list = target_console->search_items(policy_root, ObjectRole_DN, parent_dn, {ItemType_PolicyOU});
                     const QModelIndex parent_in_policy_tree = parent_in_policy_tree_list[0];
 
                     policy_ou_impl_add_ou_from_dns(target_console, ad_inner, {created_dn}, parent_in_policy_tree);
@@ -1064,7 +1073,7 @@ void ObjectImpl::set_disabled(const bool disabled) {
 
     auto apply_changes = [&changed_objects, &disabled](ConsoleWidget *target_console) {
         for (const QString &dn : changed_objects) {
-            const QList<QModelIndex> index_list = target_console->search_items(QModelIndex(), ObjectRole_DN, dn, ItemType_Object);
+            const QList<QModelIndex> index_list = target_console->search_items(QModelIndex(), ObjectRole_DN, dn, {ItemType_Object});
             for (const QModelIndex &index : index_list) {
                 QStandardItem *item = target_console->get_item(index);
                 item->setData(disabled, ObjectRole_AccountDisabled);
@@ -1202,7 +1211,7 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
         const QModelIndex object_root = get_object_tree_root(target_console);
         if (object_root.isValid()) {
             const QModelIndex new_parent_index = [=]() {
-                const QList<QModelIndex> results = target_console->search_items(object_root, ObjectRole_DN, new_parent_dn, ItemType_Object);
+                const QList<QModelIndex> results = target_console->search_items(object_root, ObjectRole_DN, new_parent_dn, {ItemType_Object});
 
                 if (results.size() == 1) {
                     return results[0];
@@ -1214,7 +1223,7 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
             if (new_parent_index.isValid()) {
                 object_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
 
-                console_object_delete(target_console, old_dn_list, object_root, ItemType_Object);
+                console_object_delete_dn_list(target_console, old_dn_list, object_root, {ItemType_Object});
             }
         }
 
@@ -1240,7 +1249,7 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
                 QHash<QString, QModelIndex> out;
 
                 for (const QString &old_dn : old_dn_list) {
-                    const QList<QModelIndex> results = target_console->search_items(query_root, ObjectRole_DN, old_dn, ItemType_Object);
+                    const QList<QModelIndex> results = target_console->search_items(query_root, ObjectRole_DN, old_dn, {ItemType_Object});
 
                     for (const QModelIndex &index : results) {
                         out[old_dn] = index;
@@ -1280,7 +1289,7 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
                 QHash<QString, QModelIndex> out;
 
                 for (const QString &old_dn : old_dn_list) {
-                    const QList<QModelIndex> results = target_console->search_items(find_root, ObjectRole_DN, old_dn, ItemType_Object);
+                    const QList<QModelIndex> results = target_console->search_items(find_root, ObjectRole_DN, old_dn, {ItemType_Object});
 
                     for (const QModelIndex &index : results) {
                         out[old_dn] = index;
@@ -1305,7 +1314,7 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
         const QModelIndex policy_root = get_policy_tree_root(target_console);
         if (policy_root.isValid()) {
             const QModelIndex new_parent_index = [=]() {
-                const QList<QModelIndex> results = target_console->search_items(policy_root, ObjectRole_DN, new_parent_dn, ItemType_PolicyOU);
+                const QList<QModelIndex> results = target_console->search_items(policy_root, ObjectRole_DN, new_parent_dn, {ItemType_PolicyOU});
 
                 if (results.size() == 1) {
                     return results[0];
@@ -1316,7 +1325,7 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
 
             policy_ou_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
 
-            console_object_delete(target_console, old_dn_list, policy_root, ItemType_PolicyOU);
+            console_object_delete_dn_list(target_console, old_dn_list, policy_root, {ItemType_PolicyOU});
         }
     };
 
@@ -1693,7 +1702,7 @@ bool console_object_is_ou(const QModelIndex &index) {
 
 QModelIndex get_object_tree_root(ConsoleWidget *console) {
     const QString head_dn = g_adconfig->domain_dn();
-    const QList<QModelIndex> search_results = console->search_items(QModelIndex(), ObjectRole_DN, head_dn, ItemType_Object);
+    const QList<QModelIndex> search_results = console->search_items(QModelIndex(), ObjectRole_DN, head_dn, {ItemType_Object});
 
     if (!search_results.isEmpty()) {
         // NOTE: domain object may also appear in queries,
@@ -1786,9 +1795,9 @@ QString get_selected_target_dn_object(ConsoleWidget *console) {
     return get_selected_target_dn(console, ItemType_Object, ObjectRole_DN);
 }
 
-void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const ItemType type) {
+void console_object_delete_dn_list(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const QList<int> &type_list) {
     for (const QString &dn : dn_list) {
-        const QList<QModelIndex> index_list = console->search_items(tree_root, ObjectRole_DN, dn, type);
+        const QList<QModelIndex> index_list = console->search_items(tree_root, ObjectRole_DN, dn, type_list);
         const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
         for (const QPersistentModelIndex &index : persistent_list) {

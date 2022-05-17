@@ -45,6 +45,7 @@ public:
 
 
     void rename(const QList<QModelIndex> &index_list) override;
+    void delete_action(const QList<QModelIndex> &index_list) override;
 
 private:
     QAction *create_ou_action;
