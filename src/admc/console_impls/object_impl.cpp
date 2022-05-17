@@ -502,6 +502,10 @@ void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console,
 }
 
 void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
+    console_object_properties(console, nullptr, index_list);
+}
+
+void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list) {
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
@@ -509,7 +513,7 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
 
     const QList<QString> dn_list = index_list_to_dn_list(index_list);
 
-    auto on_object_properties_applied = [this, dn_list]() {
+    auto on_object_properties_applied = [console, buddy_console, dn_list]() {
         AdInterface ad2;
         if (ad_failed(ad2, console)) {
             return;
@@ -534,7 +538,7 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
                 // NOTE: search for indexes instead of using the
                 // list given to f-n because we want to update
                 // objects in both object and query tree
-                const QList<QModelIndex> indexes_for_this_object = target_console->search_items(QModelIndex(), ObjectRole_DN, dn, {ItemType_Object});
+                const QList<QModelIndex> indexes_for_this_object = target_console->search_items(QModelIndex(), ObjectRole_DN, dn, {ItemType_Object, ItemType_PolicyOU});
                 for (const QModelIndex &index : indexes_for_this_object) {
                     const QList<QStandardItem *> row = target_console->get_row(index);
                     console_object_load(row, object);
@@ -558,9 +562,9 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
         PropertiesDialog *dialog = PropertiesDialog::open_for_target(ad, dn, &dialog_is_new);
 
         if (dialog_is_new) {
-            connect(
+            QObject::connect(
                 dialog, &PropertiesDialog::applied,
-                on_object_properties_applied);
+                console, on_object_properties_applied);
         }
     } else if (dn_list.size() > 1) {
         const QList<QString> class_list = [&]() {
@@ -578,9 +582,9 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
         auto dialog = new PropertiesMultiDialog(ad, dn_list, class_list);
         dialog->open();
 
-        connect(
+        QObject::connect(
             dialog, &PropertiesMultiDialog::applied,
-            on_object_properties_applied);
+            console, on_object_properties_applied);
     }
 }
 

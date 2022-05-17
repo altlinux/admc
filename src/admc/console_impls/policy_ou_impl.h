@@ -35,6 +35,7 @@ public:
 
     void fetch(const QModelIndex &index) override;
     void refresh(const QList<QModelIndex> &index_list) override;
+    void activate(const QModelIndex &index) override;
 
     QList<QAction *> get_all_custom_actions() const override;
     QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
@@ -43,8 +44,8 @@ public:
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
 
-
     void rename(const QList<QModelIndex> &index_list) override;
+    void properties(const QList<QModelIndex> &index_list) override;
     void delete_action(const QList<QModelIndex> &index_list) override;
 
 private:

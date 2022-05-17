@@ -148,6 +148,10 @@ void PolicyOUImpl::refresh(const QList<QModelIndex> &index_list) {
     fetch(index);
 }
 
+void PolicyOUImpl::activate(const QModelIndex &index) {
+    properties({index});
+}
+
 QList<QAction *> PolicyOUImpl::get_all_custom_actions() const {
     QList<QAction *> out;
 
@@ -174,6 +178,8 @@ QSet<StandardAction> PolicyOUImpl::get_standard_actions(const QModelIndex &index
 
     QSet<StandardAction> out;
 
+    out.insert(StandardAction_Properties);
+
     out.insert(StandardAction_Refresh);
     out.insert(StandardAction_Rename);
     out.insert(StandardAction_Delete);
@@ -193,6 +199,10 @@ void PolicyOUImpl::create_ou() {
     const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
 
     console_object_create(console, nullptr, CLASS_OU, parent_dn);
+}
+
+void PolicyOUImpl::properties(const QList<QModelIndex> &index_list) {
+    console_object_properties(console, nullptr, index_list);
 }
 
 void PolicyOUImpl::rename(const QList<QModelIndex> &index_list) {
