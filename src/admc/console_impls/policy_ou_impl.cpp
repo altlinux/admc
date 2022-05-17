@@ -49,8 +49,6 @@
 // complicate code sharing.
 
 void console_policy_ou_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
-void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
-void policy_ou_impl_add_ou_list(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 
 PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -83,7 +81,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
 
         const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-        policy_ou_impl_add_ou_list(console, results.values(), index);
+        policy_ou_impl_add_objects_to_console(console, results.values(), index);
     }
 
     // Add "All policies" folder if this is domain
@@ -177,6 +175,7 @@ QSet<StandardAction> PolicyOUImpl::get_standard_actions(const QModelIndex &index
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Refresh);
+    out.insert(StandardAction_Rename);
 
     return out;
 }
@@ -192,7 +191,11 @@ QList<int> PolicyOUImpl::default_columns() const {
 void PolicyOUImpl::create_ou() {
     const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
 
-    console_new_object(console, nullptr, CLASS_OU, parent_dn);
+    console_object_create(console, nullptr, CLASS_OU, parent_dn);
+}
+
+void PolicyOUImpl::rename(const QList<QModelIndex> &index_list) {
+    console_object_rename(console, nullptr, index_list);
 }
 
 void policy_ou_impl_add_ou_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
@@ -207,12 +210,16 @@ void policy_ou_impl_add_ou_from_dns(ConsoleWidget *console, AdInterface &ad, con
         return out;
     }();
 
-    policy_ou_impl_add_ou_list(console, object_list, parent);
+    policy_ou_impl_add_objects_to_console(console, object_list, parent);
 }
 
-void policy_ou_impl_add_ou_list(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
-
+void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
     for (const AdObject &object : object_list) {
+        const bool is_ou = object.is_class(CLASS_OU);
+        if (!is_ou) {
+            continue;
+        }
+
         const QList<QStandardItem *> row = console->add_scope_item(ItemType_PolicyOU, parent);
         console_object_item_data_load(row[0], object);
 

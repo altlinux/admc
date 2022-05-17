@@ -25,6 +25,7 @@
 #include "console_widget/console_widget.h"
 
 class AdInterface;
+class AdObject;
 
 class PolicyOUImpl final : public ConsoleImpl {
     Q_OBJECT
@@ -42,12 +43,17 @@ public:
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
 
+
+    void rename(const QList<QModelIndex> &index_list) override;
+
 private:
     QAction *create_ou_action;
+    QAction *rename_ou_action;
 
     void create_ou();
 };
 
 void policy_ou_impl_add_ou_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
+void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 
 #endif /* POLICY_OU_IMPL_H */

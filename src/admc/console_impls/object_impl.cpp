@@ -70,7 +70,7 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
 QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list);
 QList<QString> get_selected_dn_list_object(ConsoleWidget *console);
 QString get_selected_target_dn_object(ConsoleWidget *console);
-void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root);
+void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const ItemType type);
 bool can_create_class_at_parent(const QString &create_class, const QString &parent_class);
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
@@ -447,12 +447,25 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex
 }
 
 void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
+    console_object_rename(console, buddy_console, index_list);
+}
+  
+void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list) {  
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
     }
 
-    const QString old_dn = get_selected_target_dn_object(console);
+    const QString old_dn = [&]() {
+        if (!index_list.isEmpty()) {
+            const QModelIndex index = index_list[0];
+            const QString out = index.data(ObjectRole_DN).toString();
+
+            return out;
+        } else {
+            return QString();
+        }
+    }();
 
     RenameObjectDialog *dialog = [&]() -> RenameObjectDialog * {
         const QModelIndex index = index_list[0];
@@ -471,10 +484,10 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
 
     dialog->open();
 
-    connect(
+    QObject::connect(
         dialog, &QDialog::accepted,
-        this,
-        [this, dialog, old_dn]() {
+        console,
+        [console, buddy_console, dialog, old_dn]() {
             AdInterface ad_inner;
             if (ad_failed(ad_inner, console)) {
                 return;
@@ -483,7 +496,7 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
             const QString new_dn = dialog->get_new_dn();
             const QString parent_dn = dn_get_parent(old_dn);
 
-            move_and_rename(ad_inner, {{old_dn, new_dn}}, parent_dn);
+            console_object_move_and_rename(console, buddy_console, ad_inner, {{old_dn, new_dn}}, parent_dn);
         });
 }
 
@@ -619,7 +632,7 @@ void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
         
         for (const QModelIndex &root : root_list) {
             if (root.isValid()) {
-                console_object_delete(target_console, deleted_list, root);
+                console_object_delete(target_console, deleted_list, root, ItemType_Object);
             }
         }
     };
@@ -914,10 +927,10 @@ void ObjectImpl::on_reset_account() {
 void ObjectImpl::new_object(const QString &object_class) {
     const QString parent_dn = get_selected_target_dn_object(console);
   
-    console_new_object(console, buddy_console, object_class, parent_dn);
+    console_object_create(console, buddy_console, object_class, parent_dn);
 }
 
-void console_new_object(ConsoleWidget *console, ConsoleWidget *buddy_console, const QString &object_class, const QString &parent_dn) {
+void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console, const QString &object_class, const QString &parent_dn) {
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
@@ -1131,7 +1144,7 @@ void ObjectImpl::drop_policies(const QList<QPersistentModelIndex> &dropped_list,
     }
 }
 
-void ObjectImpl::move_and_rename(AdInterface &ad, const QHash<QString, QString> &old_to_new_dn_map_arg, const QString &new_parent_dn) {
+void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, AdInterface &ad, const QHash<QString, QString> &old_to_new_dn_map_arg, const QString &new_parent_dn) {
     // NOTE: sometimes, some objects that are supposed
     // to be moved don't actually need to be. For
     // example, if an object were to be moved to an
@@ -1198,9 +1211,11 @@ void ObjectImpl::move_and_rename(AdInterface &ad, const QHash<QString, QString> 
                 }
             }();
 
-            object_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
+            if (new_parent_index.isValid()) {
+                object_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
 
-            console_object_delete(target_console, old_dn_list, object_root);
+                console_object_delete(target_console, old_dn_list, object_root, ItemType_Object);
+            }
         }
 
         // For query tree, we don't move items or recreate
@@ -1244,7 +1259,7 @@ void ObjectImpl::move_and_rename(AdInterface &ad, const QHash<QString, QString> 
                 const QModelIndex query_index = index.parent();
                 QStandardItem *item = target_console->get_item(query_index);
                 item->setIcon(QIcon::fromTheme("dialog-warning"));
-                item->setToolTip(tr("Query may be out of date"));
+                item->setToolTip(QCoreApplication::translate("ObjectImpl", "Query may be out of date"));
 
                 // Update item row
                 const QList<QStandardItem *> row = target_console->get_row(index);
@@ -1285,6 +1300,24 @@ void ObjectImpl::move_and_rename(AdInterface &ad, const QHash<QString, QString> 
                 console_object_load(row, object);
             }
         }
+
+        // Apply changes to policy tree
+        const QModelIndex policy_root = get_policy_tree_root(target_console);
+        if (policy_root.isValid()) {
+            const QModelIndex new_parent_index = [=]() {
+                const QList<QModelIndex> results = target_console->search_items(policy_root, ObjectRole_DN, new_parent_dn, ItemType_PolicyOU);
+
+                if (results.size() == 1) {
+                    return results[0];
+                } else {
+                    return QModelIndex();
+                }
+            }();
+
+            policy_ou_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
+
+            console_object_delete(target_console, old_dn_list, policy_root, ItemType_PolicyOU);
+        }
     };
 
     apply_changes(console);
@@ -1309,7 +1342,7 @@ void ObjectImpl::move(AdInterface &ad, const QList<QString> &old_dn_list, const 
         return out;
     }();
 
-    move_and_rename(ad, old_to_new_dn_map, new_parent_dn);
+    console_object_move_and_rename(console, buddy_console, ad, old_to_new_dn_map, new_parent_dn);
 }
 
 void ObjectImpl::update_toolbar_actions() {
@@ -1753,9 +1786,9 @@ QString get_selected_target_dn_object(ConsoleWidget *console) {
     return get_selected_target_dn(console, ItemType_Object, ObjectRole_DN);
 }
 
-void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root) {
+void console_object_delete(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const ItemType type) {
     for (const QString &dn : dn_list) {
-        const QList<QModelIndex> index_list = console->search_items(tree_root, ObjectRole_DN, dn, ItemType_Object);
+        const QList<QModelIndex> index_list = console->search_items(tree_root, ObjectRole_DN, dn, type);
         const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
         for (const QPersistentModelIndex &index : persistent_list) {
