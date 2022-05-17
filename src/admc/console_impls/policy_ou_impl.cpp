@@ -180,7 +180,10 @@ QSet<StandardAction> PolicyOUImpl::get_standard_actions(const QModelIndex &index
 
     out.insert(StandardAction_Properties);
 
-    out.insert(StandardAction_Refresh);
+    const bool can_refresh = console_item_get_was_fetched(index);
+    if (can_refresh) {
+        out.insert(StandardAction_Refresh);
+    }
     out.insert(StandardAction_Rename);
     out.insert(StandardAction_Delete);
 
