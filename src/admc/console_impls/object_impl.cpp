@@ -26,6 +26,8 @@
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_impls/find_root_impl.h"
+#include "console_impls/policy_root_impl.h"
+#include "console_impls/policy_ou_impl.h"
 #include "console_widget/results_view.h"
 #include "create_computer_dialog.h"
 #include "create_group_dialog.h"
@@ -963,7 +965,7 @@ void console_new_object(ConsoleWidget *console, ConsoleWidget *buddy_console, co
     QObject::connect(
         dialog, &QDialog::accepted,
         console,
-        [console, buddy_console, dialog, parent_dn]() {
+        [console, buddy_console, dialog, parent_dn, object_class]() {
             AdInterface ad_inner;
             if (ad_failed(ad_inner, console)) {
                 return;
@@ -1002,6 +1004,15 @@ void console_new_object(ConsoleWidget *console, ConsoleWidget *buddy_console, co
                 // search criteria, then find dialog
                 // can just be considered out of date
                 // and should be updated
+
+                // Apply changes to policy tree
+                const QModelIndex policy_root = get_policy_tree_root(target_console);
+                if (policy_root.isValid() && object_class == CLASS_OU) {
+                    const QList<QModelIndex> parent_in_policy_tree_list = target_console->search_items(policy_root, ObjectRole_DN, parent_dn, ItemType_PolicyOU);
+                    const QModelIndex parent_in_policy_tree = parent_in_policy_tree_list[0];
+
+                    policy_ou_impl_add_ou_from_dns(target_console, ad_inner, {created_dn}, parent_in_policy_tree);
+                }
             };
 
             apply_changes(console);

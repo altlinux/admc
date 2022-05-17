@@ -99,3 +99,13 @@ void console_policy_tree_init(ConsoleWidget *console) {
     policy_tree_head->setDragEnabled(false);
     policy_tree_head->setIcon(QIcon::fromTheme("folder"));
 }
+
+QModelIndex get_policy_tree_root(ConsoleWidget *console) {
+    const QList<QModelIndex> index_list = console->search_items(QModelIndex(), ItemType_PolicyRoot);
+
+    if (!index_list.isEmpty()) {
+        return index_list[0];
+    } else {
+        return QModelIndex();
+    }
+}

@@ -50,6 +50,7 @@
 
 void console_policy_ou_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
 void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
+void policy_ou_impl_add_ou_list(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 
 PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -82,13 +83,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
 
         const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-        for (const AdObject &object : results.values()) {
-            const QList<QStandardItem *> row = console->add_scope_item(ItemType_PolicyOU, index);
-            console_object_item_data_load(row[0], object);
-
-            const QString item_text = object.get_string(ATTRIBUTE_NAME);
-            row[0]->setText(item_text);
-        }
+        policy_ou_impl_add_ou_list(console, results.values(), index);
     }
 
     // Add "All policies" folder if this is domain
@@ -198,4 +193,30 @@ void PolicyOUImpl::create_ou() {
     const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
 
     console_new_object(console, nullptr, CLASS_OU, parent_dn);
+}
+
+void policy_ou_impl_add_ou_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
+    const QList<AdObject> object_list = [&]() {
+        QList<AdObject> out;
+
+        for (const QString &dn : dn_list) {
+            const AdObject object = ad.search_object(dn);
+            out.append(object);
+        }
+
+        return out;
+    }();
+
+    policy_ou_impl_add_ou_list(console, object_list, parent);
+}
+
+void policy_ou_impl_add_ou_list(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
+
+    for (const AdObject &object : object_list) {
+        const QList<QStandardItem *> row = console->add_scope_item(ItemType_PolicyOU, parent);
+        console_object_item_data_load(row[0], object);
+
+        const QString item_text = object.get_string(ATTRIBUTE_NAME);
+        row[0]->setText(item_text);
+    }
 }

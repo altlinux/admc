@@ -40,5 +40,6 @@ public:
 };
 
 void console_policy_tree_init(ConsoleWidget *console);
+QModelIndex get_policy_tree_root(ConsoleWidget *console);
 
 #endif /* POLICY_ROOT_IMPL_H */

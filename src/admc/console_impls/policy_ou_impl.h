@@ -24,6 +24,8 @@
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"
 
+class AdInterface;
+
 class PolicyOUImpl final : public ConsoleImpl {
     Q_OBJECT
 
@@ -45,5 +47,7 @@ private:
 
     void create_ou();
 };
+
+void policy_ou_impl_add_ou_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 
 #endif /* POLICY_OU_IMPL_H */
