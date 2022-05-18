@@ -50,7 +50,6 @@ public:
 
 private:
     QAction *create_ou_action;
-    QAction *rename_ou_action;
 
     void create_ou();
 };
