@@ -36,6 +36,7 @@
 #include "status.h"
 #include "utils.h"
 #include "search_thread.h"
+#include "select_policy_dialog.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -55,10 +56,14 @@ PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
     set_results_view(new ResultsView(console_arg));
 
     create_ou_action = new QAction(tr("Create OU"), this);
+    link_gpo_action = new QAction(tr("Link existing GPO"), this);
 
     connect(
         create_ou_action, &QAction::triggered,
         this, &PolicyOUImpl::create_ou);
+    connect(
+        link_gpo_action, &QAction::triggered,
+        this, &PolicyOUImpl::link_gpo);
 }
 
 // TODO: perform searches in separate threads
@@ -156,6 +161,7 @@ QList<QAction *> PolicyOUImpl::get_all_custom_actions() const {
     QList<QAction *> out;
 
     out.append(create_ou_action);
+    out.append(link_gpo_action);
 
     return out;
 }
@@ -167,6 +173,7 @@ QSet<QAction *> PolicyOUImpl::get_custom_actions(const QModelIndex &index, const
 
     if (single_selection) {
         out.insert(create_ou_action);
+        out.insert(link_gpo_action);
     }
 
     return out;
@@ -202,6 +209,47 @@ void PolicyOUImpl::create_ou() {
     const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
 
     console_object_create(console, nullptr, CLASS_OU, parent_dn);
+}
+
+void PolicyOUImpl::link_gpo() {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    auto dialog = new SelectPolicyDialog(ad, console);
+    dialog->open();
+
+    connect(
+        dialog, &QDialog::accepted,
+        this,
+        [this, dialog]() {
+            AdInterface ad_inner;
+            if (ad_failed(ad_inner, console)) {
+                return;
+            }
+
+            const QString target_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
+            
+            Gplink gplink = [&]() {
+                const AdObject target_object = ad_inner.search_object(target_dn);
+                const QString gplink_string = target_object.get_string(ATTRIBUTE_GPLINK);
+                const Gplink out = Gplink(gplink_string);
+
+                return out;
+            }();
+
+            const QList<QString> gpo_list = dialog->get_selected_dns();
+
+            for (const QString &gpo : gpo_list) {
+                gplink.add(gpo);
+            }
+
+            const QString new_gplink_string = gplink.to_string();
+            ad_inner.attribute_replace_string(target_dn, ATTRIBUTE_GPLINK, new_gplink_string);
+
+            g_status->display_ad_messages(ad_inner, console);
+        });
 }
 
 void PolicyOUImpl::properties(const QList<QModelIndex> &index_list) {

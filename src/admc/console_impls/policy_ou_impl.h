@@ -50,8 +50,10 @@ public:
 
 private:
     QAction *create_ou_action;
+    QAction *link_gpo_action;
 
     void create_ou();
+    void link_gpo();
 };
 
 void policy_ou_impl_add_ou_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
