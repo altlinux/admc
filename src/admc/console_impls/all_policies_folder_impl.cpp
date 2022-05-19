@@ -24,6 +24,7 @@
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
+#include "console_impls/policy_root_impl.h"
 #include "console_widget/results_view.h"
 #include "create_policy_dialog.h"
 #include "globals.h"
@@ -41,6 +42,8 @@
 #include <QMenu>
 #include <QProcess>
 #include <QStandardItem>
+
+void all_policies_folder_impl_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 
 AllPoliciesFolderImpl::AllPoliciesFolderImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -67,9 +70,7 @@ void AllPoliciesFolderImpl::fetch(const QModelIndex &index) {
     const QList<QString> attributes = console_policy_search_attributes();
     const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
-    for (const AdObject &object : results.values()) {
-        create_policy_in_console(object, index);
-    }
+    all_policies_folder_impl_add_objects(console, results.values(), index);
 }
 
 void AllPoliciesFolderImpl::refresh(const QList<QModelIndex> &index_list) {
@@ -144,20 +145,49 @@ void AllPoliciesFolderImpl::create_policy() {
             }
 
             const QString dn = dialog->get_created_dn();
-            const SearchScope scope = SearchScope_Object;
-            const QString filter = QString();
-            const QList<QString> attributes = console_policy_search_attributes();
-            const QHash<QString, AdObject> results = ad2.search(dn, scope, filter, attributes);
-
-            const AdObject object = results[dn];
-
-            create_policy_in_console(object, parent_index);
+            all_policies_folder_impl_add_objects_from_dns(console, ad2, {dn}, parent_index);
         });
 }
 
-void AllPoliciesFolderImpl::create_policy_in_console(const AdObject &object, const QModelIndex &parent_index) {
+QModelIndex get_all_policies_folder_index(ConsoleWidget *console) {
+    const QModelIndex policy_tree_root = get_policy_tree_root(console);
+    const QList<QModelIndex> index_list = console->search_items(policy_tree_root, {ItemType_AllPoliciesFolder});
 
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, parent_index);
+    if (!index_list.isEmpty()) {
+        return index_list[0];
+    } else {
+        return QModelIndex();
+    }
+}
 
-    console_policy_load(row, object);
+void all_policies_folder_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
+    const QList<AdObject> object_list = [&]() {
+        QList<AdObject> out;
+
+        for (const QString &dn : dn_list) {
+            const AdObject object = ad.search_object(dn);
+            out.append(object);
+        }
+
+        return out;
+    }();
+
+    all_policies_folder_impl_add_objects(console, object_list, parent);
+}
+
+void all_policies_folder_impl_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
+    if (!parent.isValid()) {
+        return;
+    }
+
+    const bool parent_was_fetched = console_item_get_was_fetched(parent);
+    if (!parent_was_fetched) {
+        return;
+    }
+
+    for (const AdObject &object : object_list) {
+        const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, parent);
+
+        console_policy_load(row, object);
+    }
 }

@@ -56,11 +56,15 @@ PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
     set_results_view(new ResultsView(console_arg));
 
     create_ou_action = new QAction(tr("Create OU"), this);
+    create_and_link_gpo_action = new QAction(tr("Create a GPO and link to this OU"), this);
     link_gpo_action = new QAction(tr("Link existing GPO"), this);
 
     connect(
         create_ou_action, &QAction::triggered,
         this, &PolicyOUImpl::create_ou);
+    connect(
+        create_and_link_gpo_action, &QAction::triggered,
+        this, &PolicyOUImpl::create_and_link_gpo);
     connect(
         link_gpo_action, &QAction::triggered,
         this, &PolicyOUImpl::link_gpo);
@@ -130,6 +134,7 @@ QList<QAction *> PolicyOUImpl::get_all_custom_actions() const {
     QList<QAction *> out;
 
     out.append(create_ou_action);
+    out.append(create_and_link_gpo_action);
     out.append(link_gpo_action);
 
     return out;
@@ -142,6 +147,7 @@ QSet<QAction *> PolicyOUImpl::get_custom_actions(const QModelIndex &index, const
 
     if (single_selection) {
         out.insert(create_ou_action);
+        out.insert(create_and_link_gpo_action);
         out.insert(link_gpo_action);
     }
 
@@ -178,6 +184,68 @@ void PolicyOUImpl::create_ou() {
     const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
 
     console_object_create(console, nullptr, CLASS_OU, parent_dn);
+}
+
+void PolicyOUImpl::create_and_link_gpo() {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    const QList<QModelIndex> selected_list = console->get_selected_items(ItemType_PolicyOU);
+
+    if (selected_list.isEmpty()) {
+        return;
+    }
+
+    const QModelIndex target_index = selected_list[0];
+    const QString target_dn = target_index.data(ObjectRole_DN).toString();
+
+    auto dialog = new CreatePolicyDialog(ad, console);
+    dialog->open();    
+
+    connect(
+        dialog, &QDialog::accepted,
+        this,
+        [this, dialog, target_index, target_dn]() {
+            // Link OU and GPO
+            AdInterface ad2;
+            if (ad_failed(ad2, console)) {
+                return;
+            }
+
+            const QString gpo_dn = dialog->get_created_dn();
+
+            // TODO: duplicating code in link_gpo()
+            const Gplink original_gplink = [&]() {
+                const AdObject target_object = ad2.search_object(target_dn);
+                const QString gplink_string = target_object.get_string(ATTRIBUTE_GPLINK);
+                const Gplink out = Gplink(gplink_string);
+
+                return out;
+            }();
+
+            const Gplink new_gplink = [&]() {
+                Gplink out = original_gplink;
+
+                out.add(gpo_dn);
+
+                return out;
+            }();
+
+            const QString new_gplink_string = new_gplink.to_string();
+
+            ad2.attribute_replace_string(target_dn, ATTRIBUTE_GPLINK, new_gplink_string);
+
+            g_status->display_ad_messages(ad2, console);
+
+            // Add GPO as child to linked OU in policy tree
+            policy_ou_impl_add_objects_from_dns(console, ad2, {gpo_dn}, target_index);
+
+            // Also add GPO to "All Policies" folder
+            const QModelIndex all_policies_folder_index = get_all_policies_folder_index(console);
+            all_policies_folder_impl_add_objects_from_dns(console, ad2, {gpo_dn}, all_policies_folder_index);
+        });
 }
 
 void PolicyOUImpl::link_gpo() {

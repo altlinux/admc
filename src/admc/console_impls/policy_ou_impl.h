@@ -50,9 +50,11 @@ public:
 
 private:
     QAction *create_ou_action;
+    QAction *create_and_link_gpo_action;
     QAction *link_gpo_action;
 
     void create_ou();
+    void create_and_link_gpo();
     void link_gpo();
 };
 
