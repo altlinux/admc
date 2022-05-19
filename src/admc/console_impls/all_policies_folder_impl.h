@@ -21,6 +21,11 @@
 #ifndef ALL_POLICIES_FOLDER_IMPL_H
 #define ALL_POLICIES_FOLDER_IMPL_H
 
+/**
+ * Impl for a virtual container for "All policies". Displays
+ * all of the policies present in the domain.
+ */
+
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"
 

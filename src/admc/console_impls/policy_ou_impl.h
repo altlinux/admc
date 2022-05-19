@@ -21,6 +21,15 @@
 #ifndef POLICY_OU_IMPL_H
 #define POLICY_OU_IMPL_H
 
+/**
+ * Impl for OU's in policy tree. Different from OU's in
+ * object tree because in policy tree OU's have as children
+ * only other OU's and GPO's that are linked to them. OU's
+ * in policy tree also have different actions. Domain object
+ * in policy tree also uses this impl even though it's not
+ * an OU.
+ */
+
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"
 
