@@ -38,6 +38,8 @@ enum GplinkOption {
  * enforced.
  */
 
+class AdConfig;
+
 class Gplink {
 public:
     Gplink();
@@ -45,7 +47,12 @@ public:
 
     QString to_string() const;
     bool contains(const QString &gpo) const;
-    QList<QString> get_gpo_list() const;
+    
+    // NOTE: this returns a list of GPO DN's with correct
+    // letter case. Gplink string contains DN's in a
+    // different letter case that is not appropriate for
+    // LDAP operations.
+    QList<QString> get_gpo_list(AdConfig *adconfig) const;
 
     void add(const QString &gpo);
     void remove(const QString &gpo);

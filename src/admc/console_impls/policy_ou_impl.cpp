@@ -106,43 +106,12 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
             const AdObject parent_object = ad.search_object(dn);
             const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
             const Gplink gplink = Gplink(gplink_string);
-            const QList<QString> out = gplink.get_gpo_list();
+            const QList<QString> out = gplink.get_gpo_list(g_adconfig);
 
             return out;
         }();
 
-        if (!gpo_list.isEmpty()) {
-            const QString base = g_adconfig->policies_dn();
-            const SearchScope scope = SearchScope_Children;
-            const QString filter = [&]() {
-
-                const QList<QString> subfilter_list = [&]() {
-                    QList<QString> out;
-
-                    for (const QString &gpo : gpo_list) {
-                        const QString subfilter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, gpo);
-                        out.append(subfilter);
-                    }
-
-                    return out;
-                }();
-
-                const QString out = filter_OR(subfilter_list);
-
-                return out;
-            }();
-            const QList<QString> attributes = {
-                ATTRIBUTE_DISPLAY_NAME
-            };
-
-            const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
-
-            for (const AdObject &object : results.values()) {
-                const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, index);
-
-                console_policy_load(row, object);
-            }
-        }
+        policy_ou_impl_add_objects_from_dns(console, ad, gpo_list, index);
     }
 }
 
@@ -231,7 +200,7 @@ void PolicyOUImpl::link_gpo() {
 
             const QString target_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
             
-            Gplink gplink = [&]() {
+            const Gplink original_gplink = [&]() {
                 const AdObject target_object = ad_inner.search_object(target_dn);
                 const QString gplink_string = target_object.get_string(ATTRIBUTE_GPLINK);
                 const Gplink out = Gplink(gplink_string);
@@ -239,16 +208,42 @@ void PolicyOUImpl::link_gpo() {
                 return out;
             }();
 
-            const QList<QString> gpo_list = dialog->get_selected_dns();
+            const Gplink new_gplink = [&]() {
+                Gplink out = original_gplink;
 
-            for (const QString &gpo : gpo_list) {
-                gplink.add(gpo);
-            }
+                const QList<QString> gpo_list = dialog->get_selected_dns();
 
-            const QString new_gplink_string = gplink.to_string();
+                for (const QString &gpo : gpo_list) {
+                    out.add(gpo);
+                }
+
+                return out;
+            }();
+
+            const QString new_gplink_string = new_gplink.to_string();
+
             ad_inner.attribute_replace_string(target_dn, ATTRIBUTE_GPLINK, new_gplink_string);
 
             g_status->display_ad_messages(ad_inner, console);
+
+            const QList<QString> added_gpo_list = [&]() {
+                QList<QString> out;
+
+                const QList<QString> new_gpo_list = new_gplink.get_gpo_list(g_adconfig);
+
+                for (const QString &gpo : new_gpo_list) {
+                    const bool added = !original_gplink.contains(gpo);
+                    if (added) {
+                        out.append(gpo);
+                    }
+                }
+
+                return out;
+            }();
+
+            const QModelIndex parent = console->get_selected_item(ItemType_PolicyOU);
+
+            policy_ou_impl_add_objects_from_dns(console, ad_inner, added_gpo_list, parent);
         });
 }
 
@@ -264,7 +259,7 @@ void PolicyOUImpl::delete_action(const QList<QModelIndex> &index_list) {
     console_object_delete(console, nullptr, index_list);
 }
 
-void policy_ou_impl_add_ou_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
+void policy_ou_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
     const QList<AdObject> object_list = [&]() {
         QList<AdObject> out;
 
@@ -280,16 +275,29 @@ void policy_ou_impl_add_ou_from_dns(ConsoleWidget *console, AdInterface &ad, con
 }
 
 void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
+    if (!parent.isValid()) {
+        return;
+    }
+
+    const bool parent_was_fetched = console_item_get_was_fetched(parent);
+    if (!parent_was_fetched) {
+        return;
+    }
+
     for (const AdObject &object : object_list) {
         const bool is_ou = object.is_class(CLASS_OU);
-        if (!is_ou) {
-            continue;
+        const bool is_gpc = object.is_class(CLASS_GP_CONTAINER);
+
+        if (is_ou) {
+            const QList<QStandardItem *> row = console->add_scope_item(ItemType_PolicyOU, parent);
+            console_object_item_data_load(row[0], object);
+
+            const QString item_text = object.get_string(ATTRIBUTE_NAME);
+            row[0]->setText(item_text);
+        } else if (is_gpc) {
+            const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, parent);
+
+            console_policy_load(row, object);
         }
-
-        const QList<QStandardItem *> row = console->add_scope_item(ItemType_PolicyOU, parent);
-        console_object_item_data_load(row[0], object);
-
-        const QString item_text = object.get_string(ATTRIBUTE_NAME);
-        row[0]->setText(item_text);
     }
 }

@@ -1037,7 +1037,7 @@ void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console,
                     const QList<QModelIndex> parent_in_policy_tree_list = target_console->search_items(policy_root, ObjectRole_DN, parent_dn, {ItemType_PolicyOU});
                     const QModelIndex parent_in_policy_tree = parent_in_policy_tree_list[0];
 
-                    policy_ou_impl_add_ou_from_dns(target_console, ad_inner, {created_dn}, parent_in_policy_tree);
+                    policy_ou_impl_add_objects_from_dns(target_console, ad_inner, {created_dn}, parent_in_policy_tree);
                 }
             };
 

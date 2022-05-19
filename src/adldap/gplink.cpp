@@ -139,8 +139,39 @@ bool Gplink::contains(const QString &gpo_case) const {
     return options.contains(gpo);
 }
 
-QList<QString> Gplink::get_gpo_list() const {
-    return gpo_list;
+QList<QString> Gplink::get_gpo_list(AdConfig *adconfig) const {
+    QList<QString> gpo_list_case;
+
+    for (auto gpo : gpo_list) {
+        const QString gpo_case = [&]() {
+            const QList<QString> rdn_list = gpo.split(",");
+
+            const bool rdn_list_is_malformed = rdn_list.isEmpty();
+            if (rdn_list_is_malformed) {
+                return gpo;
+            }
+
+            const QString guid_rdn = rdn_list[0];
+            const QList<QString> guid_rdn_split = guid_rdn.split("=");
+
+            const bool guid_rdn_is_malformed = (guid_rdn_split.size() != 2);
+            if (guid_rdn_is_malformed) {
+                return gpo;
+            }
+
+            const QString guid = guid_rdn_split[1];
+            const QString guid_case = guid.toUpper();
+            const QString policies_dn = adconfig->policies_dn();
+
+            const QString out = QString("CN=%1,%2").arg(guid_case, policies_dn);
+
+            return out;
+        }();
+
+        gpo_list_case.append(gpo_case);
+    }
+
+    return gpo_list_case;
 }
 
 void Gplink::add(const QString &gpo_case) {

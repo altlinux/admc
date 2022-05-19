@@ -258,7 +258,7 @@ void GroupPolicyTabEdit::reload_gplink() {
         return out;
     }();
 
-    const QList<QString> gpo_list = gplink.get_gpo_list();
+    const QList<QString> gpo_list = gplink.get_gpo_list(g_adconfig);
 
     for (const QString &gpo : gpo_list) {
         // NOTE: Gplink may contain deleted gpo's, in which
