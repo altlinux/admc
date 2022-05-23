@@ -153,6 +153,11 @@ void PolicyOUImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const 
     }();
 
     link_gpo_to_ou(target, ou_dn, gpo_list);
+
+    // Need to refresh so that results widget is updated
+    // because linking a gpo changes contents of results.
+    const QModelIndex current_scope = console->get_current_scope_item();
+    console->refresh_scope(current_scope);
 }
 
 void PolicyOUImpl::refresh(const QList<QModelIndex> &index_list) {

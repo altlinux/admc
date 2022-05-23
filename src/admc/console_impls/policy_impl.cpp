@@ -90,9 +90,10 @@ void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QS
 
     add_link(policy_list, ou_list);
 
-    // NOTE: don't need to sync changes in policy results
-    // widget because when drag and dropping you will select
-    // the policy which will update results automatically
+    // Need to refresh so that results widget is updated
+    // because linking a gpo changes contents of results.
+    const QModelIndex current_scope = console->get_current_scope_item();
+    console->refresh_scope(current_scope);
 }
 
 void PolicyImpl::selected_as_scope(const QModelIndex &index) {
