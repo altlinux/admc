@@ -41,6 +41,7 @@ set(ADMC_SOURCES
     find_widget.cpp
     tab_widget.cpp
     policy_results_widget.cpp
+    policy_ou_results_widget.cpp
     edit_query_item_widget.cpp
     fsmo_tab.cpp
 

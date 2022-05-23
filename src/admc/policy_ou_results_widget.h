@@ -1,0 +1,67 @@
+/*
+ * ADMC - AD Management Center
+ *
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef POLICY_OU_RESULTS_WIDGET_H
+#define POLICY_OU_RESULTS_WIDGET_H
+
+/**
+ * Displays OU's linked to currently selected policy.
+ */
+
+#include <QWidget>
+
+#include "gplink.h"
+
+class QStandardItemModel;
+class QStandardItem;
+class QMenu;
+
+namespace Ui {
+class PolicyOUResultsWidget;
+}
+
+class PolicyOUResultsWidget final : public QWidget {
+    Q_OBJECT
+
+public:
+    Ui::PolicyOUResultsWidget *ui;
+
+    PolicyOUResultsWidget(QWidget *parent);
+    ~PolicyOUResultsWidget();
+
+    // Loads links for given OU. Nothing is done if given
+    // index is not an OU in policy tree.
+    void update(const QModelIndex &index);
+
+private:
+    QStandardItemModel *model;
+    Gplink gplink;
+    QString ou_dn;
+    QMenu *context_menu;
+
+    void on_item_changed(QStandardItem *item);
+    void open_context_menu(const QPoint &pos);
+    void remove_link();
+    void move_up();
+    void move_down();
+    void reload_gplink();
+};
+
+#endif /* POLICY_OU_RESULTS_WIDGET_H */

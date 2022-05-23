@@ -30,6 +30,7 @@
 #include "globals.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
+#include "policy_ou_results_widget.h"
 #include "rename_policy_dialog.h"
 #include "select_object_dialog.h"
 #include "settings.h"
@@ -53,7 +54,8 @@ void console_policy_ou_search(ConsoleWidget *console, const QModelIndex &index, 
 
 PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    set_results_view(new ResultsView(console_arg));
+    policy_ou_results_widget = new PolicyOUResultsWidget(console_arg);
+    set_results_widget(policy_ou_results_widget);
 
     create_ou_action = new QAction(tr("Create OU"), this);
     create_and_link_gpo_action = new QAction(tr("Create a GPO and link to this OU"), this);
@@ -68,6 +70,10 @@ PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
     connect(
         link_gpo_action, &QAction::triggered,
         this, &PolicyOUImpl::link_gpo);
+}
+
+void PolicyOUImpl::selected_as_scope(const QModelIndex &index) {
+    policy_ou_results_widget->update(index);
 }
 
 // TODO: perform searches in separate threads
@@ -124,6 +130,8 @@ void PolicyOUImpl::refresh(const QList<QModelIndex> &index_list) {
 
     console->delete_children(index);
     fetch(index);
+
+    policy_ou_results_widget->update(index);
 }
 
 void PolicyOUImpl::activate(const QModelIndex &index) {
@@ -245,6 +253,9 @@ void PolicyOUImpl::create_and_link_gpo() {
             // Also add GPO to "All Policies" folder
             const QModelIndex all_policies_folder_index = get_all_policies_folder_index(console);
             all_policies_folder_impl_add_objects_from_dns(console, ad2, {gpo_dn}, all_policies_folder_index);
+
+            const QModelIndex current_scope = console->get_current_scope_item();
+            policy_ou_results_widget->update(current_scope);
         });
 }
 
@@ -312,6 +323,9 @@ void PolicyOUImpl::link_gpo() {
             const QModelIndex parent = console->get_selected_item(ItemType_PolicyOU);
 
             policy_ou_impl_add_objects_from_dns(console, ad_inner, added_gpo_list, parent);
+
+            const QModelIndex current_scope = console->get_current_scope_item();
+            policy_ou_results_widget->update(current_scope);
         });
 }
 

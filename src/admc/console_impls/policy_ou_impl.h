@@ -35,12 +35,15 @@
 
 class AdInterface;
 class AdObject;
+class PolicyOUResultsWidget;
 
 class PolicyOUImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
     PolicyOUImpl(ConsoleWidget *console_arg);
+
+    void selected_as_scope(const QModelIndex &index) override;
 
     void fetch(const QModelIndex &index) override;
     void refresh(const QList<QModelIndex> &index_list) override;
@@ -58,6 +61,7 @@ public:
     void delete_action(const QList<QModelIndex> &index_list) override;
 
 private:
+    PolicyOUResultsWidget *policy_ou_results_widget;
     QAction *create_ou_action;
     QAction *create_and_link_gpo_action;
     QAction *link_gpo_action;
