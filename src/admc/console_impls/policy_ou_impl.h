@@ -31,7 +31,6 @@
  */
 
 #include "console_widget/console_impl.h"
-#include "console_widget/console_widget.h"
 
 class AdInterface;
 class AdObject;
