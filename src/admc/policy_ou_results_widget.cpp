@@ -97,7 +97,7 @@ PolicyOUResultsWidget::PolicyOUResultsWidget(QWidget *parent)
     ui->view->detail_view()->header()->resizeSection(2, 100);
     ui->view->detail_view()->header()->resizeSection(3, 500);
 
-    const QVariant state = settings_get_variant(SETTING_policy_results_state);
+    const QVariant state = settings_get_variant(SETTING_policy_ou_results_state);
     ui->view->restore_state(state,
         {
             PolicyOUResultsColumn_Name,
@@ -124,7 +124,7 @@ PolicyOUResultsWidget::PolicyOUResultsWidget(QWidget *parent)
 
 PolicyOUResultsWidget::~PolicyOUResultsWidget() {
     const QVariant state = ui->view->save_state();
-    settings_set_variant(SETTING_policy_results_state, state);
+    settings_set_variant(SETTING_policy_ou_results_state, state);
 
     delete ui;
 }
