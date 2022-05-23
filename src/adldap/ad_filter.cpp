@@ -118,3 +118,20 @@ QList<QString> process_subfilters(const QList<QString> &in) {
 
     return out;
 }
+
+QString filter_dn_list(const QList<QString> &dn_list) {
+    const QList<QString> subfilter_list = [&]() {
+        QList<QString> subfilter_list_out;
+
+        for (const QString &dn : dn_list) {
+            const QString subfilter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, dn);
+            subfilter_list_out.append(subfilter);
+        }
+
+        return subfilter_list_out;
+    }();
+
+    const QString out = filter_OR(subfilter_list);
+
+    return out;
+}

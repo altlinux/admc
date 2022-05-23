@@ -162,12 +162,14 @@ QModelIndex get_all_policies_folder_index(ConsoleWidget *console) {
 
 void all_policies_folder_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
     const QList<AdObject> object_list = [&]() {
-        QList<AdObject> out;
+        const QString base = g_adconfig->policies_dn();
+        const SearchScope scope = SearchScope_Children;
+        const QString filter = filter_dn_list(dn_list);
+        const QList<QString> attributes = QList<QString>();
 
-        for (const QString &dn : dn_list) {
-            const AdObject object = ad.search_object(dn);
-            out.append(object);
-        }
+        const QHash<QString, AdObject> search_results = ad.search(base, scope, filter, attributes);
+
+        const QList<AdObject> out = search_results.values();
 
         return out;
     }();

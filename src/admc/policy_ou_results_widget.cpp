@@ -297,16 +297,20 @@ void PolicyOUResultsWidget::reload_gplink() {
         return;
     }
 
-    // TODO: do this in one search using OR(dn=a,dn=b...)
     const QList<AdObject> gpo_object_list = [&]() {
-        QList<AdObject> out;
+        const QString base = g_adconfig->policies_dn();
+        const SearchScope scope = SearchScope_Children;
+        const QString filter = [&]() {
+            const QList<QString> gpo_dn_list = gplink.get_gpo_list(g_adconfig);
+            const QString out = filter_dn_list(gpo_dn_list);
 
-        const QList<QString> gpo_dn_list = gplink.get_gpo_list(g_adconfig);
+            return out;
+        }();
+        const QList<QString> attributes = QList<QString>();
 
-        for (const QString &dn : gpo_dn_list) {
-            const AdObject object = ad.search_object(dn);
-            out.append(object);
-        }
+        const QHash<QString, AdObject> search_results = ad.search(base, scope, filter, attributes);
+
+        const QList<AdObject> out = search_results.values();
 
         return out;
     }();
