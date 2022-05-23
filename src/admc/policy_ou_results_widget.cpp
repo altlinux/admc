@@ -332,6 +332,7 @@ void PolicyOUResultsWidget::reload_gplink() {
         const QList<QStandardItem *> row = make_item_row(PolicyOUResultsColumn_COUNT);
         row[PolicyOUResultsColumn_Name]->setText(name);
         set_data_for_row(row, gpo_dn, PolicyOUResultsRole_DN);
+        row[0]->setIcon(QIcon::fromTheme("folder-templates"));
         
         for (const auto column : option_columns) {
             QStandardItem *item = row[column];
