@@ -33,7 +33,6 @@ class ConsoleActions;
 class QMenu;
 template <typename T>
 class QList;
-class PolicyImpl;
 class ConsoleWidget;
 class ConsoleFilterDialog;
 
@@ -59,8 +58,6 @@ class ObjectImpl final : public ConsoleImpl {
 
 public:
     ObjectImpl(ConsoleWidget *console);
-
-    void set_policy_impl(PolicyImpl *policy_root_impl_arg);
 
     // This is for cases where there are multiple consoles
     // in the app and you need to propagate changes from one
@@ -117,7 +114,6 @@ private slots:
 
 private:
     ConsoleWidget *buddy_console;
-    PolicyImpl *policy_impl;
     QString object_filter;
     bool object_filter_enabled;
 

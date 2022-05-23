@@ -87,7 +87,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     auto query_folder_impl = new QueryFolderImpl(ui->console);
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
-    object_impl->set_policy_impl(policy_impl);
     query_item_impl->set_query_folder_impl(query_folder_impl);
 
     object_impl->set_toolbar_actions(ui->action_create_user, ui->action_create_group, ui->action_create_ou);

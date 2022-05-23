@@ -22,7 +22,6 @@
 
 #include "adldap.h"
 #include "console_impls/item_type.h"
-#include "console_impls/policy_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_impls/find_root_impl.h"
@@ -77,7 +76,6 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     buddy_console = nullptr;
-    policy_impl = nullptr;
 
     set_results_view(new ResultsView(console_arg));
 
@@ -171,10 +169,6 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
         this, &ObjectImpl::update_toolbar_actions);
 }
 
-void ObjectImpl::set_policy_impl(PolicyImpl *policy_impl_arg) {
-    policy_impl = policy_impl_arg;
-}
-
 void ObjectImpl::set_buddy_console(ConsoleWidget *buddy_console_arg) {
     buddy_console = buddy_console_arg;
 }
@@ -227,7 +221,6 @@ bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
     UNUSED_ARG(target_type);
 
     const bool dropped_are_all_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
-    const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
     if (dropped_are_all_objects) {
         if (dropped_list.size() == 1) {
@@ -244,10 +237,6 @@ bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
             // to drop it's not a big deal.
             return true;
         }
-    } else if (dropped_are_policies) {
-        const bool target_is_ou = console_object_is_ou(target);
-
-        return target_is_ou;
     } else {
         return false;
     }
@@ -256,14 +245,7 @@ bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
 void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     UNUSED_ARG(target_type);
 
-    const bool dropped_are_all_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
-    const bool dropped_are_policies = (dropped_type_list == QSet<int>({ItemType_Policy}));
-
-    if (dropped_are_all_objects) {
-        drop_objects(dropped_list, target);
-    } else if (dropped_are_policies) {
-        drop_policies(dropped_list, target);
-    }
+    drop_objects(dropped_list, target);
 }
 
 QString ObjectImpl::get_description(const QModelIndex &index) const {
@@ -1135,26 +1117,6 @@ void ObjectImpl::drop_objects(const QList<QPersistentModelIndex> &dropped_list, 
     hide_busy_indicator();
 
     g_status->display_ad_messages(ad, console);
-}
-
-void ObjectImpl::drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
-    const QList<QString> policy_list = [&]() {
-        QList<QString> out;
-
-        for (const QPersistentModelIndex &index : dropped_list) {
-            const QString dn = index.data(PolicyRole_DN).toString();
-            out.append(dn);
-        }
-
-        return out;
-    }();
-
-    const QString target_dn = target.data(ObjectRole_DN).toString();
-    const QList<QString> ou_list = {target_dn};
-
-    if (policy_impl != nullptr) {
-        policy_impl->add_link(policy_list, ou_list);
-    }
 }
 
 void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, AdInterface &ad, const QHash<QString, QString> &old_to_new_dn_map_arg, const QString &new_parent_dn) {
