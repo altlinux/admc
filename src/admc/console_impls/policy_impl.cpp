@@ -60,22 +60,9 @@ bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
     UNUSED_ARG(target);
     UNUSED_ARG(target_type);
 
-    const bool dropped_are_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
-    if (!dropped_are_objects) {
-        return false;
-    }
+    const bool dropped_are_policy_ou = (dropped_type_list == QSet<int>({ItemType_PolicyOU}));
 
-    const bool dropped_contain_ou = [&]() {
-        for (const QPersistentModelIndex &index : dropped_list) {
-            if (console_object_is_ou(index)) {
-                return true;
-            }
-        }
-
-        return false;
-    }();
-
-    return dropped_contain_ou;
+    return dropped_are_policy_ou;
 }
 
 void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
