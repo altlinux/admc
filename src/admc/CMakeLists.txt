@@ -104,7 +104,6 @@ set(ADMC_SOURCES
     tabs/account_tab.cpp
     tabs/membership_tab.cpp
     tabs/address_tab.cpp
-    tabs/group_policy_tab.cpp
     tabs/organization_tab.cpp
     tabs/telephones_tab.cpp
     tabs/profile_tab.cpp
