@@ -125,6 +125,36 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
     }
 }
 
+bool PolicyOUImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    UNUSED_ARG(target);
+    UNUSED_ARG(target_type);
+    UNUSED_ARG(dropped_list);
+
+    const bool dropped_are_policy = (dropped_type_list == QSet<int>({ItemType_Policy}));
+
+    return dropped_are_policy;
+}
+
+void PolicyOUImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+    UNUSED_ARG(target_type);
+    UNUSED_ARG(dropped_type_list);
+
+    const QString ou_dn = target.data(ObjectRole_DN).toString();
+
+    const QList<QString> gpo_list = [&]() {
+        QList<QString> out;
+
+        for (const QPersistentModelIndex &index : dropped_list) {
+            const QString gpo = index.data(PolicyRole_DN).toString();
+            out.append(gpo);
+        }
+
+        return out;
+    }();
+
+    link_gpo_to_ou(target, ou_dn, gpo_list);
+}
+
 void PolicyOUImpl::refresh(const QList<QModelIndex> &index_list) {
     const QModelIndex index = index_list[0];
 
@@ -216,43 +246,9 @@ void PolicyOUImpl::create_and_link_gpo() {
         dialog, &QDialog::accepted,
         this,
         [this, dialog, target_index, target_dn]() {
-            // Link OU and GPO
-            AdInterface ad2;
-            if (ad_failed(ad2, console)) {
-                return;
-            }
-
             const QString gpo_dn = dialog->get_created_dn();
 
-            // TODO: duplicating code in link_gpo()
-            const Gplink original_gplink = [&]() {
-                const AdObject target_object = ad2.search_object(target_dn);
-                const QString gplink_string = target_object.get_string(ATTRIBUTE_GPLINK);
-                const Gplink out = Gplink(gplink_string);
-
-                return out;
-            }();
-
-            const Gplink new_gplink = [&]() {
-                Gplink out = original_gplink;
-
-                out.add(gpo_dn);
-
-                return out;
-            }();
-
-            const QString new_gplink_string = new_gplink.to_string();
-
-            ad2.attribute_replace_string(target_dn, ATTRIBUTE_GPLINK, new_gplink_string);
-
-            g_status->display_ad_messages(ad2, console);
-
-            // Add GPO as child to linked OU in policy tree
-            policy_ou_impl_add_objects_from_dns(console, ad2, {gpo_dn}, target_index);
-
-            // Also add GPO to "All Policies" folder
-            const QModelIndex all_policies_folder_index = get_all_policies_folder_index(console);
-            all_policies_folder_impl_add_objects_from_dns(console, ad2, {gpo_dn}, all_policies_folder_index);
+            link_gpo_to_ou(target_index, target_dn, {gpo_dn});
 
             const QModelIndex current_scope = console->get_current_scope_item();
             policy_ou_results_widget->update(current_scope);
@@ -272,60 +268,12 @@ void PolicyOUImpl::link_gpo() {
         dialog, &QDialog::accepted,
         this,
         [this, dialog]() {
-            AdInterface ad_inner;
-            if (ad_failed(ad_inner, console)) {
-                return;
-            }
-
+            const QList<QModelIndex> selected_list = console->get_selected_items(ItemType_PolicyOU);
+            const QModelIndex selected_index = selected_list[0];
             const QString target_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
-            
-            const Gplink original_gplink = [&]() {
-                const AdObject target_object = ad_inner.search_object(target_dn);
-                const QString gplink_string = target_object.get_string(ATTRIBUTE_GPLINK);
-                const Gplink out = Gplink(gplink_string);
+            const QList<QString> gpo_list = dialog->get_selected_dns();
 
-                return out;
-            }();
-
-            const Gplink new_gplink = [&]() {
-                Gplink out = original_gplink;
-
-                const QList<QString> gpo_list = dialog->get_selected_dns();
-
-                for (const QString &gpo : gpo_list) {
-                    out.add(gpo);
-                }
-
-                return out;
-            }();
-
-            const QString new_gplink_string = new_gplink.to_string();
-
-            ad_inner.attribute_replace_string(target_dn, ATTRIBUTE_GPLINK, new_gplink_string);
-
-            g_status->display_ad_messages(ad_inner, console);
-
-            const QList<QString> added_gpo_list = [&]() {
-                QList<QString> out;
-
-                const QList<QString> new_gpo_list = new_gplink.get_gpo_list(g_adconfig);
-
-                for (const QString &gpo : new_gpo_list) {
-                    const bool added = !original_gplink.contains(gpo);
-                    if (added) {
-                        out.append(gpo);
-                    }
-                }
-
-                return out;
-            }();
-
-            const QModelIndex parent = console->get_selected_item(ItemType_PolicyOU);
-
-            policy_ou_impl_add_objects_from_dns(console, ad_inner, added_gpo_list, parent);
-
-            const QModelIndex current_scope = console->get_current_scope_item();
-            policy_ou_results_widget->update(current_scope);
+            link_gpo_to_ou(selected_index, target_dn, gpo_list);
         });
 }
 
@@ -382,4 +330,55 @@ void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<A
             console_policy_load(row, object);
         }
     }
+}
+
+void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou_dn, const QList<QString> &gpo_list) {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    const Gplink original_gplink = [&]() {
+        const AdObject target_object = ad.search_object(ou_dn);
+        const QString gplink_string = target_object.get_string(ATTRIBUTE_GPLINK);
+        const Gplink out = Gplink(gplink_string);
+
+        return out;
+    }();
+
+    const Gplink new_gplink = [&]() {
+        Gplink out = original_gplink;
+
+        for (const QString &gpo : gpo_list) {
+            out.add(gpo);
+        }
+
+        return out;
+    }();
+
+    const QString new_gplink_string = new_gplink.to_string();
+
+    ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, new_gplink_string);
+
+    g_status->display_ad_messages(ad, console);
+
+    const QList<QString> added_gpo_list = [&]() {
+        QList<QString> out;
+
+        const QList<QString> new_gpo_list = new_gplink.get_gpo_list(g_adconfig);
+
+        for (const QString &gpo : new_gpo_list) {
+            const bool added = !original_gplink.contains(gpo);
+            if (added) {
+                out.append(gpo);
+            }
+        }
+
+        return out;
+    }();
+
+    policy_ou_impl_add_objects_from_dns(console, ad, added_gpo_list, ou_index);
+
+    const QModelIndex current_scope = console->get_current_scope_item();
+    policy_ou_results_widget->update(current_scope);
 }

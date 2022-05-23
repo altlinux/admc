@@ -46,6 +46,8 @@ public:
     void selected_as_scope(const QModelIndex &index) override;
 
     void fetch(const QModelIndex &index) override;
+    bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
+    void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;
     void refresh(const QList<QModelIndex> &index_list) override;
     void activate(const QModelIndex &index) override;
 
@@ -69,6 +71,7 @@ private:
     void create_ou();
     void create_and_link_gpo();
     void link_gpo();
+    void link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou_dn, const QList<QString> &gpo_list);
 };
 
 void policy_ou_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
