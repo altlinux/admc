@@ -69,7 +69,7 @@ DropType console_object_get_drop_type(const QModelIndex &dropped, const QModelIn
 QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list);
 QList<QString> get_selected_dn_list_object(ConsoleWidget *console);
 QString get_selected_target_dn_object(ConsoleWidget *console);
-void console_object_delete_dn_list(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const QList<int> &type);
+void console_object_delete_dn_list(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const int type);
 bool can_create_class_at_parent(const QString &create_class, const QString &parent_class);
 void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, AdInterface &ad, const QHash<QString, QString> &old_to_new_dn_map_arg, const QString &new_parent_dn);
 
@@ -619,13 +619,17 @@ void console_object_delete(ConsoleWidget *console, ConsoleWidget *buddy_console,
             get_object_tree_root(target_console),
             get_query_tree_root(target_console),
             get_find_tree_root(target_console),
-            get_policy_tree_root(target_console),
         };
         
         for (const QModelIndex &root : root_list) {
             if (root.isValid()) {
-                console_object_delete_dn_list(target_console, deleted_list, root, {ItemType_Object, ItemType_PolicyOU});
+                console_object_delete_dn_list(target_console, deleted_list, root, ItemType_Object);
             }
+        }
+
+        const QModelIndex policy_root = get_policy_tree_root(target_console);
+        if (policy_root.isValid()) {
+            console_object_delete_dn_list(target_console, deleted_list, policy_root, ItemType_PolicyOU);
         }
     };
 
@@ -1186,7 +1190,7 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
             if (new_parent_index.isValid()) {
                 object_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
 
-                console_object_delete_dn_list(target_console, old_dn_list, object_root, {ItemType_Object});
+                console_object_delete_dn_list(target_console, old_dn_list, object_root, ItemType_Object);
             }
         }
 
@@ -1288,7 +1292,7 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
 
             policy_ou_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
 
-            console_object_delete_dn_list(target_console, old_dn_list, policy_root, {ItemType_PolicyOU});
+            console_object_delete_dn_list(target_console, old_dn_list, policy_root, ItemType_PolicyOU);
         }
     };
 
@@ -1758,9 +1762,9 @@ QString get_selected_target_dn_object(ConsoleWidget *console) {
     return get_selected_target_dn(console, ItemType_Object, ObjectRole_DN);
 }
 
-void console_object_delete_dn_list(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const QList<int> &type_list) {
+void console_object_delete_dn_list(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const int type) {
     for (const QString &dn : dn_list) {
-        const QList<QModelIndex> index_list = console->search_items(tree_root, ObjectRole_DN, dn, type_list);
+        const QList<QModelIndex> index_list = console->search_items(tree_root, ObjectRole_DN, dn, {type});
         const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
         for (const QPersistentModelIndex &index : persistent_list) {
