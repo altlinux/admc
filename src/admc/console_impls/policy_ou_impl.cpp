@@ -37,10 +37,6 @@
 #include <QMenu>
 #include <QStandardItem>
 
-// TODO: Duplicating code related to object search in
-// object_impl, but there are some differences that
-// complicate code sharing.
-
 void console_policy_ou_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
 
 PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
