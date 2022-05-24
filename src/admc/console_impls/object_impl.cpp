@@ -614,9 +614,6 @@ void console_object_delete(ConsoleWidget *console, ConsoleWidget *buddy_console,
         return out;
     }();
 
-    // TODO: this is a GREAT apply_changes(), should do
-    // it in this style in all other cases. Though there
-    // are some complications in other cases.
     auto apply_changes = [&ad, &deleted_list](ConsoleWidget *target_console) {
         const QList<QModelIndex> root_list = {
             get_object_tree_root(target_console),
