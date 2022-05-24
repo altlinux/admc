@@ -62,6 +62,7 @@ private:
     void move_up();
     void move_down();
     void reload_gplink();
+    void modify_gplink(void (*modify_function)(Gplink&, const QString&));
 };
 
 #endif /* POLICY_OU_RESULTS_WIDGET_H */

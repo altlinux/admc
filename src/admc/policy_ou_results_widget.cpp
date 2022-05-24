@@ -195,9 +195,10 @@ void PolicyOUResultsWidget::open_context_menu(const QPoint &pos) {
     context_menu->popup(global_pos);
 }
 
-// TODO: duplicating code 3 times, only difference is the
-// modification performed on gplink
-void PolicyOUResultsWidget::remove_link() {
+// Takes as argument function that modifies the gplink.
+// Modify function accepts gplink as argument and gpo dn
+// used in the operation.
+void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink&, const QString&)) {
     AdInterface ad;
     if (ad_failed(ad, this)) {
         return;
@@ -212,7 +213,7 @@ void PolicyOUResultsWidget::remove_link() {
     for (const QModelIndex &index : selected) {
         const QString gpo_dn = index.data(PolicyOUResultsRole_DN).toString();
 
-        gplink.remove(gpo_dn);
+        modify_function(gplink, gpo_dn);
     }
 
     const QString gplink_string = gplink.to_string();
@@ -225,68 +226,28 @@ void PolicyOUResultsWidget::remove_link() {
     hide_busy_indicator();
 }
 
+void PolicyOUResultsWidget::remove_link() {
+    auto modify_function = [](Gplink &gplink_arg, const QString &gpo) {
+        gplink_arg.remove(gpo);
+    };
+
+    modify_gplink(modify_function);
+}
+
 void PolicyOUResultsWidget::move_up() {
-    AdInterface ad;
-    if (ad_failed(ad, this)) {
-        return;
-    }
+    auto modify_function = [](Gplink &gplink_arg, const QString &gpo) {
+        gplink_arg.move_up(gpo);
+    };
 
-    show_busy_indicator();
-
-    const QList<QModelIndex> selected = ui->view->get_selected_indexes();
-
-    const QString old_gplink_string = gplink.to_string();
-
-    for (const QModelIndex &index : selected) {
-        const QString gpo_dn = index.data(PolicyOUResultsRole_DN).toString();
-
-        gplink.move_up(gpo_dn);
-    }
-
-    const bool gplink_changed = !gplink.equals(old_gplink_string);
-    if (gplink_changed) {
-        const QString updated_gplink_string = gplink.to_string();
-
-        ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, updated_gplink_string);
-
-        g_status->display_ad_messages(ad, this);
-
-        reload_gplink();
-    }
-
-    hide_busy_indicator();
+    modify_gplink(modify_function);
 }
 
 void PolicyOUResultsWidget::move_down() {
-    AdInterface ad;
-    if (ad_failed(ad, this)) {
-        return;
-    }
+    auto modify_function = [](Gplink &gplink_arg, const QString &gpo) {
+        gplink_arg.move_down(gpo);
+    };
 
-    show_busy_indicator();
-
-    const QList<QModelIndex> selected = ui->view->get_selected_indexes();
-
-    const QString old_gplink_string = gplink.to_string();
-
-    for (const QModelIndex &index : selected) {
-        const QString gpo_dn = index.data(PolicyOUResultsRole_DN).toString();
-
-        gplink.move_down(gpo_dn);
-    }
-
-    const bool gplink_changed = !gplink.equals(old_gplink_string);
-    if (gplink_changed) {
-        const QString updated_gplink_string = gplink.to_string();
-
-        ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, updated_gplink_string);
-
-        g_status->display_ad_messages(ad, this);
-
-        reload_gplink();
-    }
-
-    hide_busy_indicator();
+    modify_gplink(modify_function);
 }
 
 void PolicyOUResultsWidget::reload_gplink() {
