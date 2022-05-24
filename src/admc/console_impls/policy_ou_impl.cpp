@@ -24,6 +24,7 @@
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
+#include "console_impls/all_policies_folder_impl.h"
 #include "create_policy_dialog.h"
 #include "globals.h"
 #include "gplink.h"
@@ -241,12 +242,22 @@ void PolicyOUImpl::create_and_link_gpo() {
         dialog, &QDialog::accepted,
         this,
         [this, dialog, target_index, target_dn]() {
+            AdInterface ad2;
+            if (ad_failed(ad2, console)) {
+                return;
+            }
+
             const QString gpo_dn = dialog->get_created_dn();
 
             link_gpo_to_ou(target_index, target_dn, {gpo_dn});
 
             const QModelIndex current_scope = console->get_current_scope_item();
             policy_ou_results_widget->update(current_scope);
+
+            // Add policy to "all policies" folder
+            const AdObject gpo_object = ad2.search_object(gpo_dn);
+            const QModelIndex all_policies_index = get_all_policies_folder_index(console);
+            all_policies_folder_impl_add_objects(console, {gpo_object}, all_policies_index);
         });
 }
 

@@ -55,5 +55,6 @@ private:
 };
 
 QModelIndex get_all_policies_folder_index(ConsoleWidget *console);
+void all_policies_folder_impl_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 
 #endif /* ALL_POLICIES_FOLDER_IMPL_H */

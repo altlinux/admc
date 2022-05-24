@@ -43,8 +43,6 @@
 #include <QProcess>
 #include <QStandardItem>
 
-void all_policies_folder_impl_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
-
 AllPoliciesFolderImpl::AllPoliciesFolderImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));
