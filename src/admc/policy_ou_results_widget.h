@@ -33,6 +33,7 @@ class QStandardItemModel;
 class QStandardItem;
 class QMenu;
 class ResultsView;
+class ConsoleWidget;
 
 namespace Ui {
 class PolicyOUResultsWidget;
@@ -44,7 +45,7 @@ class PolicyOUResultsWidget final : public QWidget {
 public:
     Ui::PolicyOUResultsWidget *ui;
 
-    PolicyOUResultsWidget(QWidget *parent);
+    PolicyOUResultsWidget(ConsoleWidget *console);
     ~PolicyOUResultsWidget();
 
     // Loads links for given OU. Nothing is done if given
@@ -55,6 +56,7 @@ public:
     ResultsView *get_view() const;
 
 private:
+    ConsoleWidget *console;
     QStandardItemModel *model;
     Gplink gplink;
     QString ou_dn;

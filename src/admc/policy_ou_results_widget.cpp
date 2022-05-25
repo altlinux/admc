@@ -25,6 +25,8 @@
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_ou_impl.h"
+#include "console_impls/policy_impl.h"
+#include "console_impls/policy_root_impl.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
@@ -34,6 +36,7 @@
 #include "utils.h"
 
 #include <QAction>
+#include <QDebug>
 #include <QHeaderView>
 #include <QMenu>
 #include <QMessageBox>
@@ -68,10 +71,12 @@ const QHash<PolicyOUResultsColumn, GplinkOption> column_to_option = {
 
 QString gplink_option_to_display_string(const QString &option);
 
-PolicyOUResultsWidget::PolicyOUResultsWidget(QWidget *parent)
-: QWidget(parent) {
+PolicyOUResultsWidget::PolicyOUResultsWidget(ConsoleWidget *console_arg)
+: QWidget(console_arg) {
     ui = new Ui::PolicyOUResultsWidget();
     ui->setupUi(this);
+
+    console = console_arg;
 
     auto remove_link_action = new QAction(tr("Remove link"), this);
     auto move_up_action = new QAction(tr("Move up"), this);
@@ -237,11 +242,43 @@ void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink&, const
 }
 
 void PolicyOUResultsWidget::remove_link() {
+    // NOTE: save gpo dn list before they are removed in
+    // modify_gplink()
+    const QList<QString> gpo_dn_list = [&]() {
+        QList<QString> out;
+
+        const QList<QModelIndex> selected = ui->view->get_selected_indexes();
+
+        for (const QModelIndex &index : selected) {
+            const QString gpo_dn = index.data(PolicyOUResultsRole_DN).toString();
+
+            out.append(gpo_dn);
+        }
+
+        return out;
+    }();
+
     auto modify_function = [](Gplink &gplink_arg, const QString &gpo) {
         gplink_arg.remove(gpo);
     };
 
     modify_gplink(modify_function);
+
+    // Also remove gpo from OU in console
+    const QModelIndex policy_root = get_policy_tree_root(console);
+    const QList<QModelIndex> ou_search_results = console->search_items(policy_root, ObjectRole_DN, ou_dn, {ItemType_PolicyOU});
+    if (!ou_search_results.isEmpty()) {
+        const QModelIndex ou_index = ou_search_results[0];
+
+        for (const QString &gpo_dn : gpo_dn_list) {
+            const QList<QModelIndex> gpo_search_results = console->search_items(ou_index, PolicyRole_DN, gpo_dn, {ItemType_Policy});
+            if (!gpo_search_results.isEmpty()) {
+                const QModelIndex gpo_index = gpo_search_results[0];
+
+                console->delete_item(gpo_index);
+            }
+        }
+    }
 }
 
 void PolicyOUResultsWidget::move_up() {
