@@ -167,7 +167,26 @@ void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
 }
 
 void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
-    const bool confirmed = confirmation_dialog(tr("Are you sure you want to delete this policy and all of it's links?"), console);
+    if (index_list.isEmpty()) {
+        return;
+    }
+
+    const QModelIndex parent_index = index_list[0].parent();
+    const ItemType parent_type = (ItemType) console_item_get_type(parent_index);
+    const bool parent_is_ou = (parent_type == ItemType_PolicyOU);
+    const bool parent_is_all_policies = (parent_type == ItemType_AllPoliciesFolder);
+
+
+    const QString confirmation_text = [&]() {
+        if (parent_is_ou) {
+            return tr("Are you sure you want to unlink this policy from the OU? Note that the actual policy object won't be deleted.");
+        } else if (parent_is_all_policies) {
+            return tr("Are you sure you want to delete this policy and all of it's links?");
+        } else {
+            return QString();
+        }
+    }();
+    const bool confirmed = confirmation_dialog(confirmation_text, console);
     if (!confirmed) {
         return;
     }
@@ -181,18 +200,53 @@ void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
 
     const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
-    for (const QPersistentModelIndex &index : persistent_list) {
-        const QString dn = index.data(PolicyRole_DN).toString();
+    if (parent_is_ou) {
+        const QString parent_dn = parent_index.data(ObjectRole_DN).toString();
 
-        bool deleted_object = false;
-        ad.gpo_delete(dn, &deleted_object);
+        const QString gplink_new_string = [&]() {
+            Gplink gplink = [&]() {
+                const AdObject parent_object = ad.search_object(parent_dn);
+                const QString gplink_old_string = parent_object.get_string(ATTRIBUTE_GPLINK);
+                const Gplink out = Gplink(gplink_old_string);
 
-        // NOTE: object may get deleted successfuly but
-        // deleting GPT fails which makes gpo_delete() fail
-        // as a whole, but we still want to remove gpo from
-        // the console in that case
-        if (deleted_object) {
-            console->delete_item(index);
+                return out;
+            }();
+
+            for (const QPersistentModelIndex &index : persistent_list) {
+                const QString dn = index.data(PolicyRole_DN).toString();
+
+                gplink.remove(dn);
+            }
+
+            const QString out = gplink.to_string();
+
+            return out;
+        }();
+
+        const bool replace_success = ad.attribute_replace_string(parent_dn, ATTRIBUTE_GPLINK, gplink_new_string);
+
+        if (replace_success) {
+            for (const QPersistentModelIndex &index : persistent_list) {
+                console->delete_item(index);
+            }
+
+            const QModelIndex current_scope = console->get_current_scope_item();
+            policy_results_widget->update(current_scope);
+        }
+    } else if (parent_is_all_policies) {
+        for (const QPersistentModelIndex &index : persistent_list) {
+            const QString dn = index.data(PolicyRole_DN).toString();
+
+            bool deleted_object = false;
+            ad.gpo_delete(dn, &deleted_object);
+
+            // NOTE: object may get deleted successfuly but
+            // deleting GPT fails which makes gpo_delete() fail
+            // as a whole, but we still want to remove gpo from
+            // the console in that case
+            if (deleted_object) {
+                console->delete_item(index);
+            }
         }
     }
 
