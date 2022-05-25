@@ -135,12 +135,18 @@ void PolicyOUResultsWidget::update(const QModelIndex &index) {
         return;
     }
 
+    const QString dn = index.data(ObjectRole_DN).toString();
+
+    update(dn);
+}
+
+void PolicyOUResultsWidget::update(const QString &dn) {
     AdInterface ad;
     if (ad_failed(ad, this)) {
         return;
     }
 
-    ou_dn = index.data(ObjectRole_DN).toString();
+    ou_dn = dn;
 
     gplink = [&]() {
         const AdObject object = ad.search_object(ou_dn);
@@ -151,6 +157,10 @@ void PolicyOUResultsWidget::update(const QModelIndex &index) {
     }();
 
     reload_gplink();
+}
+
+ResultsView *PolicyOUResultsWidget::get_view() const {
+    return ui->view;
 }
 
 void PolicyOUResultsWidget::on_item_changed(QStandardItem *item) {
@@ -259,14 +269,14 @@ void PolicyOUResultsWidget::reload_gplink() {
     }
 
     const QList<AdObject> gpo_object_list = [&]() {
+        const QList<QString> gpo_dn_list = gplink.get_gpo_list(g_adconfig);
+        if (gpo_dn_list.isEmpty()) {
+            return QList<AdObject>();
+        }
+
         const QString base = g_adconfig->policies_dn();
         const SearchScope scope = SearchScope_Children;
-        const QString filter = [&]() {
-            const QList<QString> gpo_dn_list = gplink.get_gpo_list(g_adconfig);
-            const QString out = filter_dn_list(gpo_dn_list);
-
-            return out;
-        }();
+        const QString filter = filter_dn_list(gpo_dn_list);
         const QList<QString> attributes = QList<QString>();
 
         const QHash<QString, AdObject> search_results = ad.search(base, scope, filter, attributes);

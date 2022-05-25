@@ -32,6 +32,7 @@
 class QStandardItemModel;
 class QStandardItem;
 class QMenu;
+class ResultsView;
 
 namespace Ui {
 class PolicyOUResultsWidget;
@@ -49,6 +50,9 @@ public:
     // Loads links for given OU. Nothing is done if given
     // index is not an OU in policy tree.
     void update(const QModelIndex &index);
+    void update(const QString &dn);
+
+    ResultsView *get_view() const;
 
 private:
     QStandardItemModel *model;
