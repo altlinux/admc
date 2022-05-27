@@ -244,8 +244,46 @@ bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
 
 void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     UNUSED_ARG(target_type);
+    UNUSED_ARG(dropped_type_list);
 
-    drop_objects(dropped_list, target);
+    const QString target_dn = target.data(ObjectRole_DN).toString();
+
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    for (const QPersistentModelIndex &dropped : dropped_list) {
+        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
+        const DropType drop_type = console_object_get_drop_type(dropped, target);
+
+        switch (drop_type) {
+            case DropType_Move: {
+                const bool move_success = ad.object_move(dropped_dn,
+                    target_dn);
+
+                if (move_success) {
+                    move(ad, QList<QString>({dropped_dn}), target_dn);
+                }
+
+                break;
+            }
+            case DropType_AddToGroup: {
+                ad.group_add_member(target_dn, dropped_dn);
+
+                break;
+            }
+            case DropType_None: {
+                break;
+            }
+        }
+    }
+
+    hide_busy_indicator();
+
+    g_status->display_ad_messages(ad, console);
 }
 
 QString ObjectImpl::get_description(const QModelIndex &index) const {
@@ -1072,47 +1110,6 @@ void ObjectImpl::set_disabled(const bool disabled) {
 
     if (buddy_console != nullptr) {
         apply_changes(buddy_console);
-    }
-
-    hide_busy_indicator();
-
-    g_status->display_ad_messages(ad, console);
-}
-
-void ObjectImpl::drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target) {
-    const QString target_dn = target.data(ObjectRole_DN).toString();
-
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    for (const QPersistentModelIndex &dropped : dropped_list) {
-        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
-        const DropType drop_type = console_object_get_drop_type(dropped, target);
-
-        switch (drop_type) {
-            case DropType_Move: {
-                const bool move_success = ad.object_move(dropped_dn,
-                    target_dn);
-
-                if (move_success) {
-                    move(ad, QList<QString>({dropped_dn}), target_dn);
-                }
-
-                break;
-            }
-            case DropType_AddToGroup: {
-                ad.group_add_member(target_dn, dropped_dn);
-
-                break;
-            }
-            case DropType_None: {
-                break;
-            }
-        }
     }
 
     hide_busy_indicator();

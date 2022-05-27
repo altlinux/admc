@@ -137,8 +137,6 @@ private:
 
     void new_object(const QString &object_class);
     void set_disabled(const bool disabled);
-    void drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
-    void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
     void move_and_rename(AdInterface &ad, const QHash<QString, QString> &old_dn_list, const QString &new_parent_dn);
     void move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
     void update_toolbar_actions();
