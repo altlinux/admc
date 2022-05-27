@@ -36,18 +36,6 @@ const QString gplink_C = "[LDAP://cn={CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC},cn=p
 
 void test_gplink_equality(const Gplink &a, const QString &b);
 
-void ADMCTestGplink::initTestCase() {
-}
-
-void ADMCTestGplink::cleanupTestCase() {
-}
-
-void ADMCTestGplink::init() {
-}
-
-void ADMCTestGplink::cleanup() {
-}
-
 void ADMCTestGplink::to_string() {
     Gplink gplink(test_gplink_string);
 
@@ -236,6 +224,35 @@ void ADMCTestGplink::set_option() {
     gplink.set_option(gpo, option, option_value);
 
     QCOMPARE(gplink.to_string(), gplink_after);
+}
+
+void ADMCTestGplink::get_gpo_list_data() {
+    QTest::addColumn<QList<QString>>("input");
+    QTest::addColumn<QList<QString>>("expected_output");
+
+    const QString policies_dn = ad.adconfig()->policies_dn();
+    const QString guid_rdn = "CN={AAAAAAAA-1234-GUID-AAAA-AAAAAAAAAAAA}";
+    const QString dn_ldap_case = QString("%1,%2").arg(guid_rdn, policies_dn);
+    const QString dn_lower_case = QString("%1,%2").arg(guid_rdn.toLower(), policies_dn);
+    const QString dn_upper_case = QString("%1,%2").arg(guid_rdn.toUpper(), policies_dn);
+
+    QTest::newRow("LDAP case") << QList<QString>({dn_ldap_case}) << QList<QString>({dn_ldap_case});
+    QTest::newRow("gplink case") << QList<QString>({dn_lower_case}) << QList<QString>({dn_ldap_case});
+    QTest::newRow("all lower case") << QList<QString>({dn_lower_case}) << QList<QString>({dn_ldap_case});
+}
+
+void ADMCTestGplink::get_gpo_list() {
+    QFETCH(QList<QString>, input);
+    QFETCH(QList<QString>, expected_output);
+
+    Gplink gplink;
+
+    for (const QString &gpo : input) {
+        gplink.add(gpo);
+    }
+
+    const QList<QString> actual_output = gplink.get_gpo_list(ad.adconfig());
+    QCOMPARE(actual_output, expected_output);
 }
 
 QTEST_MAIN(ADMCTestGplink)

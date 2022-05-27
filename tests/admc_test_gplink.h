@@ -21,18 +21,10 @@
 #ifndef ADMC_TEST_GPLINK_H
 #define ADMC_TEST_GPLINK_H
 
-#include <QObject>
+#include "admc_test.h"
 
-#include <QTest>
-
-class ADMCTestGplink : public QObject {
+class ADMCTestGplink : public ADMCTest {
     Q_OBJECT
-
-public slots:
-    void initTestCase();
-    void cleanupTestCase();
-    void init();
-    void cleanup();
 
 private slots:
     void to_string();
@@ -51,6 +43,8 @@ private slots:
     void get_option();
     void set_option_data();
     void set_option();
+    void get_gpo_list_data();
+    void get_gpo_list();
 };
 
 #endif /* ADMC_TEST_GPLINK_H */
