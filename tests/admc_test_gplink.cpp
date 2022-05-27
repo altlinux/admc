@@ -24,15 +24,15 @@
 
 Q_DECLARE_METATYPE(GplinkOption)
 
-const QString test_gplink_string = "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=domain,DC=alt;0][LDAP://cn={BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB},cn=policies,cn=system,DC=domain,DC=alt;1][LDAP://cn={CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC},cn=policies,cn=system,DC=domain,DC=alt;2]";
+const QString test_gplink_string = "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=foodomain,DC=com;0][LDAP://cn={BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB},cn=policies,cn=system,DC=foodomain,DC=com;1][LDAP://cn={CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC},cn=policies,cn=system,DC=foodomain,DC=com;2]";
 
-const QString dn_A = "CN={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},CN=Policies,CN=System,DC=domain,DC=alt";
-const QString dn_B = "CN={BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB},CN=Policies,CN=System,DC=domain,DC=alt";
-const QString dn_C = "CN={CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC},CN=Policies,CN=System,DC=domain,DC=alt";
+const QString dn_A = "CN={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},CN=Policies,CN=System,DC=foodomain,DC=com";
+const QString dn_B = "CN={BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB},CN=Policies,CN=System,DC=foodomain,DC=com";
+const QString dn_C = "CN={CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC},CN=Policies,CN=System,DC=foodomain,DC=com";
 
-const QString gplink_A = "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=domain,DC=alt;0]";
-const QString gplink_B = "[LDAP://cn={BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB},cn=policies,cn=system,DC=domain,DC=alt;1]";
-const QString gplink_C = "[LDAP://cn={CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC},cn=policies,cn=system,DC=domain,DC=alt;2]";
+const QString gplink_A = "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=foodomain,DC=com;0]";
+const QString gplink_B = "[LDAP://cn={BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB},cn=policies,cn=system,DC=foodomain,DC=com;1]";
+const QString gplink_C = "[LDAP://cn={CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC},cn=policies,cn=system,DC=foodomain,DC=com;2]";
 
 void test_gplink_equality(const Gplink &a, const QString &b);
 
@@ -68,7 +68,7 @@ void ADMCTestGplink::contains_data() {
     QTest::newRow("a") << dn_A << true;
     QTest::newRow("b") << dn_B << true;
     QTest::newRow("c") << dn_C << true;
-    QTest::newRow("shouldn't contains") << "CN={00000000-016D-11D2-945F-00C04FB984F9},CN=Policies,CN=Dystem,DC=domain,DC=alt" << false;
+    QTest::newRow("shouldn't contains") << "CN={00000000-016D-11D2-945F-00C04FB984F9},CN=Policies,CN=Dystem,DC=foodomain,DC=com" << false;
 }
 
 void ADMCTestGplink::contains() {
@@ -218,10 +218,10 @@ void ADMCTestGplink::set_option_data() {
     QTest::addColumn<bool>("option_value");
     QTest::addColumn<QString>("gplink_after");
 
-    QTest::newRow("set disabled true") << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=domain,DC=alt;0]" << dn_A << GplinkOption_Disabled << true << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=domain,DC=alt;1]";
-    QTest::newRow("set enforced true") << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=domain,DC=alt;0]" << dn_A << GplinkOption_Enforced << true << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=domain,DC=alt;2]";
-    QTest::newRow("set disabled false") << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=domain,DC=alt;1]" << dn_A << GplinkOption_Disabled << false << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=domain,DC=alt;0]";
-    QTest::newRow("set enforced false") << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=domain,DC=alt;2]" << dn_A << GplinkOption_Enforced << false << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=domain,DC=alt;0]";
+    QTest::newRow("set disabled true") << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=foodomain,DC=com;0]" << dn_A << GplinkOption_Disabled << true << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=foodomain,DC=com;1]";
+    QTest::newRow("set enforced true") << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=foodomain,DC=com;0]" << dn_A << GplinkOption_Enforced << true << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=foodomain,DC=com;2]";
+    QTest::newRow("set disabled false") << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=foodomain,DC=com;1]" << dn_A << GplinkOption_Disabled << false << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=foodomain,DC=com;0]";
+    QTest::newRow("set enforced false") << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=foodomain,DC=com;2]" << dn_A << GplinkOption_Enforced << false << "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=policies,cn=system,DC=foodomain,DC=com;0]";
 }
 
 void ADMCTestGplink::set_option() {
