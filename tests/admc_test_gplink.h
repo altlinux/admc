@@ -21,10 +21,17 @@
 #ifndef ADMC_TEST_GPLINK_H
 #define ADMC_TEST_GPLINK_H
 
-#include "admc_test.h"
+#include <QObject>
+#include <QTest>
 
-class ADMCTestGplink : public ADMCTest {
+class ADMCTestGplink : public QObject {
     Q_OBJECT
+
+public slots:
+    void initTestCase();
+    void cleanupTestCase();
+    void init();
+    void cleanup();
 
 private slots:
     void to_string();
