@@ -103,7 +103,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
             const AdObject parent_object = ad.search_object(dn);
             const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
             const Gplink gplink = Gplink(gplink_string);
-            const QList<QString> out = gplink.get_gpo_list(g_adconfig);
+            const QList<QString> out = gplink.get_gpo_list();
 
             return out;
         }();
@@ -367,7 +367,7 @@ void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou
     const QList<QString> added_gpo_list = [&]() {
         QList<QString> out;
 
-        const QList<QString> new_gpo_list = new_gplink.get_gpo_list(g_adconfig);
+        const QList<QString> new_gpo_list = new_gplink.get_gpo_list();
 
         for (const QString &gpo : new_gpo_list) {
             const bool added = !original_gplink.contains(gpo);

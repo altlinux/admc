@@ -139,12 +139,12 @@ bool Gplink::contains(const QString &gpo_case) const {
     return options.contains(gpo);
 }
 
-QList<QString> Gplink::get_gpo_list(AdConfig *adconfig) const {
+QList<QString> Gplink::get_gpo_list() const {
     QList<QString> gpo_list_case;
 
     for (auto gpo : gpo_list) {
         const QString gpo_case = [&]() {
-            const QList<QString> rdn_list = gpo.split(",");
+            QList<QString> rdn_list = gpo.split(",");
 
             const bool rdn_list_is_malformed = rdn_list.isEmpty();
             if (rdn_list_is_malformed) {
@@ -152,18 +152,31 @@ QList<QString> Gplink::get_gpo_list(AdConfig *adconfig) const {
             }
 
             const QString guid_rdn = rdn_list[0];
-            const QList<QString> guid_rdn_split = guid_rdn.split("=");
+            rdn_list[0] = guid_rdn.toUpper();
 
-            const bool guid_rdn_is_malformed = (guid_rdn_split.size() != 2);
-            if (guid_rdn_is_malformed) {
-                return gpo;
+            for (int i = 1; i < rdn_list.size(); i++) {
+                const QString rdn = rdn_list[i];
+                QList<QString> rdn_split = rdn.split("=");
+
+                const bool rdn_is_malformed = (rdn_split.size() != 2);
+                if (rdn_is_malformed) {
+                    continue;
+                }
+
+                // Uppercase all rdn left halves
+                rdn_split[0] = rdn_split[0].toUpper();
+
+                // Modify some right halves
+                if (rdn_split[1] == "system") {
+                    rdn_split[1] = "System";
+                } else if (rdn_split[1] == "policies") {
+                    rdn_split[1] = "Policies";
+                }
+
+                rdn_list[i] = rdn_split.join("=");
             }
 
-            const QString guid = guid_rdn_split[1];
-            const QString guid_case = guid.toUpper();
-            const QString policies_dn = adconfig->policies_dn();
-
-            const QString out = QString("CN=%1,%2").arg(guid_case, policies_dn);
+            const QString out = rdn_list.join(",");
 
             return out;
         }();

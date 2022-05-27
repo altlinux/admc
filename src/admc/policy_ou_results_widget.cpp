@@ -306,7 +306,7 @@ void PolicyOUResultsWidget::reload_gplink() {
     }
 
     const QList<AdObject> gpo_object_list = [&]() {
-        const QList<QString> gpo_dn_list = gplink.get_gpo_list(g_adconfig);
+        const QList<QString> gpo_dn_list = gplink.get_gpo_list();
         if (gpo_dn_list.isEmpty()) {
             return QList<AdObject>();
         }
