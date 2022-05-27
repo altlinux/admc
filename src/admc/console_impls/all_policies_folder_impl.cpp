@@ -55,8 +55,6 @@ AllPoliciesFolderImpl::AllPoliciesFolderImpl(ConsoleWidget *console_arg)
 }
 
 void AllPoliciesFolderImpl::fetch(const QModelIndex &index) {
-    UNUSED_ARG(index);
-
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
