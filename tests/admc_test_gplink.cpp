@@ -34,8 +34,6 @@ const QString gplink_A = "[LDAP://cn={AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA},cn=p
 const QString gplink_B = "[LDAP://cn={BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB},cn=policies,cn=system,DC=foodomain,DC=com;1]";
 const QString gplink_C = "[LDAP://cn={CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC},cn=policies,cn=system,DC=foodomain,DC=com;2]";
 
-void test_gplink_equality(const Gplink &a, const QString &b);
-
 void ADMCTestGplink::initTestCase() {
 }
 
