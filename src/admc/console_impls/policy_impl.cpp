@@ -73,21 +73,8 @@ void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QS
     const QString policy_dn = target.data(PolicyRole_DN).toString();
     const QList<QString> policy_list = {policy_dn};
 
-    const QList<QString> ou_list = [&]() {
-        QList<QString> out;
-
-        // NOTE: when multi-selecting, selection may contain
-        // a mix of OU and non-OU objects. In that case just
-        // ignore non-OU objects and link OU's only
-        for (const QPersistentModelIndex &index : dropped_list) {
-            if (console_object_is_ou(index)) {
-                const QString dn = index.data(PolicyOURole_DN).toString();
-                out.append(dn);
-            }
-        }
-
-        return out;
-    }();
+    const QList<QModelIndex> dropped_list_normal = normal_index_list(dropped_list);
+    const QList<QString> ou_list = index_list_to_dn_list(dropped_list_normal, PolicyOURole_DN);
 
     add_link(policy_list, ou_list);
 
