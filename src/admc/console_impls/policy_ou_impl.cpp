@@ -70,7 +70,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
         return;
     }
 
-    const QString dn = index.data(ObjectRole_DN).toString();
+    const QString dn = index.data(PolicyOURole_DN).toString();
     const QString domain_dn = g_adconfig->domain_dn();
     const bool is_domain = (dn == domain_dn);
 
@@ -126,7 +126,7 @@ void PolicyOUImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const 
     UNUSED_ARG(target_type);
     UNUSED_ARG(dropped_type_list);
 
-    const QString ou_dn = target.data(ObjectRole_DN).toString();
+    const QString ou_dn = target.data(PolicyOURole_DN).toString();
 
     const QList<QString> gpo_list = [&]() {
         QList<QString> out;
@@ -211,7 +211,7 @@ QList<int> PolicyOUImpl::default_columns() const {
 }
 
 void PolicyOUImpl::create_ou() {
-    const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
+    const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, PolicyOURole_DN);
 
     console_object_create(console, nullptr, CLASS_OU, parent_dn);
 }
@@ -229,7 +229,7 @@ void PolicyOUImpl::create_and_link_gpo() {
     }
 
     const QModelIndex target_index = selected_list[0];
-    const QString target_dn = target_index.data(ObjectRole_DN).toString();
+    const QString target_dn = target_index.data(PolicyOURole_DN).toString();
 
     auto dialog = new CreatePolicyDialog(ad, console);
     dialog->open();    
@@ -272,7 +272,7 @@ void PolicyOUImpl::link_gpo() {
         [this, dialog]() {
             const QList<QModelIndex> selected_list = console->get_selected_items(ItemType_PolicyOU);
             const QModelIndex selected_index = selected_list[0];
-            const QString target_dn = get_selected_target_dn(console, ItemType_PolicyOU, ObjectRole_DN);
+            const QString target_dn = get_selected_target_dn(console, ItemType_PolicyOU, PolicyOURole_DN);
             const QList<QString> gpo_list = dialog->get_selected_dns();
 
             link_gpo_to_ou(selected_index, target_dn, gpo_list);
@@ -280,15 +280,15 @@ void PolicyOUImpl::link_gpo() {
 }
 
 void PolicyOUImpl::properties(const QList<QModelIndex> &index_list) {
-    console_object_properties(console, nullptr, index_list);
+    console_object_properties(console, nullptr, index_list, PolicyOURole_DN);
 }
 
 void PolicyOUImpl::rename(const QList<QModelIndex> &index_list) {
-    console_object_rename(console, nullptr, index_list);
+    console_object_rename(console, nullptr, index_list, PolicyOURole_DN);
 }
 
 void PolicyOUImpl::delete_action(const QList<QModelIndex> &index_list) {
-    console_object_delete(console, nullptr, index_list);
+    console_object_delete(console, nullptr, index_list, PolicyOURole_DN);
 }
 
 void policy_ou_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
@@ -322,10 +322,12 @@ void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<A
 
         if (is_ou) {
             const QList<QStandardItem *> row = console->add_scope_item(ItemType_PolicyOU, parent);
-            console_object_item_data_load(row[0], object);
+            QStandardItem *item = row[0];
 
-            const QString item_text = object.get_string(ATTRIBUTE_NAME);
-            row[0]->setText(item_text);
+            policy_ou_impl_load_item_data(item, object);
+
+            const QString name = object.get_string(ATTRIBUTE_NAME);
+            item->setText(name);
         } else if (is_gpc) {
             const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, parent);
 
@@ -383,4 +385,12 @@ void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou
 
     const QModelIndex current_scope = console->get_current_scope_item();
     policy_ou_results_widget->update(current_scope);
+}
+
+void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object) {
+    const QIcon icon = get_object_icon(object);
+    item->setIcon(icon);
+
+    const QString dn = object.get_dn();
+    item->setData(dn, PolicyOURole_DN);
 }

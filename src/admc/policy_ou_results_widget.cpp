@@ -140,7 +140,7 @@ void PolicyOUResultsWidget::update(const QModelIndex &index) {
         return;
     }
 
-    const QString dn = index.data(ObjectRole_DN).toString();
+    const QString dn = index.data(PolicyOURole_DN).toString();
 
     update(dn);
 }
@@ -266,7 +266,7 @@ void PolicyOUResultsWidget::remove_link() {
 
     // Also remove gpo from OU in console
     const QModelIndex policy_root = get_policy_tree_root(console);
-    const QList<QModelIndex> ou_search_results = console->search_items(policy_root, ObjectRole_DN, ou_dn, {ItemType_PolicyOU});
+    const QList<QModelIndex> ou_search_results = console->search_items(policy_root, PolicyOURole_DN, ou_dn, {ItemType_PolicyOU});
     if (!ou_search_results.isEmpty()) {
         const QModelIndex ou_index = ou_search_results[0];
 

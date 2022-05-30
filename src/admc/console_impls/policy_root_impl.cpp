@@ -60,10 +60,11 @@ void PolicyRootImpl::fetch(const QModelIndex &index) {
     QStandardItem *domain_item = domain_row[0];
     const QString domain_dn = g_adconfig->domain_dn();
     const AdObject domain_object = ad.search_object(domain_dn);
-    console_object_item_data_load(domain_item, domain_object);
 
-    const QString domain_item_text = g_adconfig->domain().toLower();
-    domain_item->setText(domain_item_text);
+    policy_ou_impl_load_item_data(domain_item, domain_object);
+
+    const QString domain_name = g_adconfig->domain().toLower();
+    domain_item->setText(domain_name);
 }
 
 void PolicyRootImpl::refresh(const QList<QModelIndex> &index_list) {

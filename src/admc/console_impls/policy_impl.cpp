@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
+#include "console_impls/policy_ou_impl.h"
 #include "create_policy_dialog.h"
 #include "globals.h"
 #include "gplink.h"
@@ -80,7 +81,7 @@ void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QS
         // ignore non-OU objects and link OU's only
         for (const QPersistentModelIndex &index : dropped_list) {
             if (console_object_is_ou(index)) {
-                const QString dn = index.data(ObjectRole_DN).toString();
+                const QString dn = index.data(PolicyOURole_DN).toString();
                 out.append(dn);
             }
         }
@@ -201,7 +202,7 @@ void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
     const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
     if (parent_is_ou) {
-        const QString parent_dn = parent_index.data(ObjectRole_DN).toString();
+        const QString parent_dn = parent_index.data(PolicyOURole_DN).toString();
 
         const QString gplink_new_string = [&]() {
             Gplink gplink = [&]() {

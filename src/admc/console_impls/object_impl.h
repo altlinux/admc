@@ -157,8 +157,8 @@ bool console_object_is_ou(const QModelIndex &index);
 QModelIndex get_object_tree_root(ConsoleWidget *console);
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
 void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console, const QString &object_class, const QString &parent_dn);
-void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list);
-void console_object_delete(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list);
-void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list);
+void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role);
+void console_object_delete(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role);
+void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role);
 
 #endif /* OBJECT_IMPL_H */

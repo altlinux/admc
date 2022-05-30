@@ -31,6 +31,13 @@
  */
 
 #include "console_widget/console_impl.h"
+#include "console_impls/my_console_role.h"
+
+enum PolicyOURole {
+    PolicyOURole_DN = MyConsoleRole_LAST + 1,
+
+    PolicyOURole_LAST,
+};
 
 class AdInterface;
 class AdObject;
@@ -75,5 +82,6 @@ private:
 
 void policy_ou_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
+void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object);
 
 #endif /* POLICY_OU_IMPL_H */
