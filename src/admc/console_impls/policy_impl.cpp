@@ -399,7 +399,8 @@ void console_policy_load(const QList<QStandardItem *> &row, const AdObject &obje
 }
 
 void console_policy_load_item(QStandardItem *main_item, const AdObject &object) {
-    main_item->setIcon(QIcon::fromTheme("preferences-other"));
+    const QIcon icon = get_object_icon(object);
+    main_item->setIcon(icon);
     main_item->setData(object.get_dn(), PolicyRole_DN);
 
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
