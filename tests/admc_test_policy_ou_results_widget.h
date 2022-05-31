@@ -18,21 +18,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ITEM_TYPE_H
-#define ITEM_TYPE_H
+#ifndef ADMC_TEST_POLICY_OU_RESULTS_WIDGET_H
+#define ADMC_TEST_POLICY_OU_RESULTS_WIDGET_H
 
-enum ItemType {
-    ItemType_Unassigned,
-    ItemType_Object,
-    ItemType_PolicyRoot,
-    ItemType_PolicyOU,
-    ItemType_AllPoliciesFolder,
-    ItemType_Policy,
-    ItemType_QueryFolder,
-    ItemType_QueryItem,
-    ItemType_FindRoot,
+#include "admc_test.h"
 
-    ItemType_LAST,
+class PolicyOUResultsWidget;
+class QTreeView;
+class QStandardItemModel;
+
+class ADMCTestPolicyOUResultsWidget : public ADMCTest {
+    Q_OBJECT
+
+private slots:
+    void initTestCase() override;
+    void cleanupTestCase() override;
+
+    void init() override;
+
+    void load_empty();
+    void load();
+
+private:
+    PolicyOUResultsWidget *widget;
+    QTreeView *view;
+    QStandardItemModel *model;
+    QString ou_dn;
 };
 
-#endif /* ITEM_TYPE_H */
+#endif /* ADMC_TEST_POLICY_OU_RESULTS_WIDGET_H */

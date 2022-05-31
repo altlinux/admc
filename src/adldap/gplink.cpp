@@ -140,7 +140,51 @@ bool Gplink::contains(const QString &gpo_case) const {
 }
 
 QList<QString> Gplink::get_gpo_list() const {
-    return gpo_list;
+    QList<QString> gpo_list_case;
+
+    for (auto gpo : gpo_list) {
+        const QString gpo_case = [&]() {
+            QList<QString> rdn_list = gpo.split(",");
+
+            const bool rdn_list_is_malformed = rdn_list.isEmpty();
+            if (rdn_list_is_malformed) {
+                return gpo;
+            }
+
+            const QString guid_rdn = rdn_list[0];
+            rdn_list[0] = guid_rdn.toUpper();
+
+            for (int i = 1; i < rdn_list.size(); i++) {
+                const QString rdn = rdn_list[i];
+                QList<QString> rdn_split = rdn.split("=");
+
+                const bool rdn_is_malformed = (rdn_split.size() != 2);
+                if (rdn_is_malformed) {
+                    continue;
+                }
+
+                // Uppercase all rdn left halves
+                rdn_split[0] = rdn_split[0].toUpper();
+
+                // Modify some right halves
+                if (rdn_split[1] == "system") {
+                    rdn_split[1] = "System";
+                } else if (rdn_split[1] == "policies") {
+                    rdn_split[1] = "Policies";
+                }
+
+                rdn_list[i] = rdn_split.join("=");
+            }
+
+            const QString out = rdn_list.join(",");
+
+            return out;
+        }();
+
+        gpo_list_case.append(gpo_case);
+    }
+
+    return gpo_list_case;
 }
 
 void Gplink::add(const QString &gpo_case) {

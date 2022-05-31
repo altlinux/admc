@@ -318,7 +318,7 @@ QModelIndex ConsoleWidget::get_selected_item(const int type) const {
     }
 }
 
-QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int role, const QVariant &value, const int type) const {
+QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int role, const QVariant &value, const QList<int> &type_list) const {
     const QList<QModelIndex> all_matches = [&]() {
         QList<QModelIndex> out;
 
@@ -340,7 +340,7 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int ro
     }();
 
     const QList<QModelIndex> filtered_matches = [&]() {
-        if (type == -1) {
+        if (type_list.isEmpty()) {
             return all_matches;
         }
 
@@ -351,7 +351,7 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int ro
             if (type_variant.isValid()) {
                 const int this_type = type_variant.toInt();
 
-                if (this_type == type) {
+                if (type_list.contains(this_type)) {
                     out.append(index);
                 }
             }
@@ -368,24 +368,26 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int ro
 // search iteration includes parent or not. Once this
 // is done it may be possible to simplify
 // get_x_tree_root() f-ns.
-QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, const int type) const {
+QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, const QList<int> &type_list) const {
     QList<QModelIndex> out;
 
-    const int role = ConsoleRole_Type;
-    const int value = type;
+    for (const int type : type_list) {
+        const int role = ConsoleRole_Type;
+        const int value = type;
 
-    // NOTE: start index may be invalid if parent has no
-    // children
-    const QModelIndex start_index = d->model->index(0, 0, parent);
-    if (start_index.isValid()) {
-        const QList<QModelIndex> descendant_matches = d->model->match(start_index, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
-        out.append(descendant_matches);
-    }
+        // NOTE: start index may be invalid if parent has no
+        // children
+        const QModelIndex start_index = d->model->index(0, 0, parent);
+        if (start_index.isValid()) {
+            const QList<QModelIndex> descendant_matches = d->model->match(start_index, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+            out.append(descendant_matches);
+        }
 
-    const QVariant parent_value = parent.data(role);
-    const bool parent_is_match = (parent_value.isValid() && parent_value == value);
-    if (parent_is_match) {
-        out.append(parent);
+        const QVariant parent_value = parent.data(role);
+        const bool parent_is_match = (parent_value.isValid() && parent_value == value);
+        if (parent_is_match) {
+            out.append(parent);
+        }
     }
 
     return out;
@@ -515,6 +517,10 @@ void ConsoleWidget::setup_menubar_action_menu(QMenu *menu) {
     connect(
         menu, &QMenu::aboutToShow,
         d, &ConsoleWidgetPrivate::update_actions);
+}
+
+void ConsoleWidget::set_item_sort_index(const QModelIndex &index, const int sort_index) {
+    d->model->setData(index, sort_index, ConsoleRole_SortIndex);
 }
 
 void ConsoleWidgetPrivate::add_actions(QMenu *menu) {

@@ -52,4 +52,7 @@ QString add_advanced_view_filter(const QString &filter);
 
 QString condition_to_display_string(const Condition condition);
 
+// Filter that accepts any DN from given list
+QString filter_dn_list(const QList<QString> &dn_list);
+
 #endif /* AD_FILTER_H */

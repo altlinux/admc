@@ -43,6 +43,7 @@ class ConsoleImpl;
 enum ConsoleRole {
     // Determines whether scope item was fetched
     ConsoleRole_WasFetched = Qt::UserRole + 1,
+    ConsoleRole_SortIndex = Qt::UserRole + 2,
 
     ConsoleRole_IsScope = Qt::UserRole + 3,
 

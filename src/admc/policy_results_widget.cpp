@@ -222,7 +222,8 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
         row[0]->setData(dn, PolicyResultsRole_DN);
         row[0]->setData(gplink_string, PolicyResultsRole_GplinkString);
-        row[0]->setIcon(QIcon::fromTheme("folder-documents"));
+        const QIcon icon = get_object_icon(object);
+        row[0]->setIcon(icon);
 
         model->appendRow(row);
     }

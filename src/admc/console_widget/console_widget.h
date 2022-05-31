@@ -138,8 +138,8 @@ public:
     // and all of it's descendants. Pass QModelIndex()
     // parent to search the whole model. If no type is
     // given, then items of all types will be returned.
-    QList<QModelIndex> search_items(const QModelIndex &parent, int role, const QVariant &value, const int type = -1) const;
-    QList<QModelIndex> search_items(const QModelIndex &parent, const int type) const;
+    QList<QModelIndex> search_items(const QModelIndex &parent, int role, const QVariant &value, const QList<int> &type = QList<int>()) const;
+    QList<QModelIndex> search_items(const QModelIndex &parent, const QList<int> &type) const;
 
     QModelIndex get_current_scope_item() const;
     int get_child_count(const QModelIndex &index) const;
@@ -160,6 +160,13 @@ public:
     // Setups the action menu in menubar. Action menu
     // opened by right click is setup automatically.
     void setup_menubar_action_menu(QMenu *menu);
+
+    // Define custom sort index for scope item. By default
+    // scope items are sorted by their item text. Use sort
+    // indexes if you need more fine-grained sort behavior.
+    // Default sort index is "0". Note that this doesn't
+    // affect order in results pane.
+    void set_item_sort_index(const QModelIndex &index, const int sort_index);
 
 signals:
     // Emitted when selection in the whole console

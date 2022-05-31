@@ -41,6 +41,7 @@ set(ADMC_SOURCES
     find_widget.cpp
     tab_widget.cpp
     policy_results_widget.cpp
+    policy_ou_results_widget.cpp
     edit_query_item_widget.cpp
     fsmo_tab.cpp
 
@@ -103,7 +104,6 @@ set(ADMC_SOURCES
     tabs/account_tab.cpp
     tabs/membership_tab.cpp
     tabs/address_tab.cpp
-    tabs/group_policy_tab.cpp
     tabs/organization_tab.cpp
     tabs/telephones_tab.cpp
     tabs/profile_tab.cpp
@@ -177,6 +177,8 @@ set(ADMC_SOURCES
     console_impls/query_folder_impl.cpp
     console_impls/policy_root_impl.cpp
     console_impls/find_root_impl.cpp
+    console_impls/all_policies_folder_impl.cpp
+    console_impls/policy_ou_impl.cpp
 
     admc.qrc
 )

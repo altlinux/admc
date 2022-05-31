@@ -456,7 +456,7 @@ void console_query_tree_save(ConsoleWidget *console) {
 }
 
 QModelIndex get_query_tree_root(ConsoleWidget *console) {
-    const QList<QModelIndex> search_results = console->search_items(QModelIndex(), QueryItemRole_IsRoot, true, ItemType_QueryFolder);
+    const QList<QModelIndex> search_results = console->search_items(QModelIndex(), QueryItemRole_IsRoot, true, {ItemType_QueryFolder});
 
     if (!search_results.isEmpty()) {
         return search_results[0];

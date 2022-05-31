@@ -22,22 +22,18 @@
 
 #include "adldap.h"
 #include "console_impls/item_type.h"
-#include "console_impls/object_impl.h"
-#include "create_policy_dialog.h"
+#include "console_impls/policy_ou_impl.h"
 #include "globals.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
 #include "properties_dialog.h"
 #include "rename_policy_dialog.h"
 #include "select_object_dialog.h"
-#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
 #include <QAction>
 #include <QDebug>
-#include <QList>
-#include <QProcess>
 #include <QStandardItem>
 
 PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
@@ -60,22 +56,9 @@ bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
     UNUSED_ARG(target);
     UNUSED_ARG(target_type);
 
-    const bool dropped_are_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
-    if (!dropped_are_objects) {
-        return false;
-    }
+    const bool dropped_are_policy_ou = (dropped_type_list == QSet<int>({ItemType_PolicyOU}));
 
-    const bool dropped_contain_ou = [&]() {
-        for (const QPersistentModelIndex &index : dropped_list) {
-            if (console_object_is_ou(index)) {
-                return true;
-            }
-        }
-
-        return false;
-    }();
-
-    return dropped_contain_ou;
+    return dropped_are_policy_ou;
 }
 
 void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -85,27 +68,15 @@ void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QS
     const QString policy_dn = target.data(PolicyRole_DN).toString();
     const QList<QString> policy_list = {policy_dn};
 
-    const QList<QString> ou_list = [&]() {
-        QList<QString> out;
-
-        // NOTE: when multi-selecting, selection may contain
-        // a mix of OU and non-OU objects. In that case just
-        // ignore non-OU objects and link OU's only
-        for (const QPersistentModelIndex &index : dropped_list) {
-            if (console_object_is_ou(index)) {
-                const QString dn = index.data(ObjectRole_DN).toString();
-                out.append(dn);
-            }
-        }
-
-        return out;
-    }();
+    const QList<QModelIndex> dropped_list_normal = normal_index_list(dropped_list);
+    const QList<QString> ou_list = index_list_to_dn_list(dropped_list_normal, PolicyOURole_DN);
 
     add_link(policy_list, ou_list);
 
-    // NOTE: don't need to sync changes in policy results
-    // widget because when drag and dropping you will select
-    // the policy which will update results automatically
+    // Need to refresh so that results widget is updated
+    // because linking a gpo changes contents of results.
+    const QModelIndex current_scope = console->get_current_scope_item();
+    console->refresh_scope(current_scope);
 }
 
 void PolicyImpl::selected_as_scope(const QModelIndex &index) {
@@ -179,7 +150,26 @@ void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
 }
 
 void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
-    const bool confirmed = confirmation_dialog(tr("Are you sure you want to delete this policy and all of it's links?"), console);
+    if (index_list.isEmpty()) {
+        return;
+    }
+
+    const QModelIndex parent_index = index_list[0].parent();
+    const ItemType parent_type = (ItemType) console_item_get_type(parent_index);
+    const bool parent_is_ou = (parent_type == ItemType_PolicyOU);
+    const bool parent_is_all_policies = (parent_type == ItemType_AllPoliciesFolder);
+
+
+    const QString confirmation_text = [&]() {
+        if (parent_is_ou) {
+            return tr("Are you sure you want to unlink this policy from the OU? Note that the actual policy object won't be deleted.");
+        } else if (parent_is_all_policies) {
+            return tr("Are you sure you want to delete this policy and all of it's links?");
+        } else {
+            return QString();
+        }
+    }();
+    const bool confirmed = confirmation_dialog(confirmation_text, console);
     if (!confirmed) {
         return;
     }
@@ -193,18 +183,53 @@ void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
 
     const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
-    for (const QPersistentModelIndex &index : persistent_list) {
-        const QString dn = index.data(PolicyRole_DN).toString();
+    if (parent_is_ou) {
+        const QString parent_dn = parent_index.data(PolicyOURole_DN).toString();
 
-        bool deleted_object = false;
-        ad.gpo_delete(dn, &deleted_object);
+        const QString gplink_new_string = [&]() {
+            Gplink gplink = [&]() {
+                const AdObject parent_object = ad.search_object(parent_dn);
+                const QString gplink_old_string = parent_object.get_string(ATTRIBUTE_GPLINK);
+                const Gplink out = Gplink(gplink_old_string);
 
-        // NOTE: object may get deleted successfuly but
-        // deleting GPT fails which makes gpo_delete() fail
-        // as a whole, but we still want to remove gpo from
-        // the console in that case
-        if (deleted_object) {
-            console->delete_item(index);
+                return out;
+            }();
+
+            for (const QPersistentModelIndex &index : persistent_list) {
+                const QString dn = index.data(PolicyRole_DN).toString();
+
+                gplink.remove(dn);
+            }
+
+            const QString out = gplink.to_string();
+
+            return out;
+        }();
+
+        const bool replace_success = ad.attribute_replace_string(parent_dn, ATTRIBUTE_GPLINK, gplink_new_string);
+
+        if (replace_success) {
+            for (const QPersistentModelIndex &index : persistent_list) {
+                console->delete_item(index);
+            }
+
+            const QModelIndex current_scope = console->get_current_scope_item();
+            policy_results_widget->update(current_scope);
+        }
+    } else if (parent_is_all_policies) {
+        for (const QPersistentModelIndex &index : persistent_list) {
+            const QString dn = index.data(PolicyRole_DN).toString();
+
+            bool deleted_object = false;
+            ad.gpo_delete(dn, &deleted_object);
+
+            // NOTE: object may get deleted successfuly but
+            // deleting GPT fails which makes gpo_delete() fail
+            // as a whole, but we still want to remove gpo from
+            // the console in that case
+            if (deleted_object) {
+                console->delete_item(index);
+            }
         }
     }
 
@@ -374,7 +399,8 @@ void console_policy_load(const QList<QStandardItem *> &row, const AdObject &obje
 }
 
 void console_policy_load_item(QStandardItem *main_item, const AdObject &object) {
-    main_item->setIcon(QIcon::fromTheme("folder-templates"));
+    const QIcon icon = get_object_icon(object);
+    main_item->setIcon(icon);
     main_item->setData(object.get_dn(), PolicyRole_DN);
 
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);

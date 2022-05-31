@@ -90,6 +90,7 @@ void limit_edit(QLineEdit *edit, const QString &attribute);
 QIcon get_object_icon(const AdObject &object);
 
 QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes);
+QList<QModelIndex> normal_index_list(const QList<QPersistentModelIndex> &indexes);
 
 QString advanced_features_filter(const QString &filter);
 

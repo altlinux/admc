@@ -22,7 +22,6 @@
 #define ADMC_TEST_GPLINK_H
 
 #include <QObject>
-
 #include <QTest>
 
 class ADMCTestGplink : public QObject {
@@ -51,6 +50,8 @@ private slots:
     void get_option();
     void set_option_data();
     void set_option();
+    void get_gpo_list_data();
+    void get_gpo_list();
 };
 
 #endif /* ADMC_TEST_GPLINK_H */

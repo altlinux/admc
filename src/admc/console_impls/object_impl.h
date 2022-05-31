@@ -33,7 +33,6 @@ class ConsoleActions;
 class QMenu;
 template <typename T>
 class QList;
-class PolicyImpl;
 class ConsoleWidget;
 class ConsoleFilterDialog;
 
@@ -59,8 +58,6 @@ class ObjectImpl final : public ConsoleImpl {
 
 public:
     ObjectImpl(ConsoleWidget *console);
-
-    void set_policy_impl(PolicyImpl *policy_root_impl_arg);
 
     // This is for cases where there are multiple consoles
     // in the app and you need to propagate changes from one
@@ -117,7 +114,6 @@ private slots:
 
 private:
     ConsoleWidget *buddy_console;
-    PolicyImpl *policy_impl;
     QString object_filter;
     bool object_filter_enabled;
 
@@ -141,8 +137,6 @@ private:
 
     void new_object(const QString &object_class);
     void set_disabled(const bool disabled);
-    void drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
-    void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
     void move_and_rename(AdInterface &ad, const QHash<QString, QString> &old_dn_list, const QString &new_parent_dn);
     void move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
     void update_toolbar_actions();
@@ -162,5 +156,9 @@ bool console_object_is_ou(const QModelIndex &index);
 // of objects setup
 QModelIndex get_object_tree_root(ConsoleWidget *console);
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
+void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console, const QString &object_class, const QString &parent_dn);
+void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role);
+void console_object_delete(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role);
+void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role);
 
 #endif /* OBJECT_IMPL_H */

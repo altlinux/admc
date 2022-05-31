@@ -176,7 +176,7 @@ QIcon get_object_icon(const AdObject &object) {
         {"Group", {"system-users"}},
         {"Person", {"avatar-default", "avatar-default-symbolic"}},
         {"Computer", {"computer"}},
-        {"Group-Policy-Container", {"folder-templates"}},
+        {"Group-Policy-Container", {"preferences-other"}},
         {"Volume", {"folder-templates"}},
 
         // Some custom icons for one-off objects
@@ -225,6 +225,16 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
 
     for (const QModelIndex &index : indexes) {
         out.append(QPersistentModelIndex(index));
+    }
+
+    return out;
+}
+
+QList<QModelIndex> normal_index_list(const QList<QPersistentModelIndex> &indexes) {
+    QList<QModelIndex> out;
+
+    for (const QPersistentModelIndex &index : indexes) {
+        out.append(QModelIndex(index));
     }
 
     return out;
