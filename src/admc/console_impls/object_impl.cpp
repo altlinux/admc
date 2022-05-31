@@ -538,15 +538,12 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
             return;
         }
 
-        auto apply_changes = [&ad2, &dn_list](ConsoleWidget *target_console) {
-            const QModelIndex object_root = get_object_tree_root(target_console);
-            const QModelIndex query_root = get_query_tree_root(target_console);
-            const QModelIndex policy_root = get_policy_tree_root(target_console);
-            const QModelIndex find_root = get_find_tree_root(target_console);
+        const QList<AdObject> object_list = [&]() {
+            QList<AdObject> out;
 
             for (const QString &dn : dn_list) {
                 const AdObject object = ad2.search_object(dn);
-
+                
                 // TODO: band-aid for the situations
                 // where properties dialog interacts
                 // with deleted objects. Bad stuff can
@@ -559,23 +556,41 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
                     continue;
                 }
 
-                auto update_object = [&](const QModelIndex &root_index, const int item_type, const int update_dn_role) {
-                    if (!root_index.isValid()) {
-                        return;
-                    }
-
-                    const QList<QModelIndex> indexes_for_this_object = target_console->search_items(root_index, update_dn_role, dn, {item_type});
-                    for (const QModelIndex &index : indexes_for_this_object) {
-                        const QList<QStandardItem *> row = target_console->get_row(index);
-                        console_object_load(row, object);
-                    }
-                };
-
-                update_object(object_root, ItemType_Object, ObjectRole_DN);
-                update_object(query_root, ItemType_Object, ObjectRole_DN);
-                update_object(find_root, ItemType_Object, ObjectRole_DN);
-                update_object(policy_root, ItemType_PolicyOU, PolicyOURole_DN);
+                out.append(object);
             }
+
+            return out;
+        }();
+
+        auto apply_changes = [&ad2, &object_list](ConsoleWidget *target_console) {
+            auto apply_changes_to_branch = [&](const QModelIndex &root_index, const int item_type, const int update_dn_role) {
+                if (!root_index.isValid()) {
+                    return;
+                }
+
+                for (const AdObject &object : object_list) {
+                    const QString dn = object.get_dn();
+                    const QList<QModelIndex> object_index_list = target_console->search_items(root_index, update_dn_role, dn, {item_type});
+
+                    if (object_index_list.isEmpty()) {
+                        continue;
+                    }
+
+                    const QModelIndex object_index = object_index_list[0];
+                    const QList<QStandardItem *> object_row = target_console->get_row(object_index);
+                    console_object_load(object_row, object);
+                }
+            };
+
+            const QModelIndex object_root = get_object_tree_root(target_console);
+            const QModelIndex query_root = get_query_tree_root(target_console);
+            const QModelIndex policy_root = get_policy_tree_root(target_console);
+            const QModelIndex find_root = get_find_tree_root(target_console);
+
+            apply_changes_to_branch(object_root, ItemType_Object, ObjectRole_DN);
+            apply_changes_to_branch(query_root, ItemType_Object, ObjectRole_DN);
+            apply_changes_to_branch(find_root, ItemType_Object, ObjectRole_DN);
+            apply_changes_to_branch(policy_root, ItemType_PolicyOU, PolicyOURole_DN);
         };
 
         apply_changes(console);
