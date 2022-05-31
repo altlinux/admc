@@ -193,8 +193,19 @@ QSet<StandardAction> PolicyOUImpl::get_standard_actions(const QModelIndex &index
     if (can_refresh) {
         out.insert(StandardAction_Refresh);
     }
-    out.insert(StandardAction_Rename);
-    out.insert(StandardAction_Delete);
+
+    const bool is_domain = [&]() {
+        const QString dn = index.data(PolicyOURole_DN).toString();
+        const QString domain_dn = g_adconfig->domain_dn();
+        const bool is_domain_out = (dn == domain_dn);
+
+        return is_domain_out;
+    }();
+
+    if (!is_domain) {
+        out.insert(StandardAction_Rename);
+        out.insert(StandardAction_Delete);
+    }
 
     return out;
 }
