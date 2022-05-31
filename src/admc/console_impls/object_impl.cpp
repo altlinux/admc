@@ -1692,8 +1692,8 @@ bool console_object_is_ou(const QModelIndex &index) {
 
 QModelIndex get_object_tree_root(ConsoleWidget *console) {
     const QString head_dn = g_adconfig->domain_dn();
-    const QModelIndex object_root = get_object_tree_root(console);
-    const QList<QModelIndex> search_results = console->search_items(object_root, ObjectRole_DN, head_dn, {ItemType_Object});
+    const QModelIndex console_root = QModelIndex();
+    const QList<QModelIndex> search_results = console->search_items(console_root, ObjectRole_DN, head_dn, {ItemType_Object});
 
     if (!search_results.isEmpty()) {
         // NOTE: domain object may also appear in queries,
