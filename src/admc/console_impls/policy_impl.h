@@ -21,6 +21,12 @@
 #ifndef POLICY_IMPL_H
 #define POLICY_IMPL_H
 
+/**
+ * Impl for policy objects which represent GPC + GPT.
+ * Displayed as children of OU's which they are linked to
+ * and in "All policies" folder.
+ */
+
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"
 

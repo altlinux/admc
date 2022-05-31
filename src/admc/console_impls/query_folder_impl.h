@@ -21,6 +21,11 @@
 #ifndef QUERY_FOLDER_IMPL_H
 #define QUERY_FOLDER_IMPL_H
 
+/**
+ * Impl for a query folder which stores query items. Located
+ * in the query tree.
+ */
+
 #include "console_widget/console_impl.h"
 
 class QueryFolderImpl final : public ConsoleImpl {

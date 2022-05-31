@@ -21,6 +21,13 @@
 #ifndef CONSOLE_QUERY_H
 #define CONSOLE_QUERY_H
 
+/**
+ * Impl for query item which displays results of a saved
+ * query, i.e. the objects that fit a particular filter.
+ * Located in query tree, can be children of query folders
+ * or query tree root.
+ */
+
 #include "console_impls/my_console_role.h"
 #include "console_widget/console_impl.h"
 

@@ -21,6 +21,11 @@
 #ifndef POLICY_ROOT_IMPL_H
 #define POLICY_ROOT_IMPL_H
 
+/**
+ * Impl for the root of the policy tree which contains the
+ * root of the domain and "All policies" folder.
+ */
+
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"
 

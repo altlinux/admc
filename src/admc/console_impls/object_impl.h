@@ -21,6 +21,11 @@
 #ifndef OBJECT_IMPL_H
 #define OBJECT_IMPL_H
 
+/**
+ * Impl for AD objects. Displays a hierarchical tree of
+ * objects that exist in the domain.
+ */
+
 #include "adldap.h"
 #include "console_impls/my_console_role.h"
 #include "console_widget/console_impl.h"
@@ -35,10 +40,6 @@ template <typename T>
 class QList;
 class ConsoleWidget;
 class ConsoleFilterDialog;
-
-/**
- * Some f-ns used for models that store objects.
- */
 
 enum ObjectRole {
     ObjectRole_DN = MyConsoleRole_LAST + 1,

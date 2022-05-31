@@ -21,6 +21,11 @@
 #ifndef FIND_ROOT_IMPL_H
 #define FIND_ROOT_IMPL_H
 
+/**
+ * Impl for root of the find tree which displays results of
+ * a "Find" operation. Used in Find Widget.
+ */
+
 #include "console_widget/console_impl.h"
 
 class FindRootImpl final : public ConsoleImpl {
