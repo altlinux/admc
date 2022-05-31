@@ -22,23 +22,18 @@
 
 #include "adldap.h"
 #include "console_impls/item_type.h"
-#include "console_impls/object_impl.h"
 #include "console_impls/policy_ou_impl.h"
-#include "create_policy_dialog.h"
 #include "globals.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
 #include "properties_dialog.h"
 #include "rename_policy_dialog.h"
 #include "select_object_dialog.h"
-#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
 #include <QAction>
 #include <QDebug>
-#include <QList>
-#include <QProcess>
 #include <QStandardItem>
 
 PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)

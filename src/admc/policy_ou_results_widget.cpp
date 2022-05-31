@@ -23,7 +23,6 @@
 
 #include "adldap.h"
 #include "console_impls/item_type.h"
-#include "console_impls/object_impl.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/policy_root_impl.h"
@@ -36,14 +35,12 @@
 #include "utils.h"
 
 #include <QAction>
-#include <QDebug>
 #include <QHeaderView>
 #include <QMenu>
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QStandardItemModel>
 #include <QTreeView>
-#include <QVBoxLayout>
 
 enum PolicyOUResultsColumn {
     PolicyOUResultsColumn_Name,

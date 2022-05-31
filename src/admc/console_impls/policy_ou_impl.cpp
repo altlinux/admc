@@ -29,7 +29,6 @@
 #include "globals.h"
 #include "gplink.h"
 #include "policy_ou_results_widget.h"
-#include "settings.h"
 #include "status.h"
 #include "utils.h"
 #include "select_policy_dialog.h"
