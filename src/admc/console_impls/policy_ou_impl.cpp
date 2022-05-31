@@ -36,6 +36,14 @@
 #include <QMenu>
 #include <QStandardItem>
 
+bool index_is_domain(const QModelIndex &index) {
+    const QString dn = index.data(PolicyOURole_DN).toString();
+    const QString domain_dn = g_adconfig->domain_dn();
+    const bool out = (dn == domain_dn);
+
+    return out;
+}
+
 PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     policy_ou_results_widget = new PolicyOUResultsWidget(console_arg);
@@ -68,8 +76,6 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
     }
 
     const QString dn = index.data(PolicyOURole_DN).toString();
-    const QString domain_dn = g_adconfig->domain_dn();
-    const bool is_domain = (dn == domain_dn);
 
     // Add child OU's
     {
@@ -82,6 +88,8 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
 
         policy_ou_impl_add_objects_to_console(console, results.values(), index);
     }
+
+    const bool is_domain = index_is_domain(index);
 
     // Add "All policies" folder if this is domain
     if (is_domain) {
@@ -194,13 +202,7 @@ QSet<StandardAction> PolicyOUImpl::get_standard_actions(const QModelIndex &index
         out.insert(StandardAction_Refresh);
     }
 
-    const bool is_domain = [&]() {
-        const QString dn = index.data(PolicyOURole_DN).toString();
-        const QString domain_dn = g_adconfig->domain_dn();
-        const bool is_domain_out = (dn == domain_dn);
-
-        return is_domain_out;
-    }();
+    const bool is_domain = index_is_domain(index);
 
     if (!is_domain) {
         out.insert(StandardAction_Rename);
