@@ -542,6 +542,7 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
             const QModelIndex object_root = get_object_tree_root(target_console);
             const QModelIndex query_root = get_query_tree_root(target_console);
             const QModelIndex policy_root = get_policy_tree_root(target_console);
+            const QModelIndex find_root = get_find_tree_root(target_console);
 
             for (const QString &dn : dn_list) {
                 const AdObject object = ad2.search_object(dn);
@@ -563,7 +564,7 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
                         return;
                     }
 
-                    const QList<QModelIndex> indexes_for_this_object = target_console->search_items(QModelIndex(), update_dn_role, dn, {item_type});
+                    const QList<QModelIndex> indexes_for_this_object = target_console->search_items(root_index, update_dn_role, dn, {item_type});
                     for (const QModelIndex &index : indexes_for_this_object) {
                         const QList<QStandardItem *> row = target_console->get_row(index);
                         console_object_load(row, object);
@@ -572,6 +573,7 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
 
                 update_object(object_root, ItemType_Object, ObjectRole_DN);
                 update_object(query_root, ItemType_Object, ObjectRole_DN);
+                update_object(find_root, ItemType_Object, ObjectRole_DN);
                 update_object(policy_root, ItemType_PolicyOU, PolicyOURole_DN);
             }
         };
@@ -1107,13 +1109,27 @@ void ObjectImpl::set_disabled(const bool disabled) {
     }();
 
     auto apply_changes = [&changed_objects, &disabled](ConsoleWidget *target_console) {
-        for (const QString &dn : changed_objects) {
-            const QList<QModelIndex> index_list = target_console->search_items(QModelIndex(), ObjectRole_DN, dn, {ItemType_Object});
-            for (const QModelIndex &index : index_list) {
-                QStandardItem *item = target_console->get_item(index);
-                item->setData(disabled, ObjectRole_AccountDisabled);
+        auto apply_changes_to_branch = [&](const QModelIndex &root_index) {
+            if (!root_index.isValid()) {
+                return;
             }
-        }
+
+            for (const QString &dn : changed_objects) {
+                const QList<QModelIndex> index_list = target_console->search_items(root_index, ObjectRole_DN, dn, {ItemType_Object});
+                for (const QModelIndex &index : index_list) {
+                    QStandardItem *item = target_console->get_item(index);
+                    item->setData(disabled, ObjectRole_AccountDisabled);
+                }
+            }
+        };
+
+        const QModelIndex object_root = get_object_tree_root(target_console);
+        const QModelIndex find_root = get_find_tree_root(target_console);
+        const QModelIndex query_root = get_query_tree_root(target_console);
+
+        apply_changes_to_branch(object_root);
+        apply_changes_to_branch(find_root);
+        apply_changes_to_branch(query_root);
     };
 
     apply_changes(console);
@@ -1676,7 +1692,8 @@ bool console_object_is_ou(const QModelIndex &index) {
 
 QModelIndex get_object_tree_root(ConsoleWidget *console) {
     const QString head_dn = g_adconfig->domain_dn();
-    const QList<QModelIndex> search_results = console->search_items(QModelIndex(), ObjectRole_DN, head_dn, {ItemType_Object});
+    const QModelIndex object_root = get_object_tree_root(console);
+    const QList<QModelIndex> search_results = console->search_items(object_root, ObjectRole_DN, head_dn, {ItemType_Object});
 
     if (!search_results.isEmpty()) {
         // NOTE: domain object may also appear in queries,
