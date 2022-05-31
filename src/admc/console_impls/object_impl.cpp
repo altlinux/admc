@@ -521,7 +521,7 @@ void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console,
 }
 
 void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
-    console_object_properties(console, nullptr, index_list, ObjectRole_DN);
+    console_object_properties(console, buddy_console, index_list, ObjectRole_DN);
 }
 
 void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role) {
