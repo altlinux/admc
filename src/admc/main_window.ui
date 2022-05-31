@@ -348,7 +348,7 @@
   </action>
   <action name="action_create_user">
    <property name="icon">
-    <iconset theme="avatar-default-symbolic">
+    <iconset theme="avatar-default">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
