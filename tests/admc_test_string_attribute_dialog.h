@@ -34,6 +34,7 @@ private slots:
     void display_value();
     void get_value_list_data();
     void get_value_list();
+    void limit_length();
 
 private:
     StringAttributeDialog *dialog;

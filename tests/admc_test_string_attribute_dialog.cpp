@@ -25,8 +25,10 @@
 
 #include <QPlainTextEdit>
 
+#define TEST_ATTRIBUTE ATTRIBUTE_CN
+
 void ADMCTestStringAttributeDialog::init_edit(const QList<QByteArray> &value_list) {
-    dialog = new StringAttributeDialog(value_list, ATTRIBUTE_CN, false, parent_widget);
+    dialog = new StringAttributeDialog(value_list, TEST_ATTRIBUTE, false, parent_widget);
     dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
@@ -66,6 +68,24 @@ void ADMCTestStringAttributeDialog::get_value_list() {
     const QList<QByteArray> actual_value_list = dialog->get_value_list();
     const QList<QByteArray> expected_value_list = value_list;
     QCOMPARE(actual_value_list, expected_value_list);
+}
+
+void ADMCTestStringAttributeDialog::limit_length() {
+    const auto value_list = QList<QByteArray>({"hello"});
+
+    init_edit(value_list);
+    
+    const int range_upper = ad.adconfig()->get_attribute_range_upper(TEST_ATTRIBUTE);
+
+    QVERIFY(range_upper > 0);
+
+    const QString new_value = QString(range_upper + 10, 'a');
+    text_edit->setPlainText(new_value);
+
+    const QString current_value = text_edit->toPlainText();
+    const int current_value_length = current_value.length();
+
+    QCOMPARE(current_value_length, range_upper);
 }
 
 QTEST_MAIN(ADMCTestStringAttributeDialog)
