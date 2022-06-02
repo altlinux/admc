@@ -108,10 +108,7 @@ void ListAttributeDialog::on_add_button() {
             if (attribute_is_number) {
                 return new NumberAttributeDialog(value_list, attribute, read_only, this);
             } else {
-                auto string_dialog = new StringAttributeDialog(value_list, attribute, read_only, this);
-                string_dialog->set_max_length(max_length);
-
-                return string_dialog;
+                return new StringAttributeDialog(value_list, attribute, read_only, this);
             }
         }
     }();

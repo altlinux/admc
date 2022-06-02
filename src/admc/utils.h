@@ -31,6 +31,7 @@ class QStandardItemModel;
 class QMenu;
 class QTreeView;
 class QLineEdit;
+class QPlainTextEdit;
 class QPoint;
 class QWidget;
 class QModelIndex;
@@ -85,6 +86,7 @@ QString get_classes_filter(const QList<QString> &class_list);
 QString is_container_filter();
 
 void limit_edit(QLineEdit *edit, const QString &attribute);
+void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute);
 
 // NOTE: object must contain "objectCategory" attribute
 QIcon get_object_icon(const AdObject &object);

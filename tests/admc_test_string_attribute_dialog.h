@@ -24,7 +24,7 @@
 #include "admc_test.h"
 
 class StringAttributeDialog;
-class QLineEdit;
+class QPlainTextEdit;
 
 class ADMCTestStringAttributeDialog : public ADMCTest {
     Q_OBJECT
@@ -38,7 +38,7 @@ private slots:
 
 private:
     StringAttributeDialog *dialog;
-    QLineEdit *line_edit;
+    QPlainTextEdit *text_edit;
 };
 
 #endif /* ADMC_TEST_STRING_EDITOR_H */

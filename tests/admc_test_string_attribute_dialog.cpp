@@ -23,7 +23,7 @@
 #include "attribute_dialogs/string_attribute_dialog.h"
 #include "attribute_dialogs/ui_string_attribute_dialog.h"
 
-#include <QLineEdit>
+#include <QPlainTextEdit>
 
 void ADMCTestStringAttributeDialog::initTestCase_data() {
     QTest::addColumn<QList<QByteArray>>("value_list");
@@ -48,7 +48,7 @@ void ADMCTestStringAttributeDialog::init() {
 void ADMCTestStringAttributeDialog::display_value() {
     QFETCH_GLOBAL(QString, display_value);
 
-    const QString actual_display_value = line_edit->text();
+    const QString actual_display_value = line_edit->toPlainText();
     QCOMPARE(actual_display_value, display_value);
 }
 

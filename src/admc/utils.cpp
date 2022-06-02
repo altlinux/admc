@@ -34,6 +34,7 @@
 #include <QHash>
 #include <QHeaderView>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QList>
 #include <QMap>
 #include <QMenu>
@@ -48,6 +49,7 @@
 #include <QTreeView>
 
 QMessageBox *message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
+int get_range_upper(const QString &attribute);
 
 QList<QStandardItem *> make_item_row(const int count) {
     QList<QStandardItem *> row;
@@ -159,9 +161,26 @@ QString is_container_filter() {
 }
 
 void limit_edit(QLineEdit *edit, const QString &attribute) {
-    const int range_upper = g_adconfig->get_attribute_range_upper(attribute);
+    const int range_upper = get_range_upper(attribute);
+
     if (range_upper > 0) {
         edit->setMaxLength(range_upper);
+    }
+}
+
+void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
+    const int range_upper = get_range_upper(attribute);
+
+    if (range_upper > 0) {
+        QObject::connect(
+            edit, &QPlainTextEdit::textChanged,
+            edit, [edit, range_upper]() {
+                const QString text = edit->toPlainText();
+
+                if (text.length() > range_upper) {
+                    edit->setPlainText(text.left(range_upper));
+                }
+            });
     }
 }
 
@@ -463,4 +482,25 @@ void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_e
     QObject::connect(
         last_name_edit, &QLineEdit::textChanged,
         last_name_edit, autofill_full_name);
+}
+
+int get_range_upper(const QString &attribute) {
+    if (attribute == ATTRIBUTE_UPN_SUFFIXES) {
+        // NOTE: schema doesn't define a max length for
+        // "upn suffixes", but we do need a limit. Use
+        // half of total max length of upn as a good
+        // estimate.
+        const int upn_suffix_max_length = [&]() {
+            const int upn_max_length = g_adconfig->get_attribute_range_upper(ATTRIBUTE_USER_PRINCIPAL_NAME);
+            const int out = upn_max_length / 2;
+
+            return out;
+        }();
+
+        return upn_suffix_max_length;
+    } else {
+        const int out = g_adconfig->get_attribute_range_upper(attribute);
+
+        return out;
+    }
 }
