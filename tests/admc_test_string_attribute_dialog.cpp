@@ -25,38 +25,47 @@
 
 #include <QPlainTextEdit>
 
-void ADMCTestStringAttributeDialog::initTestCase_data() {
+void ADMCTestStringAttributeDialog::init_edit(const QList<QByteArray> &value_list) {
+    dialog = new StringAttributeDialog(value_list, ATTRIBUTE_CN, false, parent_widget);
+    dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    text_edit = dialog->ui->edit;
+}
+
+void ADMCTestStringAttributeDialog::display_value_data() {
     QTest::addColumn<QList<QByteArray>>("value_list");
-    QTest::addColumn<QString>("display_value");
+    QTest::addColumn<QString>("expected_display_value");
 
     QTest::newRow("empty") << QList<QByteArray>() << "";
     QTest::newRow("non-empty") << QList<QByteArray>({"hello"}) << "hello";
 }
 
-void ADMCTestStringAttributeDialog::init() {
-    ADMCTest::init();
+void ADMCTestStringAttributeDialog::display_value() {
+    QFETCH(QList<QByteArray>, value_list);
+    QFETCH(QString, expected_display_value);
 
-    QFETCH_GLOBAL(QList<QByteArray>, value_list);
+    init_edit(value_list);
 
-    dialog = new StringAttributeDialog(value_list, ATTRIBUTE_NAME, false, parent_widget);
-    dialog->open();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
-    line_edit = dialog->ui->edit;
+    const QString actual_display_value = text_edit->toPlainText();
+    QCOMPARE(actual_display_value, expected_display_value);
 }
 
-void ADMCTestStringAttributeDialog::display_value() {
-    QFETCH_GLOBAL(QString, display_value);
+void ADMCTestStringAttributeDialog::get_value_list_data() {
+    QTest::addColumn<QList<QByteArray>>("value_list");
 
-    const QString actual_display_value = line_edit->toPlainText();
-    QCOMPARE(actual_display_value, display_value);
+    QTest::newRow("empty") << QList<QByteArray>();
+    QTest::newRow("non-empty") << QList<QByteArray>({"hello"});
 }
 
 void ADMCTestStringAttributeDialog::get_value_list() {
-    QFETCH_GLOBAL(QList<QByteArray>, value_list);
+    QFETCH(QList<QByteArray>, value_list);
 
-    const QList<QByteArray> value_list_from_dialog = dialog->get_value_list();
-    QCOMPARE(value_list_from_dialog, value_list);
+    init_edit(value_list);
+
+    const QList<QByteArray> actual_value_list = dialog->get_value_list();
+    const QList<QByteArray> expected_value_list = value_list;
+    QCOMPARE(actual_value_list, expected_value_list);
 }
 
 QTEST_MAIN(ADMCTestStringAttributeDialog)
