@@ -39,6 +39,7 @@ FindObjectDialog::FindObjectDialog(ConsoleWidget *buddy_console, const QString &
     auto menubar = new QMenuBar();
     layout()->setMenuBar(menubar);
     auto action_menu = menubar->addMenu(tr("&Action"));
+    menubar->setContextMenuPolicy(Qt::PreventContextMenu);
     auto view_menu = menubar->addMenu(tr("&View"));
 
     const QList<QString> class_list = filter_classes;
