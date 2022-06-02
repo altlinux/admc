@@ -100,6 +100,7 @@ Tests for ADMC
 %_bindir/admc_test_octet_attribute_dialog
 %_bindir/admc_test_bool_attribute_dialog
 %_bindir/admc_test_string_attribute_dialog
+%_bindir/admc_test_number_attribute_dialog
 %_bindir/admc_test_list_attribute_dialog
 %_bindir/admc_test_datetime_attribute_dialog
 %_bindir/admc_test_edit_query_item_widget

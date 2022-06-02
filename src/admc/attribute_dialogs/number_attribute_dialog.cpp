@@ -18,22 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_dialogs/string_attribute_dialog.h"
-#include "attribute_dialogs/ui_string_attribute_dialog.h"
+#include "attribute_dialogs/number_attribute_dialog.h"
+#include "attribute_dialogs/ui_number_attribute_dialog.h"
 
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
 #include "settings.h"
 
-StringAttributeDialog::StringAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
+NumberAttributeDialog::NumberAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
 : AttributeDialog(attribute, read_only, parent) {
-    ui = new Ui::StringAttributeDialog();
+    ui = new Ui::NumberAttributeDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
     AttributeDialog::load_attribute_label(ui->attribute_label);
+
+    set_line_edit_to_numbers_only(ui->edit);
 
     limit_edit(ui->edit, attribute);
 
@@ -43,14 +45,14 @@ StringAttributeDialog::StringAttributeDialog(const QList<QByteArray> &value_list
     const QString value_string = QString(value);
     ui->edit->setText(value_string);
 
-    settings_setup_dialog_geometry(SETTING_string_attribute_dialog_geometry, this);
+    settings_setup_dialog_geometry(SETTING_number_attribute_dialog_geometry, this);
 }
 
-StringAttributeDialog::~StringAttributeDialog() {
+NumberAttributeDialog::~NumberAttributeDialog() {
     delete ui;
 }
 
-QList<QByteArray> StringAttributeDialog::get_value_list() const {
+QList<QByteArray> NumberAttributeDialog::get_value_list() const {
     const QString new_value_string = ui->edit->text();
 
     if (new_value_string.isEmpty()) {
@@ -58,11 +60,5 @@ QList<QByteArray> StringAttributeDialog::get_value_list() const {
     } else {
         const QByteArray new_value = new_value_string.toUtf8();
         return {new_value};
-    }
-}
-
-void StringAttributeDialog::set_max_length(const int max_length) {
-    if (max_length > 0) {
-        ui->edit->setMaxLength(max_length);
     }
 }

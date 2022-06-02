@@ -64,6 +64,7 @@ set(TEST_TARGETS
     admc_test_bool_attribute_dialog
     admc_test_datetime_attribute_dialog
     admc_test_string_attribute_dialog
+    admc_test_number_attribute_dialog
     admc_test_list_attribute_dialog
     admc_test_edit_query_item_widget
     admc_test_policy_results_widget
