@@ -40,6 +40,8 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include <algorithm>
+
 #define SPLITTER_STATE "SPLITTER_STATE"
 const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
 const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
@@ -57,11 +59,25 @@ const QList<StandardAction> standard_action_list = {
 
 QString results_state_name(const int type);
 
+class ScopeView : public QTreeView {
+public:
+    using QTreeView::QTreeView;
+
+    void resizeEvent(QResizeEvent *event) override {
+        QTreeView::resizeEvent(event);
+
+        QSize areaSize = viewport()->size();
+        const int view_width = areaSize.width();
+        const int content_width = sizeHintForColumn(0);
+        header()->setDefaultSectionSize(std::max(view_width, content_width));
+    }
+};
+
 ConsoleWidget::ConsoleWidget(QWidget *parent)
 : QWidget(parent) {
     d = new ConsoleWidgetPrivate(this);
 
-    d->scope_view = new QTreeView();
+    d->scope_view = new ScopeView(this);
     d->scope_view->setHeaderHidden(true);
     d->scope_view->setExpandsOnDoubleClick(true);
     d->scope_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -69,6 +85,25 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->scope_view->setDragDropMode(QAbstractItemView::DragDrop);
     // NOTE: this makes it so that you can't drag drop between rows (even though name/description don't say anything about that)
     d->scope_view->setDragDropOverwriteMode(true);
+
+    // NOTE: this is a hacky solution to the problem of
+    // scope view cutting off long items and not turning on
+    // scrollbar so that full item can be viewed.
+    // "stretchLastSection" setting is turned off - this
+    // fixes item being stretched to fit the view and now
+    // items can be their full length.
+    // 
+    // BUT, without "stretchLastSection", selecting items
+    // looks wrong because selection rectangle doesn't
+    // stretch to the whole view and also depends on the
+    // width of the widest item that is currently visible.
+    // To fix this visual problem, we change resize mode to
+    // interactive and override scope view's resizeEvent. In
+    // resizeEvent() we resize section to width of scope
+    // view or to content width, depending on which one is
+    // greater at the moment.
+    d->scope_view->header()->setStretchLastSection(false);
+    d->scope_view->header()->setSectionResizeMode(QHeaderView::Interactive);
 
     d->model = new ConsoleDragModel(this);
 
