@@ -406,7 +406,3 @@ void console_policy_load_item(QStandardItem *main_item, const AdObject &object) 
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
     main_item->setText(display_name);
 }
-
-QList<QString> console_policy_search_attributes() {
-    return {ATTRIBUTE_DISPLAY_NAME};
-}

@@ -55,7 +55,7 @@ void AllPoliciesFolderImpl::fetch(const QModelIndex &index) {
     const QString base = g_adconfig->policies_dn();
     const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QList<QString> attributes = console_policy_search_attributes();
+    const QList<QString> attributes = QList<QString>();
     const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
     all_policies_folder_impl_add_objects(console, results.values(), index);
