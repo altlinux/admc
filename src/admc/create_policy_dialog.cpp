@@ -82,7 +82,7 @@ void CreatePolicyDialog::accept() {
 
     show_busy_indicator();
 
-    const QString name = ui->name_edit->text();
+    const QString name = ui->name_edit->text().trimmed();
 
     // NOTE: since this is *display name*, not just name,
     // have to manually check for conflict. Server wouldn't

@@ -59,7 +59,7 @@ void RenamePolicyDialog::accept() {
         return;
     }
 
-    const QString new_name = ui->name_edit->text();
+    const QString new_name = ui->name_edit->text().trimmed();
     const bool apply_success = ad.attribute_replace_string(target_dn, ATTRIBUTE_DISPLAY_NAME, new_name);
 
     if (apply_success) {
