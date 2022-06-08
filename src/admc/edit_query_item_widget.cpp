@@ -39,7 +39,7 @@ EditQueryItemWidget::~EditQueryItemWidget() {
 }
 
 QString EditQueryItemWidget::name() const {
-    return ui->name_edit->text();
+    return ui->name_edit->text().trimmed();
 }
 
 QString EditQueryItemWidget::description() const {

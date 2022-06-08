@@ -53,7 +53,7 @@ void EditQueryFolderDialog::set_data(const QList<QString> &sibling_name_list_arg
 }
 
 void EditQueryFolderDialog::accept() {
-    const QString name = ui->name_edit->text();
+    const QString name = ui->name_edit->text().trimmed();
 
     const bool name_is_valid = console_query_or_folder_name_is_good(name, sibling_name_list, this);
 
