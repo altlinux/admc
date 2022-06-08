@@ -40,6 +40,8 @@
 
 const QDateTime ntfs_epoch = QDateTime(QDate(1601, 1, 1), QTime(), Qt::UTC);
 
+QString escape_name_for_dn(const QString &unescaped);
+
 bool large_integer_datetime_is_never(const QString &value) {
     const bool is_never = (value == AD_LARGE_INTEGER_DATETIME_NEVER_1 || value == AD_LARGE_INTEGER_DATETIME_NEVER_2);
 
@@ -267,7 +269,9 @@ QString dn_rename(const QString &dn, const QString &new_name) {
         const int prefix_index = old_rdn.indexOf('=') + 1;
         const QString prefix = old_rdn.left(prefix_index);
 
-        return (prefix + new_name);
+        const QString new_name_escaped = escape_name_for_dn(new_name);
+
+        return (prefix + new_name_escaped);
     }();
 
     QStringList new_exploded_dn(exploded_dn);
@@ -305,12 +309,7 @@ QString dn_from_name_and_parent(const QString &name, const QString &parent, cons
         }
     }();
 
-    const QString name_escaped = [&]() {
-        QString out = name;
-        out.replace("?", "\\?");
-
-        return out;
-    }();
+    const QString name_escaped = escape_name_for_dn(name);
 
     const QString dn = QString("%1=%2,%3").arg(suffix, name_escaped, parent);
 
@@ -457,4 +456,12 @@ QString attribute_type_display_string(const AttributeType type) {
 
 QString int_to_hex_string(const int n) {
     return QString("0x%1").arg(n, 8, 16, QLatin1Char('0'));
+}
+
+QString escape_name_for_dn(const QString &unescaped) {
+    QString out = unescaped;
+
+    out.replace("?", "\\?");
+
+    return out;
 }
