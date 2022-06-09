@@ -4,6 +4,12 @@ CHANGELOG
 -----------------------------------------------------------------------
  VERSION 0.10.0
 -----------------------------------------------------------------------
+- Properties: Removed "Group tab". Not necessary because
+  policy tree replaces it.
+- Policies: Improved policy tree. Tree now contains OU's in
+  addition to policies. OU's display their child OU's and
+  linked policies. Viewing all policies is still possible in
+  "All policies" folder.
 - Misc: Fixed eliding of long items in scope view. Scope
   view now correctly displays a scroll bar so that long
   items can be viewed fully.
@@ -14,12 +20,6 @@ CHANGELOG
 - Misc: Increased size of editor for string attributes,
   which is available in "Attributes" tab. Long strings are
   now easier to view and edit.
-- Policies: Improved policy tree. Tree now contains OU's in
-  addition to policies. OU's display their child OU's and
-  linked policies. Viewing all policies is still possible in
-  "All policies" folder.
-- Properties: Removed "Group tab". Not necessary because
-  policy tree replaces it.
 - Misc: Removed ability to drag and drop policies onto OU's
   in object tree. This action now can be performed inside
   policy tree.
