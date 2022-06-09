@@ -781,8 +781,13 @@ QList<QString> AdConfig::get_noncontainer_classes() {
 
 bool AdConfig::rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const {
     const QByteArray rights_guid = d->rights_name_to_guid_map[rights_cn];
-    const QSet<QString> applies_to = d->rights_applies_to_map[rights_guid].toSet();
-    const bool applies = applies_to.intersects(class_list.toSet());
+
+    const QList<QString> applies_to_list = d->rights_applies_to_map[rights_guid]; 
+    const QSet<QString> applies_to_set = QSet<QString>(applies_to_list.begin(), applies_to_list.end());
+
+    const QSet<QString> class_set = QSet<QString>(class_list.begin(), class_list.end());
+
+    const bool applies = applies_to_set.intersects(class_set);
 
     return applies;
 }

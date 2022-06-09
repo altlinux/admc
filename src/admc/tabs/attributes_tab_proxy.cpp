@@ -47,10 +47,15 @@ AttributesTabProxy::AttributesTabProxy(AttributesTabFilterMenu *filter_menu_arg,
 
 void AttributesTabProxy::load(const AdObject &object) {
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    mandatory_attributes = g_adconfig->get_mandatory_attributes(object_classes).toSet();
-    optional_attributes = g_adconfig->get_optional_attributes(object_classes).toSet();
 
-    set_attributes = object.attributes().toSet();
+    const QList<QString> mandatory_attributes_list = g_adconfig->get_mandatory_attributes(object_classes);
+    mandatory_attributes = QSet<QString>(mandatory_attributes_list.begin(), mandatory_attributes_list.end());
+
+    const QList<QString> optional_attributes_list = g_adconfig->get_optional_attributes(object_classes);
+    optional_attributes = QSet<QString>(optional_attributes_list.begin(), optional_attributes_list.end());
+
+    const QList<QString> attributes_list = object.attributes();
+    set_attributes = QSet<QString>(attributes_list.begin(), attributes_list.end());
 }
 
 bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
