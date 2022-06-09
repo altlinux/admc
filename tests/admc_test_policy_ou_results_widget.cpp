@@ -25,6 +25,7 @@
 #include "globals.h"
 #include "gplink.h"
 #include "policy_ou_results_widget.h"
+#include "console_widget/console_widget.h"
 #include "utils.h"
 
 #include <QStandardItemModel>
@@ -79,7 +80,9 @@ void ADMCTestPolicyOUResultsWidget::cleanupTestCase() {
 void ADMCTestPolicyOUResultsWidget::init() {
     ADMCTest::init();
 
-    widget = new PolicyOUResultsWidget(parent_widget);
+    auto console = new ConsoleWidget(parent_widget);
+
+    widget = new PolicyOUResultsWidget(console);
     add_widget(widget);
 
     ResultsView *results_view = widget->get_view();
