@@ -27,6 +27,7 @@
 
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QListWidget>
 #include <QPushButton>
 
@@ -155,10 +156,10 @@ void ADMCTestStringOtherEdit::add_new_other_value() {
     auto string_attribute_dialog = list_attribute_dialog->findChild<StringAttributeDialog *>();
     QVERIFY(string_attribute_dialog);
 
-    auto string_attribute_dialog_line_edit = string_attribute_dialog->findChild<QLineEdit *>();
+    auto string_attribute_dialog_line_edit = string_attribute_dialog->findChild<QPlainTextEdit *>();
     QVERIFY(string_attribute_dialog_line_edit);
 
-    string_attribute_dialog_line_edit->setText(new_value);
+    string_attribute_dialog_line_edit->setPlainText(new_value);
 
     string_attribute_dialog->accept();
 
