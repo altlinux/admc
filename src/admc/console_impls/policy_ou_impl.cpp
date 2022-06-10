@@ -290,7 +290,7 @@ void PolicyOUImpl::link_gpo() {
 }
 
 void PolicyOUImpl::properties(const QList<QModelIndex> &index_list) {
-    console_object_properties(console, nullptr, index_list, PolicyOURole_DN);
+    console_object_properties(console, nullptr, index_list, PolicyOURole_DN, {CLASS_OU});
 }
 
 void PolicyOUImpl::rename(const QList<QModelIndex> &index_list) {

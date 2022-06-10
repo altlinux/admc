@@ -523,10 +523,22 @@ void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console,
 }
 
 void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
-    console_object_properties(console, buddy_console, index_list, ObjectRole_DN);
+    const QList<QString> class_list = [&]() {
+        QSet<QString> out;
+
+        for (const QModelIndex &index : index_list) {
+            const QList<QString> this_class_list = index.data(ObjectRole_ObjectClasses).toStringList();
+            const QString main_class = this_class_list.last();
+            out.insert(main_class);
+        }
+
+        return out.toList();
+    }();
+
+    console_object_properties(console, buddy_console, index_list, ObjectRole_DN, class_list);
 }
 
-void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role) {
+void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role, const QList<QString> &class_list) {
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
@@ -616,18 +628,6 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
                 console, on_object_properties_applied);
         }
     } else if (dn_list.size() > 1) {
-        const QList<QString> class_list = [&]() {
-            QSet<QString> out;
-
-            for (const QPersistentModelIndex &index : index_list) {
-                const QList<QString> this_class_list = index.data(ObjectRole_ObjectClasses).toStringList();
-                const QString main_class = this_class_list.last();
-                out.insert(main_class);
-            }
-
-            return out.toList();
-        }();
-
         auto dialog = new PropertiesMultiDialog(ad, dn_list, class_list);
         dialog->open();
 
