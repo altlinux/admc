@@ -294,7 +294,7 @@ void PolicyOUImpl::properties(const QList<QModelIndex> &index_list) {
 }
 
 void PolicyOUImpl::rename(const QList<QModelIndex> &index_list) {
-    console_object_rename(console, nullptr, index_list, PolicyOURole_DN);
+    console_object_rename(console, nullptr, index_list, PolicyOURole_DN, CLASS_OU);
 }
 
 void PolicyOUImpl::delete_action(const QList<QModelIndex> &index_list) {

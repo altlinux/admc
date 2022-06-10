@@ -467,10 +467,13 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex
 }
 
 void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
-    console_object_rename(console, buddy_console, index_list, ObjectRole_DN);
+    const QModelIndex index = index_list[0];
+    const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
+    
+    console_object_rename(console, buddy_console, index_list, ObjectRole_DN, object_class);
 }
   
-void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role) {  
+void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role, const QString &object_class) {  
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
@@ -489,7 +492,6 @@ void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console,
 
     RenameObjectDialog *dialog = [&]() -> RenameObjectDialog * {
         const QModelIndex index = index_list[0];
-        const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
         const bool is_user = (object_class == CLASS_USER);
         const bool is_group = (object_class == CLASS_GROUP);
 
