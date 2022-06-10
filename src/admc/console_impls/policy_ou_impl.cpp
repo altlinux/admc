@@ -332,18 +332,23 @@ void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<A
 
         if (is_ou) {
             const QList<QStandardItem *> row = console->add_scope_item(ItemType_PolicyOU, parent);
-            QStandardItem *item = row[0];
 
-            policy_ou_impl_load_item_data(item, object);
-
-            const QString name = object.get_string(ATTRIBUTE_NAME);
-            item->setText(name);
+            policy_ou_impl_load_row(row, object);
         } else if (is_gpc) {
             const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, parent);
 
             console_policy_load(row, object);
         }
     }
+}
+
+void policy_ou_impl_load_row(const QList<QStandardItem *> row, const AdObject &object) {
+    QStandardItem *item = row[0];
+
+    policy_ou_impl_load_item_data(item, object);
+
+    const QString name = object.get_string(ATTRIBUTE_NAME);
+    item->setText(name);
 }
 
 void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou_dn, const QList<QString> &gpo_list) {

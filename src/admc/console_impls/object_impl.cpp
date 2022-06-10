@@ -604,7 +604,24 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
             apply_changes_to_branch(object_root, ItemType_Object, ObjectRole_DN);
             apply_changes_to_branch(query_root, ItemType_Object, ObjectRole_DN);
             apply_changes_to_branch(find_root, ItemType_Object, ObjectRole_DN);
-            apply_changes_to_branch(policy_root, ItemType_PolicyOU, PolicyOURole_DN);
+
+            // Apply to policy branch
+            if (!policy_root.isValid()) {
+                for (const AdObject &object : object_list) {
+                    const QString dn = object.get_dn();
+                    const QList<QModelIndex> object_index_list = target_console->search_items(policy_root, PolicyOURole_DN, dn, {ItemType_PolicyOU});
+
+                    if (object_index_list.isEmpty()) {
+                        continue;
+                    }
+
+                    const QModelIndex object_index = object_index_list[0];
+                    const QList<QStandardItem *> object_row = target_console->get_row(object_index);
+                    console_object_load(object_row, object);
+
+                    policy_ou_impl_load_row(object_row, object);
+                }
+            }
         };
 
         apply_changes(console);
