@@ -55,6 +55,7 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
 bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
     UNUSED_ARG(target);
     UNUSED_ARG(target_type);
+    UNUSED_ARG(dropped_list);
 
     const bool dropped_are_policy_ou = (dropped_type_list == QSet<int>({ItemType_PolicyOU}));
 

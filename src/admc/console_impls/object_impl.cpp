@@ -491,7 +491,6 @@ void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console,
     }();
 
     RenameObjectDialog *dialog = [&]() -> RenameObjectDialog * {
-        const QModelIndex index = index_list[0];
         const bool is_user = (object_class == CLASS_USER);
         const bool is_group = (object_class == CLASS_GROUP);
 
