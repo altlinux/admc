@@ -1690,13 +1690,6 @@ void console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
     console->set_current_scope(root->index());
 }
 
-bool console_object_is_ou(const QModelIndex &index) {
-    const QList<QString> classes = index.data(ObjectRole_ObjectClasses).toStringList();
-    const bool is_ou = classes.contains(CLASS_OU);
-
-    return is_ou;
-}
-
 QModelIndex get_object_tree_root(ConsoleWidget *console) {
     const QString head_dn = g_adconfig->domain_dn();
     const QModelIndex console_root = QModelIndex();

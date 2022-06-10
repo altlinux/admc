@@ -152,7 +152,6 @@ QList<int> object_impl_default_columns();
 QList<QString> console_object_search_attributes();
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
 void console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
-bool console_object_is_ou(const QModelIndex &index);
 // NOTE: this may return an invalid index if there's no tree
 // of objects setup
 QModelIndex get_object_tree_root(ConsoleWidget *console);
