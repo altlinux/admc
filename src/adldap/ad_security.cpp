@@ -431,7 +431,7 @@ QList<QByteArray> security_descriptor_get_trustee_list(security_descriptor *sd) 
         return out;
     }();
 
-    const QList<QByteArray> trustee_list = trustee_set.toList();
+    const QList<QByteArray> trustee_list = QList<QByteArray>(trustee_set.begin(), trustee_set.end());
 
     return trustee_list;
 }
