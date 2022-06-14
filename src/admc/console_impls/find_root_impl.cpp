@@ -48,11 +48,7 @@ QList<int> FindRootImpl::default_columns() const {
 }
 
 QModelIndex get_find_tree_root(ConsoleWidget *console) {
-    const QList<QModelIndex> index_list = console->search_items(QModelIndex(), {ItemType_FindRoot});
+    const QModelIndex out = console->search_item(QModelIndex(), {ItemType_FindRoot});
 
-    if (!index_list.isEmpty()) {
-        return index_list[0];
-    } else {
-        return QModelIndex();
-    }
+    return out;
 }

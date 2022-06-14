@@ -263,15 +263,13 @@ void PolicyOUResultsWidget::remove_link() {
 
     // Also remove gpo from OU in console
     const QModelIndex policy_root = get_policy_tree_root(console);
-    const QList<QModelIndex> ou_search_results = console->search_items(policy_root, PolicyOURole_DN, ou_dn, {ItemType_PolicyOU});
-    if (!ou_search_results.isEmpty()) {
-        const QModelIndex ou_index = ou_search_results[0];
+    const QModelIndex ou_index = console->search_item(policy_root, PolicyOURole_DN, ou_dn, {ItemType_PolicyOU});
 
+    if (ou_index.isValid()) {
         for (const QString &gpo_dn : gpo_dn_list) {
-            const QList<QModelIndex> gpo_search_results = console->search_items(ou_index, PolicyRole_DN, gpo_dn, {ItemType_Policy});
-            if (!gpo_search_results.isEmpty()) {
-                const QModelIndex gpo_index = gpo_search_results[0];
+            const QModelIndex gpo_index = console->search_item(ou_index, PolicyRole_DN, gpo_dn, {ItemType_Policy});
 
+            if (!gpo_index.isValid()) {
                 console->delete_item(gpo_index);
             }
         }

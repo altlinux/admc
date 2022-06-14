@@ -583,15 +583,12 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
 
                 for (const AdObject &object : object_list) {
                     const QString dn = object.get_dn();
-                    const QList<QModelIndex> object_index_list = target_console->search_items(root_index, update_dn_role, dn, {item_type});
+                    const QModelIndex object_index = target_console->search_item(root_index, update_dn_role, dn, {item_type});
 
-                    if (object_index_list.isEmpty()) {
-                        continue;
+                    if (object_index.isValid()) {
+                        const QList<QStandardItem *> object_row = target_console->get_row(object_index);
+                        console_object_load(object_row, object);
                     }
-
-                    const QModelIndex object_index = object_index_list[0];
-                    const QList<QStandardItem *> object_row = target_console->get_row(object_index);
-                    console_object_load(object_row, object);
                 }
             };
 
@@ -608,17 +605,14 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
             if (!policy_root.isValid()) {
                 for (const AdObject &object : object_list) {
                     const QString dn = object.get_dn();
-                    const QList<QModelIndex> object_index_list = target_console->search_items(policy_root, PolicyOURole_DN, dn, {ItemType_PolicyOU});
+                    const QModelIndex object_index = target_console->search_item(policy_root, PolicyOURole_DN, dn, {ItemType_PolicyOU});
 
-                    if (object_index_list.isEmpty()) {
-                        continue;
+                    if (object_index.isValid()) {
+                        const QList<QStandardItem *> object_row = target_console->get_row(object_index);
+                        console_object_load(object_row, object);
+
+                        policy_ou_impl_load_row(object_row, object);
                     }
-
-                    const QModelIndex object_index = object_index_list[0];
-                    const QList<QStandardItem *> object_row = target_console->get_row(object_index);
-                    console_object_load(object_row, object);
-
-                    policy_ou_impl_load_row(object_row, object);
                 }
             }
         };
@@ -1065,10 +1059,9 @@ void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console,
             auto apply_changes = [&](ConsoleWidget *target_console) {
                 const QModelIndex object_root = get_object_tree_root(target_console);
                 if (object_root.isValid()) {
-                    const QList<QModelIndex> parent_object_list = target_console->search_items(object_root, ObjectRole_DN, parent_dn, {ItemType_Object});
+                    const QModelIndex parent_object = target_console->search_item(object_root, ObjectRole_DN, parent_dn, {ItemType_Object});
 
-                    if (!parent_object_list.isEmpty()) {
-                        const QModelIndex parent_object = parent_object_list[0];
+                    if (parent_object.isValid()) {
                         object_impl_add_objects_to_console_from_dns(target_console, ad_inner, {created_dn}, parent_object);
                     }
                 }
@@ -1085,11 +1078,9 @@ void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console,
                 // Apply changes to policy tree
                 const QModelIndex policy_root = get_policy_tree_root(target_console);
                 if (policy_root.isValid() && object_class == CLASS_OU) {
-                    const QList<QModelIndex> parent_policy_list = target_console->search_items(policy_root, PolicyOURole_DN, parent_dn, {ItemType_PolicyOU});
+                    const QModelIndex parent_policy = target_console->search_item(policy_root, PolicyOURole_DN, parent_dn, {ItemType_PolicyOU});
 
-                    if (!parent_policy_list.isEmpty()) {
-                        const QModelIndex parent_policy = parent_policy_list[0];
-
+                    if (parent_policy.isValid()) {
                         policy_ou_impl_add_objects_from_dns(target_console, ad_inner, {created_dn}, parent_policy);
                     }
                 }
@@ -1137,6 +1128,7 @@ void ObjectImpl::set_disabled(const bool disabled) {
 
             for (const QString &dn : changed_objects) {
                 const QList<QModelIndex> index_list = target_console->search_items(root_index, ObjectRole_DN, dn, {ItemType_Object});
+
                 for (const QModelIndex &index : index_list) {
                     QStandardItem *item = target_console->get_item(index);
                     item->setData(disabled, ObjectRole_AccountDisabled);
@@ -1221,18 +1213,10 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
         // is that new object is duplicated.
         const QModelIndex object_root = get_object_tree_root(target_console);
         if (object_root.isValid()) {
-            const QModelIndex new_parent_index = [=]() {
-                const QList<QModelIndex> results = target_console->search_items(object_root, ObjectRole_DN, new_parent_dn, {ItemType_Object});
+            const QModelIndex parent_object = target_console->search_item(object_root, ObjectRole_DN, new_parent_dn, {ItemType_Object});
 
-                if (results.size() == 1) {
-                    return results[0];
-                } else {
-                    return QModelIndex();
-                }
-            }();
-
-            if (new_parent_index.isValid()) {
-                object_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
+            if (parent_object.isValid()) {
+                object_impl_add_objects_to_console(target_console, object_map.values(), parent_object);
 
                 console_object_delete_dn_list(target_console, old_dn_list, object_root, ItemType_Object, ObjectRole_DN);
             }
@@ -1324,19 +1308,13 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
         // Apply changes to policy tree
         const QModelIndex policy_root = get_policy_tree_root(target_console);
         if (policy_root.isValid()) {
-            const QModelIndex new_parent_index = [=]() {
-                const QList<QModelIndex> results = target_console->search_items(policy_root, PolicyOURole_DN, new_parent_dn, {ItemType_PolicyOU});
+            const QModelIndex new_parent_index = target_console->search_item(policy_root, PolicyOURole_DN, new_parent_dn, {ItemType_PolicyOU});
 
-                if (results.size() == 1) {
-                    return results[0];
-                } else {
-                    return QModelIndex();
-                }
-            }();
+            if (new_parent_index.isValid()) {
+                policy_ou_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
 
-            policy_ou_impl_add_objects_to_console(target_console, object_map.values(), new_parent_index);
-
-            console_object_delete_dn_list(target_console, old_dn_list, policy_root, ItemType_PolicyOU, PolicyOURole_DN);
+                console_object_delete_dn_list(target_console, old_dn_list, policy_root, ItemType_PolicyOU, PolicyOURole_DN);
+            }
         }
     };
 

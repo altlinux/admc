@@ -141,13 +141,9 @@ void AllPoliciesFolderImpl::create_policy() {
 
 QModelIndex get_all_policies_folder_index(ConsoleWidget *console) {
     const QModelIndex policy_tree_root = get_policy_tree_root(console);
-    const QList<QModelIndex> index_list = console->search_items(policy_tree_root, {ItemType_AllPoliciesFolder});
-
-    if (!index_list.isEmpty()) {
-        return index_list[0];
-    } else {
-        return QModelIndex();
-    }
+    const QModelIndex out = console->search_item(policy_tree_root, {ItemType_AllPoliciesFolder});
+    
+    return out;
 }
 
 void all_policies_folder_impl_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {

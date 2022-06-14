@@ -428,6 +428,30 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, const 
     return out;
 }
 
+QModelIndex ConsoleWidget::search_item(const QModelIndex &parent, int role, const QVariant &value, const QList<int> &type_list) const {
+    const QList<QModelIndex> index_list = search_items(parent, role, value, type_list);
+
+    if (index_list.isEmpty()) {
+        const QModelIndex out = index_list[0];
+
+        return out;
+    } else {
+        return QModelIndex();
+    }
+}
+
+QModelIndex ConsoleWidget::search_item(const QModelIndex &parent, const QList<int> &type) const {
+    const QList<QModelIndex> index_list = search_items(parent, type);
+
+    if (index_list.isEmpty()) {
+        const QModelIndex out = index_list[0];
+
+        return out;
+    } else {
+        return QModelIndex();
+    }
+}
+
 QModelIndex ConsoleWidget::get_current_scope_item() const {
     const QModelIndex index = d->scope_view->selectionModel()->currentIndex();
 

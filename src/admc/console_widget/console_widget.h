@@ -141,6 +141,12 @@ public:
     QList<QModelIndex> search_items(const QModelIndex &parent, int role, const QVariant &value, const QList<int> &type = QList<int>()) const;
     QList<QModelIndex> search_items(const QModelIndex &parent, const QList<int> &type) const;
 
+    // Single index versions of search f-ns. Use when you
+    // expect only one valid result or none. QModelIndex()
+    // is returned if no items are found.
+    QModelIndex search_item(const QModelIndex &parent, int role, const QVariant &value, const QList<int> &type = QList<int>()) const;
+    QModelIndex search_item(const QModelIndex &parent, const QList<int> &type) const;
+
     QModelIndex get_current_scope_item() const;
     int get_child_count(const QModelIndex &index) const;
 
