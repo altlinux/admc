@@ -1063,20 +1063,15 @@ void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console,
             // need to search for index of parent object in domain
             // tree.
             auto apply_changes = [&](ConsoleWidget *target_console) {
-                const QModelIndex root = get_object_tree_root(target_console);
-                if (!root.isValid()) {
-                    return;
+                const QModelIndex object_root = get_object_tree_root(target_console);
+                if (object_root.isValid()) {
+                    const QList<QModelIndex> parent_object_list = target_console->search_items(object_root, ObjectRole_DN, parent_dn, {ItemType_Object});
+
+                    if (!parent_object_list.isEmpty()) {
+                        const QModelIndex parent_object = parent_object_list[0];
+                        object_impl_add_objects_to_console_from_dns(target_console, ad_inner, {created_dn}, parent_object);
+                    }
                 }
-
-                const QList<QModelIndex> search_parent = target_console->search_items(root, ObjectRole_DN, parent_dn, {ItemType_Object});
-
-                if (search_parent.isEmpty()) {
-                    hide_busy_indicator();
-                    return;
-                }
-
-                const QModelIndex scope_parent_index = search_parent[0];
-                object_impl_add_objects_to_console_from_dns(target_console, ad_inner, {created_dn}, scope_parent_index);
 
                 // NOTE: changes are not applied to
                 // find tree because creation of
@@ -1090,10 +1085,13 @@ void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console,
                 // Apply changes to policy tree
                 const QModelIndex policy_root = get_policy_tree_root(target_console);
                 if (policy_root.isValid() && object_class == CLASS_OU) {
-                    const QList<QModelIndex> parent_in_policy_tree_list = target_console->search_items(policy_root, PolicyOURole_DN, parent_dn, {ItemType_PolicyOU});
-                    const QModelIndex parent_in_policy_tree = parent_in_policy_tree_list[0];
+                    const QList<QModelIndex> parent_policy_list = target_console->search_items(policy_root, PolicyOURole_DN, parent_dn, {ItemType_PolicyOU});
 
-                    policy_ou_impl_add_objects_from_dns(target_console, ad_inner, {created_dn}, parent_in_policy_tree);
+                    if (!parent_policy_list.isEmpty()) {
+                        const QModelIndex parent_policy = parent_policy_list[0];
+
+                        policy_ou_impl_add_objects_from_dns(target_console, ad_inner, {created_dn}, parent_policy);
+                    }
                 }
             };
 
