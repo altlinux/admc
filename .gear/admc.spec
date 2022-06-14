@@ -70,19 +70,19 @@ Tests for ADMC
 
 %files test
 %_libdir/libadmctest.so
+%_bindir/admc_test_ad_interface
+%_bindir/admc_test_ad_security
 %_bindir/admc_test_unlock_edit
 %_bindir/admc_test_upn_edit
 %_bindir/admc_test_string_edit
 %_bindir/admc_test_string_large_edit
 %_bindir/admc_test_country_edit
 %_bindir/admc_test_gplink
-%_bindir/admc_test_ad_interface
-%_bindir/admc_test_ad_security
 %_bindir/admc_test_select_base_widget
 %_bindir/admc_test_filter_widget
 %_bindir/admc_test_attributes_tab
-%_bindir/admc_test_member_of_tab
 %_bindir/admc_test_members_tab
+%_bindir/admc_test_member_of_tab
 %_bindir/admc_test_select_object_dialog
 %_bindir/admc_test_logon_hours_dialog
 %_bindir/admc_test_logon_computers_edit
@@ -95,14 +95,14 @@ Tests for ADMC
 %_bindir/admc_test_delegation_edit
 %_bindir/admc_test_string_other_edit
 %_bindir/admc_test_account_option_edit
-%_bindir/admc_test_protect_deletion_edit
 %_bindir/admc_test_gpoptions_edit
+%_bindir/admc_test_protect_deletion_edit
 %_bindir/admc_test_octet_attribute_dialog
 %_bindir/admc_test_bool_attribute_dialog
+%_bindir/admc_test_datetime_attribute_dialog
 %_bindir/admc_test_string_attribute_dialog
 %_bindir/admc_test_number_attribute_dialog
 %_bindir/admc_test_list_attribute_dialog
-%_bindir/admc_test_datetime_attribute_dialog
 %_bindir/admc_test_edit_query_item_widget
 %_bindir/admc_test_policy_results_widget
 %_bindir/admc_test_policy_ou_results_widget
