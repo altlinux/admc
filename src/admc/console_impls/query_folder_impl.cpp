@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ QueryFolderImpl::QueryFolderImpl(ConsoleWidget *console_arg)
 void QueryFolderImpl::on_create_query_folder() {
     auto dialog = new CreateQueryFolderDialog(console);
 
-    const QModelIndex parent_index = console->get_action_target(ItemType_QueryFolder);
+    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, QModelIndex());
 
     dialog->set_sibling_name_list(sibling_name_list);
@@ -100,7 +100,7 @@ void QueryFolderImpl::on_create_query_folder() {
 }
 
 void QueryFolderImpl::on_create_query_item() {
-    const QModelIndex parent_index = console->get_action_target(ItemType_QueryFolder);
+    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, QModelIndex());
 
     auto dialog = new CreateQueryItemDialog(sibling_name_list, console);
@@ -126,7 +126,7 @@ void QueryFolderImpl::on_create_query_item() {
 void QueryFolderImpl::on_edit_query_folder() {
     auto dialog = new EditQueryFolderDialog(console);
 
-    const QModelIndex index = console->get_action_target(ItemType_QueryFolder);
+    const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
 
     {
         const QString name = index.data(Qt::DisplayRole).toString();
@@ -295,7 +295,7 @@ void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
 }
 
 void QueryFolderImpl::on_import() {
-    const QModelIndex parent_index = console->get_action_target(ItemType_QueryFolder);
+    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
 
     const QString file_path = [&]() {
         const QString caption = QCoreApplication::translate("query_item_impl.cpp", "Import Query");
@@ -456,13 +456,9 @@ void console_query_tree_save(ConsoleWidget *console) {
 }
 
 QModelIndex get_query_tree_root(ConsoleWidget *console) {
-    const QList<QModelIndex> search_results = console->search_items(QModelIndex(), QueryItemRole_IsRoot, true, ItemType_QueryFolder);
+    const QModelIndex out = console->search_item(QModelIndex(), QueryItemRole_IsRoot, true, {ItemType_QueryFolder});
 
-    if (!search_results.isEmpty()) {
-        return search_results[0];
-    } else {
-        return QModelIndex();
-    }
+    return out;
 }
 
 QList<QString> QueryFolderImpl::column_labels() const {

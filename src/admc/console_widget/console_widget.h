@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,30 +126,26 @@ public:
     // selected row. There is always at least one
     // selected item. If results is currently focused
     // but has no selection, selected items from scope
-    // are returned instead. Note that this shouldn't
-    // be use for as targets of actions, use
-    // get_action_target_items() instead.
+    // are returned instead.
     QList<QModelIndex> get_selected_items(const int type) const;
 
-    // Get list of action targets. These are the items
-    // that should be the target of console actions,
-    // both default and extra from console impl's.
-    // Targets are equal to currently selected items or
-    // to current scope if context menu was opened by
-    // clicking on empty space in results.
-    QList<QModelIndex> get_action_target_items(const int type) const;
-
-    // Get a single action target. Use if you are sure
+    // Get a single selected item. Use if you are sure
     // that there's only one (dialog that uses one
-    // target item for example).
-    QModelIndex get_action_target(const int type) const;
+    // selected item for example).
+    QModelIndex get_selected_item(const int type) const;
 
     // NOTE: Search is inclusive, examining the given parent
     // and all of it's descendants. Pass QModelIndex()
     // parent to search the whole model. If no type is
     // given, then items of all types will be returned.
-    QList<QModelIndex> search_items(const QModelIndex &parent, int role, const QVariant &value, const int type = -1) const;
-    QList<QModelIndex> search_items(const QModelIndex &parent, const int type) const;
+    QList<QModelIndex> search_items(const QModelIndex &parent, int role, const QVariant &value, const QList<int> &type = QList<int>()) const;
+    QList<QModelIndex> search_items(const QModelIndex &parent, const QList<int> &type) const;
+
+    // Single index versions of search f-ns. Use when you
+    // expect only one valid result or none. QModelIndex()
+    // is returned if no items are found.
+    QModelIndex search_item(const QModelIndex &parent, int role, const QVariant &value, const QList<int> &type = QList<int>()) const;
+    QModelIndex search_item(const QModelIndex &parent, const QList<int> &type) const;
 
     QModelIndex get_current_scope_item() const;
     int get_child_count(const QModelIndex &index) const;
@@ -170,6 +166,20 @@ public:
     // Setups the action menu in menubar. Action menu
     // opened by right click is setup automatically.
     void setup_menubar_action_menu(QMenu *menu);
+
+    // Define custom sort index for scope item. By default
+    // scope items are sorted by their item text. Use sort
+    // indexes if you need more fine-grained sort behavior.
+    // Default sort index is "0". Note that this doesn't
+    // affect order in results pane.
+    void set_item_sort_index(const QModelIndex &index, const int sort_index);
+
+signals:
+    // Emitted when selection in the whole console
+    // widget changes, both in scope and results panes.
+    // Can be caused by selection change in focused
+    // view or change of which view is focused.
+    void selection_changed();
 
 private:
     ConsoleWidgetPrivate *d;

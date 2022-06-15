@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,12 @@
 
 #ifndef POLICY_IMPL_H
 #define POLICY_IMPL_H
+
+/**
+ * Impl for policy objects which represent GPC + GPT.
+ * Displayed as children of OU's which they are linked to
+ * and in "All policies" folder.
+ */
 
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"

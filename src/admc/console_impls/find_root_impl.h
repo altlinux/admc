@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,11 @@
 
 #ifndef FIND_ROOT_IMPL_H
 #define FIND_ROOT_IMPL_H
+
+/**
+ * Impl for root of the find tree which displays results of
+ * a "Find" operation. Used in Find Widget.
+ */
 
 #include "console_widget/console_impl.h"
 

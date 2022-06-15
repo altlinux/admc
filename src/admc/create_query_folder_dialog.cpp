@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,11 +40,11 @@ CreateQueryFolderDialog::~CreateQueryFolderDialog() {
 }
 
 QString CreateQueryFolderDialog::name() const {
-    return ui->name_edit->text();
+    return ui->name_edit->text().trimmed();
 }
 
 QString CreateQueryFolderDialog::description() const {
-    return ui->description_edit->text();
+    return ui->description_edit->text().trimmed();
 }
 
 void CreateQueryFolderDialog::set_sibling_name_list(const QList<QString> &list) {
@@ -60,7 +60,7 @@ void CreateQueryFolderDialog::set_sibling_name_list(const QList<QString> &list) 
 }
 
 void CreateQueryFolderDialog::accept() {
-    const QString name = ui->name_edit->text();
+    const QString name = ui->name_edit->text().trimmed();
     const bool name_is_valid = console_query_or_folder_name_is_good(name, sibling_name_list, this);
 
     if (name_is_valid) {

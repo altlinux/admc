@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,11 @@
 #ifndef OBJECT_IMPL_H
 #define OBJECT_IMPL_H
 
+/**
+ * Impl for AD objects. Displays a hierarchical tree of
+ * objects that exist in the domain.
+ */
+
 #include "adldap.h"
 #include "console_impls/my_console_role.h"
 #include "console_widget/console_impl.h"
@@ -33,13 +38,8 @@ class ConsoleActions;
 class QMenu;
 template <typename T>
 class QList;
-class PolicyImpl;
 class ConsoleWidget;
 class ConsoleFilterDialog;
-
-/**
- * Some f-ns used for models that store objects.
- */
 
 enum ObjectRole {
     ObjectRole_DN = MyConsoleRole_LAST + 1,
@@ -59,8 +59,6 @@ class ObjectImpl final : public ConsoleImpl {
 
 public:
     ObjectImpl(ConsoleWidget *console);
-
-    void set_policy_impl(PolicyImpl *policy_root_impl_arg);
 
     // This is for cases where there are multiple consoles
     // in the app and you need to propagate changes from one
@@ -89,6 +87,7 @@ public:
 
     void set_find_action_enabled(const bool enabled);
     void set_refresh_action_enabled(const bool enabled);
+    void set_toolbar_actions(QAction *create_user, QAction *create_group, QAction *create_ou);
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
@@ -116,7 +115,6 @@ private slots:
 
 private:
     ConsoleWidget *buddy_console;
-    PolicyImpl *policy_impl;
     QString object_filter;
     bool object_filter_enabled;
 
@@ -131,15 +129,18 @@ private:
     QAction *new_action;
     QHash<QString, QAction *> new_action_map;
 
+    QAction *toolbar_create_user;
+    QAction *toolbar_create_group;
+    QAction *toolbar_create_ou;
+
     bool find_action_enabled;
     bool refresh_action_enabled;
 
     void new_object(const QString &object_class);
     void set_disabled(const bool disabled);
-    void drop_objects(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
-    void drop_policies(const QList<QPersistentModelIndex> &dropped_list, const QPersistentModelIndex &target);
     void move_and_rename(AdInterface &ad, const QHash<QString, QString> &old_dn_list, const QString &new_parent_dn);
     void move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn);
+    void update_toolbar_actions();
 };
 
 void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
@@ -151,10 +152,13 @@ QList<int> object_impl_default_columns();
 QList<QString> console_object_search_attributes();
 void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
 void console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
-bool console_object_is_ou(const QModelIndex &index);
 // NOTE: this may return an invalid index if there's no tree
 // of objects setup
 QModelIndex get_object_tree_root(ConsoleWidget *console);
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
+void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console, const QString &object_class, const QString &parent_dn);
+void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role, const QString &object_class);
+void console_object_delete(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role);
+void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role, const QList<QString> &class_list);
 
 #endif /* OBJECT_IMPL_H */

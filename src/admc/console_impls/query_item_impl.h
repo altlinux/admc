@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,13 @@
 
 #ifndef CONSOLE_QUERY_H
 #define CONSOLE_QUERY_H
+
+/**
+ * Impl for query item which displays results of a saved
+ * query, i.e. the objects that fit a particular filter.
+ * Located in query tree, can be children of query folders
+ * or query tree root.
+ */
 
 #include "console_impls/my_console_role.h"
 #include "console_widget/console_impl.h"

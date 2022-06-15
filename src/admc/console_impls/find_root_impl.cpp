@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,11 +48,7 @@ QList<int> FindRootImpl::default_columns() const {
 }
 
 QModelIndex get_find_tree_root(ConsoleWidget *console) {
-    const QList<QModelIndex> index_list = console->search_items(QModelIndex(), ItemType_FindRoot);
+    const QModelIndex out = console->search_item(QModelIndex(), {ItemType_FindRoot});
 
-    if (!index_list.isEmpty()) {
-        return index_list[0];
-    } else {
-        return QModelIndex();
-    }
+    return out;
 }

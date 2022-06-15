@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@ class ADMCTestRenameObjectDialog : public ADMCTest {
 
 private slots:
     void rename();
+    void rename_user_autofill();
+    void trim();
 };
 
 #endif /* ADMC_TEST_RENAME_OBJECT_DIALOG_H */

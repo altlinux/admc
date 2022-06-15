@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,6 +115,23 @@ QString condition_to_display_string(const Condition condition) {
 QList<QString> process_subfilters(const QList<QString> &in) {
     QList<QString> out = in;
     out.removeAll("");
+
+    return out;
+}
+
+QString filter_dn_list(const QList<QString> &dn_list) {
+    const QList<QString> subfilter_list = [&]() {
+        QList<QString> subfilter_list_out;
+
+        for (const QString &dn : dn_list) {
+            const QString subfilter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, dn);
+            subfilter_list_out.append(subfilter);
+        }
+
+        return subfilter_list_out;
+    }();
+
+    const QString out = filter_OR(subfilter_list);
 
     return out;
 }

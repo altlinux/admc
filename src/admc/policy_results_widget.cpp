@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -222,7 +222,8 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
         row[0]->setData(dn, PolicyResultsRole_DN);
         row[0]->setData(gplink_string, PolicyResultsRole_GplinkString);
-        row[0]->setIcon(QIcon::fromTheme("folder-documents"));
+        const QIcon icon = get_object_icon(object);
+        row[0]->setIcon(icon);
 
         model->appendRow(row);
     }

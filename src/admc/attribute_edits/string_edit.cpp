@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,16 +45,7 @@ StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QObjec
 void StringEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
-    const QString value = [=]() {
-        const QString raw_value = object.get_string(attribute);
-
-        if (attribute == ATTRIBUTE_DN) {
-            return dn_canonical(raw_value);
-        } else {
-            return raw_value;
-        }
-    }();
-
+    const QString value = object.get_string(attribute);
     edit->setText(value);
 }
 

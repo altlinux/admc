@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ public:
     QString schema_dn() const;
     QString partitions_dn() const;
     QString extended_rights_dn() const;
+    QString policies_dn() const;
     bool control_is_supported(const QString &control_oid) const;
 
     QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;

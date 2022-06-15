@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,13 @@ StringAttributeDialog::StringAttributeDialog(const QList<QByteArray> &value_list
 
     AttributeDialog::load_attribute_label(ui->attribute_label);
 
-    if (g_adconfig->get_attribute_is_number(attribute)) {
-        set_line_edit_to_numbers_only(ui->edit);
-    }
-
-    limit_edit(ui->edit, attribute);
+    limit_plain_text_edit(ui->edit, attribute);
 
     ui->edit->setReadOnly(read_only);
     
     const QByteArray value = value_list.value(0, QByteArray());
     const QString value_string = QString(value);
-    ui->edit->setText(value_string);
+    ui->edit->setPlainText(value_string);
 
     settings_setup_dialog_geometry(SETTING_string_attribute_dialog_geometry, this);
 }
@@ -55,18 +51,12 @@ StringAttributeDialog::~StringAttributeDialog() {
 }
 
 QList<QByteArray> StringAttributeDialog::get_value_list() const {
-    const QString new_value_string = ui->edit->text();
+    const QString new_value_string = ui->edit->toPlainText();
 
     if (new_value_string.isEmpty()) {
         return {};
     } else {
         const QByteArray new_value = new_value_string.toUtf8();
         return {new_value};
-    }
-}
-
-void StringAttributeDialog::set_max_length(const int max_length) {
-    if (max_length > 0) {
-        ui->edit->setMaxLength(max_length);
     }
 }

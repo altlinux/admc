@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -164,7 +164,7 @@ QList<int> QueryItemImpl::default_columns() const {
 }
 
 void QueryItemImpl::on_export() {
-    const QModelIndex index = console->get_action_target(ItemType_QueryItem);
+    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
     const QString file_path = [&]() {
         const QString query_name = index.data(Qt::DisplayRole).toString();
@@ -250,7 +250,7 @@ void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, Q
 }
 
 void QueryItemImpl::on_edit_query_item() {
-    const QModelIndex index = console->get_action_target(ItemType_QueryItem);
+    const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
     const QModelIndex parent_index = index.parent();
     const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);

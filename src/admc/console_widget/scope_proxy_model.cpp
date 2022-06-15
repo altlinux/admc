@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,4 +43,19 @@ bool ScopeProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source
     const bool is_scope = source_index.data(ConsoleRole_IsScope).toBool();
 
     return is_scope;
+}
+
+bool ScopeProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const {
+    const int left_sort_index = left.data(ConsoleRole_SortIndex).toInt();
+    const int right_sort_index = right.data(ConsoleRole_SortIndex).toInt();
+
+    if (left_sort_index != right_sort_index) {
+        const bool out = (left_sort_index < right_sort_index);
+
+        return out;
+    }
+
+    const bool out = QSortFilterProxyModel::lessThan(left, right);
+
+    return out;
 }

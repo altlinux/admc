@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,54 +22,38 @@
 
 #include "adldap.h"
 #include "console_impls/item_type.h"
-#include "console_impls/object_impl.h"
-#include "console_impls/policy_impl.h"
+#include "console_impls/all_policies_folder_impl.h"
+#include "console_impls/policy_ou_impl.h"
 #include "console_widget/results_view.h"
-#include "create_policy_dialog.h"
 #include "globals.h"
 #include "gplink.h"
-#include "policy_results_widget.h"
-#include "rename_policy_dialog.h"
-#include "select_object_dialog.h"
-#include "settings.h"
 #include "status.h"
 #include "utils.h"
 
-#include <QCoreApplication>
-#include <QDebug>
 #include <QList>
-#include <QMenu>
-#include <QProcess>
 #include <QStandardItem>
 
 PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));
-
-    create_policy_action = new QAction(tr("Create policy"), this);
-
-    connect(
-        create_policy_action, &QAction::triggered,
-        this, &PolicyRootImpl::create_policy);
 }
 
 void PolicyRootImpl::fetch(const QModelIndex &index) {
-    UNUSED_ARG(index);
-
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
     }
 
-    const QString base = g_adconfig->domain_dn();
-    const SearchScope scope = SearchScope_All;
-    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QList<QString> attributes = console_policy_search_attributes();
-    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+    // Add domain object
+    const QList<QStandardItem *> domain_row = console->add_scope_item(ItemType_PolicyOU, index);
+    QStandardItem *domain_item = domain_row[0];
+    const QString domain_dn = g_adconfig->domain_dn();
+    const AdObject domain_object = ad.search_object(domain_dn);
 
-    for (const AdObject &object : results.values()) {
-        create_policy_in_console(object);
-    }
+    policy_ou_impl_load_item_data(domain_item, domain_object);
+
+    const QString domain_name = g_adconfig->domain().toLower();
+    domain_item->setText(domain_name);
 }
 
 void PolicyRootImpl::refresh(const QList<QModelIndex> &index_list) {
@@ -77,25 +61,6 @@ void PolicyRootImpl::refresh(const QList<QModelIndex> &index_list) {
 
     console->delete_children(index);
     fetch(index);
-}
-
-QList<QAction *> PolicyRootImpl::get_all_custom_actions() const {
-    QList<QAction *> out;
-
-    out.append(create_policy_action);
-
-    return out;
-}
-
-QSet<QAction *> PolicyRootImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
-    UNUSED_ARG(single_selection);
-
-    QSet<QAction *> out;
-
-    out.insert(create_policy_action);
-
-    return out;
 }
 
 QSet<StandardAction> PolicyRootImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
@@ -117,62 +82,16 @@ QList<int> PolicyRootImpl::default_columns() const {
     return {0};
 }
 
-void PolicyRootImpl::create_policy() {
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
-
-    auto dialog = new CreatePolicyDialog(ad, console);
-    dialog->open();
-
-    connect(
-        dialog, &QDialog::accepted,
-        this,
-        [this, dialog]() {
-            AdInterface ad2;
-            if (ad_failed(ad2, console)) {
-                return;
-            }
-
-            const QString dn = dialog->get_created_dn();
-            const SearchScope scope = SearchScope_Object;
-            const QString filter = QString();
-            const QList<QString> attributes = console_policy_search_attributes();
-            const QHash<QString, AdObject> results = ad2.search(dn, scope, filter, attributes);
-
-            const AdObject object = results[dn];
-
-            create_policy_in_console(object);
-        });
-}
-
-void PolicyRootImpl::create_policy_in_console(const AdObject &object) {
-    const QModelIndex policy_root_index = [&]() {
-        const QList<QModelIndex> search_results = console->search_items(QModelIndex(), ConsoleRole_Type, ItemType_PolicyRoot, ItemType_PolicyRoot);
-
-        if (!search_results.isEmpty()) {
-            return search_results[0];
-        } else {
-            return QModelIndex();
-        }
-    }();
-
-    if (!policy_root_index.isValid()) {
-        qDebug() << "Policy tree head index is invalid";
-
-        return;
-    }
-
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, policy_root_index);
-
-    console_policy_load(row, object);
-}
-
 void console_policy_tree_init(ConsoleWidget *console) {
     const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, QModelIndex());
     auto policy_tree_head = head_row[0];
     policy_tree_head->setText(QCoreApplication::translate("policy_root_impl", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
     policy_tree_head->setIcon(QIcon::fromTheme("folder"));
+}
+
+QModelIndex get_policy_tree_root(ConsoleWidget *console) {
+    const QModelIndex out = console->search_item(QModelIndex(), {ItemType_PolicyRoot});
+
+    return out;
 }

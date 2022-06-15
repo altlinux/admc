@@ -41,6 +41,7 @@ set(ADMC_SOURCES
     find_widget.cpp
     tab_widget.cpp
     policy_results_widget.cpp
+    policy_ou_results_widget.cpp
     edit_query_item_widget.cpp
     fsmo_tab.cpp
 
@@ -103,7 +104,6 @@ set(ADMC_SOURCES
     tabs/account_tab.cpp
     tabs/membership_tab.cpp
     tabs/address_tab.cpp
-    tabs/group_policy_tab.cpp
     tabs/organization_tab.cpp
     tabs/telephones_tab.cpp
     tabs/profile_tab.cpp
@@ -152,6 +152,7 @@ set(ADMC_SOURCES
     attribute_edits/protect_deletion_edit.cpp
     attribute_edits/laps_expiry_edit.cpp
     attribute_edits/general_name_edit.cpp
+    attribute_edits/dn_edit.cpp
 
     attribute_edits/upn_multi_edit.cpp
     attribute_edits/account_option_multi_edit.cpp
@@ -159,6 +160,7 @@ set(ADMC_SOURCES
     attribute_dialogs/attribute_dialog.cpp
     attribute_dialogs/list_attribute_dialog.cpp
     attribute_dialogs/string_attribute_dialog.cpp
+    attribute_dialogs/number_attribute_dialog.cpp
     attribute_dialogs/octet_attribute_dialog.cpp
     attribute_dialogs/bool_attribute_dialog.cpp
     attribute_dialogs/datetime_attribute_dialog.cpp
@@ -176,6 +178,8 @@ set(ADMC_SOURCES
     console_impls/query_folder_impl.cpp
     console_impls/policy_root_impl.cpp
     console_impls/find_root_impl.cpp
+    console_impls/all_policies_folder_impl.cpp
+    console_impls/policy_ou_impl.cpp
 
     admc.qrc
 )

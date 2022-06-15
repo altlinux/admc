@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,5 +51,8 @@ QString filter_OR(const QList<QString> &subfilters);
 QString add_advanced_view_filter(const QString &filter);
 
 QString condition_to_display_string(const Condition condition);
+
+// Filter that accepts any DN from given list
+QString filter_dn_list(const QList<QString> &dn_list);
 
 #endif /* AD_FILTER_H */

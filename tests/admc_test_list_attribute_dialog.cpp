@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include "attribute_dialogs/ui_list_attribute_dialog.h"
 #include "attribute_dialogs/ui_string_attribute_dialog.h"
 
-#include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QListWidget>
 #include <QPushButton>
 
@@ -77,11 +77,11 @@ void ADMCTestListAttributeDialog::add() {
     auto string_attribute_dialog = dialog->findChild<StringAttributeDialog *>();
     QVERIFY(string_attribute_dialog);
 
-    QLineEdit *line_edit = string_attribute_dialog->ui->edit;
+    QPlainTextEdit *text_edit = string_attribute_dialog->ui->edit;
 
     const QString new_value = "new value";
 
-    line_edit->setText(new_value);
+    text_edit->setPlainText(new_value);
 
     string_attribute_dialog->accept();
 

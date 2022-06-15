@@ -212,6 +212,19 @@
     </message>
 </context>
 <context>
+    <name>AllPoliciesFolderImpl</name>
+    <message>
+        <location filename="console_impls/all_policies_folder_impl.cpp" line="42"/>
+        <source>Create policy</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/all_policies_folder_impl.cpp" line="102"/>
+        <source>Name</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>AttributeDialog</name>
     <message>
         <location filename="attribute_dialogs/attribute_dialog.cpp" line="44"/>
@@ -240,32 +253,32 @@
 <context>
     <name>AttributesTabEdit</name>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="66"/>
+        <location filename="tabs/attributes_tab.cpp" line="67"/>
         <source>Name</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="67"/>
+        <location filename="tabs/attributes_tab.cpp" line="68"/>
         <source>Value</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="68"/>
+        <location filename="tabs/attributes_tab.cpp" line="69"/>
         <source>Type</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="371"/>
+        <location filename="tabs/attributes_tab.cpp" line="378"/>
         <source>Edit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="369"/>
+        <location filename="tabs/attributes_tab.cpp" line="376"/>
         <source>View</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.cpp" line="380"/>
+        <location filename="tabs/attributes_tab.cpp" line="387"/>
         <source>%1 Multi-Valued %2</source>
         <comment>This is a dialog title for attribute editors. Example: &quot;Edit Multi-Valued String&quot;</comment>
         <translation></translation>
@@ -455,42 +468,42 @@
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="92"/>
+        <location filename="console_widget/console_widget.cpp" line="127"/>
         <source>Copy</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="93"/>
+        <location filename="console_widget/console_widget.cpp" line="128"/>
         <source>Cut</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="94"/>
+        <location filename="console_widget/console_widget.cpp" line="129"/>
         <source>Rename</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="95"/>
+        <location filename="console_widget/console_widget.cpp" line="130"/>
         <source>Delete</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="96"/>
+        <location filename="console_widget/console_widget.cpp" line="131"/>
         <source>Paste</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="97"/>
+        <location filename="console_widget/console_widget.cpp" line="132"/>
         <source>Print</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="98"/>
+        <location filename="console_widget/console_widget.cpp" line="133"/>
         <source>Refresh</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="99"/>
+        <location filename="console_widget/console_widget.cpp" line="134"/>
         <source>Properties</source>
         <translation></translation>
     </message>
@@ -1062,7 +1075,7 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="find_object_dialog.cpp" line="42"/>
+        <location filename="find_object_dialog.cpp" line="43"/>
         <source>&amp;View</source>
         <translation></translation>
     </message>
@@ -1389,68 +1402,6 @@
     </message>
 </context>
 <context>
-    <name>GroupPolicyTab</name>
-    <message>
-        <location filename="tabs/group_policy_tab.ui" line="41"/>
-        <source>Add...</source>
-        <oldsource>Add</oldsource>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/group_policy_tab.ui" line="48"/>
-        <source>Remove</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/group_policy_tab.ui" line="70"/>
-        <source>Block policy inheritance</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>GroupPolicyTabEdit</name>
-    <message>
-        <location filename="tabs/group_policy_tab.cpp" line="83"/>
-        <source>Name</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/group_policy_tab.cpp" line="84"/>
-        <source>Disabled</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/group_policy_tab.cpp" line="85"/>
-        <source>Enforced</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/group_policy_tab.cpp" line="151"/>
-        <source>Remove link</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/group_policy_tab.cpp" line="155"/>
-        <source>Move up</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/group_policy_tab.cpp" line="158"/>
-        <source>Move down</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/group_policy_tab.cpp" line="276"/>
-        <source>Not found</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="tabs/group_policy_tab.cpp" line="304"/>
-        <source>The GPO for this link could not be found. It maybe have been recently created and is being replicated or it could have been deleted.</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
     <name>LAPSTab</name>
     <message>
         <location filename="tabs/laps_tab.ui" line="22"/>
@@ -1486,17 +1437,17 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/list_attribute_dialog.cpp" line="89"/>
+        <location filename="attribute_dialogs/list_attribute_dialog.cpp" line="90"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/list_attribute_dialog.cpp" line="89"/>
+        <location filename="attribute_dialogs/list_attribute_dialog.cpp" line="90"/>
         <source>One or more values are empty. Edit or remove them to proceed.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="attribute_dialogs/list_attribute_dialog.cpp" line="112"/>
+        <location filename="attribute_dialogs/list_attribute_dialog.cpp" line="116"/>
         <source>Add Value</source>
         <translation></translation>
     </message>
@@ -1636,206 +1587,251 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="112"/>
+        <location filename="main_window.ui" line="116"/>
         <source>Message Log</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="125"/>
+        <location filename="main_window.ui" line="129"/>
         <source>&amp;Connection Options</source>
         <oldsource>Connection Options</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="130"/>
+        <location filename="main_window.ui" line="134"/>
         <source>&amp;Quit</source>
         <oldsource>Quit</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="133"/>
+        <location filename="main_window.ui" line="137"/>
         <source>Ctrl+Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="142"/>
+        <location filename="main_window.ui" line="146"/>
         <source>&amp;Manual</source>
         <oldsource>Manual</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="145"/>
+        <location filename="main_window.ui" line="149"/>
         <source>Manual (Alt + 8)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="148"/>
+        <location filename="main_window.ui" line="152"/>
         <source>Alt+8</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="153"/>
+        <location filename="main_window.ui" line="157"/>
         <source>&amp;Changelog</source>
         <oldsource>Changelog</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="158"/>
+        <location filename="main_window.ui" line="162"/>
         <source>&amp;About ADMC</source>
         <oldsource>About ADMC</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="166"/>
+        <location filename="main_window.ui" line="170"/>
         <source>&amp;Icons</source>
         <oldsource>Icons</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="174"/>
+        <location filename="main_window.ui" line="178"/>
         <source>&amp;List</source>
         <oldsource>List</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="182"/>
+        <location filename="main_window.ui" line="186"/>
         <source>&amp;Detail</source>
         <oldsource>Detail</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="206"/>
+        <location filename="main_window.ui" line="210"/>
         <source>&amp;Console Tree</source>
         <oldsource>Console Tree</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="214"/>
+        <location filename="main_window.ui" line="218"/>
         <source>Description &amp;Bar</source>
         <oldsource>Description Bar</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="219"/>
+        <location filename="main_window.ui" line="223"/>
         <source>C&amp;ustomize Columns...</source>
         <oldsource>Customize Columns...</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="224"/>
+        <location filename="main_window.ui" line="228"/>
         <source>&amp;Filter Objects...</source>
         <oldsource>Filter Objects...</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="232"/>
+        <location filename="main_window.ui" line="236"/>
         <source>&amp;Advanced Features</source>
         <oldsource>Advanced Features</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="240"/>
+        <location filename="main_window.ui" line="244"/>
         <source>&amp;Confirm Actions</source>
         <oldsource>Confirm Actions</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="248"/>
+        <location filename="main_window.ui" line="252"/>
         <source>&amp;Put Last Name Before First Name</source>
         <oldsource>Put Last Name Before First Name</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="256"/>
+        <location filename="main_window.ui" line="260"/>
         <source>&amp;Log Searches</source>
         <oldsource>Log Searches</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="264"/>
+        <location filename="main_window.ui" line="268"/>
         <source>&amp;Timestamps in Message Log</source>
         <oldsource>Timestamps in Message Log</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="272"/>
+        <location filename="main_window.ui" line="276"/>
         <source>&amp;Show Non-Container Objects in Console Tree</source>
         <oldsource>Show Non-Container Objects in Console Tree</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="296"/>
+        <location filename="main_window.ui" line="300"/>
         <source>Navigate Back (Alt + -)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="311"/>
+        <location filename="main_window.ui" line="315"/>
         <source>Navigate Forward (Alt + =)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="326"/>
+        <location filename="main_window.ui" line="330"/>
         <source>Refresh (Alt + 9)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="329"/>
+        <location filename="main_window.ui" line="333"/>
         <source>Alt+9</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="337"/>
+        <location filename="main_window.ui" line="341"/>
         <source>Show Login</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="342"/>
+        <location filename="main_window.ui" line="346"/>
         <source>&amp;Operations Masters</source>
         <oldsource>Operations Masters</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="281"/>
+        <location filename="main_window.ui" line="355"/>
+        <source>Create user</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="358"/>
+        <source>Create user (Alt + 7)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="361"/>
+        <source>Alt+7</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="370"/>
+        <source>Create group</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="373"/>
+        <source>Create group (Alt  + 6)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="376"/>
+        <source>Alt+6</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="385"/>
+        <source>Create organization unit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="388"/>
+        <source>Create organization unit (Alt + 5)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="391"/>
+        <source>Alt+5</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="285"/>
         <source>Navigate Up</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="284"/>
+        <location filename="main_window.ui" line="288"/>
         <source>Alt+0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="293"/>
+        <location filename="main_window.ui" line="297"/>
         <source>Navigate Back</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="299"/>
+        <location filename="main_window.ui" line="303"/>
         <source>Alt+-</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="308"/>
+        <location filename="main_window.ui" line="312"/>
         <source>Navigate Forward</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="314"/>
+        <location filename="main_window.ui" line="318"/>
         <source>Alt+=</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="323"/>
+        <location filename="main_window.ui" line="327"/>
         <source>Refresh</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="206"/>
+        <location filename="main_window.cpp" line="215"/>
         <source>Info</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="206"/>
+        <location filename="main_window.cpp" line="215"/>
         <source>Restart the app to switch to the selected language.</source>
         <translation></translation>
     </message>
@@ -2028,115 +2024,115 @@
 <context>
     <name>ObjectImpl</name>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="86"/>
+        <location filename="console_impls/object_impl.cpp" line="91"/>
         <source>User</source>
         <oldsource>&amp;User</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="87"/>
+        <location filename="console_impls/object_impl.cpp" line="92"/>
         <source>Computer</source>
         <oldsource>&amp;Computer</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="88"/>
+        <location filename="console_impls/object_impl.cpp" line="93"/>
         <source>OU</source>
         <oldsource>&amp;OU</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="89"/>
+        <location filename="console_impls/object_impl.cpp" line="94"/>
         <source>Group</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="90"/>
+        <location filename="console_impls/object_impl.cpp" line="95"/>
         <source>Shared Folder</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="91"/>
+        <location filename="console_impls/object_impl.cpp" line="96"/>
         <source>inetOrgPerson</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="92"/>
+        <location filename="console_impls/object_impl.cpp" line="97"/>
         <source>Contact</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="93"/>
+        <location filename="console_impls/object_impl.cpp" line="98"/>
         <source>Find...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="94"/>
+        <location filename="console_impls/object_impl.cpp" line="99"/>
         <source>Move...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="95"/>
+        <location filename="console_impls/object_impl.cpp" line="100"/>
         <source>Add to group...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="96"/>
+        <location filename="console_impls/object_impl.cpp" line="101"/>
         <source>Enable</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="97"/>
+        <location filename="console_impls/object_impl.cpp" line="102"/>
         <source>Disable</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="98"/>
+        <location filename="console_impls/object_impl.cpp" line="103"/>
         <source>Reset password</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="99"/>
+        <location filename="console_impls/object_impl.cpp" line="104"/>
         <source>Reset account</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="100"/>
+        <location filename="console_impls/object_impl.cpp" line="105"/>
         <source>Edit UPN suffixes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="102"/>
+        <location filename="console_impls/object_impl.cpp" line="107"/>
         <source>New</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="266"/>
+        <location filename="console_impls/object_impl.cpp" line="296"/>
         <source> [Filtering enabled]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="586"/>
+        <location filename="console_impls/object_impl.cpp" line="654"/>
         <source>Are you sure you want to delete this object?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="778"/>
+        <location filename="console_impls/object_impl.cpp" line="867"/>
         <source>Add to Group</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="846"/>
+        <location filename="console_impls/object_impl.cpp" line="935"/>
         <source>Edit UPN Suffixes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="876"/>
+        <location filename="console_impls/object_impl.cpp" line="955"/>
         <source>Are you sure you want to reset this account?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="1219"/>
+        <location filename="console_impls/object_impl.cpp" line="1266"/>
         <source>Query may be out of date</source>
         <translation></translation>
     </message>
@@ -2359,23 +2355,99 @@
 <context>
     <name>PolicyImpl</name>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="48"/>
+        <location filename="console_impls/policy_impl.cpp" line="44"/>
         <source>Add link...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="49"/>
+        <location filename="console_impls/policy_impl.cpp" line="45"/>
         <source>Edit...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="182"/>
+        <location filename="console_impls/policy_impl.cpp" line="165"/>
+        <source>Are you sure you want to unlink this policy from the OU? Note that the actual policy object won&apos;t be deleted.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="167"/>
         <source>Are you sure you want to delete this policy and all of it&apos;s links?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="285"/>
+        <location filename="console_impls/policy_impl.cpp" line="310"/>
         <source>Add Link</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>PolicyOUImpl</name>
+    <message>
+        <location filename="console_impls/policy_ou_impl.cpp" line="52"/>
+        <source>Create OU</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_ou_impl.cpp" line="53"/>
+        <source>Create a GPO and link to this OU</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_ou_impl.cpp" line="54"/>
+        <source>Link existing GPO</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_ou_impl.cpp" line="98"/>
+        <source>All policies</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_ou_impl.cpp" line="216"/>
+        <source>Name</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>PolicyOUResultsWidget</name>
+    <message>
+        <location filename="policy_ou_results_widget.cpp" line="78"/>
+        <source>Remove link</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget.cpp" line="79"/>
+        <source>Move up</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget.cpp" line="80"/>
+        <source>Move down</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget.cpp" line="90"/>
+        <source>Name</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget.cpp" line="91"/>
+        <source>Enforced</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget.cpp" line="92"/>
+        <source>Disabled</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget.cpp" line="337"/>
+        <source>Not found</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget.cpp" line="368"/>
+        <source>The GPO for this link could not be found. It maybe have been recently created and is being replicated or it could have been deleted.</source>
         <translation></translation>
     </message>
 </context>
@@ -2420,12 +2492,7 @@
 <context>
     <name>PolicyRootImpl</name>
     <message>
-        <location filename="console_impls/policy_root_impl.cpp" line="49"/>
-        <source>Create policy</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="console_impls/policy_root_impl.cpp" line="113"/>
+        <location filename="console_impls/policy_root_impl.cpp" line="78"/>
         <source>Name</source>
         <translation></translation>
     </message>
@@ -2470,93 +2537,88 @@
     <name>PropertiesDialog</name>
     <message>
         <location filename="properties_dialog.ui" line="14"/>
-        <location filename="properties_dialog.cpp" line="138"/>
+        <location filename="properties_dialog.cpp" line="137"/>
         <source>Properties</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="136"/>
+        <location filename="properties_dialog.cpp" line="135"/>
         <source>%1 Properties</source>
         <oldsource>&quot;%1&quot; Properties</oldsource>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="170"/>
+        <location filename="properties_dialog.cpp" line="169"/>
         <source>General</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="178"/>
+        <location filename="properties_dialog.cpp" line="177"/>
         <source>Object</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="179"/>
+        <location filename="properties_dialog.cpp" line="178"/>
         <source>Attributes</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="197"/>
+        <location filename="properties_dialog.cpp" line="196"/>
         <source>Account</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="190"/>
+        <location filename="properties_dialog.cpp" line="189"/>
         <source>Organization</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="191"/>
+        <location filename="properties_dialog.cpp" line="190"/>
         <source>Telephones</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="202"/>
+        <location filename="properties_dialog.cpp" line="201"/>
         <source>Profile</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="245"/>
+        <location filename="properties_dialog.cpp" line="239"/>
         <source>LAPS</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="252"/>
+        <location filename="properties_dialog.cpp" line="246"/>
         <source>Security</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="208"/>
+        <location filename="properties_dialog.cpp" line="207"/>
         <source>Members</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="213"/>
+        <location filename="properties_dialog.cpp" line="212"/>
         <source>Member of</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="223"/>
+        <location filename="properties_dialog.cpp" line="222"/>
         <source>Managed by</source>
         <translation></translation>
     </message>
     <message>
         <location filename="properties_dialog.cpp" line="228"/>
-        <source>Group policy</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="properties_dialog.cpp" line="234"/>
         <source>Operating System</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="218"/>
+        <location filename="properties_dialog.cpp" line="217"/>
         <source>Delegation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="189"/>
+        <location filename="properties_dialog.cpp" line="188"/>
         <source>Address</source>
         <translation></translation>
     </message>
@@ -2616,7 +2678,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="utils.cpp" line="109"/>
+        <location filename="utils.cpp" line="111"/>
         <source>Confirm action</source>
         <translation></translation>
     </message>
@@ -3132,7 +3194,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1617"/>
+        <location filename="console_impls/object_impl.cpp" line="1724"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n object</numerusform>
@@ -3156,7 +3218,7 @@
 <context>
     <name>policy_root_impl</name>
     <message>
-        <location filename="console_impls/policy_root_impl.cpp" line="175"/>
+        <location filename="console_impls/policy_root_impl.cpp" line="88"/>
         <source>Group Policy Objects</source>
         <translation></translation>
     </message>
@@ -3243,12 +3305,12 @@
 <context>
     <name>utils.cpp</name>
     <message>
-        <location filename="utils.cpp" line="402"/>
+        <location filename="utils.cpp" line="436"/>
         <source>Input field for Name contains one or more of the following illegal characters: # , + &quot; \ &lt; &gt; ; = (leading space) (trailing space) (leading question mark)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="utils.cpp" line="403"/>
+        <location filename="utils.cpp" line="437"/>
         <source>Error</source>
         <translation></translation>
     </message>

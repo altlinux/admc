@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ void CreatePolicyDialog::accept() {
 
     show_busy_indicator();
 
-    const QString name = ui->name_edit->text();
+    const QString name = ui->name_edit->text().trimmed();
 
     // NOTE: since this is *display name*, not just name,
     // have to manually check for conflict. Server wouldn't

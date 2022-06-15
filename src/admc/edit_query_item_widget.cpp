@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ EditQueryItemWidget::~EditQueryItemWidget() {
 }
 
 QString EditQueryItemWidget::name() const {
-    return ui->name_edit->text();
+    return ui->name_edit->text().trimmed();
 }
 
 QString EditQueryItemWidget::description() const {

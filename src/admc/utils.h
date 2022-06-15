@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ class QStandardItemModel;
 class QMenu;
 class QTreeView;
 class QLineEdit;
+class QPlainTextEdit;
 class QPoint;
 class QWidget;
 class QModelIndex;
@@ -85,11 +86,13 @@ QString get_classes_filter(const QList<QString> &class_list);
 QString is_container_filter();
 
 void limit_edit(QLineEdit *edit, const QString &attribute);
+void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute);
 
 // NOTE: object must contain "objectCategory" attribute
 QIcon get_object_icon(const AdObject &object);
 
 QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes);
+QList<QModelIndex> normal_index_list(const QList<QPersistentModelIndex> &indexes);
 
 QString advanced_features_filter(const QString &filter);
 
@@ -104,8 +107,8 @@ QMessageBox *message_box_question(QWidget *parent, const QString &title, const Q
 QMessageBox *message_box_warning(QWidget *parent, const QString &title, const QString &text);
 
 QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list, const int dn_role);
-QList<QString> get_action_target_dn_list(ConsoleWidget *console, const int type, const int dn_role);
-QString get_action_target_dn(ConsoleWidget *console, const int type, const int dn_role);
+QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role);
+QString get_selected_target_dn(ConsoleWidget *console, const int type, const int dn_role);
 
 void center_widget(QWidget *widget);
 

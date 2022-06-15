@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,8 @@ protected:
     // open(). Won't work for QMessageBox static f-ns
     void close_message_box();
 
+    bool message_box_is_open() const;
+
     // Selects an object via an already open select object
     // dialog. Object must be inside test arena
     void select_object_dialog_select(const QString &dn);
@@ -119,5 +121,6 @@ private:
 };
 
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role);
+void test_lineedit_autofill(QLineEdit *src_edit, QLineEdit *dest_edit);
 
 #endif /* ADMC_TEST_H */

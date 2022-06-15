@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,13 @@
 #ifndef POLICY_ROOT_IMPL_H
 #define POLICY_ROOT_IMPL_H
 
+/**
+ * Impl for the root of the policy tree which contains the
+ * root of the domain and "All policies" folder.
+ */
+
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"
-
-class AdObject;
 
 class PolicyRootImpl final : public ConsoleImpl {
     Q_OBJECT
@@ -35,20 +38,13 @@ public:
     void fetch(const QModelIndex &index) override;
     void refresh(const QList<QModelIndex> &index_list) override;
 
-    QList<QAction *> get_all_custom_actions() const override;
-    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
-
-private:
-    QAction *create_policy_action;
-
-    void create_policy();
-    void create_policy_in_console(const AdObject &object);
 };
 
 void console_policy_tree_init(ConsoleWidget *console);
+QModelIndex get_policy_tree_root(ConsoleWidget *console);
 
 #endif /* POLICY_ROOT_IMPL_H */

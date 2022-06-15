@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 #include "tabs/ui_attributes_tab.h"
 
 #include <QDialog>
-#include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QPushButton>
 #include <QSortFilterProxyModel>
 #include <QStandardItemModel>
@@ -181,8 +181,8 @@ void ADMCTestAttributesTab::apply() {
     QVERIFY(string_attribute_dialog);
     QVERIFY(QTest::qWaitForWindowExposed(string_attribute_dialog, 1000));
 
-    QLineEdit *string_attribute_dialog_edit = string_attribute_dialog->ui->edit;
-    string_attribute_dialog_edit->setText(correct_value);
+    QPlainTextEdit *string_attribute_dialog_edit = string_attribute_dialog->ui->edit;
+    string_attribute_dialog_edit->setPlainText(correct_value);
 
     string_attribute_dialog->accept();
     list_attribute_dialog->accept();

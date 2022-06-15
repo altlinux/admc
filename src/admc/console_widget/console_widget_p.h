@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ class ConsoleImpl;
 enum ConsoleRole {
     // Determines whether scope item was fetched
     ConsoleRole_WasFetched = Qt::UserRole + 1,
+    ConsoleRole_SortIndex = Qt::UserRole + 2,
 
     ConsoleRole_IsScope = Qt::UserRole + 3,
 
@@ -84,8 +85,6 @@ public:
     QList<QPersistentModelIndex> targets_past;
     QList<QPersistentModelIndex> targets_future;
 
-    QList<QModelIndex> action_target_list;
-
     QHash<StandardAction, QAction *> standard_action_map;
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
@@ -105,7 +104,6 @@ public:
     void open_context_menu(const QPoint &global_pos);
     void add_actions(QMenu *menu);
     bool update_actions();
-    void on_menubar_action_menu_open();
 
 public slots:
     void on_current_scope_item_changed(const QModelIndex &current, const QModelIndex &);

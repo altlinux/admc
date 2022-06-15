@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,16 @@ class ADMCTestCreateObjectDialog : public ADMCTest {
 private slots:
     void create_user_data();
     void create_user();
+    void create_user_autofill();
     void create_ou();
     void create_computer();
+    void create_computer_autofill();
     void create_group();
+    void create_group_autofill();
     void create_shared_folder();
     void create_contact();
+    void create_contact_autofill();
+    void trim();
 };
 
 #endif /* ADMC_TEST_CREATE_OBJECT_DIALOG_H */

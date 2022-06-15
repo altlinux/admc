@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,11 @@ public:
 
     QString to_string() const;
     bool contains(const QString &gpo) const;
+    
+    // NOTE: this returns a list of GPO DN's with correct
+    // letter case. Gplink string contains DN's in a
+    // different letter case that is not appropriate for
+    // LDAP operations.
     QList<QString> get_gpo_list() const;
 
     void add(const QString &gpo);

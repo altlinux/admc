@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ void ADMCTestLogonHoursDialog::select() {
     utc_time_button->setChecked(true);
 
     const QList<QModelIndex> selected = selection_model->selectedIndexes();
-    const QSet<QModelIndex> selected_set = selected.toSet();
+    const QSet<QModelIndex> selected_set = QSet<QModelIndex>(selected.begin(), selected.end());
 
     const QSet<QModelIndex> correct_selected_set = {
         model->index(2, 0),

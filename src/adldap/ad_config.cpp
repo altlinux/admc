@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -367,6 +367,10 @@ QString AdConfig::partitions_dn() const {
 
 QString AdConfig::extended_rights_dn() const {
     return QString("CN=Extended-Rights,%1").arg(configuration_dn());
+}
+
+QString AdConfig::policies_dn() const {
+    return QString("CN=Policies,CN=System,%1").arg(domain_dn());
 }
 
 bool AdConfig::control_is_supported(const QString &control_oid) const {
@@ -777,8 +781,13 @@ QList<QString> AdConfig::get_noncontainer_classes() {
 
 bool AdConfig::rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const {
     const QByteArray rights_guid = d->rights_name_to_guid_map[rights_cn];
-    const QSet<QString> applies_to = d->rights_applies_to_map[rights_guid].toSet();
-    const bool applies = applies_to.intersects(class_list.toSet());
+
+    const QList<QString> applies_to_list = d->rights_applies_to_map[rights_guid]; 
+    const QSet<QString> applies_to_set = QSet<QString>(applies_to_list.begin(), applies_to_list.end());
+
+    const QSet<QString> class_set = QSet<QString>(class_list.begin(), class_list.end());
+
+    const bool applies = applies_to_set.intersects(class_set);
 
     return applies;
 }

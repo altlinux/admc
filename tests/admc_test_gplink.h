@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 #define ADMC_TEST_GPLINK_H
 
 #include <QObject>
-
 #include <QTest>
 
 class ADMCTestGplink : public QObject {
@@ -51,6 +50,8 @@ private slots:
     void get_option();
     void set_option_data();
     void set_option();
+    void get_gpo_list_data();
+    void get_gpo_list();
 };
 
 #endif /* ADMC_TEST_GPLINK_H */

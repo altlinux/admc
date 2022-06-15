@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,21 +24,23 @@
 #include "admc_test.h"
 
 class StringAttributeDialog;
-class QLineEdit;
+class QPlainTextEdit;
 
 class ADMCTestStringAttributeDialog : public ADMCTest {
     Q_OBJECT
 
 private slots:
-    void initTestCase_data();
-    void init();
-
+    void display_value_data();
     void display_value();
+    void get_value_list_data();
     void get_value_list();
+    void limit_length();
 
 private:
     StringAttributeDialog *dialog;
-    QLineEdit *line_edit;
+    QPlainTextEdit *text_edit;
+
+    void init_edit(const QList<QByteArray> &value_list);
 };
 
 #endif /* ADMC_TEST_STRING_EDITOR_H */

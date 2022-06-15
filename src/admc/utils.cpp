@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include <QHash>
 #include <QHeaderView>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QList>
 #include <QMap>
 #include <QMenu>
@@ -48,6 +49,7 @@
 #include <QTreeView>
 
 QMessageBox *message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
+int get_range_upper(const QString &attribute);
 
 QList<QStandardItem *> make_item_row(const int count) {
     QList<QStandardItem *> row;
@@ -159,9 +161,26 @@ QString is_container_filter() {
 }
 
 void limit_edit(QLineEdit *edit, const QString &attribute) {
-    const int range_upper = g_adconfig->get_attribute_range_upper(attribute);
+    const int range_upper = get_range_upper(attribute);
+
     if (range_upper > 0) {
         edit->setMaxLength(range_upper);
+    }
+}
+
+void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
+    const int range_upper = get_range_upper(attribute);
+
+    if (range_upper > 0) {
+        QObject::connect(
+            edit, &QPlainTextEdit::textChanged,
+            edit, [edit, range_upper]() {
+                const QString text = edit->toPlainText();
+
+                if (text.length() > range_upper) {
+                    edit->setPlainText(text.left(range_upper));
+                }
+            });
     }
 }
 
@@ -176,7 +195,7 @@ QIcon get_object_icon(const AdObject &object) {
         {"Group", {"system-users"}},
         {"Person", {"avatar-default", "avatar-default-symbolic"}},
         {"Computer", {"computer"}},
-        {"Group-Policy-Container", {"folder-templates"}},
+        {"Group-Policy-Container", {"preferences-other"}},
         {"Volume", {"folder-templates"}},
 
         // Some custom icons for one-off objects
@@ -199,7 +218,12 @@ QIcon get_object_icon(const AdObject &object) {
             return out;
         }();
 
-        const QList<QString> icon_name_list = category_to_icon_list.value(object_category, {error_icon});
+        const QList<QString> fallback_icon_list = {
+            "emblem-system",
+            "emblem-system-symbolic",
+            "dialog-question"
+        };
+        const QList<QString> icon_name_list = category_to_icon_list.value(object_category, fallback_icon_list);
 
         for (const QString &icon : icon_name_list) {
             if (QIcon::hasThemeIcon(icon)) {
@@ -220,6 +244,16 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
 
     for (const QModelIndex &index : indexes) {
         out.append(QPersistentModelIndex(index));
+    }
+
+    return out;
+}
+
+QList<QModelIndex> normal_index_list(const QList<QPersistentModelIndex> &indexes) {
+    QList<QModelIndex> out;
+
+    for (const QPersistentModelIndex &index : indexes) {
+        out.append(QModelIndex(index));
     }
 
     return out;
@@ -300,15 +334,15 @@ QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list, const
     return out;
 }
 
-QList<QString> get_action_target_dn_list(ConsoleWidget *console, const int type, const int dn_role) {
-    const QList<QModelIndex> indexes = console->get_action_target_items(type);
+QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role) {
+    const QList<QModelIndex> indexes = console->get_selected_items(type);
     const QList<QString> out = index_list_to_dn_list(indexes, dn_role);
 
     return out;
 }
 
-QString get_action_target_dn(ConsoleWidget *console, const int type, const int dn_role) {
-    const QList<QString> dn_list = get_action_target_dn_list(console, type, dn_role);
+QString get_selected_target_dn(ConsoleWidget *console, const int type, const int dn_role) {
+    const QList<QString> dn_list = get_selected_dn_list(console, type, dn_role);
 
     if (!dn_list.isEmpty()) {
         return dn_list[0];
@@ -448,4 +482,25 @@ void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_e
     QObject::connect(
         last_name_edit, &QLineEdit::textChanged,
         last_name_edit, autofill_full_name);
+}
+
+int get_range_upper(const QString &attribute) {
+    if (attribute == ATTRIBUTE_UPN_SUFFIXES) {
+        // NOTE: schema doesn't define a max length for
+        // "upn suffixes", but we do need a limit. Use
+        // half of total max length of upn as a good
+        // estimate.
+        const int upn_suffix_max_length = [&]() {
+            const int upn_max_length = g_adconfig->get_attribute_range_upper(ATTRIBUTE_USER_PRINCIPAL_NAME);
+            const int out = upn_max_length / 2;
+
+            return out;
+        }();
+
+        return upn_suffix_max_length;
+    } else {
+        const int out = g_adconfig->get_attribute_range_upper(attribute);
+
+        return out;
+    }
 }

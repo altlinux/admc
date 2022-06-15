@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,8 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include <algorithm>
+
 #define SPLITTER_STATE "SPLITTER_STATE"
 const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
 const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
@@ -57,11 +59,25 @@ const QList<StandardAction> standard_action_list = {
 
 QString results_state_name(const int type);
 
+class ScopeView : public QTreeView {
+public:
+    using QTreeView::QTreeView;
+
+    void resizeEvent(QResizeEvent *event) override {
+        QTreeView::resizeEvent(event);
+
+        QSize areaSize = viewport()->size();
+        const int view_width = areaSize.width();
+        const int content_width = sizeHintForColumn(0);
+        header()->setDefaultSectionSize(std::max(view_width, content_width));
+    }
+};
+
 ConsoleWidget::ConsoleWidget(QWidget *parent)
 : QWidget(parent) {
     d = new ConsoleWidgetPrivate(this);
 
-    d->scope_view = new QTreeView();
+    d->scope_view = new ScopeView(this);
     d->scope_view->setHeaderHidden(true);
     d->scope_view->setExpandsOnDoubleClick(true);
     d->scope_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -69,6 +85,25 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->scope_view->setDragDropMode(QAbstractItemView::DragDrop);
     // NOTE: this makes it so that you can't drag drop between rows (even though name/description don't say anything about that)
     d->scope_view->setDragDropOverwriteMode(true);
+
+    // NOTE: this is a hacky solution to the problem of
+    // scope view cutting off long items and not turning on
+    // scrollbar so that full item can be viewed.
+    // "stretchLastSection" setting is turned off - this
+    // fixes item being stretched to fit the view and now
+    // items can be their full length.
+    // 
+    // BUT, without "stretchLastSection", selecting items
+    // looks wrong because selection rectangle doesn't
+    // stretch to the whole view and also depends on the
+    // width of the widest item that is currently visible.
+    // To fix this visual problem, we change resize mode to
+    // interactive and override scope view's resizeEvent. In
+    // resizeEvent() we resize section to width of scope
+    // view or to content width, depending on which one is
+    // greater at the moment.
+    d->scope_view->header()->setStretchLastSection(false);
+    d->scope_view->header()->setSectionResizeMode(QHeaderView::Interactive);
 
     d->model = new ConsoleDragModel(this);
 
@@ -149,6 +184,9 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->scope_view->selectionModel(), &QItemSelectionModel::currentChanged,
         d, &ConsoleWidgetPrivate::on_current_scope_item_changed);
     connect(
+        d->scope_view->selectionModel(), &QItemSelectionModel::selectionChanged,
+        this, &ConsoleWidget::selection_changed);
+    connect(
         d->model, &QStandardItemModel::rowsAboutToBeRemoved,
         d, &ConsoleWidgetPrivate::on_scope_items_about_to_be_removed);
 
@@ -205,6 +243,9 @@ void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
         connect(
             results_view, &ResultsView::context_menu,
             d, &ConsoleWidgetPrivate::on_results_context_menu);
+        connect(
+            results_view, &ResultsView::selection_changed,
+            this, &ConsoleWidget::selection_changed);
     }
 }
 
@@ -302,8 +343,8 @@ QList<QModelIndex> ConsoleWidget::get_selected_items(const int type) const {
     return out;
 }
 
-QModelIndex ConsoleWidget::get_action_target(const int type) const {
-    const QList<QModelIndex> index_list = get_action_target_items(type);
+QModelIndex ConsoleWidget::get_selected_item(const int type) const {
+    const QList<QModelIndex> index_list = get_selected_items(type);
 
     if (!index_list.isEmpty()) {
         return index_list[0];
@@ -312,20 +353,7 @@ QModelIndex ConsoleWidget::get_action_target(const int type) const {
     }
 }
 
-QList<QModelIndex> ConsoleWidget::get_action_target_items(const int type) const {
-    QList<QModelIndex> out;
-
-    for (const QModelIndex &index : d->action_target_list) {
-        const int this_type = console_item_get_type(index);
-        if (this_type == type) {
-            out.append(index);
-        }
-    }
-
-    return out;
-}
-
-QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int role, const QVariant &value, const int type) const {
+QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int role, const QVariant &value, const QList<int> &type_list) const {
     const QList<QModelIndex> all_matches = [&]() {
         QList<QModelIndex> out;
 
@@ -347,7 +375,7 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int ro
     }();
 
     const QList<QModelIndex> filtered_matches = [&]() {
-        if (type == -1) {
+        if (type_list.isEmpty()) {
             return all_matches;
         }
 
@@ -358,7 +386,7 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int ro
             if (type_variant.isValid()) {
                 const int this_type = type_variant.toInt();
 
-                if (this_type == type) {
+                if (type_list.contains(this_type)) {
                     out.append(index);
                 }
             }
@@ -375,27 +403,53 @@ QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, int ro
 // search iteration includes parent or not. Once this
 // is done it may be possible to simplify
 // get_x_tree_root() f-ns.
-QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, const int type) const {
+QList<QModelIndex> ConsoleWidget::search_items(const QModelIndex &parent, const QList<int> &type_list) const {
     QList<QModelIndex> out;
 
-    const int role = ConsoleRole_Type;
-    const int value = type;
+    for (const int type : type_list) {
+        const int role = ConsoleRole_Type;
+        const int value = type;
 
-    // NOTE: start index may be invalid if parent has no
-    // children
-    const QModelIndex start_index = d->model->index(0, 0, parent);
-    if (start_index.isValid()) {
-        const QList<QModelIndex> descendant_matches = d->model->match(start_index, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
-        out.append(descendant_matches);
-    }
+        // NOTE: start index may be invalid if parent has no
+        // children
+        const QModelIndex start_index = d->model->index(0, 0, parent);
+        if (start_index.isValid()) {
+            const QList<QModelIndex> descendant_matches = d->model->match(start_index, role, value, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+            out.append(descendant_matches);
+        }
 
-    const QVariant parent_value = parent.data(role);
-    const bool parent_is_match = (parent_value.isValid() && parent_value == value);
-    if (parent_is_match) {
-        out.append(parent);
+        const QVariant parent_value = parent.data(role);
+        const bool parent_is_match = (parent_value.isValid() && parent_value == value);
+        if (parent_is_match) {
+            out.append(parent);
+        }
     }
 
     return out;
+}
+
+QModelIndex ConsoleWidget::search_item(const QModelIndex &parent, int role, const QVariant &value, const QList<int> &type_list) const {
+    const QList<QModelIndex> index_list = search_items(parent, role, value, type_list);
+
+    if (index_list.isEmpty()) {
+        const QModelIndex out = index_list[0];
+
+        return out;
+    } else {
+        return QModelIndex();
+    }
+}
+
+QModelIndex ConsoleWidget::search_item(const QModelIndex &parent, const QList<int> &type) const {
+    const QList<QModelIndex> index_list = search_items(parent, type);
+
+    if (index_list.isEmpty()) {
+        const QModelIndex out = index_list[0];
+
+        return out;
+    } else {
+        return QModelIndex();
+    }
 }
 
 QModelIndex ConsoleWidget::get_current_scope_item() const {
@@ -521,7 +575,11 @@ void ConsoleWidget::setup_menubar_action_menu(QMenu *menu) {
 
     connect(
         menu, &QMenu::aboutToShow,
-        d, &ConsoleWidgetPrivate::on_menubar_action_menu_open);
+        d, &ConsoleWidgetPrivate::update_actions);
+}
+
+void ConsoleWidget::set_item_sort_index(const QModelIndex &index, const int sort_index) {
+    d->model->setData(index, sort_index, ConsoleRole_SortIndex);
 }
 
 void ConsoleWidgetPrivate::add_actions(QMenu *menu) {
@@ -546,21 +604,14 @@ void ConsoleWidgetPrivate::add_actions(QMenu *menu) {
     menu->addAction(standard_action_map[StandardAction_Properties]);
 }
 
-void ConsoleWidgetPrivate::on_menubar_action_menu_open() {
-    // Action menu opened from menubar, so use regular
-    // selected items
-    action_target_list = get_all_selected_items();
-
-    update_actions();
-}
-
 // Returns whether any action is visible
 bool ConsoleWidgetPrivate::update_actions() {
-    if (!action_target_list.isEmpty() && !action_target_list[0].isValid()) {
+    const QList<QModelIndex> selected_list = get_all_selected_items();
+    if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
         return false;
     }
 
-    const bool single_selection = (action_target_list.size() == 1);
+    const bool single_selection = (selected_list.size() == 1);
 
     //
     // Collect information about action state from impl's
@@ -569,8 +620,8 @@ bool ConsoleWidgetPrivate::update_actions() {
     const QSet<QAction *> visible_custom_action_set = [&]() {
         QSet<QAction *> out;
 
-        for (int i = 0; i < action_target_list.size(); i++) {
-            const QModelIndex index = action_target_list[i];
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
             QSet<QAction *> for_this_index = impl->get_custom_actions(index, single_selection);
@@ -591,8 +642,8 @@ bool ConsoleWidgetPrivate::update_actions() {
     const QSet<QAction *> disabled_custom_action_set = [&]() {
         QSet<QAction *> out;
 
-        for (int i = 0; i < action_target_list.size(); i++) {
-            const QModelIndex index = action_target_list[i];
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
             QSet<QAction *> for_this_index = impl->get_disabled_custom_actions(index, single_selection);
@@ -613,8 +664,8 @@ bool ConsoleWidgetPrivate::update_actions() {
     const QSet<StandardAction> visible_standard_actions = [&]() {
         QSet<StandardAction> out;
 
-        for (int i = 0; i < action_target_list.size(); i++) {
-            const QModelIndex index = action_target_list[i];
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
             QSet<StandardAction> for_this_index = impl->get_standard_actions(index, single_selection);
@@ -635,8 +686,8 @@ bool ConsoleWidgetPrivate::update_actions() {
     const QSet<StandardAction> disabled_standard_actions = [&]() {
         QSet<StandardAction> out;
 
-        for (int i = 0; i < action_target_list.size(); i++) {
-            const QModelIndex index = action_target_list[i];
+        for (int i = 0; i < selected_list.size(); i++) {
+            const QModelIndex index = selected_list[i];
 
             ConsoleImpl *impl = get_impl(index);
             QSet<StandardAction> for_this_index = impl->get_disabled_standard_actions(index, single_selection);
@@ -804,6 +855,12 @@ void ConsoleWidgetPrivate::set_results_to_type(const ResultsViewType type) {
 
     if (impl->view() != nullptr) {
         impl->view()->set_view_type(type);
+
+        // NOTE: changing results type causes a
+        // selection change because selection is there
+        // is a separate selection for each type of
+        // results view
+        emit q->selection_changed();
     }
 }
 
@@ -869,6 +926,9 @@ QList<QModelIndex> ConsoleWidgetPrivate::get_all_selected_items() const {
     } else if (focused_results) {
         const QList<QModelIndex> results_selected = results_view->get_selected_indexes();
 
+        // NOTE: this is necessary for the "context
+        // menu targets current scope if clicked on
+        // empty space in results view" feature.
         if (!results_selected.isEmpty()) {
             return results_selected;
         } else {
@@ -1036,6 +1096,8 @@ void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
 
         if (new_focused_view == scope_view || new_focused_view == results_view) {
             focused_view = new_focused_view;
+
+            emit q->selection_changed();
         }
     }
 }
@@ -1154,7 +1216,9 @@ void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) 
     const QSet<int> type_set = [&]() {
         QSet<int> out;
 
-        for (const QModelIndex &index : action_target_list) {
+        const QList<QModelIndex> selected_list = get_all_selected_items();
+
+        for (const QModelIndex &index : selected_list) {
             const int type = index.data(ConsoleRole_Type).toInt();
             out.insert(type);
         }
@@ -1165,7 +1229,7 @@ void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) 
     // Call impl's action f-n for all present types
     for (const int type : type_set) {
         // Filter selected list so that it only contains indexes of this type
-        const QList<QModelIndex> selected_of_type = q->get_action_target_items(type);
+        const QList<QModelIndex> selected_of_type = q->get_selected_items(type);
 
         ConsoleImpl *impl = impl_map[type];
         switch (action_enum) {
@@ -1213,10 +1277,6 @@ void ConsoleWidgetPrivate::on_standard_action(const StandardAction action_enum) 
     }
 }
 
-// NOTE: when action menu is opened as context menu
-// from results pane, treat clicking on empty space in
-// results pane as clicking on it's parent, which is
-// current scope.
 void ConsoleWidgetPrivate::on_results_context_menu(const QPoint &pos) {
     const QAbstractItemView *results_view = [&]() {
         ConsoleImpl *current_impl = get_current_scope_impl();
@@ -1226,21 +1286,16 @@ void ConsoleWidgetPrivate::on_results_context_menu(const QPoint &pos) {
         return out;
     }();
 
-    action_target_list = [&]() {
-        const QModelIndex index = results_view->indexAt(pos);
-        const bool clicked_empty_space = !index.isValid();
-
-        if (clicked_empty_space) {
-            const QModelIndex current_scope_item = q->get_current_scope_item();
-            const QList<QModelIndex> out = {current_scope_item};
-
-            return out;
-        } else {
-            const QList<QModelIndex> out = get_all_selected_items();
-
-            return out;
-        }
-    }();
+    // NOTE: have to manually clear selection when
+    // clicking on empty space in view because by
+    // default Qt doesn't do it. This is necessary for
+    // the "context menu targets current scope if
+    // clicked on empty space in results view" feature
+    const QModelIndex index = results_view->indexAt(pos);
+    const bool clicked_empty_space = !index.isValid();
+    if (clicked_empty_space) {
+        results_view->selectionModel()->clear();
+    }
 
     const QPoint global_pos = results_view->mapToGlobal(pos);
     open_context_menu(global_pos);
@@ -1252,11 +1307,6 @@ void ConsoleWidgetPrivate::on_scope_context_menu(const QPoint &pos) {
     if (!index.isValid()) {
         return;
     }
-
-    // Scope uses real selection as target of action
-    // menu. If clicked on empty space, action menu
-    // doesn't open.
-    action_target_list = get_all_selected_items();
 
     const QPoint global_pos = focused_view->mapToGlobal(pos);
     open_context_menu(global_pos);

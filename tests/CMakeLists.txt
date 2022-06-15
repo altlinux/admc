@@ -64,14 +64,17 @@ set(TEST_TARGETS
     admc_test_bool_attribute_dialog
     admc_test_datetime_attribute_dialog
     admc_test_string_attribute_dialog
+    admc_test_number_attribute_dialog
     admc_test_list_attribute_dialog
     admc_test_edit_query_item_widget
     admc_test_policy_results_widget
+    admc_test_policy_ou_results_widget
     admc_test_find_object_dialog
     admc_test_rename_object_dialog
     admc_test_create_object_dialog
     admc_test_select_classes_widget
     admc_test_sam_name_edit
+    admc_test_dn_edit
 )
 
 foreach(target ${TEST_TARGETS})

@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,11 +37,6 @@ public:
     ~StringAttributeDialog();
 
     QList<QByteArray> get_value_list() const override;
-
-    // NOTE: by default, most (not all) attributes have
-    // a pre-defined max length that is obtained from
-    // schema. Calling this f-n overrides it.
-    void set_max_length(const int max_length);
 };
 
 #endif /* STRING_ATTRIBUTE_DIALOG_H */

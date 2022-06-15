@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,13 +67,25 @@ void ADMCTestPasswordEdit::load() {
     QVERIFY(confirm_edit->text().isEmpty());
 }
 
+void ADMCTestPasswordEdit::verify_data() {
+    QTest::addColumn<QString>("main_pass");
+    QTest::addColumn<QString>("confirm_pass");
+
+    QTest::newRow("mismatch") << "test" << "no-match";
+    QTest::newRow("empty") << QString() << QString();
+}
+
 void ADMCTestPasswordEdit::verify() {
-    main_edit->setText("test");
-    confirm_edit->setText("no-match");
+    QFETCH(QString, main_pass);
+    QFETCH(QString, confirm_pass);
+
+    main_edit->setText(main_pass);
+    confirm_edit->setText(confirm_pass);
 
     const bool verify_success = edit->verify(ad, dn);
-    close_message_box();
     QCOMPARE(verify_success, false);
+
+    QCOMPARE(message_box_is_open(), true);
 }
 
 void ADMCTestPasswordEdit::apply() {

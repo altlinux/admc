@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,40 +23,69 @@
 #include "attribute_dialogs/string_attribute_dialog.h"
 #include "attribute_dialogs/ui_string_attribute_dialog.h"
 
-#include <QLineEdit>
+#include <QPlainTextEdit>
 
-void ADMCTestStringAttributeDialog::initTestCase_data() {
+#define TEST_ATTRIBUTE ATTRIBUTE_CN
+
+void ADMCTestStringAttributeDialog::init_edit(const QList<QByteArray> &value_list) {
+    dialog = new StringAttributeDialog(value_list, TEST_ATTRIBUTE, false, parent_widget);
+    dialog->open();
+    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
+
+    text_edit = dialog->ui->edit;
+}
+
+void ADMCTestStringAttributeDialog::display_value_data() {
     QTest::addColumn<QList<QByteArray>>("value_list");
-    QTest::addColumn<QString>("display_value");
+    QTest::addColumn<QString>("expected_display_value");
 
     QTest::newRow("empty") << QList<QByteArray>() << "";
     QTest::newRow("non-empty") << QList<QByteArray>({"hello"}) << "hello";
 }
 
-void ADMCTestStringAttributeDialog::init() {
-    ADMCTest::init();
+void ADMCTestStringAttributeDialog::display_value() {
+    QFETCH(QList<QByteArray>, value_list);
+    QFETCH(QString, expected_display_value);
 
-    QFETCH_GLOBAL(QList<QByteArray>, value_list);
+    init_edit(value_list);
 
-    dialog = new StringAttributeDialog(value_list, ATTRIBUTE_NAME, false, parent_widget);
-    dialog->open();
-    QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
-
-    line_edit = dialog->ui->edit;
+    const QString actual_display_value = text_edit->toPlainText();
+    QCOMPARE(actual_display_value, expected_display_value);
 }
 
-void ADMCTestStringAttributeDialog::display_value() {
-    QFETCH_GLOBAL(QString, display_value);
+void ADMCTestStringAttributeDialog::get_value_list_data() {
+    QTest::addColumn<QList<QByteArray>>("value_list");
 
-    const QString actual_display_value = line_edit->text();
-    QCOMPARE(actual_display_value, display_value);
+    QTest::newRow("empty") << QList<QByteArray>();
+    QTest::newRow("non-empty") << QList<QByteArray>({"hello"});
 }
 
 void ADMCTestStringAttributeDialog::get_value_list() {
-    QFETCH_GLOBAL(QList<QByteArray>, value_list);
+    QFETCH(QList<QByteArray>, value_list);
 
-    const QList<QByteArray> value_list_from_dialog = dialog->get_value_list();
-    QCOMPARE(value_list_from_dialog, value_list);
+    init_edit(value_list);
+
+    const QList<QByteArray> actual_value_list = dialog->get_value_list();
+    const QList<QByteArray> expected_value_list = value_list;
+    QCOMPARE(actual_value_list, expected_value_list);
+}
+
+void ADMCTestStringAttributeDialog::limit_length() {
+    const auto value_list = QList<QByteArray>({"hello"});
+
+    init_edit(value_list);
+    
+    const int range_upper = ad.adconfig()->get_attribute_range_upper(TEST_ATTRIBUTE);
+
+    QVERIFY(range_upper > 0);
+
+    const QString new_value = QString(range_upper + 10, 'a');
+    text_edit->setPlainText(new_value);
+
+    const QString current_value = text_edit->toPlainText();
+    const int current_value_length = current_value.length();
+
+    QCOMPARE(current_value_length, range_upper);
 }
 
 QTEST_MAIN(ADMCTestStringAttributeDialog)

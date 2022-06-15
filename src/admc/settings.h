@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ DEFINE_SETTING(SETTING_main_window_state);
 DEFINE_SETTING(SETTING_attributes_tab_filter_state);
 DEFINE_SETTING(SETTING_console_widget_state);
 DEFINE_SETTING(SETTING_policy_results_state);
+DEFINE_SETTING(SETTING_policy_ou_results_state);
 DEFINE_SETTING(SETTING_find_results_state);
 DEFINE_SETTING(SETTING_console_filter_dialog_state);
 DEFINE_SETTING(SETTING_select_object_advanced_dialog_console_state);
@@ -89,6 +90,7 @@ DEFINE_SETTING(SETTING_datetime_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_list_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_octet_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_string_attribute_dialog_geometry);
+DEFINE_SETTING(SETTING_number_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_fsmo_dialog_geometry);
 DEFINE_SETTING(SETTING_create_shared_folder_dialog_geometry);
 DEFINE_SETTING(SETTING_create_contact_dialog_geometry);
@@ -100,7 +102,6 @@ DEFINE_SETTING(SETTING_attributes_tab_header_state);
 DEFINE_SETTING(SETTING_select_object_header_state);
 DEFINE_SETTING(SETTING_membership_tab_header_state);
 DEFINE_SETTING(SETTING_organization_tab_header_state);
-DEFINE_SETTING(SETTING_group_policy_tab_header_state);
 DEFINE_SETTING(SETTING_security_tab_header_state);
 DEFINE_SETTING(SETTING_select_object_match_header_state);
 

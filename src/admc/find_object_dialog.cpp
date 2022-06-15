@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ FindObjectDialog::FindObjectDialog(ConsoleWidget *buddy_console, const QString &
     auto menubar = new QMenuBar();
     layout()->setMenuBar(menubar);
     auto action_menu = menubar->addMenu(tr("&Action"));
+    menubar->setContextMenuPolicy(Qt::PreventContextMenu);
     auto view_menu = menubar->addMenu(tr("&View"));
 
     const QList<QString> class_list = filter_classes;

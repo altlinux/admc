@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,11 +39,21 @@ ChangelogDialog::ChangelogDialog(QWidget *parent)
         const QString fail_text = tr("Failed to open changelog file.");
 
         const QString changelog_path = []() {
+            const QString changelog_file_name = [&]() {
+                const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
+
+                if (saved_locale.language() == QLocale::Russian) {
+                    return "CHANGELOG_ru.txt";
+                } else {
+                    return "CHANGELOG.txt";
+                }
+            }();
+
 #ifdef QT_DEBUG
-            return QCoreApplication::applicationDirPath() + "/CHANGELOG.txt";
+            return QString("%1/%2").arg(QCoreApplication::applicationDirPath(), changelog_file_name);
 #endif
 
-            return QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString("doc/admc-%1/CHANGELOG.txt").arg(ADMC_VERSION));
+            return QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString("doc/admc-%1/%2").arg(ADMC_VERSION, changelog_file_name));
         }();
 
         if (changelog_path.isEmpty()) {

@@ -108,6 +108,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>name_edit</tabstop>
+  <tabstop>first_name_edit</tabstop>
+  <tabstop>last_name_edit</tabstop>
+  <tabstop>full_name_edit</tabstop>
+  <tabstop>upn_prefix_edit</tabstop>
+  <tabstop>upn_suffix_edit</tabstop>
+  <tabstop>sam_name_edit</tabstop>
+  <tabstop>sam_name_domain_edit</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

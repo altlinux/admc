@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ SelectPolicyDialog::SelectPolicyDialog(AdInterface &ad, QWidget *parent)
     const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GP_CONTAINER);
-    const QList<QString> attributes = console_policy_search_attributes();
+    const QList<QString> attributes = QList<QString>();
 
     const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 

@@ -96,6 +96,13 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>name_edit</tabstop>
+  <tabstop>description_edit</tabstop>
+  <tabstop>scope_checkbox</tabstop>
+  <tabstop>edit_filter_button</tabstop>
+  <tabstop>filter_display</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

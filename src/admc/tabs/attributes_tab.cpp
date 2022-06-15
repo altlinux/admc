@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include "attribute_dialogs/list_attribute_dialog.h"
 #include "attribute_dialogs/octet_attribute_dialog.h"
 #include "attribute_dialogs/string_attribute_dialog.h"
+#include "attribute_dialogs/number_attribute_dialog.h"
 #include "globals.h"
 #include "settings.h"
 #include "tabs/attributes_tab_filter_menu.h"
@@ -308,7 +309,13 @@ AttributeDialog *AttributesTabEdit::get_attribute_dialog(const bool read_only) {
 
     auto string_attribute_dialog = [&]() -> AttributeDialog * {
         if (single_valued) {
-            return new StringAttributeDialog(value_list, attribute, read_only, view);
+            const bool attribute_is_number = g_adconfig->get_attribute_is_number(attribute);
+
+            if (attribute_is_number) {
+                return new NumberAttributeDialog(value_list, attribute, read_only, view);
+            } else {
+                return new StringAttributeDialog(value_list, attribute, read_only, view);
+            }
         } else {
             return new ListAttributeDialog(value_list, attribute, read_only, view);
         }

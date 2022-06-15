@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -198,6 +198,13 @@ void ADMCTest::close_message_box() {
     }
 }
 
+bool ADMCTest::message_box_is_open() const {
+    auto message_box = parent_widget->findChild<QMessageBox *>();
+    const bool out = (message_box != nullptr);
+
+    return out;
+}
+
 void ADMCTest::select_in_select_dialog(SelectObjectDialog *select_dialog, const QString &dn) {
     QPushButton *add_button = select_dialog->ui->add_button;
     add_button->click();
@@ -281,4 +288,13 @@ void ADMCTest::select_base_widget_add(SelectBaseWidget *widget, const QString &d
 
     select_container_dialog->accept();
     QVERIFY(QTest::qWaitForWindowExposed(widget, 1000));
+}
+
+void test_lineedit_autofill(QLineEdit *src_edit, QLineEdit *dest_edit) {
+    const QString expected_dest_text = "test";
+
+    src_edit->setText(expected_dest_text);
+
+    const QString actual_dest_text = dest_edit->text();
+    QCOMPARE(actual_dest_text, expected_dest_text);
 }

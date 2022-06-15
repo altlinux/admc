@@ -7,13 +7,16 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="48.0px"
-   height="48.0px"
-   viewBox="0 0 48.0 48.0"
+   width="256"
+   height="256"
+   viewBox="0 0 256 256"
    version="1.1"
    id="SVGRoot"
    sodipodi:docname="admc.svg"
-   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   inkscape:export-filename="/home/kevl/bitmap.png"
+   inkscape:export-xdpi="30.963808"
+   inkscape:export-ydpi="30.963808">
   <defs
      id="defs1263" />
   <sodipodi:namedview
@@ -24,8 +27,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="3"
-     inkscape:cx="136.66667"
-     inkscape:cy="101.69048"
+     inkscape:cx="62.933339"
+     inkscape:cy="128.35715"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -64,7 +67,7 @@
          sodipodi:role="line"
          id="tspan1281"
          x="5"
-         y="45"></tspan></text>
+         y="45" /></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none"
@@ -84,23 +87,25 @@
          sodipodi:role="line"
          id="tspan1289"
          x="0"
-         y="40"></tspan></text>
+         y="40" /></text>
     <rect
-       style="fill:#4d7afd;fill-opacity:1"
+       style="fill:#4d7afd;fill-opacity:1;stroke-width:5.12"
        id="rect1341"
-       width="50"
-       height="50"
+       width="256"
+       height="256"
        x="0"
-       y="0" />
+       y="-1" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:33.3333px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#f2f2f2;fill-opacity:1;stroke:none"
-       x="0"
-       y="35"
-       id="text1295"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:203.508px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#f2f2f2;fill-opacity:1;stroke:none;stroke-width:6.10525"
+       x="19.697655"
+       y="169.87297"
+       id="text1295"
+       transform="scale(0.7839141,1.27565)"><tspan
          sodipodi:role="line"
          id="tspan1293"
-         x="0"
-         y="35">AD</tspan></text>
+         x="19.697655"
+         y="169.87297"
+         style="stroke-width:6.10525">AD</tspan></text>
   </g>
 </svg>

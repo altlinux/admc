@@ -20,12 +20,6 @@ if(Ndr_VERSION VERSION_GREATER "1.0.1")
 endif()
 configure_file("adldap_config.h.in" "adldap_config.h")
 
-pkg_check_modules(Ndr REQUIRED IMPORTED_TARGET ndr)
-if(Ndr_VERSION VERSION_GREATER "1.0.1")
-    set(NDR_VERSION_GREATER_THAN_1_0_1 ON)
-endif()
-configure_file("adldap_config.h.in" "adldap_config.h")
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 

@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -431,7 +431,7 @@ QList<QByteArray> security_descriptor_get_trustee_list(security_descriptor *sd) 
         return out;
     }();
 
-    const QList<QByteArray> trustee_list = trustee_set.toList();
+    const QList<QByteArray> trustee_list = QList<QByteArray>(trustee_set.begin(), trustee_set.end());
 
     return trustee_list;
 }

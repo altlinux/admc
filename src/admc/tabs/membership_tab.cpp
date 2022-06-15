@@ -2,8 +2,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,7 +120,7 @@ MembershipTab::~MembershipTab() {
 
 void MembershipTabEdit::load(AdInterface &ad, const AdObject &object) {
     const QList<QString> values = object.get_strings(get_membership_attribute());
-    original_values = values.toSet();
+    original_values = QSet<QString>(values.begin(), values.end());
     current_values = original_values;
 
     // Add primary groups or primary members
