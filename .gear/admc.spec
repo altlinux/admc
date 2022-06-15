@@ -30,6 +30,7 @@ BuildRequires: libkrb5-devel
 
 Requires: libldap
 Requires: libsasl2
+Requires: libsasl2-plugin-gssapi
 Requires: libsmbclient
 Requires: libuuid
 Requires: qt5-base-common
