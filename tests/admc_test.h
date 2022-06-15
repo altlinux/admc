@@ -75,8 +75,6 @@ protected:
     // This list is just for passing to edit ctors
     QList<AttributeEdit *> edits;
 
-    void init_test_case();
-
     // For easy setup and cleanup of each test, we use an
     // object named "test-arena" which is an OU. It is
     // created before every test and deleted after every
