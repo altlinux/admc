@@ -1131,8 +1131,8 @@ void ConsoleWidgetPrivate::on_navigate_up() {
     // NOTE: parent of target can be invalid, if current is
     // head item in which case we've reached top of tree and
     // can't go up higher
-    const bool can_go_up = (!new_current.isValid());
-    if (!can_go_up) {
+    const bool can_go_up = (new_current.isValid());
+    if (can_go_up) {
         q->set_current_scope(new_current);
     }
 }

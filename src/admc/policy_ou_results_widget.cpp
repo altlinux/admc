@@ -269,7 +269,7 @@ void PolicyOUResultsWidget::remove_link() {
         for (const QString &gpo_dn : gpo_dn_list) {
             const QModelIndex gpo_index = console->search_item(ou_index, PolicyRole_DN, gpo_dn, {ItemType_Policy});
 
-            if (!gpo_index.isValid()) {
+            if (gpo_index.isValid()) {
                 console->delete_item(gpo_index);
             }
         }
