@@ -602,7 +602,7 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
             apply_changes_to_branch(find_root, ItemType_Object, ObjectRole_DN);
 
             // Apply to policy branch
-            if (!policy_root.isValid()) {
+            if (policy_root.isValid()) {
                 for (const AdObject &object : object_list) {
                     const QString dn = object.get_dn();
                     const QModelIndex object_index = target_console->search_item(policy_root, PolicyOURole_DN, dn, {ItemType_PolicyOU});
