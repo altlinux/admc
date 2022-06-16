@@ -43,6 +43,7 @@
 #include <QTreeView>
 
 enum PolicyOUResultsColumn {
+    PolicyOUResultsColumn_Order,
     PolicyOUResultsColumn_Name,
     PolicyOUResultsColumn_Enforced,
     PolicyOUResultsColumn_Disabled,
@@ -87,6 +88,7 @@ PolicyOUResultsWidget::PolicyOUResultsWidget(ConsoleWidget *console_arg)
     model = new QStandardItemModel(0, PolicyOUResultsColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
         {
+            {PolicyOUResultsColumn_Order, tr("Order")},
             {PolicyOUResultsColumn_Name, tr("Name")},
             {PolicyOUResultsColumn_Enforced, tr("Enforced")},
             {PolicyOUResultsColumn_Disabled, tr("Disabled")},
@@ -94,14 +96,16 @@ PolicyOUResultsWidget::PolicyOUResultsWidget(ConsoleWidget *console_arg)
 
     ui->view->set_model(model);
 
-    ui->view->detail_view()->header()->resizeSection(0, 300);
-    ui->view->detail_view()->header()->resizeSection(1, 100);
+    ui->view->detail_view()->header()->resizeSection(0, 50);
+    ui->view->detail_view()->header()->resizeSection(1, 300);
     ui->view->detail_view()->header()->resizeSection(2, 100);
-    ui->view->detail_view()->header()->resizeSection(3, 500);
+    ui->view->detail_view()->header()->resizeSection(3, 100);
+    ui->view->detail_view()->header()->resizeSection(4, 500);
 
     const QVariant state = settings_get_variant(SETTING_policy_ou_results_state);
     ui->view->restore_state(state,
         {
+            PolicyOUResultsColumn_Order,
             PolicyOUResultsColumn_Name,
             PolicyOUResultsColumn_Enforced,
             PolicyOUResultsColumn_Disabled,
@@ -300,8 +304,9 @@ void PolicyOUResultsWidget::reload_gplink() {
         return;
     }
 
+    const QList<QString> gpo_dn_list = gplink.get_gpo_list();
+
     const QList<AdObject> gpo_object_list = [&]() {
-        const QList<QString> gpo_dn_list = gplink.get_gpo_list();
         if (gpo_dn_list.isEmpty()) {
             return QList<AdObject>();
         }
@@ -337,6 +342,11 @@ void PolicyOUResultsWidget::reload_gplink() {
         }();
 
         const QList<QStandardItem *> row = make_item_row(PolicyOUResultsColumn_COUNT);
+
+        const int index = gpo_dn_list.indexOf(gpo_object.get_dn());
+        const QString index_string = QString::number(index);
+        row[PolicyOUResultsColumn_Order]->setText(index_string);
+
         row[PolicyOUResultsColumn_Name]->setText(name);
         set_data_for_row(row, gpo_dn, PolicyOUResultsRole_DN);
 
@@ -370,5 +380,5 @@ void PolicyOUResultsWidget::reload_gplink() {
         model->appendRow(row);
     }
 
-    model->sort(PolicyOUResultsColumn_Name);
+    model->sort(PolicyOUResultsColumn_Order);
 }
