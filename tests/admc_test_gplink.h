@@ -52,6 +52,8 @@ private slots:
     void set_option();
     void get_gpo_list_data();
     void get_gpo_list();
+    void get_gpo_order_data();
+    void get_gpo_order();
 };
 
 #endif /* ADMC_TEST_GPLINK_H */
