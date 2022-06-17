@@ -163,13 +163,20 @@ void ADMCTestPolicyOUResultsWidget::load() {
 
 void ADMCTestPolicyOUResultsWidget::remove_link() {
     // Link gpo to ou
-    const AdObject ou_object = ad.search_object(ou_dn);
-    const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
-    Gplink gplink = Gplink(gplink_string);
-    gplink.add(gpo_dn_list[0]);
-    gplink.set_option(gpo_dn_list[0], GplinkOption_Enforced, true);
-    const bool modify_gplink_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
-    QVERIFY(modify_gplink_success);
+    {
+        const QString modified_gplink_string = [&]() {
+            const AdObject ou_object = ad.search_object(ou_dn);
+            const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+            Gplink gplink = Gplink(gplink_string);
+            gplink.add(gpo_dn_list[0]);
+            const QString out = gplink.to_string();
+
+            return out;
+        }();
+
+        const bool modify_gplink_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, modified_gplink_string);
+        QVERIFY(modify_gplink_success);
+    }
 
     widget->update(ou_dn);
 
@@ -187,20 +194,38 @@ void ADMCTestPolicyOUResultsWidget::remove_link() {
 
     widget->remove_link();
 
+    // Check that gpo is removed from model
     QCOMPARE(model->rowCount(), 0);
+
+    const bool updated_gplink_contains_gpo = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        const Gplink updated_gplink = Gplink(gplink_string);
+        const bool out = updated_gplink.contains(gpo_dn_list[0]);
+
+        return out;
+    }();
+
+    QCOMPARE(updated_gplink_contains_gpo, false);
 }
 
 // Link two gpo's, then move up the second one and check
 // that it did move up
 void ADMCTestPolicyOUResultsWidget::move_up() {
-    const AdObject ou_object = ad.search_object(ou_dn);
-    const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
-    Gplink gplink = Gplink(gplink_string);
-    
-    gplink.add(gpo_dn_list[0]);
-    gplink.add(gpo_dn_list[1]);
+    const QString modified_gplink_string = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        Gplink gplink = Gplink(gplink_string);
+        
+        gplink.add(gpo_dn_list[0]);
+        gplink.add(gpo_dn_list[1]);
 
-    const bool modify_gplink_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
+        const QString out = gplink.to_string();
+
+        return out;
+    }();
+
+    const bool modify_gplink_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, modified_gplink_string);
     QVERIFY(modify_gplink_success);
 
     widget->update(ou_dn);
@@ -224,22 +249,41 @@ void ADMCTestPolicyOUResultsWidget::move_up() {
 
     widget->move_up();
 
+    // Check that gpo was moved up in model
     const QStandardItem *new_first_item = model->item(0, 1);
     const QString new_first_item_text = new_first_item->text();
     QCOMPARE(new_first_item_text, old_second_item_text);
+
+    // Check that gpo was moved on server
+    const bool updated_gpo_order = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        const Gplink updated_gplink = Gplink(gplink_string);
+        const int out = updated_gplink.get_gpo_order(gpo_dn_list[1]);
+
+        return out;
+    }();
+
+    QCOMPARE(updated_gpo_order, 0);
 }
 
 // Link two gpo's, then move up the second one and check
 // that it did move up
 void ADMCTestPolicyOUResultsWidget::move_down() {
-    const AdObject ou_object = ad.search_object(ou_dn);
-    const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
-    Gplink gplink = Gplink(gplink_string);
-    
-    gplink.add(gpo_dn_list[0]);
-    gplink.add(gpo_dn_list[1]);
+    const QString modified_gplink_string = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        Gplink gplink = Gplink(gplink_string);
+        
+        gplink.add(gpo_dn_list[0]);
+        gplink.add(gpo_dn_list[1]);
 
-    const bool modify_gplink_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
+        const QString out = gplink.to_string();
+
+        return out;
+    }();
+
+    const bool modify_gplink_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, modified_gplink_string);
     QVERIFY(modify_gplink_success);
 
     widget->update(ou_dn);
@@ -266,6 +310,18 @@ void ADMCTestPolicyOUResultsWidget::move_down() {
     const QStandardItem *new_second_item = model->item(1, PolicyOUResultsColumn_Name);
     const QString new_second_item_text = new_second_item->text();
     QCOMPARE(new_second_item_text, old_first_item_text);
+
+    // Check that gpo was moved on server
+    const bool updated_gpo_order = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        const Gplink updated_gplink = Gplink(gplink_string);
+        const int out = updated_gplink.get_gpo_order(gpo_dn_list[0]);
+
+        return out;
+    }();
+
+    QCOMPARE(updated_gpo_order, 1);
 }
 
 QTEST_MAIN(ADMCTestPolicyOUResultsWidget)
