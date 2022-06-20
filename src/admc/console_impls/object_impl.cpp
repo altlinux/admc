@@ -609,7 +609,6 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
 
                     if (object_index.isValid()) {
                         const QList<QStandardItem *> object_row = target_console->get_row(object_index);
-                        console_object_load(object_row, object);
 
                         policy_ou_impl_load_row(object_row, object);
                     }
