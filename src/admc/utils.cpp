@@ -185,15 +185,28 @@ void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
 }
 
 QIcon get_object_icon(const AdObject &object) {
+    const QString object_category = [&]() {
+        const QString category_dn = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
+        const QString out = dn_get_name(category_dn);
+
+        return out;
+    }();
+
+    const QIcon out = get_object_icon(object_category);
+
+    return out;
+}
+
+QIcon get_object_icon(const QString &object_category) {
     // NOTE: use a list of possible icons because
     // default icon themes for different DE's don't
     // fully intersect
     static const QMap<QString, QList<QString>> category_to_icon_list = {
         {"Domain-DNS", {"network-server"}},
         {"Container", {"folder"}},
-        {"Organizational-Unit", {"folder-documents"}},
-        {"Group", {"system-users"}},
-        {"Person", {"avatar-default", "avatar-default-symbolic"}},
+        {OBJECT_CATEGORY_OU, {"folder-documents"}},
+        {OBJECT_CATEGORY_GROUP, {"system-users"}},
+        {OBJECT_CATEGORY_PERSON, {"avatar-default", "avatar-default-symbolic"}},
         {"Computer", {"computer"}},
         {"Group-Policy-Container", {"preferences-other"}},
         {"Volume", {"folder-templates"}},
@@ -211,13 +224,6 @@ QIcon get_object_icon(const AdObject &object) {
     const QString error_icon = "dialog-question";
 
     const QString icon_name = [&]() -> QString {
-        const QString object_category = [&]() {
-            const QString category_dn = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
-            const QString out = dn_get_name(category_dn);
-
-            return out;
-        }();
-
         const QList<QString> fallback_icon_list = {
             "emblem-system",
             "emblem-system-symbolic",

@@ -225,6 +225,10 @@ enum SystemFlagsBit {
 #define CLASS_dMD "dMD"
 #define CLASS_CONTROL_ACCESS_RIGHT "controlAccessRight"
 
+#define OBJECT_CATEGORY_PERSON "Person"
+#define OBJECT_CATEGORY_GROUP "Group"
+#define OBJECT_CATEGORY_OU "Organizational-Unit"
+
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
 #define AD_LARGE_INTEGER_DATETIME_NEVER_1 "0"
