@@ -38,6 +38,7 @@ private slots:
 
     void load_empty();
     void load();
+    void delete_link();
 
 private:
     PolicyResultsWidget *widget;
