@@ -119,7 +119,10 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     d->description_bar = new QWidget();
     d->description_bar_left = new QLabel();
+    d->description_bar_left->setWordWrap(true);
     d->description_bar_right = new QLabel();
+    d->description_bar_right->setWordWrap(true);
+
     d->description_bar_left->setStyleSheet("font-weight: bold");
 
     d->results_stacked_widget = new QStackedWidget();

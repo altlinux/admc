@@ -91,6 +91,18 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     object_impl->set_toolbar_actions(ui->action_create_user, ui->action_create_group, ui->action_create_ou);
 
+    // NOTE: redefine icons for create actions because need
+    // to try multiple variants because DE's sometimes don't
+    // share icons
+    const QIcon create_user_icon = get_object_icon(OBJECT_CATEGORY_PERSON);
+    ui->action_create_user->setIcon(create_user_icon);
+
+    const QIcon create_group_icon = get_object_icon(OBJECT_CATEGORY_GROUP);
+    ui->action_create_group->setIcon(create_group_icon);
+
+    const QIcon create_ou_icon = get_object_icon(OBJECT_CATEGORY_OU);
+    ui->action_create_ou->setIcon(create_ou_icon);
+
     // Setup console
     const ConsoleWidgetActions console_actions = [&]() {
         ConsoleWidgetActions out;
