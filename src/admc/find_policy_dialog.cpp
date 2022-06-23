@@ -73,8 +73,67 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
     }
 
     settings_setup_dialog_geometry(SETTING_find_policy_dialog_geometry, this);
+
+
+    connect(
+        ui->add_button, &QAbstractButton::clicked,
+        this, &FindPolicyDialog::add_filter);
 }
 
 FindPolicyDialog::~FindPolicyDialog() {
     delete ui;
+}
+
+void FindPolicyDialog::add_filter() {
+    const QString filter = [&]() {
+        const QString attribute = [&]() -> QString {
+            const SearchItem search_item = (SearchItem) ui->search_item_combo->currentData().toInt();
+            switch (search_item) {
+                case SearchItem_Name: return ATTRIBUTE_DISPLAY_NAME;
+                case SearchItem_GUID: return ATTRIBUTE_CN;
+            }
+
+            return QString();
+        }();
+
+        const Condition condition = (Condition) ui->condition_combo->currentData().toInt();
+
+        const QString value = ui->value_edit->text();
+
+        const QString out = filter_CONDITION(condition, attribute, value);
+
+        return out;
+    }();
+
+    const QString filter_display = [&]() {
+        const QString search_item_display = [&]() -> QString {
+            const SearchItem search_item = (SearchItem) ui->search_item_combo->currentData().toInt();
+            switch (search_item) {
+                case SearchItem_Name: return tr("Name");
+                case SearchItem_GUID: return tr("GUID");
+            }
+
+            return QString();
+        }();
+
+        const QString condition_display = [&]() {
+            const Condition condition = (Condition) ui->condition_combo->currentData().toInt();
+            const QString out = condition_to_display_string(condition);
+
+            return out;
+        }();
+
+        const QString value = ui->value_edit->text();
+
+        const QString out = QString("%1 %2: \"%3\"").arg(search_item_display, condition_display, value);
+
+        return out;
+    }();
+
+    auto item = new QListWidgetItem();
+    item->setText(filter_display);
+    item->setData(Qt::UserRole, filter);
+    ui->filter_list->addItem(item);
+
+    ui->value_edit->clear();
 }

@@ -39,6 +39,9 @@ public:
 
     FindPolicyDialog(QWidget *parent);
     ~FindPolicyDialog();
+
+private:
+        void add_filter();
 };
 
 #endif /* FIND_POLICY_DIALOG_H */
