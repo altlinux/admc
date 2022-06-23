@@ -79,6 +79,7 @@ set(ADMC_SOURCES
     changelog_dialog.cpp
     error_log_dialog.cpp
     fsmo_dialog.cpp
+    find_policy_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_dialog.cpp

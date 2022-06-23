@@ -94,6 +94,7 @@ DEFINE_SETTING(SETTING_number_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_fsmo_dialog_geometry);
 DEFINE_SETTING(SETTING_create_shared_folder_dialog_geometry);
 DEFINE_SETTING(SETTING_create_contact_dialog_geometry);
+DEFINE_SETTING(SETTING_find_policy_dialog_geometry);
 
 // Header state
 DEFINE_SETTING(SETTING_results_header);

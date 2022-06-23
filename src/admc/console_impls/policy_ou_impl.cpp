@@ -32,6 +32,7 @@
 #include "status.h"
 #include "utils.h"
 #include "select_policy_dialog.h"
+#include "find_policy_dialog.h"
 
 #include <QMenu>
 #include <QStandardItem>
@@ -420,7 +421,8 @@ void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou
 }
 
 void PolicyOUImpl::find_gpo() {
-
+    auto dialog = new FindPolicyDialog(console);
+    dialog->open();
 }
 
 void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object) {
