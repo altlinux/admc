@@ -468,42 +468,42 @@
 <context>
     <name>ConsoleWidget</name>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="127"/>
+        <location filename="console_widget/console_widget.cpp" line="130"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="128"/>
+        <location filename="console_widget/console_widget.cpp" line="131"/>
         <source>Cut</source>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="129"/>
+        <location filename="console_widget/console_widget.cpp" line="132"/>
         <source>Rename</source>
         <translation>Переименовать</translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="130"/>
+        <location filename="console_widget/console_widget.cpp" line="133"/>
         <source>Delete</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="131"/>
+        <location filename="console_widget/console_widget.cpp" line="134"/>
         <source>Paste</source>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="132"/>
+        <location filename="console_widget/console_widget.cpp" line="135"/>
         <source>Print</source>
         <translation>Напечатать</translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="133"/>
+        <location filename="console_widget/console_widget.cpp" line="136"/>
         <source>Refresh</source>
         <translation>Обновить</translation>
     </message>
     <message>
-        <location filename="console_widget/console_widget.cpp" line="134"/>
+        <location filename="console_widget/console_widget.cpp" line="137"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
@@ -1826,12 +1826,12 @@
         <translation>Обновить</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="215"/>
+        <location filename="main_window.cpp" line="227"/>
         <source>Info</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="215"/>
+        <location filename="main_window.cpp" line="227"/>
         <source>Restart the app to switch to the selected language.</source>
         <translation>Для переключения на выбранный язык необходимо перезапустить приложение.</translation>
     </message>
@@ -2112,27 +2112,27 @@
         <translation> [Фильтр включён]</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="654"/>
+        <location filename="console_impls/object_impl.cpp" line="665"/>
         <source>Are you sure you want to delete this object?</source>
         <translation>Удалить этот объект?</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="867"/>
+        <location filename="console_impls/object_impl.cpp" line="878"/>
         <source>Add to Group</source>
         <translation>Добавить в группу</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="935"/>
+        <location filename="console_impls/object_impl.cpp" line="946"/>
         <source>Edit UPN Suffixes</source>
         <translation>Изменить суффиксы UPN</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="955"/>
+        <location filename="console_impls/object_impl.cpp" line="966"/>
         <source>Are you sure you want to reset this account?</source>
         <translation>Вы точно хотиту сбросить эту учетную запись?</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="1266"/>
+        <location filename="console_impls/object_impl.cpp" line="1265"/>
         <source>Query may be out of date</source>
         <translation>Запрос может быть устаревшим</translation>
     </message>
@@ -2365,17 +2365,17 @@
         <translation>Изменить...</translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="165"/>
+        <location filename="console_impls/policy_impl.cpp" line="166"/>
         <source>Are you sure you want to unlink this policy from the OU? Note that the actual policy object won&apos;t be deleted.</source>
         <translation>Удалить связь между политикой и подразделением? Обратите внимание, что сама политика не будет удалена.</translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="167"/>
+        <location filename="console_impls/policy_impl.cpp" line="168"/>
         <source>Are you sure you want to delete this policy and all of it&apos;s links?</source>
         <translation>Удалить эту политику и все её связи?</translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="310"/>
+        <location filename="console_impls/policy_impl.cpp" line="311"/>
         <source>Add Link</source>
         <translation>Добавление связи</translation>
     </message>
@@ -2411,42 +2411,47 @@
 <context>
     <name>PolicyOUResultsWidget</name>
     <message>
-        <location filename="policy_ou_results_widget.cpp" line="78"/>
+        <location filename="policy_ou_results_widget.cpp" line="79"/>
         <source>Remove link</source>
         <translation>Удалить связь</translation>
     </message>
     <message>
-        <location filename="policy_ou_results_widget.cpp" line="79"/>
+        <location filename="policy_ou_results_widget.cpp" line="80"/>
         <source>Move up</source>
         <translation>Переместить вверх</translation>
     </message>
     <message>
-        <location filename="policy_ou_results_widget.cpp" line="80"/>
+        <location filename="policy_ou_results_widget.cpp" line="81"/>
         <source>Move down</source>
         <translation>Переместить вниз</translation>
     </message>
     <message>
-        <location filename="policy_ou_results_widget.cpp" line="90"/>
+        <location filename="policy_ou_results_widget.cpp" line="91"/>
+        <source>Order</source>
+        <translation>Порядок</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget.cpp" line="92"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="policy_ou_results_widget.cpp" line="91"/>
+        <location filename="policy_ou_results_widget.cpp" line="93"/>
         <source>Enforced</source>
         <translation>Принудительно</translation>
     </message>
     <message>
-        <location filename="policy_ou_results_widget.cpp" line="92"/>
+        <location filename="policy_ou_results_widget.cpp" line="94"/>
         <source>Disabled</source>
         <translation>Отключено</translation>
     </message>
     <message>
-        <location filename="policy_ou_results_widget.cpp" line="337"/>
+        <location filename="policy_ou_results_widget.cpp" line="340"/>
         <source>Not found</source>
         <translation>Не найдено</translation>
     </message>
     <message>
-        <location filename="policy_ou_results_widget.cpp" line="368"/>
+        <location filename="policy_ou_results_widget.cpp" line="376"/>
         <source>The GPO for this link could not be found. It maybe have been recently created and is being replicated or it could have been deleted.</source>
         <translation>Не удалось найти объект групповой политики для этой связи. Возможно, он был недавно создан и реплицируется или был удалён.</translation>
     </message>
@@ -3194,7 +3199,7 @@
 <context>
     <name>object_impl</name>
     <message numerus="yes">
-        <location filename="console_impls/object_impl.cpp" line="1724"/>
+        <location filename="console_impls/object_impl.cpp" line="1710"/>
         <source>%n object(s)</source>
         <translation>
             <numerusform>%n объект</numerusform>
@@ -3235,25 +3240,25 @@
 <context>
     <name>query.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="547"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="543"/>
         <source>Name may not be empty</source>
         <translation>Имя не может быть пустым</translation>
     </message>
     <message>
         <location filename="console_impls/query_folder_impl.cpp" line="323"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="548"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="558"/>
-        <location filename="console_impls/query_folder_impl.cpp" line="561"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="544"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="554"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="557"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="557"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="553"/>
         <source>There&apos;s already an item with this name.</source>
         <translation>Элемент с этим именем уже существует.</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="560"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="556"/>
         <source>Names cannot contain &quot;/&quot;.</source>
         <translation>Имена не могут содержать «/».</translation>
     </message>
@@ -3266,12 +3271,12 @@
 <context>
     <name>query_folder.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="470"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="466"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="471"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="467"/>
         <source>Description</source>
         <translation>Описание</translation>
     </message>
@@ -3279,7 +3284,7 @@
 <context>
     <name>query_folder_impl.cpp</name>
     <message>
-        <location filename="console_impls/query_folder_impl.cpp" line="576"/>
+        <location filename="console_impls/query_folder_impl.cpp" line="572"/>
         <source>Are you sure you want to delete this item?</source>
         <translation>Удалить этот элемент?</translation>
     </message>
@@ -3306,12 +3311,12 @@
 <context>
     <name>utils.cpp</name>
     <message>
-        <location filename="utils.cpp" line="436"/>
+        <location filename="utils.cpp" line="442"/>
         <source>Input field for Name contains one or more of the following illegal characters: # , + &quot; \ &lt; &gt; ; = (leading space) (trailing space) (leading question mark)</source>
         <translation>Поле ввода &quot;Имя&quot; содержит один или несколько из следующих недопустимых символов: # , + &quot; \ &lt; &gt; ; = (пробел в начале) (пробел в конце) (? в начале)</translation>
     </message>
     <message>
-        <location filename="utils.cpp" line="437"/>
+        <location filename="utils.cpp" line="443"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
