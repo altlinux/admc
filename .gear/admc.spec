@@ -113,6 +113,7 @@ Tests for ADMC
 %_bindir/admc_test_select_classes_widget
 %_bindir/admc_test_sam_name_edit
 %_bindir/admc_test_dn_edit
+%_bindir/admc_test_find_policy_dialog
 
 # NOTE: remove this changelog entry when merging into sisyphus branch. This is an auto-generated changelog entry for the upstream branch. For release builds, you should add a hand-written changelog entry.
 %changelog

@@ -19,15 +19,11 @@
  */
 
 #include "find_policy_dialog.h"
+#include "find_policy_dialog_p.h"
 #include "ui_find_policy_dialog.h"
 
 #include "adldap.h"
 #include "settings.h"
-
-enum SearchItem {
-    SearchItem_Name,
-    SearchItem_GUID,
-};
 
 // TODO: "not contains" item for condition combo. Need to
 // add Condition_NotContains to ad_filter.

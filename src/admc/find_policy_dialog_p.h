@@ -18,30 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_POLICY_DIALOG_H
-#define FIND_POLICY_DIALOG_H
+#ifndef FIND_POLICY_DIALOG_P_H
+#define FIND_POLICY_DIALOG_P_H
 
-/**
- * Find policy objects and perform actions on them.
- */
-
-#include <QDialog>
-
-namespace Ui {
-class FindPolicyDialog;
-}
-
-class FindPolicyDialog final : public QDialog {
-    Q_OBJECT
-
-public:
-    Ui::FindPolicyDialog *ui;
-
-    FindPolicyDialog(QWidget *parent);
-    ~FindPolicyDialog();
-
-private:
-    void add_filter();
+enum SearchItem {
+    SearchItem_Name,
+    SearchItem_GUID,
 };
 
-#endif /* FIND_POLICY_DIALOG_H */
+#endif /* FIND_POLICY_DIALOG_P_H */

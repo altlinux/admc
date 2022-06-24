@@ -18,30 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_POLICY_DIALOG_H
-#define FIND_POLICY_DIALOG_H
+#ifndef ADMC_TEST_FIND_POLICY_DIALOG_H
+#define ADMC_TEST_FIND_POLICY_DIALOG_H
 
-/**
- * Find policy objects and perform actions on them.
- */
+#include "admc_test.h"
 
-#include <QDialog>
-
-namespace Ui {
 class FindPolicyDialog;
-}
 
-class FindPolicyDialog final : public QDialog {
+class ADMCTestFindPolicyDialog : public ADMCTest {
     Q_OBJECT
 
-public:
-    Ui::FindPolicyDialog *ui;
+private slots:
+    void init() override;
 
-    FindPolicyDialog(QWidget *parent);
-    ~FindPolicyDialog();
+    void add_filter_data();
+    void add_filter();
 
 private:
-    void add_filter();
+    FindPolicyDialog *dialog;
 };
 
-#endif /* FIND_POLICY_DIALOG_H */
+#endif /* ADMC_TEST_FIND_POLICY_DIALOG_H */
