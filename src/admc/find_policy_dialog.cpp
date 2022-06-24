@@ -68,8 +68,12 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
         ui->condition_combo->addItem(condition_string, (int) condition);
     }
 
+    ui->console->set_scope_view_visible(false);
+
     settings_setup_dialog_geometry(SETTING_find_policy_dialog_geometry, this);
 
+    const QVariant console_state = settings_get_variant(SETTING_find_policy_dialog_console_state);
+    ui->console->restore_state(console_state);
 
     connect(
         ui->add_button, &QAbstractButton::clicked,
@@ -77,6 +81,9 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
 }
 
 FindPolicyDialog::~FindPolicyDialog() {
+    const QVariant console_state = ui->console->save_state();
+    settings_set_variant(SETTING_find_policy_dialog_console_state, console_state);
+
     delete ui;
 }
 
