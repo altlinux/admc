@@ -29,6 +29,12 @@
 #include <QStandardItem>
 #include <QModelIndex>
 
+enum FindPolicyRole {
+    FindPolicyRole_DN = Qt::UserRole + 1,
+
+    FindPolicyRole_COUNT,
+};
+
 FindPolicyImpl::FindPolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));
@@ -67,6 +73,9 @@ QModelIndex get_find_policy_root(ConsoleWidget *console) {
 void find_policy_impl_load(const QList<QStandardItem *> row, const AdObject &object) {
     const QIcon icon = get_object_icon(object);
     row[0]->setIcon(icon);
+
+    const QString dn = object.get_dn();
+    row[0]->setData(dn, FindPolicyRole_DN);
 
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
     row[FindPolicyColumn_Name]->setText(display_name);

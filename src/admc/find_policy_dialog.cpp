@@ -35,15 +35,6 @@
 #include <QAction>
 #include <QStandardItem>
 
-// TODO: "not contains" item for condition combo. Need to
-// add Condition_NotContains to ad_filter.
-
-enum FindPolicyRole {
-    FindPolicyRole_DN = Qt::UserRole + 1,
-
-    FindPolicyRole_COUNT,
-};
-
 FindPolicyDialog::FindPolicyDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::FindPolicyDialog();
