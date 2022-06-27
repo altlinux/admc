@@ -27,6 +27,13 @@
 
 #include "console_widget/console_impl.h"
 
+enum FindPolicyColumn {
+    FindPolicyColumn_Name,
+    FindPolicyColumn_GUID,
+
+    FindPolicyColumn_COUNT,
+};
+
 class FindPolicyImpl final : public ConsoleImpl {
     Q_OBJECT
 

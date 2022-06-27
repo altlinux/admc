@@ -23,9 +23,14 @@
 #include "ui_find_policy_dialog.h"
 
 #include "adldap.h"
+#include "globals.h"
 #include "settings.h"
+#include "status.h"
+#include "utils.h"
 #include "console_impls/find_policy_impl.h"
+#include "console_impls/policy_impl.h"
 #include "console_impls/item_type.h"
+#include "search_thread.h"
 
 #include <QAction>
 #include <QStandardItem>
@@ -112,7 +117,7 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
     head_item->setText(tr("Find results"));
 
     ui->console->set_scope_view_visible(false);
-    
+
     const QModelIndex head_index = head_item->index();
     ui->console->set_current_scope(head_index);
 
@@ -124,6 +129,12 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
     connect(
         ui->add_button, &QAbstractButton::clicked,
         this, &FindPolicyDialog::add_filter);
+    connect(
+        ui->find_button, &QAbstractButton::clicked,
+        this, &FindPolicyDialog::find);
+    connect(
+        ui->clear_button, &QAbstractButton::clicked,
+        this, &FindPolicyDialog::clear_results);
 }
 
 FindPolicyDialog::~FindPolicyDialog() {
@@ -185,4 +196,83 @@ void FindPolicyDialog::add_filter() {
     ui->filter_list->addItem(item);
 
     ui->value_edit->clear();
+}
+
+void FindPolicyDialog::find() {
+    const QString base = g_adconfig->policies_dn();
+    const QString filter = [this]() {
+        QList<QString> filter_string_list;
+
+        for (int i = 0; i < ui->filter_list->count(); i++) {
+            const QListWidgetItem *item = ui->filter_list->item(i);
+            const QString this_filter = item->data(Qt::UserRole).toString();
+
+            filter_string_list.append(this_filter);
+        }
+
+        const QString out = filter_AND(filter_string_list);
+
+        return out;
+    }();
+    const QList<QString> search_attributes = QList<QString>();
+
+    auto search_thread = new SearchThread(base, SearchScope_Children, filter, search_attributes);
+
+    connect(
+        search_thread, &SearchThread::results_ready,
+        this, &FindPolicyDialog::handle_search_thread_results);
+    connect(
+        this, &QObject::destroyed,
+        search_thread, &SearchThread::stop);
+    connect(
+        ui->stop_button, &QPushButton::clicked,
+        search_thread, &SearchThread::stop);
+    connect(
+        search_thread, &SearchThread::finished,
+        this,
+        [this, search_thread]() {
+            g_status->display_ad_messages(search_thread->get_ad_messages(), this);
+            search_thread_display_errors(search_thread, this);
+
+            ui->find_button->setEnabled(true);
+            ui->clear_button->setEnabled(true);
+
+            hide_busy_indicator();
+
+            search_thread->deleteLater();
+        });
+
+    show_busy_indicator();
+
+    // NOTE: disable find and clear buttons, do not want
+    // those functions to be available while a search is in
+    // progress
+    ui->find_button->setEnabled(false);
+    ui->clear_button->setEnabled(false);
+
+    clear_results();
+
+    search_thread->start();
+}
+
+void FindPolicyDialog::handle_search_thread_results(const QHash<QString, AdObject> &results) {
+    const QModelIndex head_index = head_item->index();
+
+    for (const AdObject &object : results.values()) {
+        const QList<QStandardItem *> row = ui->console->add_results_item(ItemType_Policy, head_index);
+
+        const QIcon icon = get_object_icon(object);
+        row[0]->setIcon(icon);
+
+        const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+        row[FindPolicyColumn_Name]->setText(display_name);
+
+        const QString cn = object.get_string(ATTRIBUTE_CN);
+        row[FindPolicyColumn_GUID]->setText(cn);
+    }
+}
+
+void FindPolicyDialog::clear_results() {
+    const QModelIndex head_index = head_item->index();
+    ui->console->delete_children(head_index);
 }

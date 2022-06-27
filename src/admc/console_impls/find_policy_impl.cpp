@@ -50,8 +50,8 @@ QList<QString> FindPolicyImpl::column_labels() const {
 
 QList<int> FindPolicyImpl::default_columns() const {
     const QList<int> out = {
-        0,
-        1,
+        FindPolicyColumn_Name,
+        FindPolicyColumn_GUID,
     };
 
     return out;

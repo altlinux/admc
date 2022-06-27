@@ -28,6 +28,7 @@
 #include <QDialog>
 
 class QStandardItem;
+class AdObject;
 
 namespace Ui {
 class FindPolicyDialog;
@@ -46,6 +47,9 @@ private:
     QStandardItem *head_item;
 
     void add_filter();
+    void find();
+    void handle_search_thread_results(const QHash<QString, AdObject> &results);
+    void clear_results();
 };
 
 #endif /* FIND_POLICY_DIALOG_H */
