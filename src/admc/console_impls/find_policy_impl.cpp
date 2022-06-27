@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "console_impls/object_impl.h"
 #include "console_widget/results_view.h"
+#include "utils.h"
 #include "item_type.h"
 
 #include <QStandardItem>
@@ -61,4 +62,15 @@ QModelIndex get_find_policy_root(ConsoleWidget *console) {
     const QModelIndex out = console->search_item(QModelIndex(), {ItemType_FindPolicy});
 
     return out;
+}
+
+void find_policy_impl_load(const QList<QStandardItem *> row, const AdObject &object) {
+    const QIcon icon = get_object_icon(object);
+    row[0]->setIcon(icon);
+
+    const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    row[FindPolicyColumn_Name]->setText(display_name);
+
+    const QString cn = object.get_string(ATTRIBUTE_CN);
+    row[FindPolicyColumn_GUID]->setText(cn);
 }

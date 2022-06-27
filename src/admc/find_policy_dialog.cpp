@@ -38,6 +38,12 @@
 // TODO: "not contains" item for condition combo. Need to
 // add Condition_NotContains to ad_filter.
 
+enum FindPolicyRole {
+    FindPolicyRole_DN = Qt::UserRole + 1,
+
+    FindPolicyRole_COUNT,
+};
+
 FindPolicyDialog::FindPolicyDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::FindPolicyDialog();
@@ -261,14 +267,7 @@ void FindPolicyDialog::handle_search_thread_results(const QHash<QString, AdObjec
     for (const AdObject &object : results.values()) {
         const QList<QStandardItem *> row = ui->console->add_results_item(ItemType_Policy, head_index);
 
-        const QIcon icon = get_object_icon(object);
-        row[0]->setIcon(icon);
-
-        const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
-        row[FindPolicyColumn_Name]->setText(display_name);
-
-        const QString cn = object.get_string(ATTRIBUTE_CN);
-        row[FindPolicyColumn_GUID]->setText(cn);
+        find_policy_impl_load(row, object);
     }
 }
 
