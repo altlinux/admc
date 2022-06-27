@@ -24,6 +24,11 @@
 
 #include "adldap.h"
 #include "settings.h"
+#include "console_impls/find_policy_impl.h"
+#include "console_impls/item_type.h"
+
+#include <QAction>
+#include <QStandardItem>
 
 // TODO: "not contains" item for condition combo. Need to
 // add Condition_NotContains to ad_filter.
@@ -68,7 +73,48 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
         ui->condition_combo->addItem(condition_string, (int) condition);
     }
 
+    auto action_view_icons = new QAction(tr("&Icons"), this);
+    action_view_icons->setCheckable(true);
+    auto action_view_list = new QAction(tr("&List"), this);
+    action_view_list->setCheckable(true);
+    auto action_view_detail = new QAction(tr("&Detail"), this);
+    action_view_detail->setCheckable(true);
+    auto action_customize_columns = new QAction(tr("&Customize Columns"), this);
+    auto action_toggle_description_bar = new QAction(tr("&Description Bar"), this);
+    action_toggle_description_bar->setCheckable(true);
+
+    const ConsoleWidgetActions console_actions = [&]() {
+        ConsoleWidgetActions out;
+
+        out.view_icons = action_view_icons;
+        out.view_list = action_view_list;
+        out.view_detail = action_view_detail;
+        out.toggle_description_bar = action_toggle_description_bar;
+        out.customize_columns = action_customize_columns;
+
+        // Use placeholders for unused actions
+        out.navigate_up = new QAction(this);
+        out.navigate_back = new QAction(this);
+        out.navigate_forward = new QAction(this);
+        out.refresh = new QAction(this);
+        out.toggle_console_tree = new QAction(this);
+
+        return out;
+    }();
+
+    ui->console->set_actions(console_actions);
+
+    auto find_impl = new FindPolicyImpl(ui->console);
+    ui->console->register_impl(ItemType_FindPolicy, find_impl);
+
+    const QList<QStandardItem *> row = ui->console->add_scope_item(ItemType_FindPolicy, QModelIndex());
+    head_item = row[0];
+    head_item->setText(tr("Find results"));
+
     ui->console->set_scope_view_visible(false);
+    
+    const QModelIndex head_index = head_item->index();
+    ui->console->set_current_scope(head_index);
 
     settings_setup_dialog_geometry(SETTING_find_policy_dialog_geometry, this);
 

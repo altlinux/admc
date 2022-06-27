@@ -18,34 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_POLICY_DIALOG_H
-#define FIND_POLICY_DIALOG_H
+#ifndef FIND_POLICY_IMPL_H
+#define FIND_POLICY_IMPL_H
 
 /**
- * Find policy objects and perform actions on them.
+ * Impl for root of the find tree in FindPolicyDialog.
  */
 
-#include <QDialog>
+#include "console_widget/console_impl.h"
 
-class QStandardItem;
-
-namespace Ui {
-class FindPolicyDialog;
-}
-
-class FindPolicyDialog final : public QDialog {
+class FindPolicyImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    Ui::FindPolicyDialog *ui;
+    FindPolicyImpl(ConsoleWidget *console_arg);
 
-    FindPolicyDialog(QWidget *parent);
-    ~FindPolicyDialog();
+    QString get_description(const QModelIndex &index) const override;
 
-private:
-    QStandardItem *head_item;
-
-    void add_filter();
+    QList<QString> column_labels() const override;
+    QList<int> default_columns() const override;
 };
 
-#endif /* FIND_POLICY_DIALOG_H */
+QModelIndex get_find_policy_root(ConsoleWidget *console);
+
+#endif /* FIND_POLICY_IMPL_H */
