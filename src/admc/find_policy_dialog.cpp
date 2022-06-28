@@ -34,6 +34,7 @@
 
 #include <QAction>
 #include <QStandardItem>
+#include <QMenuBar>
 
 FindPolicyDialog::FindPolicyDialog(QWidget *parent)
 : QDialog(parent) {
@@ -41,6 +42,12 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
+
+    auto menubar = new QMenuBar();
+    layout()->setMenuBar(menubar);
+    auto action_menu = menubar->addMenu(tr("&Action"));
+    menubar->setContextMenuPolicy(Qt::PreventContextMenu);
+    auto view_menu = menubar->addMenu(tr("&View"));
 
     // Fill search item combo
     const QList<SearchItem> search_item_list = {
@@ -105,6 +112,15 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
     }();
 
     ui->console->set_actions(console_actions);
+
+    ui->console->setup_menubar_action_menu(action_menu);
+
+    view_menu->addAction(action_view_icons);
+    view_menu->addAction(action_view_list);
+    view_menu->addAction(action_view_detail);
+    view_menu->addSeparator();
+    view_menu->addAction(action_customize_columns);
+    view_menu->addAction(action_toggle_description_bar);
 
     auto find_impl = new FindPolicyImpl(ui->console);
     ui->console->register_impl(ItemType_FindPolicy, find_impl);
