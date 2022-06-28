@@ -163,8 +163,9 @@ public:
 
     void set_scope_view_visible(const bool visible);
 
-    // Setups the action menu in menubar. Action menu
-    // opened by right click is setup automatically.
+    // Setups the action menu in menubar. Action menu opened
+    // by right click is setup automatically. Note that this
+    // must be called *after* all register_impl() calls.
     void setup_menubar_action_menu(QMenu *menu);
 
     // Define custom sort index for scope item. By default
