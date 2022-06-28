@@ -83,6 +83,12 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
     }
 
     // Setup console
+    auto find_impl = new FindPolicyImpl(ui->console);
+    ui->console->register_impl(ItemType_FindPolicy, find_impl);
+
+    auto policy_impl = new PolicyImpl(ui->console);
+    ui->console->register_impl(ItemType_Policy, policy_impl);
+
     auto action_view_icons = new QAction(tr("&Icons"), this);
     action_view_icons->setCheckable(true);
     auto action_view_list = new QAction(tr("&List"), this);
@@ -122,12 +128,6 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
     view_menu->addSeparator();
     view_menu->addAction(action_customize_columns);
     view_menu->addAction(action_toggle_description_bar);
-
-    auto find_impl = new FindPolicyImpl(ui->console);
-    ui->console->register_impl(ItemType_FindPolicy, find_impl);
-
-    auto policy_impl = new PolicyImpl(ui->console);
-    ui->console->register_impl(ItemType_Policy, policy_impl);
 
     const QList<QStandardItem *> row = ui->console->add_scope_item(ItemType_FindPolicy, QModelIndex());
     head_item = row[0];
