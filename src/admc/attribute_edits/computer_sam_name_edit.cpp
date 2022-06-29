@@ -77,7 +77,8 @@ bool ComputerSamNameEdit::verify(AdInterface &ad, const QString &dn) const {
 }
 
 bool ComputerSamNameEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value = QString("%1$").arg(edit->text());
+    const QString name = edit->text().trimmed();
+    const QString new_value = QString("%1$").arg(name);
     const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
 
     return success;
