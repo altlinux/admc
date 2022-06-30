@@ -62,6 +62,8 @@ public:
 
     bool equals(const Gplink &other) const;
 
+    int get_gpo_order(const QString &gpo) const;
+
 private:
     QList<QString> gpo_list;
     QHash<QString, int> options;

@@ -19,6 +19,7 @@
  */
 
 #include "policy_ou_results_widget.h"
+#include "policy_ou_results_widget_p.h"
 #include "ui_policy_ou_results_widget.h"
 
 #include "adldap.h"
@@ -41,15 +42,6 @@
 #include <QModelIndex>
 #include <QStandardItemModel>
 #include <QTreeView>
-
-enum PolicyOUResultsColumn {
-    PolicyOUResultsColumn_Order,
-    PolicyOUResultsColumn_Name,
-    PolicyOUResultsColumn_Enforced,
-    PolicyOUResultsColumn_Disabled,
-
-    PolicyOUResultsColumn_COUNT,
-};
 
 enum PolicyOUResultsRole {
     PolicyOUResultsRole_DN = Qt::UserRole + 1,
@@ -267,14 +259,16 @@ void PolicyOUResultsWidget::remove_link() {
 
     // Also remove gpo from OU in console
     const QModelIndex policy_root = get_policy_tree_root(console);
-    const QModelIndex ou_index = console->search_item(policy_root, PolicyOURole_DN, ou_dn, {ItemType_PolicyOU});
+    if (policy_root.isValid()) {
+        const QModelIndex ou_index = console->search_item(policy_root, PolicyOURole_DN, ou_dn, {ItemType_PolicyOU});
 
-    if (ou_index.isValid()) {
-        for (const QString &gpo_dn : gpo_dn_list) {
-            const QModelIndex gpo_index = console->search_item(ou_index, PolicyRole_DN, gpo_dn, {ItemType_Policy});
+        if (ou_index.isValid()) {
+            for (const QString &gpo_dn : gpo_dn_list) {
+                const QModelIndex gpo_index = console->search_item(ou_index, PolicyRole_DN, gpo_dn, {ItemType_Policy});
 
-            if (gpo_index.isValid()) {
-                console->delete_item(gpo_index);
+                if (gpo_index.isValid()) {
+                    console->delete_item(gpo_index);
+                }
             }
         }
     }

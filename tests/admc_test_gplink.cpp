@@ -263,4 +263,35 @@ void ADMCTestGplink::get_gpo_list() {
     QCOMPARE(actual_output, expected_output);
 }
 
+void ADMCTestGplink::get_gpo_order_data() {
+    QTest::addColumn<QList<QString>>("input");
+    QTest::addColumn<QString>("target_gpo");
+    QTest::addColumn<int>("expected_order");
+
+    const QList<QString> gpo_list = {
+        dn_A,
+        dn_B,
+        dn_C,
+    };
+
+    QTest::newRow("A") << gpo_list << dn_A << 0;
+    QTest::newRow("B") << gpo_list << dn_B << 1;
+    QTest::newRow("C") << gpo_list << dn_C << 2;
+}
+
+void ADMCTestGplink::get_gpo_order() {
+    QFETCH(QList<QString>, input);
+    QFETCH(QString, target_gpo);
+    QFETCH(int, expected_order);
+
+    Gplink gplink;
+
+    for (const QString &gpo : input) {
+        gplink.add(gpo);
+    }
+
+    const int actual_order = gplink.get_gpo_order(target_gpo);
+    QCOMPARE(actual_order, expected_order);
+}
+
 QTEST_MAIN(ADMCTestGplink)

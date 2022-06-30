@@ -34,6 +34,7 @@ class QStandardItem;
 class QMenu;
 class ResultsView;
 class ConsoleWidget;
+class ADMCTestPolicyOUResultsWidget;
 
 namespace Ui {
 class PolicyOUResultsWidget;
@@ -69,6 +70,8 @@ private:
     void move_down();
     void reload_gplink();
     void modify_gplink(void (*modify_function)(Gplink&, const QString&));
+
+    friend ADMCTestPolicyOUResultsWidget;
 };
 
 #endif /* POLICY_OU_RESULTS_WIDGET_H */

@@ -269,3 +269,10 @@ void Gplink::set_option(const QString &gpo_case, const GplinkOption option, cons
 bool Gplink::equals(const Gplink &other) const {
     return (to_string() == other.to_string());
 }
+
+int Gplink::get_gpo_order(const QString &gpo_case) const {
+    const QString gpo = gpo_case.toLower();
+    const int out = gpo_list.indexOf(gpo);
+
+    return out;
+}

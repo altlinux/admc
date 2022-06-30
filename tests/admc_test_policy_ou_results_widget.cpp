@@ -25,10 +25,12 @@
 #include "globals.h"
 #include "gplink.h"
 #include "policy_ou_results_widget.h"
+#include "policy_ou_results_widget_p.h"
 #include "console_widget/console_widget.h"
 #include "utils.h"
 
 #include <QStandardItemModel>
+#include <QSortFilterProxyModel>
 #include <QTreeView>
 
 // NOTE: unlike other tests, here we have to create the test
@@ -53,6 +55,31 @@ void ADMCTestPolicyOUResultsWidget::initTestCase() {
 
     for (int i = 0; i < gpo_name_list.size(); i++) {
         const QString gpo_name = gpo_name_list[i];
+
+        // Delete test gpo's if they failed to be deleted from
+        // previous run
+        const QString old_gpo_dn = [&]() {
+            const QString base = ad.adconfig()->policies_dn();
+            const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DISPLAY_NAME, gpo_name);
+            const QList<QString> attributes = QList<QString>();
+            const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_Children, filter, attributes);
+
+            if (!search_results.isEmpty()) {
+                const AdObject object = search_results[0];
+                const QString out = object.get_dn();
+
+                return out;
+            } else {
+                return QString();
+            }
+        }();
+
+        if (!old_gpo_dn.isEmpty()) {
+            bool deleted_object;
+            const bool delete_success = ad.gpo_delete(old_gpo_dn, &deleted_object);
+            QVERIFY(delete_success);
+        }
+
         QString created_dn;
         const bool gpo_add_success = ad.gpo_add(gpo_name, created_dn);
         gpo_dn_list[i] = created_dn;
@@ -86,10 +113,14 @@ void ADMCTestPolicyOUResultsWidget::init() {
     add_widget(widget);
 
     ResultsView *results_view = widget->get_view();
+    results_view->set_view_type(ResultsViewType_Detail);
     view = results_view->detail_view();
 
     model = widget->findChild<QStandardItemModel *>();
     QVERIFY(model);
+
+    proxy_model = widget->findChild<QSortFilterProxyModel *>();
+    QVERIFY(proxy_model);
 
     ou_dn = test_object_dn(ou_name, CLASS_OU);
     const bool create_ou_succes = ad.object_add(ou_dn, CLASS_OU);
@@ -115,7 +146,7 @@ void ADMCTestPolicyOUResultsWidget::load() {
     widget->update(ou_dn);
 
     QCOMPARE(model->rowCount(), 1);
-    QCOMPARE(model->columnCount(), 3);
+    QCOMPARE(model->columnCount(), PolicyOUResultsColumn_COUNT);
 
     QList<QStandardItem *> item_list;
     for (int col = 0; col < model->columnCount(); col++) {
@@ -124,9 +155,173 @@ void ADMCTestPolicyOUResultsWidget::load() {
         item_list.append(item);
     }
 
-    QCOMPARE(item_list[0]->text(), gpo_name_list[0]);
-    QCOMPARE(item_list[1]->checkState(), Qt::Checked);
-    QCOMPARE(item_list[2]->checkState(), Qt::Unchecked);
+    QCOMPARE(item_list[PolicyOUResultsColumn_Order]->text(), "0");
+    QCOMPARE(item_list[PolicyOUResultsColumn_Name]->text(), gpo_name_list[0]);
+    QCOMPARE(item_list[PolicyOUResultsColumn_Enforced]->checkState(), Qt::Checked);
+    QCOMPARE(item_list[PolicyOUResultsColumn_Disabled]->checkState(), Qt::Unchecked);
+}
+
+void ADMCTestPolicyOUResultsWidget::remove_link() {
+    // Link gpo to ou
+    {
+        const QString modified_gplink_string = [&]() {
+            const AdObject ou_object = ad.search_object(ou_dn);
+            const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+            Gplink gplink = Gplink(gplink_string);
+            gplink.add(gpo_dn_list[0]);
+            const QString out = gplink.to_string();
+
+            return out;
+        }();
+
+        const bool modify_gplink_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, modified_gplink_string);
+        QVERIFY(modify_gplink_success);
+    }
+
+    widget->update(ou_dn);
+
+    QCOMPARE(model->rowCount(), 1);
+
+    const QStandardItem *gpo_item = model->item(0, 0);
+
+    QVERIFY(gpo_item);
+
+    // Select policy so it's used for remove operation
+    QItemSelectionModel *selection_model = view->selectionModel();
+    const QModelIndex gpo_index_source = gpo_item->index();
+    const QModelIndex gpo_index_proxy = proxy_model->mapFromSource(gpo_index_source);
+    selection_model->select(gpo_index_proxy, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+
+    widget->remove_link();
+
+    // Check that gpo is removed from model
+    QCOMPARE(model->rowCount(), 0);
+
+    const bool updated_gplink_contains_gpo = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        const Gplink updated_gplink = Gplink(gplink_string);
+        const bool out = updated_gplink.contains(gpo_dn_list[0]);
+
+        return out;
+    }();
+
+    QCOMPARE(updated_gplink_contains_gpo, false);
+}
+
+// Link two gpo's, then move up the second one and check
+// that it did move up
+void ADMCTestPolicyOUResultsWidget::move_up() {
+    const QString modified_gplink_string = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        Gplink gplink = Gplink(gplink_string);
+        
+        gplink.add(gpo_dn_list[0]);
+        gplink.add(gpo_dn_list[1]);
+
+        const QString out = gplink.to_string();
+
+        return out;
+    }();
+
+    const bool modify_gplink_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, modified_gplink_string);
+    QVERIFY(modify_gplink_success);
+
+    widget->update(ou_dn);
+
+    QCOMPARE(model->rowCount(), 2);
+
+    // NOTE: need to sort by order, sorting when test
+    // launches may be different due to settings
+    view->sortByColumn(0, Qt::AscendingOrder);
+
+    const QStandardItem *old_second_item = model->item(1, 1);
+    QVERIFY(old_second_item);
+
+    const QString old_second_item_text = old_second_item->text();
+
+    // Select policy so it's used for remove operation
+    QItemSelectionModel *selection_model = view->selectionModel();
+    const QModelIndex old_second_index_source = old_second_item->index();
+    const QModelIndex old_second_index_proxy = proxy_model->mapFromSource(old_second_index_source);
+    selection_model->select(old_second_index_proxy, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+
+    widget->move_up();
+
+    // Check that gpo was moved up in model
+    const QStandardItem *new_first_item = model->item(0, 1);
+    const QString new_first_item_text = new_first_item->text();
+    QCOMPARE(new_first_item_text, old_second_item_text);
+
+    // Check that gpo was moved on server
+    const bool updated_gpo_order = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        const Gplink updated_gplink = Gplink(gplink_string);
+        const int out = updated_gplink.get_gpo_order(gpo_dn_list[1]);
+
+        return out;
+    }();
+
+    QCOMPARE(updated_gpo_order, 0);
+}
+
+// Link two gpo's, then move up the second one and check
+// that it did move up
+void ADMCTestPolicyOUResultsWidget::move_down() {
+    const QString modified_gplink_string = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        Gplink gplink = Gplink(gplink_string);
+        
+        gplink.add(gpo_dn_list[0]);
+        gplink.add(gpo_dn_list[1]);
+
+        const QString out = gplink.to_string();
+
+        return out;
+    }();
+
+    const bool modify_gplink_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, modified_gplink_string);
+    QVERIFY(modify_gplink_success);
+
+    widget->update(ou_dn);
+
+    QCOMPARE(model->rowCount(), 2);
+
+    // NOTE: need to sort by order, sorting when test
+    // launches may be different due to settings
+    view->sortByColumn(0, Qt::AscendingOrder);
+
+    const QStandardItem *old_first_item = model->item(0, PolicyOUResultsColumn_Name);
+    QVERIFY(old_first_item);
+  
+    const QString old_first_item_text = old_first_item->text();
+
+    // Select policy so it's used for remove operation
+    QItemSelectionModel *selection_model = view->selectionModel();
+    const QModelIndex old_first_index_source = old_first_item->index();
+    const QModelIndex old_first_index_proxy = proxy_model->mapFromSource(old_first_index_source);
+    selection_model->select(old_first_index_proxy, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+
+    widget->move_down();
+
+    const QStandardItem *new_second_item = model->item(1, PolicyOUResultsColumn_Name);
+    const QString new_second_item_text = new_second_item->text();
+    QCOMPARE(new_second_item_text, old_first_item_text);
+
+    // Check that gpo was moved on server
+    const bool updated_gpo_order = [&]() {
+        const AdObject ou_object = ad.search_object(ou_dn);
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        const Gplink updated_gplink = Gplink(gplink_string);
+        const int out = updated_gplink.get_gpo_order(gpo_dn_list[0]);
+
+        return out;
+    }();
+
+    QCOMPARE(updated_gpo_order, 1);
 }
 
 QTEST_MAIN(ADMCTestPolicyOUResultsWidget)

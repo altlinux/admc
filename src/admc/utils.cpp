@@ -460,8 +460,8 @@ void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest) {
 void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit) {
     auto autofill_full_name = [=]() {
         const QString full_name_value = [=]() {
-            const QString first_name = first_name_edit->text();
-            const QString last_name = last_name_edit->text();
+            const QString first_name = first_name_edit->text().trimmed();
+            const QString last_name = last_name_edit->text().trimmed();
 
             const bool last_name_first = settings_get_variant(SETTING_last_name_before_first_name).toBool();
             if (!first_name.isEmpty() && !last_name.isEmpty()) {
