@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.9.0
+Version: 0.10.0
 Release: alt1
 
 Summary: AD editor
@@ -115,6 +115,27 @@ Tests for ADMC
 %_bindir/admc_test_dn_edit
 
 %changelog
+* Thu Jun 30 2022 Dmitry Degtyarev <kevl@altlinux.org> 0.10.0-alt1
+- Properties: Removed "Group tab". Not necessary because
+  policy tree replaces it.
+- Policies: Improved policy tree. Tree now contains OU's in
+  addition to policies. OU's display their child OU's and
+  linked policies. Viewing all policies is still possible in
+  "All policies" folder.
+- Misc: Fixed eliding of long items in scope view. Scope
+  view now correctly displays a scroll bar so that long
+  items can be viewed fully.
+- Misc: Added trimming of spaces from names when creating or
+  renaming policies, query folders and query items.
+- Misc: Fixed a bug where object became unloaded if during
+  rename character '?' was added to it's name.
+- Misc: Increased size of editor for string attributes,
+  which is available in "Attributes" tab. Long strings are
+  now easier to view and edit.
+- Misc: Removed ability to drag and drop policies onto OU's
+  in object tree. This action now can be performed inside
+  policy tree.
+
 * Fri Apr 01 2022 Dmitry Degtyarev <kevl@altlinux.org> 0.9.0-alt1
 - 0.9.0 (See CHANGELOG.txt for details)
 
