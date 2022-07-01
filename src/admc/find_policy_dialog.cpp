@@ -49,6 +49,8 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
     menubar->setContextMenuPolicy(Qt::PreventContextMenu);
     auto view_menu = menubar->addMenu(tr("&View"));
 
+    ui->find_button->setDefault(true);
+
     // Fill search item combo
     const QList<SearchItem> search_item_list = {
         SearchItem_Name,
