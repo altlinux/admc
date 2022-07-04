@@ -1,585 +1,685 @@
 admc
-CHANGELOG
+ЖУРНАЛ ИЗМЕНЕНИЙ
 
 -----------------------------------------------------------------------
- VERSION 0.10.0
+ ВЕРСИЯ 0.10.0
 -----------------------------------------------------------------------
-- Properties: Removed "Group tab". Not necessary because
-  policy tree replaces it.
-- Policies: Improved policy tree. Tree now contains OU's in
-  addition to policies. OU's display their child OU's and
-  linked policies. Viewing all policies is still possible in
-  "All policies" folder.
-- Misc: Fixed eliding of long items in scope view. Scope
-  view now correctly displays a scroll bar so that long
-  items can be viewed fully.
-- Misc: Added trimming of spaces from names when creating or
-  renaming policies, query folders and query items.
-- Misc: Fixed a bug where object became unloaded if during
-  rename character '?' was added to it's name.
-- Misc: Increased size of editor for string attributes,
-  which is available in "Attributes" tab. Long strings are
-  now easier to view and edit.
-- Misc: Removed ability to drag and drop policies onto OU's
-  in object tree. This action now can be performed inside
-  policy tree.
+- Свойства: Удалена вкладка «Группа». Она больше не нужна,
+  поскольку её заменяет дерево политик.
+- Политики: Улучшено отображение дерева политик. Теперь вместе
+  с политиками в нём расположены подразделения (OU).
+  Подразделения отображают подразделения своих потомков и
+  связанные политики. Возможность просмотра всех политик
+  сохраняется в папке «Все политики».
+- Разное: Исправлен неполный просмотр длинных элементов в
+  области видимости. Корректное отображение полосы прокрутки
+  в области видимости теперь обеспечивает возможность полного
+  просмотра элементов.
+- Разное: Добавлено удаление лишних пробелов в строке имени,
+  выполняемое при создании или переименовании политик, папок
+  запроса и элементов запроса.
+- Разное: Исправлена ошибка, где объект становился незагруженным,
+  если в ходе переименования в его имя вставлялся символ «?».
+- Разное: Увеличен размер поля атрибутов строки на вкладке
+  «Атрибуты». Теперь легче просматривать и редактировать длинные
+  строки.
+- Разное: Удалена возможность перетаскивания политик на дерево
+  объектов подразделения. Данное действие теперь выполняется
+  внутри дерева политик.
 
 -----------------------------------------------------------------------
- VERSION 0.9.0
+ ВЕРСИЯ 0.9.0
 -----------------------------------------------------------------------
-- Account Tab: Improved editor for "Logon Hours".
-- Account Tab: Fixed "Logon Computers" editor
-  incorrectly adding empty entry when being opened.
-- Account Tab: Fixed incorrect flag value for
-  "Reversible encryption" account option.
-- Attributes Tab: Added special display format for some
-  bitfield attributes, so that both the value and names
-  of bitfields are displayed. Includes
-  "userAccountControl", "sAMAccountType" and
-  "primaryGroupId".
-- Account Tab: Added missing "DES key" account option.
-- Account Tab: Removed "Trusted for delegation" option
-  because it should be in "Delegation" tab only.
-- Account Tab: Fixed some options using incorrect flags.
-- Action menu: Added creation of more object types:
-  "Contact", "inetOrgPerson" and "Shared Folder".
-- Action menu: Fixed "New" sub-menu in action menu so
-  that it contains only those object types that can be
-  children of target object. (#343)
-- Action menu: Removed "Rename" action from computer
-  objects because computer objects must be renamed from
-  the machine itself in system configuration.
-- Console: Added object display limit option. Applies
-  to main window and find dialog. (#319)
-- Address Tab: Changed order of country list so that
-  the country of current locale is always first, for
-  ease of use.
-- Console: Implemented opening action menu by right
-  clicking on empty space in results pane. In this
-  case, currently selected scope item is treated as
-  target object for the menu. (#334)
-- Console: Fixed action menu being empty on startup
-  until user selected another console item. (#340)
-- Console: Fixed being able to move an object onto it's
-  current parent via action menu or drag and drop. This
-  caused visual glitches. (#336, #338)
-- Console: Improved default sort setting for results
-  view (for all view types - details, icons, list).
-- Create dialog: Fix incorrect field labels.
-- Logon Hours: Improved usability.
-- Logon Hours: Added legend that explains how dialog
-  works.
-- Security Tab: Fixed handling of inherited rights.
-  Inherited rights will now correctly display as grayed
-  out checkboxes and will not be editable. (#327)
-- Security Tab: Fixed all objects having the same kinds
-  of rights. Security tab will now correctly show
-  rights that are appropriate for the object type.
+- Вкладка «Учётная запись»: Исправлено поле параметра "Время входа".
+- Вкладка «Учётная запись»: Исправлена ошибка вывода пустого
+  значения поля «Компьютеры для входа в систему» при открытии.
+- Вкладка «Учётная запись»: Исправлено неверное значение флага
+  параметра учётной записи «Обратимое шифрование».
+- Вкладка «Атрибуты»: Добавлен специальный формат отображения
+  некоторых атрибутов битовых полей, позволяющий корректно
+  выводить как имена, так и значения битовых полей. Включает
+  «userAccountControl», «sAMAccountType» и «primaryGroupId».
+- Вкладка «Учётная запись»: Добавлен отсутствующий параметр
+  учётной записи «Ключ DES».
+- Вкладка «Учётная запись»: Удалён параметр «Доверять
+  делегирование», поскольку он должен находиться только на
+  вкладке «Делегирование».
+- Вкладка «Учётная запись»: Исправлено несколько параметров,
+  которые используют некорректные флаги.
+- Меню «Действие»: Расширено количество создаваемых типов
+  объектов: «Контакт», «inetOrgPerson» и «Общая папка».
+- Меню «Действие»: В меню «Действие» откорректировано подменю
+  «Новое». Теперь оно содержит только те объекты, которые
+  могут быть потомками целевого объекта. (#343)
+- Меню «Действие»: У объектов компьютера удалено действие
+  «Переименовать», поскольку переименование объектов
+  компьютера должно проводится самой машиной в конфигурации
+  системы.
+- Консоль: Добавлен параметр ограничения отображения объекта.
+  Применяется к главному окну и диалоговому окну поиска. (#319)
+- Вкладка «Адрес»: В целях удобства использования изменён порядок
+  вывода списка стран, чтобы страна текущей региональной
+  настройки всегда отображалась в начале списка.
+- Консоль: Реализовано открытие меню действий по щелчку на
+  свободном пространстве панели результатов. При этом
+  выделенный элемент области рассматривается в качестве
+  целевого объекта меню. (#334)
+- Консоль: Исправлен вывод пустого меню действий при запуске
+  пока пользователь не выбрал другой элемент консоли. (#340)
+- Консоль: Исправлена способность перемещения объекта на
+  своего текущего родителя посредством меню действий или
+  перетаскивания. Ранее это вызывало проблемы с отображением.
+  (#336, #338)
+- Консоль: Улучшен способ сортировки вывода результатов
+  по умолчанию (для всех типов представления - Значки,
+  Список, Подробно).
+- Создание диалогового окна: Исправлены некорректные
+  подписи полей.
+- Время входа: Улучшено удобство использования.
+- Время входа: Добавлен текст пояснения по работе диалогового
+  окна.
+- Вкладка «Безопасность»: Добавлена обработка наследуемых прав.
+  Наследуемые права теперь правильно отображаются в виде
+  недоступных для редактирования неактивных флажков. (#327)
+- Вкладка «Безопасность»: Исправлено некорректное отображение
+  одинаковых прав у всех объектов. На вкладке «Безопасность»
+  теперь корректно отображаются права, соответствующие типу объекта.
   (#328)
-- Security Tab: Added verification of ACL order. When
-  switching to security tab, order will be verified and
-  if it's incorrect, a warning dialog will open
-  offering to fix it. (#339)
-- Toolbar: Added keyboard shortcuts to all actions.
-- Propeties: Added LAPS(Local Administration Password
-  Solution) tab for computer objects. This tab is
-  accessible only if LAPS is enabled in the domain. (#312)
-- Properties: Improved how properties dialog responds
-  to failing to load a user due to connection error or
-  absence of object.
-- Properties: Disabled "Profile" tab, not usable
-  because not implemented in backend.
-- Properties: Disabled "Logon Computers" feature, not
-  usable because not implemented in backend.
-- Policies: Fixed permission check incorrectly
-  complaining about policies made by RSAT. (#333)
-- Policies: Implemented "Edit" action for policies.
-  Installation of "gpui" package is required for
-  correct functioning.
-- Queries: Removed "Cut" and "Copy" actions from Query
-  root, because they don't apply to it. (#350)
-- Queries: Remove ability to recursively cut and paste
-  query folders into themselves.
-- Queries: Fixed program freezing when copying and
-  pasting a query folder into itself.
-- Queries: Fixed default name for query folders when
-  making them.
-- Queries: Fixed "Copy" and "Paste" of query folder
-  into same parent.
-- Queries: Remove ability to drag and drop query
-  folders onto themselves.
-- Find dialog: Added class filtering by all classes,
-  implemented as a separate checkbox. This filtering
-  will accept all classes, not just the ones in the
-  list. (#341)
-- Managed by tab: Fixed tab not applying.
-- Managed by tab: Fixed some fields being editable when
-  they shouldn't be.
-- Menubar: Fixed checkboxes for view types (Icons,
-  List, Details) not being exclusive. (#329)
-- Menubar: Fixed search logging, now correctly works
-  when browsing the object tree, in find dialog and
-  other UI elements.
-- Menubar: Added keyboard shortcuts to all actions,
-  except for the "Action" menu.
-- Menubar: Added keyboard navigation for all sub-menu's
-  except "Action" menu.
-- Misc: Fixed class filters not working correctly until
-  class selection dialog was opened. Occured in find
-  dialog, query creation/editing and others. (#322)
-- Misc: Added "Operations Masters" dialog for viewing
-  and editing FSMO roles. Opened from
-  Menubar->File->Operations Masters. (#313)
-- Misc: Changed AD error dialogs to be modal.
-- Misc: Removed "Reset" button from rename dialogs.
-- Misc: Fixed group icons not displaying on some DE's. (#330)
-- Misc: Added app icon which is displayed next to in
-  app lists and on the title bar.
-- Misc: Empty password input is now not allowed.
-- Misc: Fixed incorrect value for length limit of the
-  field "Logon name (pre-Windows 2000)".
-- Misc: Improved handling of illegal characters in
-  dialogs that create objects and those that rename
-  objects.
-- Misc: Added automatic trimming of leading and
-  trailing spaces in most fields for inputting string
-  values.
-- Misc: Fixed creation of computer objects so that
-  attributes are set correctly.
-- Misc: Added "Show password" checkbox to all password
-  fields, which toggles password visibility when
-  entering.
-- Misc: Fixed crash that sometimes happened when
-  loading objects from server.
-- Misc: Fixed incorrect "Street" field for OU objects.
-  Was using the wrong attribute.
-- Misc: Improved translation.
+- Вкладка «Безопасность»: Добавлена проверка порядка ACL.
+  При переключении на вкладку «Безопасность», порядок будет
+  проверяться и в случае его некорректности будет выводиться
+  диалоговое окно предупреждения с предложением исправить
+  порядок. (#339)
+- Панель инструментов: Для всех действий добавлены комбинации клавиш.
+- Свойства: Добавлена вкладка LAPS (Диспетчер паролей локальных
+  администраторов) для объектов компьютера. Эта панель будет
+  доступна только при наличии LAPS в домене. (#312)
+- Свойства: Исправлена реакция диалогового окна свойств
+  на сбой загрузки пользователя в связи с ошибкой соединения
+  или отсутствии объекта.
+- Свойства: Отключена вкладка «Профиль», в связи с
+  невозможностью использования, так как реализация
+  данной функции в серверном модуле отсутствует.
+- Свойства: Отключена функция «Компьютеры для входа
+  в систему», в связи с невозможностью использования,
+  так как реализация данной функции в серверном модуле
+  отсутствует.
+- Политики: Исправлено неверное указание на ошибки в
+  политиках, созданных с помощью RSAT, при проверке
+  разрешений. (#333)
+- Политики: Для политик добавлено действие «Редактировать».
+  Для правильной работы необходима установка пакета «gpui».
+- Запросы: Из корня «Запросы» удалены действия «Вырезать»
+  и «Копировать», в связи с тем, что данные действия
+  применить к нему невозможно. (#350)
+- Запросы: Удалена возможность рекурсивно вырезать
+  и вставлять папки запроса друг в друга.
+- Запросы: Устранено зависание программы при копировании
+  и вставке папки в саму себя.
+- Запросы: Исправлено имя по умолчанию для папок запроса
+  при создании.
+- Запросы: Устранена ошибка копирования и вставки папки
+  запроса в того же родителя.
+- Запросы: Удаление возможности перетаскивания папок запроса
+  в самих себя.
+- Диалоговое окно поиска: Добавлено фильтрование по всем
+  классам, реализованное в виде отдельного флажка.
+  Фильтрование будет принимать все классы, а не только те,
+  которые включены в список. (#341)
+- Элементы управления на вкладке: Устранена ошибка на вкладке,
+  в связи с которой не сохранялись внесённые изменения.
+- Элементы управления на вкладке: Исправлены некоторые поля,
+  которые позволяли изменять значения, не предназначенные
+  для изменения.
+- Панель меню: Исправлены флажки для типов представления
+  (Значки, Список, Подробно), которые не были
+  исключительными. (#329)
+- Панель меню: Устранена ошибка журналирования поиска,
+  сейчас всё исправно работает при обзоре дерева объектов,
+  в диалоговом окне поиска и других элементах интерфейса
+  пользователя.
+- Панель меню: Добавлены сочетания клавиш для всех действий,
+  за исключением меню «Действия».
+- Панель меню: Добавлены сочетания клавиш для навигации
+  во всех подменю, за исключением меню «Действия».
+- Разное: Устранена ошибка фильтрации по классам, которая
+  работала неправильно до открытия диалогового окна выбора
+  класса. Ошибка возникала в диалоговом окне поиска, при
+  создании/редактировании запроса и других подобных случаях. (#322)
+- Разное: Добавлено диалоговое окно «Мастера Операций»
+  для просмотра и редактирования FSMO-ролей. Открывается в
+  Меню->Файл->Мастера Операций. (#313)
+- Разное: Диалоговые окна сообщений об ошибках АД изменены
+  на модальные.
+- Разное: Удалена кнопка «Сброс» из диалоговых окон
+  для переименования.
+- Разное: Исправлена ошибка значков групп, которые не
+  отображались на некоторых элементах. (#330)
+- Разное: Добавлен значок приложения, отображаемый рядом
+  с приложениями в списке и в заголовке окна.
+- Разное: Исключена возможность ввода пустого пароля.
+- Разное: Исправлено неверное ограничение на длину поля
+  «Имя для входа (до Windows 2000)».
+- Разное: Улучшена обработка недопустимых символов в
+  диалоговых окнах создания и переименования объектов.
+- Разное: Добавлено автоматическое удаление пробелов в
+  начале и конце имени для большинства полей вставки
+  строковых значений.
+- Разное: Исправлено создание объектов компьютера
+  в части правильной установки атрибутов.
+- Разное: Добавлена галочка «Показать пароль» для всех
+  полей ввода паролей, обеспечивающая переключение
+  видимости пароля при вводе.
+- Разное: Устранена ошибка сбоя программы, которая иногда
+  имела место при загрузке объектов с сервера.
+- Разное: Исправлено некорректное поле «Улица» для
+  объектов подразделений. Использовался неверный атрибут.
+- Разное: Улучшен перевод.
 
 
 -----------------------------------------------------------------------
- VERSION 0.8.0
+ ВЕРСИЯ 0.8.0
 -----------------------------------------------------------------------
-- Connection: Added a new window for case where app fails to
-  connect to domain on startup. This window contains
-  connection options and a way to retry connection. Removed
-  "Connect" action from main window's menubar.
-- Console: Removed display of current domain controller in
-  domain item. It can now be seen in connection options.
-- Console: Fixed bug with overlapping object
-  fetches/refreshes. Happened when refreshing an object
-  while it's children are still being loaded. (#290)
-- Console: Fixed restoration of results state. State was
-  saved but then sometimes restoration failed. Includes
-  things like visible columns and sorting. (#299)
-- Menubar: Fixed custom filter in "Filter objects" dialog
-  not being saved.
-- Menubar: Removed "Navigation" menu because it's not
-  useful. Navigation actions can still be accessed from the
-  toolbar in a much more convenient manner.
-- Menubar: Added a way to view changelog in the app. Opened
-  from "Help" menu.
-- Menubar: Manual is now opened as an online version on the
-  wiki.
-- Action menu: Improved order of actions.
-- Find dialog: Fixed object action effects in find results,
-  for example objects not getting removed after being
-  deleted in find results. (#296)
-- Find dialog: Added missing "View" actions to find dialog
-  ("Icon", "List", "Detail").
-- Find dialog: Added "View" menu to find dialog opened from
-  select object dialog.
-- Find dialog: Implemented propagation of changes from Find
-  dialog to the main window. For example, deleting an object
-  in Find dialog will also remove it from the console in
-  Main window. (#298)
-- Find dialog: Added "Clear" button which clears filter
-  input and all results. (#314)
-- Find dialog: Implemented updating of objects in find
-  dialog after move/rename.
-- Select object dialog: Added "Clear" button which clears
-  filter input and all results. (#314)
-- Queries: Added "out of date" state to queries. In that
-  state query icon and tooltip change to indicate that the
-  query is in that state. Queries become out of date when
-  their child objects are renamed or moved.
-- Queries: Fixed query tree saving objects into settings
-  file, which can make the file unnecessarily big. This also
-  speeds up app shutdown. (#300)
-- Queries: Added ability to cut/copy/paste multiple query
-  item and/or folders.
-- Policies: Added Properties for policies in the policy
-  tree. Contains policy-specific information as well as a security tab. (#278)
-- Properties: Fixed changes not propagating from other tabs
-  to Attributes tab after apply. For example, changing
-  "description" in general tab now also updates it in
-  Attributes tab. (#306)
-- Managed by tab: Fixed unaccessible "Other" fields. Button
-  is now enabled and opens a read only sub-dialog. (#311)
-- Account tab: Fixed incorrect behavior of the "Cannot
-  delegate" account option. It was turning on "Trusted for
-  delegation option". Also fixed display of status for those
-  options. (#305)
-- Misc: Added expanded default names when creating policies
-  and query folders, before had just one default, now will
-  offer a numbered default depending on what already
-  exist. (#302)
-- Misc: Moved UI element toggle actions from "Preferences"
-  to "View" menu.
-- Misc: Fixed hanging/crashing when logged in as
-  non-privileged user. (#301)
-- Misc: Added display of currently login to status bar
-  (username@domain.com for example).
-- Misc: Fixed incorrect display of "Enable"/"Disable"
-  actions for user objects. Before, "Disable" was shown for
-  already disabled users. (#297)
-- Misc: Fixed password dialog sometimes not applying the
-  "Password expired" option. (#304)
-- Misc: Fixed stack smashing on 32 bit systems. (#294)
-- Misc: Fixed crash when creating a user with name
-  containing leading or trailing whitespace and enabling
-  "Must change pass" option. This also fixes a similar issue
-  when creating OU's and renaming users. (#308)
-- Misc: Moved "Change domain controller" functionality to
-  connection options.
+- Соединение: Добавлено новое окно, которое выводится
+  в случае сбоя приложения во время запуска при соединении
+  с доменом. Это окно содержит параметры соединения и
+  метод установки повторного соединения. Удалено действие
+  «Соединить» из меню главного окна.
+- Консоль: Удалено отображение текущего контроллера домена
+  в поле домена. Теперь оно отображается в параметрах
+  соединения.
+- Консоль: Устранена ошибка наложения объекта при
+  получении/обновлении. Это происходило при обновлении
+  объекта в процессе загрузки его потомков. (#290)
+- Консоль: Устранена ошибка восстановления состояния
+  результатов. Состояние сохранялось, но иногда происходил
+  сбой при восстановлении. Включает такие настраиваемые
+  параметры, как отображаемые колонки и сортировка. (#299)
+- Панель меню: Устранена ошибка сохранения настраиваемого
+  фильтра в диалоговом окне «Фильтровать объекты».
+- Панель меню: Удалено меню «Навигация» ввиду неудобства
+  использования. Действия по навигации доступны и
+  значительно более удобно выполняются из панели меню.
+- Панель меню: Добавлен вариант просмотра журнала
+  изменений в приложении. Открывается из меню «Помощь».
+- Панель меню: Руководство теперь открывается в виде
+  Интернет-версии на wiki.
+- Меню «Действие»: Улучшен порядок действий.
+- Диалоговое окно поиска: Устранена ошибка выполнения
+  действий с объектами в результатах поиска, например,
+  объекты, остающиеся в результатах поиска после
+  удаления. (#296)
+- Диалоговое окно поиска: В диалоговое окно поиска
+  добавлены отсутствующие действия меню «Вид»
+  («Значки», «Список», «Подробно»).
+- Диалоговое окно поиска: В диалоговое окно поиска,
+  открываемое из диалогового окна выбора объектов, добавлено
+  меню «Вид».
+- Диалоговое окно поиска: Реализована синхронизация изменений,
+  выполняемых в диалоговом окне «Поиск», с главным окном.
+  Например, удаление объекта в диалоговом окне поиска
+  приведёт к удалению его в консоли главного окна. (#298)
+- Диалоговое окно поиска: Добавлена кнопка «Очистить» для сброса
+  параметров фильтра и всех результатов. (#314)
+- Диалоговое окно поиска: Реализовано обновление объектов
+  в диалоговом окне поиска после перемещения/переименования
+  объектов.
+- Диалоговое окно выбора объекта: Добавлена кнопка «Очистить»
+  для сброса параметров фильтра и всех результатов. (#314)
+- Запросы: Добавлено состояние «устаревшее» для запросов.
+  На такое состояние запроса указывает изменение значка
+  и подсказки. Запросы становятся устаревшими при
+  переименовании или перемещении их дочерних объектов.
+- Запросы: Устранено сохранение объектов дерева запросов
+  в файл параметров, которое приводит к необоснованному
+  увеличению размера файла. Данное исправление также
+  ускоряет завершение работы приложения. (#300)
+- Запросы: Добавлена возможность вставки/копирования/вставки
+  нескольких элементов запроса и/или папок.
+- Политики: Добавлены «Свойства» для политик в дереве политик.
+  Содержит информацию по политикам, а также вкладку
+  «Безопасность». (#278)
+- Свойства: Устранена ошибка синхронизации изменений,
+  внесённых на  других вкладках, со вкладкой «Атрибуты»
+  после их применения. Например, изменение поля «Описание»
+  в общей вкладке теперь приводит к его обновлению на вкладке
+  «Атрибуты». (#306)
+- Элементы управления на вкладке: Внесено исправление в
+  недоступные поля «Другие». Кнопка теперь активна и открывает
+  дочернее диалоговое окно, доступное только для чтения. (#311)
+- Вкладка «Учётная запись»: Исправлено некорректное поведение
+  параметра учётной записи «Делегирование невозможно»,
+  при котором активировался параметр «Доверять делегирование».
+  Также исправлены ошибки отображения состояния для этих
+  параметров. (#305)
+- Разное: Добавлено расширение для имён по умолчанию при
+  создании политик и папок запросов. Ранее был только один
+  вариант по умолчанию, теперь предлагаются пронумерованные
+  варианты в зависимости от уже существующих настроек. (#302)
+- Разное: Действия по переключению элементов пользовательского
+  интерфейса перемещены из меню «Настройки» в меню «Вид».
+- Разное: Устранён сбой/зависание программы при входе
+  в качестве непривилегированного пользователя. (#301)
+- Разное: Добавлено отображение текущего логина в строке
+  состояния (например, username@domain.com).
+- Разное: Устранено некорректное отображение действий
+  «Включить»/«Отключить» для объектов пользователей.
+  Ранее действие «Отключить» отображалось для
+  пользователей, которые уже были отключены. (#297)
+- Разное: Устранена ошибка в диалоговом окне ввода
+  пароля, вследствие которой не всегда применялся
+  параметр «Истёк срок действия пароля». (#304)
+- Разное: Устранено переполнение буфера на 32-разрядных
+  системах. (#294)
+- Разное: Устранён сбой при создании пользователя, имя
+  которого имеет пробелы в начале или в конце слова, при
+  включенном параметре «Пользователь должен сменить пароль».
+  Также была исправлена похожая проблема, возникавшая
+  при создании подразделений и переименовании пользователей. (#308)
+- Разное: Функция «Сменить контроллер домена» была
+  перемещена в параметры соединения.
 
 -----------------------------------------------------------------------
- VERSION 0.7.0
+ ВЕРСИЯ 0.7.0
 -----------------------------------------------------------------------
-- Manual: Fixed manual not opening when app is installed
-  fresh. (#267)
-- Manual: Improved how help pages are selected. Can now
-  single-click to select and also select using arrow keys.
-- Policies: Fixed group policy tab not displaying policies
-  created on Windows. (#270)
-- Policies: Fixed incorrect case in gplink strings outputted
-  by the app. Changed to use the same case style as Windows.
-  (#271)
-- Policies: Added displaying of invalid GPO links in "Group
-  Policy" tab. Invalid links can be caused by slow
-  replication of recently created GPO's or delete GPO's or
-  incorrect deletiong of GPO's without unlinking. (#274)
-- Policies: Fixed deletion of policies not unlinking them as
-  well. (#273)
-- Policies: Fixed incorrect permissions of GPT of newly
-  created policies. (#269)
-- Policies: Fixed incorrect deletion of GPT's (group policy
-  files on the sysvol share). (#277)
-- Policies: Added a check for GPO permission mismatch. If
-  there's a mismatch, user is warned about it and offered to
-  sync permissions. (#281)
-- Policies: Added "Refresh" action to policy tree. (#279)
-- Properties: Added "Security" properties tab to all objects
-  that need it, not just users.
-- Object tab: Added "Protect against deletion" feature which
-  allows enabling or disabling protection against deletion
-  for objects. Available in Object tab or in create dialog
-  for OU's. (#283)
-- Misc: Added a toolbar. (#257)
+- Руководство: Устранена ошибка при которой руководство
+  пользователя не открывалось сразу после установки
+  приложения. (#267)
+- Руководство: Улучшен метод выбора страниц справки. Сейчас
+  выбор осуществляется однократным щелчком мыши, а также
+  с помощью клавиш со стрелками.
+- Политики: Устранена ошибка, при которой на вкладке групповой
+  политики не отображались политики, созданные в Windows. (#270)
+- Политики: Исправлен вывод приложением строк gplink в
+  некорректном регистре. Сейчас регистр применяется в том
+  стиле, который принят в Windows. (#271)
+- Политики: Добавлено отображение недопустимых связей объектов
+  групповой политики (GPO) на вкладке «Групповая политика».
+  Недопустимые связи могут появится по причине медленной
+  репликации недавно созданных или удалённых GPO, а также
+  вследствие некорректного удаления GPO без удаления связи. (#274)
+- Политики: Устранено удаление политик без удаления связей. (#273)
+- Политики: Исправлены некорректные разрешения шаблона групповой
+  политики (GPT) для создания политик. (#269)
+- Политики: Устранено некорректное удаление GPT (файлы
+  групповой политики на общем ресурсе sysvol). (#277)
+- Политики: Добавлена проверка несовпадения разрешений GPO.
+  При наличии несовпадения пользователю выводится предупреждение
+  и предлагается синхронизировать разрешения. (#281)
+- Политики: В дереве политик добавлено действие «Обновить». (#279)
+- Свойства: Вкладка «Безопасность» добавлена в свойства всех
+  необходимых объектов, не только пользователей.
+- Вкладка «Объект»: Добавлена функция «Защитить от удаления»,
+  которая позволяет включать или отключать защиту от удаления
+  для объектов. Доступна на вкладке «Объект» или в диалоговом
+  окне создания подразделений. (#283)
+- Разное: Добавлена панель инструментов. (#257)
 
 -----------------------------------------------------------------------
- VERSION 0.6.4
+ ВЕРСИЯ 0.6.4
 -----------------------------------------------------------------------
-- Queries: Fixed query edit dialog not loading state
-  correctly. Was loading some fields as blank. (#255)
-- Policies: Fixed policy creation dialog not closing. (#264)
-- Policies: Fixed policy creation dialog not displaying
-  errors.
-- Policies: Fixed policy results not loading
-  state(enforced/disabled) of links correctly. Was loading
-  blank every time. (#263)
-- Policies: Fixed policy delete action not deleting GPO
-  files on sysvol.
-- Policies: Disabled imprinting of policy security
-  descriptors on their sysvol files temporarily. For the
-  time being, sysvol files of newly created gpo's will have
-  default SD's. This is because the current process for
-  imprinting SD's causes problems.
-- Misc: Fixed dialog titles.
-- Misc: Added object count to description bar for queries.
-  (#256)
-- Menubar: Added shortcuts for navigation actions and quit.
-  (#262)
+- Запросы: Исправлена некорректная загрузка состояния
+  в диалоговом окне редактирования запроса, где некоторые
+  поля выводились пустыми. (#255)
+- Политики: Устранена ошибка, вследствие которой не
+  закрывалось диалоговое окно создания политики. (#264)
+- Политики: Устранена ошибка, вследствие которой не
+  отображались ошибки в диалоговом окне создания политики.
+- Политики: Устранена проблема с некорректной загрузкой
+  состояния связи (принудительно/отключено) в составе
+  результатов применения политики, вместо которого всё
+  время загружалась пустая строка. (#263)
+- Политики: Исправлена ошибка выполнения действий по
+  удалению, в результате которых файлы GPO не удалялись
+  на sysvol.
+- Политики: Временно отключено присвоение дескрипторов
+  безопасности политики файлам на sysvol. На данный
+  момент, файлы вновь создаваемых gpo на sysvol получают
+  дескриптор безопасности по умолчанию. Это происходит
+  в связи с тем, что текущий процесс установки
+  дескрипторов безопасности работает с ошибками.
+- Разное: Устранена проблема с заголовками диалоговых окон.
+- Разное: Добавлен вывод числа объектов в поле описания у
+  запросов. (#256)
+- Панель меню: Добавлены комбинации клавиш для навигации и
+  завершения работы. (#262)
 
 -----------------------------------------------------------------------
- VERSION 0.6.3
+ ВЕРСИЯ 0.6.3
 -----------------------------------------------------------------------
-- Misc: Added manual generated from the wiki page. (#218)
+- Разное: Добавлено руководство пользователя, сформированное
+  на основе wiki. (#218)
 
 -----------------------------------------------------------------------
- VERSION 0.6.2
+ ВЕРСИЯ 0.6.2
 -----------------------------------------------------------------------
-- Console: Added "Reset account" action for computer objects.
+- Консоль: Добавлено действие «Сбросить учётную запись»
+  для объектов компьютера.
   (#245)
-- Console: Fixed "Advanced features" setting not hiding
-  advanced objects when the setting is turned off. (#247)
-- UI: Implemented saving and restoring of state and geometry
-  of UI elements. Things like sizes of dialogs, column
-  customization and column widths. (#242)
-- Options: Added connection options to "File" menu. (#248)
-- Misc: Fixed crash on startup if there are no Kerberos
-  tickets. (#246)
-- Misc: Fixed crash caused by threaded search when a
-  connection error happened. (#249)
-- Misc: Fixed incorrect error message for account option
-  conflicts. Error message contained incorrect or empty
-  strings for account options. (#251)
-- Misc: Fixed account option conflicts not being enforced
-  correctly. Was able to set conflicting account option
-  after closign the error message. (#252)
-- Misc: Fixed expiry edit behaving incorrectly in some
-  timezones. The edit was setting the date to the next day.
-  (#253)
+- Консоль: Устранена ошибка параметра «Дополнительные
+  возможности», вследствие которой дополнительные объекты
+  отображались при отключенном параметре. (#247)
+- Интерфейс пользователя: Реализовано сохранение и
+  восстановление состояния и геометрии элементов
+  пользовательского интерфейса. Размеры диалогового окна,
+  настройка внешнего вида колонок и их ширина. (#242)
+- Параметры: В меню «Файл» добавлены параметры подключения.
+  (#248)
+- Разное: Устранён сбой, происходивший в процессе загрузки
+  при отсутствии билетов Kerberos. (#246)
+- Разное: Устранён сбой, происходивший в процессе
+  многопоточного поиска при возникновении ошибки соединения.
+  (#249)
+- Разное: Исправлено некорректное сообщение об ошибке,
+  выводившееся при наличии конфликтов в параметрах учётной
+  записи. Сообщение содержало некорректные или пустые строки
+  параметров учётной записи. (#251)
+- Разное: Устранена ошибка некорректного исправления
+  конфликтующих параметров учётной записи. Установка
+  конфликтующего параметра учётной записи была возможна
+  после закрытия сообщения об ошибке. (#252)
+- Разное: Исправлено некорректное поведение при редактировании
+  времени действия в некоторых часовых поясах. При этом дата
+  могла выставляться на следующий день. (#253)
 
 -----------------------------------------------------------------------
- VERSION 0.6.1
+ ВЕРСИЯ 0.6.1
 -----------------------------------------------------------------------
-- Action menu: Added "Enable account" and "Disable account"
-  actions for computer objects. (#236)
-- Console: Fixed a bug where creating objects at domain
-  object did not add those objects in console. Also fixed
-  similar issue with moving objects to domain object. (#240)
-- Console: Fixed results pane showing always showing all
-  columns. Now it hides non-default columns as it should. (#237)
-- Console: Fixed changes to object properties not updating
-  objects in queries.(#241)
-- Rename dialog: For the user version, updated the UPN edit
-  to the new version used everywhere else. (#238)
-- Misc: Improved text in labels, titles and messages.
-- Misc: Fixed "Close" button in error log dialog not closing
-  the dialog. (#235)
-- Misc: Fixed empty text in some message boxes. (#234)
-- Misc: Fixed crash caused by performing object operations
-  like delete, while "Saved Queries" is empty. (#239)
-- Misc: Added .desktop file so that the app appears in app
-  list. (#231)
+- Меню «Действие»: Добавлены действия «Включить учётную запись»
+  и «Отключить учётную запись» для объектов компьютера. (#236)
+- Консоль: Устранена ошибка, вследствие которой объекты,
+  создаваемые в объекте домена, не добавлялись в консоль. Также
+  устранена похожая ошибка, связанная с перемещением объектов
+  в объект домена. (#240)
+- Консоль: Устранена ошибка, вследствие которой на панели результатов
+  всегда отображались все колонки. Сейчас не отображаемые по умолчанию
+  колонки скрываются в соответствии с логикой работы программы. (#237)
+- Консоль: Исправлена ошибка обновления объекта в запросах
+  при изменении его свойств.(#241)
+- Диалоговое окно «Переименовать»: В версии пользователя поле
+  редактирования UPN было обновлено до повсеместно используемой
+  новой версии. (#238)
+- Разное: Улучшен текст в подписях, заголовках и сообщениях.
+- Разное: Устранена ошибка, вследствие которой диалоговое окно журнала
+  ошибок не закрывалось при нажатии на кнопку «Закрыть». (#235)
+- Разное: Устранена ошибка вывода пустых текстовых строк
+  в некоторых окнах сообщений. (#234)
+- Разное: Устранён сбой, возникавший при выполнении действий
+  с объектами, такими как удаление, когда папка «Сохранённые
+  запросы» была пуста. (#239)
+- Разное: Добавлен файл .desktop для включения приложения в
+  список приложений. (#231)
 
 -----------------------------------------------------------------------
- VERSION 0.6.0
+ ВЕРСИЯ 0.6.0
 -----------------------------------------------------------------------
-- Properties dialog: Improved how connection failure is
-  handled. Dialog stays open and displays informative error
-  text.
-- Properties dialog: Sped up dialog opening and applying
-  slightly.
-- Manual dialog: Fixed manual path so it loads correctly.
-- Connection: Fixed crash when getting domain name fails.
-- Connection: Changed how domain name is determined. Before
-  it was determined from the default domain, now it is
-  determined from the default principal. Default domain has
-  to be specified manually and is not guaranteed to be
-  there.
-- Console: Don't open context menu when clicking on empty
-  space in results pane.
-- Console: Changed how target object for Action menu is
-  determined. If results is focused but has no selection,
-  use selection from scope.
-- Action menu: Disable "New" menu if all new actions are
-  disabled.
-- Action menu: Don't disable actions for items that are
-  fetching. This messed up context menu logic.
-- Action menu: Enabled "Add to group" action for groups.
-  Groups can be added to groups.
-- Select object dialog: Changed the base dialog to contain a
-  simpler search method. More advanced search is still available via another dialog opened from "Advanced" button.
-- Select object dialog: Changed columns for the selected
-  list to be more informative.
-- Account tab: Added "Logon hours" edit. Note that this
-  functionality is currently only working for Windows
-  clients. To work on Linux clients, it has to be
-  implemented in the client backend (not in ADMC).
-- Account tab: Added "Logon computers" edit.
-- UI: Improved button layout.
-- UI: Added missing "Cancel" buttons to some dialogs.
-- Security tab: Implemented addition of well-known trustee's.
+- Диалоговое окно «Свойства»: Применён более эффективный
+  способ обработки сбоя соединения. Диалоговое окно
+  остаётся открытым и отображает информативное сообщение
+  об ошибке.
+- Диалоговое окно «Свойства»: Немного увеличена скорость
+  открытия диалогового окна и применения изменений.
+- Диалоговое окно «Руководство»: Исправлен путь к руководству
+  пользователя, благодаря чему оно теперь загружается корректно.
+- Соединение: Устранён сбой при ошибке получения доменного
+  имени.
+- Соединение: Изменён метод определения доменного имени.
+  Если раньше для определения доменного имени использовался домен
+  по умолчанию, то сейчас определение имени происходит с
+  использованием учётной записи по умолчанию. Доменное имя
+  по умолчанию указывается вручную и доступность его не может
+  быть гарантирована.
+- Консоль: Отключена возможности открытия контекстного
+  меню щелчком по пустому пространству на панели результатов.
+- Консоль: Изменён способ определения целевого объекта для
+  меню «Действие». Если панель результатов активна, но
+  элементы на ней не выделены, то используется текущая
+  область выделения.
+- Меню «Действие»: Меню «Создать» становится неактивным
+  при отключении всех действий.
+- Меню «Действие»: Не допускается отключение действий у
+  элементов, по которым ещё не получена информация, поскольку
+  это нарушает логику работы контекстного меню.
+- Меню «Действие»: Действие «Добавить в группу» доступно для
+  групп. Теперь группы могут добавляться в группы.
+- Диалоговое окно выбора объекта: Содержимое основного
+  диалогового окна было изменено с целью применения более
+  простого метода поиска. Расширенные возможности поиска
+  остались доступны в другом диалоговом окне, которое можно
+  открыть с помощью кнопки «Продвинутый».
+- Диалоговое окно выбора объекта: Для большей информативности
+  изменены колонки списка выбранных объектов.
+- Вкладка «Учётная запись»: Добавлено поле для редактирования
+  значения «Время входа». Обратите внимание на то, что в данный
+  момент эта функция работает только на клиентских приложениях
+  Windows. Для поддержки этой функции на клиентских приложениях
+  Linux, она должна быть реализована в серверном модуле
+  (не в ADMC).
+- Вкладка «Учётная запись»: Добавлено поле для редактирования
+  значения параметра «Компьютеры для входа в систему».
+- Интерфейс пользователя: Оптимизировано расположение кнопок.
+- Интерфейс пользователя: В некоторые диалоговые окна добавлены
+  отсутствовавшие кнопки «Отмена».
+- Вкладка «Безопасность»: Реализовано дополнение известных
+  доверенных лиц.
 
 -----------------------------------------------------------------------
- VERSION 0.5.3
+ ВЕРСИЯ 0.5.3
 -----------------------------------------------------------------------
-- Properties dialog: Added new "Security" tab for User objects.
-- Properties dialog: Added new tabs for Computer objects:
-  "Delegation", "Managed by", "Member of" and "Operating
-  System".
-- Properties dialog: Added "Location" field to General tab
-  for Computer objects.
-- Create User dialog: Added "Can't change password" option.
-- Filters: Removed "Cancel" button from class selection
-  dialog.
-- Filters: Removed hidden feature where selecting all
-  classes in filter setup secretly changed filter to accept
-  ALL classes, even ones not listed in the class list.
-- Console filtering dialog: Added more filtering options.
-  Now there's an option to: show all objects, show selected
-  classes and a custom filter.
-- Console: Perform fetches of domain objects and queries in
-  a separate thread.
-- Create query dialog: Fixed dialog not resetting between
-  multiple instances.
-- Create query dialog: Fixed search base defaulting to being
-  empty. Default to domain instead like find dialog.
-- Queries: Added "Edit" action to query items, which is
-  accessible from the action menu.
-- Errors: Added more helpful error messages for the
-  connection process.
+- Диалоговое окно свойств: Для объектов пользователя добавлена
+  новая вкладка «Безопасность».
+- Диалоговое окно свойств: Для объектов компьютера добавлены
+  новые вкладки: «Делегирование», «Руководство», «Группы» и
+  «Операционная система».
+- Диалоговое окно свойств: В основную вкладку объектов компьютера
+  добавлено поле «Местонахождение».
+- Диалоговое окно создания пользователя: Добавлен параметр
+  «Пользователь не может изменить пароль».
+- Фильтры: В диалоговом окне выбора класса удалена кнопка «Отмена».
+- Фильтры: Удалена недокументированная возможность, которая при
+  выборе всех классов в фильтре по факту меняла настройки фильтра
+  таким образом, что позволяла принимать ВСЕ классы, включая те,
+  которые отсутствуют в списке классов.
+- Диалоговое окно фильтра консоли: Добавлены новые параметры
+  фильтра. Теперь параметры фильтра позволяют: показывать все объекты,
+  показывать выбранные классы и применять настраиваемый фильтр.
+- Консоль: Реализовано получение информации по объектам домена
+  и запросам в отдельном потоке.
+- Диалоговое окно создания запроса: Устранена ошибка, вследствие
+  которой не выполнялся сброс диалогового окна между несколькими
+  экземплярами программы.
+- Диалоговое окно создания запроса: Исправлена подстановка пустого
+  значения в качестве основы для поиска по умолчанию. Теперь в
+  качестве основы для поиска по умолчанию будет использоваться
+  домен, как в диалоговом окне поиска.
+- Запросы: К элементам запроса добавлено действие «Редактировать»,
+  доступ к которому осуществляется из меню действий.
+- Ошибки: Добавлены более информативные сообщения об ошибках,
+  возникающих в процессе подключения.
 
 -----------------------------------------------------------------------
- VERSION 0.5.2
+ ВЕРСИЯ 0.5.2
 -----------------------------------------------------------------------
-- Translation: Fix translation of "Action" menu not loading.
-- Properties: Added new properties dialog for multiple
-  objects which allows editing properties of multiple
-  objects at the same time.
-- Message Log: Add option to show LDAP search operations.
-- Message Log: Add option to show timestamps next to messages.
+- Перевод: Исправлена ошибка загрузки перевода меню «Действие».
+- Свойства: Добавлено новое диалоговое окно свойств для нескольких
+  объектов, позволяющее одновременно редактировать свойства нескольких
+  объектов.
+- Журнал сообщений: Добавлен параметр для отображения операций
+  поиска LDAP.
+- Журнал сообщений: Добавлен параметр для отображения меток времени
+  после сообщений.
 
 -----------------------------------------------------------------------
- VERSION 0.5.1
+ ВЕРСИЯ 0.5.1
 -----------------------------------------------------------------------
-- Console: Fixed a bug where when moving or deleting items,
-  some of the items were skipped.
-- Select dialog: Fixed pressing return closing the Find the
-  dialog. Pressing return now presses "Find" button.
+- Консоль: Устранена ошибка, возникавшая в процессе перемещения
+  или удаления элементов при котором некоторые элементы пропускались.
+- Диалоговое окно выбора: Устранена ошибка, вследствие которой
+  нажатие клавиши ВВОД вызывало закрытие диалогового окна поиска.
+  Теперь нажатие клавиши ВВОД вызывает нажатие кнопки «Поиск».
 
 -----------------------------------------------------------------------
- VERSION 0.5.0
+ ВЕРСИЯ 0.5.0
 -----------------------------------------------------------------------
-- Console: Added new tree called "Group Policy Objects".
-  Lists all of the policies in the domain. Selecting a
-  policy shows all of the links to that policy in results
-  pane.
-- Console: Added new tree called "Saved Queries". Displays a
-  tree of folders which contain "queries". Queries are saved
-  searches which display search results in results pane.
-- Console: Display current domain controller in domain item
-  label.
-- Console: Add additional way to "activate" results items by
-  selecting and pressing ENTER. Before could only activate
-  by double-clicking. Activating means switching scope to
-  selected results item or opening it's properties.
-- Console: Items in scope pane are now sorted.
-- Console: Change sorting of items in scope and results to
-  be case insensitive.
-- Action menu: Added "Edit upn suffixes" action to domain
-  object. Opens menu to edit upn suffixes for this domain.
-- Account tab: Added combobox for user logon name which
-  contains current upn suffixes.
-- Attributes tab: Remember what attribute filters were
-  selected when app is closed.
-- Move object dialog: Items are now sorted.
-- Attributes tab: Prevent mixing changes in attributes tab
-  with changes in other tabs. When switching from/to
-  attributes tab while there are changes in tabs, open a
-  dialog which forces user to apply or discard those
-  changes.
-- Create dialog: Added combobox for user logon name which
-  contains current upn suffixes.
-- View menu: Added new results view types: Icons, Lists,
-  Detail.
-- View menu: Added "Customize columns" option. Opens a
-  dialog where columns for results pane can be shown and
-  hidden.
-- Preferences: Added toggles for some console widgets.
-  Replaces "toggle widgets dialog".
-- Message log: Changed this to a docked widget. Can now be
-  repositioned to the sides or bottom of window as well as
-  floating.
-- Find dialog: Fixed find dialog taking a long time to close
-  if find results contained many objects and they were
-  sorted by user.
-- Find dialog: Fixed group scope and type not showing
-  correctly. Was always showing the default scope and type
-  (Distribution Group - Global).
-- Properties: Added new tab called "Managed by",
-  which is shown for Organizational Units.
-- Properties: Added new tab called "Group policy"
-  which displays and edits policies linked to selected
-  object.
-- Manual: Added contents and index sectio. Still no actual content though.
-- Misc: Drag and drop is now disabled for objects that can't
-  be moved. Before you were able to start drag process for
-  those objects but weren't able to drop them anywhere,
-  which is confusing.
+- Консоль: Добавлено новое дерево под названием «Объекты
+  групповой политики», в которое выводятся все политики домена.
+  При выборе политики в панели результатов отображаются все
+  её связи.
+- Консоль: Добавлено новое дерево под названием «Сохранённые
+  запросы». Оно состоит из папок, содержащих «запросы».
+  В запросах сохраняется поиск с отображением результатов поиска
+  в панели результатов.
+- Консоль: Добавлено отображение текущего контроллера домена
+  в составе подписи элемента домена.
+- Консоль: Добавлен дополнительный метод, позволяющий
+  «активировать» элементы панели результатов путём выбора
+  и нажатия клавиши ВВОД. Ранее это можно было сделать
+  только двойным щелчком мыши. Активировать, означает
+  переключить область выделения на выбранный элемент
+  результатов или открыть его свойства.
+- Консоль: Реализована сортировка элементов панели результатов.
+- Консоль: Реализована регистронезависимая сортировка
+  в области выделения и на панели результатов.
+- Меню «Действие»: К объектам домена добавлено действие
+  «Редактировать суффиксы UPN». Открывает меню редактирования
+  суффиксов upn для данного домена.
+- Вкладка «Учётная запись»: Добавлено поле со списком,
+  содержащее текущие суффиксы upn, для логина пользователя.
+- Вкладка «Атрибуты»: При закрытии программы запоминаются
+  выбранные атрибуты фильтров.
+- Диалоговое окно перемещения объекта: Реализована сортировка
+  элементов.
+- Вкладка «Атрибуты»: Предотвращается смешивание изменений
+  на вкладке «Атрибуты» с изменениями на других вкладках.
+  Переключение с/на вкладку «Атрибуты» при наличии изменений
+  на вкладках приводит к выводу диалогового окна, которое
+  принуждает пользователя применить или отменить эти изменения.
+- Диалоговое окно «Создать»: Добавлено поле со списком,
+  содержащее текущие суффиксы upn, для логина пользователя.
+- Меню «Вид»: Добавлены новые варианты просмотра результатов:
+  Значки, Список, Подробно.
+- Меню «Вид»: Добавлен параметр «Настроить колонки». Открывает
+  диалоговое окно, позволяющее показывать или скрывать колонки
+  на панели результатов.
+- Настройки: Добавлены переключатели для некоторых виджетов
+  консоли. Заменяет «диалоговое окно переключателей виджетов».
+- Журнал сообщений: Преобразован в закреплённый виджет. Теперь
+  он может размещаться по сторонам или в нижней части окна.
+  Также возможно произвольное перемещение.
+- Диалоговое окно поиска: Устранено продолжительное время
+  ожидания закрытия диалогового окна поиска при наличии большого
+  количества объектов и сортировке их пользователем.
+- Диалоговое окно поиска: Исправлено некорректное отображение
+  области и типа группы. Всегда отображались область и тип
+  по умолчанию (Distribution Group - Global).
+- Свойства: Добавлена новая вкладка «Руководство», отображаемая
+  у подразделений.
+- Свойства: Добавлена новая вкладка «Групповая политика» для
+  отображения и редактирования политик, связанных с выбранным
+  объектом.
+- Руководство: Добавлено оглавление и индекс. Однако реального
+  содержимого пока нет.
+- Разное: Отключена возможность перетаскивания объектов,
+  перемещение которых невозможно. Раньше такие объекты можно
+  было начать перетаскивать, но по факту переместить их куда-либо
+  не получалось, что приводило к путанице.
 
 -----------------------------------------------------------------------
- VERSION 0.4.1
+ ВЕРСИЯ 0.4.1
 -----------------------------------------------------------------------
-- Properties: Fixed "Apply"/"Reset" buttons being
-  incorrectly disabled after apply failure. They now stay
-  enabled if any error occured.
-- Properties: Fixed edits and tabs applying old changes if
-  they were previously applied in the same Properties
-  dialog.
-- Member Of/Members tab: Changed primary objects to be
-  selectable. When pressing "Remove" button, a warning opens
-  if any of selected objects are primary, remove action
-  fails.
-- Member Of tab: Added "Primary Group" display.
-- Console: Changed drag and drop process to not make server
-  requests while dragging. Dragging will now be smoother.
-- Find dialog: Moved the find process to a separate thread.
-  This removes all lag.
-- Find dialog: Fixed crashing when closing dialog while a
-  find is in progress.
-- Find dialog: Removed results limit.
-- Find dialog: Removed quick find option. Didn't work well.
-- Misc: Implemented recursive delete so now you can delete
-  objects with children. Before this action caused a server
-  error.
-- Misc: Fixed idle disconnect. The app now opens a new
-  connection to server for every set of operations instead
-  of keeping one connection open.
-- Misc: Added message box that warns about connection
-  failure after trying to perform some operations that
-  require a connection.
+- Свойства: Исправлена ошибка, в результате которой кнопки
+  «Применить»/«Сбросить» становились неактивными при
+  возникновении сбоя в процессе применения изменений. Теперь
+  при возникновении ошибок эти кнопки остаются активными.
+- Свойства: Исправлено применение старых изменений на полях
+  и вкладках, если ранее они были применены в том же самом
+  диалоговом окне «Свойства».
+- Вкладка «Группы/Участники»: Добавлена возможность выделения
+  основных объектов. Если какие-либо из выделенных объектов
+  являются основными, то при нажатии кнопки «Удалить»
+  выводится предупреждение, а операция удаления не выполняется.
+- Вкладка «Группы»: Добавлено отображение элемента
+  «Основная группа».
+- Консоль: Внесены изменения в процесс перетаскивания,
+  обуславливающие отсутствие обращений к серверу при
+  выполнении этого действия. Процесс перетаскивания теперь
+  будет выполняться более гладко.
+- Диалоговое окно поиска: Процесс поиска перенесён в
+  отдельный поток, что устраняет проблемы с зависанием.
+- Диалоговое окно поиска: Устранён сбой приложения
+  при закрытии диалогового окна во время выполнения
+  поискового запроса.
+- Диалоговое окно поиска: Удалено ограничение на количество
+  результатов.
+- Диалоговое окно поиска: Удалена функция быстрого поиска
+  по причине неудовлетворительной работы.
+- Разное: Реализовано рекурсивное удаление, позволяющее
+  удалять объекты вместе с потомками. Раньше это действие
+  вызывало ошибку сервера.
+- Разное: Устранена ошибка разрыва соединения при простое.
+  Сейчас приложение устанавливает новое соединение с сервером
+  для каждого набора операций вместо постоянного подключения
+  к одному соединению.
+- Разное: Добавлен вывод сообщения с предупреждением об ошибке
+  подключения после попытки выполнения некоторых операций,
+  требующих его наличия.
 
 -----------------------------------------------------------------------
- VERSION 0.4.0
+ ВЕРСИЯ 0.4.0
 -----------------------------------------------------------------------
-- Properties: Added more tabs to Properties dialog:
-    - general 
-    - object
-    - account
-    - address
-    - organization
-    - telephones
-    - profile
-    - members
-    - member of
-- Properties: Changed Properties to be a dialog instead of
-  docked widget.
-- Properties: Tab titles are now displayed in a vertical
-  list to the left of tab content.
-- Properties: Renamed from Details to Properties.
-- Attributes Tab: Added new features:
-    - filtering
-    - attribute type column
-    - specialized editors for all attribute types
-- Object Menu: Added most of the object actions.
-- Object Menu: Actions can now be performed for multiple
-  objects. Select multiple objects to load object menu for
-  all of them. Can move, delete, rename and perform other
-  operations, depending on selection.
-- Object Menu: Now available in menubar for accessibility.
-- Object Menu: Added new dialogs:
-    - rename dialog
-    - find dialog
-    - create dialog
-    - select dialog
-- Settings: Added more customization:
-    - showing/hiding widgets
-    - show non-container objects in containers widget
-- Settings: Added Contents widget filtering
-- Menubar: Added Navigation menu.
-- Performance: Reduced lag when working with large amounts
-  of objects (1000s)
-- Misc: Removed login dialog. New usage scheme is to do
-  authenticate via kerberos before starting the app using
-  "kinit" and then use the app. There's also an option to
-  attempt to connect after app has started.
-- Misc: Implemented displaying busy indicator on cursor for
-  long operations.
-- Misc: Implemented correct dialog modality for all dialogs.
-- Misc: Selected better object icons.
-- Misc: Enabled sorting of most object lists.
-- Misc: Improved default column widths for object lists.
-- Misc: Implemented saving of column widths between app
-  sessions.
+- Свойства: в диалоговое окно свойств добавлены вкладки:
+    - общее
+    - объект
+    - учётная запись
+    - адрес
+    - организация
+    - телефоны
+    - профиль
+    - участники
+    - группы
+- Свойства: Из закреплённого виджета «Свойства»
+  преобразованы в диалоговое окно.
+- Свойства: Заголовки вкладок теперь отображаются
+  в вертикальном списке слева от содержимого вкладки.
+- Свойства: «Сведения» переименованы в «Свойства».
+- Вкладка «Атрибуты»: Добавлены новые функции:
+    - фильтр
+    - колонка типа атрибута
+    - специализированные поля для редактирования всех типов
+    атрибутов
+- Меню «Объект»: Добавлена большая часть действий для работы
+  с объектами.
+- Меню «Объект»: Реализовано выполнение действий над несколькими
+  объектами. Для этого выбирается несколько объектов и для всех
+  этих объектов открывается меню. Позволяет перемещать, удалять,
+  переименовывать, а также выполнять другие операции,
+  в зависимости от выделяемых объектов.
+- Меню «Объект»: Для более высокой доступности добавлено в панель меню.
+- Меню «Объект»: Добавлено несколько диалоговых окон:
+    - диалоговое окно «Переименование»
+    - диалоговое окно «Поиск»
+    - диалоговое окно «Создание»
+    - диалоговое окно «Выбор»
+- Параметры: Добавлены настройки:
+    - показывать/скрывать виджеты
+    - показывать в виджете для контейнеров объекты, не
+    являющиеся контейнерами
+- Параметры: Добавлено фильтрование виджета «Содержимое»
+- Панель меню: Добавлено меню навигации.
+- Производительность: Уменьшено время зависания при работе с
+  большим количеством (тысячами) объектов
+- Разное: Удалено диалоговое окно входа в систему. Новая схема
+  использования ещё до запуска приложения проводит проверку
+  подлинности на основе kerberos с использованием «kinit»,
+  после чего приложение запускается. Также существует вариант
+  попытки подключения после запуска приложения.
+- Разное: Реализовано отображение индикатора занятости вместо
+  указателя курсора при выполнении длительных операций.
+- Разное: Реализована корректная модальность всех диалоговых
+  окон.
+- Разное: Подобраны более подходящие значки объектов.
+- Разное: Включена сортировка списка для большинства объектов.
+- Разное: Оптимизирована ширина колонок по умолчанию для списков
+  объектов.
+- Разное: Реализовано сохранение ширины колонок для следующих
+  сеансов работы приложения.
