@@ -35,6 +35,7 @@
 #include <QAction>
 #include <QDebug>
 #include <QStandardItem>
+#include <QMessageBox>
 
 PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -81,7 +82,47 @@ void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QS
 }
 
 void PolicyImpl::selected_as_scope(const QModelIndex &index) {
-    policy_results_widget->update(index);
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    // When selecting a policy, check it's permissions to
+    // make sure that they permissions of GPT and GPC match.
+    // If they don't, offer to update GPT permissions.
+    const QString selected_gpo = index.data(PolicyRole_DN).toString();
+    bool ok = true;
+    const bool perms_ok = ad.gpo_check_perms(selected_gpo, &ok);
+
+    if (!perms_ok && ok) {
+        const QString title = tr("Incorrect permissions detected");
+        const QString text = tr("Permissions for this policy's GPT don't match the permissions for it's GPC object. Would you like to update GPT permissions?");
+
+        auto sync_warning_dialog = new QMessageBox(console);
+        sync_warning_dialog->setAttribute(Qt::WA_DeleteOnClose);
+        sync_warning_dialog->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        sync_warning_dialog->setWindowTitle(title);
+        sync_warning_dialog->setText(text);
+        sync_warning_dialog->setIcon(QMessageBox::Warning);
+
+        connect(
+            sync_warning_dialog, &QDialog::accepted,
+            console,
+            [this, selected_gpo]() {
+                AdInterface ad_inner;
+                if (ad_failed(ad_inner, console)) {
+                    return;
+                }
+
+                ad_inner.gpo_sync_perms(selected_gpo);
+
+                g_status->display_ad_messages(ad_inner, console);
+            });
+    }
+
+    g_status->display_ad_messages(ad, console);
+
+    policy_results_widget->update(selected_gpo);
 }
 
 QList<QAction *> PolicyImpl::get_all_custom_actions() const {
