@@ -22,11 +22,8 @@
 #include "attribute_dialogs/ui_list_attribute_dialog.h"
 
 #include "adldap.h"
-#include "attribute_dialogs/bool_attribute_dialog.h"
-#include "attribute_dialogs/datetime_attribute_dialog.h"
+#include "attribute_dialogs/attribute_dialog.h"
 #include "attribute_dialogs/octet_attribute_dialog.h"
-#include "attribute_dialogs/string_attribute_dialog.h"
-#include "attribute_dialogs/number_attribute_dialog.h"
 #include "globals.h"
 #include "utils.h"
 #include "settings.h"
@@ -94,24 +91,13 @@ void ListAttributeDialog::accept() {
 }
 
 void ListAttributeDialog::on_add_button() {
-    AttributeDialog *dialog = [this]() -> AttributeDialog * {
-        const bool is_bool = (g_adconfig->get_attribute_type(get_attribute()) == AttributeType_Boolean);
-        const QList<QByteArray> value_list = {};
-        const QString attribute = get_attribute();
-        const bool read_only = false;
+    const bool read_only = false;
+    const bool single_valued = true;
+    AttributeDialog *dialog = AttributeDialog::make(get_attribute(), QList<QByteArray>(), read_only, single_valued, this);
 
-        if (is_bool) {
-            return new BoolAttributeDialog(value_list, attribute, read_only, this);
-        } else {
-            const bool attribute_is_number = g_adconfig->get_attribute_is_number(attribute);
-
-            if (attribute_is_number) {
-                return new NumberAttributeDialog(value_list, attribute, read_only, this);
-            } else {
-                return new StringAttributeDialog(value_list, attribute, read_only, this);
-            }
-        }
-    }();
+    if (dialog == nullptr) {
+        return;
+    }
 
     dialog->setWindowTitle(tr("Add Value"));
     dialog->open();

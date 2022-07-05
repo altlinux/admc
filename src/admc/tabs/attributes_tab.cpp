@@ -22,12 +22,7 @@
 #include "tabs/ui_attributes_tab.h"
 
 #include "adldap.h"
-#include "attribute_dialogs/bool_attribute_dialog.h"
-#include "attribute_dialogs/datetime_attribute_dialog.h"
-#include "attribute_dialogs/list_attribute_dialog.h"
-#include "attribute_dialogs/octet_attribute_dialog.h"
-#include "attribute_dialogs/string_attribute_dialog.h"
-#include "attribute_dialogs/number_attribute_dialog.h"
+#include "attribute_dialogs/attribute_dialog.h"
 #include "globals.h"
 #include "settings.h"
 #include "tabs/attributes_tab_filter_menu.h"
@@ -297,100 +292,7 @@ AttributeDialog *AttributesTabEdit::get_attribute_dialog(const bool read_only) {
     const QList<QByteArray> value_list = current[attribute];
     const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
 
-    // Single/multi valued logic is separated out of the
-    // switch statement for better flow
-    auto octet_attribute_dialog = [&]() -> AttributeDialog * {
-        if (single_valued) {
-            return new OctetAttributeDialog(value_list, attribute, read_only, view);
-        } else {
-            return new ListAttributeDialog(value_list, attribute, read_only, view);
-        }
-    };
-
-    auto string_attribute_dialog = [&]() -> AttributeDialog * {
-        if (single_valued) {
-            const bool attribute_is_number = g_adconfig->get_attribute_is_number(attribute);
-
-            if (attribute_is_number) {
-                return new NumberAttributeDialog(value_list, attribute, read_only, view);
-            } else {
-                return new StringAttributeDialog(value_list, attribute, read_only, view);
-            }
-        } else {
-            return new ListAttributeDialog(value_list, attribute, read_only, view);
-        }
-    };
-
-    auto bool_attribute_dialog = [&]() -> AttributeDialog * {
-        if (single_valued) {
-            return new BoolAttributeDialog(value_list, attribute, read_only, view);
-        } else {
-            return new ListAttributeDialog(value_list, attribute, read_only, view);
-        }
-    };
-
-    auto datetime_attribute_dialog = [&]() -> AttributeDialog * {
-        if (single_valued) {
-            return new DatetimeAttributeDialog(value_list, attribute, read_only, view);
-        } else {
-            return nullptr;
-        }
-    };
-
-    const AttributeType type = g_adconfig->get_attribute_type(attribute);
-
-    AttributeDialog *dialog = [&]() -> AttributeDialog * {
-        switch (type) {
-            case AttributeType_Octet: return octet_attribute_dialog();
-            case AttributeType_Sid: return octet_attribute_dialog();
-
-            case AttributeType_Boolean: return bool_attribute_dialog();
-
-            case AttributeType_Unicode: return string_attribute_dialog();
-            case AttributeType_StringCase: return string_attribute_dialog();
-            case AttributeType_DSDN: return string_attribute_dialog();
-            case AttributeType_IA5: return string_attribute_dialog();
-            case AttributeType_Teletex: return string_attribute_dialog();
-            case AttributeType_ObjectIdentifier: return string_attribute_dialog();
-            case AttributeType_Integer: return string_attribute_dialog();
-            case AttributeType_Enumeration: return string_attribute_dialog();
-            case AttributeType_LargeInteger: return string_attribute_dialog();
-            case AttributeType_UTCTime: return datetime_attribute_dialog();
-            case AttributeType_GeneralizedTime: return datetime_attribute_dialog();
-            case AttributeType_NTSecDesc: return octet_attribute_dialog();
-            case AttributeType_Numeric: return string_attribute_dialog();
-            case AttributeType_Printable: return string_attribute_dialog();
-            case AttributeType_DNString: return string_attribute_dialog();
-
-            // NOTE: putting these here as confirmed to be unsupported
-            case AttributeType_ReplicaLink: return nullptr;
-            case AttributeType_DNBinary: return nullptr;
-        }
-
-        return nullptr;
-    }();
-
-    const QString title = [&]() {
-        const QString title_action = [&]() {
-            if (read_only) {
-                return tr("View");
-            } else {
-                return tr("Edit");
-            }
-        }();
-
-        const QString title_attribute = attribute_type_display_string(type);
-
-        if (single_valued) {
-            return QString("%1 %2").arg(title_action, title_attribute);
-        } else {
-            return QString(tr("%1 Multi-Valued %2", "This is a dialog title for attribute editors. Example: \"Edit Multi-Valued String\"")).arg(title_action, title_attribute);
-        }
-    }();
-
-    if (dialog != nullptr) {
-        dialog->setWindowTitle(title);
-    }
+    AttributeDialog *dialog = AttributeDialog::make(attribute, value_list, read_only, single_valued, view);
 
     return dialog;
 }
