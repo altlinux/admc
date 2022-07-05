@@ -28,7 +28,7 @@
 #include "status.h"
 #include "utils.h"
 #include "console_impls/find_policy_impl.h"
-#include "console_impls/policy_impl.h"
+#include "console_impls/found_policy_impl.h"
 #include "console_impls/item_type.h"
 #include "search_thread.h"
 
@@ -36,7 +36,7 @@
 #include <QStandardItem>
 #include <QMenuBar>
 
-FindPolicyDialog::FindPolicyDialog(QWidget *parent)
+FindPolicyDialog::FindPolicyDialog(ConsoleWidget *buddy_console, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::FindPolicyDialog();
     ui->setupUi(this);
@@ -88,8 +88,9 @@ FindPolicyDialog::FindPolicyDialog(QWidget *parent)
     auto find_impl = new FindPolicyImpl(ui->console);
     ui->console->register_impl(ItemType_FindPolicy, find_impl);
 
-    auto policy_impl = new PolicyImpl(ui->console);
-    ui->console->register_impl(ItemType_Policy, policy_impl);
+    auto found_policy_impl = new FoundPolicyImpl(ui->console);
+    ui->console->register_impl(ItemType_FoundPolicy, found_policy_impl);
+    found_policy_impl->set_buddy_console(buddy_console);
 
     auto action_view_icons = new QAction(tr("&Icons"), this);
     action_view_icons->setCheckable(true);
@@ -278,9 +279,9 @@ void FindPolicyDialog::handle_search_thread_results(const QHash<QString, AdObjec
     const QModelIndex head_index = head_item->index();
 
     for (const AdObject &object : results.values()) {
-        const QList<QStandardItem *> row = ui->console->add_results_item(ItemType_Policy, head_index);
+        const QList<QStandardItem *> row = ui->console->add_results_item(ItemType_FoundPolicy, head_index);
 
-        find_policy_impl_load(row, object);
+        found_policy_impl_load(row, object);
     }
 }
 

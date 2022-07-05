@@ -49,6 +49,5 @@ public:
 };
 
 QModelIndex get_find_policy_root(ConsoleWidget *console);
-void find_policy_impl_load(const QList<QStandardItem *> row, const AdObject &object);
 
 #endif /* FIND_POLICY_IMPL_H */

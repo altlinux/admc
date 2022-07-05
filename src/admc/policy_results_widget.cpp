@@ -198,6 +198,10 @@ ResultsView *PolicyResultsWidget::get_view() const {
     return ui->view;
 }
 
+QString PolicyResultsWidget::get_current_gpo() const {
+    return gpo;
+}
+
 void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
     const PolicyResultsColumn column = (PolicyResultsColumn) item->column();
     if (!option_columns.contains(column)) {

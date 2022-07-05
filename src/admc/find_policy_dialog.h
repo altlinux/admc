@@ -29,6 +29,7 @@
 
 class QStandardItem;
 class AdObject;
+class ConsoleWidget;
 
 namespace Ui {
 class FindPolicyDialog;
@@ -40,7 +41,7 @@ class FindPolicyDialog final : public QDialog {
 public:
     Ui::FindPolicyDialog *ui;
 
-    FindPolicyDialog(QWidget *parent);
+    FindPolicyDialog(ConsoleWidget *console_widget, QWidget *parent);
     ~FindPolicyDialog();
 
 private:

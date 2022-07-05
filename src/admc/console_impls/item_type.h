@@ -32,6 +32,7 @@ enum ItemType {
     ItemType_QueryItem,
     ItemType_FindRoot,
     ItemType_FindPolicy,
+    ItemType_FoundPolicy,
 
     ItemType_LAST,
 };

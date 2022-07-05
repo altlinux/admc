@@ -53,6 +53,8 @@ public:
 
     ResultsView *get_view() const;
 
+    QString get_current_gpo() const;
+
 private:
     QStandardItemModel *model;
     QString gpo;

@@ -421,7 +421,7 @@ void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou
 }
 
 void PolicyOUImpl::find_gpo() {
-    auto dialog = new FindPolicyDialog(console);
+    auto dialog = new FindPolicyDialog(console, console);
     dialog->open();
 }
 
