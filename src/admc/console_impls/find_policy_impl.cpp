@@ -31,7 +31,9 @@
 
 FindPolicyImpl::FindPolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    set_results_view(new ResultsView(console_arg));
+    auto view = new ResultsView(console_arg);
+    view->set_drag_drop_enabled(false);
+    set_results_view(view);
 }
 
 QString FindPolicyImpl::get_description(const QModelIndex &index) const {
