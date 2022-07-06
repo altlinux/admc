@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_impls/find_root_impl.h"
+#include "console_impls/find_object_impl.h"
 
 #include "adldap.h"
 #include "console_impls/object_impl.h"
@@ -28,27 +28,27 @@
 #include <QStandardItem>
 #include <QModelIndex>
 
-FindRootImpl::FindRootImpl(ConsoleWidget *console_arg)
+FindObjectImpl::FindObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));
 }
 
-QString FindRootImpl::get_description(const QModelIndex &index) const {
+QString FindObjectImpl::get_description(const QModelIndex &index) const {
     const QString object_count_text = console_object_count_string(console, index);
 
     return object_count_text;
 }
 
-QList<QString> FindRootImpl::column_labels() const {
+QList<QString> FindObjectImpl::column_labels() const {
     return object_impl_column_labels();
 }
 
-QList<int> FindRootImpl::default_columns() const {
+QList<int> FindObjectImpl::default_columns() const {
     return object_impl_default_columns();
 }
 
-QModelIndex get_find_tree_root(ConsoleWidget *console) {
-    const QModelIndex out = console->search_item(QModelIndex(), {ItemType_FindRoot});
+QModelIndex get_find_object_root(ConsoleWidget *console) {
+    const QModelIndex out = console->search_item(QModelIndex(), {ItemType_FindObject});
 
     return out;
 }

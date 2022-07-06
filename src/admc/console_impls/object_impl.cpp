@@ -24,7 +24,7 @@
 #include "console_impls/item_type.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
-#include "console_impls/find_root_impl.h"
+#include "console_impls/find_object_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_widget/results_view.h"
@@ -595,11 +595,11 @@ void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_cons
             const QModelIndex object_root = get_object_tree_root(target_console);
             const QModelIndex query_root = get_query_tree_root(target_console);
             const QModelIndex policy_root = get_policy_tree_root(target_console);
-            const QModelIndex find_root = get_find_tree_root(target_console);
+            const QModelIndex find_object_root = get_find_object_root(target_console);
 
             apply_changes_to_branch(object_root, ItemType_Object, ObjectRole_DN);
             apply_changes_to_branch(query_root, ItemType_Object, ObjectRole_DN);
-            apply_changes_to_branch(find_root, ItemType_Object, ObjectRole_DN);
+            apply_changes_to_branch(find_object_root, ItemType_Object, ObjectRole_DN);
 
             // Apply to policy branch
             if (policy_root.isValid()) {
@@ -694,7 +694,7 @@ void console_object_delete(ConsoleWidget *console, ConsoleWidget *buddy_console,
         const QList<QModelIndex> root_list = {
             get_object_tree_root(target_console),
             get_query_tree_root(target_console),
-            get_find_tree_root(target_console),
+            get_find_object_root(target_console),
         };
         
         for (const QModelIndex &root : root_list) {
@@ -1136,11 +1136,11 @@ void ObjectImpl::set_disabled(const bool disabled) {
         };
 
         const QModelIndex object_root = get_object_tree_root(target_console);
-        const QModelIndex find_root = get_find_tree_root(target_console);
+        const QModelIndex find_object_root = get_find_object_root(target_console);
         const QModelIndex query_root = get_query_tree_root(target_console);
 
         apply_changes_to_branch(object_root);
-        apply_changes_to_branch(find_root);
+        apply_changes_to_branch(find_object_root);
         apply_changes_to_branch(query_root);
     };
 
@@ -1275,15 +1275,15 @@ void console_object_move_and_rename(ConsoleWidget *console, ConsoleWidget *buddy
         // TODO: decrease code duplication
         // For find tree, we only reload the rows to
         // update name, and attributes (DN for example)
-        const QModelIndex find_root = get_query_tree_root(target_console);
-        if (find_root.isValid()) {
+        const QModelIndex find_object_root = get_query_tree_root(target_console);
+        if (find_object_root.isValid()) {
             // Find indexes of modified objects in find
             // tree
             const QHash<QString, QModelIndex> index_map = [&]() {
                 QHash<QString, QModelIndex> out;
 
                 for (const QString &old_dn : old_dn_list) {
-                    const QList<QModelIndex> results = target_console->search_items(find_root, ObjectRole_DN, old_dn, {ItemType_Object});
+                    const QList<QModelIndex> results = target_console->search_items(find_object_root, ObjectRole_DN, old_dn, {ItemType_Object});
 
                     for (const QModelIndex &index : results) {
                         out[old_dn] = index;

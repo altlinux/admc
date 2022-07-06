@@ -18,21 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FIND_ROOT_IMPL_H
-#define FIND_ROOT_IMPL_H
+#ifndef FIND_OBJECT_IMPL_H
+#define FIND_OBJECT_IMPL_H
 
 /**
- * Impl for root of the find tree which displays results of
- * a "Find" operation. Used in Find Widget.
+ * Impl for root of the find object tree which displays
+ * results of a "Find" operation. Used in Find Widget.
  */
 
 #include "console_widget/console_impl.h"
 
-class FindRootImpl final : public ConsoleImpl {
+class FindObjectImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
-    FindRootImpl(ConsoleWidget *console_arg);
+    FindObjectImpl(ConsoleWidget *console_arg);
 
     QString get_description(const QModelIndex &index) const override;
 
@@ -40,6 +40,6 @@ public:
     QList<int> default_columns() const override;
 };
 
-QModelIndex get_find_tree_root(ConsoleWidget *console);
+QModelIndex get_find_object_root(ConsoleWidget *console);
 
-#endif /* FIND_ROOT_IMPL_H */
+#endif /* FIND_OBJECT_IMPL_H */
