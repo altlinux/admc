@@ -29,12 +29,6 @@
 #include <QStandardItem>
 #include <QModelIndex>
 
-enum FindPolicyRole {
-    FindPolicyRole_DN = Qt::UserRole + 1,
-
-    FindPolicyRole_COUNT,
-};
-
 FindPolicyImpl::FindPolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     set_results_view(new ResultsView(console_arg));

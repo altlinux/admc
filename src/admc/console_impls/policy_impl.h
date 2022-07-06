@@ -86,6 +86,5 @@ void console_policy_rename(ConsoleWidget *console, ConsoleWidget *buddy_console,
 void console_policy_add_link(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const int item_type, const int dn_role);
 void console_policy_delete(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const int item_type, const int dn_role);
 void console_policy_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const int item_type, const int dn_role);
-void console_policy_refresh_policy_ou_results(ConsoleWidget *console);
 
 #endif /* POLICY_IMPL_H */

@@ -62,7 +62,6 @@ private:
     QAction *edit_action;
 };
 
-void console_policy_load_item(QStandardItem *item, const AdObject &object);
 QList<QString> console_policy_search_attributes();
 
 void found_policy_impl_load(const QList<QStandardItem *> &row, const AdObject &object);
