@@ -28,14 +28,7 @@
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"
 
-#include <QProcess>
-
-class QStandardItem;
 class AdObject;
-class AdInterface;
-class ConsoleActions;
-template <typename T>
-class QList;
 
 enum FoundPolicyRole {
     FoundPolicyRole_DN = ConsoleRole_LAST + 1,

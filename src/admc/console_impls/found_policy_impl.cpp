@@ -23,19 +23,10 @@
 #include "adldap.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
-#include "console_impls/policy_ou_impl.h"
-#include "console_impls/policy_root_impl.h"
 #include "console_impls/find_policy_impl.h"
-#include "globals.h"
-#include "gplink.h"
-#include "properties_dialog.h"
-#include "rename_policy_dialog.h"
-#include "select_object_dialog.h"
-#include "status.h"
 #include "utils.h"
 
 #include <QAction>
-#include <QDebug>
 #include <QStandardItem>
 
 FoundPolicyImpl::FoundPolicyImpl(ConsoleWidget *console_arg)
