@@ -18,23 +18,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ITEM_TYPE_H
-#define ITEM_TYPE_H
+#ifndef FIND_POLICY_IMPL_H
+#define FIND_POLICY_IMPL_H
 
-enum ItemType {
-    ItemType_Unassigned,
-    ItemType_Object,
-    ItemType_PolicyRoot,
-    ItemType_PolicyOU,
-    ItemType_AllPoliciesFolder,
-    ItemType_Policy,
-    ItemType_QueryFolder,
-    ItemType_QueryItem,
-    ItemType_FindRoot,
-    ItemType_FindPolicy,
-    ItemType_FoundPolicy,
+/**
+ * Impl for root of the find tree in FindPolicyDialog.
+ */
 
-    ItemType_LAST,
+#include "console_widget/console_impl.h"
+
+class AdObject;
+
+enum FindPolicyColumn {
+    FindPolicyColumn_Name,
+    FindPolicyColumn_GUID,
+
+    FindPolicyColumn_COUNT,
 };
 
-#endif /* ITEM_TYPE_H */
+class FindPolicyImpl final : public ConsoleImpl {
+    Q_OBJECT
+
+public:
+    FindPolicyImpl(ConsoleWidget *console_arg);
+
+    QString get_description(const QModelIndex &index) const override;
+
+    QList<QString> column_labels() const override;
+    QList<int> default_columns() const override;
+};
+
+QModelIndex get_find_policy_root(ConsoleWidget *console);
+
+#endif /* FIND_POLICY_IMPL_H */

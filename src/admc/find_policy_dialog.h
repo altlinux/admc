@@ -18,23 +18,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ITEM_TYPE_H
-#define ITEM_TYPE_H
+#ifndef FIND_POLICY_DIALOG_H
+#define FIND_POLICY_DIALOG_H
 
-enum ItemType {
-    ItemType_Unassigned,
-    ItemType_Object,
-    ItemType_PolicyRoot,
-    ItemType_PolicyOU,
-    ItemType_AllPoliciesFolder,
-    ItemType_Policy,
-    ItemType_QueryFolder,
-    ItemType_QueryItem,
-    ItemType_FindRoot,
-    ItemType_FindPolicy,
-    ItemType_FoundPolicy,
+/**
+ * Find policy objects and perform actions on them.
+ */
 
-    ItemType_LAST,
+#include <QDialog>
+
+class QStandardItem;
+class AdObject;
+class ConsoleWidget;
+
+namespace Ui {
+class FindPolicyDialog;
+}
+
+class FindPolicyDialog final : public QDialog {
+    Q_OBJECT
+
+public:
+    Ui::FindPolicyDialog *ui;
+
+    FindPolicyDialog(ConsoleWidget *console_widget, QWidget *parent);
+    ~FindPolicyDialog();
+
+private:
+    QStandardItem *head_item;
+
+    void add_filter();
+    void find();
+    void handle_search_thread_results(const QHash<QString, AdObject> &results);
+    void clear_results();
 };
 
-#endif /* ITEM_TYPE_H */
+#endif /* FIND_POLICY_DIALOG_H */

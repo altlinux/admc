@@ -23,6 +23,10 @@
 #include "adldap.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_ou_impl.h"
+#include "console_impls/policy_impl.h"
+#include "console_impls/policy_root_impl.h"
+#include "console_impls/find_policy_impl.h"
+#include "console_impls/found_policy_impl.h"
 #include "globals.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
@@ -35,11 +39,16 @@
 #include <QAction>
 #include <QDebug>
 #include <QStandardItem>
+#include <QMessageBox>
+
+void policy_add_links(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const QList<QString> &policy_list, const QList<QString> &ou_list);
+void console_policy_update_policy_results(ConsoleWidget *console, PolicyResultsWidget *policy_results);
+void console_policy_remove_link(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const int item_type, const int dn_role, const QString &ou_dn);
 
 PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    policy_results_widget = new PolicyResultsWidget(console_arg);
-    set_results_widget(policy_results_widget);
+    policy_results = new PolicyResultsWidget(console_arg);
+    set_results_widget(policy_results);
 
     add_link_action = new QAction(tr("Add link..."), this);
     edit_action = new QAction(tr("Edit..."), this);
@@ -72,16 +81,52 @@ void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QS
     const QList<QModelIndex> dropped_list_normal = normal_index_list(dropped_list);
     const QList<QString> ou_list = index_list_to_dn_list(dropped_list_normal, PolicyOURole_DN);
 
-    add_link(policy_list, ou_list);
-
-    // Need to refresh so that results widget is updated
-    // because linking a gpo changes contents of results.
-    const QModelIndex current_scope = console->get_current_scope_item();
-    console->refresh_scope(current_scope);
+    ConsoleWidget *buddy_console = nullptr;
+    policy_add_links(console, buddy_console, policy_results, policy_list, ou_list);
 }
 
 void PolicyImpl::selected_as_scope(const QModelIndex &index) {
-    policy_results_widget->update(index);
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    // When selecting a policy, check it's permissions to
+    // make sure that they permissions of GPT and GPC match.
+    // If they don't, offer to update GPT permissions.
+    const QString selected_gpo = index.data(PolicyRole_DN).toString();
+    bool ok = true;
+    const bool perms_ok = ad.gpo_check_perms(selected_gpo, &ok);
+
+    if (!perms_ok && ok) {
+        const QString title = tr("Incorrect permissions detected");
+        const QString text = tr("Permissions for this policy's GPT don't match the permissions for it's GPC object. Would you like to update GPT permissions?");
+
+        auto sync_warning_dialog = new QMessageBox(console);
+        sync_warning_dialog->setAttribute(Qt::WA_DeleteOnClose);
+        sync_warning_dialog->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        sync_warning_dialog->setWindowTitle(title);
+        sync_warning_dialog->setText(text);
+        sync_warning_dialog->setIcon(QMessageBox::Warning);
+
+        connect(
+            sync_warning_dialog, &QDialog::accepted,
+            console,
+            [this, selected_gpo]() {
+                AdInterface ad_inner;
+                if (ad_failed(ad_inner, console)) {
+                    return;
+                }
+
+                ad_inner.gpo_sync_perms(selected_gpo);
+
+                g_status->display_ad_messages(ad_inner, console);
+            });
+    }
+
+    g_status->display_ad_messages(ad, console);
+
+    policy_results->update(selected_gpo);
 }
 
 QList<QAction *> PolicyImpl::get_all_custom_actions() const {
@@ -123,211 +168,66 @@ QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, 
 void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
-
-    const QModelIndex index = console->get_selected_item(ItemType_Policy);
-    const QString dn = index.data(PolicyRole_DN).toString();
-
-    auto dialog = new RenamePolicyDialog(ad, dn, console);
-    dialog->open();
-
-    connect(
-        dialog, &QDialog::accepted,
-        this,
-        [this, index, dn]() {
-            AdInterface ad_inner;
-            if (ad_failed(ad_inner, console)) {
-                return;
-            }
-
-            const AdObject object = ad_inner.search_object(dn);
-
-            const QList<QStandardItem *> row = console->get_row(index);
-            console_policy_load(row, object);
-        });
+    ConsoleWidget *buddy_console = nullptr;
+    console_policy_rename(console, buddy_console, policy_results, ItemType_Policy, PolicyRole_DN);
 }
 
 void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
-    if (index_list.isEmpty()) {
-        return;
-    }
+    UNUSED_ARG(index_list);
 
     const QModelIndex parent_index = index_list[0].parent();
     const ItemType parent_type = (ItemType) console_item_get_type(parent_index);
     const bool parent_is_ou = (parent_type == ItemType_PolicyOU);
-    const bool parent_is_all_policies = (parent_type == ItemType_AllPoliciesFolder);
-
-
-    const QString confirmation_text = [&]() {
-        if (parent_is_ou) {
-            return tr("Are you sure you want to unlink this policy from the OU? Note that the actual policy object won't be deleted.");
-        } else if (parent_is_all_policies) {
-            return tr("Are you sure you want to delete this policy and all of it's links?");
-        } else {
-            return QString();
-        }
-    }();
-    const bool confirmed = confirmation_dialog(confirmation_text, console);
-    if (!confirmed) {
-        return;
-    }
-
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
     if (parent_is_ou) {
-        const QString parent_dn = parent_index.data(PolicyOURole_DN).toString();
+        const QString ou_dn = parent_index.data(PolicyOURole_DN).toString();
 
-        const QString gplink_new_string = [&]() {
-            Gplink gplink = [&]() {
-                const AdObject parent_object = ad.search_object(parent_dn);
-                const QString gplink_old_string = parent_object.get_string(ATTRIBUTE_GPLINK);
-                const Gplink out = Gplink(gplink_old_string);
-
-                return out;
-            }();
-
-            for (const QPersistentModelIndex &index : persistent_list) {
-                const QString dn = index.data(PolicyRole_DN).toString();
-
-                gplink.remove(dn);
-            }
-
-            const QString out = gplink.to_string();
-
-            return out;
-        }();
-
-        const bool replace_success = ad.attribute_replace_string(parent_dn, ATTRIBUTE_GPLINK, gplink_new_string);
-
-        if (replace_success) {
-            for (const QPersistentModelIndex &index : persistent_list) {
-                console->delete_item(index);
-            }
-
-            const QModelIndex current_scope = console->get_current_scope_item();
-            policy_results_widget->update(current_scope);
-        }
-    } else if (parent_is_all_policies) {
-        for (const QPersistentModelIndex &index : persistent_list) {
-            const QString dn = index.data(PolicyRole_DN).toString();
-
-            bool deleted_object = false;
-            ad.gpo_delete(dn, &deleted_object);
-
-            // NOTE: object may get deleted successfuly but
-            // deleting GPT fails which makes gpo_delete() fail
-            // as a whole, but we still want to remove gpo from
-            // the console in that case
-            if (deleted_object) {
-                console->delete_item(index);
-            }
-        }
+        ConsoleWidget *buddy_console = nullptr;
+        console_policy_remove_link(console, buddy_console, policy_results, ItemType_Policy, PolicyRole_DN, ou_dn);
+    } else {
+        ConsoleWidget *buddy_console = nullptr;
+        console_policy_delete(console, buddy_console, policy_results, ItemType_Policy, PolicyRole_DN);
     }
-
-    hide_busy_indicator();
-
-    g_status->display_ad_messages(ad, console);
 }
 
 void PolicyImpl::refresh(const QList<QModelIndex> &index_list) {
     const QModelIndex index = index_list[0];
 
-    policy_results_widget->update(index);
+    policy_results->update(index);
 }
 
 void PolicyImpl::properties(const QList<QModelIndex> &index_list) {
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
+    UNUSED_ARG(index_list);
 
-    const QModelIndex index = index_list[0];
-    const QString dn = index.data(PolicyRole_DN).toString();
-
-    bool dialog_is_new;
-    PropertiesDialog *dialog = PropertiesDialog::open_for_target(ad, dn, &dialog_is_new);
-
-    // Need to update results when properties are applied,
-    // in case links were modified in links tab
-    auto on_propeties_applied = [&]() {
-        const QModelIndex current_scope = console->get_current_scope_item();
-        policy_results_widget->update(current_scope);
-    };
-
-    if (dialog_is_new) {
-        connect(
-            dialog, &PropertiesDialog::applied,
-            on_propeties_applied);
-    }
-}
-
-void PolicyImpl::add_link(const QList<QString> &policy_list, const QList<QString> &ou_list) {
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
-
-    show_busy_indicator();
-
-    for (const QString &ou_dn : ou_list) {
-        const QString base = ou_dn;
-        const SearchScope scope = SearchScope_Object;
-        const QString filter = QString();
-        const QList<QString> attributes = {ATTRIBUTE_GPLINK};
-        const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
-
-        const AdObject ou_object = results[ou_dn];
-        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
-        Gplink gplink = Gplink(gplink_string);
-
-        for (const QString &policy : policy_list) {
-            gplink.add(policy);
-        }
-
-        ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
-    }
-
-    // Update policy results widget since link state changed
-    const QModelIndex current_scope = console->get_current_scope_item();
-    policy_results_widget->update(current_scope);
-
-    hide_busy_indicator();
-
-    g_status->display_ad_messages(ad, console);
+    ConsoleWidget *buddy_console = nullptr;
+    console_policy_properties(console, buddy_console, policy_results, ItemType_Policy, PolicyRole_DN);
 }
 
 void PolicyImpl::on_add_link() {
-    auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, console);
-    dialog->setWindowTitle(tr("Add Link"));
-    dialog->open();
-
-    connect(
-        dialog, &SelectObjectDialog::accepted,
-        this,
-        [this, dialog]() {
-            const QList<QString> gpos = get_selected_dn_list(console, ItemType_Policy, PolicyRole_DN);
-
-            const QList<QString> ou_list = dialog->get_selected();
-
-            add_link(gpos, ou_list);
-
-            const QModelIndex current_scope = console->get_current_scope_item();
-            policy_results_widget->update(current_scope);
-        });
+    ConsoleWidget *buddy_console = nullptr;
+    console_policy_add_link(console, buddy_console, policy_results, ItemType_Policy, PolicyRole_DN);
 }
 
 void PolicyImpl::on_edit() {
-    const QString dn = get_selected_target_dn(console, ItemType_Policy, PolicyRole_DN);
+    console_policy_edit(console, ItemType_Policy, PolicyRole_DN);
+}
+
+void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
+    QStandardItem *main_item = row[0];
+    console_policy_load_item(main_item, object);
+}
+
+void console_policy_load_item(QStandardItem *main_item, const AdObject &object) {
+    const QIcon icon = get_object_icon(object);
+    main_item->setIcon(icon);
+    main_item->setData(object.get_dn(), PolicyRole_DN);
+
+    const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    main_item->setText(display_name);
+}
+
+void console_policy_edit(ConsoleWidget *console, const int item_type, const int dn_role) {
+    const QString dn = get_selected_target_dn(console, item_type, dn_role);
 
     // TODO: remove this when gpui is able to load
     // policy name on their own
@@ -376,34 +276,404 @@ void PolicyImpl::on_edit() {
 
     process->setArguments(args);
 
-    connect(
+    auto on_gpui_error = [console](QProcess::ProcessError error) {
+        const bool failed_to_start = (error == QProcess::FailedToStart);
+
+        if (failed_to_start) {
+            const QString error_text = "Failed to start gpui. Check that it's installed.";
+            qDebug() << error_text;
+            g_status->add_message(error_text, StatusType_Error);
+            error_log({error_text}, console);
+        }
+    };
+
+    QObject::connect(
         process, &QProcess::errorOccurred,
-        this, &PolicyImpl::on_gpui_error);
+        console, on_gpui_error);
 
     process->start(QIODevice::ReadOnly);
 }
 
-void PolicyImpl::on_gpui_error(QProcess::ProcessError error) {
-    const bool failed_to_start = (error == QProcess::FailedToStart);
+void console_policy_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const int item_type, const int dn_role) {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
 
-    if (failed_to_start) {
-        const QString error_text = "Failed to start gpui. Check that it's installed.";
-        qDebug() << error_text;
-        g_status->add_message(error_text, StatusType_Error);
-        error_log({error_text}, console);
+    const QString dn = get_selected_target_dn(console, item_type, dn_role);
+
+    auto dialog = new RenamePolicyDialog(ad, dn, console);
+    dialog->open();
+
+    QObject::connect(
+        dialog, &QDialog::accepted,
+        console,
+        [console, buddy_console, policy_results, dn]() {
+            AdInterface ad_inner;
+            if (ad_failed(ad_inner, console)) {
+                return;
+            }
+
+            const AdObject object = ad_inner.search_object(dn);
+
+            // NOTE: ok to not update dn after rename
+            // because policy rename doesn't change dn, since "policy name" is displayName
+            auto apply_changes = [&dn, &object, policy_results](ConsoleWidget *target_console) {
+                const QModelIndex policy_root = get_policy_tree_root(target_console);
+
+                // NOTE: there can be duplicate items for
+                // one policy because policy may be
+                // displayed under multiple OU's
+                if (policy_root.isValid()) {
+                    const QList<QModelIndex> index_list = target_console->search_items(policy_root, PolicyRole_DN, dn, {ItemType_Policy});
+
+                    for (const QModelIndex &index : index_list) {
+                        const QList<QStandardItem *> row = target_console->get_row(index);
+                        console_policy_load(row, object);
+                    }
+                }
+
+                const QModelIndex find_policy_root = get_find_policy_root(target_console);
+
+                if (find_policy_root.isValid()) {
+                    const QModelIndex index = target_console->search_item(find_policy_root, FoundPolicyRole_DN, dn, {ItemType_FoundPolicy});
+
+                    if (index.isValid()) {
+                        const QList<QStandardItem *> row = target_console->get_row(index);
+                        console_policy_load(row, object);
+                    }
+                }
+
+                console_policy_update_policy_results(target_console, policy_results);
+            };
+
+            apply_changes(console);
+
+            if (buddy_console != nullptr) {
+                apply_changes(buddy_console);
+            }
+        });
+}
+
+void console_policy_add_link(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const int item_type, const int dn_role) {
+    auto dialog = new SelectObjectDialog({CLASS_OU}, SelectObjectDialogMultiSelection_Yes, console);
+    dialog->setWindowTitle(QCoreApplication::translate("PolicyImpl", "Add Link"));
+    dialog->open();
+
+    QObject::connect(
+        dialog, &SelectObjectDialog::accepted,
+        console,
+        [console, buddy_console, policy_results, dialog, item_type, dn_role]() {
+            const QList<QString> gpo_list = get_selected_dn_list(console, item_type, dn_role);
+
+            const QList<QString> ou_list = dialog->get_selected();
+
+            policy_add_links(console, buddy_console, policy_results, gpo_list, ou_list);
+        });
+}
+
+void console_policy_remove_link(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const int item_type, const int dn_role, const QString &ou_dn) {
+    const QList<QString> dn_list = get_selected_dn_list(console, item_type, dn_role);
+
+    const QString confirmation_text = QCoreApplication::translate("PolicyImpl", "Are you sure you want to unlink this policy from the OU? Note that the actual policy object won't be deleted.");
+    const bool confirmed = confirmation_dialog(confirmation_text, console);
+    if (!confirmed) {
+        return;
+    }
+
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    const QString gplink_new_string = [&]() {
+        Gplink gplink = [&]() {
+            const AdObject parent_object = ad.search_object(ou_dn);
+            const QString gplink_old_string = parent_object.get_string(ATTRIBUTE_GPLINK);
+            const Gplink out = Gplink(gplink_old_string);
+
+            return out;
+        }();
+
+        for (const QString &dn : dn_list) {
+            gplink.remove(dn);
+        }
+
+        const QString out = gplink.to_string();
+
+        return out;
+    }();
+
+    const bool replace_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink_new_string);
+
+    if (replace_success) {
+        auto apply_changes = [&ou_dn, &dn_list, policy_results](ConsoleWidget *target_console) {
+            const QModelIndex policy_root = get_policy_tree_root(target_console);
+
+            // NOTE: there can be duplicate items for
+            // one policy because policy may be
+            // displayed under multiple OU's
+            if (policy_root.isValid()) {
+                const QModelIndex ou_index = target_console->search_item(policy_root, PolicyOURole_DN, ou_dn, {ItemType_PolicyOU});
+
+                if (ou_index.isValid()) {
+                    for (const QString &dn : dn_list) {
+                        const QModelIndex gpo_index = target_console->search_item(ou_index, PolicyRole_DN, dn, {ItemType_Policy});
+
+                        target_console->delete_item(gpo_index);
+                    }
+                }
+            }
+
+            console_policy_update_policy_results(target_console, policy_results);
+        };
+
+        apply_changes(console);
+
+        if (buddy_console != nullptr) {
+            apply_changes(buddy_console);
+        }
+    }
+
+    hide_busy_indicator();
+
+    g_status->display_ad_messages(ad, console);
+}
+
+void console_policy_delete(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const int item_type, const int dn_role) {
+    const QList<QString> dn_list = get_selected_dn_list(console, item_type, dn_role);
+
+    const QString confirmation_text = QCoreApplication::translate("PolicyImpl", "Are you sure you want to delete this policy and all of it's links?");
+    const bool confirmed = confirmation_dialog(confirmation_text, console);
+    if (!confirmed) {
+        return;
+    }
+
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    const QList<QString> deleted_list = [&]() {
+        QList<QString> out;
+
+        for (const QString &dn : dn_list) {
+            bool deleted_object = false;
+            ad.gpo_delete(dn, &deleted_object);
+
+            // NOTE: object may get deleted successfuly but
+            // deleting GPT fails which makes gpo_delete() fail
+            // as a whole, but we still want to remove gpo from
+            // the console in that case
+            if (deleted_object) {
+                out.append(dn);
+            }
+        }
+
+        return out;
+    }();
+
+    auto apply_changes = [&dn_list, policy_results](ConsoleWidget *target_console) {
+        const QModelIndex policy_root = get_policy_tree_root(target_console);
+
+        // NOTE: there can be duplicate items for
+        // one policy because policy may be
+        // displayed under multiple OU's
+        if (policy_root.isValid()) {
+            for (const QString &dn : dn_list) {
+                const QList<QModelIndex> index_list = target_console->search_items(policy_root, PolicyRole_DN, dn, {ItemType_Policy});
+                const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
+
+                for (const QPersistentModelIndex &index : persistent_list) {
+                    target_console->delete_item(index);
+                }
+            }
+        }
+
+        const QModelIndex find_policy_root = get_find_policy_root(target_console);
+
+        if (find_policy_root.isValid()) {
+            for (const QString &dn : dn_list) {
+                const QList<QModelIndex> index_list = target_console->search_items(find_policy_root, FoundPolicyRole_DN, dn, {ItemType_FoundPolicy});
+                const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
+
+                for (const QPersistentModelIndex &index : persistent_list) {
+                    target_console->delete_item(index);
+                }
+            }
+        }
+
+        console_policy_update_policy_results(target_console, policy_results);
+    };
+
+    apply_changes(console);
+
+    if (buddy_console != nullptr) {
+        apply_changes(buddy_console);
+    }
+
+    hide_busy_indicator();
+
+    g_status->display_ad_messages(ad, console);
+}
+
+void console_policy_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const int item_type, const int dn_role) {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    // const QModelIndex index = index_list[0];
+    const QString dn = get_selected_target_dn(console, item_type, dn_role);
+
+    bool dialog_is_new;
+    PropertiesDialog *dialog = PropertiesDialog::open_for_target(ad, dn, &dialog_is_new);
+
+    auto on_propeties_applied = [console, buddy_console, policy_results, dn]() {
+        AdInterface ad_inner;
+        if (ad_failed(ad_inner, console)) {
+            return;
+        }
+
+        const AdObject object = ad_inner.search_object(dn);
+
+        auto apply_changes = [policy_results, &dn, &object](ConsoleWidget *target_console) {
+            const QModelIndex policy_root = get_policy_tree_root(target_console);
+
+            if (policy_root.isValid()) {
+                const QList<QModelIndex> index_list = target_console->search_items(policy_root, PolicyRole_DN, dn, {ItemType_Policy});
+
+                for (const QModelIndex &index : index_list) {
+                    const QList<QStandardItem *> row = target_console->get_row(index);
+                    console_policy_load(row, object);
+                }
+
+                const QModelIndex find_policy_root = get_find_policy_root(target_console);
+
+                if (find_policy_root.isValid()) {
+                    const QModelIndex index = target_console->search_item(find_policy_root, FoundPolicyRole_DN, dn, {ItemType_FoundPolicy});
+
+                    if (index.isValid()) {
+                        const QList<QStandardItem *> row = target_console->get_row(index);
+                        console_policy_load(row, object);
+                    }
+                }
+            }
+
+            console_policy_update_policy_results(target_console, policy_results);
+        };
+
+        apply_changes(console);
+
+        if (buddy_console != nullptr) {
+            apply_changes(buddy_console);
+        }
+    };
+
+    if (dialog_is_new) {
+        QObject::connect(
+            dialog, &PropertiesDialog::applied,
+            console, on_propeties_applied);
     }
 }
 
-void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
-    QStandardItem *main_item = row[0];
-    console_policy_load_item(main_item, object);
+void policy_add_links(ConsoleWidget *console, ConsoleWidget *buddy_console, PolicyResultsWidget *policy_results, const QList<QString> &policy_list, const QList<QString> &ou_list) {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    for (const QString &ou_dn : ou_list) {
+        const QString base = ou_dn;
+        const SearchScope scope = SearchScope_Object;
+        const QString filter = QString();
+        const QList<QString> attributes = {ATTRIBUTE_GPLINK};
+        const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+
+        const AdObject ou_object = results[ou_dn];
+        const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
+        Gplink gplink = Gplink(gplink_string);
+
+        for (const QString &policy : policy_list) {
+            gplink.add(policy);
+        }
+
+        ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
+    }
+
+    // TODO: serch for all policy objects once, then add
+    // them to OU's
+    const QList<AdObject> gpo_object_list = [&]() {
+        const QString base = g_adconfig->policies_dn();
+        const SearchScope scope = SearchScope_Children;
+        const QString filter = filter_dn_list(policy_list);
+        const QList<QString> attributes = QList<QString>();
+
+        const QHash<QString, AdObject> search_results = ad.search(base, scope, filter, attributes);
+
+        const QList<AdObject> out = search_results.values();
+
+        return out;
+    }();
+
+    // NOTE: ok to not update dn after rename
+    // because policy rename doesn't change dn,
+    // since "policy name" is displayName
+    auto apply_changes = [&ou_list, &gpo_object_list](ConsoleWidget *target_console) {
+        const QModelIndex policy_root = get_policy_tree_root(target_console);
+
+        if (policy_root.isValid()) {
+            for (const QString &ou_dn : ou_list) {
+                const QModelIndex ou_index = target_console->search_item(policy_root, PolicyOURole_DN, ou_dn, {ItemType_PolicyOU});
+
+                if (!ou_index.isValid()) {
+                    continue;
+                }
+
+                const bool ou_was_fetched = console_item_get_was_fetched(ou_index);
+
+                if (!ou_was_fetched) {
+                    continue;
+                }
+
+                policy_ou_impl_add_objects_to_console(target_console, gpo_object_list, ou_index);
+                target_console->refresh_scope(ou_index);
+            }
+        }
+    };
+
+    apply_changes(console);
+
+    if (buddy_console != nullptr) {
+        apply_changes(buddy_console);
+    }
+
+    console_policy_update_policy_results(console, policy_results);
+
+    hide_busy_indicator();
+
+    g_status->display_ad_messages(ad, console);
 }
 
-void console_policy_load_item(QStandardItem *main_item, const AdObject &object) {
-    const QIcon icon = get_object_icon(object);
-    main_item->setIcon(icon);
-    main_item->setData(object.get_dn(), PolicyRole_DN);
+// Update policy results widget if it's currently displayed
+void console_policy_update_policy_results(ConsoleWidget *console, PolicyResultsWidget *policy_results) {
+    if (policy_results == nullptr) {
+        return;
+    }
 
-    const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
-    main_item->setText(display_name);
+    // NOTE: we always use Policy item type because that is
+    // the only type which uses PolicyResultsWidget
+    const QString results_gpo = policy_results->get_current_gpo();
+    const QString scope_gpo = get_selected_target_dn(console, ItemType_Policy, PolicyRole_DN);
+    const bool results_is_shown = (results_gpo == scope_gpo);
+
+    if (results_is_shown) {
+        policy_results->update(results_gpo);
+    }
 }

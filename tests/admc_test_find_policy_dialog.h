@@ -18,23 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ITEM_TYPE_H
-#define ITEM_TYPE_H
+#ifndef ADMC_TEST_FIND_POLICY_DIALOG_H
+#define ADMC_TEST_FIND_POLICY_DIALOG_H
 
-enum ItemType {
-    ItemType_Unassigned,
-    ItemType_Object,
-    ItemType_PolicyRoot,
-    ItemType_PolicyOU,
-    ItemType_AllPoliciesFolder,
-    ItemType_Policy,
-    ItemType_QueryFolder,
-    ItemType_QueryItem,
-    ItemType_FindRoot,
-    ItemType_FindPolicy,
-    ItemType_FoundPolicy,
+#include "admc_test.h"
 
-    ItemType_LAST,
+class FindPolicyDialog;
+
+class ADMCTestFindPolicyDialog : public ADMCTest {
+    Q_OBJECT
+
+private slots:
+    void init() override;
+
+    void add_filter_data();
+    void add_filter();
+
+private:
+    FindPolicyDialog *dialog;
 };
 
-#endif /* ITEM_TYPE_H */
+#endif /* ADMC_TEST_FIND_POLICY_DIALOG_H */

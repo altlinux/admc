@@ -73,11 +73,13 @@ private:
     QAction *create_ou_action;
     QAction *create_and_link_gpo_action;
     QAction *link_gpo_action;
+    QAction *find_gpo_action;
 
     void create_ou();
     void create_and_link_gpo();
     void link_gpo();
     void link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou_dn, const QList<QString> &gpo_list);
+    void find_gpo();
 };
 
 void policy_ou_impl_load_row(const QList<QStandardItem *> row, const AdObject &object);

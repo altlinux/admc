@@ -35,7 +35,6 @@
 #include <QAction>
 #include <QHeaderView>
 #include <QMenu>
-#include <QMessageBox>
 #include <QModelIndex>
 #include <QStandardItemModel>
 #include <QTreeView>
@@ -139,40 +138,6 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
         return;
     }
 
-    // When selecting a policy, check it's permissions to
-    // make sure that they permissions of GPT and GPC match.
-    // If they don't, offer to update GPT permissions.
-    bool ok = true;
-    const bool perms_ok = ad.gpo_check_perms(new_gpo, &ok);
-
-    if (!perms_ok && ok) {
-        const QString title = tr("Incorrect permissions detected");
-        const QString text = tr("Permissions for this policy's GPT don't match the permissions for it's GPC object. Would you like to update GPT permissions?");
-
-        auto sync_warning_dialog = new QMessageBox(this);
-        sync_warning_dialog->setAttribute(Qt::WA_DeleteOnClose);
-        sync_warning_dialog->setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        sync_warning_dialog->setWindowTitle(title);
-        sync_warning_dialog->setText(text);
-        sync_warning_dialog->setIcon(QMessageBox::Warning);
-
-        connect(
-            sync_warning_dialog, &QDialog::accepted,
-            this,
-            [this]() {
-                AdInterface ad_inner;
-                if (ad_failed(ad_inner, this)) {
-                    return;
-                }
-
-                ad_inner.gpo_sync_perms(gpo);
-
-                g_status->display_ad_messages(ad_inner, this);
-            });
-    }
-
-    g_status->display_ad_messages(ad, this);
-
     model->removeRows(0, model->rowCount());
 
     const QString base = g_adconfig->domain_dn();
@@ -231,6 +196,10 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
 ResultsView *PolicyResultsWidget::get_view() const {
     return ui->view;
+}
+
+QString PolicyResultsWidget::get_current_gpo() const {
+    return gpo;
 }
 
 void PolicyResultsWidget::on_item_changed(QStandardItem *item) {

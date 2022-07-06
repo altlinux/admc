@@ -18,23 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ITEM_TYPE_H
-#define ITEM_TYPE_H
+#ifndef FIND_POLICY_DIALOG_P_H
+#define FIND_POLICY_DIALOG_P_H
 
-enum ItemType {
-    ItemType_Unassigned,
-    ItemType_Object,
-    ItemType_PolicyRoot,
-    ItemType_PolicyOU,
-    ItemType_AllPoliciesFolder,
-    ItemType_Policy,
-    ItemType_QueryFolder,
-    ItemType_QueryItem,
-    ItemType_FindRoot,
-    ItemType_FindPolicy,
-    ItemType_FoundPolicy,
-
-    ItemType_LAST,
+enum SearchItem {
+    SearchItem_Name,
+    SearchItem_GUID,
 };
 
-#endif /* ITEM_TYPE_H */
+#endif /* FIND_POLICY_DIALOG_P_H */

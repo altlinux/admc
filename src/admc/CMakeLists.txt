@@ -79,6 +79,7 @@ set(ADMC_SOURCES
     changelog_dialog.cpp
     error_log_dialog.cpp
     fsmo_dialog.cpp
+    find_policy_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_dialog.cpp
@@ -178,8 +179,10 @@ set(ADMC_SOURCES
     console_impls/query_folder_impl.cpp
     console_impls/policy_root_impl.cpp
     console_impls/find_root_impl.cpp
+    console_impls/find_policy_impl.cpp
     console_impls/all_policies_folder_impl.cpp
     console_impls/policy_ou_impl.cpp
+    console_impls/found_policy_impl.cpp
 
     admc.qrc
 )
