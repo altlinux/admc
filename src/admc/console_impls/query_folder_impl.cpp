@@ -297,40 +297,42 @@ void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
 void QueryFolderImpl::on_import() {
     const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
 
-    const QString file_path = [&]() {
+    const QList<QString> path_list = [&]() {
         const QString caption = QCoreApplication::translate("query_item_impl.cpp", "Import Query");
         const QString dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
         const QString file_filter = QCoreApplication::translate("query_item_impl.cpp", "JSON (*.json)");
 
-        const QString out = QFileDialog::getOpenFileName(console, caption, dir, file_filter);
+        const QList<QString> out = QFileDialog::getOpenFileNames(console, caption, dir, file_filter);
 
         return out;
     }();
 
-    if (file_path.isEmpty()) {
+    if (path_list.isEmpty()) {
         return;
     }
 
-    const QHash<QString, QVariant> data = [&]() {
-        QFile file(file_path);
-        file.open(QIODevice::ReadOnly);
-        const QByteArray json_bytes = file.readAll();
+    for (const QString &file_path : path_list) {
+        const QHash<QString, QVariant> data = [&]() {
+            QFile file(file_path);
+            file.open(QIODevice::ReadOnly);
+            const QByteArray json_bytes = file.readAll();
 
-        const QJsonDocument json_document = QJsonDocument::fromJson(json_bytes);
+            const QJsonDocument json_document = QJsonDocument::fromJson(json_bytes);
 
-        if (json_document.isNull()) {
-            const QString error_text = QString(QCoreApplication::translate("query.cpp", "Query file is corrupted."));
-            message_box_warning(console, QCoreApplication::translate("query.cpp", "Error"), error_text);
+            if (json_document.isNull()) {
+                const QString error_text = QString(QCoreApplication::translate("query.cpp", "Query file is corrupted."));
+                message_box_warning(console, QCoreApplication::translate("query.cpp", "Error"), error_text);
 
-            return QHash<QString, QVariant>();
-        }
+                return QHash<QString, QVariant>();
+            }
 
-        const QHash<QString, QVariant> out = json_document.toVariant().toHash();
+            const QHash<QString, QVariant> out = json_document.toVariant().toHash();
 
-        return out;
-    }();
+            return out;
+        }();
 
-    console_query_item_load_hash(console, data, parent_index);
+        console_query_item_load_hash(console, data, parent_index);
+    }
 
     console_query_tree_save(console);
 }
