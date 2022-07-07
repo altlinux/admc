@@ -241,7 +241,7 @@ QList<int> PolicyOUImpl::default_columns() const {
 void PolicyOUImpl::create_ou() {
     const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, PolicyOURole_DN);
 
-    console_object_create(console, nullptr, CLASS_OU, parent_dn);
+    console_object_create({console}, CLASS_OU, parent_dn);
 }
 
 void PolicyOUImpl::create_and_link_gpo() {
@@ -308,15 +308,15 @@ void PolicyOUImpl::link_gpo() {
 }
 
 void PolicyOUImpl::properties(const QList<QModelIndex> &index_list) {
-    console_object_properties(console, nullptr, index_list, PolicyOURole_DN, {CLASS_OU});
+    console_object_properties({console}, index_list, PolicyOURole_DN, {CLASS_OU});
 }
 
 void PolicyOUImpl::rename(const QList<QModelIndex> &index_list) {
-    console_object_rename(console, nullptr, index_list, PolicyOURole_DN, CLASS_OU);
+    console_object_rename({console}, index_list, PolicyOURole_DN, CLASS_OU);
 }
 
 void PolicyOUImpl::delete_action(const QList<QModelIndex> &index_list) {
-    console_object_delete(console, nullptr, index_list, PolicyOURole_DN);
+    console_object_delete({console}, index_list, PolicyOURole_DN);
 }
 
 void policy_ou_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {

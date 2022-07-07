@@ -114,7 +114,7 @@ private slots:
     void on_reset_account();
 
 private:
-    ConsoleWidget *buddy_console;
+    QList<ConsoleWidget *> console_list;
     QString object_filter;
     bool object_filter_enabled;
 
@@ -156,9 +156,9 @@ void console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
 // of objects setup
 QModelIndex get_object_tree_root(ConsoleWidget *console);
 QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
-void console_object_create(ConsoleWidget *console, ConsoleWidget *buddy_console, const QString &object_class, const QString &parent_dn);
-void console_object_rename(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role, const QString &object_class);
-void console_object_delete(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role);
-void console_object_properties(ConsoleWidget *console, ConsoleWidget *buddy_console, const QList<QModelIndex> &index_list, const int dn_role, const QList<QString> &class_list);
+void console_object_create(const QList<ConsoleWidget *> &console_list, const QString &object_class, const QString &parent_dn);
+void console_object_rename(const QList<ConsoleWidget *> &console_list, const QList<QModelIndex> &index_list, const int dn_role, const QString &object_class);
+void console_object_delete(const QList<ConsoleWidget *> &console_list, const QList<QModelIndex> &index_list, const int dn_role);
+void console_object_properties(const QList<ConsoleWidget *> &console_list, const QList<QModelIndex> &index_list, const int dn_role, const QList<QString> &class_list);
 
 #endif /* OBJECT_IMPL_H */
