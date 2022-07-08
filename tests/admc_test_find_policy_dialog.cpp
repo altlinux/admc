@@ -32,7 +32,9 @@
 void ADMCTestFindPolicyDialog::init() {
     ADMCTest::init();
 
-    dialog = new FindPolicyDialog(parent_widget);
+    ConsoleWidget *console = new ConsoleWidget(parent_widget);
+
+    dialog = new FindPolicyDialog(console, parent_widget);
 }
 
 void ADMCTestFindPolicyDialog::add_filter_data() {
