@@ -31,7 +31,9 @@
 
 FoundPolicyImpl::FoundPolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    buddy_console = nullptr;
+    console_list = {
+        console,
+    };
 
     add_link_action = new QAction(tr("Add link..."), this);
     edit_action = new QAction(tr("Edit..."), this);
@@ -44,8 +46,11 @@ FoundPolicyImpl::FoundPolicyImpl(ConsoleWidget *console_arg)
         this, &FoundPolicyImpl::on_edit);
 }
 
-void FoundPolicyImpl::set_buddy_console(ConsoleWidget *buddy_console_arg) {
-    buddy_console = buddy_console_arg;
+void FoundPolicyImpl::set_buddy_console(ConsoleWidget *buddy_console) {
+    console_list = {
+        console,
+        buddy_console
+    };
 }
 
 QList<QAction *> FoundPolicyImpl::get_all_custom_actions() const {
@@ -87,27 +92,27 @@ void FoundPolicyImpl::rename(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 
     PolicyResultsWidget *policy_results = nullptr;
-    console_policy_rename(console, buddy_console, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
+    console_policy_rename(console_list, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
 }
 
 void FoundPolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
     
     PolicyResultsWidget *policy_results = nullptr;
-    console_policy_delete(console, buddy_console, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
+    console_policy_delete(console_list, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
 }
 
 void FoundPolicyImpl::properties(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 
     PolicyResultsWidget *policy_results = nullptr;
-    console_policy_properties(console, buddy_console, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
+    console_policy_properties(console_list, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
 }
 
 void FoundPolicyImpl::on_add_link() {
     PolicyResultsWidget *policy_results = nullptr;
 
-    console_policy_add_link(console, buddy_console, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
+    console_policy_add_link(console_list, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
 }
 
 void FoundPolicyImpl::on_edit() {

@@ -57,7 +57,7 @@ private slots:
     void on_edit();
 
 private:
-    ConsoleWidget *buddy_console;
+    QList<ConsoleWidget *> console_list;
     QAction *add_link_action;
     QAction *edit_action;
 };
