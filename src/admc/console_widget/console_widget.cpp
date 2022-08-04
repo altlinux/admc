@@ -39,12 +39,14 @@
 #include <QToolBar>
 #include <QTreeView>
 #include <QVBoxLayout>
+#include <QTextEdit>
 
 #include <algorithm>
 
 #define SPLITTER_STATE "SPLITTER_STATE"
 const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
 const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
+const int DESCRIPTION_BAR_HEIGHT = 30;
 
 const QList<StandardAction> standard_action_list = {
     StandardAction_Copy,
@@ -118,10 +120,16 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->focused_view = d->scope_view;
 
     d->description_bar = new QWidget();
-    d->description_bar_left = new QLabel();
-    d->description_bar_left->setWordWrap(true);
-    d->description_bar_right = new QLabel();
-    d->description_bar_right->setWordWrap(true);
+    d->description_bar->setMaximumHeight(DESCRIPTION_BAR_HEIGHT);
+    d->description_bar_left = new QTextEdit();
+    d->description_bar_left->setLineWrapMode(QTextEdit::WidgetWidth);
+    d->description_bar_left->setWordWrapMode(QTextOption::WrapAnywhere);
+    d->description_bar_left->setReadOnly(true);
+    d->description_bar_right = new QTextEdit();
+    d->description_bar_right->setLineWrapMode(QTextEdit::WidgetWidth);
+    d->description_bar_right->setWordWrapMode(QTextOption::WrapAnywhere);
+    d->description_bar_left->setReadOnly(true);
+
 
     d->description_bar_left->setStyleSheet("font-weight: bold");
 
