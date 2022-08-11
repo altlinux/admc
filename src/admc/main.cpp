@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QLibraryInfo>
 #include <QTranslator>
+#include <QMessageBox>
 
 int main(int argc, char **argv) {
     Q_INIT_RESOURCE(adldap);
@@ -49,6 +50,10 @@ int main(int argc, char **argv) {
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
     app.setWindowIcon(QIcon(":/admc/admc.ico"));
+
+    QIcon::setFallbackSearchPaths(QIcon::fallbackSearchPaths() << ":/icons");
+
+    QIcon::setThemeName("admc-icons");
 
     const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
 

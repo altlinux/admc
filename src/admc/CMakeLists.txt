@@ -185,6 +185,7 @@ set(ADMC_SOURCES
     console_impls/found_policy_impl.cpp
 
     admc.qrc
+    admc-icons.qrc
 )
 
 add_executable(admc
