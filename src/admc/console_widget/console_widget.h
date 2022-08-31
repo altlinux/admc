@@ -82,6 +82,7 @@ public:
     QAction *view_icons;
     QAction *view_list;
     QAction *view_detail;
+    QAction *view_theme;
     QAction *toggle_console_tree;
     QAction *toggle_description_bar;
 };

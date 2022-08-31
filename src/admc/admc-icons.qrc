@@ -11,5 +11,7 @@
         <file>admc-icons/64x64/avatar-default.svg</file>
         <file>admc-icons/64x64/volume.svg</file>
         <file>admc-icons/index.theme</file>
+        <file>admc-icons/theme</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>

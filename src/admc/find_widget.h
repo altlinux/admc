@@ -77,6 +77,7 @@ private:
     QAction *action_view_icons;
     QAction *action_view_list;
     QAction *action_view_detail;
+    QAction *action_view_theme;
     QAction *action_customize_columns;
     QAction *action_toggle_description_bar;
 

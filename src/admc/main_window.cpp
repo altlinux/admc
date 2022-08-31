@@ -47,6 +47,7 @@
 #include <QLabel>
 #include <QModelIndex>
 #include <QDesktopServices>
+#include <QFileDialog>
 
 MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 : QMainWindow(parent) {
@@ -115,6 +116,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         out.view_icons = ui->action_view_icons;
         out.view_list = ui->action_view_list;
         out.view_detail = ui->action_view_detail;
+        out.view_theme = ui->action_view_theme;
         out.toggle_console_tree = ui->action_toggle_console_tree;
         out.toggle_description_bar = ui->action_toggle_description_bar;
 
@@ -253,6 +255,9 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     connect(
         ui->action_filter_objects, &QAction::triggered,
         object_impl, &ObjectImpl::open_console_filter_dialog);
+    connect(
+        ui->action_view_theme, &QAction::triggered,
+        this, &MainWindow::set_theme);
 
     const QHash<QString, QAction *> bool_action_map = {
         {SETTING_confirm_actions, ui->action_confirm_actions},
@@ -355,6 +360,20 @@ void MainWindow::on_show_login_changed() {
 void MainWindow::open_manual() {
     const QUrl manual_url = QUrl("https://www.altlinux.org/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%BE%D0%B2%D1%8B%D0%B5_%D0%BF%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D0%BA%D0%B8/ADMC");
     QDesktopServices::openUrl(manual_url);
+}
+
+void MainWindow::set_theme() {
+    const QString file_path = [&]() {
+        const QString caption = QCoreApplication::translate("query_item_impl.cpp", "Import Query");
+        const QString dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+        const QString file_filter = QCoreApplication::translate("query_item_impl.cpp", "JSON (*.json)");
+
+        const QList<QString> out = QFileDialog::getOpenFileNames(this, caption, dir, file_filter);
+
+        return out;
+    }()[0];
+
+    qCritical() << file_path;
 }
 
 void MainWindow::open_connection_options() {

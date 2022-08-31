@@ -765,6 +765,7 @@ void ConsoleWidget::set_actions(const ConsoleWidgetActions &actions_arg) {
     view_type_group->addAction(d->actions.view_icons);
     view_type_group->addAction(d->actions.view_list);
     view_type_group->addAction(d->actions.view_detail);
+    view_type_group->addAction(d->actions.view_theme);
 
     connect(
         d->actions.navigate_up, &QAction::triggered,
@@ -790,6 +791,9 @@ void ConsoleWidget::set_actions(const ConsoleWidgetActions &actions_arg) {
     connect(
         d->actions.view_detail, &QAction::triggered,
         d, &ConsoleWidgetPrivate::on_view_detail);
+//    connect(
+//        d->actions.view_theme, &QAction::triggered,
+//        d, &ConsoleWidgetPrivate::on)
     connect(
         d->actions.toggle_console_tree, &QAction::triggered,
         d, &ConsoleWidgetPrivate::on_toggle_console_tree);

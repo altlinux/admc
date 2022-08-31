@@ -51,6 +51,7 @@ private:
     void open_connection_options();
     void open_changelog();
     void open_about();
+    void set_theme();
     void edit_fsmo_roles();
 };
 
