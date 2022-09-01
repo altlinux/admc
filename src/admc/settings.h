@@ -129,6 +129,8 @@ DEFINE_SETTING(SETTING_last_opened_version);
 DEFINE_SETTING(SETTING_object_filter);
 DEFINE_SETTING(SETTING_object_filter_enabled);
 DEFINE_SETTING(SETTING_object_display_limit);
+DEFINE_SETTING(SETTING_app_themes);
+DEFINE_SETTING(SETTING_app_active_theme);
 
 // Feature flags
 //
@@ -160,5 +162,4 @@ bool settings_restore_geometry(const QString setting, QWidget *widget);
 
 void settings_save_header_state(const QString setting, QHeaderView *header);
 bool settings_restore_header_state(const QString setting, QHeaderView *header);
-
 #endif /* SETTINGS_H */
