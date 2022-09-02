@@ -33,6 +33,7 @@ enum ItemType {
     ItemType_FindObject,
     ItemType_FindPolicy,
     ItemType_FoundPolicy,
+    ItemType_SelectTheme,
 
     ItemType_LAST,
 };

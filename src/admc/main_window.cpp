@@ -35,6 +35,7 @@
 #include "console_impls/all_policies_folder_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
+#include "console_impls/select_theme_impl.h"
 #include "console_widget/console_widget.h"
 #include "attribute_edits/country_combo.h"
 #include "globals.h"
@@ -88,6 +89,9 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     auto query_folder_impl = new QueryFolderImpl(ui->console);
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
+    auto select_theme_impl = new SelectThemeImpl(ui->console);
+    ui->console->register_impl(ItemType_SelectTheme, select_theme_impl);
+
     query_item_impl->set_query_folder_impl(query_folder_impl);
 
     object_impl->set_toolbar_actions(ui->action_create_user, ui->action_create_group, ui->action_create_ou);
@@ -116,7 +120,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         out.view_icons = ui->action_view_icons;
         out.view_list = ui->action_view_list;
         out.view_detail = ui->action_view_detail;
-        out.view_theme = ui->action_view_theme;
         out.toggle_console_tree = ui->action_toggle_console_tree;
         out.toggle_description_bar = ui->action_toggle_description_bar;
 
@@ -231,6 +234,8 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
             });
     }
 
+    settings_restore_themes(ui->menu_theme, ui->console);
+
     //
     // Connect
     //
@@ -256,8 +261,8 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         ui->action_filter_objects, &QAction::triggered,
         object_impl, &ObjectImpl::open_console_filter_dialog);
     connect(
-        ui->action_view_theme, &QAction::triggered,
-        this, &MainWindow::set_theme);
+        ui->action_choose_custom_theme, &QAction::triggered,
+        this, &MainWindow::add_theme);
 
     const QHash<QString, QAction *> bool_action_map = {
         {SETTING_confirm_actions, ui->action_confirm_actions},
@@ -362,18 +367,13 @@ void MainWindow::open_manual() {
     QDesktopServices::openUrl(manual_url);
 }
 
-void MainWindow::set_theme() {
-    const QString file_path = [&]() {
-        const QString caption = QCoreApplication::translate("query_item_impl.cpp", "Import Query");
-        const QString dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-        const QString file_filter = QCoreApplication::translate("query_item_impl.cpp", "JSON (*.json)");
+//void MainWindow::set_theme() {
+//    SelectThemeImpl()
+//}
 
-        const QList<QString> out = QFileDialog::getOpenFileNames(this, caption, dir, file_filter);
-
-        return out;
-    }()[0];
-
-    qCritical() << file_path;
+void MainWindow::add_theme() {
+    QString new_theme_name = SelectThemeImpl(ui->console).add_new_theme();
+    ui->menu_theme->addAction((ui->menu_theme->actions().length() - 1, new_theme_name));
 }
 
 void MainWindow::open_connection_options() {

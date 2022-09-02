@@ -22,12 +22,16 @@
 
 #include "config.h"
 #include "connection_options_dialog.h"
+#include "console_impls/select_theme_impl.h"
 
 #include <QAction>
 #include <QDialog>
 #include <QHeaderView>
 #include <QLocale>
+#include <QDebug>
 #include <QSettings>
+#include <QApplication>
+#include <QMenu>
 
 const QHash<QString, QVariant> setting_default_map = {
     {SETTING_advanced_features, false},
@@ -56,7 +60,8 @@ const QHash<QString, QVariant> setting_default_map = {
     {SETTING_feature_profile_tab, false},
     {SETTING_feature_dev_mode, false},
     {SETTING_feature_current_locale_first, false},
-    {SETTING_app_active_theme, QString("admc-icons")}
+    {SETTING_app_active_theme, QString("admc-icons")},
+    {SETTING_app_themes, QStringList() }
 };
 
 void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
@@ -69,6 +74,16 @@ void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
             const QByteArray geometry = dialog->saveGeometry();
             settings_set_variant(setting, geometry);
         });
+}
+
+void settings_restore_themes(QMenu * themes_menu, ConsoleWidget * console) {
+    auto active_theme_name = settings_get_variant(SETTING_app_active_theme).toString();
+
+    auto added_theme_names = settings_get_variant(SETTING_app_themes).toStringList();
+
+    themes_menu->clear();
+
+    themes_menu->addMenu(SelectThemeImpl(console).format_theme_list(active_theme_name, added_theme_names));
 }
 
 bool settings_restore_geometry(const QString setting, QWidget *widget) {
@@ -103,6 +118,8 @@ QVariant settings_get_variant(const QString setting) {
 
     const QVariant default_value = setting_default_map.value(setting, QVariant());
 
+    qCritical() <<"default: " << default_value;
+
     const QVariant value = settings.value(setting, default_value);
 
     return value;
@@ -112,4 +129,6 @@ void settings_set_variant(const QString setting, const QVariant &value) {
     QSettings settings;
 
     settings.setValue(setting, value);
+
+    settings.sync();
 }

@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -63,6 +63,13 @@
       <string>&amp;Language</string>
      </property>
     </widget>
+    <widget class="QMenu" name="menu_theme">
+     <property name="title">
+      <string>&amp;Theme</string>
+     </property>
+     <addaction name="action_choose_default_theme"/>
+     <addaction name="action_choose_custom_theme"/>
+    </widget>
     <addaction name="action_advanced_features"/>
     <addaction name="action_confirm_actions"/>
     <addaction name="action_last_name_order"/>
@@ -70,6 +77,7 @@
     <addaction name="action_timestamps"/>
     <addaction name="action_show_noncontainers"/>
     <addaction name="menu_language"/>
+    <addaction name="menu_theme"/>
    </widget>
    <widget class="QMenu" name="menu_help">
     <property name="title">
@@ -389,6 +397,21 @@
    </property>
    <property name="shortcut">
     <string>Alt+5</string>
+   </property>
+  </action>
+  <action name="action_view_theme">
+   <property name="text">
+    <string>Theme</string>
+   </property>
+  </action>
+  <action name="action_choose_default_theme">
+   <property name="text">
+    <string>defaut</string>
+   </property>
+  </action>
+  <action name="action_choose_custom_theme">
+   <property name="text">
+    <string>choose...</string>
    </property>
   </action>
  </widget>
