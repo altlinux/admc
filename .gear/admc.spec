@@ -2,9 +2,9 @@
 
 Name: admc
 Version: 0.10.0
-Release: alt1
+Release: alt2
 
-Summary: AD editor
+Summary: Active Directory Management Center
 License: GPLv3+
 Group: Other
 Url: https://github.com/altlinuxteam/admc
@@ -44,7 +44,9 @@ Summary: Tests for ADMC
 Group: Other
 
 %description
-AD editor
+Active Directory Management Center (ADMC) is integrated complex tool implements
+User and Computers and Group Policy Manager modules of Microsoft Remote Server
+Administration Tools (RSAT).
 
 %description test
 Tests for ADMC
@@ -115,6 +117,10 @@ Tests for ADMC
 %_bindir/admc_test_dn_edit
 
 %changelog
+* Wed Sep 07 2022 Evgeny Sinelnikov <sin@altlinux.org> 0.10.0-alt2
+- Build latest tested release.
+- Adjust package summary and description.
+
 * Thu Jun 30 2022 Dmitry Degtyarev <kevl@altlinux.org> 0.10.0-alt1
 - Properties: Removed "Group tab". Not necessary because
   policy tree replaces it.
