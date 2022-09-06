@@ -89,7 +89,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     auto query_folder_impl = new QueryFolderImpl(ui->console);
     ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
 
-    auto select_theme_impl = new SelectThemeImpl(ui->console);
+    auto select_theme_impl = new SelectThemeImpl(ui->console, ui->menu_theme);
     ui->console->register_impl(ItemType_SelectTheme, select_theme_impl);
 
     query_item_impl->set_query_folder_impl(query_folder_impl);
@@ -126,7 +126,12 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         return out;
     }();
 
-    ui->console->set_actions(console_actions);
+    try {
+        ui->console->set_actions(console_actions);
+    }
+    catch (std::exception & e){
+        qCritical() << e.what() << "exception";
+    }
 
     // NOTE: "Action" menu actions need to be filled by the
     // console
@@ -234,8 +239,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
             });
     }
 
-    settings_restore_themes(ui->menu_theme, ui->console);
-
     //
     // Connect
     //
@@ -260,9 +263,8 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     connect(
         ui->action_filter_objects, &QAction::triggered,
         object_impl, &ObjectImpl::open_console_filter_dialog);
-    connect(
-        ui->action_choose_custom_theme, &QAction::triggered,
-        this, &MainWindow::add_theme);
+
+    settings_restore_themes(ui->menu_theme, ui->console);
 
     const QHash<QString, QAction *> bool_action_map = {
         {SETTING_confirm_actions, ui->action_confirm_actions},
@@ -332,6 +334,9 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     connect(
         ui->action_show_login, &QAction::triggered,
         this, &MainWindow::on_show_login_changed);
+    connect(
+        ui->menu_theme, &QMenu::triggered,
+        this, &MainWindow::update_theme_list);
     on_show_login_changed();
 }
 
@@ -367,13 +372,10 @@ void MainWindow::open_manual() {
     QDesktopServices::openUrl(manual_url);
 }
 
-//void MainWindow::set_theme() {
-//    SelectThemeImpl()
-//}
-
-void MainWindow::add_theme() {
-    QString new_theme_name = SelectThemeImpl(ui->console).add_new_theme();
-    ui->menu_theme->addAction((ui->menu_theme->actions().length() - 1, new_theme_name));
+void MainWindow::update_theme_list() {
+    SelectThemeImpl(ui->console, ui->menu_theme).restore_theme_menu();
+    ui->toolbar->setFocus();
+    ui->console->update_view();
 }
 
 void MainWindow::open_connection_options() {

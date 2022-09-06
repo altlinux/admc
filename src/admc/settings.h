@@ -132,7 +132,6 @@ DEFINE_SETTING(SETTING_last_opened_version);
 DEFINE_SETTING(SETTING_object_filter);
 DEFINE_SETTING(SETTING_object_filter_enabled);
 DEFINE_SETTING(SETTING_object_display_limit);
-DEFINE_SETTING(SETTING_app_themes);
 DEFINE_SETTING(SETTING_app_active_theme);
 
 // Feature flags

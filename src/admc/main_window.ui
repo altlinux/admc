@@ -64,11 +64,12 @@
      </property>
     </widget>
     <widget class="QMenu" name="menu_theme">
+     <property name="styleSheet">
+      <string notr="true">menu-scrollable: 1;</string>
+     </property>
      <property name="title">
       <string>&amp;Theme</string>
      </property>
-     <addaction name="action_choose_default_theme"/>
-     <addaction name="action_choose_custom_theme"/>
     </widget>
     <addaction name="action_advanced_features"/>
     <addaction name="action_confirm_actions"/>

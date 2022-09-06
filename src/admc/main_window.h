@@ -38,6 +38,8 @@ public:
 
     MainWindow(AdInterface &ad, QWidget *parent = nullptr);
     ~MainWindow();
+public slots:
+    void update_theme_list();
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -52,7 +54,6 @@ private:
     void open_changelog();
     void open_about();
     void edit_fsmo_roles();
-    void add_theme();
 };
 
 #endif /* MAIN_WINDOW_H */

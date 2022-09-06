@@ -51,10 +51,6 @@ int main(int argc, char **argv) {
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
     app.setWindowIcon(QIcon(":/admc/admc.ico"));
 
-    QIcon::setFallbackSearchPaths(QIcon::fallbackSearchPaths() << ":/icons");
-
-    QIcon::setThemeName("admc-icons");
-
     const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
 
     QTranslator translator;
@@ -90,6 +86,8 @@ int main(int argc, char **argv) {
         qDebug() << "Failed to load qt base translation";
     }
 
+
+
     load_connection_options();
 
     // In case of failure to connect to AD and load
@@ -119,7 +117,6 @@ int main(int argc, char **argv) {
 
         if (ad.is_connected()) {
             load_g_adconfig(ad);
-            
             first_main_window = new MainWindow(ad);
             first_main_window->show();
         } else {
