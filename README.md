@@ -4,7 +4,7 @@
 Dependencies:
 * qt (core, widgets, help, linguist tools)
 * samba (smbclient, ndr)
-* glib2 (resolv)
+* glibc (resolv)
 * ldap
 * krb5
 * uuid

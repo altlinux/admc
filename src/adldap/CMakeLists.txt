@@ -10,7 +10,6 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(NdrStandard REQUIRED IMPORTED_TARGET ndr_standard)
 pkg_check_modules(Smbclient REQUIRED IMPORTED_TARGET smbclient)
 pkg_check_modules(Krb5 REQUIRED IMPORTED_TARGET krb5)
-pkg_check_modules(Glib REQUIRED IMPORTED_TARGET glib-2.0)
 pkg_check_modules(Uuid REQUIRED IMPORTED_TARGET uuid)
 pkg_check_modules(Sasl REQUIRED IMPORTED_TARGET libsasl2)
 
