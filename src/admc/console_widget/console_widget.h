@@ -96,7 +96,6 @@ public:
     // NOTE: must be called before restore_state(), so that
     // action state is restored
     void set_actions(const ConsoleWidgetActions &actions_arg);
-    void update_view();
 
     // NOTE: you must register all impl's before adding
     // items

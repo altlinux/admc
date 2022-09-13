@@ -820,10 +820,6 @@ void ConsoleWidgetPrivate::update_navigation_actions() {
     actions.navigate_forward->setEnabled(!targets_future.isEmpty());
 }
 
-void ConsoleWidget::update_view() {
-    d->on_refresh();
-}
-
 void ConsoleWidgetPrivate::update_view_actions() {
     ConsoleImpl *impl = get_current_scope_impl();
     const bool results_view_exists = (impl->view() != nullptr);

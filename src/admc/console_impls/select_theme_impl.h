@@ -5,18 +5,15 @@
 #include <QDir>
 #include <console_widget/console_impl.h>
 
-class SelectThemeImpl : public ConsoleImpl
+class SelectThemeImpl
 {
-    Q_OBJECT
 public:
-    SelectThemeImpl(ConsoleWidget *console_arg, QMenu* menu_theme);
+    SelectThemeImpl();
     void apply_theme(QString theme_name);
-    QList<QAction* >* generate_theme_action_list();
-    void restore_theme_menu();
+    QStringList get_available_theme_list();
 
 private slots:
     void set_theme(const QString& themeName);
-    QStringList get_available_theme_list();
 
 private:
     QStringList parse_theme_names(const QStringList & theme_path_list);

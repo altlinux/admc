@@ -76,11 +76,9 @@ void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
         });
 }
 
-void settings_restore_themes(QMenu * themes_menu, ConsoleWidget * console) {
-    auto theme_impl = new SelectThemeImpl(console, themes_menu);
+void settings_restore_themes() {
+    auto theme_impl = new SelectThemeImpl();
     theme_impl->apply_theme(settings_get_variant(SETTING_app_active_theme).toString());
-
-    theme_impl->restore_theme_menu();
 }
 
 bool settings_restore_geometry(const QString setting, QWidget *widget) {
