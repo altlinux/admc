@@ -26,6 +26,7 @@ private:
     QString user_icons_dir_path;
 
     const QString theme_name_regex_pattern = "Name=.*";
+    const QString theme_file_name = "index.theme";
 };
 
 #endif // QUERY_THEME_IMPL_H

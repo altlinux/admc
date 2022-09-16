@@ -31,7 +31,7 @@ void SelectThemeImpl::apply_theme(QString theme_name)
 
 QStringList SelectThemeImpl::get_themes_from_dir(QString path_to_dir)
 {
-    QDirIterator it(path_to_dir, QStringList("index.theme"), QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
+    QDirIterator it(path_to_dir, QStringList(theme_file_name), QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
 
     QStringList files;
 
