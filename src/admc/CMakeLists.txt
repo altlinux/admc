@@ -80,6 +80,7 @@ set(ADMC_SOURCES
     error_log_dialog.cpp
     fsmo_dialog.cpp
     find_policy_dialog.cpp
+    get_krb_ticket_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_dialog.cpp

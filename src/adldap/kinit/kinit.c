@@ -95,7 +95,7 @@ struct k5_data
 };
 
 static int
-k5_begin(struct k_opts *opts, struct k5_data *k5)
+k5_begin(struct k_opts *opts, struct k5_data *k5, char *error_buf, int *shift, int buffSize)
 {
     krb5_error_code ret;
     int success = 0;
@@ -107,7 +107,7 @@ k5_begin(struct k_opts *opts, struct k5_data *k5)
 
     ret = krb5_init_context(&k5->ctx);
     if (ret) {
-        printf("Error while initializing Kerberos 5 library");
+        *shift += snprintf(error_buf, buffSize - *shift, "Error while initializing Kerberos 5 library\n");
         return 0;
     }
 
@@ -115,18 +115,18 @@ k5_begin(struct k_opts *opts, struct k5_data *k5)
     if (opts->k5_out_cache_name) {
         ret = krb5_cc_resolve(k5->ctx, opts->k5_out_cache_name, &k5->out_cc);
         if (ret) {
-            printf("Error while resolving ccache %s", opts->k5_out_cache_name);
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while resolving ccache %s\n", opts->k5_out_cache_name);
             goto cleanup;
         }
         if (opts->verbose) {
-            printf("Error while using specified cache: %s\n", opts->k5_out_cache_name);
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while using specified cache: %s\n", opts->k5_out_cache_name);
         }
     } else {
         /* Resolve the default ccache and get its type and default principal
          * (if it is initialized). */
         ret = krb5_cc_default(k5->ctx, &defcache);
         if (ret) {
-            printf("Error while getting default ccache");
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while getting default ccache\n");
             goto cleanup;
         }
         deftype = krb5_cc_get_type(k5->ctx, defcache);
@@ -140,14 +140,14 @@ k5_begin(struct k_opts *opts, struct k5_data *k5)
         ret = krb5_parse_name_flags(k5->ctx, opts->principal_name, flags,
                                     &k5->me);
         if (ret) {
-            printf("Error when parsing name %s", opts->principal_name);
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error when parsing name %s\n", opts->principal_name);
             goto cleanup;
         }
     } else if (opts->anonymous) {
         /* Use the anonymous principal for the local realm. */
         ret = krb5_get_default_realm(k5->ctx, &defrealm);
         if (ret) {
-            printf("Error while getting default realm");
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while getting default realm\n");
             goto cleanup;
         }
         ret = krb5_build_principal_ext(k5->ctx, &k5->me,
@@ -158,7 +158,7 @@ k5_begin(struct k_opts *opts, struct k5_data *k5)
                                        KRB5_ANONYMOUS_PRINCSTR, 0);
         krb5_free_default_realm(k5->ctx, defrealm);
         if (ret) {
-            printf("Error while building principal");
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while building principal\n");
             goto cleanup;
         }
     } else if (opts->action == INIT_KT) {
@@ -166,7 +166,7 @@ k5_begin(struct k_opts *opts, struct k5_data *k5)
         ret = krb5_sname_to_principal(k5->ctx, NULL, NULL, KRB5_NT_SRV_HST,
                                       &k5->me);
         if (ret) {
-            printf("Error when creating default server principal name");
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error when creating default server principal name\n");
             goto cleanup;
         }
     } else if (k5->out_cc != NULL) {
@@ -186,12 +186,12 @@ k5_begin(struct k_opts *opts, struct k5_data *k5)
     if (k5->me == NULL) {
         name = get_name_from_os();
         if (name == NULL) {
-            printf("Error: Unable to identify user\n");
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error: Unable to identify user\n");
             goto cleanup;
         }
         ret = krb5_parse_name_flags(k5->ctx, name, flags, &k5->me);
         if (ret) {
-            printf("Error when parsing name %s", name);
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error when parsing name %s\n", name);
             goto cleanup;
         }
     }
@@ -200,12 +200,12 @@ k5_begin(struct k_opts *opts, struct k5_data *k5)
         /* Use an existing cache for the client principal if we can. */
         ret = krb5_cc_cache_match(k5->ctx, k5->me, &k5->out_cc);
         if (ret && ret != KRB5_CC_NOTFOUND) {
-            printf("Error while searching for ccache for %s", opts->principal_name);
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while searching for ccache for %s\n", opts->principal_name);
             goto cleanup;
         }
         if (!ret) {
             if (opts->verbose) {
-                printf("Error with using existing cache: %s\n", krb5_cc_get_name(k5->ctx, k5->out_cc));
+                *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error with using existing cache: %s\n", krb5_cc_get_name(k5->ctx, k5->out_cc));
             }
             k5->switch_to_cache = 1;
         } else if (defcache_princ != NULL) {
@@ -213,11 +213,11 @@ k5_begin(struct k_opts *opts, struct k5_data *k5)
              * cache. */
             ret = krb5_cc_new_unique(k5->ctx, deftype, NULL, &k5->out_cc);
             if (ret) {
-                printf("Error while generating new ccache");
+                *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while generating new ccache\n");
                 goto cleanup;
             }
             if (opts->verbose) {
-                printf("Error with using new cache: %s\n", krb5_cc_get_name(k5->ctx, k5->out_cc));
+                *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error with using new cache: %s\n", krb5_cc_get_name(k5->ctx, k5->out_cc));
             }
             k5->switch_to_cache = 1;
         }
@@ -228,28 +228,30 @@ k5_begin(struct k_opts *opts, struct k5_data *k5)
         k5->out_cc = defcache;
         defcache = NULL;
         if (opts->verbose) {
-            printf("Error using default cache: %s\n", krb5_cc_get_name(k5->ctx, k5->out_cc));
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error using default cache: %s\n", krb5_cc_get_name(k5->ctx, k5->out_cc));
         }
     }
 
     if (opts->k5_in_cache_name) {
         ret = krb5_cc_resolve(k5->ctx, opts->k5_in_cache_name, &k5->in_cc);
         if (ret) {
-            printf("Error while resolving ccache %s", opts->k5_in_cache_name);
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while resolving ccache %s\n", opts->k5_in_cache_name);
             goto cleanup;
         }
         if (opts->verbose) {
-            printf("Error with using specified input cache: %s\n", opts->k5_in_cache_name);
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error with using specified input cache: %s\n", opts->k5_in_cache_name);
         }
     }
 
     ret = krb5_unparse_name(k5->ctx, k5->me, &k5->name);
     if (ret) {
-        printf("Error when unparsing name");
+        *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error when unparsing name\n");
         goto cleanup;
     }
     if (opts->verbose)
-        printf("Error when using principal: %s\n", k5->name);
+    {
+        *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error when using principal: %s\n", k5->name);
+    }
 
     opts->principal_name = k5->name;
 
@@ -276,15 +278,14 @@ k5_end(struct k5_data *k5)
 }
 
 static int
-k5_kinit(struct k_opts *opts, struct k5_data *k5)
+k5_kinit(struct k_opts *opts, struct k5_data *k5, char* error_buf, int *shift, int buffSize)
 {
     int notix = 1;
     krb5_keytab keytab = 0;
     krb5_creds my_creds;
     krb5_error_code ret;
     krb5_get_init_creds_opt *options = NULL;
-    krb5_boolean pwprompt = FALSE;
-    krb5_address **addresses = NULL;
+    krb5_boolean pwprompt = TRUE;
     krb5_principal cprinc;
     krb5_ccache mcc = NULL;
     int i;
@@ -296,16 +297,15 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
         goto cleanup;
 
     if (opts->action == INIT_KT && opts->keytab_name != NULL) {
-
         ret = krb5_kt_resolve(k5->ctx, opts->keytab_name, &keytab);
         if (ret) {
-            printf("Error when resolving keytab %s", opts->keytab_name);
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error when resolving keytab %s\n", opts->keytab_name);
             goto cleanup;
         }
     } else if (opts->action == INIT_KT && opts->use_client_keytab) {
         ret = krb5_kt_client_default(k5->ctx, &keytab);
         if (ret) {
-            printf("Error when resolving default client keytab");
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error when resolving default client keytab\n");
             goto cleanup;
         }
     }
@@ -315,11 +315,11 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
                                              opts->pa_opts[i].attr,
                                              opts->pa_opts[i].value);
         if (ret) {
-            printf("Error while setting '%s'='%s'", opts->pa_opts[i].attr, opts->pa_opts[i].value);
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while setting '%s'='%s'\n", opts->pa_opts[i].attr, opts->pa_opts[i].value);
             goto cleanup;
         }
         if (opts->verbose) {
-            printf("Erorr with PA Option %s = %s\n", opts->pa_opts[i].value);
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Erorr with PA Option %s\n", opts->pa_opts[i].value);
         }
     }
     if (k5->in_cc) {
@@ -359,9 +359,7 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
          * were prompted for a password, assume the password was wrong. */
         if (ret == KRB5KRB_AP_ERR_BAD_INTEGRITY ||
             (pwprompt && ret == KRB5KDC_ERR_PREAUTH_FAILED)) {
-            printf("%s: Password incorrect while %s\n");
-        } else {
-//            qDebug() << "while %s";
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Password incorrect\n");
         }
         goto cleanup;
     }
@@ -372,14 +370,16 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
         if (!ret)
             ret = krb5_cc_initialize(k5->ctx, mcc, cprinc);
         if (ret) {
-            printf("Error when creating temporary cache");
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error when creating temporary cache\n");
             goto cleanup;
         }
         if (opts->verbose)
-            printf("Error with initialized cache\n");
+        {
+            *shift += snprintf(error_buf, buffSize - *shift, "Error with initialized cache\n");
+        }
         ret = krb5_cc_move(k5->ctx, mcc, k5->out_cc);
         if (ret) {
-            printf("Error while saving to cache %s", opts->k5_out_cache_name ? opts->k5_out_cache_name : "");
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while saving to cache %s\n", opts->k5_out_cache_name ? opts->k5_out_cache_name : "");
             goto cleanup;
         }
         mcc = NULL;
@@ -388,7 +388,7 @@ k5_kinit(struct k_opts *opts, struct k5_data *k5)
     if (k5->switch_to_cache) {
         ret = krb5_cc_switch(k5->ctx, k5->out_cc);
         if (ret) {
-            printf("Error while switching to new ccache");
+            *shift += snprintf(error_buf + *shift, buffSize - *shift, "Error while switching to new ccache\n");
             goto cleanup;
         }
     }
@@ -411,7 +411,7 @@ cleanup:
     return notix ? 0 : 1;
 }
 
-int kinit(int argc, char *argv[])
+int kinit(char *principal, char *password, char *error_buf, int buffSize)
 {
     struct k_opts opts;
     struct k5_data k5;
@@ -422,25 +422,26 @@ int kinit(int argc, char *argv[])
 
     memset(&k5, 0, sizeof(k5));
 
-    opts.principal_name = argv[0];
-    opts.password = argv[1];
+    opts.principal_name = principal;
+    opts.password = password;
 
     opts.action = INIT_PW;
 
-    if (k5_begin(&opts, &k5))
-    {
-        authed_k5 = k5_kinit(&opts, &k5);
-    }
+    int shift = 0;
 
-    if (authed_k5 && opts.verbose)
+    if (k5_begin(&opts, &k5, error_buf, &shift, buffSize))
     {
-        printf("Authenticated to Kerberos v5\n");
+        authed_k5 = k5_kinit(&opts, &k5, error_buf, &shift, buffSize);
     }
 
     k5_end(&k5);
 
     if (!authed_k5)
-        exit(1);
+    {
+        snprintf(error_buf + shift, buffSize - shift, "Authentication to Kerberos v5 didn't succeed\n");
 
-    return 0;
+        return 0;
+    }
+
+    return 1;
 }

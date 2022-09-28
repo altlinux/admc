@@ -41,6 +41,7 @@ public:
     ~ErrorLogDialog();
 
     void set_text(const QString &text);
+    void reconnect();
 };
 
 #endif /* ERROR_LOG_DIALOG_H */

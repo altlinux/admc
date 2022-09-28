@@ -28,6 +28,10 @@
 #include "globals.h"
 #include "connection_options_dialog.h"
 
+#include <memory>
+
+#include <QDebug>
+
 MainWindowConnectionError::MainWindowConnectionError()
 : QMainWindow() {
     ui = new Ui::MainWindowConnectionError();
