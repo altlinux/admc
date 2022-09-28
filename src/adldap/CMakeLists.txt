@@ -40,6 +40,7 @@ add_library(adldap SHARED
     samba/ndr_misc.c
     samba/libsmb_xattr.c
     samba/security_descriptor.c
+    kinit/kinit.c
 
     adldap.qrc
 )
