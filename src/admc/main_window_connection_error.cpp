@@ -27,6 +27,7 @@
 #include "utils.h"
 #include "globals.h"
 #include "connection_options_dialog.h"
+#include "kinitdialog.h"
 
 #include <memory>
 
@@ -48,6 +49,18 @@ MainWindowConnectionError::MainWindowConnectionError()
     connect(
         ui->options_button, &QAbstractButton::clicked,
         this, &MainWindowConnectionError::open_connection_options);
+    connect(
+        ui->retry_button, &QPushButton::clicked,
+        this, &MainWindowConnectionError::reconnect);
+}
+
+void MainWindowConnectionError::reconnect()
+{
+    if (!ad_connected(AdInterface(), this))
+    {
+        std::unique_ptr<KinitDialog> error_dialog = std::unique_ptr<KinitDialog>(new KinitDialog());
+        error_dialog->exec();
+    }
 }
 
 MainWindowConnectionError::~MainWindowConnectionError() {

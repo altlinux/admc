@@ -1537,25 +1537,21 @@
     <name>GetKrbTicketDialog</name>
     <message>
         <location filename="connect_to_domain_dialog.ui" line="14"/>
-        <location filename="get_krb_ticket_dialog.ui" line="14"/>
         <source>Get krb ticket</source>
         <translation>Получить krb тикет</translation>
     </message>
     <message>
         <location filename="connect_to_domain_dialog.ui" line="75"/>
-        <location filename="get_krb_ticket_dialog.ui" line="75"/>
         <source>Insert login</source>
         <translation>Введите логин</translation>
     </message>
     <message>
         <location filename="connect_to_domain_dialog.ui" line="88"/>
-        <location filename="get_krb_ticket_dialog.ui" line="88"/>
         <source>Insert password</source>
         <translation>Введите пароль</translation>
     </message>
     <message>
         <location filename="connect_to_domain_dialog.ui" line="101"/>
-        <location filename="get_krb_ticket_dialog.ui" line="101"/>
         <source>Insert domain name</source>
         <translation>Введите имя домена</translation>
     </message>
@@ -1711,286 +1707,291 @@
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="38"/>
+        <location filename="main_window.ui" line="39"/>
         <source>&amp;Action</source>
         <oldsource>Action</oldsource>
         <translation>&amp;Действие</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="43"/>
+        <location filename="main_window.ui" line="44"/>
         <source>&amp;View</source>
         <oldsource>View</oldsource>
         <translation>&amp;Вид</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="59"/>
+        <location filename="main_window.ui" line="60"/>
         <source>&amp;Preferences</source>
         <oldsource>Preferences</oldsource>
         <translation>&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="63"/>
+        <location filename="main_window.ui" line="64"/>
         <source>&amp;Language</source>
         <oldsource>Language</oldsource>
         <translation>&amp;Язык</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="76"/>
+        <location filename="main_window.ui" line="77"/>
         <source>&amp;Help</source>
         <oldsource>Help</oldsource>
         <translation>&amp;Помощь</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="95"/>
+        <location filename="main_window.ui" line="96"/>
         <source>Tool Bar</source>
         <translation>Панель инструментов</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="116"/>
+        <location filename="main_window.ui" line="117"/>
         <source>Message Log</source>
         <translation>Журнал сообщений</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="129"/>
+        <location filename="main_window.ui" line="130"/>
         <source>&amp;Connection Options</source>
         <oldsource>Connection Options</oldsource>
         <translation>&amp;Параметры подключения</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="134"/>
+        <location filename="main_window.ui" line="135"/>
         <source>&amp;Quit</source>
         <oldsource>Quit</oldsource>
         <translation>&amp;Выйти</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="137"/>
+        <location filename="main_window.ui" line="138"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="146"/>
+        <location filename="main_window.ui" line="147"/>
         <source>&amp;Manual</source>
         <oldsource>Manual</oldsource>
         <translation>&amp;Руководство</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="149"/>
+        <location filename="main_window.ui" line="150"/>
         <source>Manual (Alt + 8)</source>
         <translation>Помощь (Alt + 8)</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="152"/>
+        <location filename="main_window.ui" line="153"/>
         <source>Alt+8</source>
         <translation>Alt+8</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="157"/>
+        <location filename="main_window.ui" line="158"/>
         <source>&amp;Changelog</source>
         <oldsource>Changelog</oldsource>
         <translation>&amp;Журнал изменений</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="162"/>
+        <location filename="main_window.ui" line="163"/>
         <source>&amp;About ADMC</source>
         <oldsource>About ADMC</oldsource>
         <translation>&amp;О приложении ADMC</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="170"/>
+        <location filename="main_window.ui" line="171"/>
         <source>&amp;Icons</source>
         <oldsource>Icons</oldsource>
         <translation>&amp;Значки</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="178"/>
+        <location filename="main_window.ui" line="179"/>
         <source>&amp;List</source>
         <oldsource>List</oldsource>
         <translation>&amp;Список</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="186"/>
+        <location filename="main_window.ui" line="187"/>
         <source>&amp;Detail</source>
         <oldsource>Detail</oldsource>
         <translation>&amp;Подробно</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="210"/>
+        <location filename="main_window.ui" line="211"/>
         <source>&amp;Console Tree</source>
         <oldsource>Console Tree</oldsource>
         <translation>&amp;Дерево консоли</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="218"/>
+        <location filename="main_window.ui" line="219"/>
         <source>Description &amp;Bar</source>
         <oldsource>Description Bar</oldsource>
         <translation>&amp;Область описания</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="223"/>
+        <location filename="main_window.ui" line="224"/>
         <source>C&amp;ustomize Columns...</source>
         <oldsource>Customize Columns...</oldsource>
         <translation>&amp;Настроить колонки...</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="228"/>
+        <location filename="main_window.ui" line="229"/>
         <source>&amp;Filter Objects...</source>
         <oldsource>Filter Objects...</oldsource>
         <translation>&amp;Фильтровать объекты...</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="236"/>
+        <location filename="main_window.ui" line="237"/>
         <source>&amp;Advanced Features</source>
         <oldsource>Advanced Features</oldsource>
         <translation>&amp;Дополнительные возможности</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="244"/>
+        <location filename="main_window.ui" line="245"/>
         <source>&amp;Confirm Actions</source>
         <oldsource>Confirm Actions</oldsource>
         <translation>&amp;Подтверждать действия</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="252"/>
+        <location filename="main_window.ui" line="253"/>
         <source>&amp;Put Last Name Before First Name</source>
         <oldsource>Put Last Name Before First Name</oldsource>
         <translation>&amp;Ставить фамилию перед именем</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="260"/>
+        <location filename="main_window.ui" line="261"/>
         <source>&amp;Log Searches</source>
         <oldsource>Log Searches</oldsource>
         <translation>&amp;Вносить информацию о поиске в журнал сообщений</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="268"/>
+        <location filename="main_window.ui" line="269"/>
         <source>&amp;Timestamps in Message Log</source>
         <oldsource>Timestamps in Message Log</oldsource>
         <translation>&amp;Метки времени в журнале сообщений</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="276"/>
+        <location filename="main_window.ui" line="277"/>
         <source>&amp;Show Non-Container Objects in Console Tree</source>
         <oldsource>Show Non-Container Objects in Console Tree</oldsource>
         <translation>П&amp;оказывать неконтейнерные объекты в дереве консоли</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="300"/>
+        <location filename="main_window.ui" line="301"/>
         <source>Navigate Back (Alt + -)</source>
         <translation>Назад (Alt + -)</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="315"/>
+        <location filename="main_window.ui" line="316"/>
         <source>Navigate Forward (Alt + =)</source>
         <translation>Вперед (Alt + =)</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="330"/>
+        <location filename="main_window.ui" line="331"/>
         <source>Refresh (Alt + 9)</source>
         <translation>Обновить (Alt + 9)</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="333"/>
+        <location filename="main_window.ui" line="334"/>
         <source>Alt+9</source>
         <translation>Alt+9</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="341"/>
+        <location filename="main_window.ui" line="342"/>
         <source>Show Login</source>
         <translation>Показывать логин</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="346"/>
+        <location filename="main_window.ui" line="347"/>
         <source>&amp;Operations Masters</source>
         <oldsource>Operations Masters</oldsource>
         <translation>&amp;Мастера Операций</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="355"/>
+        <location filename="main_window.ui" line="356"/>
         <source>Create user</source>
         <translation>Создать пользователя</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="358"/>
+        <location filename="main_window.ui" line="359"/>
         <source>Create user (Alt + 7)</source>
         <translation>Создать пользователя (Alt + 7)</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="361"/>
+        <location filename="main_window.ui" line="362"/>
         <source>Alt+7</source>
         <translation>Alt+7</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="370"/>
+        <location filename="main_window.ui" line="371"/>
         <source>Create group</source>
         <translation>Создать группу</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="373"/>
+        <location filename="main_window.ui" line="374"/>
         <source>Create group (Alt  + 6)</source>
         <translation>Создать группу (Alt + 6)</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="376"/>
+        <location filename="main_window.ui" line="377"/>
         <source>Alt+6</source>
         <translation>Alt+6</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="385"/>
+        <location filename="main_window.ui" line="386"/>
         <source>Create organization unit</source>
         <translation>Создать подразделение</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="388"/>
+        <location filename="main_window.ui" line="389"/>
         <source>Create organization unit (Alt + 5)</source>
         <translation>Создать подразделение (Alt + 5)</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="391"/>
+        <location filename="main_window.ui" line="392"/>
         <source>Alt+5</source>
         <translation>Alt+5</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="285"/>
+        <location filename="main_window.ui" line="397"/>
+        <source>Manage krb ticket list</source>
+        <translation>Управление krb-билетами</translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="286"/>
         <source>Navigate Up</source>
         <translation>Наверх</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="288"/>
+        <location filename="main_window.ui" line="289"/>
         <source>Alt+0</source>
         <translation>Alt+0</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="297"/>
+        <location filename="main_window.ui" line="298"/>
         <source>Navigate Back</source>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="303"/>
+        <location filename="main_window.ui" line="304"/>
         <source>Alt+-</source>
         <translation>Alt+-</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="312"/>
+        <location filename="main_window.ui" line="313"/>
         <source>Navigate Forward</source>
         <translation>Вперед</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="318"/>
+        <location filename="main_window.ui" line="319"/>
         <source>Alt+=</source>
         <translation>Alt+=</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="327"/>
+        <location filename="main_window.ui" line="328"/>
         <source>Refresh</source>
         <translation>Обновить</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="227"/>
+        <location filename="main_window.cpp" line="228"/>
         <source>Info</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="227"/>
+        <location filename="main_window.cpp" line="228"/>
         <source>Restart the app to switch to the selected language.</source>
         <translation>Для переключения на выбранный язык необходимо перезапустить приложение.</translation>
     </message>

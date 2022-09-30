@@ -20,6 +20,7 @@ include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${PROJECT_SOURCE_DIR}/src/adldap
+        ${PROJECT_SOURCE_DIR}/src/kinit
 )
 
 link_libraries(
@@ -27,6 +28,7 @@ link_libraries(
     Qt5::Widgets
     adldap
     resolv
+    kinit
 )
 
 set(ADMC_SOURCES
@@ -80,7 +82,6 @@ set(ADMC_SOURCES
     error_log_dialog.cpp
     fsmo_dialog.cpp
     find_policy_dialog.cpp
-    get_krb_ticket_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_dialog.cpp

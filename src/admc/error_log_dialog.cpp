@@ -22,7 +22,6 @@
 #include "ui_error_log_dialog.h"
 #include "utils.h"
 #include "ad_interface.h"
-#include "get_krb_ticket_dialog.h"
 
 #include "settings.h"
 
@@ -31,20 +30,9 @@ ErrorLogDialog::ErrorLogDialog(QWidget *parent)
     ui = new Ui::ErrorLogDialog();
     ui->setupUi(this);
 
-    connect(ui->buttonBox, &QDialogButtonBox::destroyed, this, &ErrorLogDialog::reconnect);
-
     setAttribute(Qt::WA_DeleteOnClose);
 
     settings_setup_dialog_geometry(SETTING_error_log_dialog_geometry, this);
-}
-
-void ErrorLogDialog::reconnect()
-{
-    if (!ad_connected(AdInterface(), this))
-    {
-        std::unique_ptr<GetKrbTicketDialog> error_dialog = std::unique_ptr<GetKrbTicketDialog>(new GetKrbTicketDialog());
-        error_dialog->exec();
-    }
 }
 
 ErrorLogDialog::~ErrorLogDialog() {

@@ -39,6 +39,7 @@ public:
 private:
     void on_retry_button();
     void open_connection_options();
+    void reconnect();
 };
 
 #endif /* MAIN_WINDOW_PRE_H */

@@ -52,6 +52,7 @@ private:
     void open_changelog();
     void open_about();
     void edit_fsmo_roles();
+    void manage_krb_tickets();
 };
 
 #endif /* MAIN_WINDOW_H */
