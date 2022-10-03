@@ -333,7 +333,7 @@ void MainWindow::manage_krb_tickets()
 {
     int argc = 0;
 
-    std::unique_ptr<Ktw> ticket_watcher_window = std::unique_ptr<Ktw>(new Ktw(argc, 0));
+    Ktw* ticket_watcher_window = new Ktw(argc, 0);
     ticket_watcher_window->show();
 }
 

@@ -394,7 +394,7 @@
   </action>
   <action name="action_manage_krb_tickets">
    <property name="text">
-    <string>Manage krb ticket list</string>
+    <string>Check krb ticket list</string>
    </property>
   </action>
  </widget>

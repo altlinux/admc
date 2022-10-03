@@ -1947,7 +1947,8 @@
     </message>
     <message>
         <location filename="main_window.ui" line="397"/>
-        <source>Manage krb ticket list</source>
+        <source>Check krb ticket list</source>
+        <oldsource>Manage krb ticket list</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>

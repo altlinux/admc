@@ -13,7 +13,6 @@
 #include "kinitdialog.h"
 #include "ui_kinitdialog.h"
 
-
 KinitDialog::KinitDialog( QWidget* parent, const char* name,
                          bool modal, Qt::WindowFlags fl)
 	: QDialog(parent, fl)
@@ -27,7 +26,10 @@ KinitDialog::KinitDialog( QWidget* parent, const char* name,
     changeRenewState(Qt::Checked);
 }
 
-KinitDialog::~KinitDialog() {}
+KinitDialog::~KinitDialog()
+{
+    delete ui;
+}
 
 void KinitDialog::changeDetailsState( int state )
 {

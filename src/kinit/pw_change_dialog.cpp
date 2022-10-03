@@ -14,7 +14,10 @@ PWChangeDialog::PWChangeDialog( QWidget* parent, const char* name,
 
 }
 
-PWChangeDialog::~PWChangeDialog() {}
+PWChangeDialog::~PWChangeDialog()
+{
+    delete ui;
+}
 
 void PWChangeDialog::titleTextLabelSetText(const QString& text)
 {

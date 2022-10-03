@@ -141,7 +141,6 @@ v5::renewCredential(krb5_context kcontext, krb5_principal kprincipal, krb5_times
 	if (getTgtFromCcache (kcontext, &my_creds))
 	{
 		qDebug("got tgt from ccache");
-		//setOptionsUsingCreds(kcontext, &my_creds, &opts);
 		*tgtEndtime = my_creds.times.endtime;
 		krb5_free_cred_contents(kcontext, &my_creds);
 	}

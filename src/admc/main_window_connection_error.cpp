@@ -27,7 +27,8 @@
 #include "utils.h"
 #include "globals.h"
 #include "connection_options_dialog.h"
-#include "kinitdialog.h"
+#include "v5.h"
+#include "krb5ticketwatcher.h"
 
 #include <memory>
 
@@ -58,8 +59,9 @@ void MainWindowConnectionError::reconnect()
 {
     if (!ad_connected(AdInterface(), this))
     {
-        std::unique_ptr<KinitDialog> error_dialog = std::unique_ptr<KinitDialog>(new KinitDialog());
-        error_dialog->exec();
+        int argc = 0;
+
+        Ktw kinit(argc, 0);
     }
 }
 

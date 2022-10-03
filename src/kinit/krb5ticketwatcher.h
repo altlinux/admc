@@ -45,7 +45,7 @@ class Ktw : public QWidget
 	
 public:
     Ktw(int & argc, char ** argv,
-	    QWidget* parent = 0, Qt::WindowFlags fl = 0  );
+        QWidget* parent = 0, Qt::WindowFlags fl = Qt::WindowFlags());
 	~Ktw();
 	
 	enum reqAction {none, renew, reinit};

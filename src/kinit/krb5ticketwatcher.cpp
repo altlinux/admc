@@ -79,7 +79,7 @@ Ktw::Ktw( int & argc, char ** argv, QWidget* parent, Qt::WindowFlags fl )
 	
 	krb5_error_code err = krb5_init_context(&kcontext);
 	if (err)
-	{
+    {
 		qFatal("Error at krb5_init_context");
 		return;
 	}
@@ -88,10 +88,19 @@ Ktw::Ktw( int & argc, char ** argv, QWidget* parent, Qt::WindowFlags fl )
 	initMainWindow();
 	qApp->processEvents();
 
+    krb5_creds creds;
+
+    if(!v5::getTgtFromCcache(kcontext, &creds))
+    {
+        kinit();
+    }
+
 	connect( &waitTimer, SIGNAL(timeout()), this, SLOT(initWorkflow()) );
 
 	qDebug("start the timer");
 	waitTimer.start( promptInterval*60*1000); // retryTime is in minutes
+
+    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 Ktw::~Ktw()
@@ -102,6 +111,8 @@ Ktw::~Ktw()
 	
 	krb5_free_context(kcontext);
 	kcontext = NULL;
+
+    delete ui;
 }
 
 // private ------------------------------------------------------------------
@@ -503,7 +514,7 @@ Ktw::passwordDialog(const QString& errorText) const
         return QString();
 	}
 	
-    PWDialog pwd(NULL, "pwdialog", true);
+    PWDialog pwd(this->parentWidget(), "pwdialog", true);
     pwd.krb5promptSetText(ki18n("Please enter the Kerberos password for <b>%1</b>").arg(princ));
     pwd.promptEditSetEchoMode(QLineEdit::Password);
 	

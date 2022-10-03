@@ -17,7 +17,7 @@ class KinitDialog : public QDialog
 
 	public:
 	KinitDialog(QWidget* parent = 0, const char* name = 0,
-                bool modal = false, Qt::WindowFlags fl = 0 );
+                bool modal = false, Qt::WindowFlags fl = Qt::WindowFlags() );
 	~KinitDialog();
 
     void errorLabelSetText(const QString& text);

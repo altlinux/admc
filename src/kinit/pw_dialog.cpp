@@ -17,7 +17,7 @@ PWDialog::PWDialog(QWidget* parent, const char* name,
 
 PWDialog::~PWDialog()
 {
-
+    delete ui;
 }
 
 void PWDialog::krb5promptSetText(const QString& text)
