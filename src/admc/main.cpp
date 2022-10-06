@@ -27,6 +27,7 @@
 #include "status.h"
 #include "utils.h"
 #include "connection_options_dialog.h"
+#include "language_updater.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -50,40 +51,7 @@ int main(int argc, char **argv) {
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
     app.setWindowIcon(QIcon(":/admc/admc.ico"));
 
-    const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
-
-    QTranslator translator;
-    const bool loaded_admc_translation = translator.load(saved_locale, "admc", "_", ":/admc");
-    app.installTranslator(&translator);
-
-    if (!loaded_admc_translation) {
-        qDebug() << "Failed to load admc translation";
-    }
-
-    QTranslator adldap_translator;
-    const bool loaded_adldap_translation = load_adldap_translation(adldap_translator, saved_locale);
-    app.installTranslator(&adldap_translator);
-
-    if (!loaded_adldap_translation) {
-        qDebug() << "Failed to load adldap translation";
-    }
-
-    // NOTE: these translations are for qt-defined text, like standard dialog buttons
-    QTranslator qt_translator;
-    const bool loaded_qt_translation = qt_translator.load(saved_locale, "qt", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    app.installTranslator(&qt_translator);
-
-    if (!loaded_qt_translation) {
-        qDebug() << "Failed to load qt translation";
-    }
-
-    QTranslator qtbase_translator;
-    const bool loaded_qtbase_translation = qtbase_translator.load(saved_locale, "qtbase", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    app.installTranslator(&qtbase_translator);
-
-    if (!loaded_qtbase_translation) {
-        qDebug() << "Failed to load qt base translation";
-    }
+    LanguageUpdater::load_translators();
 
     load_connection_options();
 

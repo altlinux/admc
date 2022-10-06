@@ -42,11 +42,13 @@
 #include "status.h"
 #include "utils.h"
 #include "fsmo_dialog.h"
+#include "language_updater.h"
 
 #include <QDebug>
 #include <QLabel>
 #include <QModelIndex>
 #include <QDesktopServices>
+#include <QTranslator>
 
 MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 : QMainWindow(parent) {
@@ -220,11 +222,12 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         connect(
             action, &QAction::triggered,
             this,
-            [this, language](bool checked) {
+            [this, language, language_name](bool checked) {
                 if (checked) {
                     settings_set_variant(SETTING_locale, QLocale(language));
 
-                    message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
+                    LanguageUpdater::load_translators();
+                    ui->retranslateUi(this);
                 }
             });
     }
