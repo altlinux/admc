@@ -52,6 +52,7 @@ private:
     void open_changelog();
     void open_about();
     void edit_fsmo_roles();
+    void changeEvent(QEvent * event);
 };
 
 #endif /* MAIN_WINDOW_H */

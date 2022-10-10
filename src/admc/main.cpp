@@ -76,26 +76,25 @@ int main(int argc, char **argv) {
     // destroyed when scope is over. If it's created
     // outside the scope, then it will stay alive for
     // the whole duration of the app which is bad.
-    QMainWindow *first_main_window = nullptr;
     {
         AdInterface ad;
 
         if (ad.is_connected()) {
             load_g_adconfig(ad);
             
-            first_main_window = new MainWindow(ad);
-            first_main_window->show();
+            main_window = new MainWindow(ad);
+            main_window->show();
         } else {
-            first_main_window = new MainWindowConnectionError();
-            first_main_window->show();
+            main_window = new MainWindowConnectionError();
+            main_window->show();
 
-            ad_error_log(ad, first_main_window);
+            ad_error_log(ad, main_window);
         }
     }
 
     const int retval = app.exec();
 
-    delete first_main_window;
+    delete main_window;
 
     return retval;
 }

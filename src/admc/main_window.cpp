@@ -227,7 +227,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
                     settings_set_variant(SETTING_locale, QLocale(language));
 
                     LanguageUpdater::load_translators();
-                    ui->retranslateUi(this);
                 }
             });
     }
@@ -326,6 +325,21 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         ui->action_show_login, &QAction::triggered,
         this, &MainWindow::on_show_login_changed);
     on_show_login_changed();
+}
+
+void MainWindow::changeEvent(QEvent * event)
+{
+    if (event->type() == QEvent::LanguageChange)
+    {
+        AdInterface ad;
+        load_g_adconfig(ad);
+        this->destroy();
+
+        delete main_window;
+
+        main_window = new MainWindow(ad);
+        main_window->show();
+    }
 }
 
 MainWindow::~MainWindow() {
