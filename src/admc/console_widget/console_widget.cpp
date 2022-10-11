@@ -128,7 +128,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->description_bar_right = new QTextEdit();
     d->description_bar_right->setLineWrapMode(QTextEdit::WidgetWidth);
     d->description_bar_right->setWordWrapMode(QTextOption::WrapAnywhere);
-    d->description_bar_left->setReadOnly(true);
+    d->description_bar_right->setReadOnly(true);
 
 
     d->description_bar_left->setStyleSheet("font-weight: bold");

@@ -36,38 +36,4 @@ void LanguageUpdater::load_translators()
         translators_.append(translator);
     }
 
-    QTranslator* adldap_translator(new QTranslator());
-    const bool loaded_adldap_translation = load_adldap_translation(*adldap_translator, saved_locale);
-    qApp->installTranslator(adldap_translator);
-
-    if (!loaded_adldap_translation) {
-        qDebug() << "Failed to load adldap translation";
-    }
-    else {
-        translators_.append(adldap_translator);
-    }
-
-    // NOTE: these translations are for qt-defined text, like standard dialog buttons
-    QTranslator* qt_translator(new QTranslator());
-    const bool loaded_qt_translation = qt_translator->load(saved_locale, "qt", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    qApp->installTranslator(qt_translator);
-
-    if (!loaded_qt_translation) {
-        qDebug() << "Failed to load qt translation";
-    }
-    else {
-        translators_.append(qt_translator);
-    }
-
-    QTranslator* qtbase_translator(new QTranslator());
-    const bool loaded_qtbase_translation = qtbase_translator->load(saved_locale, "qtbase", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    qApp->installTranslator(qtbase_translator);
-
-    if (!loaded_qtbase_translation) {
-        qDebug() << "Failed to load qt base translation";
-    }
-    else {
-        translators_.append(qtbase_translator);
-    }
-
 }
