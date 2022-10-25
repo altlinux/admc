@@ -24,8 +24,7 @@
 #include "adldap.h"
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
-#include "console_impls/find_root_impl.h"
-#include "console_widget/results_view.h"
+#include "console_impls/find_object_impl.h"
 #include "search_thread.h"
 #include "settings.h"
 #include "status.h"
@@ -77,13 +76,10 @@ FindWidget::FindWidget(QWidget *parent)
     object_impl->set_find_action_enabled(false);
     object_impl->set_refresh_action_enabled(false);
 
-    auto find_root_impl = new FindRootImpl(ui->console);
-    ui->console->register_impl(ItemType_FindRoot, find_root_impl);
+    auto find_object_impl = new FindObjectImpl(ui->console);
+    ui->console->register_impl(ItemType_FindObject, find_object_impl);
 
-    ResultsView *find_root_view = find_root_impl->view();
-    find_root_view->set_drag_drop_enabled(false);
-
-    const QList<QStandardItem *> row = ui->console->add_scope_item(ItemType_FindRoot, QModelIndex());
+    const QList<QStandardItem *> row = ui->console->add_scope_item(ItemType_FindObject, QModelIndex());
     head_item = row[0];
     head_item->setText(tr("Find results"));
 

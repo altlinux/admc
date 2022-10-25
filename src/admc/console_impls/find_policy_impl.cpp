@@ -18,37 +18,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_impls/find_root_impl.h"
+#include "console_impls/find_policy_impl.h"
 
 #include "adldap.h"
 #include "console_impls/object_impl.h"
 #include "console_widget/results_view.h"
+#include "utils.h"
 #include "item_type.h"
 
 #include <QStandardItem>
 #include <QModelIndex>
 
-FindRootImpl::FindRootImpl(ConsoleWidget *console_arg)
+FindPolicyImpl::FindPolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    set_results_view(new ResultsView(console_arg));
+    auto view = new ResultsView(console_arg);
+    view->set_drag_drop_enabled(false);
+    set_results_view(view);
 }
 
-QString FindRootImpl::get_description(const QModelIndex &index) const {
+QString FindPolicyImpl::get_description(const QModelIndex &index) const {
     const QString object_count_text = console_object_count_string(console, index);
 
     return object_count_text;
 }
 
-QList<QString> FindRootImpl::column_labels() const {
-    return object_impl_column_labels();
+QList<QString> FindPolicyImpl::column_labels() const {
+    const QList<QString> out = {
+        tr("Name"),
+        tr("GUID"),
+    };
+
+    return out;
 }
 
-QList<int> FindRootImpl::default_columns() const {
-    return object_impl_default_columns();
+QList<int> FindPolicyImpl::default_columns() const {
+    const QList<int> out = {
+        FindPolicyColumn_Name,
+        FindPolicyColumn_GUID,
+    };
+
+    return out;
 }
 
-QModelIndex get_find_tree_root(ConsoleWidget *console) {
-    const QModelIndex out = console->search_item(QModelIndex(), {ItemType_FindRoot});
+QModelIndex get_find_policy_root(ConsoleWidget *console) {
+    const QModelIndex out = console->search_item(QModelIndex(), {ItemType_FindPolicy});
 
     return out;
 }

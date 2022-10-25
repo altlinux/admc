@@ -32,6 +32,7 @@
 #include "status.h"
 #include "utils.h"
 #include "select_policy_dialog.h"
+#include "find_policy_dialog.h"
 
 #include <QMenu>
 #include <QStandardItem>
@@ -52,6 +53,7 @@ PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
     create_ou_action = new QAction(tr("Create OU"), this);
     create_and_link_gpo_action = new QAction(tr("Create a GPO and link to this OU"), this);
     link_gpo_action = new QAction(tr("Link existing GPO"), this);
+    find_gpo_action = new QAction(tr("Find GPO"), this);
 
     connect(
         create_ou_action, &QAction::triggered,
@@ -62,6 +64,9 @@ PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
     connect(
         link_gpo_action, &QAction::triggered,
         this, &PolicyOUImpl::link_gpo);
+    connect(
+        find_gpo_action, &QAction::triggered,
+        this, &PolicyOUImpl::find_gpo);
 }
 
 void PolicyOUImpl::selected_as_scope(const QModelIndex &index) {
@@ -171,6 +176,7 @@ QList<QAction *> PolicyOUImpl::get_all_custom_actions() const {
     out.append(create_ou_action);
     out.append(create_and_link_gpo_action);
     out.append(link_gpo_action);
+    out.append(find_gpo_action);
 
     return out;
 }
@@ -184,6 +190,18 @@ QSet<QAction *> PolicyOUImpl::get_custom_actions(const QModelIndex &index, const
         out.insert(create_ou_action);
         out.insert(create_and_link_gpo_action);
         out.insert(link_gpo_action);
+    
+        const bool is_domain = [&]() {
+            const QString dn = index.data(PolicyOURole_DN).toString();
+            const QString domain_dn = g_adconfig->domain_dn();
+            const bool is_domain_out = (dn == domain_dn);
+
+            return is_domain_out;
+        }();
+
+        if (is_domain) {
+            out.insert(find_gpo_action);
+        }
     }
 
     return out;
@@ -223,7 +241,7 @@ QList<int> PolicyOUImpl::default_columns() const {
 void PolicyOUImpl::create_ou() {
     const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, PolicyOURole_DN);
 
-    console_object_create(console, nullptr, CLASS_OU, parent_dn);
+    console_object_create({console}, CLASS_OU, parent_dn);
 }
 
 void PolicyOUImpl::create_and_link_gpo() {
@@ -290,15 +308,15 @@ void PolicyOUImpl::link_gpo() {
 }
 
 void PolicyOUImpl::properties(const QList<QModelIndex> &index_list) {
-    console_object_properties(console, nullptr, index_list, PolicyOURole_DN, {CLASS_OU});
+    console_object_properties({console}, index_list, PolicyOURole_DN, {CLASS_OU});
 }
 
 void PolicyOUImpl::rename(const QList<QModelIndex> &index_list) {
-    console_object_rename(console, nullptr, index_list, PolicyOURole_DN, CLASS_OU);
+    console_object_rename({console}, index_list, PolicyOURole_DN, CLASS_OU);
 }
 
 void PolicyOUImpl::delete_action(const QList<QModelIndex> &index_list) {
-    console_object_delete(console, nullptr, index_list, PolicyOURole_DN);
+    console_object_delete({console}, index_list, PolicyOURole_DN);
 }
 
 void policy_ou_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
@@ -400,6 +418,11 @@ void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou
 
     const QModelIndex current_scope = console->get_current_scope_item();
     policy_ou_results_widget->update(current_scope);
+}
+
+void PolicyOUImpl::find_gpo() {
+    auto dialog = new FindPolicyDialog(console, console);
+    dialog->open();
 }
 
 void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object) {

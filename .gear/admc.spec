@@ -1,8 +1,8 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.10.0
-Release: alt3
+Version: 0.11.0
+Release: alt0.dev1
 
 Summary: Active Directory Management Center
 License: GPLv3+
@@ -107,8 +107,15 @@ Tests for ADMC
 %_bindir/admc_test_select_classes_widget
 %_bindir/admc_test_sam_name_edit
 %_bindir/admc_test_dn_edit
+%_bindir/admc_test_find_policy_dialog
 
+# NOTE: remove this changelog entry when merging into sisyphus branch.
+# This is an auto-generated changelog entry for the upstream branch.
+# For release builds, you should add a hand-written changelog entry.
 %changelog
+* %(LC_TIME=C date "+%%a %%b %%d %%Y") %{?package_signer:%package_signer}%{!?package_signer:%packager} %version-%release
+- %version-%release
+
 * Mon Sep 12 2022 Alexey Shabalin <shaba@altlinux.org> 0.10.0-alt3
 - Cleanup Requires and BuidRequires.
 

@@ -75,6 +75,7 @@ set(TEST_TARGETS
     admc_test_select_classes_widget
     admc_test_sam_name_edit
     admc_test_dn_edit
+    admc_test_find_policy_dialog
 )
 
 foreach(target ${TEST_TARGETS})

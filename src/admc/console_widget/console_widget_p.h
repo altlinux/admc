@@ -30,6 +30,7 @@
 
 #include <QCoreApplication>
 #include <QSet>
+#include <QTextEdit>
 
 class QLabel;
 class QStackedWidget;
@@ -65,8 +66,8 @@ public:
     ConsoleDragModel *model;
     ScopeProxyModel *scope_proxy_model;
     QWidget *description_bar;
-    QLabel *description_bar_left;
-    QLabel *description_bar_right;
+    QTextEdit *description_bar_left;
+    QTextEdit *description_bar_right;
     QAbstractItemView *focused_view;
     QStackedWidget *results_stacked_widget;
     QSplitter *splitter;

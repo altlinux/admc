@@ -31,6 +31,7 @@ class QStandardItemModel;
 class QStandardItem;
 class QMenu;
 class ResultsView;
+class ADMCTestPolicyResultsWidget;
 
 namespace Ui {
 class PolicyResultsWidget;
@@ -53,6 +54,8 @@ public:
 
     ResultsView *get_view() const;
 
+    QString get_current_gpo() const;
+
 private:
     QStandardItemModel *model;
     QString gpo;
@@ -61,6 +64,8 @@ private:
     void on_item_changed(QStandardItem *item);
     void open_context_menu(const QPoint &pos);
     void delete_link();
+
+    friend class ADMCTestPolicyResultsWidget;
 };
 
 #endif /* POLICY_RESULTS_WIDGET_H */

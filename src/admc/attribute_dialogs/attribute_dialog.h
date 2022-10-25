@@ -33,6 +33,8 @@ class AttributeDialog : public QDialog {
     Q_OBJECT
 
 public:
+    static AttributeDialog *make(const QString &attribute, const QList<QByteArray> &value_list, const bool read_only, const bool single_valued, QWidget *parent);
+
     AttributeDialog(const QString &attribute, const bool read_only, QWidget *parent);
 
     QString get_attribute() const;

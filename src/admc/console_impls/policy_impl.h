@@ -66,14 +66,12 @@ public:
     void refresh(const QList<QModelIndex> &index_list) override;
     void properties(const QList<QModelIndex> &index_list) override;
 
-    void add_link(const QList<QString> &policy_list, const QList<QString> &ou_list);
-
 private slots:
     void on_add_link();
     void on_edit();
 
 private:
-    PolicyResultsWidget *policy_results_widget;
+    PolicyResultsWidget *policy_results;
     QAction *add_link_action;
     QAction *edit_action;
 
@@ -83,5 +81,10 @@ private:
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object);
 void console_policy_load_item(QStandardItem *item, const AdObject &object);
 QList<QString> console_policy_search_attributes();
+void console_policy_edit(ConsoleWidget *console, const int item_type, const int dn_role);
+void console_policy_rename(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role);
+void console_policy_add_link(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role);
+void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role);
+void console_policy_properties(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role);
 
 #endif /* POLICY_IMPL_H */

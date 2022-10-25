@@ -51,6 +51,7 @@ DEFINE_SETTING(SETTING_find_results_state);
 DEFINE_SETTING(SETTING_console_filter_dialog_state);
 DEFINE_SETTING(SETTING_select_object_advanced_dialog_console_state);
 DEFINE_SETTING(SETTING_find_object_dialog_console_state);
+DEFINE_SETTING(SETTING_find_policy_dialog_console_state);
 
 // Widget geometry
 DEFINE_SETTING(SETTING_main_window_geometry);
@@ -94,6 +95,7 @@ DEFINE_SETTING(SETTING_number_attribute_dialog_geometry);
 DEFINE_SETTING(SETTING_fsmo_dialog_geometry);
 DEFINE_SETTING(SETTING_create_shared_folder_dialog_geometry);
 DEFINE_SETTING(SETTING_create_contact_dialog_geometry);
+DEFINE_SETTING(SETTING_find_policy_dialog_geometry);
 
 // Header state
 DEFINE_SETTING(SETTING_results_header);
