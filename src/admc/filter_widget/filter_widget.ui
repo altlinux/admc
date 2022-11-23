@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FilterWidget</class>
+ <widget class="QWidget" name="FilterWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>945</width>
+    <height>702</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true">Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tab_widget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="FilterWidgetSimpleTab" name="simple_tab">
+      <attribute name="title">
+       <string>Simple</string>
+      </attribute>
+     </widget>
+     <widget class="FilterWidgetNormalTab" name="normal_tab">
+      <attribute name="title">
+       <string>Normal</string>
+      </attribute>
+     </widget>
+     <widget class="FilterWidgetAdvancedTab" name="advanced_tab">
+      <attribute name="title">
+       <string>Advanced</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FilterWidgetSimpleTab</class>
+   <extends>QWidget</extends>
+   <header>filter_widget/filter_widget_simple_tab.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FilterWidgetNormalTab</class>
+   <extends>QWidget</extends>
+   <header>filter_widget/filter_widget_normal_tab.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FilterWidgetAdvancedTab</class>
+   <extends>QWidget</extends>
+   <header>filter_widget/filter_widget_advanced_tab.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

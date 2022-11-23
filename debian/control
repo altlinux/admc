@@ -1,0 +1,12 @@
+Source: admc
+Maintainer: Kees van Vloten
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9), cmake, qtbase5-dev, libqt5help5, qttools5-dev, libldap2-dev, pkg-config, samba-dev (>=4.9), libsmbclient-dev, libkrb5-dev, libglib2.0-dev, libsasl2-dev
+
+Package: admc
+Architecture: any
+Depends: libldap-2.4-2, libsasl2-2, libsmbclient (>=4.9), libuuid1 (>= 2.33), libqt5help5 (>= 5.11), libkrb5-3 (>= 1.17)
+Description: Samba domain management console.
+ Samba domain management console.

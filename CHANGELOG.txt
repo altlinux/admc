@@ -1,0 +1,608 @@
+admc
+CHANGELOG
+
+-----------------------------------------------------------------------
+ VERSION 0.10.0
+-----------------------------------------------------------------------
+- Properties: Removed "Group tab". Not necessary because
+  policy tree replaces it.
+- Policies: Improved policy tree. Tree now contains OU's in
+  addition to policies. OU's display their child OU's and
+  linked policies. Viewing all policies is still possible in
+  "All policies" folder.
+- Misc: Fixed eliding of long items in scope view. Scope
+  view now correctly displays a scroll bar so that long
+  items can be viewed fully.
+- Misc: Added trimming of spaces from names when creating or
+  renaming policies, query folders and query items.
+- Misc: Fixed a bug where object became unloaded if during
+  rename character '?' was added to it's name.
+- Misc: Increased size of editor for string attributes,
+  which is available in "Attributes" tab. Long strings are
+  now easier to view and edit.
+- Misc: Removed ability to drag and drop policies onto OU's
+  in object tree. This action now can be performed inside
+  policy tree.
+
+-----------------------------------------------------------------------
+ VERSION 0.9.0
+-----------------------------------------------------------------------
+- Account Tab: Improved editor for "Logon Hours".
+- Account Tab: Fixed "Logon Computers" editor
+  incorrectly adding empty entry when being opened.
+- Account Tab: Fixed incorrect flag value for
+  "Reversible encryption" account option.
+- Attributes Tab: Added special display format for some
+  bitfield attributes, so that both the value and names
+  of bitfields are displayed. Includes
+  "userAccountControl", "sAMAccountType" and
+  "primaryGroupId".
+- Account Tab: Added missing "DES key" account option.
+- Account Tab: Removed "Trusted for delegation" option
+  because it should be in "Delegation" tab only.
+- Account Tab: Fixed some options using incorrect flags.
+- Action menu: Added creation of more object types:
+  "Contact", "inetOrgPerson" and "Shared Folder".
+- Action menu: Fixed "New" sub-menu in action menu so
+  that it contains only those object types that can be
+  children of target object. (#343)
+- Action menu: Removed "Rename" action from computer
+  objects because computer objects must be renamed from
+  the machine itself in system configuration.
+- Console: Added object display limit option. Applies
+  to main window and find dialog. (#319)
+- Address Tab: Changed order of country list so that
+  the country of current locale is always first, for
+  ease of use.
+- Console: Implemented opening action menu by right
+  clicking on empty space in results pane. In this
+  case, currently selected scope item is treated as
+  target object for the menu. (#334)
+- Console: Fixed action menu being empty on startup
+  until user selected another console item. (#340)
+- Console: Fixed being able to move an object onto it's
+  current parent via action menu or drag and drop. This
+  caused visual glitches. (#336, #338)
+- Console: Improved default sort setting for results
+  view (for all view types - details, icons, list).
+- Create dialog: Fix incorrect field labels.
+- Logon Hours: Improved usability.
+- Logon Hours: Added legend that explains how dialog
+  works.
+- Security Tab: Fixed handling of inherited rights.
+  Inherited rights will now correctly display as grayed
+  out checkboxes and will not be editable. (#327)
+- Security Tab: Fixed all objects having the same kinds
+  of rights. Security tab will now correctly show
+  rights that are appropriate for the object type.
+  (#328)
+- Security Tab: Added verification of ACL order. When
+  switching to security tab, order will be verified and
+  if it's incorrect, a warning dialog will open
+  offering to fix it. (#339)
+- Toolbar: Added keyboard shortcuts to all actions.
+- Propeties: Added LAPS(Local Administration Password
+  Solution) tab for computer objects. This tab is
+  accessible only if LAPS is enabled in the domain. (#312)
+- Properties: Improved how properties dialog responds
+  to failing to load a user due to connection error or
+  absence of object.
+- Properties: Disabled "Profile" tab, not usable
+  because not implemented in backend.
+- Properties: Disabled "Logon Computers" feature, not
+  usable because not implemented in backend.
+- Policies: Fixed permission check incorrectly
+  complaining about policies made by RSAT. (#333)
+- Policies: Implemented "Edit" action for policies.
+  Installation of "gpui" package is required for
+  correct functioning.
+- Queries: Removed "Cut" and "Copy" actions from Query
+  root, because they don't apply to it. (#350)
+- Queries: Remove ability to recursively cut and paste
+  query folders into themselves.
+- Queries: Fixed program freezing when copying and
+  pasting a query folder into itself.
+- Queries: Fixed default name for query folders when
+  making them.
+- Queries: Fixed "Copy" and "Paste" of query folder
+  into same parent.
+- Queries: Remove ability to drag and drop query
+  folders onto themselves.
+- Find dialog: Added class filtering by all classes,
+  implemented as a separate checkbox. This filtering
+  will accept all classes, not just the ones in the
+  list. (#341)
+- Managed by tab: Fixed tab not applying.
+- Managed by tab: Fixed some fields being editable when
+  they shouldn't be.
+- Menubar: Fixed checkboxes for view types (Icons,
+  List, Details) not being exclusive. (#329)
+- Menubar: Fixed search logging, now correctly works
+  when browsing the object tree, in find dialog and
+  other UI elements.
+- Menubar: Added keyboard shortcuts to all actions,
+  except for the "Action" menu.
+- Menubar: Added keyboard navigation for all sub-menu's
+  except "Action" menu.
+- Misc: Fixed class filters not working correctly until
+  class selection dialog was opened. Occured in find
+  dialog, query creation/editing and others. (#322)
+- Misc: Added "Operations Masters" dialog for viewing
+  and editing FSMO roles. Opened from
+  Menubar->File->Operations Masters. (#313)
+- Misc: Changed AD error dialogs to be modal.
+- Misc: Removed "Reset" button from rename dialogs.
+- Misc: Fixed group icons not displaying on some DE's. (#330)
+- Misc: Added app icon which is displayed next to in
+  app lists and on the title bar.
+- Misc: Empty password input is now not allowed.
+- Misc: Fixed incorrect value for length limit of the
+  field "Logon name (pre-Windows 2000)".
+- Misc: Improved handling of illegal characters in
+  dialogs that create objects and those that rename
+  objects.
+- Misc: Added automatic trimming of leading and
+  trailing spaces in most fields for inputting string
+  values.
+- Misc: Fixed creation of computer objects so that
+  attributes are set correctly.
+- Misc: Added "Show password" checkbox to all password
+  fields, which toggles password visibility when
+  entering.
+- Misc: Fixed crash that sometimes happened when
+  loading objects from server.
+- Misc: Fixed incorrect "Street" field for OU objects.
+  Was using the wrong attribute.
+- Misc: Improved translation.
+
+-----------------------------------------------------------------------
+ VERSION 0.8.3
+-----------------------------------------------------------------------
+- Misc: Fixed build compatibility with new Samba
+  version.
+
+-----------------------------------------------------------------------
+ VERSION 0.8.2
+-----------------------------------------------------------------------
+- Misc: Fixed problems with sAMAccountName fields for
+  computer and group objects. In some places domain and
+  name fields were swapped or domain name was
+  incorrectly enabled. (#324)
+
+-----------------------------------------------------------------------
+ VERSION 0.8.1
+-----------------------------------------------------------------------
+- Misc: Fixed build for e2k.
+
+-----------------------------------------------------------------------
+ VERSION 0.8.0
+-----------------------------------------------------------------------
+- Connection: Added a new window for case where app fails to
+  connect to domain on startup. This window contains
+  connection options and a way to retry connection. Removed
+  "Connect" action from main window's menubar.
+- Console: Removed display of current domain controller in
+  domain item. It can now be seen in connection options.
+- Console: Fixed bug with overlapping object
+  fetches/refreshes. Happened when refreshing an object
+  while it's children are still being loaded. (#290)
+- Console: Fixed restoration of results state. State was
+  saved but then sometimes restoration failed. Includes
+  things like visible columns and sorting. (#299)
+- Menubar: Fixed custom filter in "Filter objects" dialog
+  not being saved.
+- Menubar: Removed "Navigation" menu because it's not
+  useful. Navigation actions can still be accessed from the
+  toolbar in a much more convenient manner.
+- Menubar: Added a way to view changelog in the app. Opened
+  from "Help" menu.
+- Menubar: Manual is now opened as an online version on the
+  wiki.
+- Action menu: Improved order of actions.
+- Find dialog: Fixed object action effects in find results,
+  for example objects not getting removed after being
+  deleted in find results. (#296)
+- Find dialog: Added missing "View" actions to find dialog
+  ("Icon", "List", "Detail").
+- Find dialog: Added "View" menu to find dialog opened from
+  select object dialog.
+- Find dialog: Implemented propagation of changes from Find
+  dialog to the main window. For example, deleting an object
+  in Find dialog will also remove it from the console in
+  Main window. (#298)
+- Find dialog: Added "Clear" button which clears filter
+  input and all results. (#314)
+- Find dialog: Implemented updating of objects in find
+  dialog after move/rename.
+- Select object dialog: Added "Clear" button which clears
+  filter input and all results. (#314)
+- Queries: Added "out of date" state to queries. In that
+  state query icon and tooltip change to indicate that the
+  query is in that state. Queries become out of date when
+  their child objects are renamed or moved.
+- Queries: Fixed query tree saving objects into settings
+  file, which can make the file unnecessarily big. This also
+  speeds up app shutdown. (#300)
+- Queries: Added ability to cut/copy/paste multiple query
+  item and/or folders.
+- Policies: Added Properties for policies in the policy
+  tree. Contains policy-specific information as well as a security tab. (#278)
+- Properties: Fixed changes not propagating from other tabs
+  to Attributes tab after apply. For example, changing
+  "description" in general tab now also updates it in
+  Attributes tab. (#306)
+- Managed by tab: Fixed unaccessible "Other" fields. Button
+  is now enabled and opens a read only sub-dialog. (#311)
+- Account tab: Fixed incorrect behavior of the "Cannot
+  delegate" account option. It was turning on "Trusted for
+  delegation option". Also fixed display of status for those
+  options. (#305)
+- Misc: Added expanded default names when creating policies
+  and query folders, before had just one default, now will
+  offer a numbered default depending on what already
+  exist. (#302)
+- Misc: Moved UI element toggle actions from "Preferences"
+  to "View" menu.
+- Misc: Fixed hanging/crashing when logged in as
+  non-privileged user. (#301)
+- Misc: Added display of currently login to status bar
+  (username@domain.com for example).
+- Misc: Fixed incorrect display of "Enable"/"Disable"
+  actions for user objects. Before, "Disable" was shown for
+  already disabled users. (#297)
+- Misc: Fixed password dialog sometimes not applying the
+  "Password expired" option. (#304)
+- Misc: Fixed stack smashing on 32 bit systems. (#294)
+- Misc: Fixed crash when creating a user with name
+  containing leading or trailing whitespace and enabling
+  "Must change pass" option. This also fixes a similar issue
+  when creating OU's and renaming users. (#308)
+- Misc: Moved "Change domain controller" functionality to
+  connection options.
+
+-----------------------------------------------------------------------
+ VERSION 0.7.1
+-----------------------------------------------------------------------
+- Misc: Fix stack smashing on 32 bit systems. (#294)
+
+-----------------------------------------------------------------------
+ VERSION 0.7.0
+-----------------------------------------------------------------------
+- Manual: Fixed manual not opening when app is installed
+  fresh. (#267)
+- Manual: Improved how help pages are selected. Can now
+  single-click to select and also select using arrow keys.
+- Policies: Fixed group policy tab not displaying policies
+  created on Windows. (#270)
+- Policies: Fixed incorrect case in gplink strings outputted
+  by the app. Changed to use the same case style as Windows.
+  (#271)
+- Policies: Added displaying of invalid GPO links in "Group
+  Policy" tab. Invalid links can be caused by slow
+  replication of recently created GPO's or delete GPO's or
+  incorrect deletiong of GPO's without unlinking. (#274)
+- Policies: Fixed deletion of policies not unlinking them as
+  well. (#273)
+- Policies: Fixed incorrect permissions of GPT of newly
+  created policies. (#269)
+- Policies: Fixed incorrect deletion of GPT's (group policy
+  files on the sysvol share). (#277)
+- Policies: Added a check for GPO permission mismatch. If
+  there's a mismatch, user is warned about it and offered to
+  sync permissions. (#281)
+- Policies: Added "Refresh" action to policy tree. (#279)
+- Properties: Added "Security" properties tab to all objects
+  that need it, not just users.
+- Object tab: Added "Protect against deletion" feature which
+  allows enabling or disabling protection against deletion
+  for objects. Available in Object tab or in create dialog
+  for OU's. (#283)
+- Misc: Added a toolbar. (#257)
+
+-----------------------------------------------------------------------
+ VERSION 0.6.4
+-----------------------------------------------------------------------
+- Queries: Fixed query edit dialog not loading state
+  correctly. Was loading some fields as blank. (#255)
+- Policies: Fixed policy creation dialog not closing. (#264)
+- Policies: Fixed policy creation dialog not displaying
+  errors.
+- Policies: Fixed policy results not loading
+  state(enforced/disabled) of links correctly. Was loading
+  blank every time. (#263)
+- Policies: Fixed policy delete action not deleting GPO
+  files on sysvol.
+- Policies: Disabled imprinting of policy security
+  descriptors on their sysvol files temporarily. For the
+  time being, sysvol files of newly created gpo's will have
+  default SD's. This is because the current process for
+  imprinting SD's causes problems.
+- Misc: Fixed dialog titles.
+- Misc: Added object count to description bar for queries.
+  (#256)
+- Menubar: Added shortcuts for navigation actions and quit.
+  (#262)
+
+-----------------------------------------------------------------------
+ VERSION 0.6.3
+-----------------------------------------------------------------------
+- Misc: Added manual generated from the wiki page. (#218)
+
+-----------------------------------------------------------------------
+ VERSION 0.6.2
+-----------------------------------------------------------------------
+- Console: Added "Reset account" action for computer objects.
+  (#245)
+- Console: Fixed "Advanced features" setting not hiding
+  advanced objects when the setting is turned off. (#247)
+- UI: Implemented saving and restoring of state and geometry
+  of UI elements. Things like sizes of dialogs, column
+  customization and column widths. (#242)
+- Options: Added connection options to "File" menu. (#248)
+- Misc: Fixed crash on startup if there are no Kerberos
+  tickets. (#246)
+- Misc: Fixed crash caused by threaded search when a
+  connection error happened. (#249)
+- Misc: Fixed incorrect error message for account option
+  conflicts. Error message contained incorrect or empty
+  strings for account options. (#251)
+- Misc: Fixed account option conflicts not being enforced
+  correctly. Was able to set conflicting account option
+  after closign the error message. (#252)
+- Misc: Fixed expiry edit behaving incorrectly in some
+  timezones. The edit was setting the date to the next day.
+  (#253)
+
+-----------------------------------------------------------------------
+ VERSION 0.6.1
+-----------------------------------------------------------------------
+- Action menu: Added "Enable account" and "Disable account"
+  actions for computer objects. (#236)
+- Console: Fixed a bug where creating objects at domain
+  object did not add those objects in console. Also fixed
+  similar issue with moving objects to domain object. (#240)
+- Console: Fixed results pane showing always showing all
+  columns. Now it hides non-default columns as it should. (#237)
+- Console: Fixed changes to object properties not updating
+  objects in queries.(#241)
+- Rename dialog: For the user version, updated the UPN edit
+  to the new version used everywhere else. (#238)
+- Misc: Improved text in labels, titles and messages.
+- Misc: Fixed "Close" button in error log dialog not closing
+  the dialog. (#235)
+- Misc: Fixed empty text in some message boxes. (#234)
+- Misc: Fixed crash caused by performing object operations
+  like delete, while "Saved Queries" is empty. (#239)
+- Misc: Added .desktop file so that the app appears in app
+  list. (#231)
+
+-----------------------------------------------------------------------
+ VERSION 0.6.0
+-----------------------------------------------------------------------
+- Properties dialog: Improved how connection failure is
+  handled. Dialog stays open and displays informative error
+  text.
+- Properties dialog: Sped up dialog opening and applying
+  slightly.
+- Manual dialog: Fixed manual path so it loads correctly.
+- Connection: Fixed crash when getting domain name fails.
+- Connection: Changed how domain name is determined. Before
+  it was determined from the default domain, now it is
+  determined from the default principal. Default domain has
+  to be specified manually and is not guaranteed to be
+  there.
+- Console: Don't open context menu when clicking on empty
+  space in results pane.
+- Console: Changed how target object for Action menu is
+  determined. If results is focused but has no selection,
+  use selection from scope.
+- Action menu: Disable "New" menu if all new actions are
+  disabled.
+- Action menu: Don't disable actions for items that are
+  fetching. This messed up context menu logic.
+- Action menu: Enabled "Add to group" action for groups.
+  Groups can be added to groups.
+- Select object dialog: Changed the base dialog to contain a
+  simpler search method. More advanced search is still available via another dialog opened from "Advanced" button.
+- Select object dialog: Changed columns for the selected
+  list to be more informative.
+- Account tab: Added "Logon hours" edit. Note that this
+  functionality is currently only working for Windows
+  clients. To work on Linux clients, it has to be
+  implemented in the client backend (not in ADMC).
+- Account tab: Added "Logon computers" edit.
+- UI: Improved button layout.
+- UI: Added missing "Cancel" buttons to some dialogs.
+- Security tab: Implemented addition of well-known trustee's.
+
+-----------------------------------------------------------------------
+ VERSION 0.5.3
+-----------------------------------------------------------------------
+- Properties dialog: Added new "Security" tab for User objects.
+- Properties dialog: Added new tabs for Computer objects:
+  "Delegation", "Managed by", "Member of" and "Operating
+  System".
+- Properties dialog: Added "Location" field to General tab
+  for Computer objects.
+- Create User dialog: Added "Can't change password" option.
+- Filters: Removed "Cancel" button from class selection
+  dialog.
+- Filters: Removed hidden feature where selecting all
+  classes in filter setup secretly changed filter to accept
+  ALL classes, even ones not listed in the class list.
+- Console filtering dialog: Added more filtering options.
+  Now there's an option to: show all objects, show selected
+  classes and a custom filter.
+- Console: Perform fetches of domain objects and queries in
+  a separate thread.
+- Create query dialog: Fixed dialog not resetting between
+  multiple instances.
+- Create query dialog: Fixed search base defaulting to being
+  empty. Default to domain instead like find dialog.
+- Queries: Added "Edit" action to query items, which is
+  accessible from the action menu.
+- Errors: Added more helpful error messages for the
+  connection process.
+
+-----------------------------------------------------------------------
+ VERSION 0.5.2
+-----------------------------------------------------------------------
+- Translation: Fix translation of "Action" menu not loading.
+- Properties: Added new properties dialog for multiple
+  objects which allows editing properties of multiple
+  objects at the same time.
+- Message Log: Add option to show LDAP search operations.
+- Message Log: Add option to show timestamps next to messages.
+
+-----------------------------------------------------------------------
+ VERSION 0.5.1
+-----------------------------------------------------------------------
+- Console: Fixed a bug where when moving or deleting items,
+  some of the items were skipped.
+- Select dialog: Fixed pressing return closing the Find the
+  dialog. Pressing return now presses "Find" button.
+
+-----------------------------------------------------------------------
+ VERSION 0.5.0
+-----------------------------------------------------------------------
+- Console: Added new tree called "Group Policy Objects".
+  Lists all of the policies in the domain. Selecting a
+  policy shows all of the links to that policy in results
+  pane.
+- Console: Added new tree called "Saved Queries". Displays a
+  tree of folders which contain "queries". Queries are saved
+  searches which display search results in results pane.
+- Console: Display current domain controller in domain item
+  label.
+- Console: Add additional way to "activate" results items by
+  selecting and pressing ENTER. Before could only activate
+  by double-clicking. Activating means switching scope to
+  selected results item or opening it's properties.
+- Console: Items in scope pane are now sorted.
+- Console: Change sorting of items in scope and results to
+  be case insensitive.
+- Action menu: Added "Edit upn suffixes" action to domain
+  object. Opens menu to edit upn suffixes for this domain.
+- Account tab: Added combobox for user logon name which
+  contains current upn suffixes.
+- Attributes tab: Remember what attribute filters were
+  selected when app is closed.
+- Move object dialog: Items are now sorted.
+- Attributes tab: Prevent mixing changes in attributes tab
+  with changes in other tabs. When switching from/to
+  attributes tab while there are changes in tabs, open a
+  dialog which forces user to apply or discard those
+  changes.
+- Create dialog: Added combobox for user logon name which
+  contains current upn suffixes.
+- View menu: Added new results view types: Icons, Lists,
+  Detail.
+- View menu: Added "Customize columns" option. Opens a
+  dialog where columns for results pane can be shown and
+  hidden.
+- Preferences: Added toggles for some console widgets.
+  Replaces "toggle widgets dialog".
+- Message log: Changed this to a docked widget. Can now be
+  repositioned to the sides or bottom of window as well as
+  floating.
+- Find dialog: Fixed find dialog taking a long time to close
+  if find results contained many objects and they were
+  sorted by user.
+- Find dialog: Fixed group scope and type not showing
+  correctly. Was always showing the default scope and type
+  (Distribution Group - Global).
+- Properties: Added new tab called "Managed by",
+  which is shown for Organizational Units.
+- Properties: Added new tab called "Group policy"
+  which displays and edits policies linked to selected
+  object.
+- Manual: Added contents and index sectio. Still no actual content though.
+- Misc: Drag and drop is now disabled for objects that can't
+  be moved. Before you were able to start drag process for
+  those objects but weren't able to drop them anywhere,
+  which is confusing.
+
+-----------------------------------------------------------------------
+ VERSION 0.4.1
+-----------------------------------------------------------------------
+- Properties: Fixed "Apply"/"Reset" buttons being
+  incorrectly disabled after apply failure. They now stay
+  enabled if any error occured.
+- Properties: Fixed edits and tabs applying old changes if
+  they were previously applied in the same Properties
+  dialog.
+- Member Of/Members tab: Changed primary objects to be
+  selectable. When pressing "Remove" button, a warning opens
+  if any of selected objects are primary, remove action
+  fails.
+- Member Of tab: Added "Primary Group" display.
+- Console: Changed drag and drop process to not make server
+  requests while dragging. Dragging will now be smoother.
+- Find dialog: Moved the find process to a separate thread.
+  This removes all lag.
+- Find dialog: Fixed crashing when closing dialog while a
+  find is in progress.
+- Find dialog: Removed results limit.
+- Find dialog: Removed quick find option. Didn't work well.
+- Misc: Implemented recursive delete so now you can delete
+  objects with children. Before this action caused a server
+  error.
+- Misc: Fixed idle disconnect. The app now opens a new
+  connection to server for every set of operations instead
+  of keeping one connection open.
+- Misc: Added message box that warns about connection
+  failure after trying to perform some operations that
+  require a connection.
+
+-----------------------------------------------------------------------
+ VERSION 0.4.0
+-----------------------------------------------------------------------
+- Properties: Added more tabs to Properties dialog:
+    - general 
+    - object
+    - account
+    - address
+    - organization
+    - telephones
+    - profile
+    - members
+    - member of
+- Properties: Changed Properties to be a dialog instead of
+  docked widget.
+- Properties: Tab titles are now displayed in a vertical
+  list to the left of tab content.
+- Properties: Renamed from Details to Properties.
+- Attributes Tab: Added new features:
+    - filtering
+    - attribute type column
+    - specialized editors for all attribute types
+- Object Menu: Added most of the object actions.
+- Object Menu: Actions can now be performed for multiple
+  objects. Select multiple objects to load object menu for
+  all of them. Can move, delete, rename and perform other
+  operations, depending on selection.
+- Object Menu: Now available in menubar for accessibility.
+- Object Menu: Added new dialogs:
+    - rename dialog
+    - find dialog
+    - create dialog
+    - select dialog
+- Settings: Added more customization:
+    - showing/hiding widgets
+    - show non-container objects in containers widget
+- Settings: Added Contents widget filtering
+- Menubar: Added Navigation menu.
+- Performance: Reduced lag when working with large amounts
+  of objects (1000s)
+- Misc: Removed login dialog. New usage scheme is to do
+  authenticate via kerberos before starting the app using
+  "kinit" and then use the app. There's also an option to
+  attempt to connect after app has started.
+- Misc: Implemented displaying busy indicator on cursor for
+  long operations.
+- Misc: Implemented correct dialog modality for all dialogs.
+- Misc: Selected better object icons.
+- Misc: Enabled sorting of most object lists.
+- Misc: Improved default column widths for object lists.
+- Misc: Implemented saving of column widths between app
+  sessions.

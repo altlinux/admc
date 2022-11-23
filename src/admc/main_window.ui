@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true"/>
+  </property>
+  <widget class="ConsoleWidget" name="console"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_file">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_connection_options"/>
+    <addaction name="action_edit_fsmo_roles"/>
+    <addaction name="separator"/>
+    <addaction name="action_quit"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menu_action">
+    <property name="title">
+     <string>&amp;Action</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_view">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="action_view_icons"/>
+    <addaction name="action_view_list"/>
+    <addaction name="action_view_detail"/>
+    <addaction name="separator"/>
+    <addaction name="action_toggle_message_log"/>
+    <addaction name="action_toggle_toolbar"/>
+    <addaction name="action_toggle_console_tree"/>
+    <addaction name="action_toggle_description_bar"/>
+    <addaction name="separator"/>
+    <addaction name="action_customize_columns"/>
+    <addaction name="action_filter_objects"/>
+   </widget>
+   <widget class="QMenu" name="menu_preferences">
+    <property name="title">
+     <string>&amp;Preferences</string>
+    </property>
+    <widget class="QMenu" name="menu_language">
+     <property name="title">
+      <string>&amp;Language</string>
+     </property>
+    </widget>
+    <addaction name="action_advanced_features"/>
+    <addaction name="action_confirm_actions"/>
+    <addaction name="action_last_name_order"/>
+    <addaction name="action_log_searches"/>
+    <addaction name="action_timestamps"/>
+    <addaction name="action_show_noncontainers"/>
+    <addaction name="menu_language"/>
+   </widget>
+   <widget class="QMenu" name="menu_help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="action_manual"/>
+    <addaction name="action_changelog"/>
+    <addaction name="action_about"/>
+   </widget>
+   <addaction name="menu_file"/>
+   <addaction name="menu_action"/>
+   <addaction name="menu_view"/>
+   <addaction name="menu_preferences"/>
+   <addaction name="menu_help"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="contextMenuPolicy">
+    <enum>Qt::ActionsContextMenu</enum>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="toolbar">
+   <property name="windowTitle">
+    <string>Tool Bar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_navigate_up"/>
+   <addaction name="action_navigate_back"/>
+   <addaction name="action_navigate_forward"/>
+   <addaction name="separator"/>
+   <addaction name="action_refresh"/>
+   <addaction name="action_manual"/>
+   <addaction name="separator"/>
+   <addaction name="action_create_user"/>
+   <addaction name="action_create_group"/>
+   <addaction name="action_create_ou"/>
+  </widget>
+  <widget class="QDockWidget" name="message_log">
+   <property name="windowTitle">
+    <string>Message Log</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="QTextEdit" name="message_log_edit">
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <action name="action_connection_options">
+   <property name="text">
+    <string>&amp;Connection Options</string>
+   </property>
+  </action>
+  <action name="action_quit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="action_manual">
+   <property name="icon">
+    <iconset theme="help">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Manual</string>
+   </property>
+   <property name="toolTip">
+    <string>Manual (Alt + 8)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+8</string>
+   </property>
+  </action>
+  <action name="action_changelog">
+   <property name="text">
+    <string>&amp;Changelog</string>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>&amp;About ADMC</string>
+   </property>
+  </action>
+  <action name="action_view_icons">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Icons</string>
+   </property>
+  </action>
+  <action name="action_view_list">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;List</string>
+   </property>
+  </action>
+  <action name="action_view_detail">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Detail</string>
+   </property>
+  </action>
+  <action name="action_toggle_message_log">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string notr="true">Message Log (placeholder)</string>
+   </property>
+  </action>
+  <action name="action_toggle_toolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string notr="true">Toolbar (placeholder)</string>
+   </property>
+  </action>
+  <action name="action_toggle_console_tree">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Console Tree</string>
+   </property>
+  </action>
+  <action name="action_toggle_description_bar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Description &amp;Bar</string>
+   </property>
+  </action>
+  <action name="action_customize_columns">
+   <property name="text">
+    <string>C&amp;ustomize Columns...</string>
+   </property>
+  </action>
+  <action name="action_filter_objects">
+   <property name="text">
+    <string>&amp;Filter Objects...</string>
+   </property>
+  </action>
+  <action name="action_advanced_features">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Advanced Features</string>
+   </property>
+  </action>
+  <action name="action_confirm_actions">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Confirm Actions</string>
+   </property>
+  </action>
+  <action name="action_last_name_order">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Put Last Name Before First Name</string>
+   </property>
+  </action>
+  <action name="action_log_searches">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Log Searches</string>
+   </property>
+  </action>
+  <action name="action_timestamps">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Timestamps in Message Log</string>
+   </property>
+  </action>
+  <action name="action_show_noncontainers">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Show Non-Container Objects in Console Tree</string>
+   </property>
+  </action>
+  <action name="action_navigate_up">
+   <property name="icon">
+    <iconset theme="go-up">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Navigate Up</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+0</string>
+   </property>
+  </action>
+  <action name="action_navigate_back">
+   <property name="icon">
+    <iconset theme="go-previous">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Navigate Back</string>
+   </property>
+   <property name="toolTip">
+    <string>Navigate Back (Alt + -)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+-</string>
+   </property>
+  </action>
+  <action name="action_navigate_forward">
+   <property name="icon">
+    <iconset theme="go-next">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Navigate Forward</string>
+   </property>
+   <property name="toolTip">
+    <string>Navigate Forward (Alt + =)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+=</string>
+   </property>
+  </action>
+  <action name="action_refresh">
+   <property name="icon">
+    <iconset theme="view-refresh">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+   <property name="toolTip">
+    <string>Refresh (Alt + 9)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+9</string>
+   </property>
+  </action>
+  <action name="action_show_login">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Login</string>
+   </property>
+  </action>
+  <action name="action_edit_fsmo_roles">
+   <property name="text">
+    <string>&amp;Operations Masters</string>
+   </property>
+  </action>
+  <action name="action_create_user">
+   <property name="icon">
+    <iconset theme="avatar-default">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Create user</string>
+   </property>
+   <property name="toolTip">
+    <string>Create user (Alt + 7)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+7</string>
+   </property>
+  </action>
+  <action name="action_create_group">
+   <property name="icon">
+    <iconset theme="system-users">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Create group</string>
+   </property>
+   <property name="toolTip">
+    <string>Create group (Alt  + 6)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+6</string>
+   </property>
+  </action>
+  <action name="action_create_ou">
+   <property name="icon">
+    <iconset theme="folder-documents">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Create organization unit</string>
+   </property>
+   <property name="toolTip">
+    <string>Create organization unit (Alt + 5)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+5</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ConsoleWidget</class>
+   <extends>QWidget</extends>
+   <header>console_widget/console_widget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

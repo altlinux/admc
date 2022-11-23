@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/adldap/">
+        <file>adldap_ru.qm</file>
+        <file>adldap_en.qm</file>
+    </qresource>
+</RCC>
