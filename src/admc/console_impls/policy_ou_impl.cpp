@@ -36,6 +36,7 @@
 
 #include <QMenu>
 #include <QStandardItem>
+#include <QDebug>
 
 bool index_is_domain(const QModelIndex &index) {
     const QString dn = index.data(PolicyOURole_DN).toString();
@@ -54,7 +55,12 @@ PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
     create_and_link_gpo_action = new QAction(tr("Create a GPO and link to this OU"), this);
     link_gpo_action = new QAction(tr("Link existing GPO"), this);
     find_gpo_action = new QAction(tr("Find GPO"), this);
+    change_gp_options_action = new QAction(tr("Block inheritance"), this);
+    change_gp_options_action->setCheckable(true);
+    update_gp_options_check_state();
 
+    connect(this, &PolicyOUImpl::update_gp_options_action_check,
+            this, &PolicyOUImpl::update_gp_options_check_state);
     connect(
         create_ou_action, &QAction::triggered,
         this, &PolicyOUImpl::create_ou);
@@ -67,6 +73,9 @@ PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
     connect(
         find_gpo_action, &QAction::triggered,
         this, &PolicyOUImpl::find_gpo);
+    connect(
+        change_gp_options_action, &QAction::triggered,
+        this, &PolicyOUImpl::change_gp_options);
 }
 
 void PolicyOUImpl::selected_as_scope(const QModelIndex &index) {
@@ -173,10 +182,12 @@ void PolicyOUImpl::activate(const QModelIndex &index) {
 QList<QAction *> PolicyOUImpl::get_all_custom_actions() const {
     QList<QAction *> out;
 
+    emit update_gp_options_action_check();
     out.append(create_ou_action);
     out.append(create_and_link_gpo_action);
     out.append(link_gpo_action);
     out.append(find_gpo_action);
+    out.append(change_gp_options_action);
 
     return out;
 }
@@ -186,11 +197,13 @@ QSet<QAction *> PolicyOUImpl::get_custom_actions(const QModelIndex &index, const
 
     QSet<QAction *> out;
 
+    emit update_gp_options_action_check();
     if (single_selection) {
         out.insert(create_ou_action);
         out.insert(create_and_link_gpo_action);
         out.insert(link_gpo_action);
-    
+        out.insert(change_gp_options_action);
+
         const bool is_domain = [&]() {
             const QString dn = index.data(PolicyOURole_DN).toString();
             const QString domain_dn = g_adconfig->domain_dn();
@@ -240,7 +253,6 @@ QList<int> PolicyOUImpl::default_columns() const {
 
 void PolicyOUImpl::create_ou() {
     const QString parent_dn = get_selected_target_dn(console, ItemType_PolicyOU, PolicyOURole_DN);
-
     console_object_create({console}, CLASS_OU, parent_dn);
 }
 
@@ -423,6 +435,53 @@ void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou
 void PolicyOUImpl::find_gpo() {
     auto dialog = new FindPolicyDialog(console, console);
     dialog->open();
+}
+
+void PolicyOUImpl::change_gp_options()
+{
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+    const QString dn = console->get_current_scope_item().data(PolicyOURole_DN).toString();
+
+    bool checked = change_gp_options_action->isChecked();
+    bool res;
+    if (checked)
+    {
+        res = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, GPOPTIONS_BLOCK_INHERITANCE);
+    }
+    else
+    {
+        res = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, GPOPTIONS_INHERIT);
+    }
+
+    if (!res)
+    {
+        g_status->display_ad_messages(ad, console);
+        change_gp_options_action->toggle();
+        return;
+    }
+}
+
+void PolicyOUImpl::update_gp_options_check_state()
+{
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    const QString dn = console->get_current_scope_item().data(PolicyOURole_DN).toString();
+    AdObject object = ad.search_object(dn, {ATTRIBUTE_GPOPTIONS});
+    if (object.is_empty())
+    {
+        change_gp_options_action->setDisabled(true);
+        return;
+    }
+
+    change_gp_options_action->setEnabled(true);
+    bool checked = (object.get_string(ATTRIBUTE_GPOPTIONS) == GPOPTIONS_BLOCK_INHERITANCE);
+    change_gp_options_action->setChecked(checked);
 }
 
 void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object) {

@@ -37,6 +37,12 @@ GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QObject *parent)
 void GpoptionsEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
+    if (!(object.is_class(CLASS_OU) || object.is_class(CLASS_DOMAIN)))
+    {
+        emit change_checkbox_visibility(false);
+        return;
+    }
+    emit change_checkbox_visibility(true);
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
     const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);
 

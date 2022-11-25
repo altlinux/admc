@@ -110,6 +110,20 @@
      <item row="6" column="1">
       <widget class="QCheckBox" name="deletion_check"/>
      </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="blockInheritanceLabel">
+       <property name="text">
+        <string>Block inheritance:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QCheckBox" name="inheritance_check">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
