@@ -46,13 +46,6 @@ ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 
     auto deletion_edit = new ProtectDeletionEdit(ui->deletion_check, this);
 
-    auto gpoptions_edit = new GpoptionsEdit(ui->inheritance_check, this);
-
-    connect(gpoptions_edit, &GpoptionsEdit::change_checkbox_visibility, [this](bool visible){
-        ui->blockInheritanceLabel->setVisible(visible);
-        ui->inheritance_check->setVisible(visible);
-    });
-
     edit_list->append({
         dn_edit,
         class_edit,
@@ -60,8 +53,7 @@ ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
         when_changed_edit,
         usn_created_edit,
         usn_changed_edit,
-        deletion_edit,
-        gpoptions_edit
+        deletion_edit
     });
 }
 
