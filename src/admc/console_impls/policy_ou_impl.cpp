@@ -59,8 +59,6 @@ PolicyOUImpl::PolicyOUImpl(ConsoleWidget *console_arg)
     change_gp_options_action->setCheckable(true);
     update_gp_options_check_state();
 
-    connect(this, &PolicyOUImpl::update_gp_options_action_check,
-            this, &PolicyOUImpl::update_gp_options_check_state);
     connect(
         create_ou_action, &QAction::triggered,
         this, &PolicyOUImpl::create_ou);
@@ -182,7 +180,7 @@ void PolicyOUImpl::activate(const QModelIndex &index) {
 QList<QAction *> PolicyOUImpl::get_all_custom_actions() const {
     QList<QAction *> out;
 
-    emit update_gp_options_action_check();
+    update_gp_options_check_state();
     out.append(create_ou_action);
     out.append(create_and_link_gpo_action);
     out.append(link_gpo_action);
@@ -197,7 +195,7 @@ QSet<QAction *> PolicyOUImpl::get_custom_actions(const QModelIndex &index, const
 
     QSet<QAction *> out;
 
-    emit update_gp_options_action_check();
+    update_gp_options_check_state();
     if (single_selection) {
         out.insert(create_ou_action);
         out.insert(create_and_link_gpo_action);
@@ -464,7 +462,7 @@ void PolicyOUImpl::change_gp_options()
     }
 }
 
-void PolicyOUImpl::update_gp_options_check_state()
+void PolicyOUImpl::update_gp_options_check_state() const
 {
     AdInterface ad;
     if (ad_failed(ad, console)) {
