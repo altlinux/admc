@@ -83,8 +83,6 @@ private:
     void link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou_dn, const QList<QString> &gpo_list);
     void find_gpo();
     void change_gp_options();
-
-private slots:
     void update_gp_options_check_state() const;
 };
 
