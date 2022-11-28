@@ -115,6 +115,8 @@ set(ADMC_SOURCES
     tabs/select_well_known_trustee_dialog.cpp
     tabs/laps_tab.cpp
     tabs/error_tab.cpp
+    tabs/group_policy_tab.cpp
+    tabs/group_policy_tab.ui
 
     multi_tabs/general_user_multi_tab.cpp
     multi_tabs/general_other_multi_tab.cpp
