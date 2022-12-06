@@ -22,7 +22,6 @@
 
 #include "config.h"
 #include "connection_options_dialog.h"
-#include "console_impls/select_theme_impl.h"
 
 #include <QAction>
 #include <QDialog>
@@ -77,7 +76,9 @@ void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
 }
 
 void settings_restore_themes() {
-    SelectThemeImpl().apply_theme(settings_get_variant(SETTING_app_active_theme).toString());
+    QString theme_name = settings_get_variant(SETTING_app_active_theme).toString();
+    QIcon::setThemeName(theme_name);
+    settings_set_variant(SETTING_app_active_theme, theme_name);
 }
 
 bool settings_restore_geometry(const QString setting, QWidget *widget) {

@@ -35,7 +35,6 @@
 #include "console_impls/all_policies_folder_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
-#include "console_impls/select_theme_impl.h"
 #include "console_widget/console_widget.h"
 #include "attribute_edits/country_combo.h"
 #include "globals.h"
@@ -371,7 +370,7 @@ void MainWindow::open_manual() {
 }
 
 void MainWindow::open_choose_theme_dialog() {
-    auto dialog = new ChooseThemeDialog (this);
+    auto dialog = new ChooseThemeDialog(this);
     dialog->open();
     ui->toolbar->setFocus();
 }
