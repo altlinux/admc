@@ -354,6 +354,15 @@
     </message>
 </context>
 <context>
+    <name>ChooseThemeDialog</name>
+    <message>
+        <location filename="choose_theme_dialog.ui" line="14"/>
+        <source>Theme selection</source>
+        <oldsource>ChooseTheme</oldsource>
+        <translation>Выбор темы</translation>
+    </message>
+</context>
+<context>
     <name>ClassFilterDialog</name>
     <message>
         <location filename="filter_widget/class_filter_dialog.ui" line="14"/>
@@ -1791,7 +1800,23 @@
         <translation>Alt+5</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="285"/>
+        <location filename="main_window.ui" line="397"/>
+        <location filename="main_window.ui" line="412"/>
+        <source>Theme</source>
+        <translation>Тема</translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="402"/>
+        <source>defaut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="407"/>
+        <source>choose...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="286"/>
         <source>Navigate Up</source>
         <translation>Наверх</translation>
     </message>
