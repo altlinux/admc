@@ -130,7 +130,8 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->description_bar_right->setWordWrapMode(QTextOption::WrapAnywhere);
     d->description_bar_right->setReadOnly(true);
 
-    d->description_bar_left->setStyleSheet("font-weight: bold");
+    d->description_bar_left->setStyleSheet("font-weight: bold; background-color: #F0F0F0");
+    d->description_bar_right->setStyleSheet("background-color: #F0F0F0");
 
     d->results_stacked_widget = new QStackedWidget();
 
@@ -895,7 +896,6 @@ ConsoleImpl *ConsoleWidgetPrivate::get_current_scope_impl() const {
 
 ConsoleImpl *ConsoleWidgetPrivate::get_impl(const QModelIndex &index) const {
     const int type = index.data(ConsoleRole_Type).toInt();
-    qDebug() << "Type: " << type;
     ConsoleImpl *impl = impl_map.value(type, default_impl);
 
     return impl;
