@@ -51,6 +51,11 @@ public:
     void display_ad_messages(const QList<AdMessage> &messages, QWidget *parent);
     void display_ad_messages(const AdInterface &ad, QWidget *parent);
 
+
+    // Display all messages in status log without dialogs
+    void log_messages(const QList<AdMessage> &messages);
+    void log_messages(const AdInterface &ad);
+
 private:
     QStatusBar *m_status_bar;
     QTextEdit *m_message_log;

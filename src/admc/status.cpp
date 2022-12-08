@@ -94,12 +94,24 @@ void Status::add_message(const QString &msg, const StatusType &type) {
 }
 
 void Status::display_ad_messages(const QList<AdMessage> &messages, QWidget *parent) {
+
+    log_messages(messages);
+
+    ad_error_log(messages, parent);
+}
+
+void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
+    const QList<AdMessage> messages = ad.messages();
+
+    display_ad_messages(messages, parent);
+}
+
+void Status::log_messages(const QList<AdMessage> &messages)
+{
     if (m_status_bar == nullptr || m_message_log == nullptr) {
         return;
     }
-    //
-    // Display all messages in status log
-    //
+
     for (const AdMessage &message : messages) {
         const StatusType status_type = [message]() {
             switch (message.type()) {
@@ -111,14 +123,13 @@ void Status::display_ad_messages(const QList<AdMessage> &messages, QWidget *pare
 
         add_message(message.text(), status_type);
     }
-
-    ad_error_log(messages, parent);
 }
 
-void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
+void Status::log_messages(const AdInterface &ad)
+{
     const QList<AdMessage> messages = ad.messages();
 
-    display_ad_messages(messages, parent);
+    log_messages(messages);
 }
 
 void ad_error_log(const QList<AdMessage> &messages, QWidget *parent) {
