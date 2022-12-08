@@ -42,6 +42,8 @@ public:
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
+
+    QString get_description(const QModelIndex &index) const override;
 };
 
 void console_policy_tree_init(ConsoleWidget *console);

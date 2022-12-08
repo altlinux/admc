@@ -319,6 +319,11 @@ void PolicyOUImpl::delete_action(const QList<QModelIndex> &index_list) {
     console_object_delete({console}, index_list, PolicyOURole_DN);
 }
 
+QString PolicyOUImpl::get_description(const QModelIndex &index) const
+{
+    return console_object_count_string(console, index);
+}
+
 void policy_ou_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent) {
     const QList<AdObject> object_list = [&]() {
         QList<AdObject> out;

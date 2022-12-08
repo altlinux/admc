@@ -67,6 +67,7 @@ public:
     void rename(const QList<QModelIndex> &index_list) override;
     void properties(const QList<QModelIndex> &index_list) override;
     void delete_action(const QList<QModelIndex> &index_list) override;
+    QString get_description(const QModelIndex &index) const override;
 
 private:
     PolicyOUResultsWidget *policy_ou_results_widget;

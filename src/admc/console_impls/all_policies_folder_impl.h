@@ -47,6 +47,7 @@ public:
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
+    QString get_description(const QModelIndex &index) const override;
 
 private:
     QAction *create_policy_action;

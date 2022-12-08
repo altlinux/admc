@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_ou_impl.h"
+#include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "console_impls/find_policy_impl.h"
@@ -196,6 +197,11 @@ void PolicyImpl::properties(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
 
     console_policy_properties({console}, policy_results, ItemType_Policy, PolicyRole_DN);
+}
+
+QString PolicyImpl::get_description(const QModelIndex &index) const
+{
+    return console_object_count_string(console, index);
 }
 
 void PolicyImpl::on_add_link() {

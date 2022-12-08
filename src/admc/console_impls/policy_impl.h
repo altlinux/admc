@@ -65,6 +65,7 @@ public:
     void delete_action(const QList<QModelIndex> &index_list) override;
     void refresh(const QList<QModelIndex> &index_list) override;
     void properties(const QList<QModelIndex> &index_list) override;
+    QString get_description(const QModelIndex &index) const override;
 
 private slots:
     void on_add_link();

@@ -474,6 +474,11 @@ QList<int> QueryFolderImpl::default_columns() const {
     return {QueryColumn_Name, QueryColumn_Description};
 }
 
+QString QueryFolderImpl::get_description(const QModelIndex &index) const
+{
+    return console_object_count_string(console, index);
+}
+
 // NOTE: use constant QUERY_ROOT for root because query root
 // item has different name depending on app language. The
 // end result is that path for root is equal to

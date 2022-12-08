@@ -23,6 +23,7 @@
 #include "adldap.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
+#include "console_impls/object_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "console_widget/results_view.h"
 #include "create_policy_dialog.h"
@@ -104,6 +105,11 @@ QList<QString> AllPoliciesFolderImpl::column_labels() const {
 
 QList<int> AllPoliciesFolderImpl::default_columns() const {
     return {0};
+}
+
+QString AllPoliciesFolderImpl::get_description(const QModelIndex &index) const
+{
+    return console_object_count_string(console, index);
 }
 
 void AllPoliciesFolderImpl::create_policy() {

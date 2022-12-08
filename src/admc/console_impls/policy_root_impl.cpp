@@ -24,6 +24,7 @@
 #include "console_impls/item_type.h"
 #include "console_impls/all_policies_folder_impl.h"
 #include "console_impls/policy_ou_impl.h"
+#include "console_impls/object_impl.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
 #include "gplink.h"
@@ -80,6 +81,11 @@ QList<QString> PolicyRootImpl::column_labels() const {
 
 QList<int> PolicyRootImpl::default_columns() const {
     return {0};
+}
+
+QString PolicyRootImpl::get_description(const QModelIndex &index) const
+{
+    return console_object_count_string(console, index);
 }
 
 void console_policy_tree_init(ConsoleWidget *console) {
