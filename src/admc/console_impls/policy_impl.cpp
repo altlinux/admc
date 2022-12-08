@@ -437,6 +437,7 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
 
     const QString confirmation_text = QCoreApplication::translate("PolicyImpl", "Are you sure you want to delete this policy and all of it's links?");
     const bool confirmed = confirmation_dialog(confirmation_text, console_list[0]);
+    QStringList not_deleted_dn_list;
     if (!confirmed) {
         return;
     }
@@ -450,7 +451,6 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
 
     const QList<QString> deleted_list = [&]() {
         QList<QString> out;
-
         for (const QString &dn : dn_list) {
             bool deleted_object = false;
             ad.gpo_delete(dn, &deleted_object);
@@ -462,19 +462,23 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
             if (deleted_object) {
                 out.append(dn);
             }
+            else
+            {
+                not_deleted_dn_list.append(dn);
+            }
         }
 
         return out;
     }();
 
-    auto apply_changes = [&dn_list, policy_results](ConsoleWidget *target_console) {
+    auto apply_changes = [&deleted_list, policy_results](ConsoleWidget *target_console) {
         const QModelIndex policy_root = get_policy_tree_root(target_console);
 
         // NOTE: there can be duplicate items for
         // one policy because policy may be
         // displayed under multiple OU's
         if (policy_root.isValid()) {
-            for (const QString &dn : dn_list) {
+            for (const QString &dn : deleted_list) {
                 const QList<QModelIndex> index_list = target_console->search_items(policy_root, PolicyRole_DN, dn, {ItemType_Policy});
                 const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
@@ -487,7 +491,7 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
         const QModelIndex find_policy_root = get_find_policy_root(target_console);
 
         if (find_policy_root.isValid()) {
-            for (const QString &dn : dn_list) {
+            for (const QString &dn : deleted_list) {
                 const QList<QModelIndex> index_list = target_console->search_items(find_policy_root, FoundPolicyRole_DN, dn, {ItemType_FoundPolicy});
                 const QList<QPersistentModelIndex> persistent_list = persistent_index_list(index_list);
 
@@ -506,7 +510,13 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
 
     hide_busy_indicator();
 
-    g_status->display_ad_messages(ad, console_list[0]);
+    g_status->log_messages(ad);
+    if (!not_deleted_dn_list.isEmpty())
+    {
+        QString message = (not_deleted_dn_list.size() == 1) ?  QObject::tr("Can't delete default policy") :
+                                                               QObject::tr("Can't delete default policies");
+        QMessageBox::warning(console_list[0], "", message);
+    }
 }
 
 void console_policy_properties(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role) {
