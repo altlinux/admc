@@ -128,7 +128,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->description_bar_right = new QTextEdit();
     d->description_bar_right->setLineWrapMode(QTextEdit::WidgetWidth);
     d->description_bar_right->setWordWrapMode(QTextOption::WrapAnywhere);
-    d->description_bar_left->setReadOnly(true);
+    d->description_bar_right->setReadOnly(true);
 
     d->description_bar_left->setStyleSheet("font-weight: bold");
 
@@ -895,6 +895,7 @@ ConsoleImpl *ConsoleWidgetPrivate::get_current_scope_impl() const {
 
 ConsoleImpl *ConsoleWidgetPrivate::get_impl(const QModelIndex &index) const {
     const int type = index.data(ConsoleRole_Type).toInt();
+    qDebug() << "Type: " << type;
     ConsoleImpl *impl = impl_map.value(type, default_impl);
 
     return impl;
