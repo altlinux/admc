@@ -2375,7 +2375,17 @@
         <translation>Удалить эту политику и все её связи?</translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="311"/>
+        <location filename="console_impls/policy_impl.cpp" line="516"/>
+        <source>Can&apos;t delete default policy</source>
+        <translation>Нельзя удалить политику по умолчанию</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="517"/>
+        <source>Can&apos;t delete default policies</source>
+        <translation>Нельзя удалить политики по умолчанию</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="352"/>
         <source>Add Link</source>
         <translation>Добавление связи</translation>
     </message>
