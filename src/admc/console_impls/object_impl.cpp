@@ -1392,6 +1392,8 @@ void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdOb
     }
 
     for (const AdObject &object : object_list) {
+        if (object.is_empty())
+            continue;
         const bool should_be_in_scope = [&]() {
             // NOTE: "containers" referenced here don't mean
             // objects with "container" object class.
