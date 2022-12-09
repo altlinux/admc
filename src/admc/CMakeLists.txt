@@ -116,7 +116,6 @@ set(ADMC_SOURCES
     tabs/laps_tab.cpp
     tabs/error_tab.cpp
     tabs/group_policy_tab.cpp
-    tabs/group_policy_tab.ui
 
     multi_tabs/general_user_multi_tab.cpp
     multi_tabs/general_other_multi_tab.cpp
