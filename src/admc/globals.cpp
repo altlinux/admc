@@ -25,9 +25,11 @@
 #include "settings.h"
 
 #include <QLocale>
+#include <QMainWindow>
 
 AdConfig *g_adconfig = new AdConfig();
 Status *g_status = new Status();
+QMainWindow * main_window = nullptr;
 
 void load_g_adconfig(AdInterface &ad) {
     const QLocale locale = settings_get_variant(SETTING_locale).toLocale();

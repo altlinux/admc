@@ -24,10 +24,13 @@
 class AdConfig;
 class AdInterface;
 class Status;
+class QMainWindow;
 
 extern AdConfig *g_adconfig;
 extern Status *g_status;
+extern QMainWindow *main_window;
 
 void load_g_adconfig(AdInterface &ad);
+
 
 #endif /* GLOBALS_H */
