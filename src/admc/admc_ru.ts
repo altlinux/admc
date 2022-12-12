@@ -2543,6 +2543,16 @@
         <translation>Удалить эту политику и все её связи?</translation>
     </message>
     <message>
+        <location filename="console_impls/policy_impl.cpp" line="516"/>
+        <source>Failed to delete group policy</source>
+        <translation>Не удалось удалить групповую политику</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="517"/>
+        <source>Failed to delete some group policies</source>
+        <translation>Не удалось удалить некоторые групповые политики</translation>
+    </message>
+    <message>
         <location filename="console_impls/policy_impl.cpp" line="352"/>
         <source>Add Link</source>
         <translation>Добавление связи</translation>
