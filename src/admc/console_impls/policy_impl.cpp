@@ -513,8 +513,8 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
     g_status->log_messages(ad);
     if (!not_deleted_dn_list.isEmpty())
     {
-        QString message = (not_deleted_dn_list.size() == 1) ?  PolicyImpl::tr("Can't delete default policy") :
-                                                               PolicyImpl::tr("Can't delete default policies");
+        QString message = (not_deleted_dn_list.size() == 1) ?  PolicyImpl::tr("Failed to delete group policy") :
+                                                               PolicyImpl::tr("Failed to delete some group policies");
         QMessageBox::warning(console_list[0], "", message);
     }
 }

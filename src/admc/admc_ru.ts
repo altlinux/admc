@@ -2376,13 +2376,13 @@
     </message>
     <message>
         <location filename="console_impls/policy_impl.cpp" line="516"/>
-        <source>Can&apos;t delete default policy</source>
-        <translation>Нельзя удалить политику по умолчанию</translation>
+        <source>Failed to delete group policy</source>
+        <translation>Не удалось удалить групповую политику</translation>
     </message>
     <message>
         <location filename="console_impls/policy_impl.cpp" line="517"/>
-        <source>Can&apos;t delete default policies</source>
-        <translation>Нельзя удалить политики по умолчанию</translation>
+        <source>Failed to delete some group policies</source>
+        <translation>Не удалось удалить некоторые групповые политики</translation>
     </message>
     <message>
         <location filename="console_impls/policy_impl.cpp" line="352"/>
