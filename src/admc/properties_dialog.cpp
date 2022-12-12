@@ -51,6 +51,7 @@
 #include "tabs/telephones_tab.h"
 #include "tabs/laps_tab.h"
 #include "tabs/error_tab.h"
+#include "tabs/group_policy_tab.h"
 #include "utils.h"
 
 #include <QAbstractItemView>
@@ -220,6 +221,11 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     if (object.is_class(CLASS_OU) || object.is_class(CLASS_COMPUTER) || object.is_class(CLASS_SHARED_FOLDER)) {
         auto managed_by_tab = new ManagedByTab(&edit_list, this);
         ui->tab_widget->add_tab(managed_by_tab, tr("Managed by"));
+    }
+
+    if (object.is_class(CLASS_OU) || object.is_class(CLASS_DOMAIN)) {
+        auto group_policy_tab = new GroupPolicyTab(&edit_list, this);
+        ui->tab_widget->add_tab(group_policy_tab, tr("Group policy"));
     }
 
     if (object.is_class(CLASS_COMPUTER)) {

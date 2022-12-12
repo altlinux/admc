@@ -32,6 +32,7 @@
 
 #include "console_widget/console_impl.h"
 #include "console_impls/my_console_role.h"
+#include "ad_interface.h"
 
 enum PolicyOURole {
     PolicyOURole_DN = MyConsoleRole_LAST + 1,
@@ -74,12 +75,15 @@ private:
     QAction *create_and_link_gpo_action;
     QAction *link_gpo_action;
     QAction *find_gpo_action;
+    mutable QAction *change_gp_options_action;
 
     void create_ou();
     void create_and_link_gpo();
     void link_gpo();
     void link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou_dn, const QList<QString> &gpo_list);
     void find_gpo();
+    void change_gp_options();
+    void update_gp_options_check_state() const;
 };
 
 void policy_ou_impl_load_row(const QList<QStandardItem *> row, const AdObject &object);
