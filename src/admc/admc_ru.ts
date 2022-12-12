@@ -1547,6 +1547,14 @@
     </message>
 </context>
 <context>
+    <name>GroupPolicyTab</name>
+    <message>
+        <location filename="tabs/group_policy_tab.ui" line="20"/>
+        <source>Block policy inheritance</source>
+        <translation>Заблокировать наследование политик</translation>
+    </message>
+</context>
+<context>
     <name>LAPSTab</name>
     <message>
         <location filename="tabs/laps_tab.ui" line="22"/>
@@ -2756,7 +2764,12 @@
         <translation>Профиль</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="239"/>
+        <location filename="properties_dialog.cpp" line="228"/>
+        <source>Group policy</source>
+        <translation>Групповая политика</translation>
+    </message>
+    <message>
+        <location filename="properties_dialog.cpp" line="245"/>
         <source>LAPS</source>
         <translation>LAPS</translation>
     </message>
