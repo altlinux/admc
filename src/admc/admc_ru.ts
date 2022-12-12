@@ -1547,14 +1547,6 @@
     </message>
 </context>
 <context>
-    <name>GroupPolicyTab</name>
-    <message>
-        <location filename="tabs/group_policy_tab.ui" line="20"/>
-        <source>Block policy inheritance</source>
-        <translation>Заблокировать наследование политик</translation>
-    </message>
-</context>
-<context>
     <name>LAPSTab</name>
     <message>
         <location filename="tabs/laps_tab.ui" line="22"/>
@@ -2576,12 +2568,12 @@
         <translation>Блокировать наследование</translation>
     </message>
     <message>
-        <location filename="console_impls/policy_ou_impl.cpp" line="110"/>
+        <location filename="console_impls/policy_ou_impl.cpp" line="112"/>
         <source>All policies</source>
         <translation>Все политики</translation>
     </message>
     <message>
-        <location filename="console_impls/policy_ou_impl.cpp" line="245"/>
+        <location filename="console_impls/policy_ou_impl.cpp" line="247"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
@@ -2718,93 +2710,88 @@
     <name>PropertiesDialog</name>
     <message>
         <location filename="properties_dialog.ui" line="14"/>
-        <location filename="properties_dialog.cpp" line="138"/>
+        <location filename="properties_dialog.cpp" line="137"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="136"/>
+        <location filename="properties_dialog.cpp" line="135"/>
         <source>%1 Properties</source>
         <oldsource>&quot;%1&quot; Properties</oldsource>
         <translation>%1 — свойства</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="170"/>
+        <location filename="properties_dialog.cpp" line="169"/>
         <source>General</source>
         <translation>Общее</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="178"/>
+        <location filename="properties_dialog.cpp" line="177"/>
         <source>Object</source>
         <translation>Объект</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="179"/>
+        <location filename="properties_dialog.cpp" line="178"/>
         <source>Attributes</source>
         <translation>Атрибуты</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="197"/>
+        <location filename="properties_dialog.cpp" line="196"/>
         <source>Account</source>
         <translation>Учётная запись</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="190"/>
+        <location filename="properties_dialog.cpp" line="189"/>
         <source>Organization</source>
         <translation>Организация</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="191"/>
+        <location filename="properties_dialog.cpp" line="190"/>
         <source>Telephones</source>
         <translation>Телефоны</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="202"/>
+        <location filename="properties_dialog.cpp" line="201"/>
         <source>Profile</source>
         <translation>Профиль</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="228"/>
-        <source>Group policy</source>
-        <translation>Групповая политика</translation>
-    </message>
-    <message>
-        <location filename="properties_dialog.cpp" line="245"/>
+        <location filename="properties_dialog.cpp" line="239"/>
         <source>LAPS</source>
         <translation>LAPS</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="252"/>
+        <location filename="properties_dialog.cpp" line="246"/>
         <source>Security</source>
         <translation>Безопасность</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="208"/>
+        <location filename="properties_dialog.cpp" line="207"/>
         <source>Members</source>
         <translation>Участники</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="213"/>
+        <location filename="properties_dialog.cpp" line="212"/>
         <source>Member of</source>
         <translation>Группы</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="223"/>
+        <location filename="properties_dialog.cpp" line="222"/>
         <source>Managed by</source>
         <translation>Руководство</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="234"/>
+        <location filename="properties_dialog.cpp" line="228"/>
         <source>Operating System</source>
         <translation>Операционная система</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="218"/>
+        <location filename="properties_dialog.cpp" line="217"/>
         <source>Delegation</source>
         <translation>Делегирование</translation>
     </message>
     <message>
-        <location filename="properties_dialog.cpp" line="189"/>
+        <location filename="properties_dialog.cpp" line="188"/>
         <source>Address</source>
         <translation>Адрес</translation>
     </message>
