@@ -42,6 +42,7 @@
 #include "status.h"
 #include "utils.h"
 #include "fsmo_dialog.h"
+#include "krb5ticketwatcher.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -253,6 +254,9 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     connect(
         ui->action_filter_objects, &QAction::triggered,
         object_impl, &ObjectImpl::open_console_filter_dialog);
+    connect(
+        ui->action_manage_krb_tickets, &QAction::triggered,
+        this, &MainWindow::manage_krb_tickets);
 
     const QHash<QString, QAction *> bool_action_map = {
         {SETTING_confirm_actions, ui->action_confirm_actions},
@@ -323,6 +327,14 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         ui->action_show_login, &QAction::triggered,
         this, &MainWindow::on_show_login_changed);
     on_show_login_changed();
+}
+
+void MainWindow::manage_krb_tickets()
+{
+    int argc = 0;
+
+    Ktw* ticket_watcher_window = new Ktw(argc, 0);
+    ticket_watcher_window->show();
 }
 
 MainWindow::~MainWindow() {

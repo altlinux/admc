@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -28,6 +28,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="action_connection_options"/>
+    <addaction name="action_manage_krb_tickets"/>
     <addaction name="action_edit_fsmo_roles"/>
     <addaction name="separator"/>
     <addaction name="action_quit"/>
@@ -389,6 +390,11 @@
    </property>
    <property name="shortcut">
     <string>Alt+5</string>
+   </property>
+  </action>
+  <action name="action_manage_krb_tickets">
+   <property name="text">
+    <string>Check krb ticket list</string>
    </property>
   </action>
  </widget>

@@ -27,6 +27,12 @@
 #include "utils.h"
 #include "globals.h"
 #include "connection_options_dialog.h"
+#include "v5.h"
+#include "krb5ticketwatcher.h"
+
+#include <memory>
+
+#include <QDebug>
 
 MainWindowConnectionError::MainWindowConnectionError()
 : QMainWindow() {
@@ -44,6 +50,19 @@ MainWindowConnectionError::MainWindowConnectionError()
     connect(
         ui->options_button, &QAbstractButton::clicked,
         this, &MainWindowConnectionError::open_connection_options);
+    connect(
+        ui->retry_button, &QPushButton::clicked,
+        this, &MainWindowConnectionError::reconnect);
+}
+
+void MainWindowConnectionError::reconnect()
+{
+    if (!ad_connected(AdInterface(), this))
+    {
+        int argc = 0;
+
+        Ktw kinit(argc, 0);
+    }
 }
 
 MainWindowConnectionError::~MainWindowConnectionError() {

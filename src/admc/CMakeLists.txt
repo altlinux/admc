@@ -20,6 +20,7 @@ include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${PROJECT_SOURCE_DIR}/src/adldap
+        ${PROJECT_SOURCE_DIR}/src/kinit
 )
 
 link_libraries(
@@ -27,6 +28,7 @@ link_libraries(
     Qt5::Widgets
     adldap
     resolv
+    kinit
 )
 
 set(ADMC_SOURCES

@@ -27,6 +27,7 @@
 #include "status.h"
 #include "utils.h"
 #include "connection_options_dialog.h"
+#include "krb5ticketwatcher.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -86,6 +87,8 @@ int main(int argc, char **argv) {
     }
 
     load_connection_options();
+
+    Ktw kinit(argc, argv);
 
     // In case of failure to connect to AD and load
     // adconfig, we open a special alternative main window.

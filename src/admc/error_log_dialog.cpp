@@ -20,6 +20,8 @@
 
 #include "error_log_dialog.h"
 #include "ui_error_log_dialog.h"
+#include "utils.h"
+#include "ad_interface.h"
 
 #include "settings.h"
 
