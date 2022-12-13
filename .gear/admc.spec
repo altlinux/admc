@@ -2,7 +2,7 @@
 
 Name: admc
 Version: 0.11.0
-Release: alt0.dev1
+Release: alt1
 
 Summary: Active Directory Management Center
 License: GPLv3+
@@ -109,12 +109,29 @@ Tests for ADMC
 %_bindir/admc_test_dn_edit
 %_bindir/admc_test_find_policy_dialog
 
-# NOTE: remove this changelog entry when merging into sisyphus branch.
-# This is an auto-generated changelog entry for the upstream branch.
-# For release builds, you should add a hand-written changelog entry.
 %changelog
-* %(LC_TIME=C date "+%%a %%b %%d %%Y") %{?package_signer:%package_signer}%{!?package_signer:%packager} %version-%release
-- %version-%release
+* Tue Dec 13 2022 Evgeny Sinelnikov <sin@altlinux.org> 0.11.0-alt1
+- Action menu: Block inheritance feature is added to organizational
+  unit context menu. Also limited group policy tab is returned.
+- Console: Bug with empty group policy object crushing is fixed.
+- Console: Non-deletable group policy containers dont dissapear
+  from GUI after deletion attempt now. Warning message popups instead
+  of error log dialog.
+- Misc: "Order" column is added to policy organizational unit results.
+  Sort is performed with this column by default.
+- Console: Fix crash in policy tree after changing properties
+  for organizational units.
+- Misc: Fix description bar squishing scope pane, when selected
+  item's name is too long and description bar needs to display it.
+- Toolbar: Fix icons for "create" actions for organizational units,
+  users and groups in toolbar.
+- Misc: Add trimming to full name autofill.
+- Misc: Add trimming to attribute sAMAccountName edit in create
+  dialog for computers.
+- Misc: Add "find gpo" action to policy tree. It implements group
+  policy objects search functional.
+- Misc: Improve "Import Query" action. So it's possible to
+  import multiple queries at the same time.
 
 * Mon Sep 12 2022 Alexey Shabalin <shaba@altlinux.org> 0.10.0-alt3
 - Cleanup Requires and BuidRequires.
