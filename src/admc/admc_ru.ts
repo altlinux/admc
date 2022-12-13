@@ -2578,7 +2578,7 @@
     <message>
         <location filename="console_impls/policy_ou_impl.cpp" line="57"/>
         <source>Find GPO</source>
-        <translation type="unfinished"></translation>
+        <translation>Найти объект групповой политики</translation>
     </message>
     <message>
         <location filename="console_impls/policy_ou_impl.cpp" line="58"/>
