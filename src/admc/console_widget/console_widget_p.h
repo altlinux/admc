@@ -66,8 +66,8 @@ public:
     ConsoleDragModel *model;
     ScopeProxyModel *scope_proxy_model;
     QWidget *description_bar;
-    QTextEdit *description_bar_left;
-    QTextEdit *description_bar_right;
+    QLabel *description_bar_left;
+    QLabel *description_bar_right;
     QAbstractItemView *focused_view;
     QStackedWidget *results_stacked_widget;
     QSplitter *splitter;

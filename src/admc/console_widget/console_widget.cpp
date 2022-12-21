@@ -39,7 +39,6 @@
 #include <QToolBar>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QTextEdit>
 
 #include <algorithm>
 
@@ -120,18 +119,10 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->focused_view = d->scope_view;
 
     d->description_bar = new QWidget();
-    d->description_bar->setMaximumHeight(DESCRIPTION_BAR_HEIGHT);
-    d->description_bar_left = new QTextEdit();
-    d->description_bar_left->setLineWrapMode(QTextEdit::WidgetWidth);
-    d->description_bar_left->setWordWrapMode(QTextOption::WrapAnywhere);
-    d->description_bar_left->setReadOnly(true);
-    d->description_bar_right = new QTextEdit();
-    d->description_bar_right->setLineWrapMode(QTextEdit::WidgetWidth);
-    d->description_bar_right->setWordWrapMode(QTextOption::WrapAnywhere);
-    d->description_bar_right->setReadOnly(true);
-
-    d->description_bar_left->setStyleSheet("font-weight: bold; background-color: #F0F0F0");
-    d->description_bar_right->setStyleSheet("background-color: #F0F0F0");
+    d->description_bar_left = new QLabel();
+    //d->description_bar_left->setWordWrap(true);
+    d->description_bar_right = new QLabel();
+    d->description_bar_right->setWordWrap(true);
 
     d->results_stacked_widget = new QStackedWidget();
 
@@ -159,7 +150,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     description_layout->addWidget(d->description_bar_left);
     description_layout->addSpacing(10);
     description_layout->addWidget(d->description_bar_right);
-    description_layout->addStretch();
+    //description_layout->addStretch();
 
     auto results_wrapper = new QWidget();
     auto results_layout = new QVBoxLayout();
