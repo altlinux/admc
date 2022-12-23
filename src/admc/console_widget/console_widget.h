@@ -182,6 +182,8 @@ signals:
     // view or change of which view is focused.
     void selection_changed();
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
 private:
     ConsoleWidgetPrivate *d;
 

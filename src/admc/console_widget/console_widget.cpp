@@ -119,10 +119,9 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
 
     d->description_bar = new QWidget();
     d->description_bar_left = new QLabel();
-    d->description_bar_left->setWordWrap(true);
     d->description_bar_right = new QLabel();
-    d->description_bar_right->setWordWrap(true);
     d->description_bar_left->setStyleSheet("font-weight: bold");
+    d->description_bar_right->setAlignment(Qt::AlignRight);
 
     d->results_stacked_widget = new QStackedWidget();
 
@@ -149,8 +148,9 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     d->description_bar->setLayout(description_layout);
     description_layout->addWidget(d->description_bar_left);
     description_layout->addSpacing(10);
-    description_layout->addWidget(d->description_bar_right);
     description_layout->addStretch();
+    description_layout->addWidget(d->description_bar_right);
+    description_layout->addSpacing(10);
 
     auto results_wrapper = new QWidget();
     auto results_layout = new QVBoxLayout();
@@ -584,6 +584,11 @@ void ConsoleWidget::set_item_sort_index(const QModelIndex &index, const int sort
     d->model->setData(index, sort_index, ConsoleRole_SortIndex);
 }
 
+void ConsoleWidget::resizeEvent(QResizeEvent *event) {
+    d->update_description();
+    QWidget::resizeEvent(event);
+}
+
 void ConsoleWidgetPrivate::add_actions(QMenu *menu) {
     // Add custom actions
     const QList<QAction *> custom_action_list = get_custom_action_list();
@@ -896,11 +901,14 @@ void ConsoleWidgetPrivate::update_description() {
     const QModelIndex current_scope = q->get_current_scope_item();
 
     const QString scope_name = current_scope.data().toString();
-
+    const QString elided_name = description_bar_left->fontMetrics().elidedText(scope_name,
+                                                                               Qt::ElideRight,
+                                                                               description_bar->width()/2);
     ConsoleImpl *impl = get_impl(current_scope);
     const QString description = impl->get_description(current_scope);
 
-    description_bar_left->setText(scope_name);
+    description_bar_left->setText(elided_name);
+    description_bar_left->setToolTip(scope_name);
     description_bar_right->setText(description);
 }
 
