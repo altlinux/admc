@@ -31,6 +31,7 @@ GeneralOUTab::GeneralOUTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::GeneralOUTab();
     ui->setupUi(this);
 
+    ui->name_label->setWordWrap(true);
     auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
     auto street_edit = new StringEdit(ui->street_edit, ATTRIBUTE_STREET_OU, this);

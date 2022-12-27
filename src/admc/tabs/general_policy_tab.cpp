@@ -40,6 +40,7 @@ GeneralPolicyTab::GeneralPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *p
     ui = new Ui::GeneralPolicyTab();
     ui->setupUi(this);
 
+    ui->name_label->setWordWrap(true);
     auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto created_edit = new DateTimeEdit(ui->created_edit, ATTRIBUTE_WHEN_CREATED, this);
     auto modified_edit = new DateTimeEdit(ui->modified_edit, ATTRIBUTE_WHEN_CHANGED, this);

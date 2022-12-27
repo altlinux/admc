@@ -31,6 +31,7 @@ GeneralSharedFolderTab::GeneralSharedFolderTab(QList<AttributeEdit *> *edit_list
     ui = new Ui::GeneralSharedFolderTab();
     ui->setupUi(this);
 
+    ui->name_label->setWordWrap(true);
     auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
     auto keywords_edit = new StringListEdit(ui->keywords_button, ATTRIBUTE_KEYWORDS, this);

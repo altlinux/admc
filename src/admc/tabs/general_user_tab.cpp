@@ -31,6 +31,7 @@ GeneralUserTab::GeneralUserTab(QList<AttributeEdit *> *edit_list, QWidget *paren
     ui = new Ui::GeneralUserTab();
     ui->setupUi(this);
 
+    ui->name_label->setWordWrap(true);
     auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
     auto first_name_edit = new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);

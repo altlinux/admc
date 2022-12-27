@@ -33,6 +33,7 @@ GeneralGroupTab::GeneralGroupTab(QList<AttributeEdit *> *edit_list, QWidget *par
     ui = new Ui::GeneralGroupTab();
     ui->setupUi(this);
 
+    ui->name_label->setWordWrap(true);
     auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);

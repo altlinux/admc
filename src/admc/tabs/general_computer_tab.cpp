@@ -31,6 +31,7 @@ GeneralComputerTab::GeneralComputerTab(QList<AttributeEdit *> *edit_list, QWidge
     ui = new Ui::GeneralComputerTab();
     ui->setupUi(this);
 
+    ui->name_label->setWordWrap(true);
     auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto sam_name_edit = new ComputerSamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
     auto dns_edit = new StringEdit(ui->dns_host_name_edit, ATTRIBUTE_DNS_HOST_NAME, this);
