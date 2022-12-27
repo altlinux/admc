@@ -123,7 +123,7 @@ void PolicyImpl::selected_as_scope(const QModelIndex &index) {
             });
     }
 
-    g_status->display_ad_messages(ad, console);
+    g_status->log_messages(ad);
 
     policy_results->update(selected_gpo);
 }
