@@ -508,9 +508,28 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
     hide_busy_indicator();
 
     g_status->log_messages(ad);
-    if (!not_deleted_dn_list.isEmpty()) {
-        QString message = (not_deleted_dn_list.size() == 1) ? PolicyImpl::tr("Failed to delete group policy") :
-                                                              PolicyImpl::tr("Failed to delete some group policies");
+
+    if (!not_deleted_dn_list.isEmpty())
+    {
+        QString message;
+        if (not_deleted_dn_list.size() == 1)
+        {
+            message = PolicyImpl::tr("Failed to delete group policy");
+            AdObject not_deleted_object = ad.search_object(not_deleted_dn_list.first());
+            if (!not_deleted_object.is_empty() && not_deleted_object.get_bool("isCriticalSystemObject"))
+                message += PolicyImpl::tr(": this is a critical policy");
+        }
+        else
+        {
+            message = PolicyImpl::tr("Failed to delete the following group policies: \n");
+            for (QString not_deleted_dn : not_deleted_dn_list)
+            {
+                AdObject not_deleted_object = ad.search_object(not_deleted_dn);
+                message += '\n' + not_deleted_object.get_string("displayName");
+                if (not_deleted_object.get_bool("isCriticalSystemObject"))
+                    message += PolicyImpl::tr(" (critical policy)");
+            }
+        }
         QMessageBox::warning(console_list[0], "", message);
     }
 }
