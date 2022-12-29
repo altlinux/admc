@@ -27,6 +27,8 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "connection_options_dialog.h"
+#include "locale.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -51,6 +53,12 @@ int main(int argc, char **argv) {
     app.setWindowIcon(QIcon(":/admc/admc.ico"));
 
     const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
+    const QString locale_dot_UTF8 = saved_locale.name() + ".UTF-8";
+    const char* locale_for_c = std::setlocale(LC_ALL, locale_dot_UTF8.toLocal8Bit().data());
+    if (!locale_for_c)
+    {
+        qDebug() << "Failed to set locale for C libs";
+    }
 
     QTranslator translator;
     const bool loaded_admc_translation = translator.load(saved_locale, "admc", "_", ":/admc");
