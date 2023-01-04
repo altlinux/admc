@@ -21,7 +21,9 @@
 #ifndef RENAME_OBJECT_HELPER_H
 #define RENAME_OBJECT_HELPER_H
 
+#include <QDialogButtonBox>
 #include <QObject>
+#include <QPushButton>
 
 class QLineEdit;
 class QDialog;
@@ -32,7 +34,7 @@ class RenameObjectHelper : public QObject {
     Q_OBJECT
 
 public:
-    RenameObjectHelper(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg, QDialog *parent_dialog);
+    RenameObjectHelper(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg, QDialog *parent_dialog, QList<QLineEdit *> required = QList<QLineEdit *>(), QDialogButtonBox *button_box = nullptr);
 
     static void success_msg(const QString &old_name);
     static void fail_msg(const QString &old_name);
@@ -41,11 +43,16 @@ public:
     QString get_new_name() const;
     QString get_new_dn() const;
 
+private slots:
+    void on_edited();
+
 private:
     QString target;
     QLineEdit *name_edit;
     QList<AttributeEdit *> edits;
     QDialog *parent_dialog;
+    QList<QLineEdit *> required_list;
+    QPushButton *ok_button;
 };
 
 #endif /* RENAME_OBJECT_HELPER_H */

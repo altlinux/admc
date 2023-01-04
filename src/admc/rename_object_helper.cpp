@@ -39,12 +39,17 @@ void RenameObjectHelper::fail_msg(const QString &old_name) {
     g_status->add_message(message, StatusType_Error);
 }
 
-RenameObjectHelper::RenameObjectHelper(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg, QDialog *parent_dialog_arg)
+RenameObjectHelper::RenameObjectHelper(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg, QDialog *parent_dialog_arg, QList<QLineEdit *> required, QDialogButtonBox *button_box)
 : QObject(parent_dialog_arg) {
     name_edit = name_edit_arg;
     edits = edits_arg;
     target = target_arg;
     parent_dialog = parent_dialog_arg;
+    required_list = required;
+    ok_button = nullptr;
+    if(button_box != nullptr) {
+        ok_button = button_box->button(QDialogButtonBox::Ok);
+    }
 
     const QString name = dn_get_name(target);
     name_edit->setText(name);
@@ -53,6 +58,13 @@ RenameObjectHelper::RenameObjectHelper(AdInterface &ad, const QString &target_ar
 
     const AdObject object = ad.search_object(target);
     AttributeEdit::load(edits, ad, object);
+
+    if(!required_list.isEmpty() && ok_button != nullptr) {
+        for(QLineEdit *edit : required_list) {
+            connect(edit, &QLineEdit::textChanged, this, &RenameObjectHelper::on_edited);
+        }
+        on_edited();
+    }
 }
 
 bool RenameObjectHelper::accept() const {
@@ -115,4 +127,19 @@ QString RenameObjectHelper::get_new_dn() const {
     const QString new_dn = dn_rename(target, new_name);
 
     return new_dn;
+}
+
+void RenameObjectHelper::on_edited()
+{
+    const bool all_required_filled = [this]() {
+        for (QLineEdit *edit : required_list) {
+            if (edit->text().isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }();
+
+    ok_button->setEnabled(all_required_filled);
 }
