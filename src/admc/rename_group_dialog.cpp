@@ -37,7 +37,12 @@ RenameGroupDialog::RenameGroupDialog(AdInterface &ad, const QString &target_arg,
         sam_name_edit,
     };
 
-    helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, edit_list, this);
+    QList<QLineEdit *> requred_list = {
+        ui->name_edit,
+        ui->sam_name_edit
+    };
+
+    helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, edit_list, this, requred_list, ui->button_box);
 
     settings_setup_dialog_geometry(SETTING_rename_group_dialog_geometry, this);
 }
