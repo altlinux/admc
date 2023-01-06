@@ -29,7 +29,11 @@ RenameOtherDialog::RenameOtherDialog(AdInterface &ad, const QString &target_arg,
     ui = new Ui::RenameOtherDialog();
     ui->setupUi(this);
 
-    helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, {}, this);
+    const QList<QLineEdit *> required_list = {
+        ui->name_edit
+    };
+
+    helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, {}, this, required_list, ui->button_box);
 
     settings_setup_dialog_geometry(SETTING_rename_other_dialog_geometry, this);
 }
