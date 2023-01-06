@@ -50,6 +50,9 @@ public:
 private:
     QString target_dn;
     QString target_name;
+
+private slots:
+    void on_edited();
 };
 
 #endif /* RENAME_DIALOG_POLICY_H */

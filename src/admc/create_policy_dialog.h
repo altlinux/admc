@@ -50,6 +50,9 @@ public slots:
 
 private:
     QString created_dn;
+
+private slots:
+    void on_edited();
 };
 
 #endif /* CREATE_POLICY_DIALOG_H */

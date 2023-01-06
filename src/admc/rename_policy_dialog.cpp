@@ -46,6 +46,9 @@ RenamePolicyDialog::RenamePolicyDialog(AdInterface &ad, const QString &target_dn
     ui->name_edit->setText(target_name);
     limit_edit(ui->name_edit, ATTRIBUTE_DISPLAY_NAME);
 
+    connect(ui->name_edit, &QLineEdit::textChanged, this, &RenamePolicyDialog::on_edited);
+    on_edited();
+
     settings_setup_dialog_geometry(SETTING_rename_policy_dialog_geometry, this);
 }
 
@@ -72,5 +75,14 @@ void RenamePolicyDialog::accept() {
 
     if (apply_success) {
         QDialog::accept();
+    }
+}
+
+void RenamePolicyDialog::on_edited()
+{
+    if(ui->name_edit->text().isEmpty()) {
+        ui->button_box->button(QDialogButtonBox::Ok)->setEnabled(false);
+    } else {
+        ui->button_box->button(QDialogButtonBox::Ok)->setEnabled(true);
     }
 }

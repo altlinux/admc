@@ -29,6 +29,8 @@
 #include "status.h"
 #include "utils.h"
 
+#include<QPushButton>
+
 CreatePolicyDialog::CreatePolicyDialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::CreatePolicyDialog();
@@ -55,6 +57,9 @@ CreatePolicyDialog::CreatePolicyDialog(AdInterface &ad, QWidget *parent)
         }();
 
         const QString out = generate_new_name(existing_name_list, tr("New Group Policy Object"));
+
+        connect(ui->name_edit, &QLineEdit::textChanged, this, &CreatePolicyDialog::on_edited);
+        on_edited();
 
         return out;
     }();
@@ -111,5 +116,14 @@ void CreatePolicyDialog::accept() {
 
     if (success) {
         QDialog::accept();
+    }
+}
+
+void CreatePolicyDialog::on_edited()
+{
+    if(ui->name_edit->text().isEmpty()) {
+        ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+    } else {
+        ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
     }
 }
