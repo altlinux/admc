@@ -1384,7 +1384,7 @@ bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
         {ATTRIBUTE_DISPLAY_NAME, display_name},
         {ATTRIBUTE_GPC_FILE_SYS_PATH, filesys_path},
         // NOTE: samba defaults to 1, ADUC defaults to 0. Figure out what's this supposed to be.
-        {ATTRIBUTE_FLAGS, "1"},
+        {ATTRIBUTE_FLAGS, "0"},
         {ATTRIBUTE_VERSION_NUMBER, "0"},
         {ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, "TRUE"},
         {ATTRIBUTE_GPC_FUNCTIONALITY_VERSION, "2"},
