@@ -2543,14 +2543,29 @@
         <translation>Удалить эту политику и все её связи?</translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="516"/>
+        <location filename="console_impls/policy_impl.cpp" line="519"/>
         <source>Failed to delete group policy</source>
         <translation>Не удалось удалить групповую политику</translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="517"/>
+        <location filename="console_impls/policy_impl.cpp" line="522"/>
+        <source>: this is a critical policy</source>
+        <translation>: данная политика является критической</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="526"/>
+        <source>Failed to delete the following group policies: 
+</source>
+        <translation>Не удалось удалить следующие групповые политики: </translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="532"/>
+        <source> (critical policy)</source>
+        <translation> (критическая политика)</translation>
+    </message>
+    <message>
         <source>Failed to delete some group policies</source>
-        <translation>Не удалось удалить некоторые групповые политики</translation>
+        <translation type="vanished">Не удалось удалить некоторые групповые политики</translation>
     </message>
     <message>
         <location filename="console_impls/policy_impl.cpp" line="352"/>
