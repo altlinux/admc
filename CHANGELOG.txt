@@ -2,6 +2,16 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.11.1
+-----------------------------------------------------------------------
+- Fix property tabs size policy to looks more pretty.
+- Enable both user and machine attributes during GPO creating.
+- Fix availability of the Ok button when:
+ + a policy name is missing in the policy create dialog;
+ + group name is missing in the renaming ou dialog;
+ + user name is missing in rename user dialog.
+
+-----------------------------------------------------------------------
  VERSION 0.11.0
 -----------------------------------------------------------------------
 - Action menu: Block inheritance feature is added to organizational
