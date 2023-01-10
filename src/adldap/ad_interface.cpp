@@ -92,6 +92,7 @@ void *AdInterfacePrivate::s_sasl_nocanon = LDAP_OPT_ON;
 int AdInterfacePrivate::s_port = 0;
 CertStrategy AdInterfacePrivate::s_cert_strat = CertStrategy_Never;
 SMBCCTX *AdInterfacePrivate::smbc = NULL;
+QMutex AdInterfacePrivate::mutex;
 
 void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup, int maxLenWorkgroup, char *pUsername, int maxLenUsername, char *pPassword, int maxLenPassword) {
     UNUSED_ARG(pServer);
@@ -327,7 +328,9 @@ void AdInterface::set_cert_strategy(const CertStrategy strategy) {
 }
 
 AdInterfacePrivate::AdInterfacePrivate(AdInterface *q_arg) {
+    mutex.lock();
     q = q_arg;
+    mutex.unlock();
 }
 
 bool AdInterface::is_connected() const {

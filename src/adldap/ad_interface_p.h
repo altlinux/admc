@@ -23,6 +23,7 @@
 
 #include <QCoreApplication>
 #include <QList>
+#include <QMutex>
 
 class AdInterface;
 class AdConfig;
@@ -34,6 +35,7 @@ class AdInterfacePrivate {
     Q_DECLARE_TR_FUNCTIONS(AdInterfacePrivate)
 
     friend AdInterface;
+    static QMutex mutex;
 
 public:
     AdInterfacePrivate(AdInterface *q);
