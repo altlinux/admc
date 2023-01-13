@@ -132,15 +132,12 @@ QString RenameObjectHelper::get_new_dn() const {
 void RenameObjectHelper::on_edited()
 {
     const bool all_required_filled = [this]() {
-        QRegExp regName("^([a-zA-Z_0-9]+[*]*)$");
-
-        for (QLineEdit *edit : required_list)
-        {
-            if (regName.indexIn((edit->text())) == -1)
-            {
+        for (QLineEdit *edit : required_list) {
+            if (edit->text().isEmpty()) {
                 return false;
             }
         }
+
         return true;
     }();
 
