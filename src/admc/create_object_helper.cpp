@@ -156,15 +156,12 @@ bool CreateObjectHelper::accept() const {
 // Enable/disable create button if all required edits filled
 void CreateObjectHelper::on_edited() {
     const bool all_required_filled = [this]() {
-        QRegExp regName("^([a-zA-Z_0-9]+[*]*)$");
-
-        for (QLineEdit *edit : m_required_list)
-        {
-            if (regName.indexIn((edit->text())) == -1)
-            {
+        for (QLineEdit *edit : m_required_list) {
+            if (edit->text().isEmpty()) {
                 return false;
             }
         }
+
         return true;
     }();
 
