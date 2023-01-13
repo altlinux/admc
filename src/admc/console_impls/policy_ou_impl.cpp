@@ -33,6 +33,7 @@
 #include "select_policy_dialog.h"
 #include "status.h"
 #include "utils.h"
+#include "console_widget/console_tree_item_icons.h"
 
 #include <QDebug>
 #include <QMenu>
@@ -94,7 +95,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
         const QString base = dn;
         const SearchScope scope = SearchScope_Children;
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_OU);
-        const QList<QString> attributes = console_object_search_attributes();
+        QList<QString> attributes = console_object_search_attributes();
 
         const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 
@@ -437,14 +438,27 @@ void PolicyOUImpl::change_gp_options() {
     if (ad_failed(ad, console)) {
         return;
     }
-    const QString dn = console->get_current_scope_item().data(PolicyOURole_DN).toString();
+
+    QStandardItem *currentItem = console->get_item(console->get_current_scope_item());
+    const QString dn = currentItem->data(PolicyOURole_DN).toString();
 
     bool checked = change_gp_options_action->isChecked();
     bool res;
-    if (checked) {
+
+    QIcon icon_to_set;
+    bool is_domain = index_is_domain(currentItem->index());
+
+    if (checked)
+    {
         res = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, GPOPTIONS_BLOCK_INHERITANCE);
-    } else {
+        icon_to_set = is_domain ? get_console_tree_item_icon(ItemIconType_Domain_InheritanceBlocked) :
+                get_console_tree_item_icon(ItemIconType_OU_InheritanceBlocked);
+    }
+    else
+    {
         res = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, GPOPTIONS_INHERIT);
+        icon_to_set = is_domain ? get_console_tree_item_icon(ItemIconType_Domain_Clean) :
+                get_console_tree_item_icon(ItemIconType_OU_Clean);
     }
 
     if (!res) {
@@ -452,24 +466,20 @@ void PolicyOUImpl::change_gp_options() {
         change_gp_options_action->toggle();
         return;
     }
+    currentItem->setData(checked, PolicyOURole_Inheritance_Block);
+    currentItem->setIcon(icon_to_set);
 }
 
+
 void PolicyOUImpl::update_gp_options_check_state() const {
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
+    QVariant checked = console->get_current_scope_item().data(PolicyOURole_Inheritance_Block);
 
-    const QString dn = console->get_current_scope_item().data(PolicyOURole_DN).toString();
-    AdObject object = ad.search_object(dn, {ATTRIBUTE_GPOPTIONS});
-    if (object.is_empty()) {
+    if (checked.isValid()) {
+        change_gp_options_action->setEnabled(true);
+        change_gp_options_action->setChecked(checked.toBool());
+    }
+    else
         change_gp_options_action->setDisabled(true);
-        return;
-    }
-
-    change_gp_options_action->setEnabled(true);
-    bool checked = (object.get_string(ATTRIBUTE_GPOPTIONS) == GPOPTIONS_BLOCK_INHERITANCE);
-    change_gp_options_action->setChecked(checked);
 }
 
 void PolicyOUImpl::update_ou_enforced_and_disabled_policies(const Gplink &gplink, const QModelIndex &ou_index) {
@@ -488,9 +498,18 @@ void PolicyOUImpl::update_ou_enforced_and_disabled_policies(const Gplink &gplink
 }
 
 void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object) {
-    const QIcon icon = get_object_icon(object);
-    item->setIcon(icon);
-
     const QString dn = object.get_dn();
     item->setData(dn, PolicyOURole_DN);
+
+    if (object.get_string(ATTRIBUTE_GPOPTIONS) == GPOPTIONS_BLOCK_INHERITANCE) {
+        if (index_is_domain(item->index()))
+            item->setIcon(get_console_tree_item_icon(ItemIconType_Domain_InheritanceBlocked));
+        else
+            item->setIcon(get_console_tree_item_icon(ItemIconType_OU_InheritanceBlocked));
+    } else {
+        item->setIcon(get_object_icon(object));
+    }
+
+    bool inheritance_is_blocked = object.get_int(ATTRIBUTE_GPOPTIONS);
+    item->setData(inheritance_is_blocked, PolicyOURole_Inheritance_Block);
 }
