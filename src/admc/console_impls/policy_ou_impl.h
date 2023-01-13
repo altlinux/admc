@@ -36,7 +36,10 @@
 
 enum PolicyOURole {
     PolicyOURole_DN = MyConsoleRole_LAST + 1,
-
+    PolicyOURole_CleanIcon,
+    PolicyOURole_OverlappedInheritanceIcon,
+    PolicyOURole_Enforced_GPO_List,
+    PolicyOURole_Inheritance_Block,
     PolicyOURole_LAST,
 };
 

@@ -1541,6 +1541,9 @@ QList<QString> console_object_search_attributes() {
     // NOTE: needed to know which icon to use for object
     attributes += ATTRIBUTE_OBJECT_CATEGORY;
 
+    // NOTE: for context menu block inheritance checkbox
+    attributes += ATTRIBUTE_GPOPTIONS;
+
     return attributes;
 }
 
