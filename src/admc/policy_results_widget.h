@@ -56,6 +56,9 @@ public:
 
     QString get_current_gpo() const;
 
+signals:
+    void set_policy_enforce_icon(const QString &policy_dn, const QString &ou_dn, bool isEnforced);
+
 private:
     QStandardItemModel *model;
     QString gpo;

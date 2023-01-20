@@ -184,7 +184,10 @@ void PolicyOUResultsWidget::on_item_changed(QStandardItem *item) {
 
     const QString gplink_string = gplink.to_string();
 
-    ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink_string);
+    bool success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink_string);
+
+    if (success && option == GplinkOption_Enforced)
+        set_policy_enforced_icon(gpo_dn, is_checked);
 
     g_status->display_ad_messages(ad, this);
 
@@ -232,6 +235,23 @@ void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink &, cons
     reload_gplink();
 
     hide_busy_indicator();
+}
+
+void PolicyOUResultsWidget::set_policy_enforced_icon(const QString &policy_dn, bool is_enforced)
+{
+    QModelIndex target_policy_index = console->search_item(console->get_current_scope_item(),
+                                                             PolicyRole_DN,
+                                                             policy_dn,
+                                                             {ItemType_Policy});
+    if (!target_policy_index.isValid())
+        return;
+
+    if (is_enforced)
+        console->get_item(target_policy_index)->setIcon(
+                    target_policy_index.data(PolicyRole_Enforced_Icon).value<QIcon>());
+    else
+        console->get_item(target_policy_index)->setIcon(
+                    target_policy_index.data(PolicyRole_Clean_Icon).value<QIcon>());
 }
 
 void PolicyOUResultsWidget::remove_link() {

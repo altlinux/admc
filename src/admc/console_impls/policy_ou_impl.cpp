@@ -116,14 +116,11 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
 
     // Add policies linked to this OU
     if (!is_domain) {
-        const QList<QString> gpo_list = [&]() {
-            const AdObject parent_object = ad.search_object(dn);
-            const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
-            const Gplink gplink = Gplink(gplink_string);
-            const QList<QString> out = gplink.get_gpo_list();
-
-            return out;
-        }();
+        const AdObject parent_object = ad.search_object(dn);
+        const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
+        const Gplink gplink = Gplink(gplink_string);
+        const QList<QString> gpo_list = gplink.get_gpo_list();
+        update_ou_enforced_policies(gplink, index);
 
         policy_ou_impl_add_objects_from_dns(console, ad, gpo_list, index);
     }
@@ -473,6 +470,18 @@ void PolicyOUImpl::update_gp_options_check_state() const {
     change_gp_options_action->setEnabled(true);
     bool checked = (object.get_string(ATTRIBUTE_GPOPTIONS) == GPOPTIONS_BLOCK_INHERITANCE);
     change_gp_options_action->setChecked(checked);
+}
+
+void PolicyOUImpl::update_ou_enforced_policies(const Gplink &gplink, const QModelIndex &ou_index)
+{
+    QStandardItem *ou_scope_item = console->get_item(ou_index);
+    QStringList enforced_gpo_dn_list;
+    for (QString enforced_gpo_dn : gplink.get_gpo_list())
+    {
+        if (gplink.get_option(enforced_gpo_dn, GplinkOption_Enforced))
+            enforced_gpo_dn_list.append(enforced_gpo_dn);
+    }
+    ou_scope_item->setData(enforced_gpo_dn_list, PolicyOURole_Enforced_GPO_List);
 }
 
 void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object) {

@@ -126,7 +126,6 @@ void PolicyResultsWidget::update(const QModelIndex &index) {
     }
 
     const QString new_gpo = index.data(PolicyRole_DN).toString();
-
     update(new_gpo);
 }
 
@@ -235,6 +234,10 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
 
     if (success) {
         model->setData(index, updated_gplink_string, PolicyResultsRole_GplinkString);
+        if (option == GplinkOption_Enforced)
+        {
+            emit set_policy_enforce_icon(gpo, dn, is_checked);
+        }
     } else {
         const Qt::CheckState undo_check_state = [&]() {
             if (item->checkState() == Qt::Checked) {

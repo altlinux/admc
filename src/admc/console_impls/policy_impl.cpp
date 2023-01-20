@@ -59,6 +59,9 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
     connect(
         edit_action, &QAction::triggered,
         this, &PolicyImpl::on_edit);
+    connect(
+        policy_results, &PolicyResultsWidget::set_policy_enforce_icon,
+        this, &PolicyImpl::set_policy_enforced_icon);
 }
 
 bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -206,6 +209,31 @@ void PolicyImpl::on_edit() {
     console_policy_edit(console, ItemType_Policy, PolicyRole_DN);
 }
 
+void PolicyImpl::set_policy_enforced_icon(const QString &policy_dn, const QString &ou_dn, bool is_enforced)
+{
+    //Group Policy Objects item index
+    QModelIndex gp_objects_index = console->search_item(QModelIndex(), {ItemType_PolicyRoot});
+    QModelIndex ou_dn_item_index = console->search_item(gp_objects_index, PolicyOURole_DN,
+                                                        ou_dn, {ItemType_PolicyOU});
+    QModelIndex target_policy_index = console->search_item(ou_dn_item_index, PolicyRole_DN,
+                                                           policy_dn, {ItemType_Policy});
+    if (!target_policy_index.isValid())
+    {
+        return;
+    }
+
+    QStandardItem *target_policy_item = console->get_item(target_policy_index);
+    if (!target_policy_item || target_policy_item->parent()->data(ConsoleRole_Type) != ItemType_PolicyOU)
+        return;
+
+    if (is_enforced)
+        target_policy_item->setIcon(
+                    target_policy_index.data(PolicyRole_Enforced_Icon).value<QIcon>());
+    else
+        target_policy_item->setIcon(
+                    target_policy_index.data(PolicyRole_Clean_Icon).value<QIcon>());
+}
+
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
     QStandardItem *main_item = row[0];
     console_policy_load_item(main_item, object);
@@ -213,8 +241,21 @@ void console_policy_load(const QList<QStandardItem *> &row, const AdObject &obje
 
 void console_policy_load_item(QStandardItem *main_item, const AdObject &object) {
     const QIcon icon = get_object_icon(object);
-    main_item->setIcon(icon);
+    const QIcon overlappedIconEnforced = overlay_scope_item_icon(icon, QIcon::fromTheme("stop"));
+
+    main_item->setData(QVariant::fromValue(icon), PolicyRole_Clean_Icon);
+    main_item->setData(QVariant::fromValue(overlappedIconEnforced), PolicyRole_Enforced_Icon);
     main_item->setData(object.get_dn(), PolicyRole_DN);
+
+    bool isEnforced = false;
+    if (main_item->parent()->data(ConsoleRole_Type).toInt() == ItemType_PolicyOU)
+        isEnforced = main_item->parent()->data(PolicyOURole_Enforced_GPO_List)
+            .toStringList().contains(object.get_dn());
+
+    if (isEnforced)
+        main_item->setIcon(overlappedIconEnforced);
+    else
+        main_item->setIcon(icon);
 
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
     main_item->setText(display_name);
