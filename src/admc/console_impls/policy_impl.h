@@ -69,6 +69,7 @@ public:
 private slots:
     void on_add_link();
     void on_edit();
+    void set_policy_enforced_icon(const QString &policy_dn, const QString &ou_dn, bool is_enforced);
 
 private:
     PolicyResultsWidget *policy_results;
