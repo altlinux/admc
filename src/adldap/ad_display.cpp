@@ -45,6 +45,7 @@ QString guid_to_display_value(const QByteArray &bytes);
 QString uac_to_display_value(const QByteArray &bytes);
 QString samaccounttype_to_display_value(const QByteArray &bytes);
 QString primarygrouptype_to_display_value(const QByteArray &bytes);
+QString grouptype_to_display_value(const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig) {
     if (adconfig == nullptr) {
@@ -61,6 +62,8 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
                 return samaccounttype_to_display_value(value);
             } else if (attribute == ATTRIBUTE_PRIMARY_GROUP_ID) {
                 return primarygrouptype_to_display_value(value);
+            } else if (attribute == ATTRIBUTE_GROUP_TYPE) {
+                return grouptype_to_display_value(value);
             } else {
                 return QString(value);
             }
@@ -418,4 +421,33 @@ QString primarygrouptype_to_display_value(const QByteArray &bytes) {
     } else {
         return QString::number(value_int);
     }
+}
+
+QString grouptype_to_display_value(const QByteArray &bytes)
+{
+    bool toInt_ok;
+    const int value_int = bytes.toInt(&toInt_ok);
+
+    if (!toInt_ok) {
+        return QCoreApplication::translate("attribute_display", "<invalid value>");
+    }
+
+    const QHash<int, QString> mask_name_map = {
+        //TODO: change strings according to rsat
+        {GROUP_TYPE_BIT_SYSTEM, "SYSTEM_GROUP"},
+        {GROUP_TYPE_BIT_SECURITY, "SECURITY_ENABLED"},
+        {group_scope_bit(GroupScope_Global), "ACCOUNT_GROUP"},
+        {group_scope_bit(GroupScope_DomainLocal), "RESOURCE_GROUP"},
+        {group_scope_bit(GroupScope_Universal), "UNIVERSAL_GROUP"},
+    };
+
+    QStringList masks_strings;
+    for (int mask : mask_name_map.keys())
+    {
+        if (bitmask_is_set(value_int, mask))
+            masks_strings.append(mask_name_map[mask]);
+    }
+
+    QString display_value = QString("0x%1 = ( %2 )").arg(QString::number((quint32)value_int, 16), masks_strings.join(" | "));
+    return display_value;
 }
