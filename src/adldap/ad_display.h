@@ -35,5 +35,6 @@ class QList;
 QString attribute_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig);
 QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values, const AdConfig *adconfig);
 QString object_sid_display_value(const QByteArray &sid_bytes);
+bool attribute_value_is_hex_displayed(const QString &attribute);
 
 #endif /* ATTRIBUTE_DISPLAY_H */

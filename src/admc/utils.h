@@ -62,7 +62,9 @@ QList<QStandardItem *> make_item_row(const int count);
 void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap<int, QString> &labels_map);
 
 // Prohibits leading zeroes
-void set_line_edit_to_numbers_only(QLineEdit *edit);
+void set_line_edit_to_decimal_numbers_only(QLineEdit *edit);
+
+void set_line_edit_to_hex_numbers_only(QLineEdit *edit);
 
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view);
 
