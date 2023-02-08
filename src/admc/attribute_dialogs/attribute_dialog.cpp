@@ -22,15 +22,21 @@
 
 #include "ad_config.h"
 #include "ad_utils.h"
+
+#include "ad_display.h"
+#include "globals.h"
 #include "attribute_dialogs/bool_attribute_dialog.h"
 #include "attribute_dialogs/datetime_attribute_dialog.h"
 #include "attribute_dialogs/list_attribute_dialog.h"
 #include "attribute_dialogs/number_attribute_dialog.h"
 #include "attribute_dialogs/octet_attribute_dialog.h"
 #include "attribute_dialogs/string_attribute_dialog.h"
-#include "globals.h"
+#include "attribute_dialogs/number_attribute_dialog.h"
+#include "attribute_dialogs/hex_number_attribute_dialog.h"
+
 
 #include <QLabel>
+#include <QDebug>
 
 AttributeDialog *AttributeDialog::make(const QString &attribute, const QList<QByteArray> &value_list, const bool read_only, const bool single_valued, QWidget *parent) {
     // Single/multi valued logic is separated out of the
@@ -48,7 +54,10 @@ AttributeDialog *AttributeDialog::make(const QString &attribute, const QList<QBy
             const bool attribute_is_number = g_adconfig->get_attribute_is_number(attribute);
 
             if (attribute_is_number) {
-                return new NumberAttributeDialog(value_list, attribute, read_only, parent);
+                if (attribute_value_is_hex_displayed(attribute))
+                    return new HexNumberAttributeDialog(value_list, attribute, read_only, parent);
+                else
+                    return new NumberAttributeDialog(value_list, attribute, read_only, parent);
             } else {
                 return new StringAttributeDialog(value_list, attribute, read_only, parent);
             }
