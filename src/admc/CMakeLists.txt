@@ -163,6 +163,7 @@ set(ADMC_SOURCES
     attribute_dialogs/list_attribute_dialog.cpp
     attribute_dialogs/string_attribute_dialog.cpp
     attribute_dialogs/number_attribute_dialog.cpp
+    attribute_dialogs/hex_number_attribute_dialog.cpp
     attribute_dialogs/octet_attribute_dialog.cpp
     attribute_dialogs/bool_attribute_dialog.cpp
     attribute_dialogs/datetime_attribute_dialog.cpp

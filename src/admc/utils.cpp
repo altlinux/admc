@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2022 BaseALT Ltd.
@@ -76,7 +76,7 @@ void set_horizontal_header_labels_from_map(QStandardItemModel *model, const QMap
     }
 }
 
-void set_line_edit_to_numbers_only(QLineEdit *edit) {
+void set_line_edit_to_decimal_numbers_only(QLineEdit *edit) {
     edit->setValidator(new QRegExpValidator(QRegExp("[0-9]*"), edit));
 }
 
@@ -509,4 +509,9 @@ int get_range_upper(const QString &attribute) {
 
         return out;
     }
+}
+
+void set_line_edit_to_hex_numbers_only(QLineEdit *edit)
+{
+    edit->setValidator(new QRegExpValidator(QRegExp("[0-9a-f]*"), edit));
 }

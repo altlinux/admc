@@ -451,3 +451,9 @@ QString grouptype_to_display_value(const QByteArray &bytes)
     QString display_value = QString("0x%1 = ( %2 )").arg(QString::number((quint32)value_int, 16), masks_strings.join(" | "));
     return display_value;
 }
+
+bool attribute_value_is_hex_displayed(const QString &attribute)
+{
+    //TODO: Add here attributes with hex displayed values
+    return (attribute == ATTRIBUTE_GROUP_TYPE /* || attribute == ... */);
+}
