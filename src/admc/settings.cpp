@@ -22,12 +22,17 @@
 
 #include "config.h"
 #include "connection_options_dialog.h"
+#include "console_impls/select_theme_impl.h"
 
 #include <QAction>
 #include <QDialog>
 #include <QHeaderView>
 #include <QLocale>
+#include <QList>
 #include <QSettings>
+#include <QApplication>
+#include <QDebug>
+#include <QMenu>
 
 const QHash<QString, QVariant> setting_default_map = {
     {SETTING_advanced_features, false},
@@ -56,6 +61,7 @@ const QHash<QString, QVariant> setting_default_map = {
     {SETTING_feature_profile_tab, false},
     {SETTING_feature_dev_mode, false},
     {SETTING_feature_current_locale_first, false},
+    {SETTING_app_active_theme, QString("AdmcDefault")}
 };
 
 void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
@@ -68,6 +74,10 @@ void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
             const QByteArray geometry = dialog->saveGeometry();
             settings_set_variant(setting, geometry);
         });
+}
+
+void settings_restore_themes() {
+    SelectThemeImpl().apply_theme(settings_get_variant(SETTING_app_active_theme).toString());
 }
 
 bool settings_restore_geometry(const QString setting, QWidget *widget) {
@@ -111,4 +121,6 @@ void settings_set_variant(const QString setting, const QVariant &value) {
     QSettings settings;
 
     settings.setValue(setting, value);
+
+    settings.sync();
 }

@@ -80,6 +80,7 @@ set(ADMC_SOURCES
     error_log_dialog.cpp
     fsmo_dialog.cpp
     find_policy_dialog.cpp
+    choose_theme_dialog.cpp
 
     filter_widget/filter_widget.cpp
     filter_widget/filter_dialog.cpp
@@ -184,8 +185,10 @@ set(ADMC_SOURCES
     console_impls/all_policies_folder_impl.cpp
     console_impls/policy_ou_impl.cpp
     console_impls/found_policy_impl.cpp
+    console_impls/select_theme_impl.cpp
 
     admc.qrc
+    admc-icons.qrc
 )
 
 add_executable(admc

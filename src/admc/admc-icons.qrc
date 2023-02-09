@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>AdmcDefault/64x64/emblem-system.svg</file>
+        <file>AdmcDefault/64x64/computer.svg</file>
+        <file>AdmcDefault/64x64/folder.svg</file>
+        <file>AdmcDefault/64x64/preferences-other.svg</file>
+        <file>AdmcDefault/64x64/network-server.svg</file>
+        <file>AdmcDefault/64x64/folder-templates.svg</file>
+        <file>AdmcDefault/64x64/system-users.svg</file>
+        <file>AdmcDefault/64x64/folder-documents.svg</file>
+        <file>AdmcDefault/64x64/avatar-default.svg</file>
+        <file>AdmcDefault/64x64/volume.svg</file>
+        <file>AdmcDefault/index.theme</file>
+    </qresource>
+    <qresource prefix="/"/>
+</RCC>

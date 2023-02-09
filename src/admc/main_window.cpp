@@ -35,6 +35,7 @@
 #include "console_impls/all_policies_folder_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
+#include "console_impls/select_theme_impl.h"
 #include "console_widget/console_widget.h"
 #include "attribute_edits/country_combo.h"
 #include "globals.h"
@@ -42,11 +43,13 @@
 #include "status.h"
 #include "utils.h"
 #include "fsmo_dialog.h"
+#include "choose_theme_dialog.h"
 
 #include <QDebug>
 #include <QLabel>
 #include <QModelIndex>
 #include <QDesktopServices>
+#include <QFileDialog>
 
 MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 : QMainWindow(parent) {
@@ -121,7 +124,12 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         return out;
     }();
 
-    ui->console->set_actions(console_actions);
+    try {
+        ui->console->set_actions(console_actions);
+    }
+    catch (std::exception & e){
+        qCritical() << e.what() << "exception";
+    }
 
     // NOTE: "Action" menu actions need to be filled by the
     // console
@@ -253,6 +261,11 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     connect(
         ui->action_filter_objects, &QAction::triggered,
         object_impl, &ObjectImpl::open_console_filter_dialog);
+    connect(
+        ui->action_choose_theme, &QAction::triggered,
+        this, &MainWindow::open_choose_theme_dialog);
+
+    settings_restore_themes();
 
     const QHash<QString, QAction *> bool_action_map = {
         {SETTING_confirm_actions, ui->action_confirm_actions},
@@ -355,6 +368,12 @@ void MainWindow::on_show_login_changed() {
 void MainWindow::open_manual() {
     const QUrl manual_url = QUrl("https://www.altlinux.org/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%BE%D0%B2%D1%8B%D0%B5_%D0%BF%D0%BE%D0%BB%D0%B8%D1%82%D0%B8%D0%BA%D0%B8/ADMC");
     QDesktopServices::openUrl(manual_url);
+}
+
+void MainWindow::open_choose_theme_dialog() {
+    auto dialog = new ChooseThemeDialog (this);
+    dialog->open();
+    ui->toolbar->setFocus();
 }
 
 void MainWindow::open_connection_options() {

@@ -38,6 +38,8 @@ public:
 
     MainWindow(AdInterface &ad, QWidget *parent = nullptr);
     ~MainWindow();
+public slots:
+    void open_choose_theme_dialog();
 
 protected:
     void closeEvent(QCloseEvent *event);

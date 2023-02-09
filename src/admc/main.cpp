@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QLibraryInfo>
 #include <QTranslator>
+#include <QMessageBox>
 
 int main(int argc, char **argv) {
     Q_INIT_RESOURCE(adldap);
@@ -85,6 +86,8 @@ int main(int argc, char **argv) {
         qDebug() << "Failed to load qt base translation";
     }
 
+
+
     load_connection_options();
 
     // In case of failure to connect to AD and load
@@ -114,7 +117,6 @@ int main(int argc, char **argv) {
 
         if (ad.is_connected()) {
             load_g_adconfig(ad);
-            
             first_main_window = new MainWindow(ad);
             first_main_window->show();
         } else {
