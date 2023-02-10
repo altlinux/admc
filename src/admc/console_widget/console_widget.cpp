@@ -1361,7 +1361,7 @@ QString results_state_name(const int type) {
     return QString("RESULTS_STATE_%1").arg(type);
 }
 
-QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon)
+QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon, IconOverlayPosition position)
 {
     QIcon overlapped_icon;
     //Icon looks not distorted with 16x16 size
@@ -1369,7 +1369,24 @@ QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon
     QPixmap overlay_pixmap = overlay_icon.pixmap(10, 10);
 
     QPainter painter(&original_pixmap);
-    painter.drawPixmap(original_pixmap.width() - 8, original_pixmap.height() - 8, overlay_pixmap);
+    switch (position)
+    {
+    case IconOverlayPosition_BottomLeft:
+        painter.drawPixmap(0, original_pixmap.height() - 8, overlay_pixmap);
+        break;
+    case IconOverlayPosition_TopLeft:
+        painter.drawPixmap(0, 0, overlay_pixmap);
+        break;
+    case IconOverlayPosition_TopRight:
+        painter.drawPixmap(original_pixmap.width() - 8, 0, overlay_pixmap);
+        break;
+    case IconOverlayPosition_BottomRight:
+        painter.drawPixmap(original_pixmap.width() - 8, original_pixmap.height() - 8, overlay_pixmap);
+        break;
+    default:
+        break;
+    }
+
     overlapped_icon.addPixmap(original_pixmap);
 
     return overlapped_icon;
