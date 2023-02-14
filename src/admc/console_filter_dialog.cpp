@@ -24,8 +24,8 @@
 #include "adldap.h"
 #include "filter_widget/class_filter_widget.h"
 #include "filter_widget/filter_dialog.h"
-#include "settings.h"
 #include "globals.h"
+#include "settings.h"
 
 #define FILTER_CUSTOM_DIALOG_STATE "FILTER_CUSTOM_DIALOG_STATE"
 #define FILTER_CLASSES_STATE "FILTER_CLASSES_STATE"

@@ -20,8 +20,8 @@
 
 #include "admc_test_ad_security.h"
 
-#include "samba/ndr_security.h"
 #include "ad_security.h"
+#include "samba/ndr_security.h"
 
 // NOTE: using "int" instead of "uint32_t" for test
 // data because "uint32_t" is not supported by

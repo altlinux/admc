@@ -21,16 +21,16 @@
 #include "admc_test_policy_ou_results_widget.h"
 
 #include "ad_filter.h"
+#include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
 #include "gplink.h"
 #include "policy_ou_results_widget.h"
 #include "policy_ou_results_widget_p.h"
-#include "console_widget/console_widget.h"
 #include "utils.h"
 
-#include <QStandardItemModel>
 #include <QSortFilterProxyModel>
+#include <QStandardItemModel>
 #include <QTreeView>
 
 // NOTE: unlike other tests, here we have to create the test

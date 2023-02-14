@@ -27,8 +27,8 @@
 
 #include <QFormLayout>
 #include <QLineEdit>
-#include <QPlainTextEdit>
 #include <QListWidget>
+#include <QPlainTextEdit>
 #include <QPushButton>
 
 #define TEST_ATTRIBUTE_MAIN ATTRIBUTE_WWW_HOMEPAGE

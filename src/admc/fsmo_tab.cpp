@@ -22,9 +22,9 @@
 #include "ui_fsmo_tab.h"
 
 #include "adldap.h"
-#include "utils.h"
 #include "globals.h"
 #include "status.h"
+#include "utils.h"
 
 FSMOTab::FSMOTab(const QString &title, const QString &role_dn_arg) {
     ui = new Ui::FSMOTab();

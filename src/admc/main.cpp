@@ -20,13 +20,13 @@
 
 #include "adldap.h"
 #include "config.h"
+#include "connection_options_dialog.h"
 #include "globals.h"
 #include "main_window.h"
 #include "main_window_connection_error.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "connection_options_dialog.h"
 
 #include <QApplication>
 #include <QDebug>

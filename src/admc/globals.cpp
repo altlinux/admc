@@ -21,8 +21,8 @@
 #include "globals.h"
 
 #include "adldap.h"
-#include "status.h"
 #include "settings.h"
+#include "status.h"
 
 #include <QLocale>
 

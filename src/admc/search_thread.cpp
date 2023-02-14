@@ -21,9 +21,9 @@
 #include "search_thread.h"
 
 #include "adldap.h"
-#include "utils.h"
-#include "status.h"
 #include "settings.h"
+#include "status.h"
+#include "utils.h"
 
 #include <QHash>
 

@@ -23,8 +23,8 @@
 
 #include "adldap.h"
 #include "globals.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
 #include <QFont>
 #include <QFontDatabase>

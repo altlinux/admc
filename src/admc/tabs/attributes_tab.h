@@ -26,8 +26,8 @@
  * viewing/editing if possible via attribute dialogs.
  */
 
-#include <QWidget>
 #include "attribute_edits/attribute_edit.h"
+#include <QWidget>
 
 enum AttributesColumn {
     AttributesColumn_Name,

@@ -20,10 +20,10 @@
 
 #include "admc_test_select_classes_widget.h"
 
-#include "filter_widget/select_classes_widget.h"
-#include "filter_widget/ui_select_classes_widget.h"
 #include "filter_widget/class_filter_dialog.h"
+#include "filter_widget/select_classes_widget.h"
 #include "filter_widget/ui_class_filter_dialog.h"
+#include "filter_widget/ui_select_classes_widget.h"
 
 void ADMCTestSelectClassesWidget::init() {
     ADMCTest::init();

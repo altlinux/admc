@@ -20,8 +20,8 @@
 
 #include "admc_test_ad_interface.h"
 
-#include "samba/dom_sid.h"
 #include "globals.h"
+#include "samba/dom_sid.h"
 
 #include <QTest>
 

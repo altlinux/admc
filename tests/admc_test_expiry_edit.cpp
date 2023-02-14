@@ -25,9 +25,9 @@
 #include "attribute_edits/ui_expiry_widget.h"
 #include "globals.h"
 
-#include <QRadioButton>
 #include <QDateEdit>
 #include <QFormLayout>
+#include <QRadioButton>
 
 void ADMCTestExpiryEdit::initTestCase_data() {
     QTest::addColumn<QString>("button_name");

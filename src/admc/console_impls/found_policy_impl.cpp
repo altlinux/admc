@@ -21,9 +21,9 @@
 #include "console_impls/found_policy_impl.h"
 
 #include "adldap.h"
+#include "console_impls/find_policy_impl.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
-#include "console_impls/find_policy_impl.h"
 #include "utils.h"
 
 #include <QAction>

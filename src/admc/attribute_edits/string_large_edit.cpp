@@ -21,8 +21,8 @@
 #include "attribute_edits/string_large_edit.h"
 
 #include "adldap.h"
-#include "utils.h"
 #include "globals.h"
+#include "utils.h"
 
 #include <QPlainTextEdit>
 

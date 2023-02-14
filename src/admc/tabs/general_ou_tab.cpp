@@ -22,8 +22,8 @@
 #include "tabs/ui_general_ou_tab.h"
 
 #include "adldap.h"
-#include "attribute_edits/general_name_edit.h"
 #include "attribute_edits/country_edit.h"
+#include "attribute_edits/general_name_edit.h"
 #include "attribute_edits/string_edit.h"
 
 GeneralOUTab::GeneralOUTab(QList<AttributeEdit *> *edit_list, QWidget *parent)

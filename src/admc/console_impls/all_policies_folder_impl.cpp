@@ -31,8 +31,8 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QList>
 #include <QAction>
+#include <QList>
 #include <QStandardItem>
 
 AllPoliciesFolderImpl::AllPoliciesFolderImpl(ConsoleWidget *console_arg)

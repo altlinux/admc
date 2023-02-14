@@ -34,13 +34,13 @@
 #include <QHash>
 #include <QHeaderView>
 #include <QLineEdit>
-#include <QPlainTextEdit>
 #include <QList>
 #include <QMap>
 #include <QMenu>
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QPersistentModelIndex>
+#include <QPlainTextEdit>
 #include <QPoint>
 #include <QScreen>
 #include <QSortFilterProxyModel>

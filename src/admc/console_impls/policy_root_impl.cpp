@@ -21,8 +21,8 @@
 #include "console_impls/policy_root_impl.h"
 
 #include "adldap.h"
-#include "console_impls/item_type.h"
 #include "console_impls/all_policies_folder_impl.h"
+#include "console_impls/item_type.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_widget/results_view.h"
 #include "globals.h"

@@ -25,8 +25,8 @@
 #include "attribute_dialogs/attribute_dialog.h"
 #include "attribute_dialogs/octet_attribute_dialog.h"
 #include "globals.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
 ListAttributeDialog::ListAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
 : AttributeDialog(attribute, read_only, parent) {

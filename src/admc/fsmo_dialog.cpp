@@ -21,10 +21,10 @@
 #include "fsmo_dialog.h"
 #include "ui_fsmo_dialog.h"
 
-#include "fsmo_tab.h"
-#include "settings.h"
 #include "adldap.h"
+#include "fsmo_tab.h"
 #include "globals.h"
+#include "settings.h"
 
 enum FSMORole {
     FSMORole_DomainDNS,

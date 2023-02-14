@@ -25,8 +25,8 @@
 #include "settings.h"
 #include "utils.h"
 
-#include <QLineEdit>
 #include <QCheckBox>
+#include <QLineEdit>
 #include <QTextCodec>
 
 PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QCheckBox *show_password_check, QObject *parent)

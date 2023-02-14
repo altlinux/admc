@@ -23,11 +23,11 @@
 #include "adldap.h"
 #include "console_impls/object_impl.h"
 #include "console_widget/results_view.h"
-#include "utils.h"
 #include "item_type.h"
+#include "utils.h"
 
-#include <QStandardItem>
 #include <QModelIndex>
+#include <QStandardItem>
 
 FindPolicyImpl::FindPolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {

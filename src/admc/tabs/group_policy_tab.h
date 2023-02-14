@@ -20,8 +20,8 @@
 #ifndef GROUP_POLICY_TAB_H
 #define GROUP_POLICY_TAB_H
 
-#include <QWidget>
 #include "attribute_edits/attribute_edit.h"
+#include <QWidget>
 
 #include "gplink.h"
 

@@ -34,10 +34,10 @@
 #include <QDebug>
 #include <QLabel>
 #include <QPersistentModelIndex>
+#include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QSortFilterProxyModel>
 
 struct security_descriptor;
 

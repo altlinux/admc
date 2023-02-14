@@ -23,8 +23,8 @@
 
 #include "adldap.h"
 #include "globals.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
 StringAttributeDialog::StringAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
 : AttributeDialog(attribute, read_only, parent) {

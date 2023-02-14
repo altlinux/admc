@@ -24,9 +24,9 @@
 #include "find_policy_dialog_p.h"
 #include "ui_find_policy_dialog.h"
 
-#include <QListWidget>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QPushButton>
 
 void ADMCTestFindPolicyDialog::init() {

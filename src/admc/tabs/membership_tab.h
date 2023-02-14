@@ -21,8 +21,8 @@
 #ifndef MEMBERS_TAB_H
 #define MEMBERS_TAB_H
 
-#include <QWidget>
 #include "attribute_edits/attribute_edit.h"
+#include <QWidget>
 
 #include <QSet>
 

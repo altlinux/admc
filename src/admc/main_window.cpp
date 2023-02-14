@@ -21,32 +21,32 @@
 #include "main_window.h"
 #include "ui_main_window.h"
 
-#include "main_window_connection_error.h"
 #include "about_dialog.h"
 #include "adldap.h"
+#include "attribute_edits/country_combo.h"
 #include "changelog_dialog.h"
 #include "config.h"
 #include "connection_options_dialog.h"
+#include "console_impls/all_policies_folder_impl.h"
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
-#include "console_impls/policy_root_impl.h"
 #include "console_impls/policy_ou_impl.h"
-#include "console_impls/all_policies_folder_impl.h"
+#include "console_impls/policy_root_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_widget/console_widget.h"
-#include "attribute_edits/country_combo.h"
+#include "fsmo_dialog.h"
 #include "globals.h"
+#include "main_window_connection_error.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "fsmo_dialog.h"
 
 #include <QDebug>
+#include <QDesktopServices>
 #include <QLabel>
 #include <QModelIndex>
-#include <QDesktopServices>
 
 MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 : QMainWindow(parent) {

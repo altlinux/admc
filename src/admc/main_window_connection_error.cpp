@@ -22,11 +22,11 @@
 #include "ui_main_window_connection_error.h"
 
 #include "adldap.h"
+#include "connection_options_dialog.h"
+#include "globals.h"
 #include "main_window.h"
 #include "settings.h"
 #include "utils.h"
-#include "globals.h"
-#include "connection_options_dialog.h"
 
 MainWindowConnectionError::MainWindowConnectionError()
 : QMainWindow() {
