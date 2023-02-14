@@ -43,11 +43,11 @@ const QString gpo_alpha_name = "test_policy_for_admc_test_alpha";
 const QString gpo_beta_name = "test_policy_for_admc_test_beta";
 const QList<QString> gpo_name_list = {
     gpo_alpha_name,
-    gpo_beta_name
+    gpo_beta_name,
 };
 QList<QString> gpo_dn_list = {
     QString(),
-    QString()
+    QString(),
 };
 
 void ADMCTestPolicyOUResultsWidget::initTestCase() {

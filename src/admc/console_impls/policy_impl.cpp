@@ -265,7 +265,7 @@ void console_policy_edit(ConsoleWidget *console, const int item_type, const int 
         QString("-p"),
         path,
         QString("-n"),
-        policy_name
+        policy_name,
     };
 
     process->setArguments(args);

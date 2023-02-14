@@ -49,7 +49,7 @@ FoundPolicyImpl::FoundPolicyImpl(ConsoleWidget *console_arg)
 void FoundPolicyImpl::set_buddy_console(ConsoleWidget *buddy_console) {
     console_list = {
         console,
-        buddy_console
+        buddy_console,
     };
 }
 

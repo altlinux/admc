@@ -227,7 +227,7 @@ QIcon get_object_icon(const QString &object_category) {
         const QList<QString> fallback_icon_list = {
             "emblem-system",
             "emblem-system-symbolic",
-            "dialog-question"
+            "dialog-question",
         };
         const QList<QString> icon_name_list = category_to_icon_list.value(object_category, fallback_icon_list);
 

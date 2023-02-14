@@ -173,7 +173,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 void ObjectImpl::set_buddy_console(ConsoleWidget *buddy_console) {
     console_list = {
         console,
-        buddy_console
+        buddy_console,
     };
 }
 

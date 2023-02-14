@@ -61,7 +61,7 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
         {
             {AttributesColumn_Name, tr("Name")},
             {AttributesColumn_Value, tr("Value")},
-            {AttributesColumn_Type, tr("Type")}
+            {AttributesColumn_Type, tr("Type")},
         });
 
     auto filter_menu = new AttributesTabFilterMenu(view);
