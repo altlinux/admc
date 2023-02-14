@@ -75,7 +75,7 @@ void ADMCTestAdSecurity::add_right() {
 void ADMCTestAdSecurity::remove_right() {
     security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), true);
     check_state(test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), TestAdSecurityType_Allow);
-    
+
     security_descriptor_remove_right(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), true);
     check_state(test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), TestAdSecurityType_None);
 }
@@ -215,7 +215,7 @@ void ADMCTestAdSecurity::add_to_unset_opposite() {
     QFETCH(int, access_mask);
     QFETCH(QByteArray, object_type);
     QFETCH(TestAdSecurityType, expected_result);
-   
+
     security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, access_mask, object_type, first_allow);
     security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, access_mask, object_type, !first_allow);
 
@@ -349,7 +349,7 @@ void ADMCTestAdSecurity::add_to_unset_opposite_superior() {
     QFETCH(bool, first_allow);
     QFETCH(TestAdSecurityType, expected_create_child);
     QFETCH(TestAdSecurityType, expected_full_control);
-   
+
     security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_GENERIC_ALL, QByteArray(), first_allow);
     security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), !first_allow);
 

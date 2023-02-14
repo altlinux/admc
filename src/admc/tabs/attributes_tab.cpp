@@ -194,7 +194,7 @@ void AttributesTabEdit::edit_attribute() {
     if (dialog == nullptr) {
         return;
     }
-    
+
     dialog->open();
 
     connect(

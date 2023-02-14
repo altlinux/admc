@@ -72,7 +72,7 @@ void ADMCTestProtectDeletionEdit::apply_data() {
 void ADMCTestProtectDeletionEdit::apply() {
     QFETCH(bool, is_checked);
     QFETCH(bool, expected_delete_success);
-    
+
     const AdObject object = ad.search_object(dn);
     edit->load(ad, object);
 

@@ -1677,7 +1677,7 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     // other one. Order doesn't matter. Note that
     // simple equality doesn't work because entry order
     // may not match.
-    // 
+    //
     // NOTE: there's also a weird thing where RSAT
     // creates GPO's with duplicate ace's for Domain
     // Admins. Not sure why that happens but this

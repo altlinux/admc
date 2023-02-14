@@ -22,7 +22,7 @@
 #define CREATE_OBJECT_DIALOG_H
 
 /**
- * Base class for dialogs that create objects. 
+ * Base class for dialogs that create objects.
  */
 
 #include <QDialog>

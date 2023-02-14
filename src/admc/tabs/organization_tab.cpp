@@ -58,7 +58,7 @@ OrganizationTab::OrganizationTab(QList<AttributeEdit *> *edit_list, QWidget *par
         department_edit,
         company_edit,
         manager_edit,
-    
+
         tab_edit,
     });
 }

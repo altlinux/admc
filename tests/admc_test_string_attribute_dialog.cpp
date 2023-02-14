@@ -74,7 +74,7 @@ void ADMCTestStringAttributeDialog::limit_length() {
     const auto value_list = QList<QByteArray>({"hello"});
 
     init_edit(value_list);
-    
+
     const int range_upper = ad.adconfig()->get_attribute_range_upper(TEST_ATTRIBUTE);
 
     QVERIFY(range_upper > 0);

@@ -92,7 +92,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     // "stretchLastSection" setting is turned off - this
     // fixes item being stretched to fit the view and now
     // items can be their full length.
-    // 
+    //
     // BUT, without "stretchLastSection", selecting items
     // looks wrong because selection rectangle doesn't
     // stretch to the whole view and also depends on the

@@ -321,7 +321,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             const QByteArray display_name = object.get_value(ATTRIBUTE_DISPLAY_NAME);
             const QList<QString> applies_to = [this, object]() {
                 QList<QString> out;
-                
+
                 const QList<QString> class_guid_string_list = object.get_strings(ATTRIBUTE_APPLIES_TO);
                 for (const QString &class_guid_string : class_guid_string_list) {
                     const QByteArray class_guid = guid_string_to_bytes(class_guid_string);
@@ -722,7 +722,7 @@ QString AdConfig::get_right_name(const QByteArray &right_guid, const QLocale::La
     const QString right_cn = d->right_guid_to_cn_map[right_guid];
     if (language == QLocale::Russian && cn_to_map_russian.contains(right_cn)) {
         const QString out = cn_to_map_russian[right_cn];
-        
+
         return out;
     }
 
@@ -732,7 +732,7 @@ QString AdConfig::get_right_name(const QByteArray &right_guid, const QLocale::La
 
 QList<QString> AdConfig::get_extended_rights_list(const QList<QString> &class_list) const {
     QList<QString> out;
-    
+
     for (const QString &rights : d->extended_rights_list) {
         const bool applies_to = rights_applies_to_class(rights, class_list);
         if (applies_to) {
@@ -782,7 +782,7 @@ QList<QString> AdConfig::get_noncontainer_classes() {
 bool AdConfig::rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const {
     const QByteArray rights_guid = d->rights_name_to_guid_map[rights_cn];
 
-    const QList<QString> applies_to_list = d->rights_applies_to_map[rights_guid]; 
+    const QList<QString> applies_to_list = d->rights_applies_to_map[rights_guid];
     const QSet<QString> applies_to_set = QSet<QString>(applies_to_list.begin(), applies_to_list.end());
 
     const QSet<QString> class_set = QSet<QString>(class_list.begin(), class_list.end());

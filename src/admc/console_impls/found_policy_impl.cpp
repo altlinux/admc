@@ -97,7 +97,7 @@ void FoundPolicyImpl::rename(const QList<QModelIndex> &index_list) {
 
 void FoundPolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
-    
+
     PolicyResultsWidget *policy_results = nullptr;
     console_policy_delete(console_list, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
 }

@@ -263,7 +263,7 @@ void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
         message_box_warning(console, tr("Error"), tr("Can't cut and paste query folder into itself."));
 
         return;
-    } 
+    }
 
     const bool parent_is_same = [&]() {
         for (const QModelIndex &index : copied_list) {

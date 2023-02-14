@@ -270,7 +270,7 @@ void PolicyOUImpl::create_and_link_gpo() {
     const QString target_dn = target_index.data(PolicyOURole_DN).toString();
 
     auto dialog = new CreatePolicyDialog(ad, console);
-    dialog->open();    
+    dialog->open();
 
     connect(
         dialog, &QDialog::accepted,

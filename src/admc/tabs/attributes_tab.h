@@ -21,7 +21,7 @@
 #ifndef ATTRIBUTES_TAB_H
 #define ATTRIBUTES_TAB_H
 
-/** 
+/**
  * Show attributes of target in a list. Allows
  * viewing/editing if possible via attribute dialogs.
  */

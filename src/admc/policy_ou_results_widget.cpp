@@ -346,7 +346,7 @@ void PolicyOUResultsWidget::reload_gplink() {
 
         const QIcon icon = get_object_icon(gpo_object);
         row[0]->setIcon(icon);
-        
+
         for (const auto column : option_columns) {
             QStandardItem *item = row[column];
             item->setCheckable(true);

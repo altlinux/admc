@@ -474,11 +474,11 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex
 void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
     const QModelIndex index = index_list[0];
     const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
-    
+
     console_object_rename(console_list, index_list, ObjectRole_DN, object_class);
 }
-  
-void console_object_rename(const QList<ConsoleWidget *> &console_list, const QList<QModelIndex> &index_list, const int dn_role, const QString &object_class) {  
+
+void console_object_rename(const QList<ConsoleWidget *> &console_list, const QList<QModelIndex> &index_list, const int dn_role, const QString &object_class) {
     AdInterface ad;
     if (ad_failed(ad, console_list[0])) {
         return;
@@ -561,7 +561,7 @@ void console_object_properties(const QList<ConsoleWidget *> &console_list, const
 
             for (const QString &dn : dn_list) {
                 const AdObject object = ad2.search_object(dn);
-                
+
                 // TODO: band-aid for the situations
                 // where properties dialog interacts
                 // with deleted objects. Bad stuff can
@@ -699,7 +699,7 @@ void console_object_delete(const QList<ConsoleWidget *> &console_list, const QLi
             get_query_tree_root(target_console),
             get_find_object_root(target_console),
         };
-        
+
         for (const QModelIndex &root : root_list) {
             if (root.isValid()) {
                 console_object_delete_dn_list(target_console, deleted_list, root, ItemType_Object, ObjectRole_DN);
@@ -989,7 +989,7 @@ void ObjectImpl::on_reset_account() {
 
 void ObjectImpl::new_object(const QString &object_class) {
     const QString parent_dn = get_selected_target_dn_object(console);
-  
+
     console_object_create({console}, object_class, parent_dn);
 }
 
@@ -1537,7 +1537,7 @@ QList<QString> console_object_search_attributes() {
     attributes += ATTRIBUTE_SYSTEM_FLAGS;
 
     attributes += ATTRIBUTE_USER_ACCOUNT_CONTROL;
-    
+
     // NOTE: needed to know which icon to use for object
     attributes += ATTRIBUTE_OBJECT_CATEGORY;
 

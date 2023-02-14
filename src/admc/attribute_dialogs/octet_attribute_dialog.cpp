@@ -51,7 +51,7 @@ OctetAttributeDialog::OctetAttributeDialog(const QList<QByteArray> &value_list, 
     ui->edit->setFont(fixed_font);
 
     ui->edit->setReadOnly(read_only);
-    
+
     const QByteArray value = value_list.value(0, QByteArray());
     const QString value_string = octet_bytes_to_string(value, current_format(ui->format_combo));
     ui->edit->setPlainText(value_string);

@@ -27,7 +27,7 @@
  * AttributeEdit's wrap regular Qt widgets so that they can
  * be used to edit attributes of an AD object. Depending on
  * what kind of attribute is being edited, different widgets
- * are used to represent different data types. 
+ * are used to represent different data types.
  */
 
 class AdInterface;

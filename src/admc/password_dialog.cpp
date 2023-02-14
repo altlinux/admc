@@ -44,7 +44,7 @@ PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidg
     pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, this);
 
     auto unlock_edit = new UnlockEdit(ui->unlock_check, this);
-    
+
     target = target_arg;
 
     edits = {

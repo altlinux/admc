@@ -40,7 +40,7 @@ NumberAttributeDialog::NumberAttributeDialog(const QList<QByteArray> &value_list
     limit_edit(ui->edit, attribute);
 
     ui->edit->setReadOnly(read_only);
-    
+
     const QByteArray value = value_list.value(0, QByteArray());
     const QString value_string = QString(value);
     ui->edit->setText(value_string);

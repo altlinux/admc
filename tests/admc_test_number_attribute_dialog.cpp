@@ -82,7 +82,7 @@ void ADMCTestNumberAttributeDialog::validate() {
     QFETCH(Qt::Key, pressed_key);
     QFETCH(QList<QByteArray>, expected_value_list);
     QFETCH(QString, expected_display_value);
-    
+
     init_edit(value_list);
 
     QTest::keyPress(line_edit, pressed_key);

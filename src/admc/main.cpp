@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     //   is needed because many child widgets used by
     //   MainWindow require adconfig to load their UI
     //   elements.
-    // 
+    //
     // Control flow here is awkward for multiple
     // reasons. First, the ad error log has to be
     // displayed *after* main window is shown and
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
 
         if (ad.is_connected()) {
             load_g_adconfig(ad);
-            
+
             first_main_window = new MainWindow(ad);
             first_main_window->show();
         } else {

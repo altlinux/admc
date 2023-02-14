@@ -92,7 +92,7 @@ bool PasswordEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = edit->text();
 
     const bool success = ad.user_set_pass(dn, new_value);
-    
+
     return success;
 }
 

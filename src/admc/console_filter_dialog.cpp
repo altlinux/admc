@@ -149,7 +149,7 @@ void ConsoleFilterDialog::open_custom_dialog() {
             filter_dialog_state = dialog->save_state();
 
             custom_filter = dialog->get_filter();
-        }); 
+        });
 }
 
 void ConsoleFilterDialog::on_custom_button() {

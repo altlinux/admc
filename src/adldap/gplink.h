@@ -45,7 +45,7 @@ public:
 
     QString to_string() const;
     bool contains(const QString &gpo) const;
-    
+
     // NOTE: this returns a list of GPO DN's with correct
     // letter case. Gplink string contains DN's in a
     // different letter case that is not appropriate for

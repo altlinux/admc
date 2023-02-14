@@ -38,7 +38,7 @@ StringAttributeDialog::StringAttributeDialog(const QList<QByteArray> &value_list
     limit_plain_text_edit(ui->edit, attribute);
 
     ui->edit->setReadOnly(read_only);
-    
+
     const QByteArray value = value_list.value(0, QByteArray());
     const QString value_string = QString(value);
     ui->edit->setPlainText(value_string);

@@ -75,7 +75,7 @@ void country_combo_load_data() {
             // Split line by comma's, taking into
             // account that some comma's are inside
             // quoted parts and ignoring those.
-            // 
+            //
             // NOTE: there's definitely a better way to
             // do this
             const QList<QString> line_split = [&]() -> QList<QString> {

@@ -46,10 +46,10 @@ GeneralPolicyTab::GeneralPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *p
     auto tab_edit = new GeneralPolicyTabEdit(ui, this);
 
     edit_list->append({
-        name_edit,    
-        created_edit,    
-        modified_edit,    
-        tab_edit,    
+        name_edit,
+        created_edit,
+        modified_edit,
+        tab_edit,
     });
 }
 
