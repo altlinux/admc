@@ -19,6 +19,13 @@ $ make -j12
 
 If the build fails, check build output for missing dependencies.
 
+You can also format the sources by building `clangformat`
+target after `cmake` is run, for example:
+
+```
+make -C build clangformat
+```
+
 # Usage:
 
 This app requires a working Active Directory domain and for the client machine to be connected and logged into the domain. You can find articles about these topics on [ALTLinux wiki](https://www.altlinux.org/%D0%94%D0%BE%D0%BC%D0%B5%D0%BD).

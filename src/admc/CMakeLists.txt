@@ -192,6 +192,7 @@ add_executable(admc
     main.cpp
     ${ADMC_SOURCES}
 )
+target_clangformat_setup(admc)
 
 # NOTE: build admc as library to streamline building tests.
 # Tests just link to this lib and use all of admc's code.
