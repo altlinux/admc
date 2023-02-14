@@ -71,7 +71,8 @@ void ADMCTestPasswordEdit::verify_data() {
     QTest::addColumn<QString>("main_pass");
     QTest::addColumn<QString>("confirm_pass");
 
-    QTest::newRow("mismatch") << "test" << "no-match";
+    QTest::newRow("mismatch") << "test"
+                              << "no-match";
     QTest::newRow("empty") << QString() << QString();
 }
 

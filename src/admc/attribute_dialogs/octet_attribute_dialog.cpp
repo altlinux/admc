@@ -198,7 +198,7 @@ bool OctetAttributeDialog::check_input(const OctetDisplayFormat format) {
 
 OctetDisplayFormat current_format(QComboBox *format_combo) {
     const int format_index = format_combo->currentIndex();
-    const OctetDisplayFormat format = (OctetDisplayFormat)(format_index);
+    const OctetDisplayFormat format = (OctetDisplayFormat) (format_index);
 
     return format;
 }

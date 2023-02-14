@@ -474,7 +474,6 @@ SecurityRightState security_descriptor_get_right(const security_descriptor *sd, 
 
             const bool access_mask_match = bitmask_is_set(ace.access_mask, access_mask);
 
-
             const bool object_match = [&]() {
                 const bool object_present = ace_types_with_object.contains(ace.type);
 
@@ -669,8 +668,7 @@ bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const Q
 
     const bool trustee_match = [&]() {
         const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
-        const bool trustees_are_equal = (dom_sid_compare(
-            &ace.trustee, &trustee_sid) == 0);
+        const bool trustees_are_equal = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
 
         return trustees_are_equal;
     }();
@@ -1108,8 +1106,7 @@ uint32_t ad_security_map_access_mask(const uint32_t access_mask) {
 // always be correct. But do implement this at some
 // point, just in case. Using order requirements listed
 // here:
-int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2)
-{
+int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2) {
     bool b1;
     bool b2;
 

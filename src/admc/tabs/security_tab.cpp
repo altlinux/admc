@@ -251,7 +251,7 @@ void SecurityTabEdit::load_current_sd(AdInterface &ad) {
     // selection so that rights view displays
     // something. We also restore
     const QModelIndex selected_trustee = [&]() {
-        const QModelIndex first_index = trustee_model->index(0,0);
+        const QModelIndex first_index = trustee_model->index(0, 0);
 
         // Restore previously selected trustee
         const QList<QModelIndex> match_list = trustee_model->match(first_index, TrusteeItemRole_Sid, previous_selected_trustee, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));

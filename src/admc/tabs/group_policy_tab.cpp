@@ -34,7 +34,6 @@
 #include <QStandardItemModel>
 #include <QVBoxLayout>
 
-
 GroupPolicyTab::GroupPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::GroupPolicyTab();
@@ -42,13 +41,10 @@ GroupPolicyTab::GroupPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *paren
 
     auto options_edit = new GpoptionsEdit(ui->gpo_options_check, this);
 
-    edit_list->append({
-        options_edit
-    });
+    edit_list->append({options_edit});
 }
 
 GroupPolicyTab::~GroupPolicyTab() {
 
     delete ui;
 }
-

@@ -36,7 +36,6 @@ class AdObject;
 class AttributeEdit : public QObject {
     Q_OBJECT
 public:
-
     // Verify edit. Verify process will stop on first
     // failure. This is so that only one failure message is
     // shown at a time.

@@ -206,7 +206,7 @@ void PolicyOUResultsWidget::open_context_menu(const QPoint &pos) {
 // Takes as argument function that modifies the gplink.
 // Modify function accepts gplink as argument and gpo dn
 // used in the operation.
-void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink&, const QString&)) {
+void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink &, const QString &)) {
     AdInterface ad;
     if (ad_failed(ad, this)) {
         return;

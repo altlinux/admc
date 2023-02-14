@@ -246,10 +246,9 @@ void console_policy_edit(ConsoleWidget *console, const int item_type, const int 
 
         const QString current_dc = ad.get_dc();
 
-        filesys_path.replace(QString("\\"),QString("/"));
+        filesys_path.replace(QString("\\"), QString("/"));
         auto contents = filesys_path.split("/", Qt::KeepEmptyParts);
-        if (contents.size() > 3 && !current_dc.isEmpty())
-        {
+        if (contents.size() > 3 && !current_dc.isEmpty()) {
             contents[2] = current_dc;
         }
         filesys_path = contents.join("/");
@@ -461,9 +460,7 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
             // the console in that case
             if (deleted_object) {
                 out.append(dn);
-            }
-            else
-            {
+            } else {
                 not_deleted_dn_list.append(dn);
             }
         }
@@ -511,10 +508,9 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
     hide_busy_indicator();
 
     g_status->log_messages(ad);
-    if (!not_deleted_dn_list.isEmpty())
-    {
-        QString message = (not_deleted_dn_list.size() == 1) ?  PolicyImpl::tr("Failed to delete group policy") :
-                                                               PolicyImpl::tr("Failed to delete some group policies");
+    if (!not_deleted_dn_list.isEmpty()) {
+        QString message = (not_deleted_dn_list.size() == 1) ? PolicyImpl::tr("Failed to delete group policy") :
+                                                              PolicyImpl::tr("Failed to delete some group policies");
         QMessageBox::warning(console_list[0], "", message);
     }
 }

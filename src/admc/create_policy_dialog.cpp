@@ -29,7 +29,7 @@
 #include "status.h"
 #include "utils.h"
 
-#include<QPushButton>
+#include <QPushButton>
 
 CreatePolicyDialog::CreatePolicyDialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {
@@ -119,9 +119,8 @@ void CreatePolicyDialog::accept() {
     }
 }
 
-void CreatePolicyDialog::on_edited()
-{
-    if(ui->name_edit->text().isEmpty()) {
+void CreatePolicyDialog::on_edited() {
+    if (ui->name_edit->text().isEmpty()) {
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     } else {
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);

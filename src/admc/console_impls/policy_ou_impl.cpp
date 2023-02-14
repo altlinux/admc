@@ -435,8 +435,7 @@ void PolicyOUImpl::find_gpo() {
     dialog->open();
 }
 
-void PolicyOUImpl::change_gp_options()
-{
+void PolicyOUImpl::change_gp_options() {
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
@@ -445,25 +444,20 @@ void PolicyOUImpl::change_gp_options()
 
     bool checked = change_gp_options_action->isChecked();
     bool res;
-    if (checked)
-    {
+    if (checked) {
         res = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, GPOPTIONS_BLOCK_INHERITANCE);
-    }
-    else
-    {
+    } else {
         res = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, GPOPTIONS_INHERIT);
     }
 
-    if (!res)
-    {
+    if (!res) {
         g_status->display_ad_messages(ad, console);
         change_gp_options_action->toggle();
         return;
     }
 }
 
-void PolicyOUImpl::update_gp_options_check_state() const
-{
+void PolicyOUImpl::update_gp_options_check_state() const {
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
@@ -471,8 +465,7 @@ void PolicyOUImpl::update_gp_options_check_state() const
 
     const QString dn = console->get_current_scope_item().data(PolicyOURole_DN).toString();
     AdObject object = ad.search_object(dn, {ATTRIBUTE_GPOPTIONS});
-    if (object.is_empty())
-    {
+    if (object.is_empty()) {
         change_gp_options_action->setDisabled(true);
         return;
     }

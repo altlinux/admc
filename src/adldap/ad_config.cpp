@@ -627,7 +627,6 @@ QByteArray AdConfig::get_right_guid(const QString &right_cn) const {
     return out;
 }
 
-
 // NOTE: technically, Active Directory provides
 // translations for right names but it's not
 // accessible, so have to translate these ourselves. On

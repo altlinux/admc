@@ -44,9 +44,11 @@ void ADMCTestFindPolicyDialog::add_filter_data() {
     QTest::addColumn<QString>("expected_filter_display");
     QTest::addColumn<QString>("expected_filter");
 
+    // clang-format off
     QTest::newRow("1") << (int) SearchItem_Name << (int) Condition_Contains << "test" << "Name Contains: \"test\"" << "(displayName=*test*)";
     QTest::newRow("2") << (int) SearchItem_GUID << (int) Condition_Contains << "test2" << "GUID Contains: \"test2\"" << "(cn=*test2*)";
     QTest::newRow("3") << (int) SearchItem_GUID << (int) Condition_Equals << "{guid}" << "GUID Is (exactly): \"{guid}\"" << "(cn={guid})";
+    // clang-format on
 }
 
 void ADMCTestFindPolicyDialog::add_filter() {

@@ -43,12 +43,14 @@ void ADMCTestSelectClassesWidget::test_foo_data() {
     QTest::addColumn<QString>("correct_display_string");
     QTest::addColumn<QString>("correct_filter");
 
+    // clang-format off
     QTest::newRow("all only") << true << QList<QString>() << "All" << "";
     // NOTE: all should override other checkboxes, even
     // if they are checked
     QTest::newRow("all + some specific") << true << QList<QString>({"User", "Group"}) << "All" << "";
     QTest::newRow("User") << false << QList<QString>({"User"}) << "User" << "(objectClass=user)";
     QTest::newRow("User + Group") << false << QList<QString>({"User", "Group"}) << "Group, User" << "(|(objectClass=user)(objectClass=group))";
+    // clang-format on
 }
 
 void ADMCTestSelectClassesWidget::test_foo() {
@@ -63,7 +65,7 @@ void ADMCTestSelectClassesWidget::test_foo() {
     };
 
     auto get_class_checkbox_list = [](ClassFilterDialog *dialog) {
-        ClassFilterWidget * class_filter_widget = dialog->ui->class_filter_widget;
+        ClassFilterWidget *class_filter_widget = dialog->ui->class_filter_widget;
         const QList<QCheckBox *> out = class_filter_widget->findChildren<QCheckBox *>();
 
         return out;

@@ -1958,7 +1958,7 @@ int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp) {
     ber_flatten2(value_be, &value, 1);
 
     // Create control
-    const int result = ldap_control_create( LDAP_SERVER_SD_FLAGS_OID,
+    const int result = ldap_control_create(LDAP_SERVER_SD_FLAGS_OID,
         iscritical, &value, 0, ctrlp);
 
     if (result != LDAP_SUCCESS) {
