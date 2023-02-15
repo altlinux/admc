@@ -21,9 +21,9 @@
 #include "console_impls/found_policy_impl.h"
 
 #include "adldap.h"
+#include "console_impls/find_policy_impl.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
-#include "console_impls/find_policy_impl.h"
 #include "utils.h"
 
 #include <QAction>
@@ -49,7 +49,7 @@ FoundPolicyImpl::FoundPolicyImpl(ConsoleWidget *console_arg)
 void FoundPolicyImpl::set_buddy_console(ConsoleWidget *buddy_console) {
     console_list = {
         console,
-        buddy_console
+        buddy_console,
     };
 }
 
@@ -97,7 +97,7 @@ void FoundPolicyImpl::rename(const QList<QModelIndex> &index_list) {
 
 void FoundPolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
     UNUSED_ARG(index_list);
-    
+
     PolicyResultsWidget *policy_results = nullptr;
     console_policy_delete(console_list, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
 }

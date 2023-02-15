@@ -21,12 +21,12 @@
 #include "console_impls/policy_impl.h"
 
 #include "adldap.h"
-#include "console_impls/item_type.h"
-#include "console_impls/policy_ou_impl.h"
-#include "console_impls/policy_impl.h"
-#include "console_impls/policy_root_impl.h"
 #include "console_impls/find_policy_impl.h"
 #include "console_impls/found_policy_impl.h"
+#include "console_impls/item_type.h"
+#include "console_impls/policy_impl.h"
+#include "console_impls/policy_ou_impl.h"
+#include "console_impls/policy_root_impl.h"
 #include "globals.h"
 #include "gplink.h"
 #include "policy_results_widget.h"
@@ -38,8 +38,8 @@
 
 #include <QAction>
 #include <QDebug>
-#include <QStandardItem>
 #include <QMessageBox>
+#include <QStandardItem>
 
 void policy_add_links(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const QList<QString> &policy_list, const QList<QString> &ou_list);
 void console_policy_update_policy_results(ConsoleWidget *console, PolicyResultsWidget *policy_results);
@@ -246,10 +246,9 @@ void console_policy_edit(ConsoleWidget *console, const int item_type, const int 
 
         const QString current_dc = ad.get_dc();
 
-        filesys_path.replace(QString("\\"),QString("/"));
+        filesys_path.replace(QString("\\"), QString("/"));
         auto contents = filesys_path.split("/", Qt::KeepEmptyParts);
-        if (contents.size() > 3 && !current_dc.isEmpty())
-        {
+        if (contents.size() > 3 && !current_dc.isEmpty()) {
             contents[2] = current_dc;
         }
         filesys_path = contents.join("/");
@@ -265,7 +264,7 @@ void console_policy_edit(ConsoleWidget *console, const int item_type, const int 
         QString("-p"),
         path,
         QString("-n"),
-        policy_name
+        policy_name,
     };
 
     process->setArguments(args);
@@ -461,9 +460,7 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
             // the console in that case
             if (deleted_object) {
                 out.append(dn);
-            }
-            else
-            {
+            } else {
                 not_deleted_dn_list.append(dn);
             }
         }
@@ -511,10 +508,9 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
     hide_busy_indicator();
 
     g_status->log_messages(ad);
-    if (!not_deleted_dn_list.isEmpty())
-    {
-        QString message = (not_deleted_dn_list.size() == 1) ?  PolicyImpl::tr("Failed to delete group policy") :
-                                                               PolicyImpl::tr("Failed to delete some group policies");
+    if (!not_deleted_dn_list.isEmpty()) {
+        QString message = (not_deleted_dn_list.size() == 1) ? PolicyImpl::tr("Failed to delete group policy") :
+                                                              PolicyImpl::tr("Failed to delete some group policies");
         QMessageBox::warning(console_list[0], "", message);
     }
 }

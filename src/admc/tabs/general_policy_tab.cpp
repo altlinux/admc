@@ -22,8 +22,8 @@
 #include "tabs/ui_general_policy_tab.h"
 
 #include "adldap.h"
-#include "attribute_edits/general_name_edit.h"
 #include "attribute_edits/datetime_edit.h"
+#include "attribute_edits/general_name_edit.h"
 #include "utils.h"
 
 #include <QDebug>
@@ -46,10 +46,10 @@ GeneralPolicyTab::GeneralPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *p
     auto tab_edit = new GeneralPolicyTabEdit(ui, this);
 
     edit_list->append({
-        name_edit,    
-        created_edit,    
-        modified_edit,    
-        tab_edit,    
+        name_edit,
+        created_edit,
+        modified_edit,
+        tab_edit,
     });
 }
 

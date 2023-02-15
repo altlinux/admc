@@ -112,7 +112,7 @@ void ADMCTestPolicyResultsWidget::delete_link() {
     const QString ou_dn = test_object_dn(TEST_OU, CLASS_OU);
     const bool create_ou_success = ad.object_add(ou_dn, CLASS_OU);
     QVERIFY(create_ou_success);
-    
+
     // Link gpo to ou
     {
         const QString modified_gplink_string = [&]() {

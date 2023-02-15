@@ -25,9 +25,9 @@
 #include "attribute_edits/protect_deletion_edit.h"
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/upn_edit.h"
-#include "utils.h"
-#include "settings.h"
 #include "create_object_helper.h"
+#include "settings.h"
+#include "utils.h"
 
 CreateOUDialog::CreateOUDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {

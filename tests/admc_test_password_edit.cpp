@@ -22,10 +22,10 @@
 
 #include "attribute_edits/password_edit.h"
 
+#include <QCheckBox>
 #include <QDateEdit>
 #include <QFormLayout>
 #include <QLineEdit>
-#include <QCheckBox>
 
 // NOTE: no apply_unmodified() test because password edit
 // always changes object when applying
@@ -71,7 +71,8 @@ void ADMCTestPasswordEdit::verify_data() {
     QTest::addColumn<QString>("main_pass");
     QTest::addColumn<QString>("confirm_pass");
 
-    QTest::newRow("mismatch") << "test" << "no-match";
+    QTest::newRow("mismatch") << "test"
+                              << "no-match";
     QTest::newRow("empty") << QString() << QString();
 }
 

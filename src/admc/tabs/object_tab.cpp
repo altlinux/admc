@@ -23,10 +23,10 @@
 
 #include "adldap.h"
 #include "attribute_edits/datetime_edit.h"
-#include "attribute_edits/protect_deletion_edit.h"
-#include "attribute_edits/string_edit.h"
 #include "attribute_edits/dn_edit.h"
 #include "attribute_edits/gpoptions_edit.h"
+#include "attribute_edits/protect_deletion_edit.h"
+#include "attribute_edits/string_edit.h"
 
 #include <QFormLayout>
 
@@ -53,7 +53,7 @@ ObjectTab::ObjectTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
         when_changed_edit,
         usn_created_edit,
         usn_changed_edit,
-        deletion_edit
+        deletion_edit,
     });
 }
 

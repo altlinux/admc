@@ -25,8 +25,8 @@
 #include "console_widget/results_view.h"
 #include "item_type.h"
 
-#include <QStandardItem>
 #include <QModelIndex>
+#include <QStandardItem>
 
 FindObjectImpl::FindObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {

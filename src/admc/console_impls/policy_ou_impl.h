@@ -30,9 +30,9 @@
  * an OU.
  */
 
-#include "console_widget/console_impl.h"
-#include "console_impls/my_console_role.h"
 #include "ad_interface.h"
+#include "console_impls/my_console_role.h"
+#include "console_widget/console_impl.h"
 
 enum PolicyOURole {
     PolicyOURole_DN = MyConsoleRole_LAST + 1,

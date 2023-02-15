@@ -47,6 +47,7 @@ set(LIBRARY_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH})
 enable_testing()
 
 include(GNUInstallDirs)
+include(ClangFormat)
 
 option(ADMC_BUILD_DEB "Build the deb package of ADMC." OFF)
 

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** 
+/**
  * Functions for working with AD security and security
  * descriptors.
  */
@@ -51,7 +51,7 @@ enum SecurityRightStateInherited {
     SecurityRightStateInherited_Yes,
     SecurityRightStateInherited_No,
     SecurityRightStateInherited_COUNT,
-}; 
+};
 
 class SecurityRightState {
 public:

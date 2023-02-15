@@ -22,9 +22,9 @@
 #include "filter_widget/ui_select_classes_widget.h"
 
 #include "adldap.h"
+#include "filter_widget/class_filter_dialog.h"
 #include "globals.h"
 #include "utils.h"
-#include "filter_widget/class_filter_dialog.h"
 
 SelectClassesWidget::SelectClassesWidget(QWidget *parent)
 : QWidget(parent) {

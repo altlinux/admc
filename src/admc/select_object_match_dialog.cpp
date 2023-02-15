@@ -23,11 +23,11 @@
 
 #include "console_impls/object_impl.h"
 #include "select_object_dialog.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
-#include <QStandardItemModel>
 #include <QPushButton>
+#include <QStandardItemModel>
 
 SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
 : QDialog(parent) {

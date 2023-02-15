@@ -21,10 +21,10 @@
 #include "rename_group_dialog.h"
 #include "ui_rename_group_dialog.h"
 
-#include "rename_object_helper.h"
-#include "attribute_edits/sam_name_edit.h"
-#include "settings.h"
 #include "ad_defines.h"
+#include "attribute_edits/sam_name_edit.h"
+#include "rename_object_helper.h"
+#include "settings.h"
 
 RenameGroupDialog::RenameGroupDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {
@@ -39,7 +39,7 @@ RenameGroupDialog::RenameGroupDialog(AdInterface &ad, const QString &target_arg,
 
     QList<QLineEdit *> requred_list = {
         ui->name_edit,
-        ui->sam_name_edit
+        ui->sam_name_edit,
     };
 
     helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, edit_list, this, requred_list, ui->button_box);

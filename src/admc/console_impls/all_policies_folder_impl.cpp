@@ -31,8 +31,8 @@
 #include "status.h"
 #include "utils.h"
 
-#include <QList>
 #include <QAction>
+#include <QList>
 #include <QStandardItem>
 
 AllPoliciesFolderImpl::AllPoliciesFolderImpl(ConsoleWidget *console_arg)
@@ -142,7 +142,7 @@ void AllPoliciesFolderImpl::create_policy() {
 QModelIndex get_all_policies_folder_index(ConsoleWidget *console) {
     const QModelIndex policy_tree_root = get_policy_tree_root(console);
     const QModelIndex out = console->search_item(policy_tree_root, {ItemType_AllPoliciesFolder});
-    
+
     return out;
 }
 

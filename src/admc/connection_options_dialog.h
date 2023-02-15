@@ -27,7 +27,7 @@
 
 #include <QDialog>
 
-#define CERT_STRATEGY_NEVER_define "never" 
+#define CERT_STRATEGY_NEVER_define "never"
 
 namespace Ui {
 class ConnectionOptionsDialog;

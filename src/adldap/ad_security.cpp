@@ -474,7 +474,6 @@ SecurityRightState security_descriptor_get_right(const security_descriptor *sd, 
 
             const bool access_mask_match = bitmask_is_set(ace.access_mask, access_mask);
 
-            
             const bool object_match = [&]() {
                 const bool object_present = ace_types_with_object.contains(ace.type);
 
@@ -631,7 +630,7 @@ void security_descriptor_add_right_base(security_descriptor *sd, const QByteArra
                     return type_guid;
                 }();
             }
-            
+
             out.trustee = dom_sid_from_bytes(trustee);
 
             return out;
@@ -669,8 +668,7 @@ bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const Q
 
     const bool trustee_match = [&]() {
         const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
-        const bool trustees_are_equal = (dom_sid_compare(
-            &ace.trustee, &trustee_sid) == 0);
+        const bool trustees_are_equal = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
 
         return trustees_are_equal;
     }();
@@ -733,7 +731,7 @@ void security_descriptor_remove_right_base(security_descriptor *sd, const QByteA
                                 return out_mask;
                             } else {
                                 return access_mask;
-                            } 
+                            }
                         } else {
                             return access_mask;
                         }
@@ -819,7 +817,7 @@ bool security_descriptor_verify_acl_order(security_descriptor *sd) {
 
             if (!order_is_good) {
                 out = false;
-            } 
+            }
 
             curr = next;
         }
@@ -936,7 +934,7 @@ void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfi
         }
 
         security_descriptor_remove_right_base(sd, trustee, superior.access_mask, superior.object_type, allow);
-        
+
         const QList<SecurityRight> superior_subordinate_list = ad_security_get_subordinate_right_list(adconfig, superior.access_mask, superior.object_type, class_list);
 
         // Add opposite subordinate rights
@@ -1068,7 +1066,7 @@ QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, 
 }
 
 void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace> &new_dacl) {
-    
+
     // Free old dacl
     talloc_free(sd->dacl);
     sd->dacl = NULL;
@@ -1096,20 +1094,19 @@ uint32_t ad_security_map_access_mask(const uint32_t access_mask) {
 // verifying ACL order. Only includes necessary
 // comparisons specified by Microsoft here:
 // https://docs.microsoft.com/en-us/windows/win32/secauthz/order-of-aces-in-a-dacl
-// 
+//
 // TODO: currently missing one comparison:
-// 
+//
 // "Inherited ACE's are placed in the order in which
 // they are inherited"
-// 
+//
 // Not a big problem because inherited ACE's are added
 // to ACL by the server. Clients cannot manually add
 // such ACE's, so theoretically their order should
 // always be correct. But do implement this at some
 // point, just in case. Using order requirements listed
 // here:
-int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2)
-{
+int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2) {
     bool b1;
     bool b2;
 

@@ -106,8 +106,7 @@ void Status::display_ad_messages(const AdInterface &ad, QWidget *parent) {
     display_ad_messages(messages, parent);
 }
 
-void Status::log_messages(const QList<AdMessage> &messages)
-{
+void Status::log_messages(const QList<AdMessage> &messages) {
     if (m_status_bar == nullptr || m_message_log == nullptr) {
         return;
     }
@@ -125,8 +124,7 @@ void Status::log_messages(const QList<AdMessage> &messages)
     }
 }
 
-void Status::log_messages(const AdInterface &ad)
-{
+void Status::log_messages(const AdInterface &ad) {
     const QList<AdMessage> messages = ad.messages();
 
     log_messages(messages);

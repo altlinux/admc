@@ -21,7 +21,7 @@
 #ifndef AD_INTERFACE_H
 #define AD_INTERFACE_H
 
-/** 
+/**
  * Interface to AD server. Provides a way to search and
  * modify objects.
  */

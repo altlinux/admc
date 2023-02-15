@@ -23,8 +23,8 @@
 
 #include "ad_security.h"
 #include "ad_utils.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
 #include <QPushButton>
 

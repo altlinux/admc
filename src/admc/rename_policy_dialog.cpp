@@ -78,9 +78,8 @@ void RenamePolicyDialog::accept() {
     }
 }
 
-void RenamePolicyDialog::on_edited()
-{
-    if(ui->name_edit->text().isEmpty()) {
+void RenamePolicyDialog::on_edited() {
+    if (ui->name_edit->text().isEmpty()) {
         ui->button_box->button(QDialogButtonBox::Ok)->setEnabled(false);
     } else {
         ui->button_box->button(QDialogButtonBox::Ok)->setEnabled(true);

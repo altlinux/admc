@@ -21,8 +21,8 @@
 #ifndef MANAGED_BY_TAB_H
 #define MANAGED_BY_TAB_H
 
-#include <QWidget>
 #include "attribute_edits/attribute_edit.h"
+#include <QWidget>
 
 class ManagerEdit;
 class ManagedByTabEdit;

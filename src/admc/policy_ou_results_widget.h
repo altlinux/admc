@@ -69,7 +69,7 @@ private:
     void move_up();
     void move_down();
     void reload_gplink();
-    void modify_gplink(void (*modify_function)(Gplink&, const QString&));
+    void modify_gplink(void (*modify_function)(Gplink &, const QString &));
 
     friend ADMCTestPolicyOUResultsWidget;
 };

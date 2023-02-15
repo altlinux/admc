@@ -183,7 +183,6 @@ void ADMCTestUpnEdit::change_suffix_in_edit() {
     suffix_edit->setCurrentIndex(new_suffix_index);
 }
 
-
 void ADMCTestUpnEdit::verify_bad_chars_data() {
     QTest::addColumn<QString>("value");
     QTest::addColumn<bool>("correct_result");

@@ -331,7 +331,7 @@ QString uac_to_display_value(const QByteArray &bytes) {
             {UAC_USER_USE_AES_KEYS, "USER_USE_AES_KEYS"},
         };
 
-        const QList<QString> set_mask_name_list = [&]() { 
+        const QList<QString> set_mask_name_list = [&]() {
             QList<QString> out_list;
 
             for (const int mask : mask_list) {

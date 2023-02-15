@@ -27,9 +27,9 @@
 #include "attribute_edits/sam_name_edit.h"
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/upn_edit.h"
-#include "utils.h"
-#include "settings.h"
 #include "create_object_helper.h"
+#include "settings.h"
+#include "utils.h"
 
 CreateGroupDialog::CreateGroupDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {
@@ -37,7 +37,7 @@ CreateGroupDialog::CreateGroupDialog(const QString &parent_dn, QWidget *parent)
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
-    
+
     auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
     auto scope_edit = new GroupScopeEdit(ui->scope_combo, this);
     auto type_edit = new GroupTypeEdit(ui->type_combo, this);

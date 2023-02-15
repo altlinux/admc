@@ -21,20 +21,20 @@
 #include "admc_test_create_object_dialog.h"
 
 #include "adldap.h"
-#include "samba/dom_sid.h"
-#include "settings.h"
 #include "create_computer_dialog.h"
+#include "create_contact_dialog.h"
 #include "create_group_dialog.h"
 #include "create_ou_dialog.h"
-#include "create_user_dialog.h"
 #include "create_shared_folder_dialog.h"
-#include "create_contact_dialog.h"
+#include "create_user_dialog.h"
+#include "samba/dom_sid.h"
+#include "settings.h"
 #include "ui_create_computer_dialog.h"
+#include "ui_create_contact_dialog.h"
 #include "ui_create_group_dialog.h"
 #include "ui_create_ou_dialog.h"
-#include "ui_create_user_dialog.h"
 #include "ui_create_shared_folder_dialog.h"
-#include "ui_create_contact_dialog.h"
+#include "ui_create_user_dialog.h"
 
 void test_lineedit_autofill(QLineEdit *src_edit, QLineEdit *dest_edit);
 void test_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit);

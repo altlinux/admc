@@ -1677,7 +1677,7 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     // other one. Order doesn't matter. Note that
     // simple equality doesn't work because entry order
     // may not match.
-    // 
+    //
     // NOTE: there's also a weird thing where RSAT
     // creates GPO's with duplicate ace's for Domain
     // Admins. Not sure why that happens but this
@@ -1958,7 +1958,7 @@ int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp) {
     ber_flatten2(value_be, &value, 1);
 
     // Create control
-    const int result = ldap_control_create( LDAP_SERVER_SD_FLAGS_OID,
+    const int result = ldap_control_create(LDAP_SERVER_SD_FLAGS_OID,
         iscritical, &value, 0, ctrlp);
 
     if (result != LDAP_SUCCESS) {

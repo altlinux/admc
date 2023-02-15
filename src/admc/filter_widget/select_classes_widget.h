@@ -28,8 +28,8 @@
  * which classes can be selected.
  */
 
-#include <QWidget>
 #include <QVariant>
+#include <QWidget>
 
 namespace Ui {
 class SelectClassesWidget;

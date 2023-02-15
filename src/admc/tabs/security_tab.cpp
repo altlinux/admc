@@ -34,10 +34,10 @@
 #include <QDebug>
 #include <QLabel>
 #include <QPersistentModelIndex>
+#include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QSortFilterProxyModel>
 
 struct security_descriptor;
 
@@ -150,7 +150,7 @@ SecurityTabEdit::SecurityTabEdit(Ui::SecurityTab *ui_arg, QObject *parent)
     trustee_model = new QStandardItemModel(0, 1, this);
 
     ui->trustee_view->setModel(trustee_model);
-    
+
     rights_model = new QStandardItemModel(0, AceColumn_COUNT, this);
     set_horizontal_header_labels_from_map(rights_model,
         {
@@ -196,7 +196,7 @@ void SecurityTabEdit::fix_acl_order() {
     emit edited();
 }
 
-void SecurityTabEdit::set_read_only() {  
+void SecurityTabEdit::set_read_only() {
     ui->add_trustee_button->setEnabled(false);
     ui->add_well_known_trustee_button->setEnabled(false);
     ui->remove_trustee_button->setEnabled(false);
@@ -246,12 +246,12 @@ void SecurityTabEdit::load_current_sd(AdInterface &ad) {
     add_trustees(trustee_list, ad);
 
     // Select a trustee
-    // 
+    //
     // Note that trustee view must always have a
     // selection so that rights view displays
     // something. We also restore
     const QModelIndex selected_trustee = [&]() {
-        const QModelIndex first_index = trustee_model->index(0,0);
+        const QModelIndex first_index = trustee_model->index(0, 0);
 
         // Restore previously selected trustee
         const QList<QModelIndex> match_list = trustee_model->match(first_index, TrusteeItemRole_Sid, previous_selected_trustee, -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
@@ -527,7 +527,7 @@ void SecurityTabEdit::on_remove_trustee_button() {
     security_descriptor_remove_trustee(sd, removed_trustee_list);
 
     // Reload sd
-    // 
+    //
     // NOTE: we do this instead of removing selected
     // indexes because not all trustee's are guaranteed
     // to have been removed

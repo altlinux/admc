@@ -24,8 +24,8 @@
 #include "adldap.h"
 #include "filter_widget/class_filter_widget.h"
 #include "filter_widget/filter_dialog.h"
-#include "settings.h"
 #include "globals.h"
+#include "settings.h"
 
 #define FILTER_CUSTOM_DIALOG_STATE "FILTER_CUSTOM_DIALOG_STATE"
 #define FILTER_CLASSES_STATE "FILTER_CLASSES_STATE"
@@ -149,7 +149,7 @@ void ConsoleFilterDialog::open_custom_dialog() {
             filter_dialog_state = dialog->save_state();
 
             custom_filter = dialog->get_filter();
-        }); 
+        });
 }
 
 void ConsoleFilterDialog::on_custom_button() {

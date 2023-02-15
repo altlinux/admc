@@ -24,9 +24,9 @@
 #include "find_policy_dialog_p.h"
 #include "ui_find_policy_dialog.h"
 
-#include <QListWidget>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QListWidget>
 #include <QPushButton>
 
 void ADMCTestFindPolicyDialog::init() {
@@ -43,10 +43,12 @@ void ADMCTestFindPolicyDialog::add_filter_data() {
     QTest::addColumn<QString>("value");
     QTest::addColumn<QString>("expected_filter_display");
     QTest::addColumn<QString>("expected_filter");
-    
+
+    // clang-format off
     QTest::newRow("1") << (int) SearchItem_Name << (int) Condition_Contains << "test" << "Name Contains: \"test\"" << "(displayName=*test*)";
     QTest::newRow("2") << (int) SearchItem_GUID << (int) Condition_Contains << "test2" << "GUID Contains: \"test2\"" << "(cn=*test2*)";
     QTest::newRow("3") << (int) SearchItem_GUID << (int) Condition_Equals << "{guid}" << "GUID Is (exactly): \"{guid}\"" << "(cn={guid})";
+    // clang-format on
 }
 
 void ADMCTestFindPolicyDialog::add_filter() {
@@ -87,7 +89,7 @@ void ADMCTestFindPolicyDialog::add_filter() {
 
     const QString filter_display = filter_item->text();
     QCOMPARE(filter_display, expected_filter_display);
-    
+
     const QString filter = filter_item->data(Qt::UserRole).toString();
     QCOMPARE(filter, expected_filter);
 }

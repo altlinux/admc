@@ -21,8 +21,8 @@
 #include "attribute_edits/string_list_edit.h"
 
 #include "adldap.h"
-#include "utils.h"
 #include "attribute_dialogs/list_attribute_dialog.h"
+#include "utils.h"
 
 #include <QPushButton>
 

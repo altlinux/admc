@@ -22,7 +22,7 @@
 #define SELECT_OBJECT_ADVANCED_DIALOG_H
 
 /**
- * Find objects and select them. 
+ * Find objects and select them.
  */
 
 #include <QDialog>

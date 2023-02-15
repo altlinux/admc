@@ -26,8 +26,8 @@
  * dialog and create query dialog.
  */
 
-#include <QWidget>
 #include <QVariant>
+#include <QWidget>
 
 namespace Ui {
 class EditQueryItemWidget;

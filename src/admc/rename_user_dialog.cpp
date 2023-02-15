@@ -26,8 +26,8 @@
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/upn_edit.h"
 #include "rename_object_helper.h"
-#include "utils.h"
 #include "settings.h"
+#include "utils.h"
 
 RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {
@@ -54,7 +54,7 @@ RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, Q
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
         ui->upn_prefix_edit,
-        ui->sam_name_edit
+        ui->sam_name_edit,
     };
 
     helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, edit_list, this, required_list, ui->button_box);

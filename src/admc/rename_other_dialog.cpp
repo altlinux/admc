@@ -30,7 +30,7 @@ RenameOtherDialog::RenameOtherDialog(AdInterface &ad, const QString &target_arg,
     ui->setupUi(this);
 
     const QList<QLineEdit *> required_list = {
-        ui->name_edit
+        ui->name_edit,
     };
 
     helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, {}, this, required_list, ui->button_box);

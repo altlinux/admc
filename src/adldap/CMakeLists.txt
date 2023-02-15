@@ -22,7 +22,7 @@ configure_file("adldap_config.h.in" "adldap_config.h")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-add_library(adldap SHARED
+set(ADLDAP_SOURCES
     ad_interface.cpp
     ad_config.cpp
     ad_utils.cpp
@@ -31,7 +31,11 @@ add_library(adldap SHARED
     ad_filter.cpp
     ad_security.cpp
     gplink.cpp
+)
+prefix_clangformat_setup(adldap ${ADLDAP_SOURCES})
 
+
+set(ADLDAP_SAMBA_SOURCES
     samba/gp_manage.c
     samba/ndr_security.c
     samba/dom_sid.c
@@ -39,7 +43,12 @@ add_library(adldap SHARED
     samba/ndr_misc.c
     samba/libsmb_xattr.c
     samba/security_descriptor.c
+)
 
+
+add_library(adldap SHARED
+    ${ADLDAP_SOURCES}
+    ${ADLDAP_SAMBA_SOURCES}
     adldap.qrc
 )
 

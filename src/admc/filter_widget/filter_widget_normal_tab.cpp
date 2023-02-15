@@ -62,7 +62,6 @@ void FilterWidgetNormalTab::set_classes(const QList<QString> &class_list, const 
     }
 
     ui->select_classes_widget->set_classes(class_list, selected_list);
-
 }
 
 void FilterWidgetNormalTab::enable_filtering_all_classes() {

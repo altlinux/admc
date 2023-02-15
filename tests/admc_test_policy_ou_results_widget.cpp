@@ -21,16 +21,16 @@
 #include "admc_test_policy_ou_results_widget.h"
 
 #include "ad_filter.h"
+#include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
 #include "gplink.h"
 #include "policy_ou_results_widget.h"
 #include "policy_ou_results_widget_p.h"
-#include "console_widget/console_widget.h"
 #include "utils.h"
 
-#include <QStandardItemModel>
 #include <QSortFilterProxyModel>
+#include <QStandardItemModel>
 #include <QTreeView>
 
 // NOTE: unlike other tests, here we have to create the test
@@ -43,11 +43,11 @@ const QString gpo_alpha_name = "test_policy_for_admc_test_alpha";
 const QString gpo_beta_name = "test_policy_for_admc_test_beta";
 const QList<QString> gpo_name_list = {
     gpo_alpha_name,
-    gpo_beta_name
+    gpo_beta_name,
 };
 QList<QString> gpo_dn_list = {
     QString(),
-    QString()
+    QString(),
 };
 
 void ADMCTestPolicyOUResultsWidget::initTestCase() {
@@ -216,7 +216,7 @@ void ADMCTestPolicyOUResultsWidget::move_up() {
         const AdObject ou_object = ad.search_object(ou_dn);
         const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
         Gplink gplink = Gplink(gplink_string);
-        
+
         gplink.add(gpo_dn_list[0]);
         gplink.add(gpo_dn_list[1]);
 
@@ -274,7 +274,7 @@ void ADMCTestPolicyOUResultsWidget::move_down() {
         const AdObject ou_object = ad.search_object(ou_dn);
         const QString gplink_string = ou_object.get_string(ATTRIBUTE_GPLINK);
         Gplink gplink = Gplink(gplink_string);
-        
+
         gplink.add(gpo_dn_list[0]);
         gplink.add(gpo_dn_list[1]);
 
@@ -296,7 +296,7 @@ void ADMCTestPolicyOUResultsWidget::move_down() {
 
     const QStandardItem *old_first_item = model->item(0, PolicyOUResultsColumn_Name);
     QVERIFY(old_first_item);
-  
+
     const QString old_first_item_text = old_first_item->text();
 
     // Select policy so it's used for remove operation

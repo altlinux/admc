@@ -22,7 +22,7 @@
 #define CREATE_OBJECT_HELPER_H
 
 /**
- * Base class for dialogs that create objects. 
+ * Base class for dialogs that create objects.
  */
 
 #include <QObject>

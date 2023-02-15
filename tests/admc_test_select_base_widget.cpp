@@ -100,7 +100,7 @@ void ADMCTestSelectBaseWidget::select_base_of_already_added() {
 
     select_base_widget_add(select_base_widget, alpha);
     QCOMPARE(select_base_widget->get_base(), alpha);
-    
+
     select_base_widget_add(select_base_widget, beta);
     QCOMPARE(select_base_widget->get_base(), beta);
 

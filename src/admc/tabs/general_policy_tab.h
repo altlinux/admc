@@ -21,8 +21,8 @@
 #ifndef GENERAL_POLICY_TAB_H
 #define GENERAL_POLICY_TAB_H
 
-#include <QWidget>
 #include "attribute_edits/attribute_edit.h"
+#include <QWidget>
 
 class AdObject;
 class GeneralPolicyTabEdit;

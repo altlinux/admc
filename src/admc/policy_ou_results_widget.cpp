@@ -24,8 +24,8 @@
 
 #include "adldap.h"
 #include "console_impls/item_type.h"
-#include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_impl.h"
+#include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
@@ -206,7 +206,7 @@ void PolicyOUResultsWidget::open_context_menu(const QPoint &pos) {
 // Takes as argument function that modifies the gplink.
 // Modify function accepts gplink as argument and gpo dn
 // used in the operation.
-void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink&, const QString&)) {
+void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink &, const QString &)) {
     AdInterface ad;
     if (ad_failed(ad, this)) {
         return;
@@ -346,7 +346,7 @@ void PolicyOUResultsWidget::reload_gplink() {
 
         const QIcon icon = get_object_icon(gpo_object);
         row[0]->setIcon(icon);
-        
+
         for (const auto column : option_columns) {
             QStandardItem *item = row[column];
             item->setCheckable(true);

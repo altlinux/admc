@@ -47,7 +47,7 @@ RenameObjectHelper::RenameObjectHelper(AdInterface &ad, const QString &target_ar
     parent_dialog = parent_dialog_arg;
     required_list = required;
     ok_button = nullptr;
-    if(button_box != nullptr) {
+    if (button_box != nullptr) {
         ok_button = button_box->button(QDialogButtonBox::Ok);
     }
 
@@ -59,8 +59,8 @@ RenameObjectHelper::RenameObjectHelper(AdInterface &ad, const QString &target_ar
     const AdObject object = ad.search_object(target);
     AttributeEdit::load(edits, ad, object);
 
-    if(!required_list.isEmpty() && ok_button != nullptr) {
-        for(QLineEdit *edit : required_list) {
+    if (!required_list.isEmpty() && ok_button != nullptr) {
+        for (QLineEdit *edit : required_list) {
             connect(edit, &QLineEdit::textChanged, this, &RenameObjectHelper::on_edited);
         }
         on_edited();
@@ -129,8 +129,7 @@ QString RenameObjectHelper::get_new_dn() const {
     return new_dn;
 }
 
-void RenameObjectHelper::on_edited()
-{
+void RenameObjectHelper::on_edited() {
     const bool all_required_filled = [this]() {
         for (QLineEdit *edit : required_list) {
             if (edit->text().isEmpty()) {

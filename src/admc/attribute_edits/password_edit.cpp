@@ -25,8 +25,8 @@
 #include "settings.h"
 #include "utils.h"
 
-#include <QLineEdit>
 #include <QCheckBox>
+#include <QLineEdit>
 #include <QTextCodec>
 
 PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QCheckBox *show_password_check, QObject *parent)
@@ -92,7 +92,7 @@ bool PasswordEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = edit->text();
 
     const bool success = ad.user_set_pass(dn, new_value);
-    
+
     return success;
 }
 

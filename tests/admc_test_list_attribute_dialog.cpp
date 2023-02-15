@@ -25,8 +25,8 @@
 #include "attribute_dialogs/ui_list_attribute_dialog.h"
 #include "attribute_dialogs/ui_string_attribute_dialog.h"
 
-#include <QPlainTextEdit>
 #include <QListWidget>
+#include <QPlainTextEdit>
 #include <QPushButton>
 
 void ADMCTestListAttributeDialog::initTestCase_data() {

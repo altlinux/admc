@@ -21,22 +21,22 @@
 #include "console_impls/policy_ou_impl.h"
 
 #include "adldap.h"
+#include "console_impls/all_policies_folder_impl.h"
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl.h"
 #include "console_impls/policy_impl.h"
-#include "console_impls/all_policies_folder_impl.h"
 #include "create_policy_dialog.h"
+#include "find_policy_dialog.h"
 #include "globals.h"
 #include "gplink.h"
 #include "policy_ou_results_widget.h"
+#include "select_policy_dialog.h"
 #include "status.h"
 #include "utils.h"
-#include "select_policy_dialog.h"
-#include "find_policy_dialog.h"
 
+#include <QDebug>
 #include <QMenu>
 #include <QStandardItem>
-#include <QDebug>
 
 bool index_is_domain(const QModelIndex &index) {
     const QString dn = index.data(PolicyOURole_DN).toString();
@@ -270,7 +270,7 @@ void PolicyOUImpl::create_and_link_gpo() {
     const QString target_dn = target_index.data(PolicyOURole_DN).toString();
 
     auto dialog = new CreatePolicyDialog(ad, console);
-    dialog->open();    
+    dialog->open();
 
     connect(
         dialog, &QDialog::accepted,
@@ -435,8 +435,7 @@ void PolicyOUImpl::find_gpo() {
     dialog->open();
 }
 
-void PolicyOUImpl::change_gp_options()
-{
+void PolicyOUImpl::change_gp_options() {
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
@@ -445,25 +444,20 @@ void PolicyOUImpl::change_gp_options()
 
     bool checked = change_gp_options_action->isChecked();
     bool res;
-    if (checked)
-    {
+    if (checked) {
         res = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, GPOPTIONS_BLOCK_INHERITANCE);
-    }
-    else
-    {
+    } else {
         res = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, GPOPTIONS_INHERIT);
     }
 
-    if (!res)
-    {
+    if (!res) {
         g_status->display_ad_messages(ad, console);
         change_gp_options_action->toggle();
         return;
     }
 }
 
-void PolicyOUImpl::update_gp_options_check_state() const
-{
+void PolicyOUImpl::update_gp_options_check_state() const {
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;
@@ -471,8 +465,7 @@ void PolicyOUImpl::update_gp_options_check_state() const
 
     const QString dn = console->get_current_scope_item().data(PolicyOURole_DN).toString();
     AdObject object = ad.search_object(dn, {ATTRIBUTE_GPOPTIONS});
-    if (object.is_empty())
-    {
+    if (object.is_empty()) {
         change_gp_options_action->setDisabled(true);
         return;
     }

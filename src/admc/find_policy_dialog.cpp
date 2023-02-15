@@ -23,18 +23,18 @@
 #include "ui_find_policy_dialog.h"
 
 #include "adldap.h"
-#include "globals.h"
-#include "settings.h"
-#include "status.h"
-#include "utils.h"
 #include "console_impls/find_policy_impl.h"
 #include "console_impls/found_policy_impl.h"
 #include "console_impls/item_type.h"
+#include "globals.h"
 #include "search_thread.h"
+#include "settings.h"
+#include "status.h"
+#include "utils.h"
 
 #include <QAction>
-#include <QStandardItem>
 #include <QMenuBar>
+#include <QStandardItem>
 
 FindPolicyDialog::FindPolicyDialog(ConsoleWidget *buddy_console, QWidget *parent)
 : QDialog(parent) {

@@ -22,6 +22,7 @@
 #include "ui_properties_multi_dialog.h"
 
 #include "adldap.h"
+#include "attribute_edits/attribute_edit.h"
 #include "globals.h"
 #include "multi_tabs/account_multi_tab.h"
 #include "multi_tabs/address_multi_tab.h"
@@ -29,16 +30,15 @@
 #include "multi_tabs/general_user_multi_tab.h"
 #include "multi_tabs/organization_multi_tab.h"
 #include "multi_tabs/profile_multi_tab.h"
-#include "attribute_edits/attribute_edit.h"
 #include "settings.h"
 #include "status.h"
 #include "tab_widget.h"
 #include "utils.h"
 
 #include <QAction>
+#include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QPushButton>
-#include <QCheckBox>
 
 PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QString> &target_list_arg, const QList<QString> &class_list)
 : QDialog() {

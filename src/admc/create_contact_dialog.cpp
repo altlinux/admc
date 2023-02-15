@@ -23,9 +23,9 @@
 
 #include "adldap.h"
 #include "attribute_edits/string_edit.h"
-#include "utils.h"
-#include "settings.h"
 #include "create_object_helper.h"
+#include "settings.h"
+#include "utils.h"
 
 CreateContactDialog::CreateContactDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {

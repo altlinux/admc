@@ -24,8 +24,8 @@
 #include "globals.h"
 #include "utils.h"
 
-#include <QPushButton>
 #include <QDateTimeEdit>
+#include <QPushButton>
 
 LAPSExpiryEdit::LAPSExpiryEdit(QDateTimeEdit *edit_arg, QPushButton *reset_expiry_button, QObject *parent)
 : AttributeEdit(parent) {

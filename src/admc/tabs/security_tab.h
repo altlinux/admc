@@ -21,8 +21,8 @@
 #ifndef SECURITY_TAB_H
 #define SECURITY_TAB_H
 
-#include <QWidget>
 #include "attribute_edits/attribute_edit.h"
+#include <QWidget>
 
 #include "ad_defines.h"
 

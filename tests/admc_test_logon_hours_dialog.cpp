@@ -97,7 +97,7 @@ void ADMCTestLogonHoursDialog::load() {
     QFETCH(QByteArray, value);
 
     open_dialog(value);
-    
+
     utc_time_button->setChecked(true);
 
     const QByteArray actual_value = dialog->get();
@@ -106,7 +106,7 @@ void ADMCTestLogonHoursDialog::load() {
 
 void ADMCTestLogonHoursDialog::select() {
     open_dialog(test_bytes);
-    
+
     utc_time_button->setChecked(true);
 
     const QList<QModelIndex> selected = selection_model->selectedIndexes();
@@ -123,7 +123,7 @@ void ADMCTestLogonHoursDialog::select() {
 
 void ADMCTestLogonHoursDialog::load_empty() {
     open_dialog(QByteArray());
-    
+
     const QByteArray actual_value = dialog->get();
     const QByteArray expected_value = QByteArray();
     QCOMPARE(actual_value, expected_value);
