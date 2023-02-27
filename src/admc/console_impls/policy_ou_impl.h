@@ -39,6 +39,7 @@ enum PolicyOURole {
     PolicyOURole_CleanIcon,
     PolicyOURole_OverlappedInheritanceIcon,
     PolicyOURole_Enforced_GPO_List,
+    PolicyOURole_Disabled_GPO_List,
     PolicyOURole_Inheritance_Block,
     PolicyOURole_LAST,
 };
@@ -88,7 +89,7 @@ private:
     void find_gpo();
     void change_gp_options();
     void update_gp_options_check_state() const;
-    void update_ou_enforced_policies(const Gplink &gplink, const QModelIndex &ou_index);
+    void update_ou_enforced_and_disabled_policies(const Gplink &gplink, const QModelIndex &ou_index);
 };
 
 void policy_ou_impl_load_row(const QList<QStandardItem *> row, const AdObject &object);

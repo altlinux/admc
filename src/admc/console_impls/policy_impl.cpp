@@ -60,8 +60,8 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
         edit_action, &QAction::triggered,
         this, &PolicyImpl::on_edit);
     connect(
-        policy_results, &PolicyResultsWidget::set_policy_enforce_icon,
-        this, &PolicyImpl::set_policy_enforced_icon);
+        policy_results, &PolicyResultsWidget::policy_gplink_option_changed,
+        this, &PolicyImpl::update_policy_item_data);
 }
 
 bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -209,7 +209,7 @@ void PolicyImpl::on_edit() {
     console_policy_edit(console, ItemType_Policy, PolicyRole_DN);
 }
 
-void PolicyImpl::set_policy_enforced_icon(const QString &policy_dn, const QString &ou_dn, bool is_enforced)
+void PolicyImpl::update_policy_item_data(const QString &policy_dn, const QString &ou_dn, bool is_checked, int option)
 {
     //Group Policy Objects item index
     QModelIndex gp_objects_index = console->search_item(QModelIndex(), {ItemType_PolicyRoot});
@@ -222,16 +222,85 @@ void PolicyImpl::set_policy_enforced_icon(const QString &policy_dn, const QStrin
         return;
     }
 
-    QStandardItem *target_policy_item = console->get_item(target_policy_index);
-    if (!target_policy_item || target_policy_item->parent()->data(ConsoleRole_Type) != ItemType_PolicyOU)
+    QStandardItem *policy_ou_item = console->get_item(ou_dn_item_index);
+
+    set_policy_item_icon(target_policy_index, is_checked, option);
+    update_ou_item_gpo_lists_data(policy_dn, policy_ou_item, is_checked, option);
+}
+
+void PolicyImpl::set_policy_item_icon(const QModelIndex &policy_index, bool is_checked, int option)
+{
+    QStandardItem *target_policy_item = console->get_item(policy_index);
+    if (target_policy_item->parent()->data(ConsoleRole_Type) != ItemType_PolicyOU)
         return;
 
-    if (is_enforced)
-        target_policy_item->setIcon(
-                    target_policy_index.data(PolicyRole_Enforced_Icon).value<QIcon>());
+    if (option == GplinkOption_Enforced)
+    {
+        set_enforced_policy_icon(target_policy_item, is_checked);
+    }
+    else if (option == GplinkOption_Disabled)
+    {
+        set_disabled_policy_icon(target_policy_item, is_checked);
+    }
+}
+
+void update_ou_item_gpo_lists_data(const QString &policy_dn, QStandardItem *policy_ou_item, bool is_checked, int option)
+{
+    PolicyOURole ou_role_from_option;
+
+    if (option == GplinkOption_Disabled)
+        ou_role_from_option = PolicyOURole_Disabled_GPO_List;
+    else if (option == GplinkOption_Enforced)
+        ou_role_from_option = PolicyOURole_Enforced_GPO_List;
+    else return;
+
+    QStringList target_option_policy_dn_list = policy_ou_item->data(ou_role_from_option).
+            toStringList();
+
+    if (is_checked)
+        target_option_policy_dn_list.append(policy_dn);
     else
-        target_policy_item->setIcon(
-                    target_policy_index.data(PolicyRole_Clean_Icon).value<QIcon>());
+        target_option_policy_dn_list.removeAll(policy_dn);
+
+    policy_ou_item->setData(target_option_policy_dn_list,
+                                                 ou_role_from_option);
+
+}
+
+void set_enforced_policy_icon(QStandardItem *policy_item, bool is_enforced)
+{
+    bool is_disabled = policy_is_disabled(policy_item);
+
+    QIcon result_icon;
+
+    if (is_enforced)
+        result_icon = policy_item->data(PolicyRole_Enforced_Icon).value<QIcon>();
+    else
+        result_icon = policy_item->data(PolicyRole_Clean_Icon).value<QIcon>();
+
+    if (is_disabled)
+        policy_item->setIcon(result_icon.pixmap(16, 16, QIcon::Disabled));
+    else
+        policy_item->setIcon(result_icon);
+
+}
+
+void set_disabled_policy_icon(QStandardItem *policy_item, bool is_disabled)
+{
+    bool is_enforced = policy_is_enforced(policy_item);
+
+    if (is_disabled)
+    {
+        QIcon current_icon = policy_item->icon();
+        policy_item->setIcon(current_icon.pixmap(16, 16, QIcon::Disabled));
+    }
+    else
+    {
+        if (is_enforced)
+            policy_item->setIcon(policy_item->data(PolicyRole_Enforced_Icon).value<QIcon>());
+        else
+            policy_item->setIcon(policy_item->data(PolicyRole_Clean_Icon).value<QIcon>());
+    }
 }
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
@@ -247,15 +316,21 @@ void console_policy_load_item(QStandardItem *main_item, const AdObject &object) 
     main_item->setData(QVariant::fromValue(overlappedIconEnforced), PolicyRole_Enforced_Icon);
     main_item->setData(object.get_dn(), PolicyRole_DN);
 
-    bool isEnforced = false;
+    bool is_enforced;
+    bool is_disabled;
     if (main_item->parent()->data(ConsoleRole_Type).toInt() == ItemType_PolicyOU)
-        isEnforced = main_item->parent()->data(PolicyOURole_Enforced_GPO_List)
-            .toStringList().contains(object.get_dn());
+    {
+        is_enforced = policy_is_enforced(main_item);
+        is_disabled = policy_is_disabled(main_item);
+    }
 
-    if (isEnforced)
+    if (is_enforced)
         main_item->setIcon(overlappedIconEnforced);
     else
         main_item->setIcon(icon);
+
+    if (is_disabled)
+        main_item->setIcon(main_item->icon().pixmap(16, 16, QIcon::Disabled));
 
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
     main_item->setText(display_name);
@@ -706,4 +781,22 @@ void console_policy_update_policy_results(ConsoleWidget *console, PolicyResultsW
     if (results_is_shown) {
         policy_results->update(results_gpo);
     }
+}
+
+bool policy_is_enforced(QStandardItem *policy_item)
+{
+    bool is_enforced = false;
+    is_enforced = policy_item->parent()->data(PolicyOURole_Enforced_GPO_List)
+            .toStringList().contains(policy_item->data(PolicyRole_DN).toString());
+
+    return is_enforced;
+}
+
+bool policy_is_disabled(QStandardItem *policy_item)
+{
+    bool is_disabled = false;
+    is_disabled = policy_item->parent()->data(PolicyOURole_Disabled_GPO_List)
+            .toStringList().contains(policy_item->data(PolicyRole_DN).toString());
+
+    return is_disabled;
 }

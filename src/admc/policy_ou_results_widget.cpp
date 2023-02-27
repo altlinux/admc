@@ -186,8 +186,11 @@ void PolicyOUResultsWidget::on_item_changed(QStandardItem *item) {
 
     bool success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink_string);
 
-    if (success && option == GplinkOption_Enforced)
-        set_policy_enforced_icon(gpo_dn, is_checked);
+    if (success)
+    {
+        change_policy_icon(gpo_dn, is_checked, option);
+        update_gpo_lists_data(gpo_dn, is_checked, option);
+    }
 
     g_status->display_ad_messages(ad, this);
 
@@ -237,7 +240,7 @@ void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink &, cons
     hide_busy_indicator();
 }
 
-void PolicyOUResultsWidget::set_policy_enforced_icon(const QString &policy_dn, bool is_enforced)
+void PolicyOUResultsWidget::change_policy_icon(const QString &policy_dn, bool is_checked, GplinkOption option)
 {
     QModelIndex target_policy_index = console->search_item(console->get_current_scope_item(),
                                                              PolicyRole_DN,
@@ -246,12 +249,21 @@ void PolicyOUResultsWidget::set_policy_enforced_icon(const QString &policy_dn, b
     if (!target_policy_index.isValid())
         return;
 
-    if (is_enforced)
-        console->get_item(target_policy_index)->setIcon(
-                    target_policy_index.data(PolicyRole_Enforced_Icon).value<QIcon>());
-    else
-        console->get_item(target_policy_index)->setIcon(
-                    target_policy_index.data(PolicyRole_Clean_Icon).value<QIcon>());
+    if (option == GplinkOption_Disabled)
+    {
+        set_disabled_policy_icon(console->get_item(target_policy_index), is_checked);
+    }
+    else if (option == GplinkOption_Enforced)
+    {
+        set_enforced_policy_icon(console->get_item(target_policy_index), is_checked);
+    }
+}
+
+void PolicyOUResultsWidget::update_gpo_lists_data(const QString &policy_dn, bool is_checked, GplinkOption option)
+{
+    QStandardItem *current_ou_item = console->get_item(console->get_current_scope_item());
+
+    update_ou_item_gpo_lists_data(policy_dn, current_ou_item, is_checked, option);
 }
 
 void PolicyOUResultsWidget::remove_link() {
