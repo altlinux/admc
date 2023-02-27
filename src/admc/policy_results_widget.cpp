@@ -27,7 +27,6 @@
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
-#include "gplink.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
@@ -235,9 +234,8 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
 
     if (success) {
         model->setData(index, updated_gplink_string, PolicyResultsRole_GplinkString);
-        if (option == GplinkOption_Enforced) {
-            emit set_policy_enforce_icon(gpo, dn, is_checked);
-        }
+        emit policy_gplink_option_changed(gpo, dn, is_checked, option);
+
     } else {
         const Qt::CheckState undo_check_state = [&]() {
             if (item->checkState() == Qt::Checked) {

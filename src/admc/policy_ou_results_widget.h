@@ -70,7 +70,8 @@ private:
     void move_down();
     void reload_gplink();
     void modify_gplink(void (*modify_function)(Gplink &, const QString &));
-    void set_policy_enforced_icon(const QString &policy_dn, bool is_enforced);
+    void change_policy_icon(const QString &policy_dn, bool is_checked, GplinkOption option);
+    void update_gpo_lists_data(const QString &policy_dn, bool is_checked, GplinkOption option);
 
     friend ADMCTestPolicyOUResultsWidget;
 };
