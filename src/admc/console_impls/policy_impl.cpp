@@ -309,20 +309,22 @@ void console_policy_load(const QList<QStandardItem *> &row, const AdObject &obje
 }
 
 void console_policy_load_item(QStandardItem *main_item, const AdObject &object) {
-    const QIcon icon = get_object_icon(object);
-    const QIcon overlappedIconEnforced = overlay_scope_item_icon(icon, QIcon::fromTheme("stop"));
+    QIcon icon = get_object_icon(object);
 
-    main_item->setData(QVariant::fromValue(icon), PolicyRole_Clean_Icon);
-    main_item->setData(QVariant::fromValue(overlappedIconEnforced), PolicyRole_Enforced_Icon);
     main_item->setData(object.get_dn(), PolicyRole_DN);
 
-    bool is_enforced;
-    bool is_disabled;
+    bool is_enforced = false;
+    bool is_disabled = false;
     if (main_item->parent()->data(ConsoleRole_Type).toInt() == ItemType_PolicyOU)
     {
+        icon = overlay_scope_item_icon(icon, QIcon::fromTheme("mail-forward"), QSize(12, 12), QPoint(-2, 6));
         is_enforced = policy_is_enforced(main_item);
         is_disabled = policy_is_disabled(main_item);
     }
+
+    const QIcon overlappedIconEnforced = overlay_scope_item_icon(icon, QIcon::fromTheme("stop"));
+    main_item->setData(QVariant::fromValue(icon), PolicyRole_Clean_Icon);
+    main_item->setData(QVariant::fromValue(overlappedIconEnforced), PolicyRole_Enforced_Icon);
 
     if (is_enforced)
         main_item->setIcon(overlappedIconEnforced);

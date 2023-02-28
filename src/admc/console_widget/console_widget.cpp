@@ -1391,3 +1391,17 @@ QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon
 
     return overlapped_icon;
 }
+
+QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon, const QSize &overlay_icon_size, const QPoint &pos)
+{
+    QIcon overlapped_icon;
+    //Icon looks not distorted with 16x16 size
+    QPixmap original_pixmap = clean_icon.pixmap(16, 16);
+    QPixmap overlay_pixmap = overlay_icon.pixmap(overlay_icon_size);
+
+    QPainter painter(&original_pixmap);
+    painter.drawPixmap(pos.x(), pos.y(), overlay_pixmap);
+
+    overlapped_icon.addPixmap(original_pixmap);
+    return overlapped_icon;
+}

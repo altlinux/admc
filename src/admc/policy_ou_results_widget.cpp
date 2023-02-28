@@ -376,7 +376,8 @@ void PolicyOUResultsWidget::reload_gplink() {
         row[PolicyOUResultsColumn_Name]->setText(name);
         set_data_for_row(row, gpo_dn, PolicyOUResultsRole_DN);
 
-        const QIcon icon = get_object_icon(gpo_object);
+        const QIcon icon = overlay_scope_item_icon(get_object_icon(gpo_object), QIcon::fromTheme("mail-forward"),
+                                                   QSize(12, 12), QPoint(-2, 6));;
         row[0]->setIcon(icon);
 
         for (const auto column : option_columns) {

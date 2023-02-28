@@ -201,5 +201,7 @@ int console_item_get_type(const QModelIndex &index);
 bool console_item_get_was_fetched(const QModelIndex &index);
 QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon,
                               IconOverlayPosition position = IconOverlayPosition_BottomRight);
+QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon,
+                              const QSize &overlay_icon_size, const QPoint &pos);
 
 #endif /* CONSOLE_WIDGET_H */
