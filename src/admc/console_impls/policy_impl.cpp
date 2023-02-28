@@ -260,38 +260,31 @@ void update_ou_item_gpo_lists_data(const QString &policy_dn, QStandardItem *poli
 
 }
 
+void set_policy_icon(QStandardItem *policy_item, bool is_enforced, bool is_disabled) {
+    if (is_enforced) {
+        if (!is_disabled)
+            policy_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Enforced));
+        else
+            policy_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Enforced_Disabled));
+    } else {
+        if (!is_disabled)
+            policy_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Link));
+        else
+            policy_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Link_Disabled));
+    }
+}
+
 void set_enforced_policy_icon(QStandardItem *policy_item, bool is_enforced) {
     bool is_disabled = policy_is_disabled(policy_item);
 
-    QIcon result_icon;
-
-    if (is_enforced)
-        result_icon = get_console_tree_item_icon(ItemIconType_Policy_Enforced);
-    else
-        result_icon = get_console_tree_item_icon(ItemIconType_Policy_Clean);
-
-    if (is_disabled)
-        policy_item->setIcon(result_icon.pixmap(16, 16, QIcon::Disabled));
-    else
-        policy_item->setIcon(result_icon);
+    set_policy_icon(policy_item, is_enforced, is_disabled);
 }
 
 void set_disabled_policy_icon(QStandardItem *policy_item, bool is_disabled)
 {
     bool is_enforced = policy_is_enforced(policy_item);
 
-    if (is_disabled)
-    {
-        QIcon current_icon = policy_item->icon();
-        policy_item->setIcon(current_icon.pixmap(16, 16, QIcon::Disabled));
-    }
-    else
-    {
-        if (is_enforced)
-            policy_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Enforced));
-        else
-            policy_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Clean));
-    }
+    set_policy_icon(policy_item, is_enforced, is_disabled);
 }
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
@@ -300,26 +293,17 @@ void console_policy_load(const QList<QStandardItem *> &row, const AdObject &obje
 }
 
 void console_policy_load_item(QStandardItem *main_item, const AdObject &object) {
-    const QIcon icon = get_object_icon(object);
-
     main_item->setData(object.get_dn(), PolicyRole_DN);
 
-    bool is_enforced;
-    bool is_disabled;
     if (main_item->parent() != nullptr &&
-            main_item->parent()->data(ConsoleRole_Type).toInt() == ItemType_PolicyOU)
-    {
-        is_enforced = policy_is_enforced(main_item);
-        is_disabled = policy_is_disabled(main_item);
+            main_item->parent()->data(ConsoleRole_Type).toInt() == ItemType_PolicyOU) {
+        bool is_enforced = policy_is_enforced(main_item);
+        bool is_disabled = policy_is_disabled(main_item);
+
+        set_policy_icon(main_item, is_enforced, is_disabled);
+    } else {
+        main_item->setIcon(get_object_icon(object));
     }
-
-    if (is_enforced)
-        main_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Enforced));
-    else
-        main_item->setIcon(icon);
-
-    if (is_disabled)
-        main_item->setIcon(main_item->icon().pixmap(16, 16, QIcon::Disabled));
 
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
     main_item->setText(display_name);

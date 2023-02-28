@@ -8,7 +8,9 @@ enum ItemIconType {
     ItemIconType_OU_Clean,
     ItemIconType_OU_InheritanceBlocked,
     ItemIconType_Policy_Link,
+    ItemIconType_Policy_Link_Disabled,
     ItemIconType_Policy_Enforced,
+    ItemIconType_Policy_Enforced_Disabled,
     ItemIconType_Domain_Clean,
     ItemIconType_Domain_InheritanceBlocked,
 
