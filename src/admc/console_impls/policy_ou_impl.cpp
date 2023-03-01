@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2022 BaseALT Ltd.
@@ -116,15 +116,13 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
     }
 
     // Add policies linked to this OU
-    if (!is_domain) {
-        const AdObject parent_object = ad.search_object(dn);
-        const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
-        const Gplink gplink = Gplink(gplink_string);
-        const QList<QString> gpo_list = gplink.get_gpo_list();
-        update_ou_enforced_and_disabled_policies(gplink, index);
+    const AdObject parent_object = ad.search_object(dn);
+    const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
+    const Gplink gplink = Gplink(gplink_string);
+    const QList<QString> gpo_list = gplink.get_gpo_list();
+    update_ou_enforced_and_disabled_policies(gplink, index);
 
-        policy_ou_impl_add_objects_from_dns(console, ad, gpo_list, index);
-    }
+    policy_ou_impl_add_objects_from_dns(console, ad, gpo_list, index);
 }
 
 bool PolicyOUImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -512,4 +510,23 @@ void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object) 
 
     bool inheritance_is_blocked = object.get_int(ATTRIBUTE_GPOPTIONS);
     item->setData(inheritance_is_blocked, PolicyOURole_Inheritance_Block);
+}
+
+QModelIndex get_ou_child_policy_item(ConsoleWidget *console, const QModelIndex &ou_index, const QString &policy_dn)
+{
+    QList<QModelIndex> found_policy_indexes = console->search_items(ou_index,
+                                                                     PolicyRole_DN,
+                                                                     policy_dn,
+                                                                     {ItemType_Policy});
+    QModelIndex policy_index = QModelIndex();
+    for (QModelIndex index : found_policy_indexes)
+    {
+        if (index.parent().data(ConsoleRole_Type) == ItemType_PolicyOU)
+        {
+            policy_index = index;
+            break;
+        }
+    }
+
+    return policy_index;
 }
