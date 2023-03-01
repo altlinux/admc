@@ -214,8 +214,8 @@ void PolicyImpl::update_policy_item_data(const QString &policy_dn, const QString
     QModelIndex gp_objects_index = console->search_item(QModelIndex(), {ItemType_PolicyRoot});
     QModelIndex ou_dn_item_index = console->search_item(gp_objects_index, PolicyOURole_DN,
                                                         ou_dn, {ItemType_PolicyOU});
-    QModelIndex target_policy_index = console->search_item(ou_dn_item_index, PolicyRole_DN,
-                                                           policy_dn, {ItemType_Policy});
+    QModelIndex target_policy_index = get_ou_child_policy_item(console, ou_dn_item_index, policy_dn);
+
     if (!target_policy_index.isValid())
         return;
 

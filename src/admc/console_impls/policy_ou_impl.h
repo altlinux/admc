@@ -96,4 +96,9 @@ void policy_ou_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad
 void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object);
 
+//Get policy item that is not in All policies folder.
+//It is applied to exclude policy items from All policies folder
+//those can be found first
+QModelIndex get_ou_child_policy_item(ConsoleWidget *console, const QModelIndex &ou_index, const QString &policy_dn);
+
 #endif /* POLICY_OU_IMPL_H */
