@@ -111,7 +111,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
         all_policies_item->setIcon(QIcon::fromTheme("folder"));
         // Set sort index for "All policies" to 1 so it's always
         // at the bottom of the policy tree
-        console->set_item_sort_index(all_policies_item->index(), 1);
+        console->set_item_sort_index(all_policies_item->index(), 2);
     }
 
     // Add policies linked to this OU
@@ -362,6 +362,8 @@ void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<A
             const QList<QStandardItem *> row = console->add_scope_item(ItemType_PolicyOU, parent);
 
             policy_ou_impl_load_row(row, object);
+
+            console->set_item_sort_index(row[0]->index(), 1);
         } else if (is_gpc) {
             const QList<QStandardItem *> row = console->add_scope_item(ItemType_Policy, parent);
 
