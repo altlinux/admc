@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2022 BaseALT Ltd.
@@ -115,7 +115,6 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
     }
 
     // Add policies linked to this OU
-    if (!is_domain) {
         const QList<QString> gpo_list = [&]() {
             const AdObject parent_object = ad.search_object(dn);
             const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
@@ -126,7 +125,6 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
         }();
 
         policy_ou_impl_add_objects_from_dns(console, ad, gpo_list, index);
-    }
 }
 
 bool PolicyOUImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
