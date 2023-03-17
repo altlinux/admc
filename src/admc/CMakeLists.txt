@@ -173,6 +173,7 @@ set(ADMC_SOURCES
     console_widget/results_view.cpp
     console_widget/console_drag_model.cpp
     console_widget/console_impl.cpp
+    console_widget/console_tree_item_icons.cpp
 
     console_impls/object_impl.cpp
     console_impls/policy_impl.cpp
