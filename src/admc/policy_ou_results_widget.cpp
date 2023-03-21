@@ -30,10 +30,10 @@
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
-#include "gplink.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "console_widget/console_tree_item_icons.h"
 
 #include <QAction>
 #include <QHeaderView>
@@ -184,7 +184,12 @@ void PolicyOUResultsWidget::on_item_changed(QStandardItem *item) {
 
     const QString gplink_string = gplink.to_string();
 
-    ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink_string);
+    bool success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink_string);
+
+    if (success) {
+        change_policy_icon(gpo_dn, is_checked, option);
+        update_gpo_lists_data(gpo_dn, is_checked, option);
+    }
 
     g_status->display_ad_messages(ad, this);
 
@@ -232,6 +237,30 @@ void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink &, cons
     reload_gplink();
 
     hide_busy_indicator();
+}
+
+void PolicyOUResultsWidget::change_policy_icon(const QString &policy_dn, bool is_checked, GplinkOption option) {
+    QModelIndex target_policy_index = console->search_item(console->get_current_scope_item(),
+                                                           PolicyRole_DN,
+                                                           policy_dn,
+                                                           {ItemType_Policy});
+    if (!target_policy_index.isValid())
+        return;
+
+    if (option == GplinkOption_Disabled)
+    {
+        set_disabled_policy_icon(console->get_item(target_policy_index), is_checked);
+    }
+    else if (option == GplinkOption_Enforced)
+    {
+        set_enforced_policy_icon(console->get_item(target_policy_index), is_checked);
+    }
+}
+
+void PolicyOUResultsWidget::update_gpo_lists_data(const QString &policy_dn, bool is_checked, GplinkOption option) {
+    QStandardItem *current_ou_item = console->get_item(console->get_current_scope_item());
+
+    update_ou_item_gpo_lists_data(policy_dn, current_ou_item, is_checked, option);
 }
 
 void PolicyOUResultsWidget::remove_link() {
@@ -344,8 +373,7 @@ void PolicyOUResultsWidget::reload_gplink() {
         row[PolicyOUResultsColumn_Name]->setText(name);
         set_data_for_row(row, gpo_dn, PolicyOUResultsRole_DN);
 
-        const QIcon icon = get_object_icon(gpo_object);
-        row[0]->setIcon(icon);
+        row[0]->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Link));
 
         for (const auto column : option_columns) {
             QStandardItem *item = row[column];

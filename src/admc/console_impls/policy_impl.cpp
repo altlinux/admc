@@ -28,13 +28,13 @@
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "globals.h"
-#include "gplink.h"
 #include "policy_results_widget.h"
 #include "properties_dialog.h"
 #include "rename_policy_dialog.h"
 #include "select_object_dialog.h"
 #include "status.h"
 #include "utils.h"
+#include "console_widget/console_tree_item_icons.h"
 
 #include <QAction>
 #include <QDebug>
@@ -59,6 +59,9 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
     connect(
         edit_action, &QAction::triggered,
         this, &PolicyImpl::on_edit);
+    connect(
+        policy_results, &PolicyResultsWidget::policy_gplink_option_changed,
+        this, &PolicyImpl::update_policy_item_data);
 }
 
 bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -206,15 +209,101 @@ void PolicyImpl::on_edit() {
     console_policy_edit(console, ItemType_Policy, PolicyRole_DN);
 }
 
+void PolicyImpl::update_policy_item_data(const QString &policy_dn, const QString &ou_dn, bool is_checked, GplinkOption option) {
+    //Group Policy Objects item index
+    QModelIndex gp_objects_index = console->search_item(QModelIndex(), {ItemType_PolicyRoot});
+    QModelIndex ou_dn_item_index = console->search_item(gp_objects_index, PolicyOURole_DN,
+                                                        ou_dn, {ItemType_PolicyOU});
+    QModelIndex target_policy_index = console->search_item(ou_dn_item_index, PolicyRole_DN,
+                                                           policy_dn, {ItemType_Policy});
+    if (!target_policy_index.isValid())
+        return;
+
+    QStandardItem *policy_ou_item = console->get_item(ou_dn_item_index);
+
+    set_policy_item_icon(target_policy_index, is_checked, option);
+    update_ou_item_gpo_lists_data(policy_dn, policy_ou_item, is_checked, option);
+}
+
+void PolicyImpl::set_policy_item_icon(const QModelIndex &policy_index, bool is_checked, GplinkOption option)
+{
+    QStandardItem *target_policy_item = console->get_item(policy_index);
+    if (target_policy_item->parent()->data(ConsoleRole_Type) != ItemType_PolicyOU)
+        return;
+
+    if (option == GplinkOption_Enforced) {
+        set_enforced_policy_icon(target_policy_item, is_checked);
+    } else if (option == GplinkOption_Disabled) {
+        set_disabled_policy_icon(target_policy_item, is_checked);
+    }
+}
+
+void update_ou_item_gpo_lists_data(const QString &policy_dn, QStandardItem *policy_ou_item, bool is_checked, GplinkOption option) {
+    PolicyOURole ou_role_from_option;
+
+    if (option == GplinkOption_Disabled)
+        ou_role_from_option = PolicyOURole_Disabled_GPO_List;
+    else if (option == GplinkOption_Enforced)
+        ou_role_from_option = PolicyOURole_Enforced_GPO_List;
+    else return;
+
+    QStringList target_option_policy_dn_list = policy_ou_item->data(ou_role_from_option).
+            toStringList();
+
+    if (is_checked)
+        target_option_policy_dn_list.append(policy_dn);
+    else
+        target_option_policy_dn_list.removeAll(policy_dn);
+
+    policy_ou_item->setData(target_option_policy_dn_list,
+                                                 ou_role_from_option);
+
+}
+
+void set_policy_icon(QStandardItem *policy_item, bool is_enforced, bool is_disabled) {
+    if (is_enforced) {
+        if (!is_disabled)
+            policy_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Enforced));
+        else
+            policy_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Enforced_Disabled));
+    } else {
+        if (!is_disabled)
+            policy_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Link));
+        else
+            policy_item->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Link_Disabled));
+    }
+}
+
+void set_enforced_policy_icon(QStandardItem *policy_item, bool is_enforced) {
+    bool is_disabled = policy_is_disabled(policy_item);
+
+    set_policy_icon(policy_item, is_enforced, is_disabled);
+}
+
+void set_disabled_policy_icon(QStandardItem *policy_item, bool is_disabled)
+{
+    bool is_enforced = policy_is_enforced(policy_item);
+
+    set_policy_icon(policy_item, is_enforced, is_disabled);
+}
+
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object) {
     QStandardItem *main_item = row[0];
     console_policy_load_item(main_item, object);
 }
 
 void console_policy_load_item(QStandardItem *main_item, const AdObject &object) {
-    const QIcon icon = get_object_icon(object);
-    main_item->setIcon(icon);
     main_item->setData(object.get_dn(), PolicyRole_DN);
+
+    if (main_item->parent() != nullptr &&
+            main_item->parent()->data(ConsoleRole_Type).toInt() == ItemType_PolicyOU) {
+        bool is_enforced = policy_is_enforced(main_item);
+        bool is_disabled = policy_is_disabled(main_item);
+
+        set_policy_icon(main_item, is_enforced, is_disabled);
+    } else {
+        main_item->setIcon(get_object_icon(object));
+    }
 
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
     main_item->setText(display_name);
@@ -665,4 +754,22 @@ void console_policy_update_policy_results(ConsoleWidget *console, PolicyResultsW
     if (results_is_shown) {
         policy_results->update(results_gpo);
     }
+}
+
+bool policy_is_enforced(QStandardItem *policy_item)
+{
+    bool is_enforced = false;
+    is_enforced = policy_item->parent()->data(PolicyOURole_Enforced_GPO_List)
+            .toStringList().contains(policy_item->data(PolicyRole_DN).toString());
+
+    return is_enforced;
+}
+
+bool policy_is_disabled(QStandardItem *policy_item)
+{
+    bool is_disabled = false;
+    is_disabled = policy_item->parent()->data(PolicyOURole_Disabled_GPO_List)
+            .toStringList().contains(policy_item->data(PolicyRole_DN).toString());
+
+    return is_disabled;
 }
