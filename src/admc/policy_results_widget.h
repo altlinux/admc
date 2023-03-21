@@ -26,6 +26,7 @@
  */
 
 #include <QWidget>
+#include "gplink.h"
 
 class QStandardItemModel;
 class QStandardItem;
@@ -55,6 +56,10 @@ public:
     ResultsView *get_view() const;
 
     QString get_current_gpo() const;
+
+signals:
+    void policy_gplink_option_changed(const QString &policy_dn, const QString &ou_dn,
+                                 bool is_checked, GplinkOption option);
 
 private:
     QStandardItemModel *model;
