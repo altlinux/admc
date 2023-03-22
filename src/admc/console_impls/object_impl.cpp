@@ -1364,7 +1364,11 @@ void ObjectImpl::update_toolbar_actions() {
     }
 
     const QModelIndex target = target_list[0];
-    const QString object_class = target.data(ObjectRole_ObjectClasses).toStringList().last();
+    const QVariant target_data = target.data(ObjectRole_ObjectClasses);
+    if (!target_data.canConvert<QStringList>() || target_data.toStringList().isEmpty()) {
+        return;
+    }
+    const QString object_class = target_data.toStringList().last();
 
     for (const QString &action_object_class : toolbar_action_map.keys()) {
         QAction *action = toolbar_action_map[action_object_class];
