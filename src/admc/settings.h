@@ -47,6 +47,7 @@ DEFINE_SETTING(SETTING_attributes_tab_filter_state);
 DEFINE_SETTING(SETTING_console_widget_state);
 DEFINE_SETTING(SETTING_policy_results_state);
 DEFINE_SETTING(SETTING_policy_ou_results_state);
+DEFINE_SETTING(SETTING_inheritance_widget_state);
 DEFINE_SETTING(SETTING_find_results_state);
 DEFINE_SETTING(SETTING_console_filter_dialog_state);
 DEFINE_SETTING(SETTING_select_object_advanced_dialog_console_state);

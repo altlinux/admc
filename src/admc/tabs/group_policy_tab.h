@@ -22,6 +22,7 @@
 
 #include "attribute_edits/attribute_edit.h"
 #include <QWidget>
+#include <QModelIndex>
 
 #include "gplink.h"
 
@@ -30,6 +31,8 @@
  * attributes of an object(not a gpo!), such as gplink and
  * gpoptions.
  */
+
+class ConsoleWidget;
 
 namespace Ui {
 class GroupPolicyTab;
@@ -41,8 +44,12 @@ class GroupPolicyTab final : public QWidget {
 public:
     Ui::GroupPolicyTab *ui;
 
-    GroupPolicyTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
+    GroupPolicyTab(QList<AttributeEdit *> *edit_list, ConsoleWidget *console_widget, const QString &ou_dn, QWidget *parent);
     ~GroupPolicyTab();
+
+private:
+    ConsoleWidget *console;
+    QModelIndex target_ou_index;
 };
 
 #endif /* GROUP_POLICY_TAB_H */

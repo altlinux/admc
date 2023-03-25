@@ -632,7 +632,7 @@ void console_object_properties(const QList<ConsoleWidget *> &console_list, const
         const QString dn = dn_list[0];
 
         bool dialog_is_new;
-        PropertiesDialog *dialog = PropertiesDialog::open_for_target(ad, dn, &dialog_is_new);
+        PropertiesDialog *dialog = PropertiesDialog::open_for_target(ad, dn, &dialog_is_new, console_list[0]);
 
         if (dialog_is_new) {
             QObject::connect(
@@ -1543,6 +1543,9 @@ QList<QString> console_object_search_attributes() {
 
     // NOTE: for context menu block inheritance checkbox
     attributes += ATTRIBUTE_GPOPTIONS;
+
+    // NOTE: needed to know gpo status
+    attributes += ATTRIBUTE_FLAGS;
 
     return attributes;
 }

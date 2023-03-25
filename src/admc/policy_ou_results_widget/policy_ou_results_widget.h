@@ -56,6 +56,8 @@ public:
 
     ResultsView *get_view() const;
 
+    void update_inheritance_widget();
+
 private:
     ConsoleWidget *console;
     QStandardItemModel *model;
@@ -71,7 +73,6 @@ private:
     void reload_gplink();
     void modify_gplink(void (*modify_function)(Gplink &, const QString &));
     void change_policy_icon(const QString &policy_dn, bool is_checked, GplinkOption option);
-    void update_gpo_lists_data(const QString &policy_dn, bool is_checked, GplinkOption option);
 
     friend ADMCTestPolicyOUResultsWidget;
 };

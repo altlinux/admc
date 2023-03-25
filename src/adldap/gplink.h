@@ -64,6 +64,9 @@ public:
 
     int get_gpo_order(const QString &gpo) const;
 
+    QStringList enforced_gpo_dn_list() const;
+    QStringList disabled_gpo_dn_list() const;
+
 private:
     QList<QString> gpo_list;
     QHash<QString, int> options;

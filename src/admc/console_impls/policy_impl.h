@@ -43,8 +43,8 @@ class QList;
 
 enum PolicyRole {
     PolicyRole_DN = ConsoleRole_LAST + 1,
-
-    PolicyRole_LAST = ConsoleRole_LAST + 2,
+    PolicyRole_GPO_Status,
+    PolicyRole_LAST,
 };
 
 class PolicyImpl final : public ConsoleImpl {
@@ -70,7 +70,8 @@ public:
 private slots:
     void on_add_link();
     void on_edit();
-    void update_policy_item_data(const QString &policy_dn, const QString &ou_dn, bool is_checked, GplinkOption option);
+    void update_policy_item_icons(const QString &policy_dn, const QString &ou_dn, bool is_checked, GplinkOption option);
+    void set_ou_gplink_data(const QString &ou_dn, const QString &gplink_string);
 
 private:
     PolicyResultsWidget *policy_results;
@@ -95,6 +96,5 @@ bool policy_is_disabled(QStandardItem *policy_item);
 void set_policy_icon(QStandardItem *policy_item, bool is_enforced, bool is_disabled);
 void set_enforced_policy_icon(QStandardItem *policy_item, bool is_enforced);
 void set_disabled_policy_icon(QStandardItem *policy_item, bool is_disabled);
-void update_ou_item_gpo_lists_data(const QString &policy_dn, QStandardItem *policy_ou_item, bool is_checked, GplinkOption option);
 
 #endif /* POLICY_IMPL_H */

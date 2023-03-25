@@ -55,7 +55,7 @@ Gplink::Gplink(const QString &gplink_string) {
             return option_int;
         }();
 
-        gpo_list.append(gpo);
+        gpo_list.prepend(gpo);
         options[gpo] = option;
     }
 }
@@ -65,11 +65,12 @@ Gplink::Gplink(const QString &gplink_string) {
 QString Gplink::to_string() const {
     QList<QString> part_list;
 
-    for (auto gpo : gpo_list) {
+    QList<QString>::const_reverse_iterator i;
+    for (i = gpo_list.rbegin(); i != gpo_list.rend(); ++i) {
         // Convert gpo dn from lower case to gplink case
         // format
         const QString gpo_case = [&]() {
-            const QList<QString> rdn_list = gpo.split(",");
+            const QList<QString> rdn_list = i->split(",");
 
             QList<QString> rdn_list_case;
 
@@ -120,7 +121,7 @@ QString Gplink::to_string() const {
 
             return out;
         }();
-        const int option = options[gpo];
+        const int option = options[*i];
         const QString option_string = QString::number(option);
 
         const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo_case, option_string);
@@ -275,4 +276,24 @@ int Gplink::get_gpo_order(const QString &gpo_case) const {
     const int out = gpo_list.indexOf(gpo);
 
     return out;
+}
+
+QStringList Gplink::enforced_gpo_dn_list() const
+{
+    QStringList enforced_dn_list;
+    for (QString gpo_dn : get_gpo_list()) {
+        if (get_option(gpo_dn, GplinkOption_Enforced))
+            enforced_dn_list.append(gpo_dn);
+    }
+    return enforced_dn_list;
+}
+
+QStringList Gplink::disabled_gpo_dn_list() const
+{
+    QStringList disabled_dn_list;
+    for (QString gpo_dn : get_gpo_list()) {
+        if (get_option(gpo_dn, GplinkOption_Disabled))
+            disabled_dn_list.append(gpo_dn);
+    }
+    return disabled_dn_list;
 }

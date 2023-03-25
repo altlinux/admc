@@ -25,8 +25,8 @@
 #include "console_widget/results_view.h"
 #include "globals.h"
 #include "gplink.h"
-#include "policy_ou_results_widget.h"
-#include "policy_ou_results_widget_p.h"
+#include "policy_ou_results_widget/policy_ou_results_widget.h"
+#include "policy_ou_results_widget/policy_ou_results_widget_p.h"
 #include "utils.h"
 
 #include <QSortFilterProxyModel>

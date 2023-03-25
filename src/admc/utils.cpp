@@ -514,3 +514,13 @@ int get_range_upper(const QString &attribute) {
 void set_line_edit_to_hex_numbers_only(QLineEdit *edit) {
     edit->setValidator(new QRegExpValidator(QRegExp("[0-9a-f]*"), edit));
 }
+
+QString gpo_status_from_int(int status) {
+    switch (status) {
+    case 0: return QObject::tr("Enabled");
+    case 1: return QObject::tr("User configuration disabled");
+    case 2: return QObject::tr("Computer configuration disabled");
+    case 3: return QObject::tr("Disabled");
+    default: return QObject::tr("Undefined GPO status");
+    }
+}

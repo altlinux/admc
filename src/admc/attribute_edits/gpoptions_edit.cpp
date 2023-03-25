@@ -53,6 +53,7 @@ bool GpoptionsEdit::apply(AdInterface &ad, const QString &dn) const {
         }
     }();
     const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, new_value);
+    emit gp_options_changed(check->isChecked());
 
     return success;
 }
