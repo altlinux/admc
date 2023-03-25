@@ -69,6 +69,8 @@ public:
 
     void set_drag_drop_enabled(const bool enabled);
 
+    void set_row_hidden(int row, bool hidden);
+
 signals:
     void activated(const QModelIndex &index);
     void context_menu(const QPoint pos);

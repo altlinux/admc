@@ -177,6 +177,10 @@ public:
 
     void update_current_item_results_widget();
 
+    // Gets current scope item's result widget for given
+    // scope item index. Can return nullptr.
+    QWidget *get_result_widget_for_index(const QModelIndex &index);
+
 signals:
     // Emitted when selection in the whole console
     // widget changes, both in scope and results panes.

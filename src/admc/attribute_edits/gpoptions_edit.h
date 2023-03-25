@@ -33,6 +33,9 @@ public:
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
 
+signals:
+    void gp_options_changed(bool is_checked) const;
+
 private:
     QCheckBox *check;
 };

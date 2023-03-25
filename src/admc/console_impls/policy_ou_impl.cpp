@@ -29,7 +29,7 @@
 #include "find_policy_dialog.h"
 #include "globals.h"
 #include "gplink.h"
-#include "policy_ou_results_widget.h"
+#include "policy_ou_results_widget/policy_ou_results_widget.h"
 #include "select_policy_dialog.h"
 #include "status.h"
 #include "utils.h"
@@ -120,9 +120,11 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
     const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
     const Gplink gplink = Gplink(gplink_string);
     const QList<QString> gpo_list = gplink.get_gpo_list();
-    update_ou_enforced_and_disabled_policies(gplink, index);
+    console->get_item(index)->setData(gplink_string, PolicyOURole_Gplink_String);
 
     policy_ou_impl_add_objects_from_dns(console, ad, gpo_list, index);
+
+    policy_ou_results_widget->update_inheritance_widget();
 }
 
 bool PolicyOUImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -471,6 +473,8 @@ void PolicyOUImpl::change_gp_options() {
     }
     currentItem->setData(checked, PolicyOURole_Inheritance_Block);
     currentItem->setIcon(icon_to_set);
+
+    policy_ou_results_widget->update_inheritance_widget();
 }
 
 
@@ -483,21 +487,6 @@ void PolicyOUImpl::update_gp_options_check_state() const {
     }
     else
         change_gp_options_action->setDisabled(true);
-}
-
-void PolicyOUImpl::update_ou_enforced_and_disabled_policies(const Gplink &gplink, const QModelIndex &ou_index) {
-    QStandardItem *ou_scope_item = console->get_item(ou_index);
-    QStringList enforced_gpo_dn_list;
-    QStringList disabled_gpo_dn_list;
-    for (QString gpo_dn : gplink.get_gpo_list()) {
-        if (gplink.get_option(gpo_dn, GplinkOption_Enforced))
-            enforced_gpo_dn_list.append(gpo_dn);
-        if (gplink.get_option(gpo_dn, GplinkOption_Disabled))
-            disabled_gpo_dn_list.append(gpo_dn);
-    }
-
-    ou_scope_item->setData(enforced_gpo_dn_list, PolicyOURole_Enforced_GPO_List);
-    ou_scope_item->setData(disabled_gpo_dn_list, PolicyOURole_Disabled_GPO_List);
 }
 
 void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object) {
@@ -533,4 +522,18 @@ QModelIndex get_ou_child_policy_item(ConsoleWidget *console, const QModelIndex &
     }
 
     return policy_index;
+}
+
+void update_ou_item_gplink_data(const QString &gplink, const QModelIndex &ou_index, ConsoleWidget *console)
+{
+    QStandardItem *ou_item = console->get_item(ou_index);
+    ou_item->setData(gplink, PolicyOURole_Gplink_String);
+}
+
+QModelIndex search_gpo_ou_index(ConsoleWidget *console, const QString &ou_dn)
+{
+    QModelIndex gp_objects_index = console->search_item(QModelIndex(), {ItemType_PolicyRoot});
+    QModelIndex ou_dn_item_index = console->search_item(gp_objects_index, PolicyOURole_DN,
+                                                        ou_dn, {ItemType_PolicyOU});
+    return ou_dn_item_index;
 }

@@ -61,7 +61,7 @@
 
 QHash<QString, PropertiesDialog *> PropertiesDialog::instances;
 
-PropertiesDialog *PropertiesDialog::open_for_target(AdInterface &ad, const QString &target, bool *dialog_is_new) {
+PropertiesDialog *PropertiesDialog::open_for_target(AdInterface &ad, const QString &target, bool *dialog_is_new, ConsoleWidget *console) {
     if (target.isEmpty()) {
         return nullptr;
     }
@@ -79,7 +79,7 @@ PropertiesDialog *PropertiesDialog::open_for_target(AdInterface &ad, const QStri
         dialog->setFocus();
     } else {
         // Make new dialog for this target
-        dialog = new PropertiesDialog(ad, target);
+        dialog = new PropertiesDialog(ad, target, console);
         dialog->open();
     }
 
@@ -108,7 +108,7 @@ void PropertiesDialog::open_when_view_item_activated(QAbstractItemView *view, co
         });
 }
 
-PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
+PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg, ConsoleWidget *console)
 : QDialog() {
     ui = new Ui::PropertiesDialog();
     ui->setupUi(this);
@@ -223,7 +223,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg)
     }
 
     if (object.is_class(CLASS_OU) || object.is_class(CLASS_DOMAIN)) {
-        auto group_policy_tab = new GroupPolicyTab(&edit_list, this);
+        auto group_policy_tab = new GroupPolicyTab(&edit_list, console, target, this);
         ui->tab_widget->add_tab(group_policy_tab, tr("Group policy"));
     }
 

@@ -15,7 +15,7 @@ enum IconOverlayPosition {
 };
 
 /**
- * ConsoleTreeItemIcons struct contains map with icons that
+ * ConsoleTreeItemIcons struct contains array with icons that
  * are set to appropriate item when group policy object changes its state
  */
 struct ConsoleTreeItemIcons final

@@ -218,3 +218,8 @@ void ResultsView::set_drag_drop_enabled(const bool enabled) {
         view->setDragDropMode(mode);
     }
 }
+
+void ResultsView::set_row_hidden(int row, bool hidden)
+{
+    m_detail_view->setRowHidden(row, QModelIndex(), hidden);
+}
