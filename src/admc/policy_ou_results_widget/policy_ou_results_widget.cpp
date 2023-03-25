@@ -155,10 +155,17 @@ void PolicyOUResultsWidget::update(const QString &dn) {
     }();
 
     reload_gplink();
+    update_inheritance_widget();
 }
 
 ResultsView *PolicyOUResultsWidget::get_view() const {
     return ui->view;
+}
+
+void PolicyOUResultsWidget::update_inheritance_widget()
+{
+    QModelIndex ou_index = console->get_current_scope_item();
+    ui->inheritance_widget->update(ou_index, console);
 }
 
 void PolicyOUResultsWidget::on_item_changed(QStandardItem *item) {
@@ -188,12 +195,14 @@ void PolicyOUResultsWidget::on_item_changed(QStandardItem *item) {
 
     if (success) {
         change_policy_icon(gpo_dn, is_checked, option);
-        update_gpo_lists_data(gpo_dn, is_checked, option);
     }
 
     g_status->display_ad_messages(ad, this);
 
     reload_gplink();
+
+    update_ou_item_gplink_data(gplink_string, console->get_current_scope_item(), console);
+    update_inheritance_widget();
 
     hide_busy_indicator();
 }
@@ -221,8 +230,6 @@ void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink &, cons
 
     const QList<QModelIndex> selected = ui->view->get_selected_indexes();
 
-    const QString old_gplink_string = gplink.to_string();
-
     for (const QModelIndex &index : selected) {
         const QString gpo_dn = index.data(PolicyOUResultsRole_DN).toString();
 
@@ -235,6 +242,9 @@ void PolicyOUResultsWidget::modify_gplink(void (*modify_function)(Gplink &, cons
     g_status->display_ad_messages(ad, this);
 
     reload_gplink();
+
+    update_ou_item_gplink_data(gplink_string, console->get_current_scope_item(), console);
+    update_inheritance_widget();
 
     hide_busy_indicator();
 }
@@ -252,12 +262,6 @@ void PolicyOUResultsWidget::change_policy_icon(const QString &policy_dn, bool is
     {
         set_enforced_policy_icon(console->get_item(target_policy_index), is_checked);
     }
-}
-
-void PolicyOUResultsWidget::update_gpo_lists_data(const QString &policy_dn, bool is_checked, GplinkOption option) {
-    QStandardItem *current_ou_item = console->get_item(console->get_current_scope_item());
-
-    update_ou_item_gpo_lists_data(policy_dn, current_ou_item, is_checked, option);
 }
 
 void PolicyOUResultsWidget::remove_link() {

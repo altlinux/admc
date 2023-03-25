@@ -36,8 +36,7 @@
 
 enum PolicyOURole {
     PolicyOURole_DN = MyConsoleRole_LAST + 1,
-    PolicyOURole_Enforced_GPO_List,
-    PolicyOURole_Disabled_GPO_List,
+    PolicyOURole_Gplink_String,
     PolicyOURole_Inheritance_Block,
 
     PolicyOURole_LAST,
@@ -88,7 +87,6 @@ private:
     void find_gpo();
     void change_gp_options();
     void update_gp_options_check_state() const;
-    void update_ou_enforced_and_disabled_policies(const Gplink &gplink, const QModelIndex &ou_index);
 };
 
 void policy_ou_impl_load_row(const QList<QStandardItem *> row, const AdObject &object);
@@ -100,5 +98,10 @@ void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object);
 //It is applied to exclude policy items from All policies folder
 //those can be found first
 QModelIndex get_ou_child_policy_item(ConsoleWidget *console, const QModelIndex &ou_index, const QString &policy_dn);
+
+//Searches OU's index with given dn under "Group policy objects" item
+QModelIndex search_gpo_ou_index(ConsoleWidget *console, const QString &ou_dn);
+
+void update_ou_item_gplink_data(const QString &gplink, const QModelIndex &ou_index, ConsoleWidget *console);
 
 #endif /* POLICY_OU_IMPL_H */

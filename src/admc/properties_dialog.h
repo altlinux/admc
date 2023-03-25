@@ -39,6 +39,7 @@ class AdObject;
 class PropertiesWarningDialog;
 class AttributeEdit;
 class SecurityTab;
+class ConsoleWidget;
 
 namespace Ui {
 class PropertiesDialog;
@@ -56,7 +57,7 @@ public:
     // newly created dialog and false if a dialog was
     // already open for given target and reused. Use to know
     // whether to connect to applied() signal
-    static PropertiesDialog *open_for_target(AdInterface &ad, const QString &target, bool *dialog_is_new = nullptr);
+    static PropertiesDialog *open_for_target(AdInterface &ad, const QString &target, bool *dialog_is_new = nullptr, ConsoleWidget *console = nullptr);
     static void open_when_view_item_activated(QAbstractItemView *view, const int dn_role);
 
     ~PropertiesDialog();
@@ -84,7 +85,7 @@ private:
     SecurityTab *security_tab;
 
     // NOTE: ctor is private, use open_for_target() instead
-    PropertiesDialog(AdInterface &ad, const QString &target_arg);
+    PropertiesDialog(AdInterface &ad, const QString &target_arg, ConsoleWidget *console);
     bool apply_internal(AdInterface &ad);
     void reset_internal(AdInterface &ad, const AdObject &object);
 

@@ -1549,9 +1549,37 @@
 <context>
     <name>GroupPolicyTab</name>
     <message>
-        <location filename="tabs/group_policy_tab.ui" line="20"/>
+        <location filename="tabs/group_policy_tab.ui" line="26"/>
+        <source>Inherited Policies</source>
+        <translation>Наследуемые политики</translation>
+    </message>
+    <message>
+        <location filename="tabs/group_policy_tab.ui" line="36"/>
         <source>Block policy inheritance</source>
         <translation>Заблокировать наследование политик</translation>
+    </message>
+</context>
+<context>
+    <name>InheritedPoliciesWidget</name>
+    <message>
+        <location filename="policy_ou_results_widget/inherited_policies_widget.cpp" line="26"/>
+        <source>Priority</source>
+        <translation>Приоритет</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/inherited_policies_widget.cpp" line="27"/>
+        <source>Name</source>
+        <translation>Имя</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/inherited_policies_widget.cpp" line="28"/>
+        <source>Location</source>
+        <translation>Местонахождение</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/inherited_policies_widget.cpp" line="29"/>
+        <source>Status</source>
+        <translation>Статус</translation>
     </message>
 </context>
 <context>
@@ -2658,6 +2686,17 @@
         <source>The GPO for this link could not be found. It maybe have been recently created and is being replicated or it could have been deleted.</source>
         <translation>Не удалось найти объект групповой политики для этой связи. Возможно, он был недавно создан и реплицируется или был удалён.</translation>
     </message>
+    <message>
+        <location filename="policy_ou_results_widget/policy_ou_results_widget.ui" line="36"/>
+        <source>Linked policies</source>
+        <translation>Привязанные политики</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/policy_ou_results_widget.ui" line="58"/>
+        <source>Inherited policies</source>
+        <oldsource>Inherited</oldsource>
+        <translation>Наследуемые политики</translation>
+    </message>
 </context>
 <context>
     <name>PolicyResultsWidget</name>
@@ -2892,6 +2931,31 @@
         <location filename="utils.cpp" line="111"/>
         <source>Confirm action</source>
         <translation>Подтверждение действия</translation>
+    </message>
+    <message>
+        <location filename="utils.cpp" line="520"/>
+        <source>Enabled</source>
+        <translation>Включено</translation>
+    </message>
+    <message>
+        <location filename="utils.cpp" line="521"/>
+        <source>User configuration disabled</source>
+        <translation>Параметры конфигурации пользователя отключены</translation>
+    </message>
+    <message>
+        <location filename="utils.cpp" line="522"/>
+        <source>Computer configuration disabled</source>
+        <translation>Параметры конфигурации компьютера отключены</translation>
+    </message>
+    <message>
+        <location filename="utils.cpp" line="523"/>
+        <source>Disabled</source>
+        <translation>Отключено</translation>
+    </message>
+    <message>
+        <location filename="utils.cpp" line="524"/>
+        <source>Undefined GPO status</source>
+        <translation>Статус не определён</translation>
     </message>
     <message>
         <location filename="attribute_edits/account_option_edit.cpp" line="81"/>

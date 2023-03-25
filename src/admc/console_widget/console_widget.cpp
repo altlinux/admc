@@ -584,6 +584,16 @@ void ConsoleWidget::set_item_sort_index(const QModelIndex &index, const int sort
     d->model->setData(index, sort_index, ConsoleRole_SortIndex);
 }
 
+QWidget *ConsoleWidget::get_result_widget_for_index(const QModelIndex &index)
+{
+    ConsoleImpl *current_item_impl = d->get_impl(index);
+    QWidget *result_widget;
+    if (current_item_impl)
+        result_widget = current_item_impl->widget();
+
+    return result_widget;
+}
+
 void ConsoleWidget::resizeEvent(QResizeEvent *event) {
     d->update_description();
     QWidget::resizeEvent(event);

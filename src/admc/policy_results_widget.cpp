@@ -235,6 +235,7 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
     if (success) {
         model->setData(index, updated_gplink_string, PolicyResultsRole_GplinkString);
         emit policy_gplink_option_changed(gpo, dn, is_checked, option);
+        emit ou_gplink_changed(dn, updated_gplink_string);
 
     } else {
         const Qt::CheckState undo_check_state = [&]() {
