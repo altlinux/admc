@@ -40,6 +40,9 @@ template <typename T>
 class QList;
 class ConsoleWidget;
 class ConsoleFilterDialog;
+class GeneralUserTab;
+class GeneralGroupTab;
+class QStackedWidget;
 
 enum ObjectRole {
     ObjectRole_DN = MyConsoleRole_LAST + 1,
@@ -84,6 +87,10 @@ public:
     void properties(const QList<QModelIndex> &index_list) override;
     void refresh(const QList<QModelIndex> &index_list) override;
     void delete_action(const QList<QModelIndex> &index_list) override;
+
+    void selected_as_scope(const QModelIndex &index) override;
+
+    void update_results_widget(const QModelIndex &index) const override;
 
     void set_find_action_enabled(const bool enabled);
     void set_refresh_action_enabled(const bool enabled);
@@ -132,6 +139,10 @@ private:
     QAction *toolbar_create_user;
     QAction *toolbar_create_group;
     QAction *toolbar_create_ou;
+
+    QStackedWidget *stacked_widget;
+    GeneralGroupTab *group_results_widget;
+    GeneralUserTab *user_results_widget;
 
     bool find_action_enabled;
     bool refresh_action_enabled;

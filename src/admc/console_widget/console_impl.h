@@ -120,6 +120,8 @@ public:
     virtual QList<QString> column_labels() const;
     virtual QList<int> default_columns() const;
 
+    virtual void update_results_widget(const QModelIndex &index) const;
+
     QVariant save_state() const;
     void restore_state(const QVariant &state);
 

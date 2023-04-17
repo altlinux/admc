@@ -24,6 +24,7 @@
 #include <QWidget>
 
 class AdObject;
+class AdInterface;
 class AttributeEdit;
 
 namespace Ui {
@@ -38,6 +39,17 @@ public:
 
     GeneralUserTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralUserTab();
+
+    // Ctor is used for user's read only result widget
+    GeneralUserTab(QWidget *parent = nullptr);
+
+    void update(AdInterface &ad, const AdObject &object);
+
+private:
+    QList<AttributeEdit *> m_edit_list;
+
+    QList<AttributeEdit *> create_edits();
+
 };
 
 #endif /* GENERAL_USER_TAB_H */
