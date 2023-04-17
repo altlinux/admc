@@ -25,6 +25,7 @@
 
 class AdObject;
 class AttributeEdit;
+class AdInterface;
 
 namespace Ui {
 class GeneralGroupTab;
@@ -38,6 +39,16 @@ public:
 
     GeneralGroupTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~GeneralGroupTab();
+
+    // Ctor is used for group's read only result widget
+    GeneralGroupTab(QWidget *parent = nullptr);
+
+    void update(AdInterface &ad, const AdObject &object);
+
+private:
+    QList<AttributeEdit *> m_edit_list;
+
+    QList<AttributeEdit *> create_edits();
 };
 
 #endif /* GENERAL_GROUP_TAB_H */

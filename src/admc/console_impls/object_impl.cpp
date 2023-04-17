@@ -51,11 +51,14 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "tabs/general_user_tab.h"
+#include "tabs/general_group_tab.h"
 
 #include <QDebug>
 #include <QMenu>
 #include <QSet>
 #include <QStandardItemModel>
+#include <QStackedWidget>
 
 #include <algorithm>
 
@@ -78,7 +81,14 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
         console,
     };
 
+    stacked_widget = new QStackedWidget(console_arg);
     set_results_view(new ResultsView(console_arg));
+    group_results_widget = new GeneralGroupTab();
+    user_results_widget = new GeneralUserTab();
+    stacked_widget->addWidget(group_results_widget);
+    stacked_widget->addWidget(user_results_widget);
+    stacked_widget->addWidget(view());
+    set_results_widget(stacked_widget);
 
     find_action_enabled = true;
     refresh_action_enabled = true;
@@ -638,6 +648,11 @@ void console_object_properties(const QList<ConsoleWidget *> &console_list, const
             QObject::connect(
                 dialog, &PropertiesDialog::applied,
                 console_list[0], on_object_properties_applied);
+
+            QObject::connect(
+                dialog, &PropertiesDialog::applied,
+                [console_list]()
+                    {console_list[0]->update_current_item_results_widget();});
         }
     } else if (dn_list.size() > 1) {
         auto dialog = new PropertiesMultiDialog(ad, dn_list, class_list);
@@ -662,6 +677,57 @@ void ObjectImpl::refresh(const QList<QModelIndex> &index_list) {
 
 void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
     console_object_delete(console_list, index_list, ObjectRole_DN);
+}
+
+void ObjectImpl::selected_as_scope(const QModelIndex &index)
+{
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    const QString dn = index.data(ObjectRole_DN).toString();
+    const AdObject object = ad.search_object(dn);
+
+    if (object.is_class(CLASS_GROUP)) {
+        stacked_widget->setCurrentWidget(group_results_widget);
+        group_results_widget->update(ad, object);
+    }
+    else if (object.is_class(CLASS_CONTACT) ||
+             object.is_class(CLASS_USER) ||
+             object.is_class(CLASS_INET_ORG_PERSON)) {
+        stacked_widget->setCurrentWidget(user_results_widget);
+        user_results_widget->update(ad, object);
+    }
+    else {
+        stacked_widget->setCurrentWidget(view());
+    }
+}
+
+void ObjectImpl::update_results_widget(const QModelIndex &index) const
+{
+    const QStringList index_data_classes = index.data(ObjectRole_ObjectClasses).toStringList();
+    if (!(index_data_classes.contains(CLASS_GROUP) || index_data_classes.contains(CLASS_CONTACT) ||
+          index_data_classes.contains(CLASS_USER) || index_data_classes.contains(CLASS_INET_ORG_PERSON))) {
+            return;
+    }
+
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    const QString dn = index.data(ObjectRole_DN).toString();
+    const AdObject object = ad.search_object(dn);
+
+    if (object.is_class(CLASS_GROUP)) {
+        group_results_widget->update(ad, object);
+    }
+    else if (object.is_class(CLASS_CONTACT) ||
+             object.is_class(CLASS_USER) ||
+             object.is_class(CLASS_INET_ORG_PERSON)) {
+        user_results_widget->update(ad, object);
+    }
 }
 
 void console_object_delete(const QList<ConsoleWidget *> &console_list, const QList<QModelIndex> &index_list, const int dn_role) {

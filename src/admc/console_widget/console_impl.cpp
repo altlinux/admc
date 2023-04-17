@@ -139,6 +139,11 @@ QList<int> ConsoleImpl::default_columns() const {
     return QList<int>();
 }
 
+void ConsoleImpl::update_results_widget(const QModelIndex &index) const
+{
+   UNUSED_ARG(index);
+}
+
 QVariant ConsoleImpl::save_state() const {
     if (view() != nullptr) {
         return view()->save_state();

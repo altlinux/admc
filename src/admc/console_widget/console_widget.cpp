@@ -584,6 +584,11 @@ void ConsoleWidget::set_item_sort_index(const QModelIndex &index, const int sort
     d->model->setData(index, sort_index, ConsoleRole_SortIndex);
 }
 
+void ConsoleWidget::update_current_item_results_widget()
+{
+    d->get_current_scope_impl()->update_results_widget(get_current_scope_item());
+}
+
 void ConsoleWidget::resizeEvent(QResizeEvent *event) {
     d->update_description();
     QWidget::resizeEvent(event);

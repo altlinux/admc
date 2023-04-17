@@ -28,11 +28,42 @@
 #include "attribute_edits/sam_name_edit.h"
 #include "attribute_edits/string_edit.h"
 
+
 GeneralGroupTab::GeneralGroupTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {
     ui = new Ui::GeneralGroupTab();
     ui->setupUi(this);
 
+    edit_list->append(create_edits());
+}
+
+GeneralGroupTab::GeneralGroupTab(QWidget *parent)
+: QWidget(parent) {
+    ui = new Ui::GeneralGroupTab();
+    ui->setupUi(this);
+
+    m_edit_list.append(create_edits());
+
+    ui->name_label->setVisible(false);
+
+    ui->description_edit->setReadOnly(true);
+    ui->email_edit->setReadOnly(true);
+    ui->notes_edit->setReadOnly(true);
+    ui->sam_name_edit->setReadOnly(true);
+
+    ui->scope_combo->setEditable(false);
+    ui->type_combo->setEditable(false);
+}
+
+GeneralGroupTab::~GeneralGroupTab() {
+    delete ui;
+}
+
+void GeneralGroupTab::update(AdInterface &ad, const AdObject &object) {
+    AttributeEdit::load(m_edit_list, ad, object);
+}
+
+QList<AttributeEdit *> GeneralGroupTab::create_edits() {
     auto name_edit = new GeneralNameEdit(ui->name_label, this);
     auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
     auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
@@ -42,7 +73,7 @@ GeneralGroupTab::GeneralGroupTab(QList<AttributeEdit *> *edit_list, QWidget *par
     auto scope_edit = new GroupScopeEdit(ui->scope_combo, this);
     auto type_edit = new GroupTypeEdit(ui->type_combo, this);
 
-    edit_list->append({
+    QList<AttributeEdit *> edits_out = {
         name_edit,
         sam_name_edit,
         description_edit,
@@ -50,9 +81,7 @@ GeneralGroupTab::GeneralGroupTab(QList<AttributeEdit *> *edit_list, QWidget *par
         notes_edit,
         scope_edit,
         type_edit,
-    });
-}
+    };
 
-GeneralGroupTab::~GeneralGroupTab() {
-    delete ui;
+    return edits_out;
 }
