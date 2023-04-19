@@ -465,3 +465,25 @@ QString escape_name_for_dn(const QString &unescaped) {
 
     return out;
 }
+
+QHash<int, QString> attribute_value_bit_string_map(const QString &attribute)
+{
+    QHash<int, QString> bit_string_map;
+    if (attribute == ATTRIBUTE_GROUP_TYPE) {
+        bit_string_map = {
+            {GROUP_TYPE_BIT_SYSTEM, "SYSTEM_GROUP"},
+            {GROUP_TYPE_BIT_SECURITY, "SECURITY_ENABLED"},
+            {group_scope_bit(GroupScope_Global), "ACCOUNT_GROUP"},
+            {group_scope_bit(GroupScope_DomainLocal), "RESOURCE_GROUP"},
+            {group_scope_bit(GroupScope_Universal), "UNIVERSAL_GROUP"},
+        };
+    }
+    else if (attribute == ATTRIBUTE_SYSTEM_FLAGS) {
+        bit_string_map = {
+            {SystemFlagsBit_DomainCannotMove, "DOMAIN_DISALLOW_MOVE"},
+            {SystemFlagsBit_DomainCannotRename, "DOMAIN_DISALLOW_RENAME"},
+            {SystemFlagsBit_CannotDelete, "DISALLOW_DELETE"}
+        };
+    }
+    return bit_string_map;
+}

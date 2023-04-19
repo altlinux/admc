@@ -45,7 +45,8 @@ QString guid_to_display_value(const QByteArray &bytes);
 QString uac_to_display_value(const QByteArray &bytes);
 QString samaccounttype_to_display_value(const QByteArray &bytes);
 QString primarygrouptype_to_display_value(const QByteArray &bytes);
-QString grouptype_to_display_value(const QByteArray &bytes);
+QString msds_supported_etypes_to_display_value(const QByteArray &bytes);
+QString attribute_hex_displayed_value(const QString &attribute, const QByteArray &bytes);
 
 QString attribute_display_value(const QString &attribute, const QByteArray &value, const AdConfig *adconfig) {
     if (adconfig == nullptr) {
@@ -62,8 +63,10 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
                 return samaccounttype_to_display_value(value);
             } else if (attribute == ATTRIBUTE_PRIMARY_GROUP_ID) {
                 return primarygrouptype_to_display_value(value);
-            } else if (attribute == ATTRIBUTE_GROUP_TYPE) {
-                return grouptype_to_display_value(value);
+            } else if (attribute == ATTRIBUTE_GROUP_TYPE || attribute == ATTRIBUTE_SYSTEM_FLAGS) {
+                return attribute_hex_displayed_value(attribute, value);
+            } else if (attribute == ATTRIBUTE_MS_DS_SUPPORTED_ETYPES) {
+                return msds_supported_etypes_to_display_value(value);
             } else {
                 return QString(value);
             }
@@ -358,7 +361,7 @@ QString uac_to_display_value(const QByteArray &bytes) {
         return out_string;
     }();
 
-    const QString out = QString("%1 = ( %2 )").arg(QString(bytes), masks_string);
+    const QString out = QString("0x%1 = ( %2 )").arg(QString::number((quint32)uac, 16), masks_string);
 
     return out;
 }
@@ -427,7 +430,13 @@ QString primarygrouptype_to_display_value(const QByteArray &bytes) {
     }
 }
 
-QString grouptype_to_display_value(const QByteArray &bytes) {
+bool attribute_value_is_hex_displayed(const QString &attribute) {
+    //TODO: Add here attributes with hex displayed values
+    return (attribute == ATTRIBUTE_GROUP_TYPE || attribute == ATTRIBUTE_USER_ACCOUNT_CONTROL ||
+            attribute == ATTRIBUTE_MS_DS_SUPPORTED_ETYPES || attribute == ATTRIBUTE_SYSTEM_FLAGS);
+}
+
+QString msds_supported_etypes_to_display_value(const QByteArray &bytes) {
     bool toInt_ok;
     const int value_int = bytes.toInt(&toInt_ok);
 
@@ -435,14 +444,44 @@ QString grouptype_to_display_value(const QByteArray &bytes) {
         return QCoreApplication::translate("attribute_display", "<invalid value>");
     }
 
-    const QHash<int, QString> mask_name_map = {
-        //TODO: change strings according to rsat
-        {GROUP_TYPE_BIT_SYSTEM, "SYSTEM_GROUP"},
-        {GROUP_TYPE_BIT_SECURITY, "SECURITY_ENABLED"},
-        {group_scope_bit(GroupScope_Global), "ACCOUNT_GROUP"},
-        {group_scope_bit(GroupScope_DomainLocal), "RESOURCE_GROUP"},
-        {group_scope_bit(GroupScope_Universal), "UNIVERSAL_GROUP"},
+    // NOTE: using separate list instead of map's
+    // keys() because keys() is unordered and we need
+    // order so that display string is consistent
+    const QList<int> mask_list = {
+        ETYPES_DES_CBC_CRC,
+        ETYPES_DES_CBC_MD5,
+        ETYPES_RC4_HMAC_MD5,
+        ETYPES_AES128_CTS_HMAC_SHA1_96,
+        ETYPES_AES256_CTS_HMAC_SHA1_96
     };
+
+    const QHash<int, QString> mask_name_map = {
+        {ETYPES_DES_CBC_CRC, "DES_CBC_CRC"},
+        {ETYPES_DES_CBC_MD5, "DES_CBC_MD5"},
+        {ETYPES_RC4_HMAC_MD5, "RC4_HMAC_MD5"},
+        {ETYPES_AES128_CTS_HMAC_SHA1_96, "AES128_CTS_HMAC_SHA1_96"},
+        {ETYPES_AES256_CTS_HMAC_SHA1_96, "AES256_CTS_HMAC_SHA1_96"},
+    };
+
+    QStringList masks_strings;
+    for (const int mask : mask_list) {
+        if (bitmask_is_set(value_int, mask))
+            masks_strings.append(mask_name_map[mask]);
+    }
+
+    QString display_value = QString("0x%1 = ( %2 )").arg(QString::number((quint32)value_int, 16), masks_strings.join(" | "));
+    return display_value;
+}
+
+QString attribute_hex_displayed_value(const QString &attribute, const QByteArray &bytes) {
+    bool toInt_ok;
+    const int value_int = bytes.toInt(&toInt_ok);
+
+    if (!toInt_ok) {
+        return QCoreApplication::translate("attribute_display", "<invalid value>");
+    }
+
+    const QHash<int, QString> mask_name_map = attribute_value_bit_string_map(attribute);
 
     QStringList masks_strings;
     for (const int mask : mask_name_map.keys()) {
@@ -452,9 +491,4 @@ QString grouptype_to_display_value(const QByteArray &bytes) {
 
     QString display_value = QString("0x%1 = ( %2 )").arg(QString::number((quint32)value_int, 16), masks_strings.join(" | "));
     return display_value;
-}
-
-bool attribute_value_is_hex_displayed(const QString &attribute) {
-    //TODO: Add here attributes with hex displayed values
-    return (attribute == ATTRIBUTE_GROUP_TYPE /* || attribute == ... */);
 }
