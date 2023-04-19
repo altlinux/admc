@@ -27,6 +27,7 @@
  */
 
 #include "ad_defines.h"
+#include <QHash>
 
 class QString;
 class QDateTime;
@@ -84,5 +85,7 @@ QByteArray sid_string_to_bytes(const QString &sid_string);
 QString attribute_type_display_string(const AttributeType type);
 
 QString int_to_hex_string(const int n);
+
+QHash<int, QString> attribute_value_bit_string_map(const QString &attribute);
 
 #endif /* AD_UTILS_H */

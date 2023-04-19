@@ -85,8 +85,8 @@ enum GroupType {
 };
 
 enum SystemFlagsBit {
-    SystemFlagsBit_CannotMove = 0x04000000,
-    SystemFlagsBit_CannotRename = 0x08000000,
+    SystemFlagsBit_DomainCannotMove = 0x04000000,
+    SystemFlagsBit_DomainCannotRename = 0x08000000,
     SystemFlagsBit_CannotDelete = 0x80000000
 };
 
@@ -197,6 +197,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_VALID_ACCESSES "validAccesses"
 #define ATTRIBUTE_UNC_NAME "uNCName"
 #define ATTRIBUTE_KEYWORDS "keywords"
+#define ATTRIBUTE_MS_DS_SUPPORTED_ETYPES "msDS-SupportedEncryptionTypes"
 
 #define CLASS_GROUP "group"
 #define CLASS_USER "user"
@@ -303,6 +304,14 @@ const long long MILLIS_TO_100_NANOS = 10000LL;
 // any better source
 #define SAM_NAME_MAX_LENGTH 20
 #define SAM_NAME_COMPUTER_MAX_LENGTH 16
+
+// NOTE: define supported encryption types bit flags
+// for msDs-SupportedEncryptionTypes attribute
+#define ETYPES_DES_CBC_CRC 0x00000001
+#define ETYPES_DES_CBC_MD5 0x00000002
+#define ETYPES_RC4_HMAC_MD5 0x00000004
+#define ETYPES_AES128_CTS_HMAC_SHA1_96 0x00000008
+#define ETYPES_AES256_CTS_HMAC_SHA1_96 0x00000010
 
 enum SearchScope {
     SearchScope_Object,

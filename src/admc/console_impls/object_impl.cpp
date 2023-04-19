@@ -1475,7 +1475,7 @@ void console_object_load(const QList<QStandardItem *> row, const AdObject &objec
 
     console_object_item_data_load(row[0], object);
 
-    const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
+    const bool cannot_move = object.get_system_flag(SystemFlagsBit_DomainCannotMove);
 
     for (auto item : row) {
         item->setDragEnabled(!cannot_move);
@@ -1491,10 +1491,10 @@ void console_object_item_data_load(QStandardItem *item, const AdObject &object) 
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     item->setData(QVariant(object_classes), ObjectRole_ObjectClasses);
 
-    const bool cannot_move = object.get_system_flag(SystemFlagsBit_CannotMove);
+    const bool cannot_move = object.get_system_flag(SystemFlagsBit_DomainCannotMove);
     item->setData(cannot_move, ObjectRole_CannotMove);
 
-    const bool cannot_rename = object.get_system_flag(SystemFlagsBit_CannotRename);
+    const bool cannot_rename = object.get_system_flag(SystemFlagsBit_DomainCannotRename);
     item->setData(cannot_rename, ObjectRole_CannotRename);
 
     const bool cannot_delete = object.get_system_flag(SystemFlagsBit_CannotDelete);
