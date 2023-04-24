@@ -94,6 +94,8 @@ PolicyOUResultsWidget::PolicyOUResultsWidget(ConsoleWidget *console_arg)
     ui->view->detail_view()->header()->resizeSection(3, 100);
     ui->view->detail_view()->header()->resizeSection(4, 500);
 
+    ui->view->set_drag_drop_enabled(false);
+
     const QVariant state = settings_get_variant(SETTING_policy_ou_results_state);
     ui->view->restore_state(state,
         {
