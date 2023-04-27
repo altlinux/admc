@@ -362,7 +362,7 @@ void console_policy_edit(ConsoleWidget *console, const int item_type, const int 
         const bool failed_to_start = (error == QProcess::FailedToStart);
 
         if (failed_to_start) {
-            const QString error_text = "Failed to start gpui. Check that it's installed.";
+            const QString error_text = QObject::tr("Failed to start GPUI. Check that it's installed.");
             qDebug() << error_text;
             g_status->add_message(error_text, StatusType_Error);
             error_log({error_text}, console);
