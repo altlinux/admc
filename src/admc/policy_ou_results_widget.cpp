@@ -365,9 +365,8 @@ void PolicyOUResultsWidget::reload_gplink() {
 
         const QList<QStandardItem *> row = make_item_row(PolicyOUResultsColumn_COUNT);
 
-        const int index = gpo_dn_list.indexOf(gpo_object.get_dn());
-        const QString index_string = QString::number(index);
-        row[PolicyOUResultsColumn_Order]->setText(index_string);
+        const int index = gpo_dn_list.indexOf(gpo_object.get_dn()) + 1;
+        row[PolicyOUResultsColumn_Order]->setData(index, Qt::DisplayRole);
 
         row[PolicyOUResultsColumn_Name]->setText(name);
         set_data_for_row(row, gpo_dn, PolicyOUResultsRole_DN);
