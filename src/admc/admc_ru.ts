@@ -2903,6 +2903,10 @@
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
+    <message>
+        <source>Failed to start GPUI. Check that it&apos;s installed.</source>
+        <translation>Не удалось запустить GPUI. Проверьте установлен ли он.</translation>
+    </message>
 </context>
 <context>
     <name>QueryFolderImpl</name>
