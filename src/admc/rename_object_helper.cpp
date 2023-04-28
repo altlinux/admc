@@ -131,8 +131,9 @@ QString RenameObjectHelper::get_new_dn() const {
 
 void RenameObjectHelper::on_edited() {
     const bool all_required_filled = [this]() {
+        QRegExp reg_exp_spaces("^\\s*$");
         for (QLineEdit *edit : required_list) {
-            if (edit->text().isEmpty()) {
+            if (edit->text().isEmpty() || edit->text().contains(reg_exp_spaces)) {
                 return false;
             }
         }
