@@ -2551,7 +2551,17 @@
         <translation>Изменить...</translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="101"/>
+        <location filename="console_impls/policy_impl.cpp" line="55"/>
+        <source>Enforced</source>
+        <translation>Принудительно</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="58"/>
+        <source>Disabled</source>
+        <translation>Отключено</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="118"/>
         <source>Incorrect permissions detected</source>
         <translation type="unfinished">Обнаружены неверные разрешения</translation>
     </message>

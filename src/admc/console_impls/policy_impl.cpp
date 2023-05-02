@@ -52,6 +52,13 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
 
     add_link_action = new QAction(tr("Add link..."), this);
     edit_action = new QAction(tr("Edit..."), this);
+    enforce_action = new QAction(tr("Enforced"), this);
+    enforce_action->setCheckable(true);
+    enforce_action->setData(GplinkOption_Enforced);
+    disable_action = new QAction(tr("Disabled"), this);
+    disable_action->setCheckable(true);
+    disable_action->setData(GplinkOption_Disabled);
+    update_gplink_actions_check_state();
 
     connect(
         add_link_action, &QAction::triggered,
@@ -65,6 +72,10 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
     connect(
         policy_results, &PolicyResultsWidget::ou_gplink_changed,
         this, &PolicyImpl::set_ou_gplink_data);
+    connect(
+        enforce_action, &QAction::triggered, [this](){on_change_gplink_option(enforce_action);});
+    connect(
+        disable_action, &QAction::triggered, [this](){on_change_gplink_option(disable_action);});
 }
 
 bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -136,19 +147,25 @@ void PolicyImpl::selected_as_scope(const QModelIndex &index) {
 
 QList<QAction *> PolicyImpl::get_all_custom_actions() const {
     return {
+        enforce_action,
+        disable_action,
         add_link_action,
         edit_action,
     };
 }
 
 QSet<QAction *> PolicyImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
-
     QSet<QAction *> out;
 
     if (single_selection) {
         out.insert(add_link_action);
         out.insert(edit_action);
+        if (index.parent().data(ConsoleRole_Type).toInt() == ItemType_PolicyOU)
+        {
+            update_gplink_actions_check_state();
+            out.insert(enforce_action);
+            out.insert(disable_action);
+        }
     }
 
     return out;
@@ -232,10 +249,54 @@ void PolicyImpl::set_ou_gplink_data(const QString &ou_dn, const QString &gplink_
     update_ou_item_gplink_data(gplink_string, ou_dn_item_index, console);
 }
 
+void PolicyImpl::on_change_gplink_option(QAction *action)
+{
+    GplinkOption option = (GplinkOption)action->data().toInt();
+    const QModelIndex policy_index = console->get_current_scope_item();
+    const QString gpo_dn = policy_index.data(PolicyRole_DN).toString();
+    const QModelIndex ou_index = policy_index.parent();
+    const QString ou_dn = ou_index.data(PolicyOURole_DN).toString();
+
+    bool checked = action->isChecked();
+
+    const QString gplink_string = ou_index.data(PolicyOURole_Gplink_String).toString();
+    Gplink gplink = Gplink(gplink_string);
+    gplink.set_option(gpo_dn, option, checked);
+    const QString updated_gplink_string = gplink.to_string();
+
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
+    bool success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, updated_gplink_string);
+    if (success) {
+        update_ou_item_gplink_data(updated_gplink_string, ou_index, console);
+        set_policy_item_icon(policy_index, checked, option);
+        policy_results->update(gpo_dn);
+    }
+    else {
+        action->toggle();
+    }
+
+    g_status->display_ad_messages(ad, console);
+}
+
+void PolicyImpl::update_gplink_actions_check_state() const
+{
+    const QModelIndex policy_index = console->get_current_scope_item();
+    if (policy_index.parent().data(ConsoleRole_Type).toInt() != ItemType_PolicyOU)
+        return;
+
+    QStandardItem *item = console->get_item(policy_index);
+    enforce_action->setChecked(policy_is_enforced(item));
+    disable_action->setChecked(policy_is_disabled(item));
+}
+
 void PolicyImpl::set_policy_item_icon(const QModelIndex &policy_index, bool is_checked, GplinkOption option)
 {
     QStandardItem *target_policy_item = console->get_item(policy_index);
-    if (target_policy_item->parent()->data(ConsoleRole_Type) != ItemType_PolicyOU)
+    if (target_policy_item->parent()->data(ConsoleRole_Type).toInt() != ItemType_PolicyOU)
         return;
 
     if (option == GplinkOption_Enforced) {
