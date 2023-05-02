@@ -77,9 +77,13 @@ private:
     PolicyResultsWidget *policy_results;
     QAction *add_link_action;
     QAction *edit_action;
+    mutable QAction *enforce_action;
+    mutable QAction *disable_action;
 
     void on_gpui_error(QProcess::ProcessError error);
     void set_policy_item_icon(const QModelIndex &policy_index, bool is_checked, GplinkOption option);
+    void on_change_gplink_option(QAction *action);
+    void update_gplink_actions_check_state() const;
 };
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object);
