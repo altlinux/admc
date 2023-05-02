@@ -536,7 +536,7 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
             out.insert(main_class);
         }
 
-        return QList<QString>(out.begin(), out.end());
+        return QList<QString>::fromSet(out);
     }();
 
     console_object_properties(console_list, index_list, ObjectRole_DN, class_list);

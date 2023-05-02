@@ -336,7 +336,7 @@ void console_policy_edit(ConsoleWidget *console, const int item_type, const int 
         const QString current_dc = ad.get_dc();
 
         filesys_path.replace(QString("\\"), QString("/"));
-        auto contents = filesys_path.split("/", Qt::KeepEmptyParts);
+        auto contents = filesys_path.split("/", QString::KeepEmptyParts);
         if (contents.size() > 3 && !current_dc.isEmpty()) {
             contents[2] = current_dc;
         }

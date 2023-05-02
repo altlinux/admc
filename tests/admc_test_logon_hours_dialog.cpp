@@ -110,7 +110,7 @@ void ADMCTestLogonHoursDialog::select() {
     utc_time_button->setChecked(true);
 
     const QList<QModelIndex> selected = selection_model->selectedIndexes();
-    const QSet<QModelIndex> selected_set = QSet<QModelIndex>(selected.begin(), selected.end());
+    const QSet<QModelIndex> selected_set = QSet<QModelIndex>::fromList(selected);
 
     const QSet<QModelIndex> correct_selected_set = {
         model->index(2, 0),

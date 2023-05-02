@@ -120,7 +120,7 @@ MembershipTab::~MembershipTab() {
 
 void MembershipTabEdit::load(AdInterface &ad, const AdObject &object) {
     const QList<QString> values = object.get_strings(get_membership_attribute());
-    original_values = QSet<QString>(values.begin(), values.end());
+    original_values = QSet<QString>::fromList(values);
     current_values = original_values;
 
     // Add primary groups or primary members

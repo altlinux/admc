@@ -782,9 +782,9 @@ bool AdConfig::rights_applies_to_class(const QString &rights_cn, const QList<QSt
     const QByteArray rights_guid = d->rights_name_to_guid_map[rights_cn];
 
     const QList<QString> applies_to_list = d->rights_applies_to_map[rights_guid];
-    const QSet<QString> applies_to_set = QSet<QString>(applies_to_list.begin(), applies_to_list.end());
+    const QSet<QString> applies_to_set = QSet<QString>::fromList(applies_to_list);
 
-    const QSet<QString> class_set = QSet<QString>(class_list.begin(), class_list.end());
+    const QSet<QString> class_set = QSet<QString>::fromList(class_list);
 
     const bool applies = applies_to_set.intersects(class_set);
 
