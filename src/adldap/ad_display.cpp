@@ -167,6 +167,10 @@ QString timespan_display_value(const QByteArray &bytes) {
         return "(never)";
     }
 
+    if (hundred_nanos_negative == 0) {
+        return "(none)";
+    }
+
     qint64 seconds_total = [hundred_nanos_negative]() {
         const qint64 hundred_nanos = -hundred_nanos_negative;
         const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
@@ -176,13 +180,13 @@ QString timespan_display_value(const QByteArray &bytes) {
     }();
 
     const qint64 days = seconds_total / DAYS_TO_SECONDS;
-    seconds_total = days % DAYS_TO_SECONDS;
+    seconds_total -= days * DAYS_TO_SECONDS;
 
     const qint64 hours = seconds_total / HOURS_TO_SECONDS;
-    seconds_total = hours % HOURS_TO_SECONDS;
+    seconds_total -= hours * HOURS_TO_SECONDS;
 
     const qint64 minutes = seconds_total / MINUTES_TO_SECONDS;
-    seconds_total = minutes % MINUTES_TO_SECONDS;
+    seconds_total -= minutes * MINUTES_TO_SECONDS;
 
     const qint64 seconds = seconds_total;
 
@@ -204,7 +208,7 @@ QString timespan_display_value(const QByteArray &bytes) {
         }
     };
 
-    const QString days_string = time_unit_to_string(days);
+    const QString days_string = QString::number(days);
     const QString hours_string = time_unit_to_string(hours);
     const QString minutes_string = time_unit_to_string(minutes);
     const QString seconds_string = time_unit_to_string(seconds);

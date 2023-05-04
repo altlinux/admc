@@ -566,11 +566,14 @@ LargeIntegerSubtype AdConfig::get_attribute_large_integer_subtype(const QString 
         ATTRIBUTE_PWD_LAST_SET,
         ATTRIBUTE_LOCKOUT_TIME,
         ATTRIBUTE_BAD_PWD_TIME,
+        ATTRIBUTE_CREATION_TIME,
     };
     static const QList<QString> timespans = {
         ATTRIBUTE_MAX_PWD_AGE,
         ATTRIBUTE_MIN_PWD_AGE,
         ATTRIBUTE_LOCKOUT_DURATION,
+        ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW,
+        ATTRIBUTE_FORCE_LOGOFF,
     };
 
     if (datetimes.contains(attribute)) {

@@ -514,3 +514,9 @@ int get_range_upper(const QString &attribute) {
 void set_line_edit_to_hex_numbers_only(QLineEdit *edit) {
     edit->setValidator(new QRegExpValidator(QRegExp("[0-9a-f]*"), edit));
 }
+
+
+void set_line_edit_to_time_span_format(QLineEdit *edit) {
+    QRegExp time_span_reg_exp("([0-9]{1,4}:[0-2][0-3]:[0-5][0-9]:[0-5][0-9])|^\\(never\\)&|^\\(none\\)&");
+    edit->setValidator(new QRegExpValidator(time_span_reg_exp));
+}

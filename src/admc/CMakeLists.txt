@@ -167,6 +167,7 @@ set(ADMC_SOURCES
     attribute_dialogs/octet_attribute_dialog.cpp
     attribute_dialogs/bool_attribute_dialog.cpp
     attribute_dialogs/datetime_attribute_dialog.cpp
+    attribute_dialogs/time_span_attribute_dialog.cpp
 
     console_widget/console_widget.cpp
     console_widget/scope_proxy_model.cpp

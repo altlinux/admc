@@ -3368,6 +3368,19 @@
     </message>
 </context>
 <context>
+    <name>TimeSpanAttributeDialog</name>
+    <message>
+        <location filename="attribute_dialogs/time_span_attribute_dialog.ui" line="14"/>
+        <source>Dialog</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="attribute_dialogs/time_span_attribute_dialog.ui" line="27"/>
+        <source>d:hh:mm:ss or (never) / (none)</source>
+        <translation>д:чч:мм:cc или (never)/(none)</translation>
+    </message>
+</context>
+<context>
     <name>UnlockEdit</name>
     <message>
         <location filename="attribute_edits/unlock_edit.cpp" line="38"/>

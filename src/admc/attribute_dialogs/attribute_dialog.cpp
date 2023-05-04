@@ -33,6 +33,7 @@
 #include "attribute_dialogs/string_attribute_dialog.h"
 #include "attribute_dialogs/number_attribute_dialog.h"
 #include "attribute_dialogs/hex_number_attribute_dialog.h"
+#include "attribute_dialogs/time_span_attribute_dialog.h"
 
 
 #include <QLabel>
@@ -82,9 +83,25 @@ AttributeDialog *AttributeDialog::make(const QString &attribute, const QList<QBy
         }
     };
 
-    const AttributeType type = g_adconfig->get_attribute_type(attribute);
+    auto time_span_attribute_dialog = [&]() -> AttributeDialog * {
+        if (single_valued) {
+            return new TimeSpanAttributeDialog(value_list, attribute, read_only, parent);
+        } else {
+            return nullptr;
+        }
+    };
+
+    AttributeType type = g_adconfig->get_attribute_type(attribute);
+    const LargeIntegerSubtype large_int_subtype = g_adconfig->get_attribute_large_integer_subtype(attribute);
+    if (type == AttributeType_LargeInteger && large_int_subtype == LargeIntegerSubtype_Datetime)
+        type = AttributeType_UTCTime;
 
     AttributeDialog *dialog = [&]() -> AttributeDialog * {
+        if (type == AttributeType_LargeInteger && large_int_subtype == LargeIntegerSubtype_Timespan) {
+            qDebug() << "Attr: " << attribute;
+            return time_span_attribute_dialog();
+        }
+
         switch (type) {
             case AttributeType_Octet: return octet_attribute_dialog();
             case AttributeType_Sid: return octet_attribute_dialog();
