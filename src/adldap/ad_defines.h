@@ -143,7 +143,6 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_LAST_LOGON "lastLogon"
 #define ATTRIBUTE_LAST_LOGON_TIMESTAMP "lastLogonTimestamp"
 #define ATTRIBUTE_PWD_LAST_SET "pwdLastSet"
-#define ATTRIBUTE_LOCKOUT_TIME "lockoutTime"
 #define ATTRIBUTE_BAD_PWD_TIME "badPasswordTime"
 #define ATTRIBUTE_OBJECT_SID "objectSid"
 #define ATTRIBUTE_SYSTEM_FLAGS "systemFlags"
@@ -197,6 +196,9 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_VALID_ACCESSES "validAccesses"
 #define ATTRIBUTE_UNC_NAME "uNCName"
 #define ATTRIBUTE_KEYWORDS "keywords"
+#define ATTRIBUTE_CREATION_TIME "creationTime"
+#define ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW "lockOutObservationWindow"
+#define ATTRIBUTE_FORCE_LOGOFF "forceLogoff"
 
 #define CLASS_GROUP "group"
 #define CLASS_USER "user"
