@@ -403,9 +403,12 @@ void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou
 
     const QString new_gplink_string = new_gplink.to_string();
 
-    ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, new_gplink_string);
+    bool success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, new_gplink_string);
 
     g_status->display_ad_messages(ad, console);
+
+    if (!success)
+        return;
 
     const QList<QString> added_gpo_list = [&]() {
         QList<QString> out;
