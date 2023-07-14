@@ -36,12 +36,13 @@
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_widget/console_widget.h"
-#include "fsmo_dialog.h"
+#include "fsmo/fsmo_dialog.h"
 #include "globals.h"
 #include "main_window_connection_error.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "fsmo/fsmo_utils.h"
 
 #include <QDebug>
 #include <QDesktopServices>
@@ -323,6 +324,10 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         ui->action_show_login, &QAction::triggered,
         this, &MainWindow::on_show_login_changed);
     on_show_login_changed();
+
+    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation)) {
+            g_status->add_message(tr("You are connected to DC without PDC-Emulator role"), StatusType_Success);
+    }
 }
 
 MainWindow::~MainWindow() {

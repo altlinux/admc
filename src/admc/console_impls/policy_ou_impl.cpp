@@ -34,10 +34,12 @@
 #include "status.h"
 #include "utils.h"
 #include "console_widget/console_tree_item_icons.h"
+#include "fsmo/fsmo_utils.h"
 
 #include <QDebug>
 #include <QMenu>
 #include <QStandardItem>
+#include <QMessageBox>
 
 bool index_is_domain(const QModelIndex &index) {
     const QString dn = index.data(PolicyOURole_DN).toString();
@@ -262,6 +264,21 @@ void PolicyOUImpl::create_and_link_gpo() {
 
     if (selected_list.isEmpty()) {
         return;
+    }
+
+    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
+        QMessageBox::StandardButton answer = QMessageBox::question(console, QObject::tr("Creation is not available"),
+                                                                   QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
+                                                                   "group policy creation is prohibited by the setting. "
+                                                                   "Connect to PDC-Emulator?"));
+        if (answer == QMessageBox::Yes) {
+            connect_host_with_role(ad, FSMORole_PDCEmulation);
+            g_status->add_message(tr("PDC-Emulator is connected"), StatusType_Success);
+            return;
+        }
+        else {
+            return;
+        }
     }
 
     const QModelIndex target_index = selected_list[0];

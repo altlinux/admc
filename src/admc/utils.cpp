@@ -529,3 +529,13 @@ QString gpo_status_from_int(int status) {
     default: return QObject::tr("Undefined GPO status");
     }
 }
+
+QString current_dc_dns_host_name(AdInterface &ad)
+{
+    const AdObject rootDSE = ad.search_object("");
+    const QString server_name = rootDSE.get_string(ATTRIBUTE_SERVER_NAME);
+    const AdObject server = ad.search_object(server_name);
+    const QString out = server.get_string(ATTRIBUTE_DNS_HOST_NAME);
+
+    return out;
+}

@@ -18,25 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "fsmo_dialog.h"
+#include "fsmo/fsmo_dialog.h"
 #include "ui_fsmo_dialog.h"
 
 #include "adldap.h"
-#include "fsmo_tab.h"
+#include "fsmo/fsmo_tab.h"
+#include "fsmo/fsmo_utils.h"
 #include "globals.h"
 #include "settings.h"
 
-enum FSMORole {
-    FSMORole_DomainDNS,
-    FSMORole_ForestDNS,
-    FSMORole_PDCEmulation,
-    FSMORole_Schema,
-    FSMORole_DomainNaming,
-    FSMORole_Infrastructure,
-    FSMORole_RidAllocation,
+#include <QMessageBox>
 
-    FSMORole_COUNT,
-};
 
 FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {
@@ -64,34 +56,29 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
             return QString();
         }();
 
-        // NOTE: this is the DN of the object that
-        // store's role's master in it's attributes
-        const QString role_dn = [&]() {
-            const QString domain_dn = g_adconfig->domain_dn();
-
-            switch (role) {
-                case FSMORole_DomainDNS: return QString("CN=Infrastructure,DC=DomainDnsZones,%1").arg(domain_dn);
-                case FSMORole_ForestDNS: return QString("CN=Infrastructure,DC=ForestDnsZones,%1").arg(domain_dn);
-                case FSMORole_PDCEmulation: return domain_dn;
-                case FSMORole_Schema: return g_adconfig->schema_dn();
-                case FSMORole_DomainNaming: return g_adconfig->partitions_dn();
-                case FSMORole_Infrastructure: return QString("CN=Infrastructure,%1").arg(domain_dn);
-                case FSMORole_RidAllocation: return QString("CN=RID Manager$,CN=System,%1").arg(domain_dn);
-
-                case FSMORole_COUNT: break;
-            };
-
-            return QString();
-        }();
+        const QString role_dn = dn_from_role(role);
 
         auto tab = new FSMOTab(title, role_dn);
         ui->tab_widget->add_tab(tab, title);
         tab->load(ad);
     }
 
+    ui->warning_widget->setVisible(false);
+    ui->gpo_edit_PDC_check->setChecked(gpo_edit_without_PDC_disabled);
+    connect(ui->gpo_edit_PDC_check, &QCheckBox::toggled, this, &FSMODialog::gpo_edit_PDC_check_toggled);
+
     settings_setup_dialog_geometry(SETTING_fsmo_dialog_geometry, this);
 }
 
 FSMODialog::~FSMODialog() {
     delete ui;
+}
+
+void FSMODialog::gpo_edit_PDC_check_toggled(bool is_checked)
+{
+    gpo_edit_without_PDC_disabled = is_checked;
+    if (!is_checked)
+        ui->warning_widget->setVisible(true);
+    else
+        ui->warning_widget->setVisible(false);
 }

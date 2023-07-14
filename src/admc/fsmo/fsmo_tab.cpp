@@ -25,6 +25,7 @@
 #include "globals.h"
 #include "status.h"
 #include "utils.h"
+#include "fsmo/fsmo_utils.h"
 
 FSMOTab::FSMOTab(const QString &title, const QString &role_dn_arg) {
     ui = new Ui::FSMOTab();
@@ -44,24 +45,9 @@ FSMOTab::~FSMOTab() {
 }
 
 void FSMOTab::load(AdInterface &ad) {
-    const QString current_master = [&]() {
-        const AdObject role_object = ad.search_object(role_dn);
-        const QString master_settings_dn = role_object.get_string(ATTRIBUTE_FSMO_ROLE_OWNER);
-        const QString master_dn = dn_get_parent(master_settings_dn);
-        const AdObject master_object = ad.search_object(master_dn);
-        const QString out = master_object.get_string(ATTRIBUTE_DNS_HOST_NAME);
+    const QString current_master = current_master_for_role_dn(ad, role_dn);
 
-        return out;
-    }();
-
-    const QString new_master = [&]() {
-        const AdObject rootDSE = ad.search_object("");
-        const QString server_name = rootDSE.get_string(ATTRIBUTE_SERVER_NAME);
-        const AdObject server = ad.search_object(server_name);
-        const QString out = server.get_string(ATTRIBUTE_DNS_HOST_NAME);
-
-        return out;
-    }();
+    const QString new_master = current_dc_dns_host_name(ad);
 
     ui->current_edit->setText(current_master);
     ui->new_edit->setText(new_master);

@@ -223,6 +223,11 @@
         <source>Name</source>
         <translation>Имя</translation>
     </message>
+    <message>
+        <location filename="console_impls/all_policies_folder_impl.cpp" line="130"/>
+        <source>PDC-Emulator is connected</source>
+        <translation>Подключено к PDC-Emulator</translation>
+    </message>
 </context>
 <context>
     <name>AttributeDialog</name>
@@ -443,6 +448,16 @@
         <location filename="connection_options_dialog.cpp" line="133"/>
         <source>Select or enter a host.</source>
         <translation>Выберите или введите хост.</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="179"/>
+        <source>You are connected to DC without PDC-Emulator role. Group policy editing is prohibited by the setting.</source>
+        <translation>Вы подключены к КД без роли PDC-Emulator - редактирование групповых политик запрещено настройкой.</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="182"/>
+        <source>You are connected to DC without PDC-Emulator role. Group policy editing is available.</source>
+        <translation>Вы подключены к КД без роли PDC-Emulator - редактирование групповых политик доступно.</translation>
     </message>
 </context>
 <context>
@@ -917,7 +932,17 @@
         <translation>Мастера Операций</translation>
     </message>
     <message>
-        <location filename="fsmo_dialog.cpp" line="53"/>
+        <location filename="fsmo/fsmo_dialog.ui" line="45"/>
+        <source>Edit policies only under PDC Emulator connection</source>
+        <translation>Редактирование политик только с подключением к PDC-Emulator</translation>
+    </message>
+    <message>
+        <location filename="fsmo/fsmo_dialog.ui" line="116"/>
+        <source>Warning! If unchecking this option, group policy edition will be allowed on domain controllers that do not have the PDC-Emulator role.</source>
+        <translation>Предупреждение! В состоянии отключено редактирование групповых политик будет разрешено на контроллерах домена, не обладающих ролью PDC-Emulator.</translation>
+    </message>
+    <message>
+        <location filename="fsmo/fsmo_dialog.cpp" line="45"/>
         <source>Domain DNS</source>
         <translation>DNS домена</translation>
     </message>
@@ -2016,6 +2041,11 @@
         <source>Restart the app to switch to the selected language.</source>
         <translation>Для переключения на выбранный язык необходимо перезапустить приложение.</translation>
     </message>
+    <message>
+        <location filename="main_window.cpp" line="329"/>
+        <source>You are connected to DC without PDC-Emulator role</source>
+        <translation>Вы подключены к КД без роли PDC-Emulator</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowConnectionError</name>
@@ -2648,6 +2678,11 @@
         <source>Name</source>
         <translation>Имя</translation>
     </message>
+    <message>
+        <location filename="console_impls/policy_ou_impl.cpp" line="276"/>
+        <source>PDC-Emulator is connected</source>
+        <translation>Подключено к PDC-Emulator</translation>
+    </message>
 </context>
 <context>
     <name>PolicyOUResultsWidget</name>
@@ -2980,6 +3015,43 @@
     <message>
         <source>Failed to start GPUI. Check that it&apos;s installed.</source>
         <translation>Не удалось запустить GPUI. Проверьте установлен ли он.</translation>
+	</message>
+    <message>
+        <location filename="console_impls/all_policies_folder_impl.cpp" line="124"/>
+        <location filename="console_impls/policy_ou_impl.cpp" line="268"/>
+        <source>Creation is not available</source>
+        <translation>Создание не доступно</translation>
+    </message>
+    <message>
+        <location filename="console_impls/all_policies_folder_impl.cpp" line="125"/>
+        <location filename="console_impls/policy_ou_impl.cpp" line="269"/>
+        <source>ADMC is connected to DC without the PDC-Emulator role - group policy creation is prohibited by the setting. Connect to PDC-Emulator?</source>
+        <translation>ADMC подключен к КД без роли PDC-Emulator - создание групповых политик запрещено настройкой. Подключиться к PDC-контроллеру?</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="323"/>
+        <source>Edition is not available</source>
+        <translation>Редактирование не доступно</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="324"/>
+        <source>ADMC is connected to DC without the PDC-Emulator role - group policy editing is prohibited by the setting. Connect to PDC-Emulator?</source>
+        <translation>ADMC подключен к КД без роли PDC-Emulator - редактирование групповых политик запрещено настройкой. Подключиться к PDC-контроллеру?</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="329"/>
+        <source>PDC-Emulator is connected</source>
+        <translation>Подключено к PDC-Emulator</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="542"/>
+        <source>Deletion is not available</source>
+        <translation>Удаление не доступно</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="543"/>
+        <source>ADMC is connected to DC without the PDC-Emulator role - group policy deletion is prohibited by the setting. Connect to PDC-Emulator?</source>
+        <translation>ADMC подключен к КД без роли PDC-Emulator - удаление групповых политик запрещено настройкой. Подключиться к PDC-контроллеру?</translation>
     </message>
 </context>
 <context>

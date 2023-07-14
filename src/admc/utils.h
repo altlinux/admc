@@ -138,4 +138,7 @@ void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest);
 void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit);
 
 QString gpo_status_from_int(int status);
+
+QString current_dc_dns_host_name(AdInterface &ad);
+
 #endif /* UTILS_H */
