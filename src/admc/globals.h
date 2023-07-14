@@ -27,6 +27,7 @@ class Status;
 
 extern AdConfig *g_adconfig;
 extern Status *g_status;
+extern bool gpo_edit_without_PDC_disabled;
 
 void load_g_adconfig(AdInterface &ad);
 

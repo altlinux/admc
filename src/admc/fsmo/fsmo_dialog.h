@@ -41,6 +41,9 @@ public:
 
     FSMODialog(AdInterface &ad, QWidget *parent);
     ~FSMODialog();
+
+private slots:
+    void gpo_edit_PDC_check_toggled(bool is_checked);
 };
 
 #endif /* FSMO_DIALOG_H */

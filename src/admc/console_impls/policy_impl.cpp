@@ -35,6 +35,7 @@
 #include "status.h"
 #include "utils.h"
 #include "console_widget/console_tree_item_icons.h"
+#include "fsmo/fsmo_utils.h"
 
 #include <QAction>
 #include <QDebug>
@@ -312,24 +313,35 @@ void console_policy_load_item(QStandardItem *main_item, const AdObject &object) 
 void console_policy_edit(ConsoleWidget *console, const int item_type, const int dn_role) {
     const QString dn = get_selected_target_dn(console, item_type, dn_role);
 
+    AdInterface ad;
+    bool ad_fail = ad_failed(ad, console);
+    if (ad_fail) {
+        return;
+    }
+
+    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
+        QMessageBox::StandardButton answer = QMessageBox::question(console, QObject::tr("Edition is not available"),
+                                                                   QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
+                                                                   "group policy editing is prohibited by the setting. "
+                                                                   "Connect to PDC-Emulator?"));
+        if (answer == QMessageBox::Yes) {
+            connect_host_with_role(ad, FSMORole_PDCEmulation);
+            g_status->add_message(QObject::tr("PDC-Emulator is connected"), StatusType_Success);
+            return;
+        }
+        else {
+            return;
+        }
+    }
+
     // TODO: remove this when gpui is able to load
     // policy name on their own
     const QString policy_name = [&]() {
-        AdInterface ad;
-        if (ad_failed(ad, console)) {
-            return QString();
-        }
-
         const AdObject object = ad.search_object(dn);
         return object.get_string(ATTRIBUTE_DISPLAY_NAME);
     }();
 
     const QString path = [&]() {
-        AdInterface ad;
-        if (ad_failed(ad, console)) {
-            return QString();
-        }
-
         const AdObject object = ad.search_object(dn);
         QString filesys_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
 
@@ -521,17 +533,32 @@ void console_policy_remove_link(const QList<ConsoleWidget *> &console_list, Poli
 }
 
 void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role) {
+    AdInterface ad;
+    if (ad_failed(ad, console_list[0])) {
+        return;
+    }
+
+    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
+        QMessageBox::StandardButton answer = QMessageBox::question(console_list[0], QObject::tr("Deletion is not available"),
+                                                                   QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
+                                                                   "group policy deletion is prohibited by the setting. "
+                                                                   "Connect to PDC-Emulator?"));
+        if (answer == QMessageBox::Yes) {
+            connect_host_with_role(ad, FSMORole_PDCEmulation);
+            g_status->add_message("PDC-Emulator is connected", StatusType_Success);
+            return;
+        }
+        else {
+            return;
+        }
+    }
+
     const QList<QString> dn_list = get_selected_dn_list(console_list[0], item_type, dn_role);
 
     const QString confirmation_text = QCoreApplication::translate("PolicyImpl", "Are you sure you want to delete this policy and all of it's links?");
     const bool confirmed = confirmation_dialog(confirmation_text, console_list[0]);
     QStringList not_deleted_dn_list;
     if (!confirmed) {
-        return;
-    }
-
-    AdInterface ad;
-    if (ad_failed(ad, console_list[0])) {
         return;
     }
 

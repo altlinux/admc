@@ -24,6 +24,9 @@
 #include "adldap.h"
 #include "settings.h"
 #include "utils.h"
+#include "fsmo/fsmo_utils.h"
+#include "globals.h"
+#include "status.h"
 
 #include <QPushButton>
 
@@ -164,6 +167,21 @@ void ConnectionOptionsDialog::accept() {
     }
 
     load_connection_options();
+
+    AdInterface ad;
+    if (ad_failed(ad, parentWidget())) {
+        QDialog::accept();
+        return;
+    }
+
+    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation)) {
+        if (gpo_edit_without_PDC_disabled)
+            g_status->add_message(tr("You are connected to DC without PDC-Emulator role. "
+                                     "Group policy editing is prohibited by the setting."), StatusType_Success);
+        else
+            g_status->add_message(tr("You are connected to DC without PDC-Emulator role. "
+                                     "Group policy editing is available."), StatusType_Success);
+    }
 
     QDialog::accept();
 }
