@@ -365,6 +365,13 @@ void MainWindow::open_manual() {
 void MainWindow::open_connection_options() {
     auto dialog = new ConnectionOptionsDialog(this);
     dialog->open();
+    connect(dialog, &ConnectionOptionsDialog::domain_changed,
+            [this](const QString &host) {
+        show_busy_indicator();
+        reload_scope_tree();
+        hide_busy_indicator();
+        g_status->add_message(tr("Connected to host ") + host, StatusType_Success);
+    });
 }
 
 void MainWindow::open_changelog() {
@@ -385,4 +392,16 @@ void MainWindow::edit_fsmo_roles() {
 
     auto dialog = new FSMODialog(ad, this);
     dialog->open();
+}
+
+void MainWindow::reload_scope_tree()
+{
+    AdInterface ad;
+    if (!ad.is_connected()) {
+        return;
+    }
+    ui->console->clear_scope_tree();
+    console_object_tree_init(ui->console, ad);
+    console_policy_tree_init(ui->console);
+    console_query_tree_init(ui->console);
 }

@@ -104,6 +104,8 @@ public:
     static void set_sasl_nocanon(const bool is_on);
     static void set_port(const int port);
     static void set_cert_strategy(const CertStrategy strategy);
+    static void set_domain_is_default(const bool is_default);
+    static void set_custom_domain(const QString &domain);
 
     bool is_connected() const;
     QList<AdMessage> messages() const;
@@ -113,6 +115,7 @@ public:
     QString client_user() const;
     bool logged_in_as_admin();
     QString get_dc() const;
+    QString get_domain() const;
 
     // NOTE: If request attributes list is empty, all
     // attributes are returned

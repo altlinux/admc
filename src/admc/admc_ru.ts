@@ -421,18 +421,50 @@
     </message>
     <message>
         <location filename="connection_options_dialog.ui" line="60"/>
+        <source>Domain:</source>
+        <translation>Домен:</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.ui" line="81"/>
+        <source>Get hosts from default kerberos credential cache.</source>
+        <oldsource>Get hosts from default kerberos cache</oldsource>
+        <translation>Получить хосты из кэша учётных данных kerberos по умолчанию.</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.ui" line="84"/>
+        <source>Default:</source>
+        <translation>По умолчанию:</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.ui" line="94"/>
+        <source>Get custom domain hosts.</source>
+        <oldsource>Get custom domain hosts</oldsource>
+        <translation>Получить хосты из другого домена.</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.ui" line="114"/>
+        <source>CUSTOM.DOMAIN.COM</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.ui" line="121"/>
+        <source>Find hosts</source>
+        <oldsource>Get hosts</oldsource>
+        <translation>Найти хосты</translation>
+    </message>
+    <message>
         <source>Host:</source>
-        <translation>Хост:</translation>
+        <translation type="vanished">Хост:</translation>
     </message>
     <message>
         <location filename="connection_options_dialog.ui" line="76"/>
         <source>No hosts found.</source>
-        <translation>Не получилось найти хостов.</translation>
+        <translation>Хосты не найдены.</translation>
     </message>
     <message>
         <location filename="connection_options_dialog.ui" line="86"/>
         <source>Select:</source>
-        <translation>Выбрать:</translation>
+        <translation type="vanished">Выбрать:</translation>
     </message>
     <message>
         <location filename="connection_options_dialog.ui" line="99"/>
@@ -447,7 +479,12 @@
     <message>
         <location filename="connection_options_dialog.cpp" line="133"/>
         <source>Select or enter a host.</source>
-        <translation>Выберите или введите хост.</translation>
+        <translation type="vanished">Выберите или введите хост.</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="131"/>
+        <source>Select a host.</source>
+        <translation>Выберите хост.</translation>
     </message>
     <message>
         <location filename="connection_options_dialog.cpp" line="179"/>
@@ -2045,6 +2082,11 @@
         <location filename="main_window.cpp" line="329"/>
         <source>You are connected to DC without PDC-Emulator role</source>
         <translation>Вы подключены к КД без роли PDC-Emulator</translation>
+    </message>
+    <message>
+        <location filename="main_window.cpp" line="373"/>
+        <source>Connected to host </source>
+        <translation>Подключено к хосту </translation>
     </message>
 </context>
 <context>

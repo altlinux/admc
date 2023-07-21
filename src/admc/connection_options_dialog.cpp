@@ -65,9 +65,33 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     const int cert_strategy_index = ui->cert_combo->findText(cert_strategy);
     ui->cert_combo->setCurrentIndex(cert_strategy_index);
 
+    default_domain = get_default_domain_from_krb5();
+    default_host_list = get_domain_hosts(default_domain, QString());
+
+    custom_domain = settings_get_variant(SETTING_custom_domain).toString();
+    custom_host_list = get_domain_hosts(custom_domain, QString());
+
     // Populate hosts list
-    const QString domain = get_default_domain_from_krb5();
-    const QList<QString> host_list = get_domain_hosts(domain, QString());
+    bool domain_is_default = settings_get_variant(SETTING_domain_is_default).toBool();
+    QStringList host_list;
+
+    QString domain;
+    if (domain_is_default) {
+        domain = default_domain;
+        host_list = default_host_list;
+        ui->host_default_button->setChecked(true);
+        ui->domain_custom_edit->setEnabled(false);
+        ui->domain_custom_edit->setText(default_domain);
+        ui->get_hosts_button->setVisible(false);
+    }
+    else {
+        domain = custom_domain;
+        host_list = custom_host_list;
+        ui->host_custom_button->setChecked(true);
+        ui->domain_custom_edit->setEnabled(true);
+        ui->domain_custom_edit->setText(custom_domain);
+        ui->get_hosts_button->setVisible(true);
+    }
 
     any_hosts_available = !host_list.isEmpty();
 
@@ -78,38 +102,21 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
             ui->host_select_list->addItem(host);
         }
 
-        const QString saved_host = settings_get_variant(SETTING_host).toString();
-
-        if (!saved_host.isEmpty()) {
-            // Select saved host in list, if it's there.
-            // Otherwise put saved host into "custom" field
-            const QList<QListWidgetItem *> item_list = ui->host_select_list->findItems(saved_host, Qt::MatchExactly);
-            const bool saved_host_is_in_list = !item_list.isEmpty();
-
-            if (saved_host_is_in_list) {
-                ui->host_select_button->setChecked(true);
-                QListWidgetItem *item = item_list[0];
-                ui->host_select_list->setCurrentItem(item);
-            } else {
-                ui->host_custom_button->setChecked(true);
-                ui->host_custom_edit->setText(saved_host);
-            }
-        } else {
-            // If saved host is empty, select first available
-            // host in select list
-            ui->host_select_button->setChecked(true);
-            ui->host_select_list->setCurrentRow(0);
-        }
+        set_saved_host_current_item();
     } else {
-        ui->host_frame->setEnabled(false);
         ui->host_warning_label->setVisible(true);
     }
 
     settings_setup_dialog_geometry(SETTING_connection_options_dialog_geometry, this);
 
-    connect(
-        ui->button_box->button(QDialogButtonBox::RestoreDefaults), &QPushButton::clicked,
+    connect(ui->button_box->button(QDialogButtonBox::RestoreDefaults), &QPushButton::clicked,
         this, &ConnectionOptionsDialog::load_default_options);
+
+    connect(ui->host_default_button, &QRadioButton::toggled,
+            this, &ConnectionOptionsDialog::host_button_toggled);
+
+    connect(ui->get_hosts_button, &QPushButton::clicked,
+            this, &ConnectionOptionsDialog::get_hosts);
 }
 
 ConnectionOptionsDialog::~ConnectionOptionsDialog() {
@@ -118,23 +125,10 @@ ConnectionOptionsDialog::~ConnectionOptionsDialog() {
 
 void ConnectionOptionsDialog::accept() {
     if (any_hosts_available) {
-        const bool host_is_valid = [&]() {
-            const bool host_is_custom = ui->host_custom_button->isChecked();
+        const bool any_host_selected = !ui->host_select_list->selectedItems().isEmpty();
 
-            if (host_is_custom) {
-                const QString custom_host = ui->host_custom_edit->text();
-
-                return !custom_host.isEmpty();
-            } else {
-                const bool any_host_selected = !ui->host_select_list->selectedItems().isEmpty();
-
-                return any_host_selected;
-            }
-        }();
-
-        if (!host_is_valid) {
-            message_box_warning(this, tr("Error"), tr("Select or enter a host."));
-
+        if (!any_host_selected) {
+            message_box_warning(this, tr("Error"), tr("Select a host."));
             return;
         }
     }
@@ -148,23 +142,18 @@ void ConnectionOptionsDialog::accept() {
     const QString cert_strategy = ui->cert_combo->currentText();
     settings_set_variant(SETTING_cert_strategy, cert_strategy);
 
-    if (any_hosts_available) {
-        const QString selected_host = [&]() {
-            if (ui->host_select_button->isChecked()) {
-                QListWidgetItem *current_item = ui->host_select_list->currentItem();
+    const QString selected_host = ui->host_select_list->currentItem()->text();
+    settings_set_variant(SETTING_host, selected_host);
 
-                if (current_item == nullptr) {
-                    return QString();
-                } else {
-                    return current_item->text();
-                }
-            } else {
-                return ui->host_custom_edit->text();
-            }
-        }();
 
-        settings_set_variant(SETTING_host, selected_host);
-    }
+    bool domain_was_default = settings_get_variant(SETTING_domain_is_default).toBool();
+    bool domain_is_default = ui->host_default_button->isChecked();
+    bool custom_domain_changed = settings_get_variant(SETTING_custom_domain).toString() != custom_domain;
+
+    bool domain_is_changed = (domain_was_default != domain_is_default) || custom_domain_changed;
+
+    settings_set_variant(SETTING_custom_domain, custom_domain);
+    settings_set_variant(SETTING_domain_is_default, ui->host_default_button->isChecked());
 
     load_connection_options();
 
@@ -172,6 +161,11 @@ void ConnectionOptionsDialog::accept() {
     if (ad_failed(ad, parentWidget())) {
         QDialog::accept();
         return;
+    }
+
+    if (domain_is_changed) {
+        load_g_adconfig(ad);
+        emit domain_changed(selected_host);
     }
 
     if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation)) {
@@ -195,13 +189,86 @@ void ConnectionOptionsDialog::load_default_options() {
     ui->cert_combo->setCurrentIndex(never_index);
 
     if (any_hosts_available) {
-        ui->host_select_button->setChecked(true);
+        ui->host_default_button->setChecked(true);
         ui->host_select_list->setCurrentRow(0);
-        ui->host_custom_edit->clear();
+    }
+}
+
+void ConnectionOptionsDialog::set_saved_host_current_item()
+{
+    const QString saved_host = settings_get_variant(SETTING_host).toString();
+
+    if (!saved_host.isEmpty()) {
+        const QList<QListWidgetItem *> item_list = ui->host_select_list->findItems(saved_host, Qt::MatchExactly);
+        const bool saved_host_is_in_list = !item_list.isEmpty();
+
+        if (saved_host_is_in_list) {
+            QListWidgetItem *item = item_list[0];
+            ui->host_select_list->setCurrentItem(item);
+        }
+    } else {
+        // If saved host is empty, select first available
+        // host in select list
+        ui->host_select_list->setCurrentRow(0);
+    }
+}
+
+void ConnectionOptionsDialog::host_button_toggled(bool is_default_checked) {
+    ui->host_select_list->clear();
+    ui->host_warning_label->setVisible(false);
+    if (is_default_checked) {
+        ui->domain_custom_edit->setEnabled(false);
+        ui->domain_custom_edit->setText(default_domain);
+        ui->get_hosts_button->setVisible(false);
+
+        if (default_host_list.isEmpty()) {
+            ui->host_warning_label->setVisible(true);
+            return;
+        }
+        else
+            ui->host_select_list->addItems(default_host_list);
+    }
+    else {
+        ui->domain_custom_edit->setEnabled(true);
+        ui->domain_custom_edit->setText(custom_domain);
+        ui->get_hosts_button->setVisible(true);
+
+        if (custom_host_list.isEmpty()) {
+            ui->host_warning_label->setVisible(true);
+            return;
+        }
+        else
+            ui->host_select_list->addItems(custom_host_list);
+    }
+    set_saved_host_current_item();
+}
+
+void ConnectionOptionsDialog::get_hosts() {
+    ui->host_select_list->clear();
+    QString domain = ui->domain_custom_edit->text();
+    QStringList hosts = get_domain_hosts(domain, QString());
+    if (hosts.isEmpty()) {
+        ui->host_warning_label->setVisible(true);
+    }
+    else {
+        ui->host_warning_label->setVisible(false);
+        custom_domain = domain;
+        ui->host_select_list->addItems(hosts);
+        custom_host_list = hosts;
+        ui->host_select_list->setCurrentRow(0);
     }
 }
 
 void load_connection_options() {
+    bool domain_is_default = true;
+    if (settings_get_variant(SETTING_domain_is_default).isValid())
+        domain_is_default = settings_get_variant(SETTING_domain_is_default).toBool();
+
+    AdInterface::set_domain_is_default(domain_is_default);
+
+    const QString custom_domain = settings_get_variant(SETTING_custom_domain).toString();
+    AdInterface::set_custom_domain(custom_domain);
+
     const QString saved_dc = settings_get_variant(SETTING_host).toString();
     AdInterface::set_dc(saved_dc);
 

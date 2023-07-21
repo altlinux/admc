@@ -57,7 +57,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Host:</string>
+        <string>Domain:</string>
        </property>
       </widget>
      </item>
@@ -71,6 +71,63 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QRadioButton" name="host_default_button">
+            <property name="toolTip">
+             <string>Get hosts from default kerberos credential cache.</string>
+            </property>
+            <property name="text">
+             <string>Default:</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="host_custom_button">
+            <property name="toolTip">
+             <string>Get custom domain hosts.</string>
+            </property>
+            <property name="text">
+             <string>Custom:</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="domain_custom_edit">
+            <property name="placeholderText">
+             <string>CUSTOM.DOMAIN.COM</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="get_hosts_button">
+            <property name="text">
+             <string>Find hosts</string>
+            </property>
+            <property name="icon">
+             <iconset theme="find"/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <widget class="QLabel" name="host_warning_label">
           <property name="text">
            <string>No hosts found.</string>
@@ -81,27 +138,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="host_select_button">
-          <property name="text">
-           <string>Select:</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QListWidget" name="host_select_list"/>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="host_custom_button">
-          <property name="text">
-           <string>Custom:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="host_custom_edit"/>
         </item>
        </layout>
       </widget>

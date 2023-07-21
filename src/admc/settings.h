@@ -120,6 +120,7 @@ DEFINE_SETTING(SETTING_timestamp_log);
 DEFINE_SETTING(SETTING_sasl_nocanon);
 DEFINE_SETTING(SETTING_show_login);
 DEFINE_SETTING(SETTING_show_password);
+DEFINE_SETTING(SETTING_domain_is_default);
 
 // Other
 DEFINE_SETTING(SETTING_host);
@@ -132,6 +133,7 @@ DEFINE_SETTING(SETTING_last_opened_version);
 DEFINE_SETTING(SETTING_object_filter);
 DEFINE_SETTING(SETTING_object_filter_enabled);
 DEFINE_SETTING(SETTING_object_display_limit);
+DEFINE_SETTING(SETTING_custom_domain)
 
 // Feature flags
 //

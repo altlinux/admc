@@ -67,6 +67,8 @@ private:
     static QString s_dc;
     static void *s_sasl_nocanon;
     static int s_port;
+    static bool s_domain_is_default;
+    static QString s_custom_domain;
     static CertStrategy s_cert_strat;
     static SMBCCTX *smbc;
     AdInterface *q;

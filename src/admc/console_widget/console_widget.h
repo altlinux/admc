@@ -181,6 +181,10 @@ public:
     // scope item index. Can return nullptr.
     QWidget *get_result_widget_for_index(const QModelIndex &index);
 
+    // Removes all items from scope tree view.
+    // It is used when domain changes.
+    void clear_scope_tree();
+
 signals:
     // Emitted when selection in the whole console
     // widget changes, both in scope and results panes.
