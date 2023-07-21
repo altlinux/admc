@@ -74,7 +74,7 @@ AdConfig::~AdConfig() {
 }
 
 void AdConfig::load(AdInterface &ad, const QLocale &locale) {
-    d->domain = get_default_domain_from_krb5();
+    d->domain = ad.get_domain();
 
     d->filter_containers.clear();
     d->columns.clear();

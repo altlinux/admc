@@ -88,6 +88,8 @@ int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp);
 AdConfig *AdInterfacePrivate::adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
 QString AdInterfacePrivate::s_dc = QString();
+bool AdInterfacePrivate::s_domain_is_default = true;
+QString AdInterfacePrivate::s_custom_domain = QString();
 void *AdInterfacePrivate::s_sasl_nocanon = LDAP_OPT_ON;
 int AdInterfacePrivate::s_port = 0;
 CertStrategy AdInterfacePrivate::s_cert_strat = CertStrategy_Never;
@@ -114,7 +116,11 @@ AdInterface::AdInterface() {
 
     const QString connect_error_context = tr("Failed to connect.");
 
-    d->domain = get_default_domain_from_krb5();
+    if (AdInterfacePrivate::s_domain_is_default)
+        d->domain = get_default_domain_from_krb5();
+    else
+        d->domain = AdInterfacePrivate::s_custom_domain;
+
     if (d->domain.isEmpty()) {
         d->error_message(connect_error_context, tr("Failed to get a domain. Check that you have initialized kerberos credentials (kinit)."));
         return;
@@ -325,6 +331,15 @@ void AdInterface::set_port(const int port) {
 
 void AdInterface::set_cert_strategy(const CertStrategy strategy) {
     AdInterfacePrivate::s_cert_strat = strategy;
+}
+
+void AdInterface::set_domain_is_default(const bool is_default) {
+    AdInterfacePrivate::s_domain_is_default = is_default;
+}
+
+void AdInterface::set_custom_domain(const QString &domain)
+{
+    AdInterfacePrivate::s_custom_domain = domain;
 }
 
 AdInterfacePrivate::AdInterfacePrivate(AdInterface *q_arg) {
@@ -2015,6 +2030,10 @@ bool AdInterface::logged_in_as_admin() {
 
 QString AdInterface::get_dc() const {
     return d->dc;
+}
+
+QString AdInterface::get_domain() const {
+    return d->domain;
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {

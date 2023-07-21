@@ -26,6 +26,7 @@
 #include "console_widget/customize_columns_dialog.h"
 #include "console_widget/results_view.h"
 #include "console_widget/scope_proxy_model.h"
+#include "console_impls/item_type.h"
 
 #include <QAction>
 #include <QApplication>
@@ -597,6 +598,10 @@ QWidget *ConsoleWidget::get_result_widget_for_index(const QModelIndex &index)
         result_widget = current_item_impl->widget();
 
     return result_widget;
+}
+
+void ConsoleWidget::clear_scope_tree() {
+    delete_children(d->scope_view->rootIndex());
 }
 
 void ConsoleWidget::resizeEvent(QResizeEvent *event) {

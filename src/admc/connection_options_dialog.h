@@ -33,6 +33,10 @@ namespace Ui {
 class ConnectionOptionsDialog;
 }
 
+class QStringList;
+class QString;
+class QVariant;
+
 class ConnectionOptionsDialog : public QDialog {
     Q_OBJECT
 
@@ -46,13 +50,25 @@ public:
 
 private:
     bool any_hosts_available;
+    QStringList default_host_list;
+    QString default_domain;
+    QStringList custom_host_list;
+    QString custom_domain;
 
-    void load_saved_options();
     void load_default_options();
+
+    void set_saved_host_current_item();
+
+private slots:
+    void host_button_toggled(bool is_default_checked);
+    void get_hosts();
+
+signals:
+    void domain_changed(const QString &host);
 };
 
 // Load connection options from settings and apply to
 // AdInterface
-void load_connection_options();
+void load_connection_options(const QHash<QString, QVariant> &settings = QHash<QString, QVariant>());
 
 #endif /* CONNECTION_OPTIONS_DIALOG_H */
