@@ -100,7 +100,6 @@ Tests for ADMC
 %_bindir/admc_test_list_attribute_dialog
 %_bindir/admc_test_edit_query_item_widget
 %_bindir/admc_test_policy_results_widget
-%_bindir/admc_test_policy_ou_results_widget
 %_bindir/admc_test_find_object_dialog
 %_bindir/admc_test_rename_object_dialog
 %_bindir/admc_test_create_object_dialog
