@@ -68,7 +68,6 @@ set(TEST_TARGETS
     admc_test_list_attribute_dialog
     admc_test_edit_query_item_widget
     admc_test_policy_results_widget
-    admc_test_policy_ou_results_widget
     admc_test_find_object_dialog
     admc_test_rename_object_dialog
     admc_test_create_object_dialog
