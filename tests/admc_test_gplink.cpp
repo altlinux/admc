@@ -84,9 +84,9 @@ void ADMCTestGplink::add_data() {
     QTest::addColumn<QString>("gplink_after");
 
     QTest::newRow("add to empty") << "" << QList<QString>({dn_A}) << gplink_A;
-    QTest::newRow("add to non-empty") << gplink_B << QList<QString>({dn_A}) << (gplink_B + gplink_A);
+    QTest::newRow("add to non-empty") << gplink_B << QList<QString>({dn_A}) << (gplink_A + gplink_B);
     QTest::newRow("add same one twice to empty") << "" << QList<QString>({dn_A, dn_A}) << gplink_A;
-    QTest::newRow("add already existing") << "gplink_A" << QList<QString>({dn_A}) << gplink_A;
+    QTest::newRow("add already existing") << gplink_A << QList<QString>({dn_A}) << gplink_A;
 }
 
 void ADMCTestGplink::add() {
@@ -136,8 +136,8 @@ void ADMCTestGplink::move_up_data() {
     QTest::newRow("move up empty") << "" << QList<QString>({dn_A}) << "";
     QTest::newRow("move up single") << gplink_A << QList<QString>({dn_A}) << gplink_A;
     QTest::newRow("move up non-existing") << gplink_A << QList<QString>({dn_B}) << gplink_A;
-    QTest::newRow("move up from [2] to [1]") << (gplink_A + gplink_B + gplink_C) << QList<QString>({dn_C}) << (gplink_A + gplink_C + gplink_B);
-    QTest::newRow("move up twice from [2] to [0]") << (gplink_A + gplink_B + gplink_C) << QList<QString>({dn_C, dn_C}) << (gplink_C + gplink_A + gplink_B);
+    QTest::newRow("move up from [2] to [1]") << (gplink_A + gplink_B + gplink_C) << QList<QString>({dn_C}) << (gplink_A + gplink_B + gplink_C);
+    QTest::newRow("move up twice from [2] to [0]") << (gplink_A + gplink_B + gplink_C) << QList<QString>({dn_A, dn_A}) << (gplink_B + gplink_C + gplink_A);
 }
 
 void ADMCTestGplink::move_up() {
@@ -162,8 +162,8 @@ void ADMCTestGplink::move_down_data() {
     QTest::newRow("move down empty") << "" << QList<QString>({dn_A}) << "";
     QTest::newRow("move down single") << gplink_A << QList<QString>({dn_A}) << gplink_A;
     QTest::newRow("move down non-existing") << gplink_A << QList<QString>({dn_B}) << gplink_A;
-    QTest::newRow("move down from [1] to [2]") << (gplink_A + gplink_B + gplink_C) << QList<QString>({dn_B}) << (gplink_A + gplink_C + gplink_B);
-    QTest::newRow("move down twice from [0] to [2]") << (gplink_A + gplink_B + gplink_C) << QList<QString>({dn_A, dn_A}) << (gplink_B + gplink_C + gplink_A);
+    QTest::newRow("move down from [1] to [2]") << (gplink_A + gplink_B + gplink_C) << QList<QString>({dn_B}) << (gplink_B + gplink_A + gplink_C);
+    QTest::newRow("move down twice from [0] to [2]") << (gplink_A + gplink_B + gplink_C) << QList<QString>({dn_C, dn_C}) << (gplink_C + gplink_A + gplink_B);
 }
 
 void ADMCTestGplink::move_down() {

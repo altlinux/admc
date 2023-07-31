@@ -31,6 +31,8 @@
 #include <QPlainTextEdit>
 #include <QPushButton>
 
+#include <algorithm>
+
 #define TEST_ATTRIBUTE_MAIN ATTRIBUTE_WWW_HOMEPAGE
 #define TEST_ATTRIBUTE_OTHER ATTRIBUTE_WWW_HOMEPAGE_OTHER
 
@@ -102,7 +104,7 @@ void ADMCTestStringOtherEdit::load() {
 
     QCOMPARE(line_edit->text(), main_value);
     for (int i = 0; i < 3; i++) {
-        QCOMPARE(list_widget->item(i)->text(), other_value_list[i]);
+        QCOMPARE(list_widget->item(i)->text(), other_value_list[2-i]);
     }
 }
 
@@ -121,7 +123,8 @@ void ADMCTestStringOtherEdit::apply_modified_main_value() {
 
     QCOMPARE(current_value_main, new_value);
 
-    const QList<QByteArray> current_value_other = object.get_values(TEST_ATTRIBUTE_OTHER);
+    QList<QByteArray> current_value_other = object.get_values(TEST_ATTRIBUTE_OTHER);
+    std::reverse(current_value_other.begin(), current_value_other.end());
 
     QCOMPARE(current_value_other, other_value_list);
 }
@@ -137,7 +140,8 @@ void ADMCTestStringOtherEdit::apply_modified_other_value() {
 
     QCOMPARE(current_value_main, main_value);
 
-    const QList<QByteArray> current_value_other = object.get_values(TEST_ATTRIBUTE_OTHER);
+    QList<QByteArray> current_value_other = object.get_values(TEST_ATTRIBUTE_OTHER);
+    std::reverse(current_value_other.begin(), current_value_other.end());
     QList<QByteArray> correct_value_other = other_value_list;
     correct_value_other.append(new_value);
 
