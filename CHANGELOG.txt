@@ -2,6 +2,15 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.14.0
+-----------------------------------------------------------------------
+- Fixed group policy link dissapearence after applying enforce/disable
+action in context menu.
+- Tests admc_test_string_other_edit and admc_test_gplink are fixed.
+- Test admc_test_policy_ou_results_widget is temporarily removed.
+- Added connectivity to another domain's host.
+
+-----------------------------------------------------------------------
  VERSION 0.13.0
 -----------------------------------------------------------------------
 - PDC-Emulator check option is added. If option is enabled, GPT-related

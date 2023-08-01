@@ -1,7 +1,7 @@
 %define _unpackaged_files_terminate_build 1
 
 Name: admc
-Version: 0.13.0
+Version: 0.14.0
 Release: alt1
 
 Summary: Active Directory Management Center
@@ -100,7 +100,6 @@ Tests for ADMC
 %_bindir/admc_test_list_attribute_dialog
 %_bindir/admc_test_edit_query_item_widget
 %_bindir/admc_test_policy_results_widget
-%_bindir/admc_test_policy_ou_results_widget
 %_bindir/admc_test_find_object_dialog
 %_bindir/admc_test_rename_object_dialog
 %_bindir/admc_test_create_object_dialog
@@ -110,6 +109,13 @@ Tests for ADMC
 %_bindir/admc_test_find_policy_dialog
 
 %changelog
+* Tue Aug 01 2023 Semyon Knyazev <knyazevsr@basealt.org> 0.14.0-alt1
+- Fixed group policy link dissapearence after applying enforce/disable
+  action in context menu.
+- Tests admc_test_string_other_edit and admc_test_gplink are fixed.
+- Test admc_test_policy_ou_results_widget is temporarily removed.
+- Added connectivity to another domain's host.
+
 * Mon Jul 17 2023 Valery Sinelnikov <greh@altlinux.org> 0.13.0-alt1
 - PDC-Emulator check option is added. If option is enabled, GPT-related
   moves like policy editing/creation/deletion will be prevented under
