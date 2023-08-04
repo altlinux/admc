@@ -429,6 +429,8 @@ void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou
     if (!success)
         return;
 
+    update_ou_item_gplink_data(new_gplink_string, ou_index, console);
+
     const QList<QString> added_gpo_list = [&]() {
         QList<QString> out;
 
