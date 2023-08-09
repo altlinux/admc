@@ -1280,15 +1280,14 @@ bool AdInterface::computer_reset_account(const QString &dn) {
 }
 
 bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
+    const bool is_domain_admin = logged_in_as_domain_admin();
+
     auto error_message = [&](const QString &error) {
+        if (!is_domain_admin) {
+            d->error_message_plain(tr("Warning: User is not domain administrator."));
+        }
         d->error_message(tr("Failed to create GPO."), error);
     };
-
-    if (!logged_in_as_admin()) {
-        error_message(tr("Insufficient rights."));
-
-        return false;
-    }
 
     //
     // Generate UUID used for directory and object names
@@ -1599,7 +1598,7 @@ QString AdInterface::filesys_path_to_smb_path(const QString &filesys_path) const
 bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     // NOTE: skip perms check for non-admins, because don't
     // have enough rights to get full sd
-    if (!logged_in_as_admin()) {
+    if (!logged_in_as_domain_admin()) {
         return true;
     }
 
@@ -1985,7 +1984,7 @@ int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp) {
     return result;
 }
 
-bool AdInterface::logged_in_as_admin() {
+bool AdInterface::logged_in_as_domain_admin() {
     const QString user_dn = [&]() {
         const QString sam_account_name = [&]() {
             QString out = d->client_user;
@@ -2015,13 +2014,19 @@ bool AdInterface::logged_in_as_admin() {
     }
 
     const bool user_is_admin = [&]() {
-        const QString domain_admins_dn = QString("CN=Domain Admins,CN=Users,%1").arg(adconfig()->domain_dn());
-
-        const AdObject domain_admins_object = search_object(domain_admins_dn);
+        const QString domain_admins_sid = adconfig()->domain_sid() + "-512";
+        const QString filter_group = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GROUP);
+        const QString filter_sid = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, domain_admins_sid);
+        const QString filter = filter_AND({filter_group, filter_sid});
+        const QHash<QString, AdObject> results = search(adconfig()->domain_dn(), SearchScope_All, filter, QList<QString>());
+        if (results.isEmpty()) {
+            d->error_message(tr("Failed to check user permissions."), tr("Can't find domain admins group with SID ") + domain_admins_sid);
+            return false;
+        }
+        const AdObject domain_admins_object = results.values()[0];
         const QList<QString> member_list = domain_admins_object.get_strings(ATTRIBUTE_MEMBER);
 
         const bool out = member_list.contains(user_dn);
-
         return out;
     }();
 

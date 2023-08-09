@@ -113,7 +113,7 @@ public:
     void clear_messages();
     AdConfig *adconfig() const;
     QString client_user() const;
-    bool logged_in_as_admin();
+    bool logged_in_as_domain_admin();
     QString get_dc() const;
     QString get_domain() const;
 

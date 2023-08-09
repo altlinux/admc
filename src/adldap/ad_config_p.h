@@ -41,6 +41,7 @@ public:
     QString domain_dn;
     QString configuration_dn;
     QString schema_dn;
+    QString domain_sid;
 
     QList<ObjectClass> filter_containers;
 

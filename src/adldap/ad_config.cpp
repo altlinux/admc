@@ -26,6 +26,7 @@
 #include "ad_object.h"
 #include "ad_security.h"
 #include "ad_utils.h"
+#include "ad_display.h"
 
 #include "samba/ndr_security.h"
 
@@ -90,6 +91,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->schema_dn = rootDSE_object.get_string(ATTRIBUTE_SCHEMA_NAMING_CONTEXT);
     d->configuration_dn = rootDSE_object.get_string(ATTRIBUTE_CONFIGURATION_NAMING_CONTEXT);
     d->supported_control_list = rootDSE_object.get_strings(ATTRIBUTE_SUPPORTED_CONTROL);
+
+    const AdObject domain_object = ad.search_object(domain_dn());
+    d->domain_sid = object_sid_display_value(domain_object.get_value(ATTRIBUTE_OBJECT_SID));
 
     const QString locale_dir = [this, locale]() {
         const QString locale_code = [locale]() {
@@ -377,6 +381,11 @@ bool AdConfig::control_is_supported(const QString &control_oid) const {
     const bool supported = d->supported_control_list.contains(control_oid);
 
     return supported;
+}
+
+QString AdConfig::domain_sid() const
+{
+    return d->domain_sid;
 }
 
 QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {

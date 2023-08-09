@@ -673,13 +673,27 @@
         <translation>Не удалось сбросить компьютер %1.</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1234"/>
+        <location filename="ad_interface.cpp" line="1287"/>
+        <source>Warning: User is not domain administrator.</source>
+        <translation>Внимание: Пользователь не является администратором домена.</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="1289"/>
         <source>Failed to create GPO.</source>
         <oldsource>Failed to create GPO</oldsource>
         <translation>Не удалось создать GPO.</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="1238"/>
+        <location filename="ad_interface.cpp" line="2023"/>
+        <source>Failed to check user permissions.</source>
+        <translation>Не удалось проверить права пользователя.</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="2023"/>
+        <source>Can&apos;t find domain admins group with SID </source>
+        <translation>Не удалось найти группу админов домена с SID </translation>
+    </message>
+    <message>
         <source>Insufficient rights.</source>
         <translation>Недостаточно прав.</translation>
     </message>

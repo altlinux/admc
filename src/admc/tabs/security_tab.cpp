@@ -449,7 +449,7 @@ bool SecurityTabEdit::verify(AdInterface &ad, const QString &target) const {
         // To apply security tab for policies we need user
         // to have admin rights to be able to sync perms of
         // GPT
-        const bool have_sufficient_rights = ad.logged_in_as_admin();
+        const bool have_sufficient_rights = ad.logged_in_as_domain_admin();
 
         return have_sufficient_rights;
     } else {
