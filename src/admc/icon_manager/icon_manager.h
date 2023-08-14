@@ -17,6 +17,8 @@ enum ItemIconType {
     ItemIconType_Policy_Enforced_Disabled,
     ItemIconType_Domain_Clean,
     ItemIconType_Domain_InheritanceBlocked,
+    ItemIconType_Person_Clean,
+    ItemIconType_Person_Blocked,
 
     ItemIconType_LAST
 };

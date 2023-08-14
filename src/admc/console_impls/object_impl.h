@@ -47,6 +47,7 @@ class QStackedWidget;
 enum ObjectRole {
     ObjectRole_DN = MyConsoleRole_LAST + 1,
     ObjectRole_ObjectClasses,
+    ObjectRole_ObjectCategory,
     ObjectRole_CannotMove,
     ObjectRole_CannotRename,
     ObjectRole_CannotDelete,
@@ -158,6 +159,7 @@ void object_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdOb
 void object_impl_add_objects_to_console_from_dns(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 void console_object_load(const QList<QStandardItem *> row, const AdObject &object);
 void console_object_item_data_load(QStandardItem *item, const AdObject &object);
+void console_object_item_load_icon(QStandardItem *item, bool disabled);
 QList<QString> object_impl_column_labels();
 QList<int> object_impl_default_columns();
 QList<QString> console_object_search_attributes();

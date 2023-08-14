@@ -25,8 +25,6 @@
 
 enum MyConsoleRole {
     MyConsoleRole_SearchThreadId = ConsoleRole_LAST + 1,
-    MyConsoleRole_IconBeforeSearch,
-
     MyConsoleRole_LAST,
 };
 

@@ -51,6 +51,9 @@ void IconManager::init()
     type_index_icons_array[ItemIconType_Domain_InheritanceBlocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Domain_Clean],
                                                                                 QIcon::fromTheme("changes-prevent"),
                                                                                 QSize(10, 10), QPoint(6, 6));
+    type_index_icons_array[ItemIconType_Person_Clean] = get_object_icon(OBJECT_CATEGORY_PERSON);
+    type_index_icons_array[ItemIconType_Person_Blocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Person_Clean],
+                                                                                  QIcon::fromTheme("dialog-error"), QSize(8, 8), QPoint(8, 8));
 }
 
 QIcon IconManager::overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon, IconOverlayPosition position) const

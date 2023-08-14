@@ -1197,6 +1197,9 @@ void ObjectImpl::set_disabled(const bool disabled) {
                 for (const QModelIndex &index : index_list) {
                     QStandardItem *item = target_console->get_item(index);
                     item->setData(disabled, ObjectRole_AccountDisabled);
+                    const QIcon icon = disabled ? g_icon_manager->get_icon_for_type(ItemIconType_Person_Blocked) :
+                                            g_icon_manager->get_icon_for_type(ItemIconType_Person_Clean);
+                    item->setIcon(icon);
                 }
             }
         };
@@ -1554,13 +1557,13 @@ void console_object_load(const QList<QStandardItem *> row, const AdObject &objec
 }
 
 void console_object_item_data_load(QStandardItem *item, const AdObject &object) {
-    const QIcon icon = g_icon_manager->get_object_icon(object);
-    item->setIcon(icon);
-
     item->setData(object.get_dn(), ObjectRole_DN);
 
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     item->setData(QVariant(object_classes), ObjectRole_ObjectClasses);
+
+    const QString object_category = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
+    item->setData(object_category, ObjectRole_ObjectCategory);
 
     const bool cannot_move = object.get_system_flag(SystemFlagsBit_DomainCannotMove);
     item->setData(cannot_move, ObjectRole_CannotMove);
@@ -1573,6 +1576,8 @@ void console_object_item_data_load(QStandardItem *item, const AdObject &object) 
 
     const bool account_disabled = object.get_account_option(AccountOption_Disabled, g_adconfig);
     item->setData(account_disabled, ObjectRole_AccountDisabled);
+
+    console_object_item_load_icon(item, account_disabled);
 }
 
 QList<QString> object_impl_column_labels() {
@@ -1636,18 +1641,6 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
     };
 
     QStandardItem *item = console->get_item(index);
-
-    // Save original icon
-
-    // NOTE: only save original icon if there isn't one
-    // saved already. If this search overlaps a previous
-    // one, then previous search would've already saved it.
-    const QString icon_before_search_current = item->data(MyConsoleRole_IconBeforeSearch).toString();
-    if (icon_before_search_current.isEmpty()) {
-        const QIcon original_icon = item->icon();
-        const QString original_icon_name = original_icon.name();
-        item->setData(original_icon_name, MyConsoleRole_IconBeforeSearch);
-    }
 
     // Set icon to indicate that item is in "search" state
     item->setIcon(QIcon::fromTheme("system-search"));
@@ -1723,12 +1716,8 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
                 return;
             }
 
-            const QString original_icon_name = item_now->data(MyConsoleRole_IconBeforeSearch).toString();
-            item_now->setIcon(QIcon::fromTheme(original_icon_name));
-
-            // NOTE: empty IconBeforeSearch so next search
-            // can use this as clean state
-            item_now->setData(QString(), MyConsoleRole_IconBeforeSearch);
+            const bool is_disabled = item_now->data(ObjectRole_AccountDisabled).toBool();
+            console_object_item_load_icon(item_now, is_disabled);
 
             item_now->setData(false, ObjectRole_Fetching);
             item_now->setDragEnabled(true);
@@ -1860,4 +1849,17 @@ bool can_create_class_at_parent(const QString &create_class, const QString &pare
     const bool out = possible_superiors.contains(parent_class);
 
     return out;
+}
+
+void console_object_item_load_icon(QStandardItem *item, bool disabled) {
+    const QString category = dn_get_name(item->data(ObjectRole_ObjectCategory).toString());
+    QIcon icon;
+    if (category == OBJECT_CATEGORY_PERSON) {
+        icon = disabled ? g_icon_manager->get_icon_for_type(ItemIconType_Person_Blocked) :
+                          g_icon_manager->get_icon_for_type(ItemIconType_Person_Clean);
+        item->setIcon(icon);
+        return;
+    }
+    icon = g_icon_manager->get_object_icon(category);
+    item->setIcon(icon);
 }
