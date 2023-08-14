@@ -30,6 +30,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QAction>
 #include <QHeaderView>
@@ -186,7 +187,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
         row[0]->setData(dn, PolicyResultsRole_DN);
         row[0]->setData(gplink_string, PolicyResultsRole_GplinkString);
-        const QIcon icon = get_object_icon(object);
+        const QIcon icon = g_icon_manager->get_object_icon(object);
         row[0]->setIcon(icon);
 
         model->appendRow(row);

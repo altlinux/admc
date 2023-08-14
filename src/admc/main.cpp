@@ -29,6 +29,7 @@
 #include "utils.h"
 #include "connection_options_dialog.h"
 #include "locale.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -51,6 +52,8 @@ int main(int argc, char **argv) {
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
     app.setWindowIcon(QIcon(":/admc/admc.ico"));
+
+    g_icon_manager->init();
 
     const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
     const QString locale_dot_UTF8 = saved_locale.name() + ".UTF-8";

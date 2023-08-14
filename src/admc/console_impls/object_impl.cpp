@@ -53,6 +53,7 @@
 #include "utils.h"
 #include "tabs/general_user_tab.h"
 #include "tabs/general_group_tab.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QDebug>
 #include <QMenu>
@@ -1553,7 +1554,7 @@ void console_object_load(const QList<QStandardItem *> row, const AdObject &objec
 }
 
 void console_object_item_data_load(QStandardItem *item, const AdObject &object) {
-    const QIcon icon = get_object_icon(object);
+    const QIcon icon = g_icon_manager->get_object_icon(object);
     item->setIcon(icon);
 
     item->setData(object.get_dn(), ObjectRole_DN);

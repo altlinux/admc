@@ -184,67 +184,6 @@ void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
     }
 }
 
-QIcon get_object_icon(const AdObject &object) {
-    const QString object_category = [&]() {
-        const QString category_dn = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
-        const QString out = dn_get_name(category_dn);
-
-        return out;
-    }();
-
-    const QIcon out = get_object_icon(object_category);
-
-    return out;
-}
-
-QIcon get_object_icon(const QString &object_category) {
-    // NOTE: use a list of possible icons because
-    // default icon themes for different DE's don't
-    // fully intersect
-    static const QMap<QString, QList<QString>> category_to_icon_list = {
-        {"Domain-DNS", {"network-server"}},
-        {"Container", {"folder"}},
-        {OBJECT_CATEGORY_OU, {"folder-documents"}},
-        {OBJECT_CATEGORY_GROUP, {"system-users"}},
-        {OBJECT_CATEGORY_PERSON, {"avatar-default", "avatar-default-symbolic"}},
-        {"Computer", {"computer"}},
-        {"Group-Policy-Container", {"preferences-other"}},
-        {"Volume", {"folder-templates"}},
-
-        // Some custom icons for one-off objects
-        {"Builtin-Domain", {"emblem-system", "emblem-system-symbolic"}},
-        {"Configuration", {"emblem-system", "emblem-system-symbolic"}},
-        {"Lost-And-Found", {"emblem-system", "emblem-system-symbolic"}},
-        {"Infrastructure-Update", {"emblem-system", "emblem-system-symbolic"}},
-        {"ms-DS-Quota-Container", {"emblem-system", "emblem-system-symbolic"}},
-    };
-
-    // NOTE: This is the icon used when no icon is
-    // defined for some object category
-    const QString error_icon = "dialog-question";
-
-    const QString icon_name = [&]() -> QString {
-        const QList<QString> fallback_icon_list = {
-            "emblem-system",
-            "emblem-system-symbolic",
-            "dialog-question",
-        };
-        const QList<QString> icon_name_list = category_to_icon_list.value(object_category, fallback_icon_list);
-
-        for (const QString &icon : icon_name_list) {
-            if (QIcon::hasThemeIcon(icon)) {
-                return icon;
-            }
-        }
-
-        return error_icon;
-    }();
-
-    const QIcon icon = QIcon::fromTheme(icon_name);
-
-    return icon;
-}
-
 QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes) {
     QList<QPersistentModelIndex> out;
 

@@ -26,6 +26,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QDialogButtonBox>
 #include <QHeaderView>
@@ -151,7 +152,7 @@ QStandardItem *make_container_node(const AdObject &object) {
     const QString name = dn_get_name(dn);
     item->setText(name);
 
-    const QIcon icon = get_object_icon(object);
+    const QIcon icon = g_icon_manager->get_object_icon(object);
     item->setIcon(icon);
 
     return item;

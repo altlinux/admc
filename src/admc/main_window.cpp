@@ -43,6 +43,7 @@
 #include "status.h"
 #include "utils.h"
 #include "fsmo/fsmo_utils.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QDebug>
 #include <QDesktopServices>
@@ -95,13 +96,13 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     // NOTE: redefine icons for create actions because need
     // to try multiple variants because DE's sometimes don't
     // share icons
-    const QIcon create_user_icon = get_object_icon(OBJECT_CATEGORY_PERSON);
+    const QIcon create_user_icon = g_icon_manager->get_object_icon(OBJECT_CATEGORY_PERSON);
     ui->action_create_user->setIcon(create_user_icon);
 
-    const QIcon create_group_icon = get_object_icon(OBJECT_CATEGORY_GROUP);
+    const QIcon create_group_icon = g_icon_manager->get_object_icon(OBJECT_CATEGORY_GROUP);
     ui->action_create_group->setIcon(create_group_icon);
 
-    const QIcon create_ou_icon = get_object_icon(OBJECT_CATEGORY_OU);
+    const QIcon create_ou_icon = g_icon_manager->get_object_icon(OBJECT_CATEGORY_OU);
     ui->action_create_ou->setIcon(create_ou_icon);
 
     // Setup console

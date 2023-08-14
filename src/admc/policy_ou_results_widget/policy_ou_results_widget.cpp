@@ -33,7 +33,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "console_widget/console_tree_item_icons.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QAction>
 #include <QHeaderView>
@@ -375,7 +375,7 @@ void PolicyOUResultsWidget::reload_gplink() {
         row[PolicyOUResultsColumn_Name]->setText(name);
         set_data_for_row(row, gpo_dn, PolicyOUResultsRole_DN);
 
-        row[0]->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Link));
+        row[0]->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Policy_Link));
 
         for (const auto column : option_columns) {
             QStandardItem *item = row[column];

@@ -24,9 +24,12 @@
 class AdConfig;
 class AdInterface;
 class Status;
+class IconManager;
 
 extern AdConfig *g_adconfig;
 extern Status *g_status;
+
+extern IconManager *g_icon_manager;
 
 void load_g_adconfig(AdInterface &ad);
 

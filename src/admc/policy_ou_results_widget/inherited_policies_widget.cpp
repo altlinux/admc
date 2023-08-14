@@ -26,7 +26,8 @@
 #include "console_widget/console_widget.h"
 #include "console_impls/item_type.h"
 #include "gplink.h"
-#include "console_widget/console_tree_item_icons.h"
+#include "icon_manager/icon_manager.h"
+#include "globals.h"
 
 #include <QStandardItemModel>
 #include <QStringList>
@@ -145,7 +146,7 @@ void InheritedPoliciesWidget::load_item(const QList<QStandardItem *> row, const 
     row[InheritedPoliciesColumns_Location]->setText(ou_index.data(Qt::DisplayRole).toString());
     row[InheritedPoliciesColumns_Status]->setText(enforced_policy_index.data(PolicyRole_GPO_Status).toString());
     if (is_enforced)
-        row[0]->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Enforced));
+        row[0]->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Policy_Enforced));
     else
-        row[0]->setIcon(get_console_tree_item_icon(ItemIconType_Policy_Link));
+        row[0]->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Policy_Link));
 }
