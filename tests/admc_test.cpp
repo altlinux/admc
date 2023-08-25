@@ -39,6 +39,7 @@
 #include "ui_select_object_advanced_dialog.h"
 #include "ui_select_object_dialog.h"
 #include "utils.h"
+#include "fsmo/fsmo_utils.h"
 
 #include <QFormLayout>
 #include <QLineEdit>
@@ -59,6 +60,10 @@ void ADMCTest::initTestCase() {
 
     g_adconfig->load(ad, QLocale(QLocale::English));
     AdInterface::set_config(g_adconfig);
+
+    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation)) {
+        connect_host_with_role(ad, FSMORole_PDCEmulation);
+    }
 
     // Cleanup before all tests in-case this test suite was
     // previously interrupted and a cleanup wasn't performed
@@ -153,7 +158,6 @@ void navigate_until_object(QTreeView *view, const QString &target_dn, const int 
         const QModelIndex index = search_stack.takeFirst();
 
         const QString dn = index.data(dn_role).toString();
-
         // NOTE: need to expand items because some models
         // used in ADMC load the model dynamically from
         // server as items are expanded (for example, the

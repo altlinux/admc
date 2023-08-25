@@ -53,4 +53,5 @@ void connect_host_with_role(AdInterface &ad, FSMORole role)
     QString current_master = current_master_for_role_dn(ad, role_dn);
     settings_set_variant(SETTING_host, current_master);
     AdInterface::set_dc(current_master);
+    ad.update_dc();
 }

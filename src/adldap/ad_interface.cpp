@@ -142,8 +142,6 @@ AdInterface::AdInterface() {
             if (dc_list.contains(AdInterfacePrivate::s_dc)) {
                 return AdInterfacePrivate::s_dc;
             } else {
-                d->error_message_plain(tr("Failed to load DC defined in settings. Switching to default DC"));
-
                 return dc_list[0];
             }
         } else {
@@ -155,122 +153,9 @@ AdInterface::AdInterface() {
         AdInterfacePrivate::s_dc = d->dc;
     }
 
-    const QString uri = [&]() {
-        QString out;
-
-        if (!d->dc.isEmpty()) {
-            out = "ldap://" + d->dc;
-
-            if (AdInterfacePrivate::s_port > 0) {
-                out = out + ":" + AdInterfacePrivate::s_port;
-            }
-        }
-
-        return out;
-    }();
-
-    if (uri.isEmpty()) {
+    if (!ldap_init()) {
         return;
     }
-
-    int result;
-
-    // NOTE: this doesn't leak memory. False positive.
-    result = ldap_initialize(&d->ld, cstr(uri));
-    if (result != LDAP_SUCCESS) {
-        ldap_memfree(d->ld);
-        d->error_message(tr("Failed to initialize LDAP library."), strerror(errno));
-
-        return;
-    }
-
-    auto option_error = [&](const QString &option) {
-        d->error_message(connect_error_context, QString(tr("Failed to set ldap option %1.")).arg(option));
-    };
-
-    // Set version
-    const int version = LDAP_VERSION3;
-    result = ldap_set_option(d->ld, LDAP_OPT_PROTOCOL_VERSION, &version);
-    if (result != LDAP_OPT_SUCCESS) {
-        option_error("LDAP_OPT_PROTOCOL_VERSION");
-        return;
-    }
-
-    // Disable referrals
-    result = ldap_set_option(d->ld, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
-    if (result != LDAP_OPT_SUCCESS) {
-        option_error("LDAP_OPT_REFERRALS");
-        return;
-    }
-
-    // Set maxssf
-    const char *sasl_secprops = "maxssf=56";
-    result = ldap_set_option(d->ld, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
-    if (result != LDAP_SUCCESS) {
-        option_error("LDAP_OPT_X_SASL_SECPROPS");
-        return;
-    }
-
-    result = ldap_set_option(d->ld, LDAP_OPT_X_SASL_NOCANON, AdInterfacePrivate::s_sasl_nocanon);
-    if (result != LDAP_SUCCESS) {
-        option_error("LDAP_OPT_X_SASL_NOCANON");
-        return;
-    }
-
-    const int cert_strategy = [&]() {
-        switch (AdInterfacePrivate::s_cert_strat) {
-            case CertStrategy_Never: return LDAP_OPT_X_TLS_NEVER;
-            case CertStrategy_Hard: return LDAP_OPT_X_TLS_HARD;
-            case CertStrategy_Demand: return LDAP_OPT_X_TLS_DEMAND;
-            case CertStrategy_Allow: return LDAP_OPT_X_TLS_ALLOW;
-            case CertStrategy_Try: return LDAP_OPT_X_TLS_TRY;
-        }
-
-        return LDAP_OPT_X_TLS_NEVER;
-    }();
-
-    ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_strategy);
-    if (result != LDAP_SUCCESS) {
-        option_error("LDAP_OPT_X_TLS_REQUIRE_CERT");
-        return;
-    }
-
-    // Setup sasl_defaults_gssapi
-    struct sasl_defaults_gssapi defaults;
-    defaults.mech = (char *) "GSSAPI";
-    ldap_get_option(d->ld, LDAP_OPT_X_SASL_REALM, &defaults.realm);
-    ldap_get_option(d->ld, LDAP_OPT_X_SASL_AUTHCID, &defaults.authcid);
-    ldap_get_option(d->ld, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
-    defaults.passwd = NULL;
-
-    // Perform bind operation
-    unsigned sasl_flags = LDAP_SASL_QUIET;
-    result = ldap_sasl_interactive_bind_s(d->ld, NULL, defaults.mech, NULL, NULL, sasl_flags, sasl_interact_gssapi, &defaults);
-    ldap_memfree(defaults.realm);
-    ldap_memfree(defaults.authcid);
-    ldap_memfree(defaults.authzid);
-    if (result != LDAP_SUCCESS) {
-        d->error_message_plain(tr("Failed to connect to server. Check your connection and make sure you have initialized your credentials using kinit."));
-        d->error_message_plain(d->default_error());
-
-        return;
-    }
-
-    d->client_user = [&]() {
-        char *out_cstr = NULL;
-        ldap_get_option(d->ld, LDAP_OPT_X_SASL_USERNAME, &out_cstr);
-
-        if (out_cstr == NULL) {
-            return QString();
-        }
-
-        QString out = QString(out_cstr);
-        out = out.toLower();
-
-        ldap_memfree(out_cstr);
-
-        return out;
-    }();
 
     // Initialize SMB context
 
@@ -294,12 +179,7 @@ AdInterface::AdInterface() {
 }
 
 AdInterface::~AdInterface() {
-    if (d->is_connected) {
-        ldap_unbind_ext(d->ld, NULL, NULL);
-    } else {
-        ldap_memfree(d->ld);
-    }
-
+    ldap_free();
     delete d;
 }
 
@@ -1595,6 +1475,137 @@ QString AdInterface::filesys_path_to_smb_path(const QString &filesys_path) const
     return out;
 }
 
+bool AdInterface::ldap_init() {
+    const QString connect_error_context = tr("Failed to connect.");
+
+    const QString uri = [&]() {
+        QString out;
+
+        if (!d->dc.isEmpty()) {
+            out = "ldap://" + d->dc;
+
+            if (AdInterfacePrivate::s_port > 0) {
+                out = out + ":" + AdInterfacePrivate::s_port;
+            }
+        }
+
+        return out;
+    }();
+
+    if (uri.isEmpty()) {
+        return false;
+    }
+
+    int result;
+
+    // NOTE: this doesn't leak memory. False positive.
+    result = ldap_initialize(&d->ld, cstr(uri));
+    if (result != LDAP_SUCCESS) {
+        ldap_memfree(d->ld);
+        d->error_message(tr("Failed to initialize LDAP library."), strerror(errno));
+
+        return false;
+    }
+
+    auto option_error = [&](const QString &option) {
+        d->error_message(connect_error_context, QString(tr("Failed to set ldap option %1.")).arg(option));
+    };
+
+    // Set version
+    const int version = LDAP_VERSION3;
+    result = ldap_set_option(d->ld, LDAP_OPT_PROTOCOL_VERSION, &version);
+    if (result != LDAP_OPT_SUCCESS) {
+        option_error("LDAP_OPT_PROTOCOL_VERSION");
+        return false;
+    }
+
+    // Disable referrals
+    result = ldap_set_option(d->ld, LDAP_OPT_REFERRALS, LDAP_OPT_OFF);
+    if (result != LDAP_OPT_SUCCESS) {
+        option_error("LDAP_OPT_REFERRALS");
+        return false;
+    }
+
+    // Set maxssf
+    const char *sasl_secprops = "maxssf=56";
+    result = ldap_set_option(d->ld, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
+    if (result != LDAP_SUCCESS) {
+        option_error("LDAP_OPT_X_SASL_SECPROPS");
+        return false;
+    }
+
+    result = ldap_set_option(d->ld, LDAP_OPT_X_SASL_NOCANON, AdInterfacePrivate::s_sasl_nocanon);
+    if (result != LDAP_SUCCESS) {
+        option_error("LDAP_OPT_X_SASL_NOCANON");
+        return false;
+    }
+
+    const int cert_strategy = [&]() {
+        switch (AdInterfacePrivate::s_cert_strat) {
+            case CertStrategy_Never: return LDAP_OPT_X_TLS_NEVER;
+            case CertStrategy_Hard: return LDAP_OPT_X_TLS_HARD;
+            case CertStrategy_Demand: return LDAP_OPT_X_TLS_DEMAND;
+            case CertStrategy_Allow: return LDAP_OPT_X_TLS_ALLOW;
+            case CertStrategy_Try: return LDAP_OPT_X_TLS_TRY;
+        }
+
+        return LDAP_OPT_X_TLS_NEVER;
+    }();
+
+    ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_strategy);
+    if (result != LDAP_SUCCESS) {
+        option_error("LDAP_OPT_X_TLS_REQUIRE_CERT");
+        return false;
+    }
+
+    // Setup sasl_defaults_gssapi
+    struct sasl_defaults_gssapi defaults;
+    defaults.mech = (char *) "GSSAPI";
+    ldap_get_option(d->ld, LDAP_OPT_X_SASL_REALM, &defaults.realm);
+    ldap_get_option(d->ld, LDAP_OPT_X_SASL_AUTHCID, &defaults.authcid);
+    ldap_get_option(d->ld, LDAP_OPT_X_SASL_AUTHZID, &defaults.authzid);
+    defaults.passwd = NULL;
+
+    // Perform bind operation
+    unsigned sasl_flags = LDAP_SASL_QUIET;
+    result = ldap_sasl_interactive_bind_s(d->ld, NULL, defaults.mech, NULL, NULL, sasl_flags, sasl_interact_gssapi, &defaults);
+    ldap_memfree(defaults.realm);
+    ldap_memfree(defaults.authcid);
+    ldap_memfree(defaults.authzid);
+    if (result != LDAP_SUCCESS) {
+        d->error_message_plain(tr("Failed to connect to server. Check your connection and make sure you have initialized your credentials using kinit."));
+        d->error_message_plain(d->default_error());
+
+        return false;
+    }
+
+    d->client_user = [&]() {
+        char *out_cstr = NULL;
+        ldap_get_option(d->ld, LDAP_OPT_X_SASL_USERNAME, &out_cstr);
+
+        if (out_cstr == NULL) {
+            return QString();
+        }
+
+        QString out = QString(out_cstr);
+        out = out.toLower();
+
+        ldap_memfree(out_cstr);
+
+        return out;
+    }();
+
+    return true;
+}
+
+void AdInterface::ldap_free() {
+    if (d->is_connected) {
+        ldap_unbind_ext(d->ld, NULL, NULL);
+    } else {
+        ldap_memfree(d->ld);
+    }
+}
+
 bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     // NOTE: skip perms check for non-admins, because don't
     // have enough rights to get full sd
@@ -2039,6 +2050,14 @@ QString AdInterface::get_dc() const {
 
 QString AdInterface::get_domain() const {
     return d->domain;
+}
+
+void AdInterface::update_dc() {
+    d->dc = AdInterfacePrivate::s_dc;
+
+    // Reinit ldap connection with updated DC
+    ldap_free();
+    ldap_init();
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {

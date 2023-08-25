@@ -117,6 +117,10 @@ public:
     QString get_dc() const;
     QString get_domain() const;
 
+    // NOTE: Updates dc for AdInterface instance from static AdInterfacePrivate::s_dc.
+    // It is needed when DC changes after AdInterface object was constructed.
+    void update_dc();
+
     // NOTE: If request attributes list is empty, all
     // attributes are returned
 
@@ -182,6 +186,9 @@ public:
 
 private:
     AdInterfacePrivate *d;
+
+    bool ldap_init();
+    void ldap_free();
 };
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
