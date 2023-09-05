@@ -79,7 +79,8 @@ void RenamePolicyDialog::accept() {
 }
 
 void RenamePolicyDialog::on_edited() {
-    if (ui->name_edit->text().isEmpty()) {
+    QRegExp reg_exp_spaces("^\\s*$");
+    if (ui->name_edit->text().isEmpty() || ui->name_edit->text().contains(reg_exp_spaces)) {
         ui->button_box->button(QDialogButtonBox::Ok)->setEnabled(false);
     } else {
         ui->button_box->button(QDialogButtonBox::Ok)->setEnabled(true);

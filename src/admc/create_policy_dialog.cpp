@@ -120,7 +120,8 @@ void CreatePolicyDialog::accept() {
 }
 
 void CreatePolicyDialog::on_edited() {
-    if (ui->name_edit->text().isEmpty()) {
+    QRegExp reg_exp_spaces("^\\s*$");
+    if (ui->name_edit->text().isEmpty() || ui->name_edit->text().contains(reg_exp_spaces)) {
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     } else {
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
