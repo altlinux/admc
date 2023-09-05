@@ -2,6 +2,23 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.14.0
+-----------------------------------------------------------------------
+- Possible errors due to domain controller switching are fixed
+(revealed with failed tests).
+- Disabled user icon is added to icon manager. Now user item
+icon changes after user disabling in the object tree and in the
+organizational unit results widget.
+- User domain admin perms check for GPO add is fixed. User should no
+longer be in a group named only "Domain Admins" to be able add GPO
+(domain admins group is defined by sid now).
+- Fixed group policy link dissapearence after applying enforce/disable
+action in context menu.
+- Test admc_test_gplink is fixed.
+- Test admc_test_policy_ou_results_widget is temporarily removed.
+- Added connectivity to another domain's host.
+
+-----------------------------------------------------------------------
  VERSION 0.13.0
 -----------------------------------------------------------------------
 - PDC-Emulator check option is added. If option is enabled, GPT-related
