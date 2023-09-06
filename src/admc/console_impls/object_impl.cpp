@@ -732,7 +732,13 @@ void ObjectImpl::update_results_widget(const QModelIndex &index) const
 }
 
 void console_object_delete(const QList<ConsoleWidget *> &console_list, const QList<QModelIndex> &index_list, const int dn_role) {
-    const bool confirmed = confirmation_dialog(QCoreApplication::translate("ObjectImpl", "Are you sure you want to delete this object?"), console_list[0]);
+    bool confirmed;
+    if (index_list.size() == 1) {
+        confirmed = confirmation_dialog(QCoreApplication::translate("ObjectImpl", "Are you sure you want to delete this object?"), console_list[0]);
+    }
+    else {
+        confirmed = confirmation_dialog(QCoreApplication::translate("ObjectImpl", "Are you sure you want to delete these objects?"), console_list[0]);
+    }
     if (!confirmed) {
         return;
     }

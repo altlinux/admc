@@ -2463,7 +2463,12 @@
         <translation>Удалить этот объект?</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="879"/>
+        <location filename="console_impls/object_impl.cpp" line="740"/>
+        <source>Are you sure you want to delete these objects?</source>
+        <translation>Удалить эти объекты?</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="952"/>
         <source>Add to Group</source>
         <translation>Добавить в группу</translation>
     </message>
