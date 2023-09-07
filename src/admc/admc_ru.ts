@@ -2468,7 +2468,17 @@
         <translation>Удалить эти объекты?</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="952"/>
+        <location filename="console_impls/object_impl.cpp" line="1885"/>
+        <source> It contains other objects.</source>
+        <translation> Он содержит другие объекты.</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="1888"/>
+        <source> Containers to be deleted contain other objects.</source>
+        <translation> Удаляемые контейнеры содержат другие объекты.</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="947"/>
         <source>Add to Group</source>
         <translation>Добавить в группу</translation>
     </message>

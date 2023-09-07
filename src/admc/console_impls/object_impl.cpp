@@ -60,6 +60,7 @@
 #include <QSet>
 #include <QStandardItemModel>
 #include <QStackedWidget>
+#include <QMessageBox>
 
 #include <algorithm>
 
@@ -732,13 +733,7 @@ void ObjectImpl::update_results_widget(const QModelIndex &index) const
 }
 
 void console_object_delete(const QList<ConsoleWidget *> &console_list, const QList<QModelIndex> &index_list, const int dn_role) {
-    bool confirmed;
-    if (index_list.size() == 1) {
-        confirmed = confirmation_dialog(QCoreApplication::translate("ObjectImpl", "Are you sure you want to delete this object?"), console_list[0]);
-    }
-    else {
-        confirmed = confirmation_dialog(QCoreApplication::translate("ObjectImpl", "Are you sure you want to delete these objects?"), console_list[0]);
-    }
+    const bool confirmed = console_object_deletion_dialog(console_list[0], index_list);
     if (!confirmed) {
         return;
     }
@@ -1865,4 +1860,35 @@ void console_object_item_load_icon(QStandardItem *item, bool disabled) {
     }
     icon = g_icon_manager->get_object_icon(category);
     item->setIcon(icon);
+}
+
+bool console_object_deletion_dialog(ConsoleWidget *console, const QList<QModelIndex> &index_deleted_list) {
+    QString main_message;
+    if (index_deleted_list.size() == 1) {
+        main_message = QCoreApplication::translate("ObjectImpl", "Are you sure you want to delete this object?");
+    }
+    else {
+        main_message = QCoreApplication::translate("ObjectImpl", "Are you sure you want to delete these objects?");
+    }
+
+    QString contains_objects_message;
+    int not_empty_containers_count = 0;
+    for (QModelIndex index : index_deleted_list) {
+        if (index.model()->hasChildren(index)) {
+            ++not_empty_containers_count;
+        }
+    }
+    if (not_empty_containers_count == 1 && index_deleted_list.size() == 1) {
+        contains_objects_message = QCoreApplication::translate("ObjectImpl", " It contains other objects.");
+    }
+    else if (not_empty_containers_count >= 1) {
+        contains_objects_message = QCoreApplication::translate("ObjectImpl", " Containers to be deleted contain other objects.");
+    }
+
+    const bool confirm_actions = settings_get_variant(SETTING_confirm_actions).toBool();
+    if (not_empty_containers_count > 0 || confirm_actions) {
+        QMessageBox::StandardButton answer = QMessageBox::question(console, QObject::tr("Confirm action"), main_message + contains_objects_message);
+        return answer == QMessageBox::Yes;
+    }
+    return true;
 }
