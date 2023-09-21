@@ -53,6 +53,7 @@ DEFINE_SETTING(SETTING_console_filter_dialog_state);
 DEFINE_SETTING(SETTING_select_object_advanced_dialog_console_state);
 DEFINE_SETTING(SETTING_find_object_dialog_console_state);
 DEFINE_SETTING(SETTING_find_policy_dialog_console_state);
+DEFINE_SETTING(SETTING_icons_theme);
 
 // Widget geometry
 DEFINE_SETTING(SETTING_main_window_geometry);

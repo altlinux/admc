@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -42,6 +42,11 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <widget class="QMenu" name="menu_theme">
+     <property name="title">
+      <string>Theme</string>
+     </property>
+    </widget>
     <addaction name="action_view_icons"/>
     <addaction name="action_view_list"/>
     <addaction name="action_view_detail"/>
@@ -53,6 +58,7 @@
     <addaction name="separator"/>
     <addaction name="action_customize_columns"/>
     <addaction name="action_filter_objects"/>
+    <addaction name="menu_theme"/>
    </widget>
    <widget class="QMenu" name="menu_preferences">
     <property name="title">

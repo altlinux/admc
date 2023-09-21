@@ -13,6 +13,8 @@ IconManager::IconManager()
 
 void IconManager::init()
 {
+
+
     // NOTE: use a list of possible icons because
     // default icon themes for different DE's don't
     // fully intersect
