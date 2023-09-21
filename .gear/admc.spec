@@ -28,6 +28,7 @@ BuildRequires: libkrb5-devel
 
 Requires: libsasl2
 Requires: libsasl2-plugin-gssapi
+Requires: admc_icons
 
 Source0: %name-%version.tar
 
