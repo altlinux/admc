@@ -25,11 +25,11 @@ void IconManager::init()
         {OBJECT_CATEGORY_GROUP, {"system-users"}},
         {OBJECT_CATEGORY_PERSON, {"avatar-default", "avatar-default-symbolic"}},
         {"Computer", {"computer"}},
-        {"Group-Policy-Container", {"preferences-other"}},
+        {"Group-Policy-Container", {"preferences-other", "preferences-other-symbolic"}},
         {"Volume", {"folder-templates"}},
 
         // Some custom icons for one-off objects
-        {"Builtin-Domain", {"emblem-system", "emblem-system-symbolic"}},
+        {"Builtin-Domain", {"folder"}},
         {"Configuration", {"emblem-system", "emblem-system-symbolic"}},
         {"Lost-And-Found", {"emblem-system", "emblem-system-symbolic"}},
         {"Infrastructure-Update", {"emblem-system", "emblem-system-symbolic"}},

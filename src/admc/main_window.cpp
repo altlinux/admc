@@ -211,8 +211,11 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
             [this, name_theme](bool checked) {
                 if (checked == false)
                     return;
+                QIcon::setThemeName(name_theme);
                 settings_set_variant(SETTING_icons_theme, name_theme);
-                message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected icon's theme."));
+                update();
+//                message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected icon's theme."));
+
             });
     }
 

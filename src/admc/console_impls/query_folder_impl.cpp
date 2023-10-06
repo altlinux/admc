@@ -341,7 +341,10 @@ void console_query_tree_init(ConsoleWidget *console) {
     const QList<QStandardItem *> root_row = console->add_scope_item(ItemType_QueryFolder, QModelIndex());
     auto root = root_row[0];
     root->setText(QCoreApplication::translate("query", "Saved Queries"));
-    root->setIcon(QIcon::fromTheme("folder"));
+    if (QIcon::themeName() == QString("admc"))
+        root->setIcon(QIcon::fromTheme("folder-query"));
+    else
+        root->setIcon(QIcon::fromTheme("folder"));
     root->setDragEnabled(false);
     root->setData(true, QueryItemRole_IsRoot);
 

@@ -53,10 +53,9 @@ int main(int argc, char **argv) {
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
     app.setWindowIcon(QIcon(":/admc/admc.ico"));
 
-    qDebug() << "QIcon::fallbackThemeName() = " << QIcon::fallbackThemeName();
-
     QIcon::setThemeName(settings_get_variant(SETTING_icons_theme).toString());
     g_icon_manager->init();
+    qDebug() << "QIcon::themeName() = " << QIcon::themeName();
 
     const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
     const QString locale_dot_UTF8 = saved_locale.name() + ".UTF-8";
