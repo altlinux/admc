@@ -185,6 +185,39 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     }
 
     //
+    // Setup theme action
+    //
+    const QList<QString> name_theme_list = {
+        QIcon::fallbackThemeName(),
+        "admc"
+    };
+    auto theme_group = new QActionGroup(this);
+    for (const QString &name_theme : name_theme_list){
+        const auto action = new QAction(name_theme, theme_group);
+
+        action->setCheckable(true);
+        theme_group->addAction(action);
+
+        bool is_checked;
+        const QString current_theme = settings_get_variant(SETTING_icons_theme_geometry).toString();
+        current_theme == name_theme ? is_checked = true : is_checked = false;
+
+        action->setChecked(is_checked);
+        ui->menu_theme->addAction(action);
+
+        connect(
+            action, &QAction::triggered,
+            this,
+            [this, name_theme](bool checked) {
+                if (checked == false)
+                    return;
+                QIcon::setThemeName(name_theme);
+                settings_set_variant(SETTING_icons_theme_geometry, name_theme);
+                update();
+            });
+    }
+
+    //
     // Setup language actions
     //
     const QList<QLocale::Language> language_list = {
