@@ -1807,6 +1807,12 @@
         <translation>&amp;Вид</translation>
     </message>
     <message>
+        <location filename="main_window.ui" line="47"/>
+        <source>&amp;Theme</source>
+        <oldsource>Theme</oldsource>
+        <translation>&amp;Тема</translation>
+    </message>
+    <message>
         <location filename="main_window.ui" line="59"/>
         <source>&amp;Preferences</source>
         <oldsource>Preferences</oldsource>
