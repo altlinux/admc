@@ -189,7 +189,8 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     //
     const QList<QString> name_theme_list = {
         QIcon::fallbackThemeName(),
-        "admc"
+        "admc",
+        "Adwaita"
     };
     auto theme_group = new QActionGroup(this);
     for (const QString &name_theme : name_theme_list){
@@ -211,9 +212,22 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
             [this, name_theme](bool checked) {
                 if (checked == false)
                     return;
-                QIcon::setThemeName(name_theme);
-                settings_set_variant(SETTING_icons_theme_geometry, name_theme);
+
+                g_icon_manager->init(name_theme);
+
+                const QIcon create_user_icon = g_icon_manager->get_object_icon(OBJECT_CATEGORY_PERSON);
+                ui->action_create_user->setIcon(create_user_icon);
+
+                const QIcon create_group_icon = g_icon_manager->get_object_icon(OBJECT_CATEGORY_GROUP);
+                ui->action_create_group->setIcon(create_group_icon);
+
+                const QIcon create_ou_icon = g_icon_manager->get_object_icon(OBJECT_CATEGORY_OU);
+                ui->action_create_ou->setIcon(create_ou_icon);
+
                 update();
+                reload_scope_tree();
+
+
             });
     }
 

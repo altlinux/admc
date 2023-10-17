@@ -29,7 +29,7 @@ class IconManager final {
 public:
     explicit IconManager();
 
-    void init();
+    void init(QString);
 
     const QIcon& get_icon_for_type(ItemIconType icon_type) const;
     QIcon get_object_icon(const AdObject &object) const;

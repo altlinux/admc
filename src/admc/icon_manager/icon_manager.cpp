@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "ad_utils.h"
 #include "ad_object.h"
+#include "settings.h"
 
 #include <QPainter>
 #include <QPixmap>
@@ -11,8 +12,12 @@ IconManager::IconManager()
 {
 }
 
-void IconManager::init()
+void IconManager::init(QString icon_theme)
 {
+    //install the selected theme
+    QIcon::setThemeName(icon_theme);
+    settings_set_variant(SETTING_icons_theme_geometry, icon_theme);
+
     // NOTE: use a list of possible icons because
     // default icon themes for different DE's don't
     // fully intersect
@@ -131,9 +136,12 @@ QIcon IconManager::get_object_icon(const QString &object_category) const
         };
         const QList<QString> icon_name_list = category_to_icon_list.value(object_category, fallback_icon_list);
 
+
+
         for (const QString &icon : icon_name_list) {
             if (QIcon::hasThemeIcon(icon)) {
                 return icon;
+
             }
         }
 
