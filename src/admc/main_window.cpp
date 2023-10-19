@@ -184,26 +184,11 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         open_changelog();
     }
 
-    //
-    // Setup theme action
-    //
-    const QList<QString> name_theme_list = {
-        QIcon::fallbackThemeName(),
-        "admc",
-        "Adwaita"
-    };
     auto theme_group = new QActionGroup(this);
-    for (const QString &name_theme : name_theme_list){
+    for (const QString &name_theme : g_icon_manager->name_theme_list){
         const auto action = new QAction(name_theme, theme_group);
 
-        action->setCheckable(true);
-        theme_group->addAction(action);
-
-        bool is_checked;
-        const QString current_theme = settings_get_variant(SETTING_icons_theme_geometry).toString();
-        current_theme == name_theme ? is_checked = true : is_checked = false;
-
-        action->setChecked(is_checked);
+        g_icon_manager->change_theme(action, name_theme);
         ui->menu_theme->addAction(action);
 
         connect(
@@ -213,7 +198,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
                 if (checked == false)
                     return;
 
-                g_icon_manager->init(name_theme);
+                g_icon_manager->set_theme(name_theme);
 
                 const QIcon create_user_icon = g_icon_manager->get_object_icon(OBJECT_CATEGORY_PERSON);
                 ui->action_create_user->setIcon(create_user_icon);
@@ -226,7 +211,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
                 update();
                 reload_scope_tree();
-
 
             });
     }

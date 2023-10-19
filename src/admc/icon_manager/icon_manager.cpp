@@ -4,6 +4,8 @@
 #include "ad_utils.h"
 #include "ad_object.h"
 #include "settings.h"
+//#include "main_window.h"
+//#include "globals.h"
 
 #include <QPainter>
 #include <QPixmap>
@@ -12,12 +14,34 @@ IconManager::IconManager()
 {
 }
 
-void IconManager::init(QString icon_theme)
-{
-    //install the selected theme
+//install the selected theme
+QAction* IconManager::change_theme(QAction *action, QString name_theme){
+
+    action->setCheckable(true);
+
+    bool is_checked;
+    const QString current_theme = settings_get_variant(SETTING_icons_theme_geometry).toString();
+    current_theme == name_theme ? is_checked = true : is_checked = false;
+
+    action->setChecked(is_checked);
+
+    return action;
+
+}
+
+void IconManager::set_theme(QString icon_theme){
     QIcon::setThemeName(icon_theme);
     settings_set_variant(SETTING_icons_theme_geometry, icon_theme);
+    init();
+}
 
+void IconManager::init()
+{
+    name_theme_list = {
+        QIcon::fallbackThemeName(),
+        "admc",
+        "Adwaita"
+    };
     // NOTE: use a list of possible icons because
     // default icon themes for different DE's don't
     // fully intersect

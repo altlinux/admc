@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QIcon>
 #include <QMap>
+#include <QAction>
 
 enum ItemIconType {
     ItemIconType_Policy_Clean,
@@ -28,8 +29,10 @@ class AdObject;
 class IconManager final {
 public:
     explicit IconManager();
-
-    void init(QString);
+    void init();
+    QAction* change_theme(QAction *action, QString name_theme);
+    QList<QString> name_theme_list;
+    void set_theme(QString);
 
     const QIcon& get_icon_for_type(ItemIconType icon_type) const;
     QIcon get_object_icon(const AdObject &object) const;
