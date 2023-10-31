@@ -372,7 +372,7 @@ void MainWindow::open_manual() {
 void MainWindow::open_connection_options() {
     auto dialog = new ConnectionOptionsDialog(this);
     dialog->open();
-    connect(dialog, &ConnectionOptionsDialog::domain_changed,
+    connect(dialog, &ConnectionOptionsDialog::host_changed,
             [this](const QString &host) {
         show_busy_indicator();
         reload_console_tree();

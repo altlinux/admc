@@ -36,7 +36,6 @@
 #include <QModelIndex>
 #include <QStandardItem>
 #include <QIcon>
-#include <QDebug>
 
 
 DomainInfoImpl::DomainInfoImpl(ConsoleWidget *console_arg): ConsoleImpl(console_arg) {
@@ -117,7 +116,7 @@ void DomainInfoImpl::open_fsmo_dialog() {
 void DomainInfoImpl::open_connection_options() {
     auto dialog = new ConnectionOptionsDialog(console);
     dialog->open();
-    connect(dialog, &ConnectionOptionsDialog::domain_changed,
+    connect(dialog, &ConnectionOptionsDialog::host_changed,
             [this](const QString &host) {
         show_busy_indicator();
         console->refresh_scope(console->domain_info_index());

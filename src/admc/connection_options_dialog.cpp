@@ -167,7 +167,8 @@ void ConnectionOptionsDialog::accept() {
 
     AdInterface ad;
     if (ad_failed(ad, parentWidget())) {
-        QDialog::accept();
+        // load back options from config
+        load_connection_options();
         return;
     }
 
@@ -178,8 +179,9 @@ void ConnectionOptionsDialog::accept() {
     const bool domain_is_changed = (domain_was_default != domain_is_default) || custom_domain_changed;
     if (domain_is_changed) {
         load_g_adconfig(ad);
-        emit domain_changed(selected_host);
     }
+
+    emit host_changed(selected_host);
 
     if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation)) {
         if (gpo_edit_without_PDC_disabled)

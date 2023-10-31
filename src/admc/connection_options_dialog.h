@@ -64,7 +64,7 @@ private slots:
     void get_hosts();
 
 signals:
-    void domain_changed(const QString &host);
+    void host_changed(const QString &host);
 };
 
 // Load connection options from settings and apply to
