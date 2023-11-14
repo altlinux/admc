@@ -25,6 +25,7 @@
 #include "attribute_edits/sam_name_edit.h"
 #include "rename_object_helper.h"
 #include "settings.h"
+#include "utils.h"
 
 RenameGroupDialog::RenameGroupDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {
@@ -43,6 +44,7 @@ RenameGroupDialog::RenameGroupDialog(AdInterface &ad, const QString &target_arg,
     };
 
     helper = new RenameObjectHelper(ad, target_arg, ui->name_edit, edit_list, this, requred_list, ui->button_box);
+    setup_lineedit_autofill(ui->name_edit, ui->sam_name_edit);
 
     settings_setup_dialog_geometry(SETTING_rename_group_dialog_geometry, this);
 }
