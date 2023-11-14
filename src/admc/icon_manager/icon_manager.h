@@ -23,6 +23,8 @@ enum ItemIconType {
 //    ItemIconType_Container_Clean,
 //    ItemIconType_Configuration,
 //    ItemIconType_Settings,
+    ItemIconType_Computer_Clean,
+    ItemIconType_Computer_Blocked,
 
     ItemIconType_LAST
 };

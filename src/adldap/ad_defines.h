@@ -238,6 +238,7 @@ enum SystemFlagsBit {
 #define OBJECT_CATEGORY_PERSON "Person"
 #define OBJECT_CATEGORY_GROUP "Group"
 #define OBJECT_CATEGORY_OU "Organizational-Unit"
+#define OBJECT_CATEGORY_COMPUTER "Computer"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 

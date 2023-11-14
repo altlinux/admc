@@ -1198,8 +1198,16 @@ void ObjectImpl::set_disabled(const bool disabled) {
                 for (const QModelIndex &index : index_list) {
                     QStandardItem *item = target_console->get_item(index);
                     item->setData(disabled, ObjectRole_AccountDisabled);
-                    const QIcon icon = disabled ? g_icon_manager->get_icon_for_type(ItemIconType_Person_Blocked) :
+                    const QString category= dn_get_name(item->data(ObjectRole_ObjectCategory).toString());
+                    QIcon icon;
+                    if (category == OBJECT_CATEGORY_PERSON) {
+                        icon = disabled ? g_icon_manager->get_icon_for_type(ItemIconType_Person_Blocked) :
                                             g_icon_manager->get_icon_for_type(ItemIconType_Person_Clean);
+                    }
+                    else if (category == OBJECT_CATEGORY_COMPUTER) {
+                        icon = disabled ? g_icon_manager->get_icon_for_type(ItemIconType_Computer_Blocked) :
+                                            g_icon_manager->get_icon_for_type(ItemIconType_Computer_Clean);
+                    }
                     item->setIcon(icon);
                 }
             }
@@ -1855,6 +1863,12 @@ void console_object_item_load_icon(QStandardItem *item, bool disabled) {
     if (category == OBJECT_CATEGORY_PERSON) {
         icon = disabled ? g_icon_manager->get_icon_for_type(ItemIconType_Person_Blocked) :
                           g_icon_manager->get_icon_for_type(ItemIconType_Person_Clean);
+        item->setIcon(icon);
+        return;
+    }
+    else if (category == OBJECT_CATEGORY_COMPUTER) {
+        icon = disabled ? g_icon_manager->get_icon_for_type(ItemIconType_Computer_Blocked) :
+                          g_icon_manager->get_icon_for_type(ItemIconType_Computer_Clean);
         item->setIcon(icon);
         return;
     }
