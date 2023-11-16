@@ -44,8 +44,8 @@
 #include "utils.h"
 #include "fsmo/fsmo_utils.h"
 #include "icon_manager/icon_manager.h"
+#include "console_impls/domain_info_impl.h"
 
-#include <QDebug>
 #include <QDesktopServices>
 #include <QLabel>
 #include <QModelIndex>
@@ -68,6 +68,9 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     //
     // Console
     //
+    auto domain_info_impl = new DomainInfoImpl(ui->console);
+    ui->console->register_impl(ItemType_DomainInfo, domain_info_impl);
+
     auto object_impl = new ObjectImpl(ui->console);
     ui->console->register_impl(ItemType_Object, object_impl);
 
@@ -138,9 +141,12 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     ui->menu_view->removeAction(ui->action_toggle_toolbar);
 
     // Load console tree's
+    domain_info_impl->load_domain_info_item(ad);
+    ui->console->set_current_scope(ui->console->domain_info_index());
     console_object_tree_init(ui->console, ad);
     console_policy_tree_init(ui->console);
     console_query_tree_init(ui->console);
+    ui->console->expand_item(ui->console->domain_info_index());
 
     // Set current scope to object head to load it
     const QModelIndex object_tree_root = get_object_tree_root(ui->console);
@@ -369,7 +375,7 @@ void MainWindow::open_connection_options() {
     connect(dialog, &ConnectionOptionsDialog::domain_changed,
             [this](const QString &host) {
         show_busy_indicator();
-        reload_scope_tree();
+        reload_console_tree();
         hide_busy_indicator();
         g_status->add_message(tr("Connected to host ") + host, StatusType_Success);
     });
@@ -393,16 +399,9 @@ void MainWindow::edit_fsmo_roles() {
 
     auto dialog = new FSMODialog(ad, this);
     dialog->open();
+    connect(dialog, &FSMODialog::master_changed, ui->console, &ConsoleWidget::fsmo_master_changed);
 }
 
-void MainWindow::reload_scope_tree()
-{
-    AdInterface ad;
-    if (!ad.is_connected()) {
-        return;
-    }
-    ui->console->clear_scope_tree();
-    console_object_tree_init(ui->console, ad);
-    console_policy_tree_init(ui->console);
-    console_query_tree_init(ui->console);
+void MainWindow::reload_console_tree() {
+    ui->console->refresh_scope(ui->console->domain_info_index());
 }

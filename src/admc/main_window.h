@@ -52,7 +52,7 @@ private:
     void open_changelog();
     void open_about();
     void edit_fsmo_roles();
-    void reload_scope_tree();
+    void reload_console_tree();
 };
 
 #endif /* MAIN_WINDOW_H */

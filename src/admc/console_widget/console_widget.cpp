@@ -105,6 +105,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     // greater at the moment.
     d->scope_view->header()->setStretchLastSection(false);
     d->scope_view->header()->setSectionResizeMode(QHeaderView::Interactive);
+    d->scope_view->setRootIsDecorated(false);
 
     d->model = new ConsoleDragModel(this);
 
@@ -219,13 +220,18 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     connect(
         qApp, &QApplication::focusChanged,
         d, &ConsoleWidgetPrivate::on_focus_changed);
+
+    d->domain_info_index = add_scope_item(ItemType_DomainInfo, QModelIndex())[0]->index();
+    d->scope_view->expand(d->domain_info_index);
+    connect(d->scope_view, &QTreeView::collapsed, [this](const QModelIndex &index_proxy) {
+        const QModelIndex index = d->scope_proxy_model->mapToSource(index_proxy);
+        if (index == d->domain_info_index) {
+            d->scope_view->expand(index_proxy);
+        }
+    });
 }
 
 void ConsoleWidget::register_impl(const int type, ConsoleImpl *impl) {
-    if (d->impl_map.contains(type)) {
-        qDebug() << "Duplicate register_impl() call for type" << type;
-    }
-
     d->impl_map[type] = impl;
 
     QWidget *results_widget = impl->widget();
@@ -281,7 +287,6 @@ QList<QStandardItem *> ConsoleWidget::add_results_item(const int type, const QMo
                 return 1;
             } else {
                 ConsoleImpl *parent_impl = d->get_impl(parent);
-
                 return parent_impl->column_labels().size();
             }
         }();
@@ -541,13 +546,12 @@ void ConsoleWidget::restore_state(const QVariant &state_variant) {
     // Restore displayed of currently selected view
     // type setting
     QAction *current_view_type_action = [&]() -> QAction * {
-        const ResultsViewType current_results_view_type = [&]() {
-            ConsoleImpl *current_impl = d->get_current_scope_impl();
-            ResultsView *current_results_view = current_impl->view();
-            const ResultsViewType out = current_results_view->current_view_type();
-
-            return out;
-        }();
+        ConsoleImpl *current_impl = d->get_current_scope_impl();
+        ResultsView *current_results_view = current_impl->view();
+        if (!current_results_view) {
+            return nullptr;
+        }
+        const ResultsViewType current_results_view_type = current_results_view->current_view_type();
 
         switch (current_results_view_type) {
             case ResultsViewType_Icons: return d->actions.view_icons;
@@ -601,7 +605,19 @@ QWidget *ConsoleWidget::get_result_widget_for_index(const QModelIndex &index)
 }
 
 void ConsoleWidget::clear_scope_tree() {
-    delete_children(d->scope_view->rootIndex());
+    delete_children(d->domain_info_index);
+}
+
+void ConsoleWidget::expand_item(const QModelIndex &index) {
+    if (!index.isValid()) {
+        return;
+    }
+    const QModelIndex index_proxy = d->scope_proxy_model->mapFromSource(index);
+    d->scope_view->expand(index_proxy);
+}
+
+QPersistentModelIndex ConsoleWidget::domain_info_index() {
+    return d->domain_info_index;
 }
 
 void ConsoleWidget::resizeEvent(QResizeEvent *event) {

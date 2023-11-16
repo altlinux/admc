@@ -30,6 +30,7 @@
 
 #include <QCoreApplication>
 #include <QSet>
+#include <QPersistentModelIndex>
 
 class QLabel;
 class QStackedWidget;
@@ -86,6 +87,9 @@ public:
     QList<QPersistentModelIndex> targets_future;
 
     QHash<StandardAction, QAction *> standard_action_map;
+
+    QPersistentModelIndex domain_info_index;
+
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 

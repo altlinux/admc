@@ -181,9 +181,13 @@ public:
     // scope item index. Can return nullptr.
     QWidget *get_result_widget_for_index(const QModelIndex &index);
 
-    // Removes all items from scope tree view.
+    // Removes all items from scope tree view except top domain info item.
     // It is used when domain changes.
     void clear_scope_tree();
+
+    void expand_item(const QModelIndex &index);
+
+    QPersistentModelIndex domain_info_index();
 
 signals:
     // Emitted when selection in the whole console
@@ -191,6 +195,7 @@ signals:
     // Can be caused by selection change in focused
     // view or change of which view is focused.
     void selection_changed();
+    void fsmo_master_changed(const QString &new_master_dn, const QString &string_fsmo_role);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
