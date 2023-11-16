@@ -1900,6 +1900,12 @@
         <translation>&amp;Вид</translation>
     </message>
     <message>
+        <location filename="main_window.ui" line="47"/>
+        <source>&amp;Theme</source>
+        <oldsource>Theme</oldsource>
+        <translation>&amp;Тема</translation>
+    </message>
+    <message>
         <location filename="main_window.ui" line="59"/>
         <source>&amp;Preferences</source>
         <oldsource>Preferences</oldsource>
@@ -3202,6 +3208,20 @@
         <location filename="console_impls/policy_impl.cpp" line="543"/>
         <source>ADMC is connected to DC without the PDC-Emulator role - group policy deletion is prohibited by the setting. Connect to PDC-Emulator?</source>
         <translation>ADMC подключен к КД без роли PDC-Emulator - удаление групповых политик запрещено настройкой. Подключиться к PDC-контроллеру?</translation>
+    </message>
+    <message>
+        <source>Theme from settings not found. Fallback theme is set.</source>
+        <translation type="vanished">Тема, указанная в настройках, не найдена. Установлена тема по умолчанию.</translation>
+    </message>
+    <message>
+        <location filename="icon_manager/icon_manager.cpp" line="86"/>
+        <source>Theme from settings not found. System theme is set.</source>
+        <translation>Тема, указанная в настройках, не найдена. Установлена системная тема.</translation>
+    </message>
+    <message>
+        <location filename="icon_manager/icon_manager.cpp" line="310"/>
+        <source> (System)</source>
+        <translation> (Системная)</translation>
     </message>
 </context>
 <context>
