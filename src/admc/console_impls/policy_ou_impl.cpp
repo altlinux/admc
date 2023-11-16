@@ -272,8 +272,7 @@ void PolicyOUImpl::create_and_link_gpo() {
                                                                    "group policy creation is prohibited by the setting. "
                                                                    "Connect to PDC-Emulator?"));
         if (answer == QMessageBox::Yes) {
-            connect_host_with_role(ad, FSMORole_PDCEmulation);
-            g_status->add_message(tr("PDC-Emulator is connected"), StatusType_Success);
+            connect_to_PDC_emulator(ad, console);
             return;
         }
         else {

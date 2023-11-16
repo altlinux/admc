@@ -27,6 +27,7 @@
 #include "utils.h"
 #include "fsmo/fsmo_utils.h"
 
+
 FSMOTab::FSMOTab(const QString &title, const QString &role_dn_arg) {
     ui = new Ui::FSMOTab();
     ui->setupUi(this);
@@ -67,12 +68,8 @@ void FSMOTab::change_master() {
         return;
     }
 
-    const QString new_master_service = [&]() {
-        const AdObject rootDSE = ad.search_object("");
-        const QString out = rootDSE.get_string(ATTRIBUTE_DS_SERVICE_NAME);
-
-        return out;
-    }();
+    const AdObject rootDSE = ad.search_object("");
+    const QString new_master_service = rootDSE.get_string(ATTRIBUTE_DS_SERVICE_NAME);
 
     const bool success = ad.attribute_replace_string(role_dn, ATTRIBUTE_FSMO_ROLE_OWNER, new_master_service);
 
@@ -80,5 +77,7 @@ void FSMOTab::change_master() {
 
     if (success) {
         load(ad);
+        const QString new_master_dn = rootDSE.get_string(ATTRIBUTE_SERVER_NAME);
+        emit master_changed(new_master_dn, fsmo_string_from_dn(role_dn));
     }
 }

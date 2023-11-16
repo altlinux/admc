@@ -373,8 +373,7 @@ void console_policy_edit(ConsoleWidget *console, const int item_type, const int 
                                                                    "group policy editing is prohibited by the setting. "
                                                                    "Connect to PDC-Emulator?"));
         if (answer == QMessageBox::Yes) {
-            connect_host_with_role(ad, FSMORole_PDCEmulation);
-            g_status->add_message(QObject::tr("PDC-Emulator is connected"), StatusType_Success);
+            connect_to_PDC_emulator(ad, console);
             return;
         }
         else {
@@ -592,8 +591,7 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
                                                                    "group policy deletion is prohibited by the setting. "
                                                                    "Connect to PDC-Emulator?"));
         if (answer == QMessageBox::Yes) {
-            connect_host_with_role(ad, FSMORole_PDCEmulation);
-            g_status->add_message(QObject::tr("PDC-Emulator is connected"), StatusType_Success);
+            connect_to_PDC_emulator(ad, console_list[0]);
             return;
         }
         else {

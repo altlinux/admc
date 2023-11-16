@@ -61,6 +61,7 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
         auto tab = new FSMOTab(title, role_dn);
         ui->tab_widget->add_tab(tab, title);
         tab->load(ad);
+        connect(tab, &FSMOTab::master_changed, this, &FSMODialog::master_changed);
     }
 
     ui->warning_widget->setVisible(false);

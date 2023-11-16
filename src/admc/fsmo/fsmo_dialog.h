@@ -27,6 +27,7 @@
 
 #include <QDialog>
 
+
 class AdInterface;
 
 namespace Ui {
@@ -44,6 +45,9 @@ public:
 
 private slots:
     void gpo_edit_PDC_check_toggled(bool is_checked);
+
+signals:
+    void master_changed(const QString &new_master_dn, const QString &string_fsmo_role);
 };
 
 #endif /* FSMO_DIALOG_H */
