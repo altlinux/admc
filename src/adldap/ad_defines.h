@@ -200,6 +200,10 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW "lockOutObservationWindow"
 #define ATTRIBUTE_FORCE_LOGOFF "forceLogoff"
 #define ATTRIBUTE_MS_DS_SUPPORTED_ETYPES "msDS-SupportedEncryptionTypes"
+#define ATTRIBUTE_DOMAIN_FUNCTIONALITY_LEVEL "domainFunctionality"
+#define ATTRIBUTE_FOREST_FUNCTIONALITY_LEVEL "forestFunctionality"
+#define ATTRIBUTE_OBJECT_VERSION "objectVersion"
+
 
 #define CLASS_GROUP "group"
 #define CLASS_USER "user"
@@ -224,6 +228,9 @@ enum SystemFlagsBit {
 #define CLASS_MSMQ_GROUP "msMQ-Group"
 #define CLASS_MSMQ_QUEUE_ALIAS "msMQ-Custom-Recipient"
 #define CLASS_REMOTE_STORAGE_SERVICE "remoteStorageServicePoint"
+#define CLASS_SITE "site"
+#define CLASS_SERVER "server"
+#define CLASS_SERVERS_CONTAINER "serversContainer"
 // NOTE: for schema object
 #define CLASS_dMD "dMD"
 #define CLASS_CONTROL_ACCESS_RIGHT "controlAccessRight"
