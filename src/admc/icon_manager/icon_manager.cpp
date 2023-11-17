@@ -54,6 +54,7 @@ void IconManager::init()
     type_index_icons_array[ItemIconType_Person_Clean] = get_object_icon(OBJECT_CATEGORY_PERSON);
     type_index_icons_array[ItemIconType_Person_Blocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Person_Clean],
                                                                                   QIcon::fromTheme("dialog-error"), QSize(8, 8), QPoint(8, 8));
+    type_index_icons_array[ItemIconType_Site_Clean] = QIcon::fromTheme("go-home");
 }
 
 QIcon IconManager::overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon, IconOverlayPosition position) const

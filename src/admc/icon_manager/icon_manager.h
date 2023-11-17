@@ -19,6 +19,10 @@ enum ItemIconType {
     ItemIconType_Domain_InheritanceBlocked,
     ItemIconType_Person_Clean,
     ItemIconType_Person_Blocked,
+    ItemIconType_Site_Clean,
+//    ItemIconType_Container_Clean,
+//    ItemIconType_Configuration,
+//    ItemIconType_Settings,
 
     ItemIconType_LAST
 };
