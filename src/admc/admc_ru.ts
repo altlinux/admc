@@ -873,6 +873,99 @@
     </message>
 </context>
 <context>
+    <name>DomainInfoImpl</name>
+    <message>
+        <location filename="console_impls/domain_info_impl.cpp" line="46"/>
+        <source>Edit FSMO roles</source>
+        <translation>Изменить FSMO роли</translation>
+    </message>
+    <message>
+        <location filename="console_impls/domain_info_impl.cpp" line="47"/>
+        <source>Open connection options</source>
+        <translation>Параметры подключения</translation>
+    </message>
+    <message>
+        <location filename="console_impls/domain_info_impl.cpp" line="93"/>
+        <source>Name</source>
+        <translation>Имя</translation>
+    </message>
+    <message>
+        <location filename="console_impls/domain_info_impl.cpp" line="97"/>
+        <source>Host not found</source>
+        <translation>Хост не найден</translation>
+    </message>
+    <message>
+        <location filename="console_impls/domain_info_impl.cpp" line="102"/>
+        <source>Active directory managment center [</source>
+        <translation>Центр управления Active Directory [</translation>
+    </message>
+    <message>
+        <location filename="console_impls/domain_info_impl.cpp" line="125"/>
+        <source>Connected to host </source>
+        <translation>Подключено к хосту </translation>
+    </message>
+</context>
+<context>
+    <name>DomainInfoResultsWidget</name>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="64"/>
+        <source>Sites count:</source>
+        <translation>Количество сайтов:</translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="91"/>
+        <source>Domain controllers count:</source>
+        <translation>Количество котроллеров домена:</translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="134"/>
+        <source>Domain schema version:</source>
+        <translation>Версия схемы домена:</translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="141"/>
+        <source>Domain functionality level:</source>
+        <translation>Режим работы домена:</translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="148"/>
+        <source>Forest functionality level:</source>
+        <translation>Режим работы леса:</translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="155"/>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="162"/>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="169"/>
+        <source>PLACEHOLDER</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.cpp" line="209"/>
+        <source>Servers</source>
+        <translation>Серверы</translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.cpp" line="224"/>
+        <source>FSMO roles</source>
+        <translation>FSMO роли</translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.cpp" line="239"/>
+        <source>Failed to get objects count</source>
+        <translation>Не удалось получить количество объектов</translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.cpp" line="251"/>
+        <source>Undefined</source>
+        <translation>Не определено</translation>
+    </message>
+</context>
+<context>
     <name>EditQueryFolderDialog</name>
     <message>
         <location filename="edit_query_folder_dialog.ui" line="14"/>
@@ -3057,7 +3150,7 @@
     <message>
         <source>Failed to start GPUI. Check that it&apos;s installed.</source>
         <translation>Не удалось запустить GPUI. Проверьте установлен ли он.</translation>
-	</message>
+    </message>
     <message>
         <location filename="console_impls/all_policies_folder_impl.cpp" line="124"/>
         <location filename="console_impls/policy_ou_impl.cpp" line="268"/>
