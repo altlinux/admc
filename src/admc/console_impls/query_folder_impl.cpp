@@ -338,7 +338,7 @@ void QueryFolderImpl::on_import() {
 }
 
 void console_query_tree_init(ConsoleWidget *console) {
-    const QList<QStandardItem *> root_row = console->add_scope_item(ItemType_QueryFolder, QModelIndex());
+    const QList<QStandardItem *> root_row = console->add_scope_item(ItemType_QueryFolder, console->domain_info_index());
     auto root = root_row[0];
     root->setText(QCoreApplication::translate("query", "Saved Queries"));
     root->setIcon(QIcon::fromTheme("folder"));
@@ -458,7 +458,7 @@ void console_query_tree_save(ConsoleWidget *console) {
 }
 
 QModelIndex get_query_tree_root(ConsoleWidget *console) {
-    const QModelIndex out = console->search_item(QModelIndex(), QueryItemRole_IsRoot, true, {ItemType_QueryFolder});
+    const QModelIndex out = console->search_item(console->domain_info_index(), QueryItemRole_IsRoot, true, {ItemType_QueryFolder});
 
     return out;
 }

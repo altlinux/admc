@@ -83,7 +83,7 @@ QList<int> PolicyRootImpl::default_columns() const {
 }
 
 void console_policy_tree_init(ConsoleWidget *console) {
-    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, QModelIndex());
+    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PolicyRoot, console->domain_info_index());
     auto policy_tree_head = head_row[0];
     policy_tree_head->setText(QCoreApplication::translate("policy_root_impl", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
@@ -91,7 +91,7 @@ void console_policy_tree_init(ConsoleWidget *console) {
 }
 
 QModelIndex get_policy_tree_root(ConsoleWidget *console) {
-    const QModelIndex out = console->search_item(QModelIndex(), {ItemType_PolicyRoot});
+    const QModelIndex out = console->search_item(console->domain_info_index(), {ItemType_PolicyRoot});
 
     return out;
 }
