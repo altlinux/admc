@@ -2,6 +2,22 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.15.0
+-----------------------------------------------------------------------
+- Domain info root item is added to console tree. Its results widget
+contains tree with sites, domain controllers and FSMO role items. It
+also contains number of sites and domain controllers, forest and domain
+functional levels, domain schema version.
+- Fixed bug with remaining failed connection options. Now after a failed
+connection attempt, the old connection settings are returned and
+connection options dialog doesnt close.
+- GPO creation/renaming with only spaces bug fixed.
+- Add group rename sam account name autofill.
+- Add disabled computer icon.
+- Add warning message for multiple object deletion and non-empty OU
+deletion.
+
+-----------------------------------------------------------------------
  VERSION 0.14.0
 -----------------------------------------------------------------------
 - Possible errors due to domain controller switching are fixed
