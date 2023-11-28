@@ -98,17 +98,12 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     object_impl->set_toolbar_actions(ui->action_create_user, ui->action_create_group, ui->action_create_ou);
 
-    // NOTE: redefine icons for create actions because need
-    // to try multiple variants because DE's sometimes don't
-    // share icons
-    const QIcon create_user_icon = g_icon_manager->get_object_icon(OBJECT_CATEGORY_PERSON);
-    ui->action_create_user->setIcon(create_user_icon);
-
-    const QIcon create_group_icon = g_icon_manager->get_object_icon(OBJECT_CATEGORY_GROUP);
-    ui->action_create_group->setIcon(create_group_icon);
-
-    const QIcon create_ou_icon = g_icon_manager->get_object_icon(OBJECT_CATEGORY_OU);
-    ui->action_create_ou->setIcon(create_ou_icon);
+    const QMap<QString, QAction*> category_action_map = {
+        {OBJECT_CATEGORY_OU, ui->action_create_ou},
+        {OBJECT_CATEGORY_PERSON, ui->action_create_user},
+        {OBJECT_CATEGORY_GROUP, ui->action_create_group}
+    };
+    g_icon_manager->append_actions(category_action_map);
 
     // Setup console
     const ConsoleWidgetActions console_actions = [&]() {
@@ -190,6 +185,43 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     if (first_time_opening_this_version) {
         settings_set_variant(SETTING_last_opened_version, ADMC_VERSION);
         open_changelog();
+    }
+
+    //
+    // Setup theme actions
+    //
+    const QStringList theme_list = g_icon_manager->get_available_themes();
+    auto theme_action_group = new QActionGroup(this);
+    for (const QString &theme : theme_list) {
+        const auto action = new QAction(theme, theme_action_group);
+
+        action->setCheckable(true);
+        theme_action_group->addAction(action);
+
+        bool is_checked;
+        const QString current_theme = settings_get_variant(SETTING_current_icon_theme).toString();
+        current_theme == theme ? is_checked = true : is_checked = false;
+
+        action->setChecked(is_checked);
+        ui->menu_theme->addAction(action);
+
+        connect(
+            action, &QAction::triggered,
+            this,
+            [this, theme](bool checked) {
+                if (checked == false)
+                    return;
+
+                g_icon_manager->set_theme(theme);
+
+                update();
+
+                // TODO: Replace total tree updating from base
+                // by tree item icons updating corresponding its item type.
+                // Add corresponding function like update_console_tree_icons(ConsoleWidget*)
+                // to icon manager
+                reload_console_tree();
+            });
     }
 
     //
