@@ -30,6 +30,10 @@ enum ItemIconType {
 };
 
 class AdObject;
+class QAction;
+template <typename T, typename U>
+class QMap;
+class ConsoleWidget;
 
 class IconManager final {
 public:
@@ -40,12 +44,29 @@ public:
     const QIcon& get_icon_for_type(ItemIconType icon_type) const;
     QIcon get_object_icon(const AdObject &object) const;
     QIcon get_object_icon(const QString& object_category) const;
-    void set_icon_for_type(const QIcon &icon, ItemIconType icon_type);
+    void set_theme(const QString &icons_theme);
+
+    // Adds actions and their categories for further update.
+    // NOTE: Categories may not correspond objectCategory object attribute,
+    //       for example, query folder and items are not AD objects
+    void append_actions(const QMap<QString, QAction*> &categorized_actions);
+
+    QStringList get_available_themes();
 
 private:
     QIcon type_index_icons_array[ItemIconType_LAST];
     QMap<QString, QList<QString>> category_to_icon_list;
+    QMap<QString, QAction*> category_action_map;
+
     QString error_icon;
+    const QString fallback_icon_name = "fallback";
+
+    QString theme;
+    // system_theme field contains current system theme
+    // name that may not be fallback.
+    QString system_theme;
+
+    const QString system_icons_dir_path = "/usr/share/icons";
 
     //Enums positions where scope item icon can be overlayed
     //by another icon
@@ -60,6 +81,8 @@ private:
                                          IconOverlayPosition position = IconOverlayPosition_BottomRight) const;
     QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon,
                                          const QSize &overlay_icon_size, const QPoint &pos) const;
+    void update_icons_array();
+    void update_action_icons();
 };
 
 #endif // ICON_MANAGER_H
