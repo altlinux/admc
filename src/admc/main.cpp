@@ -53,8 +53,6 @@ int main(int argc, char **argv) {
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
     app.setWindowIcon(QIcon(":/admc/admc.ico"));
 
-    g_icon_manager->init();
-
     const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
     const QString locale_dot_UTF8 = saved_locale.name() + ".UTF-8";
     const char* locale_for_c = std::setlocale(LC_ALL, locale_dot_UTF8.toLocal8Bit().data());

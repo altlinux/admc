@@ -59,6 +59,8 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     g_status->init(ui->statusbar, ui->message_log_edit);
 
+    g_icon_manager->init();
+
     login_label = new QLabel();
     login_label->setText(ad.client_user());
     ui->statusbar->addPermanentWidget(login_label);
