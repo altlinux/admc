@@ -69,7 +69,7 @@ void QueryItemImpl::fetch(const QModelIndex &index) {
     // NOTE: reset icon and tooltip in case query is in the
     // "out of date" state
     QStandardItem *item = console->get_item(index);
-    item->setIcon(g_icon_manager->get_object_icon("query-item"));
+    item->setIcon(g_icon_manager->get_object_icon(ADMC_CATEGORY_QUERY_ITEM));
     item->setToolTip("");
 
     const QString filter = index.data(QueryItemRole_Filter).toString();
@@ -198,7 +198,7 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
     main_item->setData(filter_state, QueryItemRole_FilterState);
     main_item->setData(base, QueryItemRole_Base);
     main_item->setData(scope_is_children, QueryItemRole_ScopeIsChildren);
-    main_item->setIcon(g_icon_manager->get_object_icon("query-item"));
+    main_item->setIcon(g_icon_manager->get_object_icon(ADMC_CATEGORY_QUERY_ITEM));
 
     row[QueryColumn_Name]->setText(name);
     row[QueryColumn_Description]->setText(description);

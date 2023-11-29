@@ -199,7 +199,7 @@ void DomainInfoResultsWidget::add_host_items(QStandardItem *site_item, const AdO
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_SERVER);
     const QHash<QString, AdObject> host_objects = ad.search(servers_container_dn, SearchScope_Children,
                                                             filter, {ATTRIBUTE_DN, ATTRIBUTE_NAME, ATTRIBUTE_DNS_HOST_NAME});
-    QStandardItem *servers_item = add_tree_item(tr("Servers"), g_icon_manager->get_object_icon("Container"),
+    QStandardItem *servers_item = add_tree_item(tr("Servers"), g_icon_manager->get_object_icon(OBJECT_CATEGORY_SERVERS_CONTAINER),
                                                 DomainInfoTreeItemType_ServersContainer, site_item);
 
     QHash<QString, QStringList> host_fsmo_map;
@@ -214,12 +214,12 @@ void DomainInfoResultsWidget::add_host_items(QStandardItem *site_item, const AdO
         host_item->setData(host_object.get_dn(), DomainInfoTreeItemRole_DN);
         host = host_object.get_string(ATTRIBUTE_DNS_HOST_NAME);
 
-        QStandardItem *fsmo_roles_container_item = add_tree_item(tr("FSMO roles"), QIcon::fromTheme("applications-system"),
+        QStandardItem *fsmo_roles_container_item = add_tree_item(tr("FSMO roles"), g_icon_manager->get_object_icon(ADMC_CATEGORY_FSMO_ROLE_CONTAINER),
                                                                  DomainInfoTreeItemType_FSMO_Container, host_item);
 
         if (host_fsmo_map.keys().contains(host_item->text())) {
             for (const QString &fsmo_role : host_fsmo_map[host_item->text()]) {
-                add_tree_item(fsmo_role, g_icon_manager->get_object_icon("Configuration"),
+                add_tree_item(fsmo_role, g_icon_manager->get_object_icon(ADMC_CATEGORY_FSMO_ROLE),
                               DomainInfoTreeItemType_FSMO_Role,fsmo_roles_container_item);
             }
         }

@@ -142,7 +142,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
     const QString base = g_adconfig->domain_dn();
     const SearchScope scope = SearchScope_All;
-    const QList<QString> attributes = {ATTRIBUTE_NAME, ATTRIBUTE_GPLINK};
+    const QList<QString> attributes = {ATTRIBUTE_NAME, ATTRIBUTE_GPLINK, ATTRIBUTE_OBJECT_CATEGORY};
     const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, gpo);
     const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 

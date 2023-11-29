@@ -111,7 +111,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
         const QList<QStandardItem *> all_policies_row = console->add_scope_item(ItemType_AllPoliciesFolder, index);
         QStandardItem *all_policies_item = all_policies_row[0];
         all_policies_item->setText(tr("All policies"));
-        all_policies_item->setIcon(QIcon::fromTheme("folder"));
+        all_policies_item->setIcon(g_icon_manager->get_object_icon(ADMC_CATEGORY_ALL_POLICIES_FOLDER));
         // Set sort index for "All policies" to 1 so it's always
         // at the bottom of the policy tree
         console->set_item_sort_index(all_policies_item->index(), 2);

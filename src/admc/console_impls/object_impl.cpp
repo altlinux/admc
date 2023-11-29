@@ -1337,7 +1337,7 @@ void console_object_move_and_rename(const QList<ConsoleWidget *> &console_list, 
                 // refresh
                 const QModelIndex query_index = index.parent();
                 QStandardItem *item = target_console->get_item(query_index);
-                item->setIcon(QIcon::fromTheme("dialog-warning"));
+                item->setIcon(g_icon_manager->get_indicator_icon(g_icon_manager->warning_indicator));
                 item->setToolTip(QCoreApplication::translate("ObjectImpl", "Query may be out of date"));
 
                 // Update item row
@@ -1652,7 +1652,7 @@ void console_object_search(ConsoleWidget *console, const QModelIndex &index, con
     QStandardItem *item = console->get_item(index);
 
     // Set icon to indicate that item is in "search" state
-    item->setIcon(QIcon::fromTheme("system-search"));
+    item->setIcon(g_icon_manager->get_indicator_icon(g_icon_manager->search_indicator));
 
     // NOTE: need to set this role to disable actions during
     // fetch
@@ -1859,6 +1859,13 @@ bool can_create_class_at_parent(const QString &create_class, const QString &pare
 void console_object_item_load_icon(QStandardItem *item, bool disabled) {
     const QString category = dn_get_name(item->data(ObjectRole_ObjectCategory).toString());
     QIcon icon;
+
+    if (item->data(ConsoleRole_Type).toInt() == ItemType_QueryItem) {
+        icon = g_icon_manager->get_object_icon(ADMC_CATEGORY_QUERY_ITEM);
+        item->setIcon(icon);
+        return;
+    }
+
     if (category == OBJECT_CATEGORY_PERSON) {
         icon = disabled ? g_icon_manager->get_icon_for_type(ItemIconType_Person_Blocked) :
                           g_icon_manager->get_icon_for_type(ItemIconType_Person_Clean);

@@ -29,6 +29,7 @@
 #include "gplink.h"
 #include "status.h"
 #include "utils.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QList>
 #include <QStandardItem>
@@ -87,7 +88,7 @@ void console_policy_tree_init(ConsoleWidget *console) {
     auto policy_tree_head = head_row[0];
     policy_tree_head->setText(QCoreApplication::translate("policy_root_impl", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
-    policy_tree_head->setIcon(QIcon::fromTheme("folder"));
+    policy_tree_head->setIcon(g_icon_manager->get_object_icon(ADMC_CATEGORY_GP_OBJECTS));
 }
 
 QModelIndex get_policy_tree_root(ConsoleWidget *console) {

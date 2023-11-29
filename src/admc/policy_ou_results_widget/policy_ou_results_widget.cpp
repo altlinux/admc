@@ -394,7 +394,7 @@ void PolicyOUResultsWidget::reload_gplink() {
         }
 
         if (!gpo_is_valid) {
-            row[PolicyOUResultsColumn_Name]->setIcon(QIcon::fromTheme("dialog-error"));
+            row[PolicyOUResultsColumn_Name]->setIcon(g_icon_manager->get_object_icon("block-indicator"));
 
             for (QStandardItem *item : row) {
                 item->setToolTip(tr("The GPO for this link could not be found. It maybe have been recently created and is being replicated or it could have been deleted."));
