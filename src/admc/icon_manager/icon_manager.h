@@ -47,17 +47,17 @@ public:
 
     explicit IconManager();
 
-    void init();
+    void init(QMap<QString, QAction*> category_action_map);
 
     const QIcon& get_icon_for_type(ItemIconType icon_type) const;
     QIcon get_object_icon(const AdObject &object) const;
     QIcon get_object_icon(const QString& object_category) const;
-    QIcon get_indicator_icon(const QString &indicator_name) const;
+    QIcon get_indicator_icon(const QString &indicator_icon_name) const;
     void set_theme(const QString &icons_theme);
 
     // Adds actions and their categories for further update.
     // NOTE: Categories may not correspond objectCategory object attribute,
-    //       for example, query folder and items are not AD objects
+    //       for example, query folder and query items are not AD objects
     void append_actions(const QMap<QString, QAction*> &categorized_actions);
 
     QStringList get_available_themes();

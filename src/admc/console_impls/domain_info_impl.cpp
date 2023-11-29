@@ -30,6 +30,7 @@
 #include "utils.h"
 #include "status.h"
 #include "globals.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QSet>
 #include <QAction>
@@ -99,7 +100,7 @@ void DomainInfoImpl::load_domain_info_item(const AdInterface &ad) {
     }
     QStandardItem *domain_info_item = console->get_item(console->domain_info_index());
     domain_info_item->setText(tr("Active directory managment center [") + dc + ']');
-    domain_info_item->setIcon(QIcon::fromTheme("network-workgroup"));
+    domain_info_item->setIcon(g_icon_manager->get_object_icon(ADMC_CATEGORY_DOMAIN_INFO_ITEM));
 }
 
 void DomainInfoImpl::open_fsmo_dialog() {

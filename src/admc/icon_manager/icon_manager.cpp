@@ -16,29 +16,49 @@ IconManager::IconManager()
 {
 }
 
-void IconManager::init()
+void IconManager::init(QMap<QString, QAction *> category_action_map)
 {
+    append_actions(category_action_map);
+
     // NOTE: use a list of possible icons because
     // default icon themes for different DE's don't
     // fully intersect
     category_to_icon_list = {
-        {"Domain-DNS", {"network-server"}},
-        {"Container", {"folder"}},
+        {OBJECT_CATEGORY_DOMAIN_DNS, {"network-server"}},
+        {OBJECT_CATEGORY_CONTAINER, {"folder"}},
         {OBJECT_CATEGORY_OU, {"folder-documents"}},
         {OBJECT_CATEGORY_GROUP, {"system-users"}},
         {OBJECT_CATEGORY_PERSON, {"avatar-default", "avatar-default-symbolic"}},
-        {"Computer", {"computer"}},
-        {"Group-Policy-Container", {"preferences-other"}},
-        {"Volume", {"folder-templates"}},
+        {OBJECT_CATEGORY_COMPUTER, {"computer"}},
+        {OBJECT_CATEGORY_GP_CONTAINER, {"preferences-other"}},
+        {OBJECT_CATEGORY_VOLUME, {"folder-templates"}},
+        {OBJECT_CATEGORY_SERVERS_CONTAINER, {"folder"}},
+        {OBJECT_CATEGORY_SITE, {"go-home"}},
 
-        // Some custom icons for one-off objects
-        {"Builtin-Domain", {"emblem-system", "emblem-system-symbolic"}},
-        {"Configuration", {"emblem-system", "emblem-system-symbolic"}},
-        {"Lost-And-Found", {"emblem-system", "emblem-system-symbolic"}},
-        {"Infrastructure-Update", {"emblem-system", "emblem-system-symbolic"}},
-        {"ms-DS-Quota-Container", {"emblem-system", "emblem-system-symbolic"}},
-        {"folder-query", {"folder-query", "emblem-system", "emblem-system-symbolic"}},
-        {"query-item", {"query-item", "emblem-system", "emblem-system-symbolic"}}
+        // These categories are not AD object categories. They are used within ADMC context
+        {ADMC_CATEGORY_QUERY_ITEM, {"document-send"}},
+        {ADMC_CATEGORY_QUERY_FOLDER, {"folder"}},
+        {ADMC_CATEGORY_ALL_POLICIES_FOLDER, {"folder"}},
+        {ADMC_CATEGORY_GP_OBJECTS, {"folder"}},
+        {ADMC_CATEGORY_FSMO_ROLE_CONTAINER, {"applications-system"}},
+        {ADMC_CATEGORY_FSMO_ROLE, {"emblem-system"}},
+        {ADMC_CATEGORY_DOMAIN_INFO_ITEM, {"network-workgroup"}},
+
+        // Icons for some system containers and objects
+        {OBJECT_CATEGORY_BUILTIN, {"emblem-system", "emblem-system-symbolic"}},
+        {OBJECT_CATEGORY_LOST_AND_FOUND, {"emblem-system", "emblem-system-symbolic"}},
+        {OBJECT_CATEGORY_INFRASTRUCTURE_UPDATE, {"emblem-system", "emblem-system-symbolic"}},
+        {OBJECT_CATEGORY_MSDS_QUOTA_CONTAINER, {"emblem-system", "emblem-system-symbolic"}},
+    };
+
+    // Indicator icons
+    indicator_map = {
+        {inheritance_indicator, {"changes-prevent"}},
+        {enforced_indicator, {"stop"}},
+        {block_indicator, {"dialog-error"}},
+        {link_indicator, {"mail-forward"}},
+        {search_indicator, {"system-search"}},
+        {warning_indicator, {"dialog-warning"}}
     };
 
     // NOTE: This is the icon used when no icon is
@@ -50,6 +70,7 @@ void IconManager::init()
         custom_themes_path = "/usr/share/ad-integration-themes";
         settings_set_variant(SETTING_custom_icon_themes_path, custom_themes_path);
     }
+    QIcon::setThemeSearchPaths(QIcon::themeSearchPaths() << custom_themes_path);
 
     system_theme = QIcon::themeName();
 
@@ -116,26 +137,27 @@ void IconManager::update_action_icons() {
 }
 
 void IconManager::update_icons_array() {
-    type_index_icons_array[ItemIconType_Policy_Clean] = get_object_icon("Group-Policy-Container");
-    type_index_icons_array[ItemIconType_Policy_Link] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Policy_Clean], QIcon::fromTheme("mail-forward"),
+    type_index_icons_array[ItemIconType_Policy_Clean] = get_object_icon(OBJECT_CATEGORY_GP_CONTAINER);
+    type_index_icons_array[ItemIconType_Policy_Link] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Policy_Clean], get_indicator_icon(link_indicator),
                                                                   QSize(12, 12), QPoint(-2, 6));
     type_index_icons_array[ItemIconType_Policy_Link_Disabled] = type_index_icons_array[ItemIconType_Policy_Link].pixmap(16, 16, QIcon::Disabled);
-    type_index_icons_array[ItemIconType_Policy_Enforced] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Policy_Link], QIcon::fromTheme("stop"));
+    type_index_icons_array[ItemIconType_Policy_Enforced] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Policy_Link], get_indicator_icon(enforced_indicator),
+                                                                                   QSize(8, 8), QPoint(8, 8));
     type_index_icons_array[ItemIconType_Policy_Enforced_Disabled] = type_index_icons_array[ItemIconType_Policy_Enforced].pixmap(16, 16, QIcon::Disabled);
     type_index_icons_array[ItemIconType_OU_Clean] = get_object_icon(OBJECT_CATEGORY_OU);
-    type_index_icons_array[ItemIconType_OU_InheritanceBlocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_OU_Clean], QIcon::fromTheme("changes-prevent"),
+    type_index_icons_array[ItemIconType_OU_InheritanceBlocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_OU_Clean], get_indicator_icon(inheritance_indicator),
                                                                             QSize(10, 10), QPoint(6, 6));
-    type_index_icons_array[ItemIconType_Domain_Clean] = get_object_icon("Domain-DNS");
+    type_index_icons_array[ItemIconType_Domain_Clean] = get_object_icon(OBJECT_CATEGORY_DOMAIN_DNS);
     type_index_icons_array[ItemIconType_Domain_InheritanceBlocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Domain_Clean],
-                                                                                QIcon::fromTheme("changes-prevent"),
+                                                                                get_indicator_icon(inheritance_indicator),
                                                                                 QSize(10, 10), QPoint(6, 6));
     type_index_icons_array[ItemIconType_Person_Clean] = get_object_icon(OBJECT_CATEGORY_PERSON);
     type_index_icons_array[ItemIconType_Person_Blocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Person_Clean],
-                                                                                  QIcon::fromTheme("dialog-error"), QSize(8, 8), QPoint(8, 8));
-    type_index_icons_array[ItemIconType_Site_Clean] = QIcon::fromTheme("go-home");
-    type_index_icons_array[ItemIconType_Computer_Clean] = get_object_icon("Computer");
+                                                                                  get_indicator_icon(block_indicator), QSize(8, 8), QPoint(8, 8));
+    type_index_icons_array[ItemIconType_Site_Clean] = get_object_icon(OBJECT_CATEGORY_SITE);
+    type_index_icons_array[ItemIconType_Computer_Clean] = get_object_icon(OBJECT_CATEGORY_COMPUTER);
     type_index_icons_array[ItemIconType_Computer_Blocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Computer_Clean],
-                                                                                    QIcon::fromTheme("dialog-error"), QSize(8, 8), QPoint(8, 8));
+                                                                                    get_indicator_icon(block_indicator), QSize(8, 8), QPoint(8, 8));
 }
 
 const QIcon &IconManager::get_icon_for_type(ItemIconType icon_type) const
@@ -162,13 +184,14 @@ QIcon IconManager::get_object_icon(const QString &object_category) const
 {
     const QString icon_name = [&]() -> QString {
         const QList<QString> fallback_icon_list = {
+            "fallback",
             "emblem-system",
             "emblem-system-symbolic",
             "dialog-question",
         };
-        const QList<QString> icon_name_list = category_to_icon_list.value(object_category, fallback_icon_list);
 
-
+        QList<QString> icon_name_list = category_to_icon_list.value(object_category, fallback_icon_list);
+        icon_name_list.prepend(object_category);
 
         for (const QString &icon : icon_name_list) {
             if (QIcon::hasThemeIcon(icon)) {
@@ -181,6 +204,27 @@ QIcon IconManager::get_object_icon(const QString &object_category) const
     }();
 
     const QIcon icon = QIcon::fromTheme(icon_name);
+    return icon;
+}
+
+QIcon IconManager::get_indicator_icon(const QString &indicator_icon_name) const {
+    if (indicator_icon_name.isEmpty()) {
+        return QIcon::fromTheme(error_icon);
+    }
+
+    QList<QString> icon_name_list = indicator_map[indicator_icon_name];
+    icon_name_list.prepend(indicator_icon_name);
+    icon_name_list.append("fallback");
+
+    QIcon icon;
+    for (const QString &icon_name : icon_name_list) {
+        if (QIcon::hasThemeIcon(icon_name)) {
+            icon = QIcon::fromTheme(icon_name);
+            return icon;
+        }
+    }
+
+    icon = QIcon::fromTheme(error_icon);
     return icon;
 }
 

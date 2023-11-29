@@ -59,7 +59,13 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     g_status->init(ui->statusbar, ui->message_log_edit);
 
-    g_icon_manager->init();
+    const QMap<QString, QAction*> category_action_map = {
+        {OBJECT_CATEGORY_OU, ui->action_create_ou},
+        {OBJECT_CATEGORY_PERSON, ui->action_create_user},
+        {OBJECT_CATEGORY_GROUP, ui->action_create_group},
+    };
+
+    g_icon_manager->init(category_action_map);
 
     login_label = new QLabel();
     login_label->setText(ad.client_user());
@@ -97,13 +103,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     query_item_impl->set_query_folder_impl(query_folder_impl);
 
     object_impl->set_toolbar_actions(ui->action_create_user, ui->action_create_group, ui->action_create_ou);
-
-    const QMap<QString, QAction*> category_action_map = {
-        {OBJECT_CATEGORY_OU, ui->action_create_ou},
-        {OBJECT_CATEGORY_PERSON, ui->action_create_user},
-        {OBJECT_CATEGORY_GROUP, ui->action_create_group}
-    };
-    g_icon_manager->append_actions(category_action_map);
 
     // Setup console
     const ConsoleWidgetActions console_actions = [&]() {
