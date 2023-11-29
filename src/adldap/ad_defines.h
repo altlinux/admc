@@ -239,6 +239,25 @@ enum SystemFlagsBit {
 #define OBJECT_CATEGORY_GROUP "Group"
 #define OBJECT_CATEGORY_OU "Organizational-Unit"
 #define OBJECT_CATEGORY_COMPUTER "Computer"
+#define OBJECT_CATEGORY_DOMAIN_DNS "Domain-DNS"
+#define OBJECT_CATEGORY_CONTAINER "Container"
+#define OBJECT_CATEGORY_GP_CONTAINER "Group-Policy-Container"
+#define OBJECT_CATEGORY_VOLUME "Volume"
+#define OBJECT_CATEGORY_BUILTIN "Builtin-Domain"
+#define OBJECT_CATEGORY_LOST_AND_FOUND "Lost_And_Found"
+#define OBJECT_CATEGORY_INFRASTRUCTURE_UPDATE "Infrastructure-Update"
+#define OBJECT_CATEGORY_MSDS_QUOTA_CONTAINER "ms-DS-Quota-Container"
+#define OBJECT_CATEGORY_SERVERS_CONTAINER "Servers-Container"
+#define OBJECT_CATEGORY_SITE "Site"
+
+// These categories are not AD object categories. They are used within ADMC context
+#define ADMC_CATEGORY_QUERY_ITEM "query-item"
+#define ADMC_CATEGORY_QUERY_FOLDER "query-folder"
+#define ADMC_CATEGORY_FSMO_ROLE "FSMO-role"
+#define ADMC_CATEGORY_FSMO_ROLE_CONTAINER "FSMO-role-container"
+#define ADMC_CATEGORY_GP_OBJECTS "group-policy-objects"
+#define ADMC_CATEGORY_ALL_POLICIES_FOLDER "all-policies-folder"
+#define ADMC_CATEGORY_DOMAIN_INFO_ITEM "domain-info-item"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
