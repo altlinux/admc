@@ -184,7 +184,7 @@ QIcon IconManager::get_object_icon(const QString &object_category) const
 {
     const QString icon_name = [&]() -> QString {
         const QList<QString> fallback_icon_list = {
-            "fallback",
+            fallback_icon_name,
             "emblem-system",
             "emblem-system-symbolic",
             "dialog-question",
@@ -214,7 +214,7 @@ QIcon IconManager::get_indicator_icon(const QString &indicator_icon_name) const 
 
     QList<QString> icon_name_list = indicator_map[indicator_icon_name];
     icon_name_list.prepend(indicator_icon_name);
-    icon_name_list.append("fallback");
+    icon_name_list.append(fallback_icon_name);
 
     QIcon icon;
     for (const QString &icon_name : icon_name_list) {
