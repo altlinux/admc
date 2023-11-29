@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QMap>
 
+
 enum ItemIconType {
     ItemIconType_Policy_Clean,
     ItemIconType_OU_Clean,
@@ -37,6 +38,13 @@ class ConsoleWidget;
 
 class IconManager final {
 public:
+    const QString search_indicator = "search-indicator";
+    const QString warning_indicator = "warning-indicator";
+    const QString link_indicator = "link-indicator";
+    const QString block_indicator = "block-indicator";
+    const QString enforced_indicator = "enforced-indicator";
+    const QString inheritance_indicator = "inheritance-indicator";
+
     explicit IconManager();
 
     void init();
@@ -44,6 +52,7 @@ public:
     const QIcon& get_icon_for_type(ItemIconType icon_type) const;
     QIcon get_object_icon(const AdObject &object) const;
     QIcon get_object_icon(const QString& object_category) const;
+    QIcon get_indicator_icon(const QString &indicator_name) const;
     void set_theme(const QString &icons_theme);
 
     // Adds actions and their categories for further update.
@@ -56,6 +65,7 @@ public:
 private:
     QIcon type_index_icons_array[ItemIconType_LAST];
     QMap<QString, QList<QString>> category_to_icon_list;
+    QMap<QString, QList<QString>> indicator_map;
     QMap<QString, QAction*> category_action_map;
 
     QString error_icon;
