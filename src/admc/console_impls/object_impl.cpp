@@ -1878,6 +1878,12 @@ void console_object_item_load_icon(QStandardItem *item, bool disabled) {
         item->setIcon(icon);
         return;
     }
+    else if (category == OBJECT_CATEGORY_GROUP) {
+        icon = g_icon_manager->get_icon_for_type(ItemIconType_Group_Clean);
+        item->setIcon(icon);
+        return;
+    }
+
     icon = g_icon_manager->get_object_icon(category);
     item->setIcon(icon);
 }

@@ -89,7 +89,7 @@ QIcon IconManager::overlay_scope_item_icon(const QIcon &clean_icon, const QIcon 
 {
     QIcon overlapped_icon;
     //Icon looks not distorted with 16x16 size
-    QPixmap original_pixmap = clean_icon.pixmap(16, 16);
+    QPixmap original_pixmap = clean_icon.pixmap(32, 32);
     QPixmap overlay_pixmap = overlay_icon.pixmap(10, 10);
 
     QPainter painter(&original_pixmap);
@@ -116,11 +116,11 @@ QIcon IconManager::overlay_scope_item_icon(const QIcon &clean_icon, const QIcon 
     return overlapped_icon;
 }
 
-QIcon IconManager::overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon, const QSize &overlay_icon_size, const QPoint &pos) const
+QIcon IconManager::overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon, const QSize &clean_icon_size, const QSize &overlay_icon_size, const QPoint &pos) const
 {
     QIcon overlapped_icon;
     //Icon looks not distorted with 16x16 size
-    QPixmap original_pixmap = clean_icon.pixmap(16, 16);
+    QPixmap original_pixmap = clean_icon.pixmap(clean_icon_size.height(), clean_icon_size.width());
     QPixmap overlay_pixmap = overlay_icon.pixmap(overlay_icon_size);
 
     QPainter painter(&original_pixmap);
@@ -139,25 +139,30 @@ void IconManager::update_action_icons() {
 void IconManager::update_icons_array() {
     type_index_icons_array[ItemIconType_Policy_Clean] = get_object_icon(OBJECT_CATEGORY_GP_CONTAINER);
     type_index_icons_array[ItemIconType_Policy_Link] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Policy_Clean], get_indicator_icon(link_indicator),
-                                                                  QSize(12, 12), QPoint(-2, 6));
+                                                                  QSize(16, 16), QSize(12, 12), QPoint(-2, 6));
     type_index_icons_array[ItemIconType_Policy_Link_Disabled] = type_index_icons_array[ItemIconType_Policy_Link].pixmap(16, 16, QIcon::Disabled);
     type_index_icons_array[ItemIconType_Policy_Enforced] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Policy_Link], get_indicator_icon(enforced_indicator),
-                                                                                   QSize(8, 8), QPoint(8, 8));
+                                                                                   QSize(16, 16), QSize(8, 8), QPoint(8, 8));
     type_index_icons_array[ItemIconType_Policy_Enforced_Disabled] = type_index_icons_array[ItemIconType_Policy_Enforced].pixmap(16, 16, QIcon::Disabled);
     type_index_icons_array[ItemIconType_OU_Clean] = get_object_icon(OBJECT_CATEGORY_OU);
     type_index_icons_array[ItemIconType_OU_InheritanceBlocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_OU_Clean], get_indicator_icon(inheritance_indicator),
-                                                                            QSize(10, 10), QPoint(6, 6));
+                                                                            QSize(16, 16), QSize(10, 10), QPoint(6, 6));
     type_index_icons_array[ItemIconType_Domain_Clean] = get_object_icon(OBJECT_CATEGORY_DOMAIN_DNS);
     type_index_icons_array[ItemIconType_Domain_InheritanceBlocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Domain_Clean],
                                                                                 get_indicator_icon(inheritance_indicator),
-                                                                                QSize(10, 10), QPoint(6, 6));
-    type_index_icons_array[ItemIconType_Person_Clean] = get_object_icon(OBJECT_CATEGORY_PERSON);
+                                                                                QSize(16, 16), QSize(10, 10), QPoint(6, 6));
+    type_index_icons_array[ItemIconType_Person_Clean] = get_object_icon(OBJECT_CATEGORY_PERSON).pixmap(max_icon_size);
     type_index_icons_array[ItemIconType_Person_Blocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Person_Clean],
-                                                                                  get_indicator_icon(block_indicator), QSize(8, 8), QPoint(8, 8));
+                                                                                  get_indicator_icon(block_indicator), max_icon_size,
+                                                                                  QSize(max_icon_size.width()/2, max_icon_size.height()/2),
+                                                                                  QPoint(max_icon_size.width()/2, max_icon_size.width()/2));
     type_index_icons_array[ItemIconType_Site_Clean] = get_object_icon(OBJECT_CATEGORY_SITE);
-    type_index_icons_array[ItemIconType_Computer_Clean] = get_object_icon(OBJECT_CATEGORY_COMPUTER);
+    type_index_icons_array[ItemIconType_Computer_Clean] = get_object_icon(OBJECT_CATEGORY_COMPUTER).pixmap(max_icon_size);
     type_index_icons_array[ItemIconType_Computer_Blocked] = overlay_scope_item_icon(type_index_icons_array[ItemIconType_Computer_Clean],
-                                                                                    get_indicator_icon(block_indicator), QSize(8, 8), QPoint(8, 8));
+                                                                                    get_indicator_icon(block_indicator), max_icon_size,
+                                                                                    QSize(max_icon_size.width()/2, max_icon_size.height()/2),
+                                                                                    QPoint(max_icon_size.width()/2, max_icon_size.width()/2));
+    type_index_icons_array[ItemIconType_Group_Clean] = get_object_icon(OBJECT_CATEGORY_GROUP).pixmap(max_icon_size);
 }
 
 const QIcon &IconManager::get_icon_for_type(ItemIconType icon_type) const

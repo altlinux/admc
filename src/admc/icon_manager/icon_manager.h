@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QIcon>
 #include <QMap>
+#include <QSize>
 
 
 enum ItemIconType {
@@ -26,6 +27,7 @@ enum ItemIconType {
 //    ItemIconType_Settings,
     ItemIconType_Computer_Clean,
     ItemIconType_Computer_Blocked,
+    ItemIconType_Group_Clean,
 
     ItemIconType_LAST
 };
@@ -44,6 +46,8 @@ public:
     const QString block_indicator = "block-indicator";
     const QString enforced_indicator = "enforced-indicator";
     const QString inheritance_indicator = "inheritance-indicator";
+
+    const QSize max_icon_size = QSize(64, 64);
 
     explicit IconManager();
 
@@ -89,7 +93,7 @@ private:
 
     QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon,
                                          IconOverlayPosition position = IconOverlayPosition_BottomRight) const;
-    QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon,
+    QIcon overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon, const QSize &clean_icon_size,
                                          const QSize &overlay_icon_size, const QPoint &pos) const;
     void update_icons_array();
     void update_action_icons();
