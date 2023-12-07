@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "ad_utils.h"
 #include "ad_object.h"
+#include "settings.h"
 
 #include <QPainter>
 #include <QPixmap>
@@ -11,28 +12,44 @@ IconManager::IconManager()
 {
 }
 
+void IconManager::icon_theme(QString icon_theme)
+{
+    if (icon_theme != default_theme && icon_theme != "")
+        settings_set_variant(SETTING_icons_theme, icon_theme);
+    else
+        settings_set_variant(SETTING_icons_theme, "");
+
+    if (icon_theme != "")
+        QIcon::setThemeName(icon_theme);
+    else
+        QIcon::setThemeName(default_theme);
+
+    icon_theme_name = icon_theme;
+}
+
 void IconManager::init()
 {
     // NOTE: use a list of possible icons because
     // default icon themes for different DE's don't
     // fully intersect
-    category_to_icon_list = {
-        {"Domain-DNS", {"network-server"}},
-        {"Container", {"folder"}},
-        {OBJECT_CATEGORY_OU, {"folder-documents"}},
-        {OBJECT_CATEGORY_GROUP, {"system-users"}},
-        {OBJECT_CATEGORY_PERSON, {"avatar-default", "avatar-default-symbolic"}},
-        {"Computer", {"computer"}},
-        {"Group-Policy-Container", {"preferences-other"}},
-        {"Volume", {"folder-templates"}},
+    bool default_theme = icon_theme_name == QIcon::fallbackThemeName();
 
-        // Some custom icons for one-off objects
-        {"Builtin-Domain", {"emblem-system", "emblem-system-symbolic"}},
-        {"Configuration", {"emblem-system", "emblem-system-symbolic"}},
-        {"Lost-And-Found", {"emblem-system", "emblem-system-symbolic"}},
-        {"Infrastructure-Update", {"emblem-system", "emblem-system-symbolic"}},
-        {"ms-DS-Quota-Container", {"emblem-system", "emblem-system-symbolic"}},
-    };
+    category_to_icon_list["Domain-DNS"] = {"network-server"};
+    category_to_icon_list["Container"] = {"folder"};
+    category_to_icon_list[OBJECT_CATEGORY_OU] = {"folder-documents"};
+    category_to_icon_list[OBJECT_CATEGORY_GROUP] = {"system-users"};
+    category_to_icon_list[OBJECT_CATEGORY_PERSON] = {"avatar-default", "avatar-default-symbolic"};
+    category_to_icon_list["Computer"] = {"computer"};
+    category_to_icon_list["Group-Policy-Container"] = {"preferences-other"};
+    category_to_icon_list["Volume"] = {"folder-templates"};
+     // Some custom icons for one-off objects
+    category_to_icon_list ["Builtin-Domain"] = {default_theme ? QList<QString>({"emblem-system", "emblem-system-symbolic"}) : QList<QString>({"folder"})};
+    category_to_icon_list["Configuration"] = {"emblem-system", "emblem-system-symbolic"};
+    category_to_icon_list["Lost-And-Found"] = {default_theme ? QList<QString>({"emblem-system", "emblem-system-symbolic"}) : QList<QString>({"folder"})};
+    category_to_icon_list["Infrastructure-Update"] = {"emblem-system", "emblem-system-symbolic"};
+    category_to_icon_list["ms-DS-Quota-Container"] = {default_theme ? QList<QString>({"emblem-system", "emblem-system-symbolic"}) : QList<QString>({"folder"})};
+    category_to_icon_list["folder-query"] = {default_theme ? QList<QString>({"emblem-system", "emblem-system-symbolic"}) : QList<QString>({"folder-query"})};
+    category_to_icon_list["query-item"] = {default_theme ? QList<QString>({"emblem-system", "emblem-system-symbolic"}) : QList<QString>({"query-item"})};
 
     // NOTE: This is the icon used when no icon is
     // defined for some object category
@@ -151,4 +168,12 @@ QIcon IconManager::get_object_icon(const QString &object_category) const
 void IconManager::set_icon_for_type(const QIcon &icon, ItemIconType icon_type)
 {
     type_index_icons_array[icon_type] = icon;
+}
+
+void IconManager::set_icons_for_actions(const QHash<QString, QAction *> actions)
+{
+    for (const QString &category : actions.keys()){
+        const QIcon icon = get_object_icon(category);
+        actions[category]->setIcon(icon);
+    }
 }

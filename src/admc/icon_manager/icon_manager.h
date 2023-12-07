@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QIcon>
 #include <QMap>
+#include <QAction>
 
 enum ItemIconType {
     ItemIconType_Policy_Clean,
@@ -35,17 +36,22 @@ class IconManager final {
 public:
     explicit IconManager();
 
+    QString default_theme;
+    void icon_theme(QString);
     void init();
 
     const QIcon& get_icon_for_type(ItemIconType icon_type) const;
     QIcon get_object_icon(const AdObject &object) const;
     QIcon get_object_icon(const QString& object_category) const;
     void set_icon_for_type(const QIcon &icon, ItemIconType icon_type);
+    void set_icons_for_actions(const QHash<QString, QAction *>);
 
 private:
     QIcon type_index_icons_array[ItemIconType_LAST];
     QMap<QString, QList<QString>> category_to_icon_list;
+
     QString error_icon;
+    QString icon_theme_name;
 
     //Enums positions where scope item icon can be overlayed
     //by another icon
