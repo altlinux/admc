@@ -190,9 +190,11 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     // Setup theme actions
     //
     const QStringList theme_list = g_icon_manager->get_available_themes();
+    const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
     auto theme_action_group = new QActionGroup(this);
     for (const QString &theme : theme_list) {
-        const auto action = new QAction(theme, theme_action_group);
+        const QString localized_name = g_icon_manager->get_localized_theme_name(current_locale, theme);
+        const auto action = new QAction(localized_name, theme_action_group);
 
         action->setCheckable(true);
         theme_action_group->addAction(action);

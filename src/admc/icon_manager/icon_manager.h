@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QMap>
 #include <QSize>
+#include <QLocale>
 
 
 enum ItemIconType {
@@ -65,6 +66,7 @@ public:
     void append_actions(const QMap<QString, QAction*> &categorized_actions);
 
     QStringList get_available_themes();
+    QString get_localized_theme_name(const QLocale locale, const QString &theme);
 
 private:
     QIcon type_index_icons_array[ItemIconType_LAST];

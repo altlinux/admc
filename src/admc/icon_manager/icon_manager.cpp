@@ -11,6 +11,8 @@
 #include <QPixmap>
 #include <QAction>
 #include <QDir>
+#include <QTextStream>
+#include <QDebug>
 
 IconManager::IconManager()
 {
@@ -253,7 +255,6 @@ void IconManager::append_actions(const QMap<QString, QAction *> &categorized_act
 QStringList IconManager::get_available_themes() {
     QStringList available_themes = {system_theme};
 
-
     // Check existence and add themes from custom path
     const QDir custom_themes_dir = settings_get_variant(SETTING_custom_icon_themes_path).toString();
 
@@ -265,4 +266,48 @@ QStringList IconManager::get_available_themes() {
         }
     }
     return available_themes;
+}
+
+QString IconManager::get_localized_theme_name(const QLocale locale, const QString &theme) {
+    // Map is used for concatenation "Name" string with corresponding
+    // language string/regexp in [] brackets for localized name search
+    const QMap<QLocale::Language, QString> language_string_map = {
+        {QLocale::Russian, "[ru]"}
+    };
+    const QLocale::Language language = locale.language();
+
+    const QString search_string = "Name=";
+    const QString search_string_localized = language_string_map.contains(language) ? QString("Name%1=").arg(language_string_map[language]):
+                                                                                     QString();
+    const bool theme_is_system = theme == system_theme;
+    const QDir theme_dir = theme_is_system ? QDir(system_icons_dir_path).filePath(theme) :
+                                                                 QDir(settings_get_variant(SETTING_custom_icon_themes_path).
+                                                                      toString()).filePath(theme);
+    QFile index_theme_file(theme_dir.filePath("index.theme"));
+    index_theme_file.open(QIODevice::ReadOnly);
+
+    QString theme_name;
+    QTextStream in(&index_theme_file);
+
+    QString line;
+    do {
+        line = in.readLine();
+
+        if (line.contains(search_string, Qt::CaseSensitive)) {
+            theme_name = line.remove(search_string);
+        }
+
+        if (!search_string_localized.isEmpty() &&
+                line.contains(search_string_localized, Qt::CaseSensitive)) {
+            theme_name = line.remove(search_string_localized);
+            break;
+        }
+    } while (!line.isNull());
+
+    index_theme_file.close();
+
+    if (theme_is_system) {
+        theme_name += QObject::tr(" (System)");
+    }
+    return theme_name;
 }
