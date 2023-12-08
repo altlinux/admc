@@ -22,6 +22,8 @@
 
 #include "config.h"
 #include "connection_options_dialog.h"
+#include "globals.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QAction>
 #include <QDialog>
@@ -111,4 +113,24 @@ void settings_set_variant(const QString setting, const QVariant &value) {
     QSettings settings;
 
     settings.setValue(setting, value);
+}
+
+QList<QPair<QString, QString>> settings_get_themes(){
+    QSettings::setPath(QSettings::NativeFormat, QSettings::SystemScope, "/usr/share/alt-management-console");
+    QSettings set("icon-theme");
+
+    QList<QPair<QString, QString>> list;
+    list.push_back({g_icon_manager->default_theme, "System"});
+
+    QStringList all_themes = set.childGroups();
+    for (QString &theme : all_themes)
+    {
+        QPair<QString, QString> pair;
+        set.beginGroup(theme);
+        pair.first = set.value("NAME").toString();
+        pair.second = set.value("DISPLAY_NAME").toString();
+        set.endGroup();
+        list.push_back(pair);
+    }
+    return list;
 }
