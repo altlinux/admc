@@ -31,6 +31,7 @@
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QFileDialog>
 #include <QJsonDocument>
@@ -341,7 +342,10 @@ void console_query_tree_init(ConsoleWidget *console) {
     const QList<QStandardItem *> root_row = console->add_scope_item(ItemType_QueryFolder, console->domain_info_index());
     auto root = root_row[0];
     root->setText(QCoreApplication::translate("query", "Saved Queries"));
-    root->setIcon(QIcon::fromTheme("folder"));
+
+    const QIcon create_query_folder_icon = g_icon_manager->get_object_icon("folder-query");
+    root->setIcon(create_query_folder_icon);
+
     root->setDragEnabled(false);
     root->setData(true, QueryItemRole_IsRoot);
 
@@ -533,7 +537,9 @@ QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &n
 void console_query_folder_load(const QList<QStandardItem *> &row, const QString &name, const QString &description) {
     QStandardItem *main_item = row[0];
     main_item->setData(description, QueryItemRole_Description);
-    main_item->setIcon(QIcon::fromTheme("folder"));
+
+    const QIcon create_query_folder_icon = g_icon_manager->get_object_icon("folder-query");
+    main_item->setIcon(create_query_folder_icon);
     main_item->setData(false, QueryItemRole_IsRoot);
 
     row[QueryColumn_Name]->setText(name);
