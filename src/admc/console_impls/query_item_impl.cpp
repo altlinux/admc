@@ -30,6 +30,7 @@
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QCoreApplication>
 #include <QFileDialog>
@@ -40,8 +41,6 @@
 #include <QStandardPaths>
 
 #define QUERY_ROOT "QUERY_ROOT"
-
-const QString query_item_icon = "emblem-system";
 
 QueryItemImpl::QueryItemImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -68,7 +67,9 @@ void QueryItemImpl::fetch(const QModelIndex &index) {
     // NOTE: reset icon and tooltip in case query is in the
     // "out of date" state
     QStandardItem *item = console->get_item(index);
-    item->setIcon(QIcon::fromTheme(query_item_icon));
+
+    const QIcon create_query_item = g_icon_manager->get_object_icon("query-item");
+    item->setIcon(create_query_item);
     item->setToolTip("");
 
     const QString filter = index.data(QueryItemRole_Filter).toString();
@@ -197,7 +198,9 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
     main_item->setData(filter_state, QueryItemRole_FilterState);
     main_item->setData(base, QueryItemRole_Base);
     main_item->setData(scope_is_children, QueryItemRole_ScopeIsChildren);
-    main_item->setIcon(QIcon::fromTheme(query_item_icon));
+
+    const QIcon create_query_item = g_icon_manager->get_object_icon("query-item");
+    main_item->setIcon(create_query_item);
 
     row[QueryColumn_Name]->setText(name);
     row[QueryColumn_Description]->setText(description);

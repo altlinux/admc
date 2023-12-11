@@ -22,6 +22,8 @@
 
 #include "config.h"
 #include "connection_options_dialog.h"
+#include "globals.h"
+#include "icon_manager/icon_manager.h"
 
 #include <QAction>
 #include <QDialog>
@@ -111,4 +113,33 @@ void settings_set_variant(const QString setting, const QVariant &value) {
     QSettings settings;
 
     settings.setValue(setting, value);
+}
+
+QList<QPair<QString, QString>> settings_get_themes(){
+    QSettings::setPath(QSettings::NativeFormat, QSettings::SystemScope, "/usr/share/alt-management-console");
+    QSettings set("icon-theme");
+    set.setIniCodec("UTF-8");
+
+    QList<QPair<QString, QString>> list;
+    QString display_name;
+    if (settings_get_variant(SETTING_locale).toLocale() == QLocale::Russian){
+        display_name = "DISPLAY_NAME[ru]";
+        list.push_back({g_icon_manager->default_theme, "Системная"});
+    }
+    else{
+        display_name = "DISPLAY_NAME";
+        list.push_back({g_icon_manager->default_theme, "System"});
+    }
+
+    QStringList all_themes = set.childGroups();
+    for (QString &theme : all_themes)
+    {
+        QPair<QString, QString> pair;
+        set.beginGroup(theme);
+        pair.first = set.value("NAME").toString();
+        pair.second = set.value(display_name).toString();
+        set.endGroup();
+        list.push_back(pair);
+    }
+    return list;
 }
