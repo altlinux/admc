@@ -2,6 +2,15 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.15.1
+-----------------------------------------------------------------------
+- Add icon theme selection. System theme is taken from /usr/share/icons
+dir, custom themes are taken from /usr/share/ad-integration dir
+by default. Theme dirs must have index.theme file to be included.
+Theme dirs can also be symlinks.
+- Object creation and disabling bugs in 0.15.0 version are fixed.
+
+-----------------------------------------------------------------------
  VERSION 0.15.0
 -----------------------------------------------------------------------
 - Domain info root item is added to console tree. Its results widget
