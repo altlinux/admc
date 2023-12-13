@@ -1761,9 +1761,8 @@ QModelIndex get_object_tree_root(ConsoleWidget *console) {
         // index with no parent
         for (const QModelIndex &index : search_results) {
             const QModelIndex parent = index.parent();
-            const bool no_parent = !parent.isValid();
 
-            if (no_parent) {
+            if (parent == console->domain_info_index()) {
                 return index;
             }
         }
