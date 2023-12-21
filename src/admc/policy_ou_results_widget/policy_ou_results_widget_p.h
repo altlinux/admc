@@ -21,11 +21,11 @@
 #ifndef POLICY_OU_RESULTS_WIDGET_P_H
 #define POLICY_OU_RESULTS_WIDGET_P_H
 
-enum PolicyOUResultsColumn {
+enum LinkedPoliciesColumn {
     PolicyOUResultsColumn_Order,
     PolicyOUResultsColumn_Name,
-    PolicyOUResultsColumn_Enforced,
-    PolicyOUResultsColumn_Disabled,
+    LinkedPoliciesColumn_Enforced,
+    LinkedPoliciesColumn_Disabled,
 
     PolicyOUResultsColumn_COUNT,
 };

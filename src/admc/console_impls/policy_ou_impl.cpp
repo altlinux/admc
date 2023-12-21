@@ -126,7 +126,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
 
     policy_ou_impl_add_objects_from_dns(console, ad, gpo_list, index);
 
-    policy_ou_results_widget->update_inheritance_widget();
+    policy_ou_results_widget->update_inheritance_widget(index);
 }
 
 bool PolicyOUImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -492,7 +492,7 @@ void PolicyOUImpl::change_gp_options() {
     currentItem->setData(checked, PolicyOURole_Inheritance_Block);
     currentItem->setIcon(icon_to_set);
 
-    policy_ou_results_widget->update_inheritance_widget();
+    policy_ou_results_widget->update_inheritance_widget(currentItem->index());
 }
 
 

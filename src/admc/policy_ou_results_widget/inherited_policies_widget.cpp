@@ -67,10 +67,13 @@ InheritedPoliciesWidget::~InheritedPoliciesWidget()
     delete ui;
 }
 
-void InheritedPoliciesWidget::update(const QModelIndex &index, ConsoleWidget *console_widget)
+void InheritedPoliciesWidget::set_console(ConsoleWidget *console_arg) {
+    console = console_arg;
+}
+
+void InheritedPoliciesWidget::update(const QModelIndex &index)
 {
     model->removeRows(0, model->rowCount());
-    console = console_widget;
     selected_scope_index = index;
     add_enabled_policy_items(index);
     set_priority_to_items();

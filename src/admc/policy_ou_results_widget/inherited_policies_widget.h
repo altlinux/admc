@@ -55,7 +55,9 @@ public:
     explicit InheritedPoliciesWidget(QWidget *parent = nullptr);
     ~InheritedPoliciesWidget();
 
-    void update(const QModelIndex &index, ConsoleWidget *console_widget);
+    void set_console(ConsoleWidget *console_arg);
+
+    void update(const QModelIndex &index);
     void hide_not_enforced_inherited_links(bool hide);
 
 private:

@@ -27,14 +27,8 @@
 
 #include <QWidget>
 
-#include "gplink.h"
-
-class QStandardItemModel;
-class QStandardItem;
-class QMenu;
-class ResultsView;
 class ConsoleWidget;
-class ADMCTestPolicyOUResultsWidget;
+//class ADMCTestPolicyOUResultsWidget;
 
 namespace Ui {
 class PolicyOUResultsWidget;
@@ -52,29 +46,13 @@ public:
     // Loads links for given OU. Nothing is done if given
     // index is not an OU in policy tree.
     void update(const QModelIndex &index);
-    void update(const QString &dn);
-
-    ResultsView *get_view() const;
-
-    void update_inheritance_widget();
+    void update_inheritance_widget(const QModelIndex &index);
+    void update_links_widget(const QModelIndex &index);
 
 private:
     ConsoleWidget *console;
-    QStandardItemModel *model;
-    Gplink gplink;
-    QString ou_dn;
-    QMenu *context_menu;
 
-    void on_item_changed(QStandardItem *item);
-    void open_context_menu(const QPoint &pos);
-    void remove_link();
-    void move_up();
-    void move_down();
-    void reload_gplink();
-    void modify_gplink(void (*modify_function)(Gplink &, const QString &));
-    void change_policy_icon(const QString &policy_dn, bool is_checked, GplinkOption option);
-
-    friend ADMCTestPolicyOUResultsWidget;
+    // friend ADMCTestPolicyOUResultsWidget;
 };
 
 #endif /* POLICY_OU_RESULTS_WIDGET_H */
