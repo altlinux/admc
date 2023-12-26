@@ -46,6 +46,7 @@ set(ADMC_SOURCES
     policy_ou_results_widget/policy_ou_results_widget.cpp
     policy_ou_results_widget/inherited_policies_widget.cpp
     policy_ou_results_widget/linked_policies_widget.cpp
+    policy_ou_results_widget/drag_drop_links_model.cpp
 
     console_filter_dialog.cpp
     password_dialog.cpp

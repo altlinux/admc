@@ -53,7 +53,7 @@ public:
 
     // Loads links for given OU. Nothing is done if given
     // index is not an OU in policy tree.
-    void update(const QModelIndex &index);
+    void update(const QModelIndex &ou_index);
 
     void set_console(ConsoleWidget *console_arg);
 
