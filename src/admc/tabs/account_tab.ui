@@ -134,75 +134,92 @@
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
+    <widget class="QLabel" name="label">
+     <property name="text">
       <string>Account options:</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QCheckBox" name="disabled_check">
-        <property name="text">
-         <string>Account disabled</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="cant_change_pass_check">
-        <property name="text">
-         <string>User cannot change password</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="pass_expired_check">
-        <property name="text">
-         <string>User must change password on next logon</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="dont_expire_pass_check">
-        <property name="text">
-         <string>Don't expire password</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="reversible_encrypt_check">
-        <property name="text">
-         <string>Store password using reversible encryption</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="smartcard_check">
-        <property name="text">
-         <string>Smartcard is required for interactive logon</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="cant_delegate_check">
-        <property name="text">
-         <string>Account is sensitive and cannot be delegated</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="des_key_check">
-        <property name="text">
-         <string>Use Kerberos DES encryption types for this account</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="require_preauth_check">
-        <property name="text">
-         <string>Don't require Kerberos pre-authentication</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents_5">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>452</width>
+        <height>246</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QCheckBox" name="disabled_check">
+         <property name="text">
+          <string>Account disabled</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="cant_change_pass_check">
+         <property name="text">
+          <string>User cannot change password</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="pass_expired_check">
+         <property name="text">
+          <string>User must change password on next logon</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="dont_expire_pass_check">
+         <property name="text">
+          <string>Don't expire password</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="reversible_encrypt_check">
+         <property name="text">
+          <string>Store password using reversible encryption</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="smartcard_check">
+         <property name="text">
+          <string>Smartcard is required for interactive logon</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="cant_delegate_check">
+         <property name="text">
+          <string>Account is sensitive and cannot be delegated</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="des_key_check">
+         <property name="text">
+          <string>Use Kerberos DES encryption types for this account</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="require_preauth_check">
+         <property name="text">
+          <string>Don't require Kerberos pre-authentication</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
