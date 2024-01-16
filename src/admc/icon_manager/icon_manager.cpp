@@ -77,13 +77,15 @@ void IconManager::init(QMap<QString, QAction *> category_action_map)
     system_theme = QIcon::themeName();
 
     const QString current_theme = settings_get_variant(SETTING_current_icon_theme).toString();
-    const bool theme_is_available = get_available_themes().contains(current_theme) || current_theme.isEmpty();
+    const bool theme_is_available = get_available_themes().contains(current_theme);
     if (theme_is_available) {
         set_theme(current_theme);
     }
     else {
         set_theme(system_theme);
-        g_status->add_message(QObject::tr("Theme from settings not found. System theme is set."), StatusType_Error);
+        if (!current_theme.isEmpty()) {
+            g_status->add_message(QObject::tr("Theme from settings not found. System theme is set."), StatusType_Error);
+        }
     }
 }
 
