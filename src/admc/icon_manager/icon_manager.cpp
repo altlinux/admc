@@ -77,7 +77,7 @@ void IconManager::init(QMap<QString, QAction *> category_action_map)
     system_theme = QIcon::themeName();
 
     const QString current_theme = settings_get_variant(SETTING_current_icon_theme).toString();
-    const bool theme_is_available = get_available_themes().contains(current_theme);
+    const bool theme_is_available = get_available_themes().contains(current_theme) || current_theme.isEmpty();
     if (theme_is_available) {
         set_theme(current_theme);
     }
