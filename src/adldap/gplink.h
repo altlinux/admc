@@ -41,7 +41,10 @@ enum GplinkOption {
 class Gplink {
 public:
     Gplink();
+    Gplink(const Gplink &other);
     Gplink(const QString &gplink_string);
+
+    Gplink &operator=(const Gplink &other);
 
     QString to_string() const;
     bool contains(const QString &gpo) const;
@@ -52,10 +55,11 @@ public:
     // LDAP operations.
     QList<QString> get_gpo_list() const;
 
-    void add(const QString &gpo);
-    void remove(const QString &gpo);
-    void move_up(const QString &gpo);
-    void move_down(const QString &gpo);
+    void add(const QString &gpo_case);
+    void remove(const QString &gpo_case);
+    void move_up(const QString &gpo_case);
+    void move_down(const QString &gpo_case);
+    void move(int from_order, int to_order);
 
     bool get_option(const QString &gpo, const GplinkOption option) const;
     void set_option(const QString &gpo, const GplinkOption option, const bool value);
@@ -63,6 +67,7 @@ public:
     bool equals(const Gplink &other) const;
 
     int get_gpo_order(const QString &gpo) const;
+    int get_max_order() const;
 
     QStringList enforced_gpo_dn_list() const;
     QStringList disabled_gpo_dn_list() const;

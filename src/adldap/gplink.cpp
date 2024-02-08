@@ -9,6 +9,10 @@
 Gplink::Gplink() {
 }
 
+Gplink::Gplink(const Gplink &other) : gpo_list(other.gpo_list), options(other.options) {
+
+}
+
 Gplink::Gplink(const QString &gplink_string) {
     if (gplink_string.isEmpty()) {
         return;
@@ -58,6 +62,16 @@ Gplink::Gplink(const QString &gplink_string) {
         gpo_list.prepend(gpo);
         options[gpo] = option;
     }
+}
+
+Gplink &Gplink::operator=(const Gplink &other) {
+    if (this == &other) {
+        return *this;
+    }
+
+    gpo_list = other.gpo_list;
+    options = other.options;
+    return *this;
 }
 
 // Transform into gplink format. Have to uppercase some
@@ -242,6 +256,15 @@ void Gplink::move_down(const QString &gpo_case) {
     }
 }
 
+void Gplink::move(int from_order, int to_order) {
+    if (from_order > (int)gpo_list.size() || to_order > (int)gpo_list.size() ||
+            from_order < 1 || to_order < 1) {
+        return;
+    }
+
+    gpo_list.move(from_order - 1, to_order - 1);
+}
+
 bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) const {
     const QString gpo = gpo_case.toLower();
 
@@ -273,9 +296,13 @@ bool Gplink::equals(const Gplink &other) const {
 
 int Gplink::get_gpo_order(const QString &gpo_case) const {
     const QString gpo = gpo_case.toLower();
-    const int out = gpo_list.indexOf(gpo);
+    const int out = gpo_list.indexOf(gpo) + 1;
 
     return out;
+}
+
+int Gplink::get_max_order() const {
+    return gpo_list.size();
 }
 
 QStringList Gplink::enforced_gpo_dn_list() const
