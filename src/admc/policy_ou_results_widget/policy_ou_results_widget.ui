@@ -29,70 +29,12 @@
    <item>
     <widget class="QTabWidget" name="tab_widget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>-1</number>
      </property>
-     <widget class="QWidget" name="links_tab">
-      <attribute name="title">
-       <string>Linked policies</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="LinkedPoliciesWidget" name="links_widget" native="true"/>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="inherited_tab">
-      <attribute name="title">
-       <string>Inherited policies</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="InheritedPoliciesWidget" name="inheritance_widget" native="true"/>
-       </item>
-      </layout>
-     </widget>
     </widget>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>InheritedPoliciesWidget</class>
-   <extends>QWidget</extends>
-   <header>policy_ou_results_widget/inherited_policies_widget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LinkedPoliciesWidget</class>
-   <extends>QWidget</extends>
-   <header>policy_ou_results_widget/linked_policies_widget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

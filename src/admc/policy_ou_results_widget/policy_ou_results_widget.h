@@ -28,6 +28,8 @@
 #include <QWidget>
 
 class ConsoleWidget;
+class LinkedPoliciesWidget;
+class InheritedPoliciesWidget;
 //class ADMCTestPolicyOUResultsWidget;
 
 namespace Ui {
@@ -51,6 +53,8 @@ public:
 
 private:
     ConsoleWidget *console;
+    LinkedPoliciesWidget *links_widget;
+    InheritedPoliciesWidget *inheritance_widget;
 
     // friend ADMCTestPolicyOUResultsWidget;
 };

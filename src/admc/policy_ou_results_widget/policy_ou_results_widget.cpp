@@ -22,19 +22,23 @@
 #include "ui_policy_ou_results_widget.h"
 
 #include "console_widget/console_widget.h"
+#include "linked_policies_widget.h"
+#include "inherited_policies_widget.h"
 
 #include <QModelIndex>
 
 PolicyOUResultsWidget::PolicyOUResultsWidget(ConsoleWidget *console_arg)
-: QWidget(console_arg) {
+: QWidget(console_arg), console(console_arg) {
     ui = new Ui::PolicyOUResultsWidget();
     ui->setupUi(this);
 
-    console = console_arg;
-    ui->inheritance_widget->set_console(console);
-    ui->links_widget->set_console(console);
+    links_widget = new LinkedPoliciesWidget(console_arg);
+    ui->tab_widget->addTab(links_widget, tr("Linked policies"));
 
-    connect(ui->links_widget, &LinkedPoliciesWidget::gplink_changed,
+    inheritance_widget = new InheritedPoliciesWidget(console_arg);
+    ui->tab_widget->addTab(inheritance_widget, tr("Inherited policies"));
+
+    connect(links_widget, &LinkedPoliciesWidget::gplink_changed,
             this, &PolicyOUResultsWidget::update_inheritance_widget);
 }
 
@@ -48,9 +52,9 @@ void PolicyOUResultsWidget::update(const QModelIndex &index) {
 }
 
 void PolicyOUResultsWidget::update_inheritance_widget(const QModelIndex &index) {
-    ui->inheritance_widget->update(index);
+    inheritance_widget->update(index);
 }
 
 void PolicyOUResultsWidget::update_links_widget(const QModelIndex &index) {
-    ui->links_widget->update(index);
+    links_widget->update(index);
 }
