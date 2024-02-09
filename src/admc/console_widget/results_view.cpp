@@ -219,6 +219,12 @@ void ResultsView::set_drag_drop_enabled(const bool enabled) {
     }
 }
 
+void ResultsView::set_drag_drop_internal() {
+    for (auto view : views.values()) {
+        view->setDragDropMode(QAbstractItemView::InternalMove);
+    }
+}
+
 void ResultsView::set_row_hidden(int row, bool hidden)
 {
     m_detail_view->setRowHidden(row, QModelIndex(), hidden);

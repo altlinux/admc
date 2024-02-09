@@ -68,6 +68,7 @@ public:
     void restore_state(const QVariant &state, const QList<int> &default_columns);
 
     void set_drag_drop_enabled(const bool enabled);
+    void set_drag_drop_internal();
 
     void set_row_hidden(int row, bool hidden);
 
