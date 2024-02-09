@@ -138,7 +138,9 @@ void DragDropLinksModel::load_row(QList<QStandardItem *> &item_row, int order, c
     item_row[0]->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Policy_Link));
     item_row[LinkedPoliciesColumn_Order]->setData(order, Qt::DisplayRole);
     item_row[LinkedPoliciesColumn_Name]->setText(display_name);
+    item_row[LinkedPoliciesColumn_Enforced]->setCheckable(true);
     item_row[LinkedPoliciesColumn_Enforced]->setCheckState(is_enforced);
+    item_row[LinkedPoliciesColumn_Disabled]->setCheckable(true);
     item_row[LinkedPoliciesColumn_Disabled]->setCheckState(is_disabled);
 
     set_data_for_row(item_row, dn, LinkedPoliciesRole_DN);

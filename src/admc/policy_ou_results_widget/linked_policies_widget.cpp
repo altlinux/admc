@@ -12,6 +12,7 @@
 #include "status.h"
 #include "utils.h"
 #include "icon_manager/icon_manager.h"
+#include "drag_drop_links_model.h"
 
 #include <QAction>
 #include <QHeaderView>
@@ -21,11 +22,16 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 
-LinkedPoliciesWidget::LinkedPoliciesWidget(QWidget *parent) :
+LinkedPoliciesWidget::LinkedPoliciesWidget(ConsoleWidget *console_arg, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::LinkedPoliciesWidget)
+    ui(new Ui::LinkedPoliciesWidget),
+    console(console_arg)
 {
     ui->setupUi(this);
+
+    if (!console) {
+        return;
+    }
 
     auto remove_link_action = new QAction(tr("Remove link"), this);
     auto move_up_action = new QAction(tr("Move up"), this);
@@ -36,7 +42,7 @@ LinkedPoliciesWidget::LinkedPoliciesWidget(QWidget *parent) :
     context_menu->addAction(move_up_action);
     context_menu->addAction(move_down_action);
 
-    model = new QStandardItemModel(0, LinkedPoliciesColumn_COUNT, this);
+    model = new DragDropLinksModel(gplink, 0, LinkedPoliciesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
         {
             {LinkedPoliciesColumn_Order, tr("Order")},
@@ -47,13 +53,18 @@ LinkedPoliciesWidget::LinkedPoliciesWidget(QWidget *parent) :
 
     ui->view->set_model(model);
 
-    ui->view->detail_view()->header()->resizeSection(0, 50);
-    ui->view->detail_view()->header()->resizeSection(1, 300);
-    ui->view->detail_view()->header()->resizeSection(2, 100);
-    ui->view->detail_view()->header()->resizeSection(3, 100);
-    ui->view->detail_view()->header()->resizeSection(4, 500);
+    QHeaderView *detail_view_header = ui->view->detail_view()->header();
 
-    ui->view->set_drag_drop_enabled(false);
+    detail_view_header->resizeSection(0, 50);
+    detail_view_header->resizeSection(1, 300);
+    detail_view_header->resizeSection(2, 100);
+    detail_view_header->resizeSection(3, 100);
+    detail_view_header->resizeSection(4, 500);
+
+    ui->view->set_drag_drop_internal();
+    ui->view->current_view()->setDragDropOverwriteMode(false);
+    ui->view->current_view()->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->view->current_view()->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     const QVariant state = settings_get_variant(SETTING_policy_ou_results_state);
     ui->view->restore_state(state,
@@ -79,6 +90,29 @@ LinkedPoliciesWidget::LinkedPoliciesWidget(QWidget *parent) :
     connect(
         move_down_action, &QAction::triggered,
         this, &LinkedPoliciesWidget::move_down);
+
+    connect(model, &DragDropLinksModel::link_orders_changed, [this](const Gplink &gplink_arg) {
+        AdInterface ad;
+        if (ad_failed(ad, this)) {
+            model->arrange_orders_from_gplink(gplink);
+            return;
+        }
+
+        bool success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink_arg.to_string());
+        if (!success) {
+            model->arrange_orders_from_gplink(gplink);
+            return;
+        }
+
+        gplink = gplink_arg;
+        const QModelIndex scope_tree_ou_index = console->get_current_scope_item();
+        update_ou_item_gplink_data(gplink.to_string(), scope_tree_ou_index, console);
+
+        g_status->add_message(tr("Organizational unit ") + scope_tree_ou_index.data().toString() + tr("'s link orders have been succesfuly changed."),
+                              StatusType_Success);
+
+        emit gplink_changed(scope_tree_ou_index);
+    });
 }
 
 LinkedPoliciesWidget::~LinkedPoliciesWidget()
@@ -110,12 +144,8 @@ void LinkedPoliciesWidget::update(const QModelIndex &ou_index) {
         return out;
     }();
 
-    reload_gplink();
+    update_link_items();
     emit gplink_changed(ou_index);
-}
-
-void LinkedPoliciesWidget::set_console(ConsoleWidget *console_arg) {
-    console = console_arg;
 }
 
 void LinkedPoliciesWidget::on_item_changed(QStandardItem *item) {
@@ -149,7 +179,7 @@ void LinkedPoliciesWidget::on_item_changed(QStandardItem *item) {
 
     g_status->display_ad_messages(ad, this);
 
-    reload_gplink();
+    update_link_items();
 
     const QModelIndex scope_tree_ou_index = console->get_current_scope_item();
     update_ou_item_gplink_data(gplink_string, scope_tree_ou_index, console);
@@ -224,7 +254,7 @@ void LinkedPoliciesWidget::move_down() {
     modify_gplink(modify_function);
 }
 
-void LinkedPoliciesWidget::reload_gplink() {
+void LinkedPoliciesWidget::update_link_items() {
     model->removeRows(0, model->rowCount());
 
     AdInterface ad;
@@ -236,7 +266,7 @@ void LinkedPoliciesWidget::reload_gplink() {
 
     for (const AdObject &gpo_object : gpo_obj_list) {
         const QList<QStandardItem *> row = make_item_row(LinkedPoliciesColumn_COUNT);
-        update_item_row(gpo_object, row);
+        load_item_row(gpo_object, row);
         model->appendRow(row);
     }
 
@@ -267,7 +297,7 @@ void LinkedPoliciesWidget::modify_gplink(void (*modify_function)(Gplink &, const
 
     g_status->display_ad_messages(ad, this);
 
-    reload_gplink();
+    update_link_items();
 
     const QModelIndex scope_tree_ou_index = console->get_current_scope_item();
     update_ou_item_gplink_data(gplink_string, scope_tree_ou_index, console);
@@ -310,7 +340,7 @@ QList<AdObject> LinkedPoliciesWidget::gpo_object_list(AdInterface &ad) {
     return gpo_objects;
 }
 
-void LinkedPoliciesWidget::update_item_row(const AdObject &gpo_object, QList<QStandardItem*> row) {
+void LinkedPoliciesWidget::load_item_row(const AdObject &gpo_object, QList<QStandardItem*> row) {
     const QList<QString> gpo_dn_list = gplink.get_gpo_list();
 
     // NOTE: Gplink may contain invalid gpo's, in which
