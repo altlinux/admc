@@ -1756,6 +1756,69 @@
     </message>
 </context>
 <context>
+    <name>LinkedPoliciesWidget</name>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="36"/>
+        <source>Remove link</source>
+        <translation type="unfinished">Удалить связь</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="37"/>
+        <source>Move up</source>
+        <translation type="unfinished">Переместить вверх</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="38"/>
+        <source>Move down</source>
+        <translation type="unfinished">Переместить вниз</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="48"/>
+        <source>Order</source>
+        <translation type="unfinished">Порядок</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="49"/>
+        <source>Name</source>
+        <translation type="unfinished">Имя</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="50"/>
+        <source>Enforced</source>
+        <translation type="unfinished">Принудительно</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="51"/>
+        <source>Disabled</source>
+        <translation type="unfinished">Отключено</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="111"/>
+        <source>Organizational unit </source>
+        <translation>Порядки связей подразделения </translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="111"/>
+        <source>&apos;s link orders have been succesfuly changed.</source>
+        <translation> были успешно изменены.</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="354"/>
+        <source>Not found</source>
+        <translation type="unfinished">Не найдено</translation>
+    </message>
+    <message>
+        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="384"/>
+        <source>The GPO for this link could not be found. It maybe have been recently created and is being replicated or it could have been deleted.</source>
+        <translation type="unfinished">Не удалось найти объект групповой политики для этой связи. Возможно, он был недавно создан и реплицируется или был удалён.</translation>
+    </message>
+</context>
+<context>
     <name>ListAttributeDialog</name>
     <message>
         <location filename="attribute_dialogs/list_attribute_dialog.ui" line="44"/>
