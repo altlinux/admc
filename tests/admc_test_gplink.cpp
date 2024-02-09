@@ -274,9 +274,9 @@ void ADMCTestGplink::get_gpo_order_data() {
         dn_C,
     };
 
-    QTest::newRow("A") << gpo_list << dn_A << 0;
-    QTest::newRow("B") << gpo_list << dn_B << 1;
-    QTest::newRow("C") << gpo_list << dn_C << 2;
+    QTest::newRow("A") << gpo_list << dn_A << 1;
+    QTest::newRow("B") << gpo_list << dn_B << 2;
+    QTest::newRow("C") << gpo_list << dn_C << 3;
 }
 
 void ADMCTestGplink::get_gpo_order() {
