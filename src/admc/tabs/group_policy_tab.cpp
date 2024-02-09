@@ -36,28 +36,34 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QStandardItemModel>
-#include <QVBoxLayout>
+#include <QCheckBox>
 
 GroupPolicyTab::GroupPolicyTab(QList<AttributeEdit *> *edit_list, ConsoleWidget *console_widget, const QString &ou_dn, QWidget *parent)
-: QWidget(parent) {
+: QWidget(parent), console(console_widget) {
     ui = new Ui::GroupPolicyTab();
     ui->setupUi(this);
 
-    auto options_edit = new GpoptionsEdit(ui->gpo_options_check, this);
+    inheritance_widget = new InheritedPoliciesWidget(console, this);
+
+    gpo_options_check = new QCheckBox(tr("Block policy inheritance"), this);
+    auto options_edit = new GpoptionsEdit(gpo_options_check, this);
+
+    ui->verticalLayout->addWidget(inheritance_widget);
+    ui->verticalLayout->addWidget(gpo_options_check);
 
     edit_list->append({options_edit});
 
-    console = console_widget;
     target_ou_index = search_gpo_ou_index(console, ou_dn);
+
     if (console && target_ou_index.isValid()) {
 
-        ui->inheritance_widget->update(target_ou_index);
-        connect(ui->gpo_options_check, &QCheckBox::toggled, [this](bool toggled) {
-            ui->inheritance_widget->hide_not_enforced_inherited_links(toggled);
+        inheritance_widget->update(target_ou_index);
+        connect(gpo_options_check, &QCheckBox::toggled, [this](bool toggled) {
+            inheritance_widget->hide_not_enforced_inherited_links(toggled);
             });
         connect(options_edit, &GpoptionsEdit::gp_options_changed, [this](bool inheritance_blocked) {
             console->get_item(target_ou_index)->setData(inheritance_blocked, PolicyOURole_Inheritance_Block);
-            ui->inheritance_widget->update(target_ou_index);
+            inheritance_widget->update(target_ou_index);
 
             PolicyOUResultsWidget *result_ou_widget = dynamic_cast<PolicyOUResultsWidget*>(console->get_result_widget_for_index(target_ou_index));
             if (result_ou_widget)

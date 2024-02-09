@@ -27,26 +27,8 @@
      </property>
     </widget>
    </item>
-   <item>
-    <widget class="InheritedPoliciesWidget" name="inheritance_widget" native="true"/>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="gpo_options_check">
-     <property name="text">
-      <string>Block policy inheritance</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>InheritedPoliciesWidget</class>
-   <extends>QWidget</extends>
-   <header>policy_ou_results_widget/inherited_policies_widget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -33,6 +33,8 @@
  */
 
 class ConsoleWidget;
+class InheritedPoliciesWidget;
+class QCheckBox;
 
 namespace Ui {
 class GroupPolicyTab;
@@ -50,6 +52,8 @@ public:
 private:
     ConsoleWidget *console;
     QModelIndex target_ou_index;
+    InheritedPoliciesWidget *inheritance_widget;
+    QCheckBox *gpo_options_check;
 };
 
 #endif /* GROUP_POLICY_TAB_H */
