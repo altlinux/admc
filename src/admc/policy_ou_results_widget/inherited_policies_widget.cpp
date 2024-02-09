@@ -34,9 +34,10 @@
 //#include <QDebug>
 
 
-InheritedPoliciesWidget::InheritedPoliciesWidget(QWidget *parent) :
+InheritedPoliciesWidget::InheritedPoliciesWidget(ConsoleWidget *console_arg, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::InheritedPoliciesWidget)
+    ui(new Ui::InheritedPoliciesWidget),
+    console(console_arg)
 {
     ui->setupUi(this);
 
@@ -65,10 +66,6 @@ InheritedPoliciesWidget::~InheritedPoliciesWidget()
     settings_set_variant(SETTING_inheritance_widget_state, state);
 
     delete ui;
-}
-
-void InheritedPoliciesWidget::set_console(ConsoleWidget *console_arg) {
-    console = console_arg;
 }
 
 void InheritedPoliciesWidget::update(const QModelIndex &index)

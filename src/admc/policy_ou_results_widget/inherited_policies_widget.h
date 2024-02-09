@@ -52,18 +52,16 @@ public:
        RowRole_IsEnforced,
     };
 
-    explicit InheritedPoliciesWidget(QWidget *parent = nullptr);
+    explicit InheritedPoliciesWidget(ConsoleWidget *console_arg, QWidget *parent = nullptr);
     ~InheritedPoliciesWidget();
-
-    void set_console(ConsoleWidget *console_arg);
 
     void update(const QModelIndex &index);
     void hide_not_enforced_inherited_links(bool hide);
 
 private:
     QStandardItemModel *model;
-    ConsoleWidget *console;
     Ui::InheritedPoliciesWidget *ui;
+    ConsoleWidget *console;
     QModelIndex selected_scope_index;
 
     void add_enabled_policy_items(const QModelIndex &index, bool inheritance_blocked = false);
