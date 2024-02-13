@@ -154,30 +154,32 @@ void LinkedPoliciesWidget::on_item_changed(QStandardItem *item) {
         return;
     }
 
+    show_busy_indicator();
+
     AdInterface ad;
     if (ad_failed(ad, this)) {
         return;
     }
 
-    show_busy_indicator();
-
     const QModelIndex this_index = item->index();
-    const QModelIndex index = this_index.siblingAtColumn(0);
-    const QString gpo_dn = index.data(LinkedPoliciesRole_DN).toString();
+    const QString gpo_dn = this_index.data(LinkedPoliciesRole_DN).toString();
     const GplinkOption option = column_to_option[column];
     const bool is_checked = (item->checkState() == Qt::Checked);
 
-    gplink.set_option(gpo_dn, option, is_checked);
-
-    const QString gplink_string = gplink.to_string();
-
+    Gplink gplink_modified = gplink;
+    gplink_modified.set_option(gpo_dn, option, is_checked);
+    const QString gplink_string = gplink_modified.to_string();
     bool success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink_string);
 
-    if (success) {
-        change_policy_icon(gpo_dn, is_checked, option);
+    if (!success) {
+        hide_busy_indicator();
+        g_status->display_ad_messages(ad, this);
+        return;
     }
 
     g_status->display_ad_messages(ad, this);
+    change_policy_icon(gpo_dn, is_checked, option);
+    gplink.set_option(gpo_dn, option, is_checked);
 
     update_link_items();
 
