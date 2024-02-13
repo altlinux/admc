@@ -524,7 +524,7 @@ void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object) 
     item->setData(inheritance_is_blocked, PolicyOURole_Inheritance_Block);
 }
 
-QModelIndex get_ou_child_policy_item(ConsoleWidget *console, const QModelIndex &ou_index, const QString &policy_dn) {
+QModelIndex get_ou_child_policy_index(ConsoleWidget *console, const QModelIndex &ou_index, const QString &policy_dn) {
     QList<QModelIndex> found_policy_indexes = console->search_items(ou_index,
                                                                      PolicyRole_DN,
                                                                      policy_dn,
@@ -532,10 +532,11 @@ QModelIndex get_ou_child_policy_item(ConsoleWidget *console, const QModelIndex &
     QModelIndex policy_index = QModelIndex();
     for (QModelIndex index : found_policy_indexes)
     {
-        if (index.parent().data(ConsoleRole_Type) == ItemType_PolicyOU)
+        if (index.parent().data(ConsoleRole_Type) == ItemType_PolicyOU &&
+                index.parent().data(PolicyOURole_DN) == ou_index.data(PolicyOURole_DN))
         {
             policy_index = index;
-            break;
+            return policy_index;
         }
     }
 

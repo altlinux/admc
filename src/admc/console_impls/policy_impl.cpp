@@ -233,7 +233,7 @@ void PolicyImpl::on_edit() {
 void PolicyImpl::update_policy_item_icons(const QString &policy_dn, const QString &ou_dn, bool is_checked, GplinkOption option) {
     //Group Policy Objects item index
     QModelIndex ou_dn_item_index = search_gpo_ou_index(console, ou_dn);
-    QModelIndex target_policy_index = get_ou_child_policy_item(console, ou_dn_item_index, policy_dn);
+    QModelIndex target_policy_index = get_ou_child_policy_index(console, ou_dn_item_index, policy_dn);
 
     if (!target_policy_index.isValid())
         return;

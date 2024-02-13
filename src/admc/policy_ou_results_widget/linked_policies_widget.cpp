@@ -307,7 +307,7 @@ void LinkedPoliciesWidget::modify_gplink(void (*modify_function)(Gplink &, const
 }
 
 void LinkedPoliciesWidget::change_policy_icon(const QString &policy_dn, bool is_checked, GplinkOption option) {
-    QModelIndex target_policy_index = get_ou_child_policy_item(console, console->get_current_scope_item(), policy_dn);
+    QModelIndex target_policy_index = get_ou_child_policy_index(console, console->get_current_scope_item(), policy_dn);
     if (!target_policy_index.isValid())
         return;
 

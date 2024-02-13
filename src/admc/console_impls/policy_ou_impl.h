@@ -94,10 +94,10 @@ void policy_ou_impl_add_objects_from_dns(ConsoleWidget *console, AdInterface &ad
 void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
 void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object);
 
-//Get policy item that is not in All policies folder.
+//Get policy index for a given parent that is not in All policies folder.
 //It is applied to exclude policy items from All policies folder
 //those can be found first
-QModelIndex get_ou_child_policy_item(ConsoleWidget *console, const QModelIndex &ou_index, const QString &policy_dn);
+QModelIndex get_ou_child_policy_index(ConsoleWidget *console, const QModelIndex &ou_index, const QString &policy_dn);
 
 //Searches OU's index with given dn under "Group policy objects" item
 QModelIndex search_gpo_ou_index(ConsoleWidget *console, const QString &ou_dn);
