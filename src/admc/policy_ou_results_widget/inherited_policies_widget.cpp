@@ -31,7 +31,6 @@
 
 #include <QStandardItemModel>
 #include <QStringList>
-//#include <QDebug>
 
 
 InheritedPoliciesWidget::InheritedPoliciesWidget(ConsoleWidget *console_arg, QWidget *parent) :
@@ -73,6 +72,7 @@ void InheritedPoliciesWidget::update(const QModelIndex &index)
     model->removeRows(0, model->rowCount());
     selected_scope_index = index;
     add_enabled_policy_items(index);
+    remove_link_duplicates();
     set_priority_to_items();
     model->sort(InheritedPoliciesColumns_Prority);
 }
@@ -104,8 +104,9 @@ void InheritedPoliciesWidget::add_enabled_policy_items(const QModelIndex &index,
     int row_number = 0;
     for (QString gpo_dn : gplink.get_gpo_list())
     {
-        if (disabled_links.contains(gpo_dn))
+        if (disabled_links.contains(gpo_dn)) {
             continue;
+        }
 
         bool policy_is_enforced = enforced_links.contains(gpo_dn);
         const QList<QStandardItem *> row = make_item_row(InheritedPoliciesColumns_COUNT);
@@ -115,16 +116,27 @@ void InheritedPoliciesWidget::add_enabled_policy_items(const QModelIndex &index,
             model->insertRow(row_number, row);
             ++row_number;
         }
-        else if (index == selected_scope_index) {
-            model->appendRow(row);
-        }
-        else if (!inheritance_blocked) {
+        else if (index == selected_scope_index || !inheritance_blocked) {
             model->appendRow(row);
         }
     }
 
     bool inheritance_is_blocked = index.data(PolicyOURole_Inheritance_Block).toBool() || inheritance_blocked;
     add_enabled_policy_items(index.parent(), inheritance_is_blocked);
+}
+
+void InheritedPoliciesWidget::remove_link_duplicates() {
+    QStringList dn_list;
+    for (int row = 0; row < model->rowCount(); ++row) {
+        // The same dn is set to each item in the row
+        const QString dn = model->index(row, 0).data(RowRole_DN).toString();
+        if (dn_list.contains(dn)) {
+            model->removeRow(row);
+            --row;
+            continue;
+        }
+        dn_list << dn;
+    }
 }
 
 void InheritedPoliciesWidget::set_priority_to_items()

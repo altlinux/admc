@@ -65,6 +65,7 @@ private:
     QModelIndex selected_scope_index;
 
     void add_enabled_policy_items(const QModelIndex &index, bool inheritance_blocked = false);
+    void remove_link_duplicates();
     void set_priority_to_items();
     void load_item(const QList<QStandardItem *> row, const QModelIndex &ou_index, const QString &policy_dn, bool is_enforced);
 };
