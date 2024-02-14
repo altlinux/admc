@@ -97,7 +97,7 @@ void console_policy_properties(const QList<ConsoleWidget *> &console_list, Polic
 
 bool policy_is_enforced(QStandardItem *policy_item);
 bool policy_is_disabled(QStandardItem *policy_item);
-void set_policy_icon(QStandardItem *policy_item, bool is_enforced, bool is_disabled);
+void set_policy_link_icon(QStandardItem *policy_item, bool is_enforced, bool is_disabled);
 void set_enforced_policy_icon(QStandardItem *policy_item, bool is_enforced);
 void set_disabled_policy_icon(QStandardItem *policy_item, bool is_disabled);
 

@@ -3,6 +3,7 @@
 #include "globals.h"
 #include "icon_manager/icon_manager.h"
 #include "ad_interface.h"
+#include "console_impls/policy_impl.h"
 
 #include <QMimeData>
 #include <QDataStream>
@@ -135,7 +136,7 @@ void DragDropLinksModel::load_row(QList<QStandardItem *> &item_row, int order, c
     Qt::CheckState is_enforced = gplink_ref.get_option(dn, GplinkOption_Enforced) ? Qt::Checked : Qt::Unchecked;
     Qt::CheckState is_disabled = gplink_ref.get_option(dn, GplinkOption_Disabled) ? Qt::Checked : Qt::Unchecked;
 
-    item_row[0]->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Policy_Link));
+    set_policy_link_icon(item_row[0], is_enforced == Qt::Checked, is_disabled == Qt::Checked);
     item_row[LinkedPoliciesColumn_Order]->setData(order, Qt::DisplayRole);
     item_row[LinkedPoliciesColumn_Name]->setText(display_name);
     item_row[LinkedPoliciesColumn_Enforced]->setCheckable(true);

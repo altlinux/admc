@@ -49,7 +49,7 @@ private:
     void move_down();
     void update_link_items();
     void modify_gplink(void (*modify_function)(Gplink &, const QString &));
-    void change_policy_icon(const QString &policy_dn, bool is_checked, GplinkOption option);
+    void update_policy_link_icons(const QModelIndex &changed_item_index, bool is_checked, GplinkOption option);
     QList<AdObject> gpo_object_list(AdInterface &ad);
     void load_item_row(const AdObject &gpo_object, QList<QStandardItem*> row);
 };

@@ -178,10 +178,8 @@ void LinkedPoliciesWidget::on_item_changed(QStandardItem *item) {
     }
 
     g_status->display_ad_messages(ad, this);
-    change_policy_icon(gpo_dn, is_checked, option);
+    update_policy_link_icons(this_index, is_checked, option);
     gplink.set_option(gpo_dn, option, is_checked);
-
-    update_link_items();
 
     const QModelIndex scope_tree_ou_index = console->get_current_scope_item();
     update_ou_item_gplink_data(gplink_string, scope_tree_ou_index, console);
@@ -308,18 +306,27 @@ void LinkedPoliciesWidget::modify_gplink(void (*modify_function)(Gplink &, const
     hide_busy_indicator();
 }
 
-void LinkedPoliciesWidget::change_policy_icon(const QString &policy_dn, bool is_checked, GplinkOption option) {
-    QModelIndex target_policy_index = get_ou_child_policy_index(console, console->get_current_scope_item(), policy_dn);
-    if (!target_policy_index.isValid())
-        return;
-
+void LinkedPoliciesWidget::update_policy_link_icons(const QModelIndex &changed_item_index, bool is_checked, GplinkOption option) {
+    bool is_disabled, is_enforced;
     if (option == GplinkOption_Disabled)
     {
-        set_disabled_policy_icon(console->get_item(target_policy_index), is_checked);
+        is_disabled = is_checked;
+        is_enforced = model->itemFromIndex(changed_item_index.siblingAtColumn(LinkedPoliciesColumn_Enforced))->
+                checkState() == Qt::Checked;
     }
     else if (option == GplinkOption_Enforced)
     {
-        set_enforced_policy_icon(console->get_item(target_policy_index), is_checked);
+        is_enforced = is_checked;
+        is_disabled = model->itemFromIndex(changed_item_index.siblingAtColumn(LinkedPoliciesColumn_Disabled))->
+                checkState() == Qt::Checked;
+    }
+
+    set_policy_link_icon(model->itemFromIndex(changed_item_index.siblingAtColumn(0)), is_enforced, is_disabled);
+
+    const QString gpo_dn = changed_item_index.data(LinkedPoliciesRole_DN).toString();
+    QModelIndex target_policy_index = get_ou_child_policy_index(console, console->get_current_scope_item(), gpo_dn);
+    if (target_policy_index.isValid()) {
+        set_policy_link_icon(console->get_item(target_policy_index), is_enforced, is_disabled);
     }
 }
 
@@ -361,8 +368,6 @@ void LinkedPoliciesWidget::load_item_row(const AdObject &gpo_object, QList<QStan
     row[LinkedPoliciesColumn_Name]->setText(name);
     set_data_for_row(row, gpo_dn, LinkedPoliciesRole_DN);
 
-    row[0]->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Policy_Link));
-
     for (const auto column : option_columns) {
         QStandardItem *item = row[column];
         item->setCheckable(true);
@@ -378,6 +383,8 @@ void LinkedPoliciesWidget::load_item_row(const AdObject &gpo_object, QList<QStan
         }();
         item->setCheckState(checkstate);
     }
+
+    set_policy_link_icon(row[0], gplink.get_option(gpo_dn, GplinkOption_Enforced), gplink.get_option(gpo_dn, GplinkOption_Disabled));
 
     if (!gpo_is_valid) {
         row[LinkedPoliciesColumn_Name]->setIcon(g_icon_manager->get_object_icon("block-indicator"));
