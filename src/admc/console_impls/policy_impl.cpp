@@ -195,8 +195,6 @@ void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
 }
 
 void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
-    UNUSED_ARG(index_list);
-
     const QModelIndex parent_index = index_list[0].parent();
     const ItemType parent_type = (ItemType) console_item_get_type(parent_index);
     const bool parent_is_ou = (parent_type == ItemType_PolicyOU);
@@ -548,7 +546,7 @@ void console_policy_remove_link(const QList<ConsoleWidget *> &console_list, Poli
     const bool replace_success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink_new_string);
 
     if (replace_success) {
-        auto apply_changes = [&ou_dn, &dn_list, policy_results](ConsoleWidget *target_console) {
+        auto apply_changes = [&ou_dn, &dn_list, &gplink_new_string, policy_results](ConsoleWidget *target_console) {
             const QModelIndex policy_root = get_policy_tree_root(target_console);
 
             // NOTE: there can be duplicate items for
@@ -558,8 +556,10 @@ void console_policy_remove_link(const QList<ConsoleWidget *> &console_list, Poli
                 const QModelIndex ou_index = target_console->search_item(policy_root, PolicyOURole_DN, ou_dn, {ItemType_PolicyOU});
 
                 if (ou_index.isValid()) {
+                    update_ou_item_gplink_data(gplink_new_string, ou_index, target_console);
+
                     for (const QString &dn : dn_list) {
-                        const QModelIndex gpo_index = target_console->search_item(ou_index, PolicyRole_DN, dn, {ItemType_Policy});
+                        const QModelIndex gpo_index = get_ou_child_policy_index(target_console, ou_index, dn);
 
                         target_console->delete_item(gpo_index);
                     }
