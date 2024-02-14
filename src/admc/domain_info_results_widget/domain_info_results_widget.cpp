@@ -199,8 +199,6 @@ void DomainInfoResultsWidget::add_host_items(QStandardItem *site_item, const AdO
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_SERVER);
     const QHash<QString, AdObject> host_objects = ad.search(servers_container_dn, SearchScope_Children,
                                                             filter, {ATTRIBUTE_DN, ATTRIBUTE_NAME, ATTRIBUTE_DNS_HOST_NAME});
-    QStandardItem *servers_item = add_tree_item(tr("Servers"), g_icon_manager->get_object_icon(OBJECT_CATEGORY_SERVERS_CONTAINER),
-                                                DomainInfoTreeItemType_ServersContainer, site_item);
 
     QHash<QString, QStringList> host_fsmo_map;
     for (int role = 0; role < FSMORole_COUNT; ++role) {
@@ -210,7 +208,7 @@ void DomainInfoResultsWidget::add_host_items(QStandardItem *site_item, const AdO
     QString host;
     for (const AdObject &host_object : host_objects.values()) {
         QStandardItem *host_item = add_tree_item(host_object.get_string(ATTRIBUTE_DNS_HOST_NAME), g_icon_manager->get_icon_for_type(ItemIconType_Domain_Clean),
-                                                 DomainInfoTreeItemType_Host, servers_item);
+                                                 DomainInfoTreeItemType_Host, site_item);
         host_item->setData(host_object.get_dn(), DomainInfoTreeItemRole_DN);
         host = host_object.get_string(ATTRIBUTE_DNS_HOST_NAME);
 
