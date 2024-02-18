@@ -33,6 +33,7 @@ public:
     AttributesTabProxy(AttributesTabFilterMenu *filter_menu, QObject *parent);
 
     void load(const AdObject &object);
+    void update_set_attributes(QSet<QString> attributes);
 
 private:
     AttributesTabFilterMenu *filter_menu;

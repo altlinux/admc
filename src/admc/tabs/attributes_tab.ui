@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>378</height>
+    <width>502</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,6 +43,16 @@
       <widget class="QPushButton" name="view_button">
        <property name="text">
         <string>View...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="load_optional_attrs_button">
+       <property name="toolTip">
+        <string>Loads optional attribute values</string>
+       </property>
+       <property name="text">
+        <string>Load optional attributes</string>
        </property>
       </widget>
      </item>

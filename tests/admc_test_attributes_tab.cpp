@@ -56,8 +56,9 @@ void ADMCTestAttributesTab::init() {
     filter_button = new QPushButton(parent_widget);
     edit_button = new QPushButton(parent_widget);
     auto view_button = new QPushButton(parent_widget);
+    load_optional_attrs_button = new QPushButton(parent_widget);
 
-    edit = new AttributesTabEdit(view, filter_button, edit_button, view_button, parent_widget);
+    edit = new AttributesTabEdit(view, filter_button, edit_button, view_button, load_optional_attrs_button, parent_widget);
 
     filter_menu = view->findChild<AttributesTabFilterMenu *>();
     QVERIFY(filter_menu);

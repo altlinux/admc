@@ -55,6 +55,7 @@ private:
     QPushButton *edit_button;
     QString dn;
     QList<AttributeEdit *> edit_list;
+    QPushButton *load_optional_attrs_button;
 
     void set_filter(const QList<AttributeFilter> &filter_list, const bool state);
 };

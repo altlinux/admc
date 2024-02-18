@@ -58,6 +58,10 @@ void AttributesTabProxy::load(const AdObject &object) {
     set_attributes = QSet<QString>(attributes_list.begin(), attributes_list.end());
 }
 
+void AttributesTabProxy::update_set_attributes(QSet<QString> attributes) {
+    set_attributes += attributes;
+}
+
 bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
     auto source = sourceModel();
     const QString attribute = source->index(source_row, AttributesColumn_Name, source_parent).data().toString();

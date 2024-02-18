@@ -63,7 +63,8 @@ class AttributesTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    AttributesTabEdit(QTreeView *view, QPushButton *filter_button, QPushButton *edit_button, QPushButton *view_button, QObject *parent);
+    AttributesTabEdit(QTreeView *view, QPushButton *filter_button, QPushButton *edit_button, QPushButton *view_button,
+                      QPushButton *load_optional_attrs_button_arg, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
@@ -73,19 +74,26 @@ private:
     QPushButton *filter_button;
     QPushButton *edit_button;
     QPushButton *view_button;
+    QPushButton *load_optional_attrs_button;
+
     AttributesFilterDialog *filter_dialog;
     QStandardItemModel *model;
     AttributesTabProxy *proxy;
     QHash<QString, QList<QByteArray>> original;
     QHash<QString, QList<QByteArray>> current;
+    QList<QString> not_specified_optional_attributes;
+    QString object_dn;
 
     void update_edit_and_view_buttons();
     void on_double_click();
     void edit_attribute();
     void view_attribute();
+    void on_load_optional();
+    void load_optional_attribute_values(AdInterface &ad);
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
     QList<QStandardItem *> get_selected_row() const;
     AttributeDialog *get_attribute_dialog(const bool read_only);
+    void reload_model();
 };
 
 #endif /* ATTRIBUTES_TAB_H */

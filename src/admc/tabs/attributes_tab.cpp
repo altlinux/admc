@@ -42,19 +42,21 @@ AttributesTab::AttributesTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::AttributesTab();
     ui->setupUi(this);
 
-    auto tab_edit = new AttributesTabEdit(ui->view, ui->filter_button, ui->edit_button, ui->view_button, this);
+    auto tab_edit = new AttributesTabEdit(ui->view, ui->filter_button, ui->edit_button,
+                                          ui->view_button, ui->load_optional_attrs_button, this);
 
     edit_list->append({
         tab_edit,
     });
 }
 
-AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_button_arg, QPushButton *edit_button_arg, QPushButton *view_button_arg, QObject *parent)
-: AttributeEdit(parent) {
+AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_button_arg, QPushButton *edit_button_arg,
+                                     QPushButton *view_button_arg, QPushButton *load_optional_attrs_button_arg, QObject *parent) : AttributeEdit(parent) {
     view = view_arg;
     filter_button = filter_button_arg;
     edit_button = edit_button_arg;
     view_button = view_button_arg;
+    load_optional_attrs_button = load_optional_attrs_button_arg;
 
     model = new QStandardItemModel(0, AttributesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -87,6 +89,9 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
 
     QItemSelectionModel *selection_model = view->selectionModel();
 
+    bool load_optional_is_set = settings_get_variant(SETTING_load_optional_attribute_values).toBool();
+    load_optional_attrs_button->setVisible(!load_optional_is_set);
+
     connect(
         selection_model, &QItemSelectionModel::selectionChanged,
         this, &AttributesTabEdit::update_edit_and_view_buttons);
@@ -104,6 +109,9 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
     connect(
         filter_menu, &AttributesTabFilterMenu::filter_changed,
         proxy, &AttributesTabProxy::invalidate);
+    connect(
+        load_optional_attrs_button, &QAbstractButton::clicked,
+        this, &AttributesTabEdit::on_load_optional);
 }
 
 AttributesTab::~AttributesTab() {
@@ -188,6 +196,47 @@ void AttributesTabEdit::view_attribute() {
     dialog->open();
 }
 
+void AttributesTabEdit::on_load_optional() {
+    show_busy_indicator();
+
+    AdInterface ad;
+    if (!ad.is_connected()) {
+        hide_busy_indicator();
+        return;
+    }
+
+    load_optional_attribute_values(ad);
+    reload_model();
+
+    hide_busy_indicator();
+}
+
+void AttributesTabEdit::load_optional_attribute_values(AdInterface &ad) {
+    // Chunks number is minimal query number (manually tested) to load objects
+    // without errors. This value can be corrected after.
+    const int attr_list_chunks_number = 5;
+    int chunk_length = not_specified_optional_attributes.size()/attr_list_chunks_number;
+
+    QSet<QString> optional_set_attrs;
+
+    for (int from = 0; from < not_specified_optional_attributes.size(); from += chunk_length) {
+        if (not_specified_optional_attributes.size() - from < chunk_length) {
+            chunk_length = not_specified_optional_attributes.size() - from;
+        }
+        const QList<QString> attr_list_chunk = not_specified_optional_attributes.mid(from, chunk_length);
+        const AdObject optional_attrs_object = ad.search_object(object_dn, attr_list_chunk);
+        for (const QString &attribute : attr_list_chunk) {
+            QList<QByteArray> values = optional_attrs_object.get_values(attribute);
+            original[attribute] = values;
+            if (!values.isEmpty()) {
+                optional_set_attrs << attribute;
+            }
+        }
+    }
+
+    proxy->update_set_attributes(optional_set_attrs);
+}
+
 void AttributesTabEdit::edit_attribute() {
     const bool read_only = false;
     AttributeDialog *dialog = get_attribute_dialog(read_only);
@@ -222,33 +271,37 @@ void AttributesTabEdit::load(AdInterface &ad, const AdObject &object) {
     UNUSED_ARG(ad);
 
     original.clear();
+    object_dn = object.get_dn();
 
     for (auto attribute : object.attributes()) {
         original[attribute] = object.get_values(attribute);
     }
 
-    // Add attributes without values
     const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
     const QList<QString> optional_attributes = g_adconfig->get_optional_attributes(object_classes);
+
     for (const QString &attribute : optional_attributes) {
         if (!original.contains(attribute)) {
-            original[attribute] = QList<QByteArray>();
+            not_specified_optional_attributes << attribute;
         }
     }
 
-    current = original;
-
     proxy->load(object);
 
-    model->removeRows(0, model->rowCount());
-
-    for (auto attribute : original.keys()) {
-        const QList<QStandardItem *> row = make_item_row(AttributesColumn_COUNT);
-        const QList<QByteArray> values = original[attribute];
-
-        model->appendRow(row);
-        load_row(row, attribute, values);
+    bool load_optional = settings_get_variant(SETTING_load_optional_attribute_values).toBool();
+    if (load_optional) {
+        load_optional_attribute_values(ad);
     }
+    else {
+        for (const QString &attribute : not_specified_optional_attributes) {
+            if (!original.contains(attribute)) {
+                original[attribute] = QList<QByteArray>();
+            }
+        }
+    }
+
+    reload_model();
+    current = original;
 }
 
 bool AttributesTabEdit::apply(AdInterface &ad, const QString &target) const {
@@ -295,4 +348,16 @@ AttributeDialog *AttributesTabEdit::get_attribute_dialog(const bool read_only) {
     AttributeDialog *dialog = AttributeDialog::make(attribute, value_list, read_only, single_valued, view);
 
     return dialog;
+}
+
+void AttributesTabEdit::reload_model() {
+    model->removeRows(0, model->rowCount());
+
+    for (auto attribute : original.keys()) {
+        const QList<QStandardItem *> row = make_item_row(AttributesColumn_COUNT);
+        const QList<QByteArray> values = original[attribute];
+
+        model->appendRow(row);
+        load_row(row, attribute, values);
+    }
 }
