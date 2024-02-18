@@ -121,6 +121,7 @@ DEFINE_SETTING(SETTING_sasl_nocanon);
 DEFINE_SETTING(SETTING_show_login);
 DEFINE_SETTING(SETTING_show_password);
 DEFINE_SETTING(SETTING_domain_is_default);
+DEFINE_SETTING(SETTING_load_optional_attribute_values);
 
 // Other
 DEFINE_SETTING(SETTING_host);

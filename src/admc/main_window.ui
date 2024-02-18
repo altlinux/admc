@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -75,6 +75,7 @@
     <addaction name="action_log_searches"/>
     <addaction name="action_timestamps"/>
     <addaction name="action_show_noncontainers"/>
+    <addaction name="action_load_optional_values"/>
     <addaction name="menu_language"/>
    </widget>
    <widget class="QMenu" name="menu_help">
@@ -395,6 +396,14 @@
    </property>
    <property name="shortcut">
     <string>Alt+5</string>
+   </property>
+  </action>
+  <action name="action_load_optional_values">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Load optional attribute values</string>
    </property>
   </action>
  </widget>

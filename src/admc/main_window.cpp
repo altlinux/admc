@@ -305,6 +305,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         {SETTING_show_login, ui->action_show_login},
         {SETTING_show_non_containers_in_console_tree, ui->action_show_noncontainers},
         {SETTING_advanced_features, ui->action_advanced_features},
+        {SETTING_load_optional_attribute_values, ui->action_load_optional_values},
     };
 
     const QList<QString> simple_setting_list = {
@@ -313,6 +314,7 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
         SETTING_log_searches,
         SETTING_timestamp_log,
         SETTING_show_login,
+        SETTING_load_optional_attribute_values
     };
 
     for (const QString &setting : bool_action_map.keys()) {
