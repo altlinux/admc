@@ -203,6 +203,8 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_DOMAIN_FUNCTIONALITY_LEVEL "domainFunctionality"
 #define ATTRIBUTE_FOREST_FUNCTIONALITY_LEVEL "forestFunctionality"
 #define ATTRIBUTE_OBJECT_VERSION "objectVersion"
+#define ATTRIBUTE_SERVER_REFERENCE "serverReference"
+#define ATTRIBUTE_SERVER_REFERENCE_BL "serverReferenceBL"
 
 
 #define CLASS_GROUP "group"
