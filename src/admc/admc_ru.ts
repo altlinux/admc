@@ -266,7 +266,17 @@
         <translation>Просмотреть...</translation>
     </message>
     <message>
-        <location filename="tabs/attributes_tab.ui" line="65"/>
+        <location filename="tabs/attributes_tab.ui" line="52"/>
+        <source>Loads optional attribute values</source>
+        <translation>Загружает значения необязательных атрибутов</translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.ui" line="55"/>
+        <source>Load optional attributes</source>
+        <translation>Загрузить необязательные атрибуты</translation>
+    </message>
+    <message>
+        <location filename="tabs/attributes_tab.ui" line="75"/>
         <source>Filter</source>
         <translation>Фильтр</translation>
     </message>
@@ -2201,7 +2211,12 @@
         <translation>Alt+5</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="285"/>
+        <location filename="main_window.ui" line="406"/>
+        <source>Load optional attribute values</source>
+        <translation>Загружать значения необязательных атрибутов</translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="292"/>
         <source>Navigate Up</source>
         <translation>Наверх</translation>
     </message>
