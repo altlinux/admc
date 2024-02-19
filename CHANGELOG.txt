@@ -2,6 +2,26 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.16.0
+-----------------------------------------------------------------------
+- Add drag&drop policy link order changing to links tab in the policy OU
+widget.
+- Domain info widget: "Servers" items are removed from the tree and
+domain controller version is added.
+- Add link state icons (enforced/disabled) to the links tab from the
+policy OU widget.
+- Domain policy link broken deletion is fixed (the same links in other
+OUs were deleted instead of domain's link).
+- Fix broken domain policy link icon changing: enforcing/disabling
+from policy widget changed another OU's the same policy link icon.
+- Fix links duplication in policy OU widget's inheritance tab.
+- Fixed user properties window resize.
+- Add optional attributes loading. It can be performed via "Load
+optional attribute values" option checking (in the preferences menu)
+or with corresponding button in the attributes tab.
+- Fixed not selected of any theme after ADMC start.
+
+-----------------------------------------------------------------------
  VERSION 0.15.2
 -----------------------------------------------------------------------
 - Removed missing theme error log on first launch
