@@ -87,7 +87,8 @@ void DomainInfoResultsWidget::update_defaults() {
         ui->dc_count_value,
         ui->domain_functionality_value,
         ui->forest_functionality_value,
-        ui->domain_schema_value
+        ui->domain_schema_value,
+        ui->dc_version_value
     };
     for (auto label : labels) {
         set_label_failed(label, false);
@@ -132,10 +133,18 @@ DomainInfo_SearchResults DomainInfoResultsWidget::search_results() {
     const QStringList root_dse_attributes = {
         ATTRIBUTE_DOMAIN_FUNCTIONALITY_LEVEL,
         ATTRIBUTE_FOREST_FUNCTIONALITY_LEVEL,
-        ATTRIBUTE_SCHEMA_NAMING_CONTEXT
+        ATTRIBUTE_SCHEMA_NAMING_CONTEXT,
+        ATTRIBUTE_DNS_HOST_NAME,
+        ATTRIBUTE_SERVER_NAME
     };
 
     const AdObject rootDSE = ad.search_object("", root_dse_attributes);
+
+    const QString server_name = rootDSE.get_string(ATTRIBUTE_SERVER_NAME);
+    const AdObject server_object = ad.search_object(server_name, {ATTRIBUTE_SERVER_REFERENCE});
+    const AdObject host = ad.search_object(server_object.get_string(ATTRIBUTE_SERVER_REFERENCE), {ATTRIBUTE_OS, ATTRIBUTE_OS_VERSION});
+    const QString dc_version = host.get_string(ATTRIBUTE_OS) + QString(" (%1)").arg(host.get_string(ATTRIBUTE_OS_VERSION));
+    results.domain_controller_version = dc_version;
 
     const int forest_level = rootDSE.get_int(ATTRIBUTE_FOREST_FUNCTIONALITY_LEVEL);
     const QString forest_level_string = QString::number(forest_level) + " " + functionality_level_to_string(forest_level);
@@ -182,7 +191,8 @@ void DomainInfoResultsWidget::populate_widgets(DomainInfo_SearchResults results)
     const QHash<QLabel*, QString> label_results_hash {
         {ui->domain_functionality_value, results.domain_functional_level},
         {ui->forest_functionality_value, results.forest_functional_level},
-        {ui->domain_schema_value, results.domain_schema_version}
+        {ui->domain_schema_value, results.domain_schema_version},
+        {ui->dc_version_value, results.domain_controller_version}
     };
     for (QLabel *label : label_results_hash.keys()) {
         if (label_results_hash[label].isEmpty()) {

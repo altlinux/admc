@@ -41,6 +41,7 @@ struct DomainInfo_SearchResults {
     QString domain_functional_level;
     QString forest_functional_level;
     QString domain_schema_version;
+    QString domain_controller_version;
 };
 
 class DomainInfoResultsWidget : public QWidget
