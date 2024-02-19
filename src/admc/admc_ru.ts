@@ -933,7 +933,12 @@
         <translation>Режим работы домена:</translation>
     </message>
     <message>
-        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="148"/>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="150"/>
+        <source>Domain controller version:</source>
+        <translation>Версия контроллера домена:</translation>
+    </message>
+    <message>
+        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="80"/>
         <source>Forest functionality level:</source>
         <translation>Режим работы леса:</translation>
     </message>
