@@ -58,9 +58,7 @@ public:
     QString get_current_gpo() const;
 
 signals:
-    void policy_gplink_option_changed(const QString &policy_dn, const QString &ou_dn,
-                                 bool is_checked, GplinkOption option);
-    void ou_gplink_changed(const QString &ou_dn, const QString &gplink_string);
+    void ou_gplink_changed(const QString &ou_dn, const Gplink &gplink, const QString &policy_dn, GplinkOption option = GplinkOption_NoOption);
 
 private:
     QStandardItemModel *model;

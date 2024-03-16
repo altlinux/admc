@@ -59,7 +59,7 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
     disable_action = new QAction(tr("Disabled"), this);
     disable_action->setCheckable(true);
     disable_action->setData(GplinkOption_Disabled);
-    update_gplink_actions_check_state();
+    update_gplink_option_check_actions();
 
     connect(
         add_link_action, &QAction::triggered,
@@ -68,15 +68,12 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
         edit_action, &QAction::triggered,
         this, &PolicyImpl::on_edit);
     connect(
-        policy_results, &PolicyResultsWidget::policy_gplink_option_changed,
-        this, &PolicyImpl::update_policy_item_icons);
-    connect(
         policy_results, &PolicyResultsWidget::ou_gplink_changed,
-        this, &PolicyImpl::set_ou_gplink_data);
+        this, &PolicyImpl::on_ou_gplink_changed);
     connect(
-        enforce_action, &QAction::triggered, [this](){on_change_gplink_option(enforce_action);});
+        enforce_action, &QAction::triggered, [this](){on_change_gplink_option_action(enforce_action);});
     connect(
-        disable_action, &QAction::triggered, [this](){on_change_gplink_option(disable_action);});
+        disable_action, &QAction::triggered, [this](){on_change_gplink_option_action(disable_action);});
 }
 
 bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
@@ -163,7 +160,7 @@ QSet<QAction *> PolicyImpl::get_custom_actions(const QModelIndex &index, const b
         out.insert(edit_action);
         if (index.parent().data(ConsoleRole_Type).toInt() == ItemType_PolicyOU)
         {
-            update_gplink_actions_check_state();
+            update_gplink_option_check_actions();
             out.insert(enforce_action);
             out.insert(disable_action);
         }
@@ -228,28 +225,35 @@ void PolicyImpl::on_edit() {
     console_policy_edit(console, ItemType_Policy, PolicyRole_DN);
 }
 
-void PolicyImpl::update_policy_item_icons(const QString &policy_dn, const QString &ou_dn, bool is_checked, GplinkOption option) {
-    //Group Policy Objects child item index
-    QModelIndex ou_dn_item_index = search_gpo_ou_index(console, ou_dn);
-    QModelIndex target_policy_index = get_ou_child_policy_index(console, ou_dn_item_index, policy_dn);
-
+void PolicyImpl::on_ou_gplink_changed(const QString &ou_dn, const Gplink &gplink, const QString &policy_dn, GplinkOption option) {
+    QModelIndex ou_item_index = search_gpo_ou_index(console, ou_dn);
+    if (!ou_item_index.isValid())
+        return;
+    QModelIndex target_policy_index = get_ou_child_policy_index(console, ou_item_index, policy_dn);
     if (!target_policy_index.isValid())
         return;
 
-    set_policy_item_icon(target_policy_index, is_checked, option);
-}
+    update_ou_item_gplink_data(gplink.to_string(), ou_item_index, console);
 
-void PolicyImpl::set_ou_gplink_data(const QString &ou_dn, const QString &gplink_string)
-{
-    QModelIndex ou_dn_item_index = search_gpo_ou_index(console, ou_dn);
-    if (!ou_dn_item_index.isValid())
+    // Case of link deletion
+    if (!gplink.contains(policy_dn)) {
+        console->delete_item(target_policy_index);
         return;
+    }
 
-    update_ou_item_gplink_data(gplink_string, ou_dn_item_index, console);
+    // Case of option change
+    if (option != GplinkOption_NoOption) {
+        set_policy_item_icon(target_policy_index, gplink.get_option(policy_dn, option), option);
+    }
 }
 
-void PolicyImpl::on_change_gplink_option(QAction *action)
+void PolicyImpl::on_change_gplink_option_action(QAction *action)
 {
+    AdInterface ad;
+    if (ad_failed(ad, console)) {
+        return;
+    }
+
     GplinkOption option = (GplinkOption)action->data().toInt();
     const QModelIndex policy_index = console->get_current_scope_item();
     const QString gpo_dn = policy_index.data(PolicyRole_DN).toString();
@@ -262,11 +266,6 @@ void PolicyImpl::on_change_gplink_option(QAction *action)
     Gplink gplink = Gplink(gplink_string);
     gplink.set_option(gpo_dn, option, checked);
     const QString updated_gplink_string = gplink.to_string();
-
-    AdInterface ad;
-    if (ad_failed(ad, console)) {
-        return;
-    }
 
     bool success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, updated_gplink_string);
     if (success) {
@@ -281,7 +280,7 @@ void PolicyImpl::on_change_gplink_option(QAction *action)
     g_status->display_ad_messages(ad, console);
 }
 
-void PolicyImpl::update_gplink_actions_check_state() const
+void PolicyImpl::update_gplink_option_check_actions() const
 {
     const QModelIndex policy_index = console->get_current_scope_item();
     if (policy_index.parent().data(ConsoleRole_Type).toInt() != ItemType_PolicyOU)

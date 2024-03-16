@@ -70,8 +70,7 @@ public:
 private slots:
     void on_add_link();
     void on_edit();
-    void update_policy_item_icons(const QString &policy_dn, const QString &ou_dn, bool is_checked, GplinkOption option);
-    void set_ou_gplink_data(const QString &ou_dn, const QString &gplink_string);
+    void on_ou_gplink_changed(const QString &ou_dn, const Gplink &gplink, const QString &policy_dn, GplinkOption option);
 
 private:
     PolicyResultsWidget *policy_results;
@@ -82,8 +81,8 @@ private:
 
     void on_gpui_error(QProcess::ProcessError error);
     void set_policy_item_icon(const QModelIndex &policy_index, bool is_checked, GplinkOption option);
-    void on_change_gplink_option(QAction *action);
-    void update_gplink_actions_check_state() const;
+    void on_change_gplink_option_action(QAction *action);
+    void update_gplink_option_check_actions() const;
 };
 
 void console_policy_load(const QList<QStandardItem *> &row, const AdObject &object);

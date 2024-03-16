@@ -529,7 +529,7 @@ QModelIndex get_ou_child_policy_index(ConsoleWidget *console, const QModelIndex 
                                                                      PolicyRole_DN,
                                                                      policy_dn,
                                                                      {ItemType_Policy});
-    QModelIndex policy_index = QModelIndex();
+    QModelIndex policy_index;
     for (QModelIndex index : found_policy_indexes)
     {
         if (index.parent().data(ConsoleRole_Type) == ItemType_PolicyOU &&
@@ -543,14 +543,12 @@ QModelIndex get_ou_child_policy_index(ConsoleWidget *console, const QModelIndex 
     return policy_index;
 }
 
-void update_ou_item_gplink_data(const QString &gplink, const QModelIndex &ou_index, ConsoleWidget *console)
-{
+void update_ou_item_gplink_data(const QString &gplink, const QModelIndex &ou_index, ConsoleWidget *console) {
     QStandardItem *ou_item = console->get_item(ou_index);
     ou_item->setData(gplink, PolicyOURole_Gplink_String);
 }
 
-QModelIndex search_gpo_ou_index(ConsoleWidget *console, const QString &ou_dn)
-{
+QModelIndex search_gpo_ou_index(ConsoleWidget *console, const QString &ou_dn) {
     QModelIndex gp_objects_index = console->search_item(QModelIndex(), {ItemType_PolicyRoot});
     QModelIndex ou_dn_item_index = console->search_item(gp_objects_index, PolicyOURole_DN,
                                                         ou_dn, {ItemType_PolicyOU});

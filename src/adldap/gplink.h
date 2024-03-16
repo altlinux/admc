@@ -26,8 +26,9 @@
 #include <QString>
 
 enum GplinkOption {
-    GplinkOption_Disabled = 1,
-    GplinkOption_Enforced = 2
+    GplinkOption_NoOption,
+    GplinkOption_Disabled,
+    GplinkOption_Enforced
 };
 
 /**

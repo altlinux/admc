@@ -210,7 +210,7 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
 
     const QModelIndex this_index = item->index();
     const QModelIndex index = this_index.siblingAtColumn(0);
-    const QString dn = index.data(PolicyResultsRole_DN).toString();
+    const QString ou_dn = index.data(PolicyResultsRole_DN).toString();
     const GplinkOption option = column_to_option[column];
     const bool is_checked = (item->checkState() == Qt::Checked);
 
@@ -231,12 +231,11 @@ void PolicyResultsWidget::on_item_changed(QStandardItem *item) {
 
     show_busy_indicator();
 
-    const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_GPLINK, updated_gplink_string);
+    const bool success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, updated_gplink_string);
 
     if (success) {
         model->setData(index, updated_gplink_string, PolicyResultsRole_GplinkString);
-        emit policy_gplink_option_changed(gpo, dn, is_checked, option);
-        emit ou_gplink_changed(dn, updated_gplink_string);
+        emit ou_gplink_changed(ou_dn, gplink, gpo, option);
 
     } else {
         const Qt::CheckState undo_check_state = [&]() {
@@ -293,6 +292,7 @@ void PolicyResultsWidget::delete_link() {
 
         if (success) {
             removed_indexes.append(QPersistentModelIndex(index));
+            emit ou_gplink_changed(dn, gplink, gpo);
         }
     }
 
