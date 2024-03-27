@@ -135,3 +135,8 @@ QString filter_dn_list(const QList<QString> &dn_list) {
 
     return out;
 }
+
+QString filter_matching_rule_in_chain(const QString &attribute, const QString &dn_value) {
+    const QString filter = attribute + ":" + QString(MATCHING_RULE_IN_CHAIN_OID) + ":=" + dn_value;
+    return QString("(" + filter + ")");
+}

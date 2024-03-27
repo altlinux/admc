@@ -1992,52 +1992,39 @@ int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp) {
 }
 
 bool AdInterface::logged_in_as_domain_admin() {
-    const QString user_dn = [&]() {
-        const QString sam_account_name = [&]() {
-            QString out = d->client_user;
-            out = out.split("@")[0];
+    const QString sam_account_name = d->client_user.split('@')[0];
+    const QString client_user_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_SAM_ACCOUNT_NAME, sam_account_name);
+    const QHash<QString, AdObject> client_user_results = search(adconfig()->domain_dn(), SearchScope_All, client_user_filter, {ATTRIBUTE_PRIMARY_GROUP_ID});
+    if (client_user_results.isEmpty()) {
+        return false;
+    }
 
-            return out;
-        }();
-
-        if (sam_account_name.isEmpty()) {
-            return QString();
-        }
-
-        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_SAM_ACCOUNT_NAME, sam_account_name);
-        const QHash<QString, AdObject> results = search(adconfig()->domain_dn(), SearchScope_All, filter, QList<QString>());
-
-        if (results.isEmpty()) {
-            return QString();
-        }
-
-        const QString out = results.keys()[0];
-
-        return out;
-    }();
-
+    const QString user_dn = client_user_results.keys()[0];
     if (user_dn.isEmpty()) {
         return false;
     }
 
-    const bool user_is_admin = [&]() {
-        const QString domain_admins_sid = adconfig()->domain_sid() + "-512";
-        const QString filter_group = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GROUP);
-        const QString filter_sid = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, domain_admins_sid);
-        const QString filter = filter_AND({filter_group, filter_sid});
-        const QHash<QString, AdObject> results = search(adconfig()->domain_dn(), SearchScope_All, filter, QList<QString>());
-        if (results.isEmpty()) {
-            d->error_message(tr("Failed to check user permissions."), tr("Can't find domain admins group with SID ") + domain_admins_sid);
-            return false;
-        }
-        const AdObject domain_admins_object = results.values()[0];
-        const QList<QString> member_list = domain_admins_object.get_strings(ATTRIBUTE_MEMBER);
+    int primary_group_id = client_user_results.values()[0].get_int(ATTRIBUTE_PRIMARY_GROUP_ID);
+    const int domain_admins_rid = 512;
+    if (primary_group_id == domain_admins_rid) {
+        return true;
+    }
 
-        const bool out = member_list.contains(user_dn);
-        return out;
-    }();
+    const QString domain_admins_sid = adconfig()->domain_sid() + "-" + QString::number(domain_admins_rid);
+    const QString filter_group = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_GROUP);
+    const QString filter_sid = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, domain_admins_sid);
+    const QString filter = filter_AND({filter_group, filter_sid});
+    const QHash<QString, AdObject> admin_group_results = search(adconfig()->domain_dn(), SearchScope_All, filter, QList<QString>());
+    if (admin_group_results.isEmpty()) {
+        d->error_message(tr("Failed to check user permissions."), tr("Can't find domain admins group with SID ") + domain_admins_sid);
+        return false;
+    }
 
-    return user_is_admin;
+    const AdObject domain_admins_object = admin_group_results.values()[0];
+    const QString rule_in_chain_filter = filter_matching_rule_in_chain(ATTRIBUTE_MEMBER_OF, domain_admins_object.get_dn());
+    const QHash<QString, AdObject> res = search(user_dn, SearchScope_Object, rule_in_chain_filter, QList<QString>());
+
+    return res.keys().contains(user_dn);
 }
 
 QString AdInterface::get_dc() const {

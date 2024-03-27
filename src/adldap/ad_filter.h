@@ -52,6 +52,11 @@ QString add_advanced_view_filter(const QString &filter);
 
 QString condition_to_display_string(const Condition condition);
 
+// Search all the way to the root through the chain of
+// ancestry until it finds a match. This method works only with DN-type
+// attributes
+QString filter_matching_rule_in_chain(const QString &attribute, const QString &dn_value);
+
 // Filter that accepts any DN from given list
 QString filter_dn_list(const QList<QString> &dn_list);
 
