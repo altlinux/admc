@@ -44,6 +44,7 @@ AttributesTab::AttributesTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 
     auto tab_edit = new AttributesTabEdit(ui->view, ui->filter_button, ui->edit_button,
                                           ui->view_button, ui->load_optional_attrs_button, this);
+    ui->view->setUniformRowHeights(true);
 
     edit_list->append({
         tab_edit,
@@ -206,6 +207,7 @@ void AttributesTabEdit::on_load_optional() {
     }
 
     load_optional_attribute_values(ad);
+    current = original;
     reload_model();
 
     hide_busy_indicator();
