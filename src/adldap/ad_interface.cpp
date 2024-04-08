@@ -472,25 +472,21 @@ bool AdInterface::search_paged(const QString &base, const SearchScope scope, con
     }();
 
     // Convert attributes list to NULL-terminated array
-    char **attributes_array = [&]() {
-        char **out;
-        if (attributes.isEmpty()) {
-            // Pass NULL so LDAP gets all attributes
-            out = NULL;
-        } else {
-            out = (char **) malloc((attributes.size() + 1) * sizeof(char *));
-
-            if (out != NULL) {
-                for (int i = 0; i < attributes.size(); i++) {
-                    const QString attribute = attributes[i];
-                    out[i] = strdup(cstr(attribute));
-                }
-                out[attributes.size()] = NULL;
+    char **attributes_array;
+    QList<QByteArray> attr_bytearray_list;
+    if (attributes.isEmpty()) {
+        // Pass NULL so LDAP gets all attributes
+        attributes_array = NULL;
+    } else {
+        attributes_array = (char **) malloc((attributes.size() + 1) * sizeof(char *));
+        if (attributes_array != NULL) {
+            for (int i = 0; i < attributes.size(); i++) {
+                attr_bytearray_list.append(attributes[i].toUtf8());
+                attributes_array[i] = strdup(attr_bytearray_list.last().constData());
             }
+            attributes_array[attributes.size()] = NULL;
         }
-
-        return out;
-    }();
+    }
 
     const bool search_success = d->search_paged_internal(base_cstr, scope_int, filter_cstr, attributes_array, results, cookie, get_sacl);
     if (!search_success) {
