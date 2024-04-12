@@ -34,6 +34,29 @@ set(ADLDAP_SOURCES
 )
 prefix_clangformat_setup(adldap ${ADLDAP_SOURCES})
 
+# Bandaid to provide compatibility for Samba 4.20+ versions.
+set(VERSION_H "/usr/include/samba-4.0/samba/version.h")
+if (EXISTS ${VERSION_H})
+    file(READ ${VERSION_H} VERSION_HEADER_CONTENT)
+
+    string(REGEX MATCH "#define SAMBA_VERSION_MINOR [0-9]+" M_VERSION_LINE "${VERSION_HEADER_CONTENT}")
+    string(REGEX MATCH "[0-9]+" VERSION_SMB_MINOR "${M_VERSION_LINE}")
+    set(SMB_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samba)
+    if (VERSION_SMB_MINOR)
+        file(REMOVE ${SMB_SRC_PATH}/ndr_misc.c ${SMB_SRC_PATH}/ndr_misc.h)
+    endif(VERSION_SMB_MINOR)
+
+    if (VERSION_SMB_MINOR GREATER_EQUAL 20)
+        file(COPY ${SMB_SRC_PATH}/src_4_20/ndr_misc.h ${SMB_SRC_PATH}/src_4_20/ndr_misc.c
+             DESTINATION ${SMB_SRC_PATH})
+    else()
+        file(COPY ${SMB_SRC_PATH}/src_older/ndr_misc.h ${SMB_SRC_PATH}/src_older/ndr_misc.c
+             DESTINATION ${SMB_SRC_PATH})
+    endif(VERSION_SMB_MINOR GREATER_EQUAL 20)
+else()
+    message(WARNING "Failed to find Samba version. If its version is 20 or greater, update ndr_misc.* files.")
+endif(EXISTS ${VERSION_H})
+
 
 set(ADLDAP_SAMBA_SOURCES
     samba/gp_manage.c

@@ -2,3 +2,5 @@ build/
 output/
 *.ini
 *.qm
+src/adldap/samba/ndr_misc.c
+src/adldap/samba/ndr_misc.h
