@@ -1526,6 +1526,10 @@ void object_impl_add_objects_to_console_from_dns(ConsoleWidget *console, AdInter
 void console_object_load(const QList<QStandardItem *> row, const AdObject &object) {
     // Load attribute columns
     for (int i = 0; i < g_adconfig->get_columns().count(); i++) {
+        if (g_adconfig->get_columns().count() > row.size()) {
+            break;
+        }
+
         const QString attribute = g_adconfig->get_columns()[i];
 
         if (!object.contains(attribute)) {
