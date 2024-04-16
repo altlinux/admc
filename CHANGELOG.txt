@@ -2,6 +2,17 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.16.1
+-----------------------------------------------------------------------
+- Fix policy link deletion: OU's child link items are deleted from
+tree after removal from policy widget.
+- Update backend files for Samba 4.20 compatibility.
+- Fix admin domain definition method.
+- Fix crash after optional attributes load.
+- Fix optional attribute display bugs with enabled LAPS.
+- Fix crashing after domain object properties apply changes.
+
+-----------------------------------------------------------------------
  VERSION 0.16.0
 -----------------------------------------------------------------------
 - Add drag&drop policy link order changing to links tab in the policy OU
