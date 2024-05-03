@@ -2,6 +2,13 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.16.2
+-----------------------------------------------------------------------
+- Fix OU insufficient access for users with delegation. Users with
+delegated OU rights can do corresponding allowed actions. In particular,
+user/group creation/deletion, OU creation and policy (un)link.
+
+-----------------------------------------------------------------------
  VERSION 0.16.1
 -----------------------------------------------------------------------
 - Fix policy link deletion: OU's child link items are deleted from
