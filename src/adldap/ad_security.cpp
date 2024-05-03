@@ -254,7 +254,8 @@ bool ad_security_replace_security_descriptor(AdInterface &ad, const QString &dn,
         return out;
     }();
 
-    const bool apply_success = ad.attribute_replace_value(dn, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes);
+    const bool set_dacl = true;
+    const bool apply_success = ad.attribute_replace_value(dn, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes, DoStatusMsg_Yes, set_dacl);
 
     return apply_success;
 }

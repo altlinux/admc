@@ -83,7 +83,7 @@ enum AceMaskFormat {
 QList<QString> query_server_for_hosts(const char *dname);
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in);
 QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format);
-int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp);
+int create_sd_control(bool get_sacl, int is_critical, LDAPControl **ctrlp, bool set_dacl = false);
 
 AdConfig *AdInterfacePrivate::adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
@@ -518,7 +518,7 @@ AdObject AdInterface::search_object(const QString &dn, const QList<QString> &att
     }
 }
 
-bool AdInterface::attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg, const bool set_dacl) {
     const AdObject object = search_object(dn, {attribute});
     const QList<QByteArray> old_values = object.get_values(attribute);
     const QString name = dn_get_name(dn);
@@ -551,7 +551,30 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
 
     LDAPMod *attrs[] = {&attr, NULL};
 
-    const int result = ldap_modify_ext_s(d->ld, cstr(dn), attrs, NULL, NULL);
+    int result;
+
+    LDAPControl **server_controls_list = NULL;
+    if (set_dacl) {
+        LDAPControl *sd_control = NULL;
+        auto cleanup = [&]() {
+            ldap_control_free(sd_control);
+        };
+
+        const int is_critical = 1;
+
+        result = create_sd_control(false, is_critical, &sd_control, set_dacl);
+        if (result != LDAP_SUCCESS) {
+            qDebug() << "Failed to create sd control: " << ldap_err2string(result);
+
+            cleanup();
+            return false;
+        }
+
+        LDAPControl *server_controls[2] = {sd_control, NULL};
+        server_controls_list = server_controls;
+    }
+
+    result = ldap_modify_ext_s(d->ld, cstr(dn), attrs, server_controls_list, NULL);
 
     if (result == LDAP_SUCCESS) {
         d->success_message(QString(tr("Attribute %1 of object %2 was changed from \"%3\" to \"%4\".")).arg(attribute, name, old_values_display, values_display), do_msg);
@@ -566,7 +589,7 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     }
 }
 
-bool AdInterface::attribute_replace_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
+bool AdInterface::attribute_replace_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg, const bool set_dacl) {
     const QList<QByteArray> values = [=]() -> QList<QByteArray> {
         if (value.isEmpty()) {
             return QList<QByteArray>();
@@ -575,7 +598,7 @@ bool AdInterface::attribute_replace_value(const QString &dn, const QString &attr
         }
     }();
 
-    return attribute_replace_values(dn, attribute, values, do_msg);
+    return attribute_replace_values(dn, attribute, values, do_msg, set_dacl);
 }
 
 bool AdInterface::attribute_add_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg) {
@@ -1956,31 +1979,30 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
 // ldap_create_page_control() and others. See pagectl.c
 // in ldap sources for examples. Extracted to contain
 // the C madness.
-int create_sd_control(bool get_sacl, int iscritical, LDAPControl **ctrlp) {
-    BerElement *value_be = NULL;
-    struct berval value;
-
-    // Create berval to load into control
-    //
+int create_sd_control(bool get_sacl, int is_critical, LDAPControl **ctrlp, bool set_dacl) {
     // NOTE: SACL part of the sd can only be obtained
     // by administrators. For most operations we don't
     // need SACL. Some operations, like creating a GPO,
     // do require SACL, so for those operations we turn
     // on the "get_sacl" options.
-    const int value_int = [&]() {
-        if (get_sacl) {
-            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
-        } else {
-            return (OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION);
-        }
-    }();
+    int flags = OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION;
+    if (get_sacl) {
+        flags |= SACL_SECURITY_INFORMATION;
+    }
+    else if (set_dacl) {
+        flags = DACL_SECURITY_INFORMATION;
+    }
+
+    BerElement *value_be = NULL;
+    struct berval value;
+
     value_be = ber_alloc_t(LBER_USE_DER);
-    ber_printf(value_be, "{i}", value_int);
+    ber_printf(value_be, "{i}", flags);
     ber_flatten2(value_be, &value, 1);
 
     // Create control
     const int result = ldap_control_create(LDAP_SERVER_SD_FLAGS_OID,
-        iscritical, &value, 0, ctrlp);
+        is_critical, &value, 0, ctrlp);
 
     if (result != LDAP_SUCCESS) {
         ber_memfree(value.bv_val);
