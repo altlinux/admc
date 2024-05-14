@@ -143,7 +143,8 @@ DomainInfo_SearchResults DomainInfoResultsWidget::search_results() {
     const QString server_name = rootDSE.get_string(ATTRIBUTE_SERVER_NAME);
     const AdObject server_object = ad.search_object(server_name, {ATTRIBUTE_SERVER_REFERENCE});
     const AdObject host = ad.search_object(server_object.get_string(ATTRIBUTE_SERVER_REFERENCE), {ATTRIBUTE_OS, ATTRIBUTE_OS_VERSION});
-    const QString dc_version = host.get_string(ATTRIBUTE_OS) + QString(" (%1)").arg(host.get_string(ATTRIBUTE_OS_VERSION));
+    const QString dc_version = host.get_string(ATTRIBUTE_OS).isEmpty() ? QString() : host.get_string(ATTRIBUTE_OS) +
+                                                                                    QString(" (%1)").arg(host.get_string(ATTRIBUTE_OS_VERSION));
     results.domain_controller_version = dc_version;
 
     const int forest_level = rootDSE.get_int(ATTRIBUTE_FOREST_FUNCTIONALITY_LEVEL);
