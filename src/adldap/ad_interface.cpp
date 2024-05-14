@@ -553,28 +553,23 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
 
     int result;
 
-    LDAPControl **server_controls_list = NULL;
+    LDAPControl *server_controls[2] = {NULL, NULL};
     if (set_dacl) {
         LDAPControl *sd_control = NULL;
-        auto cleanup = [&]() {
-            ldap_control_free(sd_control);
-        };
-
         const int is_critical = 1;
 
         result = create_sd_control(false, is_critical, &sd_control, set_dacl);
         if (result != LDAP_SUCCESS) {
             qDebug() << "Failed to create sd control: " << ldap_err2string(result);
 
-            cleanup();
+            ldap_control_free(sd_control);
             return false;
         }
 
-        LDAPControl *server_controls[2] = {sd_control, NULL};
-        server_controls_list = server_controls;
+        server_controls[0] = sd_control;
     }
 
-    result = ldap_modify_ext_s(d->ld, cstr(dn), attrs, server_controls_list, NULL);
+    result = ldap_modify_ext_s(d->ld, cstr(dn), attrs, server_controls, NULL);
 
     if (result == LDAP_SUCCESS) {
         d->success_message(QString(tr("Attribute %1 of object %2 was changed from \"%3\" to \"%4\".")).arg(attribute, name, old_values_display, values_display), do_msg);
