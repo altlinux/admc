@@ -2,6 +2,12 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.16.3
+-----------------------------------------------------------------------
+- Fix crashes after OU/user creation attempts by users with
+corresponding delegated rights.
+
+-----------------------------------------------------------------------
  VERSION 0.16.2
 -----------------------------------------------------------------------
 - Fix OU insufficient access for users with delegation. Users with
