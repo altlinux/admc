@@ -207,7 +207,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg, C
         ui->tab_widget->add_tab(members_tab, tr("Members"));
     }
 
-    if (is_person || object.is_class(CLASS_COMPUTER) || object.is_class(CLASS_CONTACT)) {
+    if (is_person || object.is_class(CLASS_COMPUTER) || object.is_class(CLASS_CONTACT) || object.is_class(CLASS_GROUP)) {
         auto member_of_tab = new MembershipTab(&edit_list, MembershipTabType_MemberOf, this);
         ui->tab_widget->add_tab(member_of_tab, tr("Member of"));
     }
