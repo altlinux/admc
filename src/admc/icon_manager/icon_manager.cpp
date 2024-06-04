@@ -51,6 +51,8 @@ void IconManager::init(QMap<QString, QAction *> category_action_map)
         {OBJECT_CATEGORY_LOST_AND_FOUND, {"emblem-system", "emblem-system-symbolic"}},
         {OBJECT_CATEGORY_INFRASTRUCTURE_UPDATE, {"emblem-system", "emblem-system-symbolic"}},
         {OBJECT_CATEGORY_MSDS_QUOTA_CONTAINER, {"emblem-system", "emblem-system-symbolic"}},
+        {OBJECT_CATEGORY_PSO, {"preferences-desktop-personal"}},
+        {OBJECT_CATEGORY_PSO_CONTAINER, {"preferences-desktop"}},
     };
 
     // Indicator icons

@@ -262,6 +262,8 @@ enum SystemFlagsBit {
 #define OBJECT_CATEGORY_MSDS_QUOTA_CONTAINER "ms-DS-Quota-Container"
 #define OBJECT_CATEGORY_SERVERS_CONTAINER "Servers-Container"
 #define OBJECT_CATEGORY_SITE "Site"
+#define OBJECT_CATEGORY_PSO_CONTAINER "ms-DS-Password-Settings-Container"
+#define OBJECT_CATEGORY_PSO "ms-DS-Password-Settings"
 
 // These categories are not AD object categories. They are used within ADMC context
 #define ADMC_CATEGORY_QUERY_ITEM "query-item"
