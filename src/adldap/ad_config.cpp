@@ -583,6 +583,10 @@ LargeIntegerSubtype AdConfig::get_attribute_large_integer_subtype(const QString 
         ATTRIBUTE_LOCKOUT_DURATION,
         ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW,
         ATTRIBUTE_FORCE_LOGOFF,
+        ATTRIBUTE_MS_DS_LOCKOUT_DURATION,
+        ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW,
+        ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE,
+        ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE
     };
 
     if (datetimes.contains(attribute)) {
