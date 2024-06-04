@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CreateQueryItemDialog</class>
- <widget class="QDialog" name="CreateQueryItemDialog">
+ <class>SelectObjectAdvancedDialog</class>
+ <widget class="QDialog" name="SelectObjectAdvancedDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,11 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Create Query</string>
+   <string>Select Object</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="EditQueryItemWidget" name="edit_query_widget" native="true"/>
+    <widget class="FindWidget" name="find_widget" native="true"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -31,9 +31,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>EditQueryItemWidget</class>
+   <class>FindWidget</class>
    <extends>QWidget</extends>
-   <header>edit_query_item_widget.h</header>
+   <header>find_widgets/find_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -42,7 +42,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>CreateQueryItemDialog</receiver>
+   <receiver>SelectObjectAdvancedDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -58,7 +58,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>CreateQueryItemDialog</receiver>
+   <receiver>SelectObjectAdvancedDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

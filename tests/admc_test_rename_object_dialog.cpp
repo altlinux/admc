@@ -21,7 +21,7 @@
 #include "admc_test_rename_object_dialog.h"
 
 #include "adldap.h"
-#include "rename_user_dialog.h"
+#include "rename_dialogs/rename_user_dialog.h"
 #include "ui_rename_user_dialog.h"
 
 void ADMCTestRenameObjectDialog::rename() {

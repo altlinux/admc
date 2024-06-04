@@ -24,7 +24,7 @@
 #include "ad_security.h"
 #include "adldap.h"
 #include "globals.h"
-#include "select_object_dialog.h"
+#include "select_dialogs/select_object_dialog.h"
 #include "select_well_known_trustee_dialog.h"
 #include "settings.h"
 #include "utils.h"

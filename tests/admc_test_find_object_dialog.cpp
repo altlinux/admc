@@ -26,8 +26,8 @@
 #include "filter_widget/ui_filter_widget.h"
 #include "filter_widget/ui_filter_widget_advanced_tab.h"
 #include "filter_widget/ui_filter_widget_simple_tab.h"
-#include "find_object_dialog.h"
-#include "find_widget.h"
+#include "find_widgets/find_object_dialog.h"
+#include "find_widgets/find_widget.h"
 #include "ui_find_object_dialog.h"
 #include "ui_find_widget.h"
 

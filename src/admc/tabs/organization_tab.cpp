@@ -25,7 +25,7 @@
 #include "attribute_edits/manager_edit.h"
 #include "attribute_edits/string_edit.h"
 #include "globals.h"
-#include "properties_dialog.h"
+#include "properties_widgets/properties_dialog.h"
 #include "settings.h"
 #include "utils.h"
 

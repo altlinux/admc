@@ -24,8 +24,8 @@
 
 #include "adldap.h"
 #include "globals.h"
-#include "properties_dialog.h"
-#include "select_object_dialog.h"
+#include "properties_widgets/properties_dialog.h"
+#include "select_dialogs/select_object_dialog.h"
 #include "settings.h"
 #include "utils.h"
 

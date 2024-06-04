@@ -20,7 +20,7 @@
 
 #include "admc_test_member_of_tab.h"
 
-#include "select_object_dialog.h"
+#include "select_dialogs/select_object_dialog.h"
 #include "tabs/membership_tab.h"
 #include "tabs/ui_membership_tab.h"
 

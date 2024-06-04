@@ -24,7 +24,7 @@
 #include "console_widget/results_view.h"
 #include "globals.h"
 #include "gplink.h"
-#include "policy_results_widget.h"
+#include "results_widgets/policy_results_widget.h"
 #include "utils.h"
 
 #include <QStandardItemModel>
