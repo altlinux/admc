@@ -205,6 +205,17 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_OBJECT_VERSION "objectVersion"
 #define ATTRIBUTE_SERVER_REFERENCE "serverReference"
 #define ATTRIBUTE_SERVER_REFERENCE_BL "serverReferenceBL"
+#define ATTRIBUTE_MS_DS_LOCKOUT_DURATION "msDS-LockoutDuration"
+#define ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW "msDS-LockoutObservationWindow"
+#define ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE "msDS-MaximumPasswordAge"
+#define ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE "msDS-MinimumPasswordAge"
+#define ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD "msDS-LockoutThreshold"
+#define ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH "msDS-MinimumPasswordLength"
+#define ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED "msDS-PasswordComplexityEnabled"
+#define ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH "msDS-PasswordHistoryLength"
+#define ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED "msDS-PasswordReversibleEncryptionEnabled"
+#define ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE "msDS-PasswordSettingsPrecedence"
+#define ATTRIBUTE_PSO_APPLIES_TO "msDS-PSOAppliesTo"
 
 
 #define CLASS_GROUP "group"
