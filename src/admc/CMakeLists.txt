@@ -48,6 +48,7 @@ set(ADMC_SOURCES
     results_widgets/policy_ou_results_widget/drag_drop_links_model.cpp
     results_widgets/policy_results_widget.cpp
     results_widgets/domain_info_results_widget/domain_info_results_widget.cpp
+    results_widgets/pso_results_widget/pso_edit_widget.cpp
 
     create_dialogs/create_user_dialog.cpp
     create_dialogs/create_group_dialog.cpp
@@ -58,6 +59,7 @@ set(ADMC_SOURCES
     create_dialogs/create_policy_dialog.cpp
     create_dialogs/create_query_item_dialog.cpp
     create_dialogs/create_query_folder_dialog.cpp
+    create_dialogs/create_pso_dialog.cpp
 
     rename_dialogs/rename_other_dialog.cpp
     rename_dialogs/rename_policy_dialog.cpp
