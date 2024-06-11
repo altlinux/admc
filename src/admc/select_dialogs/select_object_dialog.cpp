@@ -103,6 +103,20 @@ QList<QString> SelectObjectDialog::get_selected() const {
     return out;
 }
 
+QList<SelectedObjectData> SelectObjectDialog::get_selected_advanced() const {
+    QList<SelectedObjectData> out;
+
+    for (int row = 0; row < model->rowCount(); row++) {
+        const QModelIndex index = model->index(row, 0);
+        const QString dn = index.data(ObjectRole_DN).toString();
+        const QString category = index.data(ObjectRole_ObjectCategory).toString();
+
+        out.append({dn, category});
+    }
+
+    return out;
+}
+
 void SelectObjectDialog::accept() {
     const QList<QString> selected = get_selected();
 
