@@ -244,6 +244,8 @@ enum SystemFlagsBit {
 #define CLASS_SITE "site"
 #define CLASS_SERVER "server"
 #define CLASS_SERVERS_CONTAINER "serversContainer"
+#define CLASS_PSO_CONTAINER "msDS-PasswordSettingsContainer"
+#define CLASS_PSO "msDS-PasswordSettings"
 // NOTE: for schema object
 #define CLASS_dMD "dMD"
 #define CLASS_CONTROL_ACCESS_RIGHT "controlAccessRight"
