@@ -690,6 +690,8 @@ void ObjectImpl::refresh(const QList<QModelIndex> &index_list) {
 
     console->delete_children(index);
     fetch(index);
+
+    update_results_widget(index);
 }
 
 void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
