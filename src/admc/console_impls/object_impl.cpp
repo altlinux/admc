@@ -54,6 +54,8 @@
 #include "tabs/general_user_tab.h"
 #include "tabs/general_group_tab.h"
 #include "icon_manager/icon_manager.h"
+#include "create_dialogs/create_pso_dialog.h"
+#include "results_widgets/pso_results_widget/pso_results_widget.h"
 
 #include <QDebug>
 #include <QMenu>
@@ -87,8 +89,10 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     set_results_view(new ResultsView(console_arg));
     group_results_widget = new GeneralGroupTab();
     user_results_widget = new GeneralUserTab();
+    pso_results_widget = new PSOResultsWidget();
     stacked_widget->addWidget(group_results_widget);
     stacked_widget->addWidget(user_results_widget);
+    stacked_widget->addWidget(pso_results_widget);
     stacked_widget->addWidget(view());
     set_results_widget(stacked_widget);
 
@@ -117,6 +121,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     reset_password_action = new QAction(tr("Reset password"), this);
     reset_account_action = new QAction(tr("Reset account"), this);
     edit_upn_suffixes_action = new QAction(tr("Edit UPN suffixes"), this);
+    create_pso_action = new QAction(tr("Create password setting object"), this);
 
     auto new_menu = new QMenu(tr("New"), console_arg);
     new_action = new_menu->menuAction();
@@ -180,6 +185,9 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     connect(
         console, &ConsoleWidget::selection_changed,
         this, &ObjectImpl::update_toolbar_actions);
+    connect(
+        create_pso_action, &QAction::triggered,
+        this, &ObjectImpl::on_create_pso);
 }
 
 void ObjectImpl::set_buddy_console(ConsoleWidget *buddy_console) {
@@ -331,6 +339,7 @@ QList<QAction *> ObjectImpl::get_all_custom_actions() const {
         reset_account_action,
         edit_upn_suffixes_action,
         move_action,
+        create_pso_action,
     };
 
     return out;
@@ -351,6 +360,7 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
     const bool is_group = (object_class == CLASS_GROUP);
     const bool is_domain = (object_class == CLASS_DOMAIN);
     const bool is_computer = (object_class == CLASS_COMPUTER);
+    const bool is_pso_container = (object_class == CLASS_PSO_CONTAINER);
 
     const bool account_disabled = index.data(ObjectRole_AccountDisabled).toBool();
 
@@ -382,6 +392,10 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
 
         if (is_domain) {
             out.insert(edit_upn_suffixes_action);
+        }
+
+        if (is_pso_container) {
+            out.insert(create_pso_action);
         }
 
     } else {
@@ -421,9 +435,10 @@ QSet<QAction *> ObjectImpl::get_disabled_custom_actions(const QModelIndex &index
 
     QSet<QAction *> out;
 
+    const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
     const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
 
-    if (cannot_move) {
+    if (cannot_move || object_class == CLASS_PSO) {
         out.insert(move_action);
     }
 
@@ -701,6 +716,10 @@ void ObjectImpl::selected_as_scope(const QModelIndex &index)
         stacked_widget->setCurrentWidget(user_results_widget);
         user_results_widget->update(ad, object);
     }
+    else if (object.is_class(CLASS_PSO)) {
+        stacked_widget->setCurrentWidget(pso_results_widget);
+        pso_results_widget->update(object);
+    }
     else {
         stacked_widget->setCurrentWidget(view());
     }
@@ -710,7 +729,8 @@ void ObjectImpl::update_results_widget(const QModelIndex &index) const
 {
     const QStringList index_data_classes = index.data(ObjectRole_ObjectClasses).toStringList();
     if (!(index_data_classes.contains(CLASS_GROUP) || index_data_classes.contains(CLASS_CONTACT) ||
-          index_data_classes.contains(CLASS_USER) || index_data_classes.contains(CLASS_INET_ORG_PERSON))) {
+          index_data_classes.contains(CLASS_USER) || index_data_classes.contains(CLASS_INET_ORG_PERSON) ||
+          index_data_classes.contains(CLASS_PSO))) {
             return;
     }
 
@@ -724,11 +744,19 @@ void ObjectImpl::update_results_widget(const QModelIndex &index) const
 
     if (object.is_class(CLASS_GROUP)) {
         group_results_widget->update(ad, object);
+        return;
     }
-    else if (object.is_class(CLASS_CONTACT) ||
+
+    if (object.is_class(CLASS_CONTACT) ||
              object.is_class(CLASS_USER) ||
              object.is_class(CLASS_INET_ORG_PERSON)) {
         user_results_widget->update(ad, object);
+        return;
+    }
+
+    if (object.is_class(CLASS_PSO)) {
+        pso_results_widget->update(object);
+        return;
     }
 }
 
@@ -884,6 +912,10 @@ void ObjectImpl::on_new_inet_org_person() {
 
 void ObjectImpl::on_new_contact() {
     new_object(CLASS_CONTACT);
+}
+
+void ObjectImpl::on_create_pso() {
+    new_object(CLASS_PSO);
 }
 
 void ObjectImpl::on_move() {
@@ -1080,6 +1112,7 @@ void console_object_create(const QList<ConsoleWidget *> &console_list, const QSt
         const bool is_shared_folder = (object_class == CLASS_SHARED_FOLDER);
         const bool is_inet_org_person = (object_class == CLASS_INET_ORG_PERSON);
         const bool is_contact = (object_class == CLASS_CONTACT);
+        const bool is_pso = (object_class == CLASS_PSO);
 
         if (is_user) {
             return new CreateUserDialog(ad, parent_dn, CLASS_USER, console_list[0]);
@@ -1095,6 +1128,8 @@ void console_object_create(const QList<ConsoleWidget *> &console_list, const QSt
             return new CreateUserDialog(ad, parent_dn, CLASS_INET_ORG_PERSON, console_list[0]);
         } else if (is_contact) {
             return new CreateContactDialog(parent_dn, console_list[0]);
+        } else if (is_pso) {
+            return new CreatePSODialog(parent_dn, console_list[0]);
         } else {
             return nullptr;
         }

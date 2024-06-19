@@ -43,6 +43,7 @@ class ConsoleFilterDialog;
 class GeneralUserTab;
 class GeneralGroupTab;
 class QStackedWidget;
+class PSOResultsWidget;
 
 enum ObjectRole {
     ObjectRole_DN = MyConsoleRole_LAST + 1,
@@ -112,6 +113,7 @@ private slots:
     void on_new_shared_folder();
     void on_new_inet_org_person();
     void on_new_contact();
+    void on_create_pso();
     void on_move();
     void on_enable();
     void on_disable();
@@ -135,6 +137,7 @@ private:
     QAction *reset_account_action;
     QAction *edit_upn_suffixes_action;
     QAction *new_action;
+    QAction *create_pso_action;
     QHash<QString, QAction *> new_action_map;
 
     QAction *toolbar_create_user;
@@ -144,6 +147,8 @@ private:
     QStackedWidget *stacked_widget;
     GeneralGroupTab *group_results_widget;
     GeneralUserTab *user_results_widget;
+    PSOResultsWidget *pso_results_widget;
+
 
     bool find_action_enabled;
     bool refresh_action_enabled;
