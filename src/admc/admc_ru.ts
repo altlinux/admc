@@ -695,6 +695,34 @@
     </message>
 </context>
 <context>
+    <name>CreatePSODialog</name>
+    <message>
+        <location filename="create_dialogs/create_pso_dialog.ui" line="14"/>
+        <source>Password settings object creation</source>
+        <translation>Создание объекта парольных настроек</translation>
+    </message>
+    <message>
+        <location filename="create_dialogs/create_pso_dialog.ui" line="23"/>
+        <source>Protect against deletion</source>
+        <translation>Защитить от удаления</translation>
+    </message>
+    <message>
+        <location filename="create_dialogs/create_pso_dialog.cpp" line="66"/>
+        <source>At least one password setting (except precedence) should not be default</source>
+        <translation>Как минимум одна настройка пароля (не учитывая приоритет) не должна быть по умолчанию</translation>
+    </message>
+    <message>
+        <location filename="create_dialogs/create_pso_dialog.cpp" line="83"/>
+        <source>Failed to create password settings object %1</source>
+        <translation>Не удалось создать объект парольных настроек %1</translation>
+    </message>
+    <message>
+        <location filename="create_dialogs/create_pso_dialog.cpp" line="89"/>
+        <source>Password settings object %1 has been successfully created.</source>
+        <translation>Объект парольных настроек %1 успешно создан.</translation>
+    </message>
+</context>
+<context>
     <name>CreatePolicyDialog</name>
     <message>
         <location filename="create_policy_dialog.ui" line="26"/>
@@ -2537,7 +2565,12 @@
         <translation>Изменить суффиксы UPN</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="109"/>
+        <location filename="console_impls/object_impl.cpp" line="124"/>
+        <source>Create password setting object</source>
+        <translation>Создать объект парольных настроек</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="126"/>
         <source>New</source>
         <translation>Создать</translation>
     </message>
@@ -2741,6 +2774,117 @@
         <location filename="tabs/organization_tab.cpp" line="74"/>
         <source>Folder</source>
         <translation>Папка</translation>
+    </message>
+</context>
+<context>
+    <name>PSOEditWidget</name>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="17"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="23"/>
+        <source>Account lockout duration (mins):</source>
+        <translation>Длительность блокировки учетной записи (минуты):</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="30"/>
+        <source>Name:</source>
+        <translation>Имя:</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="37"/>
+        <source>Minimum password length:</source>
+        <translation>Минимальная длина пароля:</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="47"/>
+        <source>Enable complexity requirements</source>
+        <translation>Включить требования сложности</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="60"/>
+        <source>Store passwords using reversible encryption</source>
+        <translation>Хранить пароли, используя обратимое шифрование</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="83"/>
+        <source>Precedence:</source>
+        <translation>Приоритет:</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="103"/>
+        <source>Apply to user/grop</source>
+        <translation>Применить к пользователю/группе</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="132"/>
+        <source>Add...</source>
+        <translation>Добавить...</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="142"/>
+        <source>Remove</source>
+        <translation>Удалить</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="177"/>
+        <source>Minimum password age (days):</source>
+        <translation>Минимальный срок действия пароля (дни):</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="194"/>
+        <source>Reset account lockout after (mins):</source>
+        <translation>Время до сброса блокировки (минуты):</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="227"/>
+        <source>PSO precedence should be greater than 0</source>
+        <translation>Приоритет должен быть больше 0</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="259"/>
+        <source>Maximum password age (days):</source>
+        <translation>Максимальный срок действия пароля (дни):</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="286"/>
+        <source>Password history length:</source>
+        <translation>Длина истории паролей:</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="293"/>
+        <source>Failed log on attempts allowed:</source>
+        <translation>Разрешено неудачных попыток входа:</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.cpp" line="207"/>
+        <source>Add applied users/group</source>
+        <translation>Добавить применяемых пользователей/группы</translation>
+    </message>
+</context>
+<context>
+    <name>PSOResultsWidget</name>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_results_widget.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_results_widget.ui" line="28"/>
+        <source>Edit...</source>
+        <translation>Изменить...</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_results_widget.ui" line="38"/>
+        <source>Cancel</source>
+        <translation>Отменить</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_results_widget.ui" line="48"/>
+        <source>Apply</source>
+        <translation>Применить</translation>
     </message>
 </context>
 <context>
