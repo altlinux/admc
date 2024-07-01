@@ -389,6 +389,10 @@ bool load_adldap_translation(QTranslator &translator, const QLocale &locale) {
 }
 
 QByteArray guid_string_to_bytes(const QString &guid_string) {
+    if (guid_string.isEmpty()) {
+        return QByteArray();
+    }
+
     const QList<QByteArray> segment_list = [&]() {
         QList<QByteArray> out;
 
