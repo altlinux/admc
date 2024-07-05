@@ -99,3 +99,32 @@ size_t rep_strlcpy(char *d, const char *s, size_t bufsize);
 #define ZERO_STRUCTPN(x) memset_s((char *)(x), sizeof(*(x)), 0, sizeof(*(x)))
 
 #endif /* _LIBREPLACE_REPLACE_H */
+
+/**
+ * Insert an array element by moving the rest one up
+ *
+ */
+#define ARRAY_INSERT_ELEMENT(__array,__old_last_idx,__new_elem,__new_idx) do { \
+    if ((__new_idx) < (__old_last_idx)) { \
+        const void *__src = &((__array)[(__new_idx)]); \
+        void *__dst = &((__array)[(__new_idx)+1]); \
+        size_t __num = (__old_last_idx)-(__new_idx); \
+        size_t __len = sizeof(*(__array)) * __num; \
+        memmove(__dst, __src, __len); \
+    } \
+    (__array)[(__new_idx)] = (__new_elem); \
+} while(0)
+
+/**
+ * Work out how many elements there are in a static array.
+ */
+#ifdef ARRAY_SIZE
+#undef ARRAY_SIZE
+#endif
+#define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
+
+/**
+ * Remove an array element by moving the rest one down
+ */
+#define ARRAY_DEL_ELEMENT(a,i,n) \
+if((i)<((n)-1)){memmove(&((a)[(i)]),&((a)[(i)+1]),(sizeof(*(a))*((n)-(i)-1)));}
