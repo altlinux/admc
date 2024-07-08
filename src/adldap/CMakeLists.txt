@@ -43,14 +43,17 @@ if (EXISTS ${VERSION_H})
     string(REGEX MATCH "[0-9]+" VERSION_SMB_MINOR "${M_VERSION_LINE}")
     set(SMB_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samba)
     if (VERSION_SMB_MINOR)
-        file(REMOVE ${SMB_SRC_PATH}/ndr_misc.c ${SMB_SRC_PATH}/ndr_misc.h ${SMB_SRC_PATH}/security_descriptor.c)
+        file(REMOVE ${SMB_SRC_PATH}/ndr_misc.c ${SMB_SRC_PATH}/ndr_misc.h ${SMB_SRC_PATH}/security_descriptor.c
+                    ${SMB_SRC_PATH}/dom_sid.c ${SMB_SRC_PATH}/dom_sid.h)
     endif(VERSION_SMB_MINOR)
 
     if (VERSION_SMB_MINOR GREATER_EQUAL 20)
         file(COPY ${SMB_SRC_PATH}/src_4_20/ndr_misc.h ${SMB_SRC_PATH}/src_4_20/ndr_misc.c ${SMB_SRC_PATH}/src_4_20/security_descriptor.c
+             ${SMB_SRC_PATH}/src_4_20/dom_sid.h ${SMB_SRC_PATH}/src_4_20/dom_sid.c
              DESTINATION ${SMB_SRC_PATH})
     else()
         file(COPY ${SMB_SRC_PATH}/src_older/ndr_misc.h ${SMB_SRC_PATH}/src_older/ndr_misc.c ${SMB_SRC_PATH}/src_older/security_descriptor.c
+             ${SMB_SRC_PATH}/src_older/dom_sid.h ${SMB_SRC_PATH}/src_older/dom_sid.c
              DESTINATION ${SMB_SRC_PATH})
     endif(VERSION_SMB_MINOR GREATER_EQUAL 20)
 else()

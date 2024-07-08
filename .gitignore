@@ -5,3 +5,5 @@ output/
 src/adldap/samba/ndr_misc.c
 src/adldap/samba/ndr_misc.h
 src/adldap/samba/security_descriptor.c
+src/adldap/samba/dom_sid.c
+src/adldap/samba/dom_sid.h
