@@ -42,21 +42,31 @@ if (EXISTS ${VERSION_H})
     string(REGEX MATCH "#define SAMBA_VERSION_MINOR [0-9]+" M_VERSION_LINE "${VERSION_HEADER_CONTENT}")
     string(REGEX MATCH "[0-9]+" VERSION_SMB_MINOR "${M_VERSION_LINE}")
     set(SMB_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samba)
+    set(FILE_UPDATE_LIST
+        ndr_misc.c
+        ndr_misc.h
+        security_descriptor.c
+        dom_sid.c
+        dom_sid.h
+        ndr_security.h
+        ndr_security.c
+        libsmb_xattr.c
+    )
     if (VERSION_SMB_MINOR)
-        file(REMOVE ${SMB_SRC_PATH}/ndr_misc.c ${SMB_SRC_PATH}/ndr_misc.h ${SMB_SRC_PATH}/security_descriptor.c
-                    ${SMB_SRC_PATH}/dom_sid.c ${SMB_SRC_PATH}/dom_sid.h
-                    ${SMB_SRC_PATH}/ndr_security.h ${SMB_SRC_PATH}/ndr_security.c)
+        set(FILE_REMOVE_LIST ${FILE_UPDATE_LIST})
+        list(TRANSFORM FILE_REMOVE_LIST PREPEND "${SMB_SRC_PATH}/")
+        file(REMOVE ${FILE_REMOVE_LIST})
     endif(VERSION_SMB_MINOR)
 
     if (VERSION_SMB_MINOR GREATER_EQUAL 20)
-        file(COPY ${SMB_SRC_PATH}/src_4_20/ndr_misc.h ${SMB_SRC_PATH}/src_4_20/ndr_misc.c ${SMB_SRC_PATH}/src_4_20/security_descriptor.c
-             ${SMB_SRC_PATH}/src_4_20/dom_sid.h ${SMB_SRC_PATH}/src_4_20/dom_sid.c
-             ${SMB_SRC_PATH}/src_4_20/ndr_security.h ${SMB_SRC_PATH}/src_4_20/ndr_security.c
+        set(FILE_COPY_LIST ${FILE_UPDATE_LIST})
+        list(TRANSFORM FILE_COPY_LIST PREPEND "${SMB_SRC_PATH}/src_4_20/")
+        file(COPY ${FILE_COPY_LIST}
              DESTINATION ${SMB_SRC_PATH})
     else()
-        file(COPY ${SMB_SRC_PATH}/src_older/ndr_misc.h ${SMB_SRC_PATH}/src_older/ndr_misc.c ${SMB_SRC_PATH}/src_older/security_descriptor.c
-             ${SMB_SRC_PATH}/src_older/dom_sid.h ${SMB_SRC_PATH}/src_older/dom_sid.c
-             ${SMB_SRC_PATH}/src_older/ndr_security.h ${SMB_SRC_PATH}/src_older/ndr_security.c
+        set(FILE_COPY_LIST ${FILE_UPDATE_LIST})
+        list(TRANSFORM FILE_COPY_LIST PREPEND "${SMB_SRC_PATH}/src_older/")
+        file(COPY ${FILE_COPY_LIST}
              DESTINATION ${SMB_SRC_PATH})
     endif(VERSION_SMB_MINOR GREATER_EQUAL 20)
 else()
