@@ -341,7 +341,6 @@ AttributeType AdConfig::get_attribute_type(const QString &attribute) const {
 
     const QString attribute_syntax = schema.get_string(ATTRIBUTE_ATTRIBUTE_SYNTAX);
     const QString om_syntax = schema.get_string(ATTRIBUTE_OM_SYNTAX);
-
     if (type_map.contains(attribute_syntax) && type_map[attribute_syntax].contains(om_syntax)) {
         return type_map[attribute_syntax][om_syntax];
     } else {
@@ -359,6 +358,7 @@ LargeIntegerSubtype AdConfig::get_attribute_large_integer_subtype(const QString 
         ATTRIBUTE_LOCKOUT_TIME,
         ATTRIBUTE_BAD_PWD_TIME,
         ATTRIBUTE_CREATION_TIME,
+        ATTRIBUTE_MSDS_USER_PASSWORD_EXPIRY_TIME_COMPUTED,
     };
     static const QList<QString> timespans = {
         ATTRIBUTE_MAX_PWD_AGE,

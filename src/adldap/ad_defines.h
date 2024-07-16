@@ -217,6 +217,8 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE "msDS-PasswordSettingsPrecedence"
 #define ATTRIBUTE_PSO_APPLIES_TO "msDS-PSOAppliesTo"
 #define ATTRIBUTE_DEFAULT_NAMING_CONTEXT "defaultNamingContext"
+#define ATTRIBUTE_MSDS_USER_PASSWORD_EXPIRY_TIME_COMPUTED "msDS-UserPasswordExpiryTimeComputed"
+#define ATTRIBUTE_MSDS_USER_ACCOUNT_CONTROL_COMPUTED "msDS-User-Account-Control-Computed"
 
 
 #define CLASS_GROUP "group"
