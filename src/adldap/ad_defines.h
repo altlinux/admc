@@ -205,6 +205,8 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_OBJECT_VERSION "objectVersion"
 #define ATTRIBUTE_SERVER_REFERENCE "serverReference"
 #define ATTRIBUTE_SERVER_REFERENCE_BL "serverReferenceBL"
+#define ATTRIBUTE_MSDS_USER_PASSWORD_EXPIRY_TIME_COMPUTED "msDS-UserPasswordExpiryTimeComputed"
+#define ATTRIBUTE_MSDS_USER_ACCOUNT_CONTROL_COMPUTED "msDS-User-Account-Control-Computed"
 
 
 #define CLASS_GROUP "group"

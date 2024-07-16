@@ -31,6 +31,7 @@
 #include <QList>
 #include <QString>
 #include <algorithm>
+#include <QTextStream>
 
 const qint64 SECONDS_TO_MILLIS = 1000LL;
 const qint64 MINUTES_TO_SECONDS = 60LL;
@@ -63,7 +64,7 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
                 return samaccounttype_to_display_value(value);
             } else if (attribute == ATTRIBUTE_PRIMARY_GROUP_ID) {
                 return primarygrouptype_to_display_value(value);
-            } else if (attribute == ATTRIBUTE_GROUP_TYPE || attribute == ATTRIBUTE_SYSTEM_FLAGS) {
+            } else if (attribute == ATTRIBUTE_GROUP_TYPE || attribute == ATTRIBUTE_SYSTEM_FLAGS || attribute == ATTRIBUTE_MSDS_USER_ACCOUNT_CONTROL_COMPUTED) {
                 return attribute_hex_displayed_value(attribute, value);
             } else if (attribute == ATTRIBUTE_MS_DS_SUPPORTED_ETYPES) {
                 return msds_supported_etypes_to_display_value(value);
@@ -73,7 +74,6 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
         }
         case AttributeType_LargeInteger: {
             const LargeIntegerSubtype subtype = adconfig->get_attribute_large_integer_subtype(attribute);
-
             switch (subtype) {
                 case LargeIntegerSubtype_Datetime: return large_integer_datetime_display_value(attribute, value, adconfig);
                 case LargeIntegerSubtype_Timespan: return timespan_display_value(value);
