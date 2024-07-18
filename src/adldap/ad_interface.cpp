@@ -1540,8 +1540,10 @@ bool AdInterface::ldap_init() {
         return false;
     }
 
-    // Set maxssf
-    const char *sasl_secprops = "maxssf=56";
+    // Set SASL propertry min_ssf to the minimum acceptable security layer strength.
+    // SSF is a rough indication of how secure the connection is. A connection
+    // secured by 56-bit DES would have an SSF of 56.
+    const char *sasl_secprops = "minssf=56";
     result = ldap_set_option(d->ld, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
     if (result != LDAP_SUCCESS) {
         option_error("LDAP_OPT_X_SASL_SECPROPS");

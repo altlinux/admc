@@ -11,7 +11,7 @@ pkg_check_modules(NdrStandard REQUIRED IMPORTED_TARGET ndr_standard)
 pkg_check_modules(Smbclient REQUIRED IMPORTED_TARGET smbclient)
 pkg_check_modules(Krb5 REQUIRED IMPORTED_TARGET krb5)
 pkg_check_modules(Uuid REQUIRED IMPORTED_TARGET uuid)
-pkg_check_modules(Sasl REQUIRED IMPORTED_TARGET libsasl2)
+pkg_check_modules(REQUIRED libsasl2)
 
 pkg_check_modules(Ndr REQUIRED IMPORTED_TARGET ndr)
 if(Ndr_VERSION VERSION_GREATER "1.0.1")
@@ -96,6 +96,8 @@ target_include_directories(adldap PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+find_library(LIBSASL "libsasl2.so" HINTS "/usr/lib64" "/lib64")
+
 target_link_libraries(adldap
     Qt5::Core
     PkgConfig::Uuid
@@ -103,7 +105,7 @@ target_link_libraries(adldap
     PkgConfig::Krb5
     Ldap::Ldap
     PkgConfig::NdrStandard
-    PkgConfig::Sasl
+    ${LIBSASL}
     resolv
 )
 
