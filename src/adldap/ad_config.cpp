@@ -109,246 +109,17 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
         return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn());
     }();
 
-    // Attribute schemas
-    {
-        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_ATTRIBUTE_SCHEMA);
+    load_attribute_schemas(ad);
 
-        const QList<QString> attributes = {
-            ATTRIBUTE_LDAP_DISPLAY_NAME,
-            ATTRIBUTE_ATTRIBUTE_SYNTAX,
-            ATTRIBUTE_OM_SYNTAX,
-            ATTRIBUTE_IS_SINGLE_VALUED,
-            ATTRIBUTE_SYSTEM_ONLY,
-            ATTRIBUTE_RANGE_UPPER,
-            ATTRIBUTE_LINK_ID,
-            ATTRIBUTE_SYSTEM_FLAGS,
-            ATTRIBUTE_SCHEMA_ID_GUID,
-        };
+    load_class_schemas(ad);
 
-        const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
+    load_display_names(ad, locale_dir);
 
-        for (const AdObject &object : results.values()) {
-            const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-            d->attribute_schemas[attribute] = object;
+    load_columns(ad, locale_dir);
 
-            const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
-            d->guid_to_attribute_map[guid] = attribute;
-        }
-    }
+    load_filter_containers(ad, locale_dir);
 
-    // Class schemas
-    {
-        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CLASS_SCHEMA);
-
-        const QList<QString> attributes = {
-            ATTRIBUTE_LDAP_DISPLAY_NAME,
-            ATTRIBUTE_POSSIBLE_SUPERIORS,
-            ATTRIBUTE_SYSTEM_POSSIBLE_SUPERIORS,
-            ATTRIBUTE_MAY_CONTAIN,
-            ATTRIBUTE_SYSTEM_MAY_CONTAIN,
-            ATTRIBUTE_MUST_CONTAIN,
-            ATTRIBUTE_SYSTEM_MUST_CONTAIN,
-            ATTRIBUTE_AUXILIARY_CLASS,
-            ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
-            ATTRIBUTE_SCHEMA_ID_GUID,
-            ATTRIBUTE_SUB_CLASS_OF,
-        };
-
-        const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
-
-        for (const AdObject &object : results.values()) {
-            const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-            d->class_schemas[object_class] = object;
-
-            const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
-            d->guid_to_class_map[guid] = object_class;
-
-            const QString sub_class_of = object.get_string(ATTRIBUTE_SUB_CLASS_OF);
-            d->sub_class_of_map[object_class] = sub_class_of;
-        }
-    }
-
-    // Class display specifiers
-    // NOTE: can't just store objects for these because the values require a decent amount of preprocessing which is best done once here, not everytime value is requested
-    {
-        const QString filter = QString();
-
-        const QList<QString> search_attributes = {
-            ATTRIBUTE_CLASS_DISPLAY_NAME,
-            ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES,
-        };
-
-        const QHash<QString, AdObject> results = ad.search(locale_dir, SearchScope_Children, filter, search_attributes);
-
-        for (const AdObject &object : results) {
-            const QString dn = object.get_dn();
-
-            // Display specifier DN is "CN=object-class-Display,CN=..."
-            // Get "object-class" from that
-            const QString object_class = [dn]() {
-                const QString rdn = dn.split(",")[0];
-                QString out = rdn;
-                out.remove("CN=", Qt::CaseInsensitive);
-                out.remove("-Display");
-
-                return out;
-            }();
-
-            if (object.contains(ATTRIBUTE_CLASS_DISPLAY_NAME)) {
-                d->class_display_names[object_class] = object.get_string(ATTRIBUTE_CLASS_DISPLAY_NAME);
-            }
-
-            if (object.contains(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES)) {
-                const QList<QString> display_names = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
-
-                for (const auto &display_name_pair : display_names) {
-                    const QList<QString> split = display_name_pair.split(",");
-                    const QString attribute_name = split[0];
-                    const QString display_name = split[1];
-
-                    d->attribute_display_names[object_class][attribute_name] = display_name;
-                }
-
-                d->find_attributes[object_class] = [object_class, display_names]() {
-                    QList<QString> out;
-
-                    for (const auto &display_name_pair : display_names) {
-                        const QList<QString> split = display_name_pair.split(",");
-                        const QString attribute = split[0];
-
-                        out.append(attribute);
-                    }
-
-                    return out;
-                }();
-            }
-        }
-    }
-
-    // Columns
-    {
-        const QList<QString> columns_values = [&] {
-            const QString dn = QString("CN=default-Display,%1").arg(locale_dir);
-            const AdObject object = ad.search_object(dn, {ATTRIBUTE_EXTRA_COLUMNS});
-
-            // NOTE: order as stored in attribute is reversed. Order is not sorted alphabetically so can't just sort.
-            QList<QString> extra_columns = object.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
-            std::reverse(extra_columns.begin(), extra_columns.end());
-
-            return extra_columns;
-        }();
-
-        // ATTRIBUTE_EXTRA_COLUMNS value is
-        // "$attribute,$display_name,..."
-        // Get attributes out of that
-        for (const QString &value : columns_values) {
-            const QList<QString> column_split = value.split(',');
-
-            if (column_split.size() < 2) {
-                continue;
-            }
-
-            const QString attribute = column_split[0];
-            const QString attribute_display_name = column_split[1];
-
-            d->columns.append(attribute);
-            d->column_display_names[attribute] = attribute_display_name;
-        }
-
-        // Insert some columns manually
-        auto add_custom = [=](const Attribute &attribute, const QString &display_name) {
-            d->columns.prepend(attribute);
-            d->column_display_names[attribute] = display_name;
-        };
-
-        add_custom(ATTRIBUTE_DN, QCoreApplication::translate("AdConfig", "Distinguished name"));
-        add_custom(ATTRIBUTE_DESCRIPTION, QCoreApplication::translate("AdConfig", "Description"));
-        add_custom(ATTRIBUTE_OBJECT_CLASS, QCoreApplication::translate("AdConfig", "Class"));
-        add_custom(ATTRIBUTE_NAME, QCoreApplication::translate("AdConfig", "Name"));
-    }
-
-    d->filter_containers = [&] {
-        QList<QString> out;
-
-        const QString ui_settings_dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
-        const AdObject object = ad.search_object(ui_settings_dn, {ATTRIBUTE_FILTER_CONTAINERS});
-
-        // NOTE: dns-Zone category is mispelled in
-        // ATTRIBUTE_FILTER_CONTAINERS, no idea why, might
-        // just be on this domain version
-        const QList<QString> categories = [object]() {
-            QList<QString> categories_out = object.get_strings(ATTRIBUTE_FILTER_CONTAINERS);
-            categories_out.replaceInStrings("dns-Zone", "Dns-Zone");
-
-            return categories_out;
-        }();
-
-        // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains object
-        // *categories* not classes, so need to get object
-        // class from category object
-        for (const auto &object_category : categories) {
-            const QString category_dn = QString("CN=%1,%2").arg(object_category, schema_dn());
-            const AdObject category_object = ad.search_object(category_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
-            const QString object_class = category_object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
-
-            out.append(object_class);
-        }
-
-        // NOTE: domain and pso container are not included for some reason, so add it manually
-        out.append(CLASS_DOMAIN);
-        out.append(CLASS_PSO_CONTAINER);
-
-        // Make configuration and schema pass filter in dev mode so they are visible and can be fetched
-        out.append({CLASS_CONFIGURATION, CLASS_dMD});
-
-        return out;
-    }();
-
-    // Extended rights
-    {
-        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);
-
-        const QList<QString> attributes = {
-            ATTRIBUTE_CN,
-            ATTRIBUTE_DISPLAY_NAME,
-            ATTRIBUTE_RIGHTS_GUID,
-            ATTRIBUTE_APPLIES_TO,
-            ATTRIBUTE_VALID_ACCESSES,
-        };
-
-        const QString search_base = extended_rights_dn();
-
-        const QHash<QString, AdObject> search_results = ad.search(search_base, SearchScope_Children, filter, attributes);
-
-        for (const AdObject &object : search_results.values()) {
-            const QString cn = object.get_string(ATTRIBUTE_CN);
-            const QString guid_string = object.get_string(ATTRIBUTE_RIGHTS_GUID);
-            const QByteArray guid = guid_string_to_bytes(guid_string);
-            const QByteArray display_name = object.get_value(ATTRIBUTE_DISPLAY_NAME);
-            const QList<QString> applies_to = [this, object]() {
-                QList<QString> out;
-
-                const QList<QString> class_guid_string_list = object.get_strings(ATTRIBUTE_APPLIES_TO);
-                for (const QString &class_guid_string : class_guid_string_list) {
-                    const QByteArray class_guid = guid_string_to_bytes(class_guid_string);
-                    const QString object_class = guid_to_class(class_guid);
-
-                    out.append(object_class);
-                }
-
-                return out;
-            }();
-            const int valid_accesses = object.get_int(ATTRIBUTE_VALID_ACCESSES);
-
-            d->right_to_guid_map[cn] = guid;
-            d->right_guid_to_cn_map[guid] = cn;
-            d->rights_guid_to_name_map[guid] = display_name;
-            d->rights_name_to_guid_map[cn] = guid;
-            d->rights_applies_to_map[guid] = applies_to;
-            d->extended_rights_list.append(cn);
-            d->rights_valid_accesses_map[cn] = valid_accesses;
-        }
-    }
+    load_extended_rights(ad);
 }
 
 QString AdConfig::domain() const {
@@ -811,6 +582,237 @@ bool AdConfig::rights_applies_to_class(const QString &rights_cn, const QList<QSt
     const bool applies = applies_to_set.intersects(class_set);
 
     return applies;
+}
+
+void AdConfig::load_extended_rights(AdInterface &ad)
+{
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);
+
+    const QList<QString> attributes = {
+        ATTRIBUTE_CN,
+        ATTRIBUTE_DISPLAY_NAME,
+        ATTRIBUTE_RIGHTS_GUID,
+        ATTRIBUTE_APPLIES_TO,
+        ATTRIBUTE_VALID_ACCESSES,
+    };
+
+    const QString search_base = extended_rights_dn();
+
+    const QHash<QString, AdObject> search_results = ad.search(search_base, SearchScope_Children, filter, attributes);
+
+    for (const AdObject &object : search_results.values()) {
+        const QString cn = object.get_string(ATTRIBUTE_CN);
+        const QString guid_string = object.get_string(ATTRIBUTE_RIGHTS_GUID);
+        const QByteArray guid = guid_string_to_bytes(guid_string);
+        const QByteArray display_name = object.get_value(ATTRIBUTE_DISPLAY_NAME);
+        const QList<QString> applies_to = [this, object]() {
+            QList<QString> out;
+
+            const QList<QString> class_guid_string_list = object.get_strings(ATTRIBUTE_APPLIES_TO);
+            for (const QString &class_guid_string : class_guid_string_list) {
+                const QByteArray class_guid = guid_string_to_bytes(class_guid_string);
+                const QString object_class = guid_to_class(class_guid);
+
+                out.append(object_class);
+            }
+
+            return out;
+        }();
+        const int valid_accesses = object.get_int(ATTRIBUTE_VALID_ACCESSES);
+
+        d->right_to_guid_map[cn] = guid;
+        d->right_guid_to_cn_map[guid] = cn;
+        d->rights_guid_to_name_map[guid] = display_name;
+        d->rights_name_to_guid_map[cn] = guid;
+        d->rights_applies_to_map[guid] = applies_to;
+        d->extended_rights_list.append(cn);
+        d->rights_valid_accesses_map[cn] = valid_accesses;
+    }
+}
+
+void AdConfig::load_attribute_schemas(AdInterface &ad) {
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_ATTRIBUTE_SCHEMA);
+
+    const QList<QString> attributes = {
+        ATTRIBUTE_LDAP_DISPLAY_NAME,
+        ATTRIBUTE_ATTRIBUTE_SYNTAX,
+        ATTRIBUTE_OM_SYNTAX,
+        ATTRIBUTE_IS_SINGLE_VALUED,
+        ATTRIBUTE_SYSTEM_ONLY,
+        ATTRIBUTE_RANGE_UPPER,
+        ATTRIBUTE_LINK_ID,
+        ATTRIBUTE_SYSTEM_FLAGS,
+        ATTRIBUTE_SCHEMA_ID_GUID,
+    };
+
+    const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
+
+    for (const AdObject &object : results.values()) {
+        const QString attribute = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+        d->attribute_schemas[attribute] = object;
+
+        const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
+        d->guid_to_attribute_map[guid] = attribute;
+    }
+}
+
+void AdConfig::load_class_schemas(AdInterface &ad) {
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CLASS_SCHEMA);
+
+    const QList<QString> attributes = {
+        ATTRIBUTE_LDAP_DISPLAY_NAME,
+        ATTRIBUTE_POSSIBLE_SUPERIORS,
+        ATTRIBUTE_SYSTEM_POSSIBLE_SUPERIORS,
+        ATTRIBUTE_MAY_CONTAIN,
+        ATTRIBUTE_SYSTEM_MAY_CONTAIN,
+        ATTRIBUTE_MUST_CONTAIN,
+        ATTRIBUTE_SYSTEM_MUST_CONTAIN,
+        ATTRIBUTE_AUXILIARY_CLASS,
+        ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
+        ATTRIBUTE_SCHEMA_ID_GUID,
+        ATTRIBUTE_SUB_CLASS_OF,
+    };
+
+    const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
+
+    for (const AdObject &object : results.values()) {
+        const QString object_class = object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+        d->class_schemas[object_class] = object;
+
+        const QByteArray guid = object.get_value(ATTRIBUTE_SCHEMA_ID_GUID);
+        d->guid_to_class_map[guid] = object_class;
+
+        const QString sub_class_of = object.get_string(ATTRIBUTE_SUB_CLASS_OF);
+        d->sub_class_of_map[object_class] = sub_class_of;
+    }
+}
+
+void AdConfig::load_display_names(AdInterface &ad, const QString &locale_dir) {
+    const QString filter = QString();
+
+    const QList<QString> search_attributes = {
+        ATTRIBUTE_CLASS_DISPLAY_NAME,
+        ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES,
+    };
+
+    const QHash<QString, AdObject> results = ad.search(locale_dir, SearchScope_Children, filter, search_attributes);
+
+    for (const AdObject &object : results) {
+        const QString dn = object.get_dn();
+
+        // Display specifier DN is "CN=object-class-Display,CN=..."
+        // Get "object-class" from that
+        const QString object_class = [dn]() {
+            const QString rdn = dn.split(",")[0];
+            QString out = rdn;
+            out.remove("CN=", Qt::CaseInsensitive);
+            out.remove("-Display");
+
+            return out;
+        }();
+
+        if (object.contains(ATTRIBUTE_CLASS_DISPLAY_NAME)) {
+            d->class_display_names[object_class] = object.get_string(ATTRIBUTE_CLASS_DISPLAY_NAME);
+        }
+
+        if (object.contains(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES)) {
+            const QList<QString> display_names = object.get_strings(ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES);
+
+            for (const auto &display_name_pair : display_names) {
+                const QList<QString> split = display_name_pair.split(",");
+                const QString attribute_name = split[0];
+                const QString display_name = split[1];
+
+                d->attribute_display_names[object_class][attribute_name] = display_name;
+            }
+
+            d->find_attributes[object_class] = [object_class, display_names]() {
+                QList<QString> out;
+
+                for (const auto &display_name_pair : display_names) {
+                    const QList<QString> split = display_name_pair.split(",");
+                    const QString attribute = split[0];
+
+                    out.append(attribute);
+                }
+
+                return out;
+            }();
+        }
+    }
+}
+
+void AdConfig::load_columns(AdInterface &ad, const QString &locale_dir) {
+    const QList<QString> columns_values = [&] {
+        const QString dn = QString("CN=default-Display,%1").arg(locale_dir);
+        const AdObject object = ad.search_object(dn, {ATTRIBUTE_EXTRA_COLUMNS});
+
+        // NOTE: order as stored in attribute is reversed. Order is not sorted alphabetically so can't just sort.
+        QList<QString> extra_columns = object.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
+        std::reverse(extra_columns.begin(), extra_columns.end());
+
+        return extra_columns;
+    }();
+
+    // ATTRIBUTE_EXTRA_COLUMNS value is
+    // "$attribute,$display_name,..."
+    // Get attributes out of that
+    for (const QString &value : columns_values) {
+        const QList<QString> column_split = value.split(',');
+
+        if (column_split.size() < 2) {
+            continue;
+        }
+
+        const QString attribute = column_split[0];
+        const QString attribute_display_name = column_split[1];
+
+        d->columns.append(attribute);
+        d->column_display_names[attribute] = attribute_display_name;
+    }
+
+    // Insert some columns manually
+    auto add_custom = [=](const Attribute &attribute, const QString &display_name) {
+        d->columns.prepend(attribute);
+        d->column_display_names[attribute] = display_name;
+    };
+
+    add_custom(ATTRIBUTE_DN, QCoreApplication::translate("AdConfig", "Distinguished name"));
+    add_custom(ATTRIBUTE_DESCRIPTION, QCoreApplication::translate("AdConfig", "Description"));
+    add_custom(ATTRIBUTE_OBJECT_CLASS, QCoreApplication::translate("AdConfig", "Class"));
+    add_custom(ATTRIBUTE_NAME, QCoreApplication::translate("AdConfig", "Name"));
+}
+
+void AdConfig::load_filter_containers(AdInterface &ad, const QString &locale_dir) {
+    const QString ui_settings_dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
+    const AdObject object = ad.search_object(ui_settings_dn, {ATTRIBUTE_FILTER_CONTAINERS});
+
+    // NOTE: dns-Zone category is mispelled in
+    // ATTRIBUTE_FILTER_CONTAINERS, no idea why, might
+    // just be on this domain version
+    const QList<QString> categories = [object]() {
+        QList<QString> categories_out = object.get_strings(ATTRIBUTE_FILTER_CONTAINERS);
+        categories_out.replaceInStrings("dns-Zone", "Dns-Zone");
+
+        return categories_out;
+    }();
+
+    // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains object
+    // *categories* not classes, so need to get object
+    // class from category object
+    for (const auto &object_category : categories) {
+        const QString category_dn = QString("CN=%1,%2").arg(object_category, schema_dn());
+        const AdObject category_object = ad.search_object(category_dn, {ATTRIBUTE_LDAP_DISPLAY_NAME});
+        const QString object_class = category_object.get_string(ATTRIBUTE_LDAP_DISPLAY_NAME);
+
+        d->filter_containers.append(object_class);
+    }
+
+    // NOTE: domain not included for some reason, so add it manually
+    d->filter_containers.append(CLASS_DOMAIN);
+
+    // Make configuration and schema pass filter in dev mode so they are visible and can be fetched
+    d->filter_containers.append({CLASS_CONFIGURATION, CLASS_dMD});
 }
 
 QList<QString> AdConfigPrivate::add_auxiliary_classes(const QList<QString> &object_classes) const {
