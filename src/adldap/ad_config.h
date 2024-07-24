@@ -113,6 +113,16 @@ public:
     bool rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const;
 
 private:
+    void load_extended_rights(AdInterface &ad);
+    void load_attribute_schemas(AdInterface &ad);
+    void load_class_schemas(AdInterface &ad);
+
+    // Loads class and attribute display names
+    // NOTE: can't just store objects for these because the values require a decent amount of preprocessing which is best done once here, not everytime value is requested
+    void load_display_names(AdInterface &ad, const QString &locale_dir);
+    void load_columns(AdInterface &ad, const QString &locale_dir);
+    void load_filter_containers(AdInterface &ad, const QString &locale_dir);
+
     AdConfigPrivate *d;
 };
 
