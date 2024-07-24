@@ -83,6 +83,7 @@ private:
     QHash<QString, QList<QByteArray>> current;
     QList<QString> not_specified_optional_attributes;
     QString object_dn;
+    bool optional_attrs_values_is_loaded;
 
     void update_edit_and_view_buttons();
     void on_double_click();

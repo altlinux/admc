@@ -90,8 +90,8 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
 
     QItemSelectionModel *selection_model = view->selectionModel();
 
-    bool load_optional_is_set = settings_get_variant(SETTING_load_optional_attribute_values).toBool();
-    load_optional_attrs_button->setVisible(!load_optional_is_set);
+    optional_attrs_values_is_loaded = settings_get_variant(SETTING_load_optional_attribute_values).toBool();
+    load_optional_attrs_button->setVisible(!optional_attrs_values_is_loaded);
 
     connect(
         selection_model, &QItemSelectionModel::selectionChanged,
@@ -235,7 +235,7 @@ void AttributesTabEdit::load_optional_attribute_values(AdInterface &ad) {
             }
         }
     }
-
+    optional_attrs_values_is_loaded = true;
     proxy->update_set_attributes(optional_set_attrs);
 }
 
@@ -290,8 +290,7 @@ void AttributesTabEdit::load(AdInterface &ad, const AdObject &object) {
 
     proxy->load(object);
 
-    bool load_optional = settings_get_variant(SETTING_load_optional_attribute_values).toBool();
-    if (load_optional) {
+    if (optional_attrs_values_is_loaded) {
         load_optional_attribute_values(ad);
     }
     else {
