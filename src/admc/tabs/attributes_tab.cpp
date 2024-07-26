@@ -34,6 +34,8 @@
 #include <QHeaderView>
 #include <QMenu>
 #include <QStandardItemModel>
+#include <QMouseEvent>
+#include <QClipboard>
 
 QString attribute_type_display_string(const AttributeType type);
 
@@ -98,6 +100,8 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
         this, &AttributesTabEdit::update_edit_and_view_buttons);
     update_edit_and_view_buttons();
 
+    view->installEventFilter(this);
+
     connect(
         view, &QAbstractItemView::doubleClicked,
         this, &AttributesTabEdit::on_double_click);
@@ -147,7 +151,6 @@ QList<QStandardItem *> AttributesTabEdit::get_selected_row() const {
 
 void AttributesTabEdit::update_edit_and_view_buttons() {
     const QList<QStandardItem *> selected_row = get_selected_row();
-
     const bool no_selection = selected_row.isEmpty();
     if (no_selection) {
         edit_button->setVisible(true);
@@ -173,6 +176,24 @@ void AttributesTabEdit::update_edit_and_view_buttons() {
             view_button->setEnabled(false);
         }
     }
+}
+
+void AttributesTabEdit::copy_action(){
+    const QList<QStandardItem *> selected_row = get_selected_row();
+    QApplication::clipboard()->setText(selected_row[AttributesColumn_Value]->text());
+}
+
+bool AttributesTabEdit::eventFilter(QObject *watched, QEvent *event){
+    if (watched == view && event->type() == 82){
+        QMenu menu;
+        QAction* saveAction = menu.addAction("Копировать");
+        connect(
+           saveAction, &QAction::triggered,
+           this, &AttributesTabEdit::copy_action);
+        menu.exec(QCursor::pos());
+        return true;
+    }
+    return QObject::eventFilter(watched, event);
 }
 
 void AttributesTabEdit::on_double_click() {
