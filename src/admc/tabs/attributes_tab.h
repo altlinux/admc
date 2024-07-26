@@ -83,12 +83,15 @@ private:
     QHash<QString, QList<QByteArray>> current;
     QList<QString> not_specified_optional_attributes;
     QString object_dn;
+    bool optional_attrs_values_is_loaded;
 
     void update_edit_and_view_buttons();
     void on_double_click();
     void edit_attribute();
     void view_attribute();
     void on_load_optional();
+    bool eventFilter(QObject *watched, QEvent *event);
+    void copy_action();
     void load_optional_attribute_values(AdInterface &ad);
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
     QList<QStandardItem *> get_selected_row() const;

@@ -34,6 +34,8 @@
 #include <QHeaderView>
 #include <QMenu>
 #include <QStandardItemModel>
+#include <QMouseEvent>
+#include <QClipboard>
 
 QString attribute_type_display_string(const AttributeType type);
 
@@ -90,13 +92,15 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
 
     QItemSelectionModel *selection_model = view->selectionModel();
 
-    bool load_optional_is_set = settings_get_variant(SETTING_load_optional_attribute_values).toBool();
-    load_optional_attrs_button->setVisible(!load_optional_is_set);
+    optional_attrs_values_is_loaded = settings_get_variant(SETTING_load_optional_attribute_values).toBool();
+    load_optional_attrs_button->setVisible(!optional_attrs_values_is_loaded);
 
     connect(
         selection_model, &QItemSelectionModel::selectionChanged,
         this, &AttributesTabEdit::update_edit_and_view_buttons);
     update_edit_and_view_buttons();
+
+    view->installEventFilter(this);
 
     connect(
         view, &QAbstractItemView::doubleClicked,
@@ -147,7 +151,6 @@ QList<QStandardItem *> AttributesTabEdit::get_selected_row() const {
 
 void AttributesTabEdit::update_edit_and_view_buttons() {
     const QList<QStandardItem *> selected_row = get_selected_row();
-
     const bool no_selection = selected_row.isEmpty();
     if (no_selection) {
         edit_button->setVisible(true);
@@ -173,6 +176,24 @@ void AttributesTabEdit::update_edit_and_view_buttons() {
             view_button->setEnabled(false);
         }
     }
+}
+
+void AttributesTabEdit::copy_action(){
+    const QList<QStandardItem *> selected_row = get_selected_row();
+    QApplication::clipboard()->setText(selected_row[AttributesColumn_Value]->text());
+}
+
+bool AttributesTabEdit::eventFilter(QObject *watched, QEvent *event){
+    if (watched == view && event->type() == 82){
+        QMenu menu;
+        QAction* saveAction = menu.addAction("Копировать");
+        connect(
+           saveAction, &QAction::triggered,
+           this, &AttributesTabEdit::copy_action);
+        menu.exec(QCursor::pos());
+        return true;
+    }
+    return QObject::eventFilter(watched, event);
 }
 
 void AttributesTabEdit::on_double_click() {
@@ -235,7 +256,7 @@ void AttributesTabEdit::load_optional_attribute_values(AdInterface &ad) {
             }
         }
     }
-
+    optional_attrs_values_is_loaded = true;
     proxy->update_set_attributes(optional_set_attrs);
 }
 
@@ -290,8 +311,7 @@ void AttributesTabEdit::load(AdInterface &ad, const AdObject &object) {
 
     proxy->load(object);
 
-    bool load_optional = settings_get_variant(SETTING_load_optional_attribute_values).toBool();
-    if (load_optional) {
+    if (optional_attrs_values_is_loaded) {
         load_optional_attribute_values(ad);
     }
     else {
