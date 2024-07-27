@@ -9,5 +9,7 @@ Build-Depends: debhelper-compat (= 11), debhelper (>= 11), cmake, qtbase5-dev, l
 Package: admc
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, libsasl2-2, libqt5help5 (>= 5.11)
-Description: Samba domain management console.
- Samba domain management console.
+Description: Active Directory Management Center (ADMC)
+ The ADMC is an integrated complex tool that implements
+ User and Computers and Group Policy Manager modules of
+ Microsoft Remote Server Administration Tools (RSAT).

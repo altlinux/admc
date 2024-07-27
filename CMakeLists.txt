@@ -67,7 +67,9 @@ if (ADMC_BUILD_DEB)
     SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Kees van Vloten <keesvanvloten@gmail.com>")
     SET(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
     SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-    SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Samba domain management console.")
+    SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "The ADMC is an integrated complex tool that implements
+ User and Computers and Group Policy Manager modules of
+ Microsoft Remote Server Administration Tools (RSAT).")
     SET(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/altlinux/admc")
     set(CPACK_STRIP_FILES "${CMAKE_INSTALL_LIBDIR}/libadldap.so;${CMAKE_INSTALL_BINDIR}/admc")
     INCLUDE(CPack)
