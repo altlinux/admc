@@ -9,3 +9,4 @@ src/adldap/samba/ndr_misc.h
 /debian/files
 /debian/admc/
 /debian/.debhelper/
+/obj-*/
