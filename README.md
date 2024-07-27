@@ -1,3 +1,10 @@
+# Active Directory Management Center (ADMC)
+
+The ADMC is an integrated complex tool that implements
+User and Computers and Group Policy Manager modules of
+Microsoft Remote Server Administration Tools (RSAT).
+
+![Screenshot](https://i.imgur.com/GuRmwnq.png)
 
 ## Building
 
@@ -44,6 +51,3 @@ Launch tests from the build directory:
 ./admc-test
 ```
 
-## Screenshots
-
-![image](https://i.imgur.com/GuRmwnq.png)
