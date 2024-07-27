@@ -163,8 +163,8 @@ AdInterface::AdInterface() {
     // wouldn't be able to have multiple active
     // AdInterface's instances at the same time
     if (AdInterfacePrivate::smbc == NULL) {
-        smbc_init(get_auth_data_fn, 0);
         AdInterfacePrivate::smbc = smbc_new_context();
+        smbc_setFunctionAuthData(AdInterfacePrivate::smbc, get_auth_data_fn);
         smbc_setOptionUseKerberos(AdInterfacePrivate::smbc, true);
         smbc_setOptionFallbackAfterKerberos(AdInterfacePrivate::smbc, true);
         if (!smbc_init_context(AdInterfacePrivate::smbc)) {
@@ -172,7 +172,6 @@ AdInterface::AdInterface() {
 
             return;
         }
-        smbc_set_context(AdInterfacePrivate::smbc);
     }
 
     d->is_connected = true;
