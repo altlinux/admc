@@ -7,6 +7,6 @@ Build-Depends: debhelper (>= 9), cmake, qtbase5-dev, libqt5help5, qttools5-dev, 
 
 Package: admc
 Architecture: any
-Depends: libldap-2.4-2, libsasl2-2, libsmbclient (>=4.9), libuuid1 (>= 2.33), libqt5help5 (>= 5.11), libkrb5-3 (>= 1.17)
+Depends: ${misc:Depends}, ${shlibs:Depends}, libsasl2-2, libqt5help5 (>= 5.11)
 Description: Samba domain management console.
  Samba domain management console.
