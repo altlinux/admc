@@ -52,9 +52,9 @@ include(ClangFormat)
 option(ADMC_BUILD_DEB "Build the deb package of ADMC." OFF)
 
 add_subdirectory(src)
-if(NOT ADMC_BUILD_DEB)
+if(BUILD_TESTING)
     add_subdirectory(tests)
-endif(NOT ADMC_BUILD_DEB)
+endif(BUILD_TESTING)
 add_subdirectory(share)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CHANGELOG.txt
