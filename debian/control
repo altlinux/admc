@@ -5,6 +5,9 @@ Priority: optional
 Rules-Requires-Root: no
 Standards-Version: 3.9.2
 Build-Depends: debhelper-compat (= 11), debhelper (>= 11), cmake, qtbase5-dev, libqt5help5, qttools5-dev, libldap2-dev, pkgconf, samba-dev (>=4.9), libsmbclient-dev, libkrb5-dev, libglib2.0-dev, libsasl2-dev
+Homepage: https://github.com/altlinux/admc
+Vcs-Browser: https://github.com/altlinux/admc
+Vcs-Git: https://github.com/altlinux/admc.git
 
 Package: admc
 Architecture: any
