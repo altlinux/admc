@@ -56,6 +56,9 @@
 #define ATTRIBUTE_LINK_ID "linkID"
 #define ATTRIBUTE_SYSTEM_AUXILIARY_CLASS "systemAuxiliaryClass"
 #define ATTRIBUTE_SUB_CLASS_OF "subClassOf"
+#define ATTRIBUTE_POSSIBLE_INFERIORS "possibleInferiors"
+#define ATTRIBUTE_ALLOWED_ATTRIBUTES "allowedAttributes"
+#define ATTRIBUTE_ALLOWED_ATTRIBUTES_EFFECTIVE "allowedAttributesEffective"
 
 #define CLASS_ATTRIBUTE_SCHEMA "attributeSchema"
 #define CLASS_CLASS_SCHEMA "classSchema"
@@ -120,6 +123,8 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     load_filter_containers(ad, locale_dir);
 
     load_extended_rights(ad);
+
+    load_permissionable_attributes(CLASS_DOMAIN, ad);
 }
 
 QString AdConfig::domain() const {
@@ -584,6 +589,14 @@ bool AdConfig::rights_applies_to_class(const QString &rights_cn, const QList<QSt
     return applies;
 }
 
+QStringList AdConfig::get_possible_inferiors(const QString &obj_class) const {
+    return d->class_possible_inferiors_map[obj_class];
+}
+
+QStringList AdConfig::get_permissionable_attributes(const QString &obj_class) const {
+    return d->class_permissionable_attributes_map[obj_class];
+}
+
 void AdConfig::load_extended_rights(AdInterface &ad)
 {
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);
@@ -671,6 +684,8 @@ void AdConfig::load_class_schemas(AdInterface &ad) {
         ATTRIBUTE_SYSTEM_AUXILIARY_CLASS,
         ATTRIBUTE_SCHEMA_ID_GUID,
         ATTRIBUTE_SUB_CLASS_OF,
+        ATTRIBUTE_SCHEMA_ID_GUID,
+        ATTRIBUTE_POSSIBLE_INFERIORS
     };
 
     const QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter, attributes);
@@ -684,6 +699,9 @@ void AdConfig::load_class_schemas(AdInterface &ad) {
 
         const QString sub_class_of = object.get_string(ATTRIBUTE_SUB_CLASS_OF);
         d->sub_class_of_map[object_class] = sub_class_of;
+
+        const QStringList possible_inferiors = bytearray_list_to_string_list(object.get_values(ATTRIBUTE_POSSIBLE_INFERIORS));
+        d->class_possible_inferiors_map[object_class] = possible_inferiors;
     }
 }
 
@@ -813,6 +831,43 @@ void AdConfig::load_filter_containers(AdInterface &ad, const QString &locale_dir
 
     // Make configuration and schema pass filter in dev mode so they are visible and can be fetched
     d->filter_containers.append({CLASS_CONFIGURATION, CLASS_dMD});
+}
+
+void AdConfig::load_permissionable_attributes(const QString &obj_class, AdInterface &ad) {
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_LDAP_DISPLAY_NAME, obj_class);
+    QHash<QString, AdObject> results = ad.search(schema_dn(), SearchScope_Children, filter,
+                                             {ATTRIBUTE_ALLOWED_ATTRIBUTES, ATTRIBUTE_SYSTEM_MAY_CONTAIN});
+    if (results.isEmpty()) {
+        return;
+    }
+    const AdObject class_schema_object = results.values()[0];
+
+    const QStringList allowed_attrs = bytearray_list_to_string_list(class_schema_object.get_values(ATTRIBUTE_ALLOWED_ATTRIBUTES));
+    const QStringList attrs_system_may_contain = bytearray_list_to_string_list(class_schema_object.get_values(ATTRIBUTE_SYSTEM_MAY_CONTAIN));
+
+    // Use set to remove duplicates (just in case)
+    QSet<QString> allowed_attrs_set = QSet<QString>(allowed_attrs.begin(), allowed_attrs.end());
+    QSet<QString> may_contain_attrs_set = QSet<QString>(attrs_system_may_contain.begin(), attrs_system_may_contain.end());
+    allowed_attrs_set |= may_contain_attrs_set;
+
+    QSet<QString> permissionable_attrs_set = allowed_attrs_set;
+    // Remove backlinks, constructed and system-only attributes
+    for (const QString &attr : allowed_attrs_set) {
+        if (get_attribute_is_backlink(attr) || get_attribute_is_constructed(attr) || get_attribute_is_system_only(attr)) {
+            permissionable_attrs_set.remove(attr);
+        }
+    }
+
+    QStringList permissionable_attrs = QStringList(permissionable_attrs_set.begin(), permissionable_attrs_set.end());
+    permissionable_attrs.sort();
+    d->class_permissionable_attributes_map[obj_class] = permissionable_attrs;
+
+    for (const QString &inferior : d->class_possible_inferiors_map.value(obj_class, QStringList())) {
+        if (inferior == obj_class || d->class_permissionable_attributes_map.contains(inferior)) {
+            continue;
+        }
+        load_permissionable_attributes(inferior, ad);
+    }
 }
 
 QList<QString> AdConfigPrivate::add_auxiliary_classes(const QList<QString> &object_classes) const {
