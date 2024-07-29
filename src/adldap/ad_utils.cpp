@@ -491,3 +491,14 @@ QHash<int, QString> attribute_value_bit_string_map(const QString &attribute)
     }
     return bit_string_map;
 }
+
+QList<QString> bytearray_list_to_string_list(const QList<QByteArray> &bytearray_list) {
+    QList<QString> out;
+
+    for (const QByteArray &bytes : bytearray_list) {
+        const QString string = bytes;
+        out.append(string);
+    }
+
+    return out;
+}
