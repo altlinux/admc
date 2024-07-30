@@ -2,6 +2,13 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.16.4
+-----------------------------------------------------------------------
+- Samba 4.20 compatibility update. Fixed related errors with security
+descriptor manipulations.
+- Fixed user creation incapability after Samba dependencies update.
+
+-----------------------------------------------------------------------
  VERSION 0.16.3
 -----------------------------------------------------------------------
 - Fix crashes after OU/user creation attempts by users with
