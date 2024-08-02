@@ -6,14 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>441</width>
-    <height>370</height>
+    <width>700</width>
+    <height>621</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string notr="true">Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Users and Groups</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QTreeView" name="trustee_view">
      <property name="editTriggers">
@@ -76,10 +83,25 @@
     </widget>
    </item>
    <item>
-    <widget class="QTreeView" name="rights_view">
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
+    <widget class="QTabWidget" name="permissions_tab_widget">
+     <property name="currentIndex">
+      <number>2</number>
      </property>
+     <widget class="QWidget" name="common_permissions_tab">
+      <attribute name="title">
+       <string>Common</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="extended_permissions_tab">
+      <attribute name="title">
+       <string>Extended</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="custom_permissions_tab">
+      <attribute name="title">
+       <string>Custom</string>
+      </attribute>
+     </widget>
     </widget>
    </item>
   </layout>
