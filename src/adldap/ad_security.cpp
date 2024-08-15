@@ -957,39 +957,7 @@ void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfi
 }
 
 QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list) {
-    QList<SecurityRight> out;
-
-    for (const uint32_t &access_mask : common_rights_list) {
-        SecurityRight right;
-        right.access_mask = access_mask;
-        right.object_type = QByteArray();
-
-        out.append(right);
-    }
-
-    const QList<QString> extended_rights_list = adconfig->get_extended_rights_list(class_list);
-    for (const QString &rights : extended_rights_list) {
-        const int valid_accesses = adconfig->get_rights_valid_accesses(rights);
-        const QByteArray rights_guid = adconfig->get_right_guid(rights);
-        const QList<uint32_t> access_mask_list = {
-            SEC_ADS_CONTROL_ACCESS,
-            SEC_ADS_READ_PROP,
-            SEC_ADS_WRITE_PROP,
-        };
-
-        for (const uint32_t &access_mask : access_mask_list) {
-            const bool mask_match = bitmask_is_set(valid_accesses, access_mask);
-
-            if (mask_match) {
-                SecurityRight right;
-                right.access_mask = access_mask;
-                right.object_type = rights_guid;
-
-                out.append(right);
-            }
-        }
-    }
-
+    QList<SecurityRight> out = ad_security_get_common_rights() + ad_security_get_extended_rights_for_class(adconfig, class_list);
     return out;
 }
 
@@ -1133,4 +1101,47 @@ int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2) {
     }
 
     return 0;
+}
+
+QList<SecurityRight> ad_security_get_common_rights() {
+    QList<SecurityRight> out;
+
+    for (const uint32_t &access_mask : common_rights_list) {
+        SecurityRight right;
+        right.access_mask = access_mask;
+        right.object_type = QByteArray();
+
+        out.append(right);
+    }
+
+    return out;
+}
+
+QList<SecurityRight> ad_security_get_extended_rights_for_class(AdConfig *adconfig, const QList<QString> &class_list) {
+    QList<SecurityRight> out;
+
+    const QList<QString> extended_rights_list = adconfig->get_extended_rights_list(class_list);
+    for (const QString &rights : extended_rights_list) {
+        const int valid_accesses = adconfig->get_rights_valid_accesses(rights);
+        const QByteArray rights_guid = adconfig->get_right_guid(rights);
+        const QList<uint32_t> access_mask_list = {
+            SEC_ADS_CONTROL_ACCESS,
+            SEC_ADS_READ_PROP,
+            SEC_ADS_WRITE_PROP,
+        };
+
+        for (const uint32_t &access_mask : access_mask_list) {
+            const bool mask_match = bitmask_is_set(valid_accesses, access_mask);
+
+            if (mask_match) {
+                SecurityRight right;
+                right.access_mask = access_mask;
+                right.object_type = rights_guid;
+
+                out.append(right);
+            }
+        }
+    }
+
+    return out;
 }
