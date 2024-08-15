@@ -106,6 +106,8 @@ void security_descriptor_add_right(security_descriptor *sd, AdConfig *adconfig, 
 void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const bool allow);
 
 QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list);
+QList<SecurityRight> ad_security_get_common_rights();
+QList<SecurityRight> ad_security_get_extended_rights_for_class(AdConfig *adconfig, const QList<QString> &class_list);
 QList<SecurityRight> ad_security_get_superior_right_list(const uint32_t access_mask, const QByteArray &object_type);
 QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, const uint32_t access_mask, const QByteArray &object_type, const QList<QString> &class_list);
 
