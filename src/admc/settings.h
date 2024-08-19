@@ -107,7 +107,11 @@ DEFINE_SETTING(SETTING_attributes_tab_header_state);
 DEFINE_SETTING(SETTING_select_object_header_state);
 DEFINE_SETTING(SETTING_membership_tab_header_state);
 DEFINE_SETTING(SETTING_organization_tab_header_state);
-DEFINE_SETTING(SETTING_security_tab_header_state);
+DEFINE_SETTING(SETTING_common_permissions_header_state);
+DEFINE_SETTING(SETTING_extended_permissions_header_state);
+DEFINE_SETTING(SETTING_delegation_permissions_header_state);
+DEFINE_SETTING(SETTING_creation_deletion_permissions_header_state);
+DEFINE_SETTING(SETTING_read_write_permissions_header_state);
 DEFINE_SETTING(SETTING_select_object_match_header_state);
 
 // Bool
