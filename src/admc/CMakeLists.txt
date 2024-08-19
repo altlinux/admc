@@ -209,6 +209,7 @@ set(ADMC_SOURCES
     permission_control_widgets/permissions_widget.cpp
     permission_control_widgets/creation_deletion_permissions_widget.cpp
     permission_control_widgets/read_write_permissions_widget.cpp
+    permission_control_widgets/common_permissions_widget.cpp
 
     admc.qrc
 )
