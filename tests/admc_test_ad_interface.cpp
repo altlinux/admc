@@ -110,7 +110,7 @@ void ADMCTestAdInterface::gpo_check_perms() {
 
             const QList<QString> class_list = gpc_object.get_strings(ATTRIBUTE_OBJECT_CLASS);
 
-            SecurityRight right{SEC_ADS_GENERIC_ALL, QByteArray()};
+            SecurityRight right{SEC_ADS_GENERIC_ALL, QByteArray(), QByteArray(), 0};
 
             security_descriptor_add_right(out, ad.adconfig(), class_list, trustee_everyone, right, true);
 

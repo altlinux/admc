@@ -63,10 +63,18 @@ private:
     bool data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT];
 };
 
-class SecurityRight {
-public:
+struct SecurityRight {
     uint32_t access_mask;
     QByteArray object_type;
+    QByteArray inherited_object_type;
+    uint8_t flags;
+
+    inline bool operator ==(const SecurityRight &another) const {
+        return (another.access_mask == access_mask) &&
+                (another.object_type == object_type) &&
+                (another.inherited_object_type == inherited_object_type) &&
+                (another.flags == flags);
+    }
 };
 
 QString ad_security_get_well_known_trustee_name(const QByteArray &trustee);
@@ -102,8 +110,10 @@ void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QBy
 // LOT more than just add rights. They also take care
 // of superior and subordinate rights to follow a logic
 // of a typical gui checklist of rights.
-void security_descriptor_add_right(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const SecurityRight &right, const bool allow);
-void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const SecurityRight &right, const bool allow);
+void security_descriptor_add_right(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list,
+                                   const QByteArray &trustee, const SecurityRight &right, const bool allow);
+void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list,
+                                      const QByteArray &trustee, const SecurityRight &right, const bool allow);
 
 QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list);
 QList<SecurityRight> ad_security_get_common_rights();
