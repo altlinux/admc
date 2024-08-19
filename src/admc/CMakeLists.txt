@@ -206,6 +206,8 @@ set(ADMC_SOURCES
     console_impls/found_policy_impl.cpp
     console_impls/domain_info_impl.cpp
 
+    permission_control_widgets/permissions_widget.cpp
+
     admc.qrc
 )
 
