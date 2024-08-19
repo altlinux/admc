@@ -24,25 +24,10 @@
 #include "attribute_edits/attribute_edit.h"
 #include <QWidget>
 
-#include "ad_defines.h"
-
-#include <QDialog>
-
-class RightsSortModel;
-class QStandardItemModel;
-class QStandardItem;
-class SecurityDescriptor;
-struct security_descriptor;
-
-enum AceColumn {
-    AceColumn_Name,
-    AceColumn_Allowed,
-    AceColumn_Denied,
-
-    AceColumn_COUNT,
-};
-
 class SecurityTabEdit;
+class QStandardItemModel;
+struct security_descriptor;
+class PermissionsWidget;
 
 namespace Ui {
 class SecurityTab;
@@ -51,9 +36,13 @@ class SecurityTab;
 class SecurityTab final : public QWidget {
     Q_OBJECT
 
-public:
-    Ui::SecurityTab *ui;
+    friend class SecurityTabEdit;
 
+    enum TrusteeItemRole {
+        TrusteeItemRole_Sid = Qt::UserRole,
+    };
+
+public:
     SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~SecurityTab();
 
@@ -62,44 +51,39 @@ public:
     bool verify_acl_order() const;
 
 private:
+    Ui::SecurityTab *ui;
     SecurityTabEdit *tab_edit;
+    QStandardItemModel *trustee_model;
+    security_descriptor *sd;
+    bool is_policy;
+    QList<PermissionsWidget*> permissions_widgets;
+
+    void load(AdInterface &ad, const AdObject &object);
+    void on_remove_trustee_button();
+    void on_add_trustee_button();
+    void on_add_well_known_trustee();
+    void add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad);
+    void load_current_sd(AdInterface &ad);
+    QByteArray get_current_trustee() const;
+
+signals:
+    void current_trustee_changed(const QByteArray &current_trustee);
+    void trustees_removed(const QByteArrayList &trustees);
 };
 
 class SecurityTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    SecurityTabEdit(Ui::SecurityTab *ui, QObject *parent);
+    SecurityTabEdit(SecurityTab *security_tab_arg);
     ~SecurityTabEdit();
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool verify(AdInterface &ad, const QString &dn) const override;
     bool apply(AdInterface &ad, const QString &dn) const override;
 
-    void fix_acl_order();
-    void set_read_only();
-    bool verify_acl_order() const;
-
 private:
-    Ui::SecurityTab *ui;
-    QStandardItemModel *trustee_model;
-    QStandardItemModel *rights_model;
-    RightsSortModel *rights_sort_model;
-    bool is_policy;
-    bool ignore_item_changed_signal;
-    security_descriptor *sd;
-    QList<QString> target_class_list;
-    bool read_only;
-
-    void on_item_changed(QStandardItem *item);
-    void on_add_trustee_button();
-    void on_remove_trustee_button();
-    void add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad);
-    void on_add_well_known_trustee();
-    void load_current_sd(AdInterface &ad);
-    void load_rights_model();
-    void make_rights_model_read_only();
-    QByteArray get_current_trustee() const;
+    SecurityTab *security_tab;
 };
 
 #endif /* SECURITY_TAB_H */
