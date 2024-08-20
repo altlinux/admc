@@ -293,8 +293,9 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
             out.append(object_class);
         }
 
-        // NOTE: domain not included for some reason, so add it manually
+        // NOTE: domain and pso container are not included for some reason, so add it manually
         out.append(CLASS_DOMAIN);
+        out.append(CLASS_PSO_CONTAINER);
 
         // Make configuration and schema pass filter in dev mode so they are visible and can be fetched
         out.append({CLASS_CONFIGURATION, CLASS_dMD});
