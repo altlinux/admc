@@ -37,7 +37,8 @@
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
 dom_sid dom_sid_from_bytes(const QByteArray &bytes);
 QByteArray dom_sid_string_to_bytes(const dom_sid &sid);
-bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow);
+bool ace_match_without_access_mask(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow);
+bool ace_match(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow);
 QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd);
 void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace> &new_dacl);
 uint32_t ad_security_map_access_mask(const uint32_t access_mask);
@@ -570,7 +571,7 @@ void security_descriptor_add_right_base(security_descriptor *sd, const QByteArra
             // such ace would not match by mask and
             // that's fine.
 
-            const bool match = check_ace_match(ace, trustee, right, allow);
+            const bool match = ace_match_without_access_mask(ace, trustee, right, allow);
 
             if (match) {
                 return i;
@@ -663,64 +664,57 @@ void security_descriptor_add_right_base(security_descriptor *sd, const QByteArra
     }
 }
 
+bool ace_match(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
+    const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
+    const bool access_mask_match = bitmask_is_set(ace.access_mask, access_mask);
+
+    return access_mask_match && ace_match_without_access_mask(ace, trustee, right, allow);
+}
+
 // Checks if ace matches given members. Note that
 // access masks are not compared. Compare them yourself
 // if you need to further filter by masks.
-bool check_ace_match(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
-    const bool type_match = [&]() {
-        const security_ace_type ace_type = ace.type;
+bool ace_match_without_access_mask(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
+    const security_ace_type ace_type = ace.type;
+    const bool ace_allow = ace_type_allow_set.contains(ace_type);
+    const bool ace_deny = ace_type_deny_set.contains(ace_type);
+    const bool type_match = (allow && ace_allow) || (!allow && ace_deny);
 
-        const bool ace_allow = ace_type_allow_set.contains(ace_type);
-        const bool ace_deny = ace_type_deny_set.contains(ace_type);
+    const bool flags_match = bitmask_is_set(ace.flags, right.flags);
 
-        if (allow && ace_allow) {
-            return true;
-        } else if (!allow && ace_deny) {
-            return true;
-        } else {
-            return false;
-        }
-    }();
+    const bool object_present = ace_types_with_object.contains(ace.type) &&
+            bitmask_is_set(ace.object.object.flags, SEC_ACE_OBJECT_TYPE_PRESENT);
+    const bool inherited_object_present = ace_types_with_object.contains(ace.type) &&
+            bitmask_is_set(ace.object.object.flags, SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT);
 
-const bool flags_match = bitmask_is_set(ace.flags, right.flags);
+    const GUID ace_objecttype_guid = ace.object.object.type.type;
+    const QByteArray ace_objecttype = QByteArray((char *) &ace_objecttype_guid, sizeof(GUID));
+    bool object_match;
+    if (object_present) {
+        const GUID ace_object_type_guid = ace.object.object.type.type;
+        const QByteArray ace_object_type = QByteArray((char *) &ace_object_type_guid, sizeof(GUID));
+        const bool types_are_equal = (ace_object_type == right.object_type);
 
-    const bool trustee_match = [&]() {
-        const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
-        const bool trustees_are_equal = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
+        object_match = types_are_equal;
+    } else {
+        object_match = right.object_type.isEmpty();
+    }
 
-        return trustees_are_equal;
-    }();
+    bool inherited_object_match;
+    if (inherited_object_present) {
+        const GUID ace_inherited_type_guid = ace.object.object.inherited_type.inherited_type;
+        const QByteArray ace_inherited_object_type = QByteArray((char *) &ace_inherited_type_guid, sizeof(GUID));
+        const bool types_are_equal = (ace_inherited_object_type == right.inherited_object_type);
 
-    const bool object_match = [&]() {
-        const bool object_present = ace_types_with_object.contains(ace.type);
+        inherited_object_match = types_are_equal;
+    } else {
+        inherited_object_match = right.inherited_object_type.isEmpty();
+    }
 
-        if (object_present) {
-            const GUID ace_object_type_guid = ace.object.object.type.type;
-            const QByteArray ace_object_type = QByteArray((char *) &ace_object_type_guid, sizeof(GUID));
-            const bool types_are_equal = (ace_object_type == right.object_type);
-
-            return types_are_equal;
-        } else {
-            return right.object_type.isEmpty();
-        }
-    }();
-
-    const bool inherited_object_match = [&]() {
-        const bool inherited_object_present = ace_types_with_object.contains(ace.type);
-
-        if (inherited_object_present) {
-            const GUID ace_inherited_type_guid = ace.object.object.inherited_type.inherited_type;
-            const QByteArray ace_inherited_object_type = QByteArray((char *) &ace_inherited_type_guid, sizeof(GUID));
-            const bool types_are_equal = (ace_inherited_object_type == right.inherited_object_type);
-
-            return types_are_equal;
-        } else {
-            return right.inherited_object_type.isEmpty();
-        }
-    }();
+    const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
+    const bool trustee_match = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
 
     const bool out_match = (inherited_object_match && type_match && flags_match && trustee_match && object_match);
-
     return out_match;
 }
 
@@ -733,7 +727,7 @@ void security_descriptor_remove_right_base(security_descriptor *sd, const QByteA
         const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
 
         for (const security_ace &ace : old_dacl) {
-            const bool match = check_ace_match(ace, trustee, right, allow);
+            const bool match = ace_match_without_access_mask(ace, trustee, right, allow);
             const bool ace_mask_contains_mask = bitmask_is_set(ace.access_mask, access_mask);
 
             if (match && ace_mask_contains_mask) {
