@@ -559,6 +559,11 @@ QString AdConfig::guid_to_attribute(const QByteArray &guid) const {
     return out;
 }
 
+QByteArray AdConfig::attribute_to_guid(const QString &attr) const {
+    const QByteArray attr_guid = d->guid_to_attribute_map.key(attr, QByteArray());
+    return attr_guid;
+}
+
 QString AdConfig::guid_to_class(const QByteArray &guid) const {
     const QString out = d->guid_to_class_map.value(guid, "<unknown class>");
     return out;
@@ -595,6 +600,10 @@ QStringList AdConfig::get_possible_inferiors(const QString &obj_class) const {
 
 QStringList AdConfig::get_permissionable_attributes(const QString &obj_class) const {
     return d->class_permissionable_attributes_map[obj_class];
+}
+
+QByteArray AdConfig::guid_from_class(const ObjectClass &object_class) {
+    return d->guid_to_class_map.key(object_class, QByteArray());
 }
 
 void AdConfig::load_extended_rights(AdInterface &ad)
