@@ -461,9 +461,6 @@ QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd) 
 
 SecurityRightState security_descriptor_get_right_state(const security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right) {
     bool out_data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT];
-
-    const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
-
     for (int x = 0; x < SecurityRightStateInherited_COUNT; x++) {
         for (int y = 0; y < SecurityRightStateType_COUNT; y++) {
             out_data[x][y] = false;
@@ -471,71 +468,42 @@ SecurityRightState security_descriptor_get_right_state(const security_descriptor
     }
 
     const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
-
     for (const security_ace &ace : dacl) {
-        const bool match = [&]() {
-            const bool trustee_match = [&]() {
-                const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
-                const bool trustees_are_equal = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
+        // NOTE: if compared ace doesn't
+        // have an object it can still
+        // match if it's access mask
+        // matches with given ace. Example:
+        // ace that allows "generic read"
+        // (mask contains bit for "read
+        // property" and object is empty)
+        // will also allow right for
+        // reading personal info (mask *is*
+        // "read property" and contains
+        // some object)
+        SecurityRight right_with_object = {right.access_mask, right.object_type,
+                                         right.inherited_object_type, ace.flags};
+        SecurityRight right_without_object_type = {right.access_mask, QByteArray(),
+                                         right.inherited_object_type, ace.flags};
+        SecurityRight right_without_types = {right.access_mask, QByteArray(),
+                                         QByteArray(), ace.flags};
 
-                return trustees_are_equal;
-            }();
+        const bool match_for_allow = ace_match(ace, trustee, right_with_object, true) ||
+                ace_match(ace, trustee, right_without_object_type, true) ||
+                ace_match(ace, trustee, right_without_types, true);
 
-            const bool access_mask_match = bitmask_is_set(ace.access_mask, access_mask);
+        const bool match_for_deny = ace_match(ace, trustee, right_with_object, false) ||
+                ace_match(ace, trustee, right_without_object_type, false) ||
+                ace_match(ace, trustee, right_without_types, false);
 
-            const bool object_match = [&]() {
-                const bool object_present = ace_types_with_object.contains(ace.type);
-
-                if (object_present) {
-                    const GUID out_guid = ace.object.object.type.type;
-                    const QByteArray ace_object_type = QByteArray((char *) &out_guid, sizeof(GUID));
-                    const bool types_are_equal = (ace_object_type == right.object_type);
-
-                    return types_are_equal;
-                } else {
-                    // NOTE: if compared ace doesn't
-                    // have an object it can still
-                    // match if it's access mask
-                    // matches with given ace. Example:
-                    // ace that allows "generic read"
-                    // (mask contains bit for "read
-                    // property" and object is empty)
-                    // will also allow right for
-                    // reading personal info (mask *is*
-                    // "read property" and contains
-                    // some object)
-                    return access_mask_match;
-                }
-            }();
-
-            const bool out = (trustee_match && access_mask_match && object_match);
-
-            return out;
-        }();
-
-        if (match) {
-            bool state_list[2];
-            state_list[SecurityRightStateType_Allow] = ace_type_allow_set.contains(ace.type);
-            state_list[SecurityRightStateType_Deny] = ace_type_deny_set.contains(ace.type);
-
-            const int inherit_i = [&]() {
-                const bool ace_is_inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
-
-                if (ace_is_inherited) {
-                    return SecurityRightStateInherited_Yes;
-                } else {
-                    return SecurityRightStateInherited_No;
-                }
-            }();
-
-            for (int type_i = 0; type_i < SecurityRightStateType_COUNT; type_i++) {
-                const bool right_state = state_list[type_i];
-
-                if (right_state) {
-                    out_data[inherit_i][type_i] = true;
-                }
-            }
+        // If there is no match, continue to search corresponding ACEs
+        if (!(match_for_allow || match_for_deny)) {
+            continue;
         }
+
+        const int state_inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE) ? SecurityRightStateInherited_Yes :
+                                                                                            SecurityRightStateInherited_No;
+        const int state_allowed = match_for_allow ? SecurityRightStateType_Allow : SecurityRightStateType_Deny;
+        out_data[state_inherited][state_allowed] = true;
     }
 
     const SecurityRightState out = SecurityRightState(out_data);
