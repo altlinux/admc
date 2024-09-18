@@ -951,7 +951,31 @@ void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfi
 }
 
 QList<SecurityRight> ad_security_get_right_list_for_class(AdConfig *adconfig, const QList<QString> &class_list) {
-    QList<SecurityRight> out = ad_security_get_common_rights() + ad_security_get_extended_rights_for_class(adconfig, class_list);
+    const QString obj_class = class_list.last();
+
+    QList<SecurityRight> permissionable_attrs_rights;
+    for (const QString &attribute : adconfig->get_permissionable_attributes(obj_class)) {
+        permissionable_attrs_rights.append(read_write_property_rights(adconfig, attribute));
+    }
+
+    QList<SecurityRight> common_task_rights;
+    QList<SecurityRight> child_objects_rights;
+    for (const QString &obj_class : adconfig->all_inferiors_list(obj_class)) {
+        child_objects_rights.append(creation_deletion_rights_for_class(adconfig, obj_class));
+
+        if (common_task_manager->class_common_task_rights_map.keys().contains(obj_class)) {
+            QList<SecurityRight> obj_class_rights = common_task_manager->rights_for_class(obj_class);
+            for (const SecurityRight &right : obj_class_rights) {
+                if (!child_objects_rights.contains(right)) {
+                    common_task_rights.append(right);
+                }
+            }
+        }
+    }
+
+    QList<SecurityRight> out = ad_security_get_common_rights() + ad_security_get_extended_rights_for_class(adconfig, class_list) +
+            permissionable_attrs_rights + child_objects_rights + common_task_rights;
+
     return out;
 }
 
