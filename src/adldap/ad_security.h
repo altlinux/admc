@@ -1,8 +1,8 @@
-/*
+﻿/*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2022 BaseALT Ltd.
- * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2020-2024 BaseALT Ltd.
+ * Copyright (C) 2020-2024 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,10 @@ public:
 private:
     bool data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT];
 };
+
+// TODO: Unite SecutityRight and SecutityRightState structs into the ACE-like
+// struct/class or remove them and use samba ACE structures. This and functions below
+// can be implemented in security descriptor manager as an option.
 
 struct SecurityRight {
     uint32_t access_mask;
