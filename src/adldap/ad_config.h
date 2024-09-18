@@ -105,6 +105,7 @@ public:
     QList<QString> get_extended_rights_list(const QList<QString> &class_list) const;
 
     QString guid_to_attribute(const QByteArray &guid) const;
+    QByteArray attribute_to_guid(const QString &attr) const;
 
     QString guid_to_class(const QByteArray &guid) const;
 
@@ -114,6 +115,8 @@ public:
 
     QStringList get_possible_inferiors(const QString &obj_class) const;
     QStringList get_permissionable_attributes(const QString &obj_class) const;
+
+    QByteArray guid_from_class(const ObjectClass &object_class);
 
 private:
     void load_extended_rights(AdInterface &ad);
