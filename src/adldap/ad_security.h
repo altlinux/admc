@@ -36,6 +36,7 @@ class AdConfig;
 class AdObject;
 struct security_descriptor;
 struct dom_sid;
+class CommonTaskManager;
 typedef void TALLOC_CTX;
 
 extern const QList<QString> well_known_sid_list;
@@ -80,6 +81,9 @@ struct SecurityRight {
                 (another.flags == flags);
     }
 };
+Q_DECLARE_METATYPE(SecurityRight)
+
+extern CommonTaskManager *common_task_manager;
 
 QString ad_security_get_well_known_trustee_name(const QByteArray &trustee);
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee);
