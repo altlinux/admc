@@ -1173,3 +1173,98 @@ QList<SecurityRight> ad_security_get_extended_rights_for_class(AdConfig *adconfi
 
     return out;
 }
+
+QList<SecurityRight> creation_deletion_rights_for_class(AdConfig *adconfig, const QString &obj_class) {
+    const QByteArray obj_class_guid = adconfig->guid_from_class(obj_class);
+    if (obj_class_guid.isEmpty()) {
+        return QList<SecurityRight>();
+    }
+
+    const QList<SecurityRight> rights = {
+        SecurityRight {
+                SEC_ADS_CREATE_CHILD,
+                obj_class_guid,
+                QByteArray(),
+                SEC_ACE_FLAG_CONTAINER_INHERIT
+            },
+        SecurityRight {
+                SEC_ADS_DELETE_CHILD,
+                obj_class_guid,
+                QByteArray(),
+                SEC_ACE_FLAG_CONTAINER_INHERIT
+            }
+    };
+
+    return rights;
+}
+
+QList<SecurityRight> control_children_class_right(AdConfig *adconfig, const QString &obj_class) {
+    const QByteArray obj_class_guid = adconfig->guid_from_class(obj_class);
+    const QList<SecurityRight> rights = {
+        SecurityRight {
+                SEC_ADS_GENERIC_ALL,
+                QByteArray(),
+                obj_class_guid,
+                SEC_ACE_FLAG_CONTAINER_INHERIT | SEC_ACE_FLAG_INHERIT_ONLY
+            }
+    };
+
+    return rights;
+}
+
+QList<SecurityRight> children_class_read_write_prop_rights(AdConfig *adconfig, const QString &obj_class, const QString &attribute) {
+    const QByteArray obj_class_guid = adconfig->guid_from_class(obj_class);
+    const QByteArray property_guid = adconfig->attribute_to_guid(attribute);
+
+    const QList<SecurityRight> rights = {
+        SecurityRight {
+            SEC_ADS_READ_PROP,
+            property_guid,
+            obj_class_guid,
+            SEC_ACE_FLAG_CONTAINER_INHERIT | SEC_ACE_FLAG_INHERIT_ONLY
+        },
+        SecurityRight {
+            SEC_ADS_WRITE_PROP,
+            property_guid,
+            obj_class_guid,
+            SEC_ACE_FLAG_CONTAINER_INHERIT | SEC_ACE_FLAG_INHERIT_ONLY
+        }
+    };
+
+    return rights;
+}
+
+QList<SecurityRight> read_all_children_class_info_rights(AdConfig *adconfig, const QString &obj_class) {
+    const QByteArray obj_class_guid = adconfig->guid_from_class(obj_class);
+    const QList<SecurityRight> rights = {
+        SecurityRight {
+                SEC_ADS_READ_PROP,
+                QByteArray(),
+                obj_class_guid,
+                SEC_ACE_FLAG_CONTAINER_INHERIT | SEC_ACE_FLAG_INHERIT_ONLY
+            }
+    };
+
+    return rights;
+}
+
+QList<SecurityRight> read_write_property_rights(AdConfig *adconfig, const QString &attribute) {
+    const QByteArray property_guid = adconfig->attribute_to_guid(attribute);
+
+    const QList<SecurityRight> rights = {
+        SecurityRight {
+            SEC_ADS_READ_PROP,
+            property_guid,
+            QByteArray(),
+            SEC_ACE_FLAG_CONTAINER_INHERIT
+        },
+        SecurityRight {
+            SEC_ADS_WRITE_PROP,
+            property_guid,
+            QByteArray(),
+            SEC_ACE_FLAG_CONTAINER_INHERIT
+        }
+    };
+
+    return rights;
+}

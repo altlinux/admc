@@ -121,4 +121,10 @@ QList<SecurityRight> ad_security_get_extended_rights_for_class(AdConfig *adconfi
 QList<SecurityRight> ad_security_get_superior_right_list(const SecurityRight &right);
 QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, const SecurityRight &right, const QList<QString> &class_list);
 
+QList<SecurityRight> creation_deletion_rights_for_class(AdConfig *adconfig, const QString &obj_class);
+QList<SecurityRight> control_children_class_right(AdConfig *adconfig, const QString &obj_class);
+QList<SecurityRight> children_class_read_write_prop_rights(AdConfig *adconfig, const QString &obj_class, const QString &attribute);
+QList<SecurityRight> read_all_children_class_info_rights(AdConfig *adconfig, const QString &obj_class);
+QList<SecurityRight> read_write_property_rights(AdConfig *adconfig, const QString &attribute);
+
 #endif /* AD_SECURITY_H */
