@@ -31,6 +31,7 @@ set(ADLDAP_SOURCES
     ad_filter.cpp
     ad_security.cpp
     gplink.cpp
+    common_task_manager.cpp
 )
 prefix_clangformat_setup(adldap ${ADLDAP_SOURCES})
 
