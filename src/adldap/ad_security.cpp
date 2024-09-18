@@ -986,10 +986,14 @@ QList<SecurityRight> ad_security_get_superior_right_list(const SecurityRight &ri
 
     const bool object_present = !right.object_type.isEmpty();
 
-    const SecurityRight generic_all = {SEC_ADS_GENERIC_ALL, QByteArray(), QByteArray(), 0};
-    const SecurityRight generic_read = {SEC_ADS_GENERIC_READ, QByteArray(), QByteArray(), 0};
-    const SecurityRight generic_write = {SEC_ADS_GENERIC_WRITE, QByteArray(), QByteArray(), 0};
-    const SecurityRight all_extended_rights = {SEC_ADS_CONTROL_ACCESS, QByteArray(), QByteArray(), 0};
+    const SecurityRight generic_all = {SEC_ADS_GENERIC_ALL, QByteArray(), right.inherited_object_type, right.flags};
+    const SecurityRight generic_read = {SEC_ADS_GENERIC_READ, QByteArray(), right.inherited_object_type, right.flags};
+    const SecurityRight generic_write = {SEC_ADS_GENERIC_WRITE, QByteArray(), right.inherited_object_type, right.flags};
+    const SecurityRight all_extended_rights = {SEC_ADS_CONTROL_ACCESS, QByteArray(), right.inherited_object_type, right.flags};
+    const SecurityRight create_child = {SEC_ADS_CREATE_CHILD, QByteArray(), right.inherited_object_type, right.flags};
+    const SecurityRight delete_child = {SEC_ADS_DELETE_CHILD, QByteArray(), right.inherited_object_type, right.flags};
+    const SecurityRight read_properties = {SEC_ADS_READ_PROP, QByteArray(), right.inherited_object_type, right.flags};
+    const SecurityRight write_properties = {SEC_ADS_WRITE_PROP, QByteArray(), right.inherited_object_type, right.flags};
 
     // NOTE: order is important, because we want to
     // process "more superior" rights first. "Generic
@@ -998,12 +1002,20 @@ QList<SecurityRight> ad_security_get_superior_right_list(const SecurityRight &ri
         if (access_mask == SEC_ADS_READ_PROP) {
             out.append(generic_all);
             out.append(generic_read);
+            out.append(read_properties);
         } else if (access_mask == SEC_ADS_WRITE_PROP) {
             out.append(generic_all);
             out.append(generic_write);
+            out.append(write_properties);
         } else if (access_mask == SEC_ADS_CONTROL_ACCESS) {
             out.append(generic_all);
             out.append(all_extended_rights);
+        } else if (access_mask == SEC_ADS_CREATE_CHILD) {
+            out.append(generic_all);
+            out.append(create_child);
+        } else if (access_mask == SEC_ADS_DELETE_CHILD) {
+            out.append(generic_all);
+            out.append(delete_child);
         }
     } else {
         if (access_mask == SEC_ADS_GENERIC_READ || access_mask == SEC_ADS_GENERIC_WRITE) {
@@ -1017,39 +1029,52 @@ QList<SecurityRight> ad_security_get_superior_right_list(const SecurityRight &ri
 QList<SecurityRight> ad_security_get_subordinate_right_list(AdConfig *adconfig, const SecurityRight &right, const QList<QString> &class_list) {
     QList<SecurityRight> out;
 
-    uint32_t access_mask = right.access_mask;
-
     const bool object_present = !right.object_type.isEmpty();
+    if (object_present) {
+        return out;
+    }
+
+    uint32_t access_mask = right.access_mask;
 
     const QList<SecurityRight> right_list_for_target = ad_security_get_right_list_for_class(adconfig, class_list);
 
-    for (const SecurityRight &right : right_list_for_target) {
-        const bool match = [&]() {
-            const bool right_object_present = !right.object_type.isEmpty();
+    for (const SecurityRight &class_right : right_list_for_target) {
+        const bool right_object_present = !class_right.object_type.isEmpty();
 
-            if (object_present) {
-                return false;
-            } else {
-                if (access_mask == SEC_ADS_GENERIC_ALL) {
-                    // All except full control
-                    return (right.access_mask != access_mask);
-                } else if (access_mask == SEC_ADS_GENERIC_READ) {
-                    // All read property rights
-                    return (right.access_mask == SEC_ADS_READ_PROP && right_object_present);
-                } else if (access_mask == SEC_ADS_GENERIC_WRITE) {
-                    // All write property rights
-                    return (right.access_mask == SEC_ADS_WRITE_PROP && right_object_present);
-                } else if (access_mask == SEC_ADS_CONTROL_ACCESS) {
-                    // All extended rights
-                    return (right.access_mask == SEC_ADS_CONTROL_ACCESS && right_object_present);
-                } else {
-                    return false;
-                }
-            }
-        }();
+        bool match = false;
+        switch (access_mask) {
+        case SEC_ADS_GENERIC_ALL:
+            match = class_right.access_mask != access_mask;
+            break;
+        case SEC_ADS_GENERIC_READ:
+            match = class_right.access_mask == SEC_ADS_READ_PROP || class_right.access_mask == SEC_ADS_LIST;
+            break;
+        case SEC_ADS_READ_PROP:
+            match = class_right.access_mask == SEC_ADS_READ_PROP && right_object_present;
+            break;
+        case SEC_ADS_GENERIC_WRITE:
+            match = class_right.access_mask == SEC_ADS_WRITE_PROP || class_right.access_mask == SEC_ADS_SELF_WRITE;
+            break;
+        case SEC_ADS_WRITE_PROP:
+            match = class_right.access_mask == SEC_ADS_WRITE_PROP && right_object_present;
+            break;
+        case SEC_ADS_CONTROL_ACCESS:
+            match = class_right.access_mask == SEC_ADS_CONTROL_ACCESS && right_object_present;
+            break;
+        case SEC_ADS_CREATE_CHILD:
+            match = class_right.access_mask == SEC_ADS_CREATE_CHILD && right_object_present;
+            break;
+        case SEC_ADS_DELETE_CHILD:
+            match = class_right.access_mask == SEC_ADS_DELETE_CHILD && right_object_present;
+            break;
+        default:
+            break;
+        }
 
         if (match) {
-            out.append(right);
+            SecurityRight out_right = {class_right.access_mask, class_right.object_type,
+                                       right.inherited_object_type, right.flags};
+            out.append(out_right);
         }
     }
 
