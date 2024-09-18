@@ -28,6 +28,7 @@
 #include "samba/security_descriptor.h"
 
 #include "ad_filter.h"
+#include "common_task_manager.h"
 
 #include <QDebug>
 
@@ -157,6 +158,8 @@ const QList<uint32_t> common_rights_list = {
 // to remove that bit both when setting generic read
 // and when reading it.
 #define GENERIC_READ_FIXED (SEC_ADS_GENERIC_READ & ~SEC_ADS_LIST_OBJECT)
+
+CommonTaskManager *common_task_manager = new CommonTaskManager();
 
 SecurityRightState::SecurityRightState(const bool data_arg[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT]) {
     for (int inherited = 0; inherited < SecurityRightStateInherited_COUNT; inherited++) {
