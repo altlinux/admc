@@ -373,7 +373,7 @@ void ADMCTestAdSecurity::add_to_unset_opposite_superior() {
 
 void ADMCTestAdSecurity::check_state(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const TestAdSecurityType type) const {
     SecurityRight right_generic{access_mask, object_type, QByteArray(), 0};
-    const SecurityRightState state = security_descriptor_get_right(sd, trustee, right_generic);
+    const SecurityRightState state = security_descriptor_get_right_state(sd, trustee, right_generic);
 
     const bool inherited_allow = state.get(SecurityRightStateInherited_Yes, SecurityRightStateType_Allow);
     const bool inherited_deny = state.get(SecurityRightStateInherited_Yes, SecurityRightStateType_Deny);
