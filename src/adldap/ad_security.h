@@ -97,7 +97,7 @@ security_descriptor *security_descriptor_copy(security_descriptor *sd);
 void security_descriptor_free(security_descriptor *sd);
 void security_descriptor_sort_dacl(security_descriptor *sd);
 QList<QByteArray> security_descriptor_get_trustee_list(security_descriptor *sd);
-SecurityRightState security_descriptor_get_right(const security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right);
+SecurityRightState security_descriptor_get_right_state(const security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right);
 void security_descriptor_print(security_descriptor *sd, AdInterface &ad);
 bool security_descriptor_verify_acl_order(security_descriptor *sd);
 

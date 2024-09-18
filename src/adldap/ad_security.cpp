@@ -296,7 +296,7 @@ bool ad_security_get_protected_against_deletion(const AdObject &object) {
     const bool is_enabled_for_trustee = [&]() {
         for (const uint32_t &mask : protect_deletion_mask_list) {
             SecurityRight right{mask, QByteArray(), QByteArray(), 0};
-            const SecurityRightState state = security_descriptor_get_right(sd, trustee_everyone, right);
+            const SecurityRightState state = security_descriptor_get_right_state(sd, trustee_everyone, right);
 
             const bool deny = state.get(SecurityRightStateInherited_No, SecurityRightStateType_Deny);
 
@@ -324,7 +324,7 @@ bool ad_security_get_user_cant_change_pass(const AdObject *object, AdConfig *adc
                 const QByteArray trustee = sid_string_to_bytes(trustee_cn);
                 const QByteArray change_pass_right = adconfig->get_right_guid("User-Change-Password");
                 SecurityRight right{SEC_ADS_CONTROL_ACCESS, change_pass_right, QByteArray(), 0};
-                const SecurityRightState state = security_descriptor_get_right(sd, trustee, right);
+                const SecurityRightState state = security_descriptor_get_right_state(sd, trustee, right);
                 const bool out_denied = state.get(SecurityRightStateInherited_No, SecurityRightStateType_Deny);
 
                 return out_denied;
@@ -455,7 +455,7 @@ QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd) 
     return out;
 }
 
-SecurityRightState security_descriptor_get_right(const security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right) {
+SecurityRightState security_descriptor_get_right_state(const security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right) {
     bool out_data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT];
 
     const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
@@ -887,7 +887,7 @@ void security_descriptor_add_right(security_descriptor *sd, AdConfig *adconfig, 
     const QList<SecurityRight> superior_list = ad_security_get_superior_right_list(right);
     for (const SecurityRight &superior : superior_list) {
         const bool opposite_superior_is_set = [&]() {
-            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior);
+            const SecurityRightState state = security_descriptor_get_right_state(sd, trustee, superior);
             const SecurityRightStateType type = [&]() {
                 // NOTE: opposite!
                 if (!allow) {
@@ -945,7 +945,7 @@ void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfi
     // Remove superiors
     for (const SecurityRight &superior : target_superior_list) {
         const bool superior_is_set = [&]() {
-            const SecurityRightState state = security_descriptor_get_right(sd, trustee, superior);
+            const SecurityRightState state = security_descriptor_get_right_state(sd, trustee, superior);
             const SecurityRightStateType type = [&]() {
                 if (allow) {
                     return SecurityRightStateType_Allow;
