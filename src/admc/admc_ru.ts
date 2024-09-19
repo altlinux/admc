@@ -898,6 +898,56 @@
     </message>
 </context>
 <context>
+    <name>DelegationPermissionsWidget</name>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="97"/>
+        <source>Common tasks delegation</source>
+        <translation>Делегирование обычных задач</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="98"/>
+        <source>Create/delete child objects</source>
+        <translation>Создание/удаление дочерних объектов</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="99"/>
+        <source>Read/write properties</source>
+        <translation>Чтение/запись свойств</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="190"/>
+        <source>Create </source>
+        <translation>Создание </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="190"/>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="193"/>
+        <source> objects</source>
+        <translation> объектов</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="193"/>
+        <source>Delete </source>
+        <translation>Удаление </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="196"/>
+        <source>Write </source>
+        <translation>Запись </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="196"/>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="199"/>
+        <source> property</source>
+        <translation> свойства</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="199"/>
+        <source>Read </source>
+        <translation>Чтение </translation>
+    </message>
+</context>
+<context>
     <name>DelegationTab</name>
     <message>
         <location filename="tabs/delegation_tab.ui" line="20"/>
@@ -2794,7 +2844,12 @@
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="37"/>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="38"/>
+        <source>Password Settings</source>
+        <translation>Настройки паролей</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="103"/>
         <source>Minimum password length:</source>
         <translation>Минимальная длина пароля:</translation>
     </message>
@@ -2949,6 +3004,24 @@
         <location filename="attribute_edits/password_edit.cpp" line="82"/>
         <source>Password contains invalid characters</source>
         <translation>Пароль содержит недопустимые символы</translation>
+    </message>
+</context>
+<context>
+    <name>PermissionsWidget</name>
+    <message>
+        <location filename="permission_control_widgets/permissions_widget.cpp" line="40"/>
+        <source>Name</source>
+        <translation>Имя</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/permissions_widget.cpp" line="41"/>
+        <source>Allowed</source>
+        <translation>Разрешено</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/permissions_widget.cpp" line="42"/>
+        <source>Denied</source>
+        <translation>Запрещено</translation>
     </message>
 </context>
 <context>
@@ -3644,7 +3717,12 @@
 <context>
     <name>SecurityTab</name>
     <message>
-        <location filename="tabs/security_tab.ui" line="51"/>
+        <location filename="tabs/security_tab.ui" line="20"/>
+        <source>Users and Groups</source>
+        <translation>Пользователи и группы</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="58"/>
         <source>Add...</source>
         <translation>Добавить...</translation>
     </message>
@@ -3662,6 +3740,36 @@
         <location filename="tabs/security_tab.ui" line="74"/>
         <source>Permissions</source>
         <translation>Разрешения</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="101"/>
+        <source>Common</source>
+        <translation>Обычные</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="133"/>
+        <source>Extended</source>
+        <translation>Расширенные</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="155"/>
+        <source>Delegation</source>
+        <translation>Делегирование</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="223"/>
+        <source>Add Trustee</source>
+        <translation>Добавить доверенное лицо</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="335"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="335"/>
+        <source>Failed to add some trustee&apos;s because they are already in the list.</source>
+        <translation>Не удалось добавить некоторых доверенных лиц, так как они уже имеются в списке.</translation>
     </message>
 </context>
 <context>

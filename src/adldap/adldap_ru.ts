@@ -987,6 +987,54 @@
     </message>
 </context>
 <context>
+    <name>CommonTaskManager</name>
+    <message>
+        <location filename="common_task_manager.cpp" line="61"/>
+        <source>Create, delete and manage user accounts</source>
+        <translation>Создание, удаление и управление учётными записями пользователей</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="62"/>
+        <source>Reset user passwords and force password change at next logon</source>
+        <translation>Переустановить пароли пользователей и установить изменение пароля при следующем входе в систему</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="63"/>
+        <source>Read all user information</source>
+        <translation>Чтение информации о всех пользователях</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="64"/>
+        <source>Create, delete and manage groups</source>
+        <translation>Создание, удаление и управление группами</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="65"/>
+        <source>Modify the membership of group</source>
+        <translation>Изменение членства в группах</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="66"/>
+        <source>Manage Group Policy links</source>
+        <translation>Управление ссылками на групповые политики</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="67"/>
+        <source>Create, delete and manage inetOrgPerson accounts</source>
+        <translation>Создание, удаление и управление учётными записями inetOrgPerson</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="68"/>
+        <source>Reset inetOrgPerson passwords and force password change at next logon</source>
+        <translation>Переустановить пароли inetOrgPerson и установить изменение пароля при следующем входе в систему</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="69"/>
+        <source>Read all inetOrgPerson information</source>
+        <translation>Чтение всей информации для inetOrgPerson</translation>
+    </message>
+</context>
+<context>
     <name>ad_security.cpp</name>
     <message>
         <location filename="ad_security.cpp" line="841"/>
