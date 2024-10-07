@@ -38,6 +38,7 @@ enum CommonTask {
     CommonTask_ReadAllInetOrgPersonInformation,
     CommonTask_GroupMembership,
     CommonTask_ManageGPLinks,
+    CommonTask_DomainComputerJoin, // Join a computer to the domain
 
     CommonTask_COUNT
 };
