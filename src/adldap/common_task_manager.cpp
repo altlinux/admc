@@ -37,6 +37,7 @@ void CommonTaskManager::init(AdConfig *adconfig) {
                                                       CommonTask_ChangeInetOrgPersonPassword,
                                                       CommonTask_ReadAllInetOrgPersonInformation};
     class_common_task_rights_map[CLASS_OU] = {CommonTask_ManageGPLinks};
+    class_common_task_rights_map[CLASS_DOMAIN] = {CommonTask_DomainComputerJoin};
 
     common_task_name[CommonTask_UserControl] = QCoreApplication::translate("CommonTaskManager", "Create, delete and manage user accounts");
     common_task_name[CommonTask_ChangeUserPassword] = QCoreApplication::translate("CommonTaskManager", "Reset user passwords and force password change at next logon");
@@ -47,6 +48,7 @@ void CommonTaskManager::init(AdConfig *adconfig) {
     common_task_name[CommonTask_InetOrgPersonControl] = QCoreApplication::translate("CommonTaskManager", "Create, delete and manage inetOrgPerson accounts");
     common_task_name[CommonTask_ChangeInetOrgPersonPassword] = QCoreApplication::translate("CommonTaskManager", "Reset inetOrgPerson passwords and force password change at next logon");
     common_task_name[CommonTask_ReadAllInetOrgPersonInformation] = QCoreApplication::translate("CommonTaskManager", "Read all inetOrgPerson information");
+    common_task_name[CommonTask_DomainComputerJoin] = QCoreApplication::translate("CommonTaskManager", "Join a computer to the domain");
 
     load_common_tasks_rights();
 }
@@ -122,4 +124,7 @@ void CommonTaskManager::load_common_tasks_rights() {
     // Append group policy link manage rights
     common_task_rights[CommonTask_ManageGPLinks] = read_write_property_rights(ad_conf, ATTRIBUTE_GPOPTIONS) +
             read_write_property_rights(ad_conf, ATTRIBUTE_GPLINK);
+
+    // Append domain computer join rights
+    common_task_rights[CommonTask_DomainComputerJoin] = create_children_class_right(ad_conf, CLASS_COMPUTER);
 }
