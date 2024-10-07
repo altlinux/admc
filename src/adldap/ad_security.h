@@ -134,5 +134,6 @@ QList<SecurityRight> control_children_class_right(AdConfig *adconfig, const QStr
 QList<SecurityRight> children_class_read_write_prop_rights(AdConfig *adconfig, const QString &obj_class, const QString &attribute);
 QList<SecurityRight> read_all_children_class_info_rights(AdConfig *adconfig, const QString &obj_class);
 QList<SecurityRight> read_write_property_rights(AdConfig *adconfig, const QString &attribute);
+QList<SecurityRight> create_children_class_right(AdConfig *adconfig, const QString &obj_class);
 
 #endif /* AD_SECURITY_H */
