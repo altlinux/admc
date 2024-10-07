@@ -1282,3 +1282,21 @@ QList<SecurityRight> read_write_property_rights(AdConfig *adconfig, const QStrin
 
     return rights;
 }
+
+QList<SecurityRight> create_children_class_right(AdConfig *adconfig, const QString &obj_class) {
+    const QByteArray obj_class_guid = adconfig->guid_from_class(obj_class);
+    if (obj_class_guid.isEmpty()) {
+        return QList<SecurityRight>();
+    }
+
+    const QList<SecurityRight> rights = {
+        SecurityRight {
+                SEC_ADS_CREATE_CHILD,
+                obj_class_guid,
+                QByteArray(),
+                SEC_ACE_FLAG_CONTAINER_INHERIT
+            }
+    };
+
+    return rights;
+}
