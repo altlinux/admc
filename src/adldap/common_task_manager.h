@@ -31,18 +31,22 @@ class AdConfig;
 enum CommonTask {
     CommonTask_UserControl, // User creation, deletion and control
     CommonTask_ChangeUserPassword, // Reset user password and force password change at next logon
-    CommonTask_ReadAllUserInformation,
+    CommonTask_ReadAllUserInformation, // Read all user information
     CommonTask_GroupControl, // Group creation, deletion and control
     CommonTask_InetOrgPersonControl, // InetOrgPerson creation, deletion and control
     CommonTask_ChangeInetOrgPersonPassword, // Reset user password and force password change at next logon
-    CommonTask_ReadAllInetOrgPersonInformation,
-    CommonTask_GroupMembership,
-    CommonTask_ManageGPLinks,
+    CommonTask_ReadAllInetOrgPersonInformation, // Read all inetOrgPerson information
+    CommonTask_GroupMembership, // Modify the membership of a group
+    CommonTask_ManageGPLinks, // Manage Group Policy links
     CommonTask_DomainComputerJoin, // Join a computer to the domain
 
     CommonTask_COUNT
 };
 
+/** Manages common tasks (the concept is taken from RSAT Users and Computers delegation).
+ *  Theoretically, existing tasks can be supplemented with other tasks. This makes
+ *  the manager class look more useful.
+ */
 class CommonTaskManager {
 public:
     QHash<CommonTask, QList<SecurityRight>> common_task_rights;
