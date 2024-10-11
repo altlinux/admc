@@ -36,7 +36,11 @@ set(ADLDAP_SOURCES
 prefix_clangformat_setup(adldap ${ADLDAP_SOURCES})
 
 # Bandaid to provide compatibility for Samba 4.20+ versions.
-set(VERSION_H "/usr/include/samba-4.0/samba/version.h")
+find_file(VERSION_H version.h
+    PATHS "${Smbclient_PREFIX}/include"
+    PATH_SUFFIXES "samba-4.0/samba" "samba4/samba"
+)
+
 if (EXISTS ${VERSION_H})
     file(READ ${VERSION_H} VERSION_HEADER_CONTENT)
 
