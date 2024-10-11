@@ -149,8 +149,18 @@ const QList<uint32_t> common_rights_list = {
     SEC_ADS_GENERIC_ALL,
     SEC_ADS_GENERIC_READ,
     SEC_ADS_GENERIC_WRITE,
+    SEC_ADS_LIST, // List contents
+    SEC_ADS_READ_PROP, // Read all properties
+    SEC_ADS_WRITE_PROP, // Write all properties
+    SEC_STD_DELETE, // Standard delete
+    SEC_ADS_DELETE_TREE, // Delete subtree
+    SEC_STD_READ_CONTROL, // Read permissions
+    SEC_STD_WRITE_DAC, // Modify permissions
+    SEC_STD_WRITE_OWNER, // Modify owner
+    SEC_ADS_SELF_WRITE, // All validated writes
+    SEC_ADS_CONTROL_ACCESS, // All extended rights
     SEC_ADS_CREATE_CHILD,
-    SEC_ADS_DELETE_CHILD,
+    SEC_ADS_DELETE_CHILD
 };
 
 // NOTE: This is needed because for some reason,
@@ -828,11 +838,11 @@ QString ad_security_get_right_name(AdConfig *adconfig, const SecurityRight &righ
     const QString object_type_name = adconfig->get_right_name(right.object_type, language);
     const uint32_t access_mask = right.access_mask;
 
-    if (access_mask == SEC_ADS_CONTROL_ACCESS) {
+    if (access_mask == SEC_ADS_CONTROL_ACCESS && !right.object_type.isEmpty()) {
         return object_type_name;
-    } else if (access_mask == SEC_ADS_READ_PROP) {
+    } else if (access_mask == SEC_ADS_READ_PROP && !right.object_type.isEmpty()) {
         return QString(QCoreApplication::translate("ad_security.cpp", "Read %1")).arg(object_type_name);
-    } else if (access_mask == SEC_ADS_WRITE_PROP) {
+    } else if (access_mask == SEC_ADS_WRITE_PROP && !right.object_type.isEmpty()) {
         return QString(QCoreApplication::translate("ad_security.cpp", "Write %1")).arg(object_type_name);
     } else {
         const QHash<uint32_t, QString> common_right_name_map = {
@@ -842,6 +852,16 @@ QString ad_security_get_right_name(AdConfig *adconfig, const SecurityRight &righ
             {SEC_STD_DELETE, QCoreApplication::translate("ad_security.cpp", "Delete")},
             {SEC_ADS_CREATE_CHILD, QCoreApplication::translate("ad_security.cpp", "Create all child objects")},
             {SEC_ADS_DELETE_CHILD, QCoreApplication::translate("ad_security.cpp", "Delete all child objects")},
+            {SEC_STD_WRITE_OWNER, QCoreApplication::translate("ad_security.cpp", "Modify owner")},
+            {SEC_ADS_SELF_WRITE, QCoreApplication::translate("ad_security.cpp", "All validated writes")},
+            {SEC_STD_WRITE_DAC, QCoreApplication::translate("ad_security.cpp", "Modify permissions")},
+            {SEC_STD_READ_CONTROL, QCoreApplication::translate("ad_security.cpp", "Read permissions")},
+            {SEC_STD_DELETE, QCoreApplication::translate("ad_security.cpp", "Standard delete")},
+            {SEC_ADS_DELETE_TREE, QCoreApplication::translate("ad_security.cpp", "Delete subtree")},
+            {SEC_ADS_READ_PROP, QCoreApplication::translate("ad_security.cpp", "Read all properties")},
+            {SEC_ADS_WRITE_PROP, QCoreApplication::translate("ad_security.cpp", "Write all properties")},
+            {SEC_ADS_LIST, QCoreApplication::translate("ad_security.cpp", "List contents")},
+            {SEC_ADS_CONTROL_ACCESS, QCoreApplication::translate("ad_security.cpp", "All extended rights")},
         };
 
         return common_right_name_map.value(access_mask, QCoreApplication::translate("ad_security.cpp", "<unknown right>"));
