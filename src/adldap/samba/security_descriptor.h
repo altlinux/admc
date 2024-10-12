@@ -30,6 +30,10 @@ extern "C" {
 #ifndef __SECURITY_DESCRIPTOR_H__
 #define __SECURITY_DESCRIPTOR_H__
 
+// time.h and unistd.h Are needed before including ndr.h when building against old samba (4.16)
+#include <time.h>
+#include <unistd.h>
+
 #include <ndr.h>
 #include <gen_ndr/security.h>
 
