@@ -66,6 +66,9 @@
 
 #define MAX_DN_LENGTH 1024
 #define MAX_PASSWORD_LENGTH 255
+#ifndef UUID_STR_LEN
+#define UUID_STR_LEN 37
+#endif
 
 typedef struct sasl_defaults_gssapi {
     char *mech;
