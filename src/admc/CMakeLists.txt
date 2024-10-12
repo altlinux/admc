@@ -22,12 +22,17 @@ include_directories(
         ${PROJECT_SOURCE_DIR}/src/adldap
 )
 
+find_library(RESOLV_LIBRARY libresolv.so)
+
 link_libraries(
     Qt5::Core
     Qt5::Widgets
     adldap
-    resolv
 )
+
+if (RESOLV_LIBRARY)
+    link_libraries(${RESOLV_LIBRARY})
+endif()
 
 set(ADMC_SOURCES
     status.cpp
@@ -106,7 +111,7 @@ set(ADMC_SOURCES
     filter_widget/class_filter_widget.cpp
     filter_widget/class_filter_dialog.cpp
     filter_widget/select_base_widget.cpp
-    
+
     tabs/general_user_tab.cpp
     tabs/general_group_tab.cpp
     tabs/general_ou_tab.cpp

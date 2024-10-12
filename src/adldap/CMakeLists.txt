@@ -105,6 +105,8 @@ target_include_directories(adldap PRIVATE
 
 find_library(LIBSASL "libsasl2.so" HINTS "/usr/lib64" "/lib64")
 
+find_library(RESOLV_LIBRARY libresolv.so)
+
 target_link_libraries(adldap
     Qt5::Core
     PkgConfig::Uuid
@@ -113,8 +115,11 @@ target_link_libraries(adldap
     Ldap::Ldap
     PkgConfig::NdrStandard
     ${LIBSASL}
-    resolv
 )
+
+if (RESOLV_LIBRARY)
+    target_link_libraries(adldap ${RESOLV_LIBRARY})
+endif()
 
 set(TS_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/adldap_ru.ts
