@@ -20,6 +20,10 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// time.h and unistd.h Are needed before including gen_ndr/security.h when building against old samba (4.16)
+#include <time.h>
+#include <unistd.h>
+
 #include "replace.h"
 #include "util/data_blob.h"
 #include "gen_ndr/security.h"

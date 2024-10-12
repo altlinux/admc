@@ -32,6 +32,10 @@
 extern "C" {
 #endif
 
+// time.h and unistd.h are needed before including gen_ndr/security.h when building against old samba (4.16)
+#include <time.h>
+#include <unistd.h>
+
 #include "replace.h"
 #include <talloc.h>
 #include "util/data_blob.h"
