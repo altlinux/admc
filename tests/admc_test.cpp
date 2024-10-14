@@ -163,8 +163,6 @@ bool ADMCTest::object_exists(const QString &dn) {
 // Go down the list of objects by pressing Down arrow
 // until current item's dn equals to target dn
 void navigate_until_object(QTreeView *view, const QString &target_dn, const int dn_role) {
-    QModelIndex prev_index;
-
     QAbstractItemModel *model = view->model();
 
     QList<QModelIndex> search_stack;
