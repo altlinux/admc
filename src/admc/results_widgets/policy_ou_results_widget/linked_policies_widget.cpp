@@ -337,7 +337,7 @@ void LinkedPoliciesWidget::modify_gplink(void (*modify_function)(Gplink &, const
 }
 
 void LinkedPoliciesWidget::update_policy_link_icons(const QModelIndex &changed_item_index, bool is_checked, GplinkOption option) {
-    bool is_disabled, is_enforced;
+    bool is_disabled = false, is_enforced = false;
     if (option == GplinkOption_Disabled)
     {
         is_disabled = is_checked;
