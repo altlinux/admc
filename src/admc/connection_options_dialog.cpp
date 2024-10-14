@@ -172,7 +172,7 @@ void ConnectionOptionsDialog::accept() {
         return;
     }
 
-    for (const QString setting : settings.keys()) {
+    for (const auto& setting : settings.keys()) {
         settings_set_variant(setting, settings.value(setting));
     }
 

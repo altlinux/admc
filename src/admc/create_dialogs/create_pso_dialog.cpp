@@ -71,7 +71,7 @@ void CreatePSODialog::accept() {
     QHash<QString, QList<QString>> attrs_map = {
         {ATTRIBUTE_OBJECT_CLASS, {CLASS_PSO}},
     };
-    for (const QString attribute : pso_string_settings.keys()) {
+    for (const auto& attribute : pso_string_settings.keys()) {
         attrs_map[attribute] = pso_string_settings[attribute];
     }
 
