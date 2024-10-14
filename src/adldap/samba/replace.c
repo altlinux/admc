@@ -1,4 +1,4 @@
-/* 
+/*
    Unix SMB/CIFS implementation.
    replacement routines for broken systems
    Copyright (C) Andrew Tridgell 1992-1998
@@ -8,7 +8,7 @@
      ** NOTE! The following LGPL license applies to the replace
      ** library. This does NOT imply that all of Samba is released
      ** under the LGPL
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
@@ -30,6 +30,7 @@
 
 #include "replace.h"
 
+#include <errno.h>
 #include <string.h>
 
 /*
@@ -51,4 +52,25 @@ size_t rep_strlcpy(char *d, const char *s, size_t bufsize)
     memcpy(d, s, len);
     d[len] = 0;
     return ret;
+}
+
+#ifndef RSIZE_MAX
+# define RSIZE_MAX (SIZE_MAX >> 1)
+#endif
+
+int rep_memset_s(void *dest, size_t destsz, int ch, size_t count)
+{
+    if (dest == NULL) {
+        return EINVAL;
+    }
+
+    if (destsz > RSIZE_MAX ||
+        count > RSIZE_MAX ||
+        count > destsz) {
+        return ERANGE;
+    }
+
+    memset(dest, ch, count);
+
+    return 0;
 }
