@@ -607,7 +607,7 @@ void console_object_properties(const QList<ConsoleWidget *> &console_list, const
             return out;
         }();
 
-        auto apply_changes = [&ad2, &object_list](ConsoleWidget *target_console) {
+        auto apply_changes = [&object_list](ConsoleWidget *target_console) {
             auto apply_changes_to_branch = [&](const QModelIndex &root_index, const int item_type, const int update_dn_role) {
                 if (!root_index.isValid()) {
                     return;
@@ -791,7 +791,7 @@ void console_object_delete(const QList<ConsoleWidget *> &console_list, const QLi
         return out;
     }();
 
-    auto apply_changes = [&ad, &deleted_list](ConsoleWidget *target_console) {
+    auto apply_changes = [&deleted_list](ConsoleWidget *target_console) {
         const QList<QModelIndex> root_list = {
             get_object_tree_root(target_console),
             get_query_tree_root(target_console),
@@ -1308,7 +1308,7 @@ void console_object_move_and_rename(const QList<ConsoleWidget *> &console_list, 
         return out;
     }();
 
-    auto apply_changes = [&ad, &old_to_new_dn_map, &old_dn_list, &new_parent_dn, &object_map](ConsoleWidget *target_console) {
+    auto apply_changes = [&old_to_new_dn_map, &old_dn_list, &new_parent_dn, &object_map](ConsoleWidget *target_console) {
         // For object tree, we add items representing
         // updated objects and delete old items. In the case
         // of move, this moves the items to their new
