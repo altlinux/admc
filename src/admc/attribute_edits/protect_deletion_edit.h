@@ -38,7 +38,7 @@ public:
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
 
-    void set_enabled(const bool enabled);
+    void set_enabled(const bool enabled) override;
 
 private:
     QCheckBox *check;

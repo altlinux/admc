@@ -46,7 +46,7 @@ public:
     virtual QMimeData *mimeData(const QModelIndexList &indexes) const override;
     virtual Qt::DropActions supportedDropActions() const override;
     virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
-    virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const;
+    virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
     void arrange_orders_from_gplink(const Gplink &gplink);
     void update_sort_column(LinkedPoliciesColumn column);
