@@ -69,6 +69,8 @@ if (EXISTS ${VERSION_H})
         list(TRANSFORM FILE_COPY_LIST PREPEND "${SMB_SRC_PATH}/src_older/")
         file(COPY ${FILE_COPY_LIST}
              DESTINATION ${SMB_SRC_PATH})
+        file(COPY ${SMB_SRC_PATH}/src_older/ndr_sec_helper.c
+             DESTINATION ${SMB_SRC_PATH})
     endif(VERSION_SMB_MINOR GREATER_EQUAL 20)
 else()
     message(WARNING "Failed to find Samba version. If its version is 20 or greater, use sources from src_4_20.")
@@ -84,6 +86,10 @@ set(ADLDAP_SAMBA_SOURCES
     samba/libsmb_xattr.c
     samba/security_descriptor.c
 )
+
+if (VERSION_SMB_MINOR LESS 20)
+  list(APPEND ADLDAP_SAMBA_SOURCES samba/ndr_sec_helper.c)
+endif()
 
 
 add_library(adldap SHARED
