@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "samba/ndr_security.h"
+#include "samba/secace.h"
 
 #include <samba/ndr_misc.h>
 
