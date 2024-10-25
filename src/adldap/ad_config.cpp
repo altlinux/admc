@@ -59,6 +59,7 @@
 #define ATTRIBUTE_POSSIBLE_INFERIORS "possibleInferiors"
 #define ATTRIBUTE_ALLOWED_ATTRIBUTES "allowedAttributes"
 #define ATTRIBUTE_ALLOWED_ATTRIBUTES_EFFECTIVE "allowedAttributesEffective"
+#define ATTRIBUTE_OBJECT_CLASS_CATEGORY "objectClassCategory"
 
 #define CLASS_ATTRIBUTE_SCHEMA "attributeSchema"
 #define CLASS_CLASS_SCHEMA "classSchema"
@@ -604,6 +605,34 @@ QStringList AdConfig::get_permissionable_attributes(const QString &obj_class) co
 
 QByteArray AdConfig::guid_from_class(const ObjectClass &object_class) {
     return d->guid_to_class_map.key(object_class, QByteArray());
+}
+
+bool AdConfig::class_is_auxiliary(const QString &obj_class) const {
+    const int auxiliary_category_value = 3;
+    const int class_category = d->class_schemas[obj_class].get_int(ATTRIBUTE_OBJECT_CLASS_CATEGORY);
+    return class_category == auxiliary_category_value;
+}
+
+QList<QString> AdConfig::all_inferiors_list(const QString &obj_class) const {
+    QList<QString> out;
+    for (const QString &inferior_class : get_possible_inferiors(obj_class)) {
+        out.append(inferior_class);
+        out.append(get_possible_inferiors(inferior_class));
+    }
+    // Remove duplicates with converting to set and back
+    out = QSet<QString>(out.begin(), out.end()).values();
+
+    return out;
+}
+
+QList<QString> AdConfig::all_extended_right_classes() const {
+    QList<QString> out;
+    for (auto obj_classes : d->rights_applies_to_map.values()) {
+        out.append(obj_classes);
+    }
+    // Remove duplicates with QSet
+    out = QSet<QString>(out.begin(), out.end()).values();
+    return out;
 }
 
 void AdConfig::load_extended_rights(AdInterface &ad)

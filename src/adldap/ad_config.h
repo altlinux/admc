@@ -118,6 +118,14 @@ public:
 
     QByteArray guid_from_class(const ObjectClass &object_class);
 
+    bool class_is_auxiliary(const QString &obj_class) const;
+
+    // Gets all children class chain for given class
+    QList<QString> all_inferiors_list(const QString &obj_class) const;
+
+    // Gets all classes, for which there are extended rights
+    QList<QString> all_extended_right_classes() const;
+
 private:
     void load_extended_rights(AdInterface &ad);
     void load_attribute_schemas(AdInterface &ad);
