@@ -207,6 +207,7 @@ set(ADMC_SOURCES
     console_impls/domain_info_impl.cpp
 
     permission_control_widgets/permissions_widget.cpp
+    permission_control_widgets/creation_deletion_permissions_widget.cpp
 
     admc.qrc
 )
