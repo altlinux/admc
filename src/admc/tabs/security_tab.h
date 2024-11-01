@@ -42,6 +42,10 @@ class SecurityTab final : public QWidget {
         TrusteeItemRole_Sid = Qt::UserRole,
     };
 
+    enum AppliedObjectRole {
+        AppliedObjectRole_ObjectClass = Qt::UserRole + 1
+    };
+
 public:
     SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
     ~SecurityTab();
@@ -65,6 +69,8 @@ private:
     void add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad);
     void load_current_sd(AdInterface &ad);
     QByteArray get_current_trustee() const;
+    void load_applied_objects_cmbbox(const QStringList &target_class_list);
+    void on_applied_objs_cmbbox();
 
 signals:
     void current_trustee_changed(const QByteArray &current_trustee);
