@@ -809,84 +809,108 @@
 <context>
     <name>CreateUserDialog</name>
     <message>
-        <location filename="create_user_dialog.ui" line="14"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="14"/>
         <source>Create User</source>
         <translation>Создать пользователя</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="22"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="22"/>
         <source>First name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="32"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="32"/>
         <source>Last name:</source>
         <translation>Фамилия:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="42"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="42"/>
         <source>Full name:</source>
         <translation>Полное имя:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="52"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="52"/>
         <source>Initials:</source>
         <translation>Инициалы:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="62"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="62"/>
         <source>Logon name:</source>
         <translation>Имя для входа:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="69"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="69"/>
         <source>Logon name (pre-Windows 2000):</source>
         <translation>Имя для входа (до Windows 2000):</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="76"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="76"/>
         <source>Password:</source>
         <translation>Пароль:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="90"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="90"/>
         <source>Confirm password:</source>
         <translation>Подтвердите пароль:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="128"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="128"/>
         <source>Show password</source>
         <translation>Показывать пароль</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="137"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="137"/>
         <source>Account options:</source>
         <translation>Параметры учётной записи:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="143"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="143"/>
         <source>User must change password on next logon</source>
         <translation>Пользователь должен сменить пароль при следующем входе в систему</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="153"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="153"/>
         <source>User cannot change password</source>
         <translation>Пользователь не может изменить пароль</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="160"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="160"/>
         <source>Don&apos;t expire password</source>
         <translation>Пароль не истекает</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="167"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="167"/>
         <source>Account disabled</source>
         <translation>Учётная запись отключена</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.cpp" line="98"/>
+        <location filename="create_dialogs/create_user_dialog.cpp" line="98"/>
         <source>Create %1</source>
         <translation>Создать объект - %1</translation>
+    </message>
+</context>
+<context>
+    <name>CreationDeletionPermissionsWidget</name>
+    <message>
+        <location filename="permission_control_widgets/creation_deletion_permissions_widget.cpp" line="85"/>
+        <source>Create </source>
+        <translation>Создание </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/creation_deletion_permissions_widget.cpp" line="85"/>
+        <location filename="permission_control_widgets/creation_deletion_permissions_widget.cpp" line="88"/>
+        <source> objects</source>
+        <translation> объектов</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/creation_deletion_permissions_widget.cpp" line="88"/>
+        <source>Delete </source>
+        <translation>Удаление </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/creation_deletion_permissions_widget.cpp" line="91"/>
+        <source>Undefined</source>
+        <translation>Не определено</translation>
     </message>
 </context>
 <context>
@@ -900,51 +924,50 @@
 <context>
     <name>DelegationPermissionsWidget</name>
     <message>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="97"/>
         <source>Common tasks delegation</source>
-        <translation>Делегирование обычных задач</translation>
+        <translation type="vanished">Делегирование обычных задач</translation>
     </message>
     <message>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="98"/>
         <source>Create/delete child objects</source>
-        <translation>Создание/удаление дочерних объектов</translation>
+        <translation type="vanished">Создание/удаление дочерних объектов</translation>
     </message>
     <message>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="99"/>
         <source>Read/write properties</source>
-        <translation>Чтение/запись свойств</translation>
+        <translation type="vanished">Чтение/запись свойств</translation>
     </message>
     <message>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="190"/>
         <source>Create </source>
-        <translation>Создание </translation>
+        <translation type="vanished">Создание </translation>
     </message>
     <message>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="190"/>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="193"/>
         <source> objects</source>
-        <translation> объектов</translation>
+        <translation type="vanished"> объектов</translation>
     </message>
     <message>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="193"/>
         <source>Delete </source>
-        <translation>Удаление </translation>
+        <translation type="vanished">Удаление </translation>
     </message>
     <message>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="196"/>
         <source>Write </source>
-        <translation>Запись </translation>
+        <translation type="vanished">Запись </translation>
     </message>
     <message>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="196"/>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="199"/>
         <source> property</source>
-        <translation> свойства</translation>
+        <translation type="vanished"> свойства</translation>
     </message>
     <message>
-        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="199"/>
         <source>Read </source>
-        <translation>Чтение </translation>
+        <translation type="vanished">Чтение </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="44"/>
+        <source>Name</source>
+        <translation>Имя</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="45"/>
+        <source>Assigned</source>
+        <translation>Назначено</translation>
     </message>
 </context>
 <context>
@@ -3023,6 +3046,11 @@
         <source>Denied</source>
         <translation>Запрещено</translation>
     </message>
+    <message>
+        <location filename="permission_control_widgets/permissions_widget.cpp" line="245"/>
+        <source>There are no rights for this class of objects</source>
+        <translation>Нет прав для данного класса объектов</translation>
+    </message>
 </context>
 <context>
     <name>PolicyImpl</name>
@@ -3582,6 +3610,30 @@
     </message>
 </context>
 <context>
+    <name>ReadWritePermissionsWidget</name>
+    <message>
+        <location filename="permission_control_widgets/read_write_permissions_widget.cpp" line="94"/>
+        <source>Write </source>
+        <translation>Запись </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/read_write_permissions_widget.cpp" line="94"/>
+        <location filename="permission_control_widgets/read_write_permissions_widget.cpp" line="97"/>
+        <source> property</source>
+        <translation> свойства</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/read_write_permissions_widget.cpp" line="97"/>
+        <source>Read </source>
+        <translation>Чтение </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/read_write_permissions_widget.cpp" line="100"/>
+        <source>Undefined</source>
+        <translation>Не определено</translation>
+    </message>
+</context>
+<context>
     <name>RenameGroupDialog</name>
     <message>
         <location filename="rename_group_dialog.ui" line="14"/>
@@ -3742,7 +3794,17 @@
         <translation>Разрешения</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.ui" line="101"/>
+        <location filename="tabs/security_tab.ui" line="105"/>
+        <source>Applied to: </source>
+        <translation>Применять : </translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="131"/>
+        <source>Clear all</source>
+        <translation>Очистить все</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="153"/>
         <source>Common</source>
         <translation>Обычные</translation>
     </message>
@@ -3752,12 +3814,46 @@
         <translation>Расширенные</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.ui" line="155"/>
-        <source>Delegation</source>
-        <translation>Делегирование</translation>
+        <location filename="tabs/security_tab.ui" line="197"/>
+        <source>Creation/deletion</source>
+        <translation>Создание/удаление</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="223"/>
+        <location filename="tabs/security_tab.ui" line="219"/>
+        <source>Read/write</source>
+        <translation>Чтение/запись</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="241"/>
+        <source>Task delegation</source>
+        <translation>Делегирование задач</translation>
+    </message>
+    <message>
+        <source>Delegation</source>
+        <translation type="vanished">Делегирование</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="212"/>
+        <source>This object</source>
+        <translation>Этот объект</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="213"/>
+        <source>This object and all child objects</source>
+        <translation>Этот объект и все дочерние объекты</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="214"/>
+        <source>All child objects</source>
+        <translation>Все дочерние объекты</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="244"/>
+        <source>Child objects: </source>
+        <translation>Дочерние объекты: </translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="302"/>
         <source>Add Trustee</source>
         <translation>Добавить доверенное лицо</translation>
     </message>
