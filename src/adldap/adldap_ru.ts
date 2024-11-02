@@ -1033,6 +1033,11 @@
         <source>Read all inetOrgPerson information</source>
         <translation>Чтение всей информации для inetOrgPerson</translation>
     </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="51"/>
+        <source>Join a computer to the domain</source>
+        <translation>Присоединение компьютера к домену</translation>
+    </message>
 </context>
 <context>
     <name>ad_security.cpp</name>
@@ -1077,7 +1082,57 @@
         <translation>Удалять все дочерние объекты</translation>
     </message>
     <message>
-        <location filename="ad_security.cpp" line="854"/>
+        <location filename="ad_security.cpp" line="855"/>
+        <source>Modify owner</source>
+        <translation>Сменить владельца</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="856"/>
+        <source>All validated writes</source>
+        <translation>Все проверенные операции записи</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="857"/>
+        <source>Modify permissions</source>
+        <translation>Сменить разрешения</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="858"/>
+        <source>Read permissions</source>
+        <translation>Чтение разрешений</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="859"/>
+        <source>Standard delete</source>
+        <translation>Удаление</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="860"/>
+        <source>Delete subtree</source>
+        <translation>Удалить поддерево</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="861"/>
+        <source>Read all properties</source>
+        <translation>Прочитать все свойства</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="862"/>
+        <source>Write all properties</source>
+        <translation>Записать все свойства</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="863"/>
+        <source>List contents</source>
+        <translation>Список содержимого</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="864"/>
+        <source>All extended rights</source>
+        <translation>Все расширенные права</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="867"/>
         <source>&lt;unknown right&gt;</source>
         <translation>&lt;неизвестные права&gt;</translation>
     </message>
