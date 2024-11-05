@@ -60,7 +60,13 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     permissions_widgets.append(ui->read_write_permissions_widget);
     permissions_widgets.append(ui->delegation_widget);
     for (PermissionsWidget *widget : permissions_widgets) {
-        connect(widget, &PermissionsWidget::edited, tab_edit, &SecurityTabEdit::edited);
+        connect(widget, &PermissionsWidget::edited,
+                [this, widget](){
+                    tab_edit->edited();
+                    if ((!ui->clear_all_button->isEnabled() && widget->there_are_selected_permissions())) {
+                        ui->clear_all_button->setEnabled(true);
+                    }
+        });
     }
 
     const QHash<QWidget*, PermissionsWidget*> tab_permission_wget_map = {
@@ -87,9 +93,15 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
             if (current_trustee.isEmpty()) {
                 return;
             }
+            bool clear_enabled = false;
             for (PermissionsWidget *widget : permissions_widgets) {
                 widget->set_current_trustee(current_trustee);
+
+                if (widget->there_are_selected_permissions()) {
+                    clear_enabled = true;
+                }
             }
+            ui->clear_all_button->setEnabled(clear_enabled);
     });
 
     connect(
@@ -105,6 +117,9 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     connect(
         ui->applied_objects_cmbBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &SecurityTab::on_applied_objs_cmbbox);
+    connect(
+        ui->clear_all_button, &QAbstractButton::clicked,
+        this, &SecurityTab::on_clear_all);
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {
@@ -275,6 +290,23 @@ void SecurityTab::on_applied_objs_cmbbox() {
     for (PermissionsWidget* perm_wget : permissions_widgets) {
        perm_wget->update_permissions(applied_objs, obj_class);
     }
+}
+
+void SecurityTab::on_clear_all() {
+    const QByteArray trustee = get_current_trustee();
+    if (trustee.isEmpty()) {
+        return;
+    }
+
+    // Do not reload sd to leave permission selection enabled for
+    // trustee removed from security descriptor.
+    security_descriptor_remove_trustee(sd, {trustee});
+    for (PermissionsWidget* perm_wget : permissions_widgets) {
+       perm_wget->update_permissions();
+    }
+
+    tab_edit->edited();
+    ui->clear_all_button->setDisabled(true);
 }
 
 void SecurityTabEdit::load(AdInterface &ad, const AdObject &object) {

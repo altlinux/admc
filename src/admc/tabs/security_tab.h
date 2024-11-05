@@ -71,6 +71,7 @@ private:
     QByteArray get_current_trustee() const;
     void load_applied_objects_cmbbox(const QStringList &target_class_list);
     void on_applied_objs_cmbbox();
+    void on_clear_all();
 
 signals:
     void current_trustee_changed(const QByteArray &current_trustee);

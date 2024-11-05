@@ -76,6 +76,7 @@ public:
     virtual void update_permissions(AppliedObjects applied_objs, const QString &appliable_child_class = QString());
     // Updates permissions with current applied objects value
     virtual void update_permissions();
+    bool there_are_selected_permissions() const;
 
 signals:
     void edited();
