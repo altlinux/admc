@@ -203,6 +203,26 @@ void PermissionsWidget::update_permissions() {
     ignore_item_changed_signal = false;
 }
 
+bool PermissionsWidget::there_are_selected_permissions() const {
+    for (int row = 0; row < rights_model->rowCount(); ++row) {
+        const QList<PermissionColumn> columns = {PermissionColumn_Allowed, PermissionColumn_Denied};
+        for (PermissionColumn col : columns) {
+            const QModelIndex index = rights_model->index(row, col);
+            if (!index.isValid()) {
+                continue;
+            }
+
+            QStandardItem *item = rights_model->itemFromIndex(index);
+            const bool checked = item->checkState() == Qt::Checked && item->isEnabled();
+            if (checked) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 void PermissionsWidget::make_model_rights_read_only() {
     // NOTE: important to ignore this signal because
     // it's slot reloads the rights model
