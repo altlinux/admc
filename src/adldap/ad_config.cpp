@@ -87,7 +87,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->class_schemas.clear();
 
     const AdObject rootDSE_object = ad.search_object(ROOT_DSE);
-    d->domain_dn = rootDSE_object.get_string(ATTRIBUTE_ROOT_DOMAIN_NAMING_CONTEXT);
+    d->domain_dn = rootDSE_object.get_string(ATTRIBUTE_DEFAULT_NAMING_CONTEXT);
     d->schema_dn = rootDSE_object.get_string(ATTRIBUTE_SCHEMA_NAMING_CONTEXT);
     d->configuration_dn = rootDSE_object.get_string(ATTRIBUTE_CONFIGURATION_NAMING_CONTEXT);
     d->supported_control_list = rootDSE_object.get_strings(ATTRIBUTE_SUPPORTED_CONTROL);
