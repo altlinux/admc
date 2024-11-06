@@ -85,6 +85,17 @@ Q_DECLARE_METATYPE(SecurityRight)
 
 extern CommonTaskManager *common_task_manager;
 
+// ace_match_flags struct is used to configure ACE matching, that determines
+// permissions check state and DACL's ACE search:
+// - inherited ACEs match for all permissions with the same access mask;
+// - object type match is required for correct ACE search and addition/deletion.
+//
+// SEC_ACE_FLAG_NO_PROPAGATE_INHERIT flag may be taken in account in future
+struct ace_match_flags {
+    bool match_inheritance;
+    bool match_object_type;
+};
+
 QString ad_security_get_well_known_trustee_name(const QByteArray &trustee);
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee);
 bool ad_security_get_protected_against_deletion(const AdObject &object);
