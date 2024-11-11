@@ -26,6 +26,8 @@
  * were removed or edited.
  */
 
+#include "secace.h"
+
 /**
  * Check if ACE has OBJECT type.
  */
