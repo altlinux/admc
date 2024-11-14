@@ -38,6 +38,7 @@ LinkedPoliciesWidget::LinkedPoliciesWidget(ConsoleWidget *console_arg, QWidget *
     auto move_down_action = new QAction(tr("Move down"), this);
     set_all_checked_action = new QAction(tr("Set all"), this);
     set_all_unchecked_action = new QAction(tr("Unset all"), this);
+    edit_policy_action = new QAction(tr("Edit..."), this);
 
     context_menu = new QMenu(this);
     context_menu->addAction(remove_link_action);
@@ -45,6 +46,7 @@ LinkedPoliciesWidget::LinkedPoliciesWidget(ConsoleWidget *console_arg, QWidget *
     context_menu->addAction(move_down_action);
     context_menu->addAction(set_all_checked_action);
     context_menu->addAction(set_all_unchecked_action);
+    context_menu->addAction(edit_policy_action);
 
     model = new DragDropLinksModel(gplink, 0, LinkedPoliciesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -100,6 +102,9 @@ LinkedPoliciesWidget::LinkedPoliciesWidget(ConsoleWidget *console_arg, QWidget *
     connect(
         set_all_unchecked_action, &QAction::triggered,
         this, &LinkedPoliciesWidget::on_set_unchecked_all);
+    connect(
+        edit_policy_action, &QAction::triggered,
+        this, &LinkedPoliciesWidget::on_edit_policy);
 
     connect(model, &DragDropLinksModel::link_orders_changed, [this](const Gplink &gplink_arg) {
         AdInterface ad;
@@ -123,6 +128,7 @@ LinkedPoliciesWidget::LinkedPoliciesWidget(ConsoleWidget *console_arg, QWidget *
 
         emit gplink_changed(scope_tree_ou_index);
     });
+
 }
 
 LinkedPoliciesWidget::~LinkedPoliciesWidget()
@@ -214,6 +220,9 @@ void LinkedPoliciesWidget::open_context_menu(const QPoint &pos) {
         set_all_checked_action->setVisible(false);
         set_all_unchecked_action->setVisible(false);
     }
+
+    const bool multiple_selection = ui->view->get_selected_indexes().size() > 1;
+    edit_policy_action->setVisible(!multiple_selection);
 
     const QPoint global_pos = ui->view->current_view()->mapToGlobal(pos);
     context_menu->popup(global_pos);
@@ -438,4 +447,11 @@ void LinkedPoliciesWidget::on_set_unchecked_all() {
         return;
     }
     set_all_column_check_state(column_data.toInt(), false);
+}
+
+void LinkedPoliciesWidget::on_edit_policy() {
+    const QModelIndex index = ui->view->get_selected_indexes()[0];
+    const QString policy_dn = index.data(LinkedPoliciesRole_DN).toString();
+
+    console_policy_edit(policy_dn, console);
 }
