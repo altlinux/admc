@@ -89,6 +89,7 @@ void console_policy_load(const QList<QStandardItem *> &row, const AdObject &obje
 void console_policy_load_item(QStandardItem *item, const AdObject &object);
 QList<QString> console_policy_search_attributes();
 void console_policy_edit(ConsoleWidget *console, const int item_type, const int dn_role);
+void console_policy_edit(const QString &policy_dn, ConsoleWidget *console);
 void console_policy_rename(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role);
 void console_policy_add_link(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role);
 void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role);

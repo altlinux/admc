@@ -14,6 +14,7 @@ class ADMCTestPolicyOUResultsWidget;
 class AdObject;
 class AdInterface;
 class DragDropLinksModel;
+class QAction;
 
 namespace Ui {
 class LinkedPoliciesWidget;
@@ -43,6 +44,7 @@ private:
     QMenu *context_menu;
     QAction *set_all_checked_action;
     QAction *set_all_unchecked_action;
+    QAction *edit_policy_action;
 
     void on_item_changed(QStandardItem *item);
     void open_context_menu(const QPoint &pos);
@@ -57,6 +59,7 @@ private:
     void set_all_column_check_state(int column, bool checked);
     void on_set_checked_all();
     void on_set_unchecked_all();
+    void on_edit_policy();
 };
 
 #endif // LINKED_POLICIES_WIDGET_H
