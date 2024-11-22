@@ -957,7 +957,7 @@ void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfi
 
         const QList<SecurityRight> superior_subordinate_list = ad_security_get_subordinate_right_list(adconfig, superior, class_list);
 
-        // Add opposite subordinate rights
+        // Add subordinate rights
         for (const SecurityRight &subordinate : superior_subordinate_list) {
             security_descriptor_add_right_base(sd, trustee, subordinate, allow);
         }
@@ -966,10 +966,14 @@ void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfi
     // Remove target right
     security_descriptor_remove_right_base(sd, trustee, right, allow);
 
-    // Add target subordinate rights
+    // Remove target subordinate rights:
+    // All subordinate rights removal is not RSAT-like behavior. This behavior
+    // is chosen to avoid manual unchecking all subordinate rights, particularly because in the RSAT
+    // custom permissions are set in the separate window. In ADMC case, for example, if
+    // generic write permission is unset it means all subordinate permissions will be unset.
     const QList<SecurityRight> tarad_security_get_subordinate_right_list = ad_security_get_subordinate_right_list(adconfig, right, class_list);
     for (const SecurityRight &subordinate : tarad_security_get_subordinate_right_list) {
-        security_descriptor_add_right_base(sd, trustee, subordinate, allow);
+        security_descriptor_remove_right_base(sd, trustee, subordinate, allow);
     }
 
     security_descriptor_sort_dacl(sd);
