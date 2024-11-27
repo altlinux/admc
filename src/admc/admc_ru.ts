@@ -1894,7 +1894,17 @@
         <translation type="unfinished">Переместить вниз</translation>
     </message>
     <message>
-        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="48"/>
+        <location filename="results_widgets/policy_ou_results_widget/linked_policies_widget.cpp" line="39"/>
+        <source>Set all</source>
+        <translation>Выставить все</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/policy_ou_results_widget/linked_policies_widget.cpp" line="40"/>
+        <source>Unset all</source>
+        <translation>Снять все</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/policy_ou_results_widget/linked_policies_widget.cpp" line="52"/>
         <source>Order</source>
         <translation type="unfinished">Порядок</translation>
     </message>
