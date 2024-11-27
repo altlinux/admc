@@ -162,17 +162,8 @@ AdInterface::AdInterface() {
     // NOTE: initialize only once, because otherwise
     // wouldn't be able to have multiple active
     // AdInterface's instances at the same time
-    if (AdInterfacePrivate::smbc == NULL) {
-        smbc_init(get_auth_data_fn, 0);
-        AdInterfacePrivate::smbc = smbc_new_context();
-        smbc_setOptionUseKerberos(AdInterfacePrivate::smbc, true);
-        smbc_setOptionFallbackAfterKerberos(AdInterfacePrivate::smbc, true);
-        if (!smbc_init_context(AdInterfacePrivate::smbc)) {
-            d->error_message(connect_error_context, tr("Failed to initialize SMB context."));
-
-            return;
-        }
-        smbc_set_context(AdInterfacePrivate::smbc);
+    if (!init_smb_context()) {
+        return;
     }
 
     d->is_connected = true;
@@ -1622,6 +1613,24 @@ void AdInterface::ldap_free() {
     }
 }
 
+bool AdInterface::init_smb_context() {
+    const QString connect_error_context = tr("Failed to connect.");
+
+    if (AdInterfacePrivate::smbc == NULL) {
+        smbc_init(get_auth_data_fn, 0);
+        AdInterfacePrivate::smbc = smbc_new_context();
+        smbc_setOptionUseKerberos(AdInterfacePrivate::smbc, true);
+        smbc_setOptionFallbackAfterKerberos(AdInterfacePrivate::smbc, true);
+        if (!smbc_init_context(AdInterfacePrivate::smbc)) {
+            d->error_message(connect_error_context, tr("Failed to initialize SMB context."));
+
+            return false;
+        }
+        smbc_set_context(AdInterfacePrivate::smbc);
+    }
+    return true;
+}
+
 bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     // NOTE: skip perms check for non-admins, because don't
     // have enough rights to get full sd
@@ -2059,7 +2068,8 @@ void AdInterface::update_dc() {
 
     // Reinit ldap connection with updated DC
     ldap_free();
-    ldap_init();
+    d->is_connected = ldap_init();
+    d->is_connected = init_smb_context();
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {
