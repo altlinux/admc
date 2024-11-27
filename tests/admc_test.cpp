@@ -56,7 +56,21 @@
 void ADMCTest::initTestCase() {
     qRegisterMetaType<QHash<QString, AdObject>>("QHash<QString, AdObject>");
 
-    QVERIFY2(ad.is_connected(), "Failed to connect to AD server");
+    bool connected = true;
+    if (!ad.is_connected()) {
+        QStringList dc_list = get_domain_hosts(ad.get_domain(), QString());
+        dc_list.removeAll(ad.get_dc()); // Remove invalid host
+        for (const QString &dc : dc_list) {
+            ad.set_dc(dc);
+            ad.update_dc();
+            connected = ad.is_connected();
+            if (connected) {
+                break;
+            }
+        }
+    }
+
+    QVERIFY2(connected, "Failed to connect to AD server");
 
     g_adconfig->load(ad, QLocale(QLocale::English));
     AdInterface::set_config(g_adconfig);
@@ -99,6 +113,10 @@ void ADMCTest::cleanup() {
             if (message.type() == AdMessageType_Error) {
                 qInfo() << message.text();
             }
+        }
+
+        if (ad.is_connected()) {
+            qInfo() << "Reconnection to DC " << ad.get_dc() << " is successfull.";
         }
     }
 
