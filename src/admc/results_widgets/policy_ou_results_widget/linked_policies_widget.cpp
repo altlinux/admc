@@ -36,11 +36,15 @@ LinkedPoliciesWidget::LinkedPoliciesWidget(ConsoleWidget *console_arg, QWidget *
     auto remove_link_action = new QAction(tr("Remove link"), this);
     auto move_up_action = new QAction(tr("Move up"), this);
     auto move_down_action = new QAction(tr("Move down"), this);
+    set_all_checked_action = new QAction(tr("Set all"), this);
+    set_all_unchecked_action = new QAction(tr("Unset all"), this);
 
     context_menu = new QMenu(this);
     context_menu->addAction(remove_link_action);
     context_menu->addAction(move_up_action);
     context_menu->addAction(move_down_action);
+    context_menu->addAction(set_all_checked_action);
+    context_menu->addAction(set_all_unchecked_action);
 
     model = new DragDropLinksModel(gplink, 0, LinkedPoliciesColumn_COUNT, this);
     set_horizontal_header_labels_from_map(model,
@@ -90,6 +94,12 @@ LinkedPoliciesWidget::LinkedPoliciesWidget(ConsoleWidget *console_arg, QWidget *
     connect(
         move_down_action, &QAction::triggered,
         this, &LinkedPoliciesWidget::move_down);
+    connect(
+        set_all_checked_action, &QAction::triggered,
+        this, &LinkedPoliciesWidget::on_set_checked_all);
+    connect(
+        set_all_unchecked_action, &QAction::triggered,
+        this, &LinkedPoliciesWidget::on_set_unchecked_all);
 
     connect(model, &DragDropLinksModel::link_orders_changed, [this](const Gplink &gplink_arg) {
         AdInterface ad;
@@ -192,6 +202,17 @@ void LinkedPoliciesWidget::open_context_menu(const QPoint &pos) {
     const QModelIndex index = ui->view->current_view()->indexAt(pos);
     if (!index.isValid()) {
         return;
+    }
+
+    if (index.column() == LinkedPoliciesColumn_Disabled || index.column() == LinkedPoliciesColumn_Enforced) {
+        set_all_checked_action->setVisible(true);
+        set_all_unchecked_action->setVisible(true);
+        set_all_checked_action->setData(index.column());
+        set_all_unchecked_action->setData(index.column());
+    }
+    else {
+        set_all_checked_action->setVisible(false);
+        set_all_unchecked_action->setVisible(false);
     }
 
     const QPoint global_pos = ui->view->current_view()->mapToGlobal(pos);
@@ -393,4 +414,28 @@ void LinkedPoliciesWidget::load_item_row(const AdObject &gpo_object, QList<QStan
             item->setToolTip(tr("The GPO for this link could not be found. It maybe have been recently created and is being replicated or it could have been deleted."));
         }
     }
+}
+
+void LinkedPoliciesWidget::set_all_column_check_state(int column, bool checked) {
+    Qt::CheckState check_state = checked ? Qt::Checked : Qt::Unchecked;
+    for (int row = 0; row < model->rowCount(); ++row) {
+        QStandardItem *item = model->itemFromIndex(model->index(row, column));
+        item->setCheckState(check_state);
+    }
+}
+
+void LinkedPoliciesWidget::on_set_checked_all() {
+    QVariant column_data = set_all_checked_action->data();
+    if (column_data.isNull()) {
+        return;
+    }
+    set_all_column_check_state(column_data.toInt(), true);
+}
+
+void LinkedPoliciesWidget::on_set_unchecked_all() {
+    QVariant column_data = set_all_unchecked_action->data();
+    if (column_data.isNull()) {
+        return;
+    }
+    set_all_column_check_state(column_data.toInt(), false);
 }
