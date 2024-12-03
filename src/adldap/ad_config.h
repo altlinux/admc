@@ -61,6 +61,7 @@ public:
     QString policies_dn() const;
     bool control_is_supported(const QString &control_oid) const;
     QString domain_sid() const;
+    QString root_domain_dn() const;
 
     QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
 

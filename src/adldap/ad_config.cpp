@@ -91,6 +91,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->schema_dn = rootDSE_object.get_string(ATTRIBUTE_SCHEMA_NAMING_CONTEXT);
     d->configuration_dn = rootDSE_object.get_string(ATTRIBUTE_CONFIGURATION_NAMING_CONTEXT);
     d->supported_control_list = rootDSE_object.get_strings(ATTRIBUTE_SUPPORTED_CONTROL);
+    d->root_domain_dn = rootDSE_object.get_string(ATTRIBUTE_ROOT_DOMAIN_NAMING_CONTEXT);
 
     const AdObject domain_object = ad.search_object(domain_dn());
     d->domain_sid = object_sid_display_value(domain_object.get_value(ATTRIBUTE_OBJECT_SID));
@@ -387,6 +388,10 @@ bool AdConfig::control_is_supported(const QString &control_oid) const {
 QString AdConfig::domain_sid() const
 {
     return d->domain_sid;
+}
+
+QString AdConfig::root_domain_dn() const {
+    return d->root_domain_dn;
 }
 
 QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {
