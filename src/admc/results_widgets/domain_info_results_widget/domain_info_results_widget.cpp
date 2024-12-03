@@ -96,7 +96,7 @@ void DomainInfoResultsWidget::update_defaults() {
 }
 
 QList<QStandardItem *> DomainInfoResultsWidget::get_tree_items(AdInterface &ad) {
-    const QString sites_container_dn = "CN=Sites,CN=Configuration," + g_adconfig->domain_dn();
+    const QString sites_container_dn = "CN=Sites,CN=Configuration," + g_adconfig->root_domain_dn();
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_SITE);
     const QHash<QString, AdObject> site_objects = ad.search(sites_container_dn, SearchScope_Children,
                                                             filter, {ATTRIBUTE_DN, ATTRIBUTE_NAME/*, ATTRIBUTE_GPLINK*/});
