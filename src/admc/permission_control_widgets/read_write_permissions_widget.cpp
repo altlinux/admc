@@ -43,7 +43,7 @@ protected:
     }
 };
 
-ReadWritePermissionsWidget::ReadWritePermissionsWidget(QWidget *parent = nullptr) : PermissionsWidget(parent) {
+ReadWritePermissionsWidget::ReadWritePermissionsWidget(QWidget *parent) : PermissionsWidget(parent) {
     v_layout->addWidget(rights_view);
 
     rights_sort_model = new ReadWriteRightsSortModel(this);
