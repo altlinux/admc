@@ -8,7 +8,7 @@ class ReadWritePermissionsWidget final : public PermissionsWidget {
     Q_OBJECT
 
 public:
-    explicit ReadWritePermissionsWidget(QWidget *parent);
+    explicit ReadWritePermissionsWidget(QWidget *parent = nullptr);
     ~ReadWritePermissionsWidget();
 
     virtual void init(const QStringList &target_classes, security_descriptor *sd_arg) override;
