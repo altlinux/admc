@@ -1620,7 +1620,6 @@ bool AdInterface::init_smb_context() {
     const QString connect_error_context = tr("Failed to connect.");
 
     if (AdInterfacePrivate::smbc == NULL) {
-        smbc_init(get_auth_data_fn, 0);
         AdInterfacePrivate::smbc = smbc_new_context();
         smbc_setOptionUseKerberos(AdInterfacePrivate::smbc, true);
         smbc_setOptionFallbackAfterKerberos(AdInterfacePrivate::smbc, true);
