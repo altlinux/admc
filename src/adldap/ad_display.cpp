@@ -488,6 +488,9 @@ QString attribute_hex_displayed_value(const QString &attribute, const QByteArray
             masks_strings.append(mask_name_map[mask]);
     }
 
-    QString display_value = QString("0x%1 = ( %2 )").arg(QString::number((quint32)value_int, 16), masks_strings.join(" | "));
+    QString display_value = masks_strings.isEmpty() ?
+                QString("0x%1").arg(QString::number((quint32)value_int, 16)) :
+                QString("0x%1 = ( %2 )").arg(QString::number((quint32)value_int, 16), masks_strings.join(" | "));
+
     return display_value;
 }
