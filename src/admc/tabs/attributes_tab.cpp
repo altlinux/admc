@@ -184,9 +184,9 @@ void AttributesTabEdit::copy_action(){
 }
 
 bool AttributesTabEdit::eventFilter(QObject *watched, QEvent *event){
-    if (watched == view && event->type() == 82){
+    if (watched == view && event->type() == QEvent::ContextMenu){
         QMenu menu;
-        QAction* saveAction = menu.addAction("Копировать");
+        QAction* saveAction = menu.addAction(tr("Copy"));
         connect(
            saveAction, &QAction::triggered,
            this, &AttributesTabEdit::copy_action);

@@ -90,7 +90,7 @@ private:
     void edit_attribute();
     void view_attribute();
     void on_load_optional();
-    bool eventFilter(QObject *watched, QEvent *event);
+    bool eventFilter(QObject *watched, QEvent *event) override;
     void copy_action();
     void load_optional_attribute_values(AdInterface &ad);
     void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
