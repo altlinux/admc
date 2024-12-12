@@ -299,6 +299,11 @@
         <translation>Тип</translation>
     </message>
     <message>
+        <location filename="tabs/attributes_tab.cpp" line="189"/>
+        <source>Copy</source>
+        <translation>Копировать</translation>
+    </message>
+    <message>
         <source>Edit</source>
         <translation type="vanished">Изменить</translation>
     </message>
