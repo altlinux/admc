@@ -31,7 +31,6 @@
 #include <QList>
 #include <QString>
 #include <algorithm>
-#include <QTextStream>
 
 const qint64 SECONDS_TO_MILLIS = 1000LL;
 const qint64 MINUTES_TO_SECONDS = 60LL;
