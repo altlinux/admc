@@ -131,7 +131,7 @@ bool verify_object_name(const QString &name, QWidget *parent);
 void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest);
 
 // (first name + last name) -> full name
-void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit);
+void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *middle_name_edit, QLineEdit *full_name_edit);
 
 QString gpo_status_from_int(int status);
 
