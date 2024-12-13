@@ -126,6 +126,7 @@ DEFINE_SETTING(SETTING_show_login);
 DEFINE_SETTING(SETTING_show_password);
 DEFINE_SETTING(SETTING_domain_is_default);
 DEFINE_SETTING(SETTING_load_optional_attribute_values);
+DEFINE_SETTING(SETTING_show_middle_name_when_creating);
 
 // Other
 DEFINE_SETTING(SETTING_host);
