@@ -62,71 +62,71 @@
      <item row="1" column="1">
       <widget class="QLineEdit" name="first_name_edit"/>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="lastNameLabel">
        <property name="text">
         <string>Last Name:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QLineEdit" name="last_name_edit"/>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="fullNameLabel">
        <property name="text">
         <string>Display Name:</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QLineEdit" name="display_name_edit"/>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="initialsLabel">
        <property name="text">
         <string>Initials:</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QLineEdit" name="initials_edit"/>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="eMailLabel">
        <property name="text">
         <string>E-mail Address:</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QLineEdit" name="email_edit"/>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="officeLocationLabel">
        <property name="text">
         <string>Office Location:</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QLineEdit" name="office_edit"/>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="telephoneNumberLabel">
        <property name="text">
         <string>Telephone Number:</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="webPageAddressLabel">
        <property name="text">
         <string>Web Page Address:</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="8" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QLineEdit" name="telephone_edit"/>
@@ -140,7 +140,7 @@
        </item>
       </layout>
      </item>
-     <item row="8" column="1">
+     <item row="9" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QLineEdit" name="web_page_edit"/>
@@ -153,6 +153,16 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="middle_name_edit"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="middle_name_label">
+       <property name="text">
+        <string>Middle Name:</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

@@ -53,6 +53,7 @@ GeneralUserTab::GeneralUserTab(QWidget *parent)
     ui->telephone_edit->setReadOnly(true);
     ui->web_page_button->setVisible(false);
     ui->telephone_button->setVisible(false);
+    ui->middle_name_edit->setReadOnly(true);
 }
 
 void GeneralUserTab::update(AdInterface &ad, const AdObject &object) {
@@ -72,6 +73,7 @@ QList<AttributeEdit *> GeneralUserTab::create_edits() {
     auto initials_edit = new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, this);
     auto mail_edit = new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, this);
     auto office_edit = new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, this);
+    auto middle_name_edit = new StringEdit(ui->middle_name_edit, ATTRIBUTE_MIDDLE_NAME, this);
 
     auto telephone_edit = new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, this);
     auto web_page_edit = new StringOtherEdit(ui->web_page_edit, ui->web_page_button, ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, this);
@@ -87,6 +89,7 @@ QList<AttributeEdit *> GeneralUserTab::create_edits() {
         office_edit,
         telephone_edit,
         web_page_edit,
+        middle_name_edit,
     };
 
     return edits_out;
