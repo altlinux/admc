@@ -38,11 +38,20 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, co
 
     setAttribute(Qt::WA_DeleteOnClose);
 
+    bool show_middle_name = false;
+    const QVariant show_middle_name_variant = settings_get_variant(SETTING_show_middle_name_when_creating);
+    if (!show_middle_name_variant.isNull()) {
+        show_middle_name = show_middle_name_variant.toBool();
+    }
+    ui->middle_name_edit->setVisible(show_middle_name);
+    ui->middle_name_label->setVisible(show_middle_name);
+
     auto first_name_edit = new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
     auto last_name_edit = new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
     auto initials_edit = new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, this);
     auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
     auto password_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, ui->show_password_check, this);
+    auto middle_name_edit = new StringEdit(ui->middle_name_edit, ATTRIBUTE_MIDDLE_NAME, this);
 
     auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, this);
     upn_edit->init_suffixes(ad);
@@ -65,7 +74,7 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, co
 
     account_option_setup_conflicts(check_map);
 
-    setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->name_edit);
+    setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->middle_name_edit, ui->name_edit);
 
     setup_lineedit_autofill(ui->upn_prefix_edit, ui->sam_name_edit);
 
@@ -85,6 +94,7 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, co
             sam_name_edit,
             password_edit,
             upn_edit,
+            middle_name_edit,
         };
 
         out.append(option_edit_list);

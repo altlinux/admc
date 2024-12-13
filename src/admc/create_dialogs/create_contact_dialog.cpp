@@ -34,16 +34,26 @@ CreateContactDialog::CreateContactDialog(const QString &parent_dn, QWidget *pare
 
     setAttribute(Qt::WA_DeleteOnClose);
 
+    bool show_middle_name = false;
+    const QVariant show_middle_name_variant = settings_get_variant(SETTING_show_middle_name_when_creating);
+    if (!show_middle_name_variant.isNull()) {
+        show_middle_name = show_middle_name_variant.toBool();
+    }
+    ui->middle_name_edit->setVisible(show_middle_name);
+    ui->middle_name_label->setVisible(show_middle_name);
+
     auto first_name_edit = new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
     auto last_name_edit = new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
     auto initials_edit = new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, this);
     auto display_name_edit = new StringEdit(ui->display_name_edit, ATTRIBUTE_DISPLAY_NAME, this);
+    auto middle_name_edit = new StringEdit(ui->middle_name_edit, ATTRIBUTE_MIDDLE_NAME, this);
 
     const QList<AttributeEdit *> edit_list = {
         first_name_edit,
         last_name_edit,
         initials_edit,
         display_name_edit,
+        middle_name_edit,
     };
 
     const QList<QLineEdit *> required_list = {
@@ -53,7 +63,7 @@ CreateContactDialog::CreateContactDialog(const QString &parent_dn, QWidget *pare
         ui->display_name_edit,
     };
 
-    setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->full_name_edit);
+    setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->middle_name_edit, ui->full_name_edit);
 
     helper = new CreateObjectHelper(ui->full_name_edit, ui->button_box, edit_list, required_list, CLASS_CONTACT, parent_dn, this);
 
