@@ -219,6 +219,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_DEFAULT_NAMING_CONTEXT "defaultNamingContext"
 #define ATTRIBUTE_MSDS_USER_PASSWORD_EXPIRY_TIME_COMPUTED "msDS-UserPasswordExpiryTimeComputed"
 #define ATTRIBUTE_MSDS_USER_ACCOUNT_CONTROL_COMPUTED "msDS-User-Account-Control-Computed"
+#define ATTRIBUTE_MIDDLE_NAME "middleName"
 
 
 #define CLASS_GROUP "group"
