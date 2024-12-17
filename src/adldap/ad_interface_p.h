@@ -25,11 +25,12 @@
 #include <QList>
 #include <QMutex>
 
+#include "samba/smb_context.h"
+
 class AdInterface;
 class AdConfig;
 class QString;
 typedef struct ldap LDAP;
-typedef struct _SMBCCTX SMBCCTX;
 
 class AdInterfacePrivate {
     Q_DECLARE_TR_FUNCTIONS(AdInterfacePrivate)
@@ -70,7 +71,8 @@ private:
     static bool s_domain_is_default;
     static QString s_custom_domain;
     static CertStrategy s_cert_strat;
-    static SMBCCTX *smbc;
+    static SMBContext s_smb_context;
+
     AdInterface *q;
 };
 
