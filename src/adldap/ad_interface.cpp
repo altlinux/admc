@@ -545,8 +545,8 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     int result;
 
     LDAPControl *server_controls[2] = {NULL, NULL};
+    LDAPControl *sd_control = NULL;
     if (set_dacl) {
-        LDAPControl *sd_control = NULL;
         const int is_critical = 1;
 
         result = create_sd_control(false, is_critical, &sd_control, set_dacl);
@@ -562,17 +562,15 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
 
     result = ldap_modify_ext_s(d->ld, cstr(dn), attrs, server_controls, NULL);
 
-    if (result == LDAP_SUCCESS) {
-        d->success_message(QString(tr("Attribute %1 of object %2 was changed from \"%3\" to \"%4\".")).arg(attribute, name, old_values_display, values_display), do_msg);
-
-        return true;
-    } else {
+    ldap_control_free(sd_control);
+    if (result != LDAP_SUCCESS) {
         const QString context = QString(tr("Failed to change attribute %1 of object %2 from \"%3\" to \"%4\".")).arg(attribute, name, old_values_display, values_display);
-
         d->error_message(context, d->default_error(), do_msg);
-
         return false;
     }
+
+    d->success_message(QString(tr("Attribute %1 of object %2 was changed from \"%3\" to \"%4\".")).arg(attribute, name, old_values_display, values_display), do_msg);
+    return true;
 }
 
 bool AdInterface::attribute_replace_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg, const bool set_dacl) {
@@ -769,10 +767,6 @@ bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {
     int result;
     LDAPControl *tree_delete_control = NULL;
 
-    auto cleanup = [tree_delete_control]() {
-        ldap_control_free(tree_delete_control);
-    };
-
     const QString name = dn_get_name(dn);
 
     const QString error_context = QString(tr("Failed to delete object %1.")).arg(name);
@@ -780,8 +774,8 @@ bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {
     // Use a tree delete control to enable recursive delete
     result = ldap_control_create(LDAP_CONTROL_X_TREE_DELETE, 1, NULL, 0, &tree_delete_control);
     if (result != LDAP_SUCCESS) {
+        ldap_control_free(tree_delete_control);
         d->error_message(error_context, tr("LDAP Operation error - Failed to create tree delete control."));
-        cleanup();
 
         return false;
     }
@@ -795,7 +789,7 @@ bool AdInterface::object_delete(const QString &dn, const DoStatusMsg do_msg) {
 
     result = ldap_delete_ext_s(d->ld, cstr(dn), server_controls, NULL);
 
-    cleanup();
+    ldap_control_free(tree_delete_control);
 
     if (result == LDAP_SUCCESS) {
         d->success_message(QString(tr("Object %1 was deleted.")).arg(name), do_msg);
