@@ -37,7 +37,7 @@
 #include "ui_create_user_dialog.h"
 
 void test_lineedit_autofill(QLineEdit *src_edit, QLineEdit *dest_edit);
-void test_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit);
+void test_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *middle_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit);
 
 void ADMCTestCreateObjectDialog::create_user_data() {
     QTest::addColumn<QString>("user_class");
@@ -105,7 +105,7 @@ void ADMCTestCreateObjectDialog::create_user_autofill() {
 
     test_lineedit_autofill(create_dialog->ui->upn_prefix_edit, create_dialog->ui->sam_name_edit);
 
-    test_full_name_autofill(create_dialog->ui->first_name_edit, create_dialog->ui->last_name_edit, create_dialog->ui->name_edit);
+    test_full_name_autofill(create_dialog->ui->first_name_edit, create_dialog->ui->middle_name_edit, create_dialog->ui->last_name_edit, create_dialog->ui->name_edit);
 }
 
 void ADMCTestCreateObjectDialog::create_ou() {
@@ -270,7 +270,7 @@ void ADMCTestCreateObjectDialog::create_contact_autofill() {
     create_dialog->open();
     QVERIFY(QTest::qWaitForWindowExposed(create_dialog, 1000));
 
-    test_full_name_autofill(create_dialog->ui->first_name_edit, create_dialog->ui->last_name_edit, create_dialog->ui->full_name_edit);
+    test_full_name_autofill(create_dialog->ui->first_name_edit, create_dialog->ui->middle_name_edit, create_dialog->ui->last_name_edit, create_dialog->ui->full_name_edit);
 }
 
 void ADMCTestCreateObjectDialog::trim() {
@@ -291,21 +291,23 @@ void ADMCTestCreateObjectDialog::trim() {
     QCOMPARE(create_dialog->get_created_dn(), dn);
 }
 
-void test_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit) {
+void test_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *middle_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit) {
     const QString first_name = "first";
     const QString last_name = "last";
+    const QString middle_name = "middle";
 
     first_name_edit->setText(first_name);
     last_name_edit->setText(last_name);
+    middle_name_edit->setText(middle_name);
 
     const QString actual_full_name = full_name_edit->text();
     const QString expected_full_name = [&]() {
         const bool last_name_first = settings_get_variant(SETTING_last_name_before_first_name).toBool();
 
         if (last_name_first) {
-            return QString("%1 %2").arg(last_name, first_name);
+            return QString("%1 %2 %3").arg(last_name, first_name, middle_name);
         } else {
-            return QString("%1 %2").arg(first_name, last_name);
+            return QString("%1 %2 %3").arg(first_name, middle_name, last_name);
         }
     }();
     QCOMPARE(actual_full_name, expected_full_name);
