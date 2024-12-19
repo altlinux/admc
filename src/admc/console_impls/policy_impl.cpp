@@ -110,7 +110,12 @@ void PolicyImpl::selected_as_scope(const QModelIndex &index) {
     // If they don't, offer to update GPT permissions.
     const QString selected_gpo = index.data(PolicyRole_DN).toString();
     bool ok = true;
-    const bool perms_ok = ad.gpo_check_perms(selected_gpo, &ok);
+    bool perms_ok = true;
+    const bool was_fetched = console_item_get_was_fetched(index);
+    // Dont check perms if item was already fetched. It helps to avoid excessive freezes.
+    if (!was_fetched) {
+        perms_ok  = ad.gpo_check_perms(selected_gpo, &ok);
+    }
 
     if (!perms_ok && ok) {
         const QString title = tr("Incorrect permissions detected");
