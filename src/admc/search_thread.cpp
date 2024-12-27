@@ -27,14 +27,9 @@
 
 #include <QHash>
 
-SearchThread::SearchThread(const QString base_arg, const SearchScope scope_arg, const QString &filter_arg, const QList<QString> attributes_arg) {
-    stop_flag = false;
-    base = base_arg;
-    scope = scope_arg;
-    filter = filter_arg;
-    attributes = attributes_arg;
-    m_failed_to_connect = false;
-    m_hit_object_display_limit = false;
+SearchThread::SearchThread(const QString base_arg, const SearchScope scope_arg, const QString &filter_arg, const QList<QString> attributes_arg) :
+stop_flag(false), base(base_arg), scope(scope_arg), filter(filter_arg), attributes(attributes_arg), id(0), m_failed_to_connect(false),
+m_hit_object_display_limit(false) {
 
     static int id_max = 0;
     id = id_max;
