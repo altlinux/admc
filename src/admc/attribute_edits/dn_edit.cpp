@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2021 BaseALT Ltd.
- * Copyright (C) 2020-2021 Dmitry Degtyarev
+ * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2025 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
