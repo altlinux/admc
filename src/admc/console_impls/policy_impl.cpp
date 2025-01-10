@@ -145,7 +145,7 @@ void PolicyImpl::selected_as_scope(const QModelIndex &index) {
 
     g_status->log_messages(ad);
 
-    policy_results->update(selected_gpo);
+    policy_results->update(index);
 }
 
 QList<QAction *> PolicyImpl::get_all_custom_actions() const {
@@ -276,7 +276,7 @@ void PolicyImpl::on_change_gplink_option_action(QAction *action)
     if (success) {
         update_ou_item_gplink_data(updated_gplink_string, ou_index, console);
         set_policy_item_icon(policy_index, checked, option);
-        policy_results->update(gpo_dn);
+        policy_results->update(policy_index);
     }
     else {
         action->toggle();
