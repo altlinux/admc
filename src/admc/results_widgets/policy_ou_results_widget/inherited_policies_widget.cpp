@@ -26,7 +26,7 @@
 #include "console_widget/console_widget.h"
 #include "console_impls/item_type.h"
 #include "gplink.h"
-#include "icon_manager/icon_manager.h"
+#include "managers/icon_manager.h"
 #include "globals.h"
 
 #include <QStandardItemModel>

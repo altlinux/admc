@@ -26,7 +26,7 @@
 #include "console_impls/policy_impl.h"
 #include "utils.h"
 #include "globals.h"
-#include "icon_manager/icon_manager.h"
+#include "managers/icon_manager.h"
 
 #include <QAction>
 #include <QStandardItem>

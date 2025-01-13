@@ -29,7 +29,7 @@
 #include "utils.h"
 #include "connection_options_dialog.h"
 #include "locale.h"
-#include "icon_manager/icon_manager.h"
+#include "managers/icon_manager.h"
 
 #include <QApplication>
 #include <QDebug>

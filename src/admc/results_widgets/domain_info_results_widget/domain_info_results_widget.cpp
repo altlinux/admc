@@ -29,7 +29,7 @@
 #include "ad_config.h"
 #include "status.h"
 #include "fsmo/fsmo_utils.h"
-#include "icon_manager/icon_manager.h"
+#include "managers/icon_manager.h"
 #include "utils.h"
 
 #include <QStandardItemModel>

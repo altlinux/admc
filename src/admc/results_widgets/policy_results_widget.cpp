@@ -30,7 +30,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "icon_manager/icon_manager.h"
+#include "managers/icon_manager.h"
 
 #include <QAction>
 #include <QHeaderView>

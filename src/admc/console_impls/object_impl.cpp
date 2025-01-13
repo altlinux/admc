@@ -53,7 +53,7 @@
 #include "utils.h"
 #include "tabs/general_user_tab.h"
 #include "tabs/general_group_tab.h"
-#include "icon_manager/icon_manager.h"
+#include "managers/icon_manager.h"
 #include "create_dialogs/create_pso_dialog.h"
 #include "results_widgets/pso_results_widget/pso_results_widget.h"
 

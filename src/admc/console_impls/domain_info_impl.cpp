@@ -30,7 +30,7 @@
 #include "utils.h"
 #include "status.h"
 #include "globals.h"
-#include "icon_manager/icon_manager.h"
+#include "managers/icon_manager.h"
 
 #include <QSet>
 #include <QAction>
