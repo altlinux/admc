@@ -1683,17 +1683,17 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
         return out;
     }();
 
-    qDebug() << "--------";
-    qDebug() << "gpc_sd:";
-    for (auto e : QString(gpc_sd).split(",")) {
-        qDebug() << e;
-    }
+    //    qDebug() << "--------";
+    //    qDebug() << "gpc_sd:";
+    //    for (auto e : QString(gpc_sd).split(",")) {
+    //        qDebug() << e;
+    //    }
 
-    qDebug() << "--------";
-    qDebug() << "gpt_sd:";
-    for (auto e : QString(gpt_sd).split(",")) {
-        qDebug() << e;
-    }
+    //    qDebug() << "--------";
+    //    qDebug() << "gpt_sd:";
+    //    for (auto e : QString(gpt_sd).split(",")) {
+    //        qDebug() << e;
+    //    }
 
     if (gpc_sd.isEmpty() || gpt_sd.isEmpty()) {
         *ok = false;
