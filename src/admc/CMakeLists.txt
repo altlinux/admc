@@ -198,6 +198,7 @@ set(ADMC_SOURCES
     console_widget/console_impl.cpp
 
     managers/icon_manager.cpp
+    managers/gplink_manager.cpp
 
     console_impls/object_impl.cpp
     console_impls/policy_impl.cpp
