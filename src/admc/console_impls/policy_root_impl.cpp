@@ -30,6 +30,7 @@
 #include "status.h"
 #include "utils.h"
 #include "managers/icon_manager.h"
+#include "managers/gplink_manager.h"
 
 #include <QList>
 #include <QStandardItem>
@@ -40,6 +41,8 @@ PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
 }
 
 void PolicyRootImpl::fetch(const QModelIndex &index) {
+    g_gplink_manager->update();
+
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;

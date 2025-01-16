@@ -24,6 +24,7 @@
 #include "settings.h"
 #include "status.h"
 #include "managers/icon_manager.h"
+#include "managers/gplink_manager.h"
 
 #include <QLocale>
 
@@ -31,6 +32,7 @@
 AdConfig *g_adconfig = new AdConfig();
 Status *g_status = new Status();
 IconManager *g_icon_manager = new IconManager();
+GPLinkManager *g_gplink_manager = new GPLinkManager();
 
 void load_g_adconfig(AdInterface &ad) {
     const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
