@@ -36,6 +36,7 @@
 #include "utils.h"
 #include "managers/icon_manager.h"
 #include "fsmo/fsmo_utils.h"
+#include "managers/gplink_manager.h"
 
 #include <QAction>
 #include <QDebug>
@@ -234,11 +235,12 @@ void PolicyImpl::on_ou_gplink_changed(const QString &ou_dn, const Gplink &gplink
     QModelIndex ou_item_index = search_gpo_ou_index(console, ou_dn);
     if (!ou_item_index.isValid())
         return;
+
+    update_ou_gplink_data(gplink.to_string(), ou_item_index);
+
     QModelIndex target_policy_index = get_ou_child_policy_index(console, ou_item_index, policy_dn);
     if (!target_policy_index.isValid())
         return;
-
-    update_ou_item_gplink_data(gplink.to_string(), ou_item_index, console);
 
     // Case of link deletion
     if (!gplink.contains(policy_dn)) {
@@ -267,14 +269,14 @@ void PolicyImpl::on_change_gplink_option_action(QAction *action)
 
     bool checked = action->isChecked();
 
-    const QString gplink_string = ou_index.data(PolicyOURole_Gplink_String).toString();
+    const QString gplink_string = g_gplink_manager->ou_gplink(ou_dn);
     Gplink gplink = Gplink(gplink_string);
     gplink.set_option(gpo_dn, option, checked);
     const QString updated_gplink_string = gplink.to_string();
 
     bool success = ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, updated_gplink_string);
     if (success) {
-        update_ou_item_gplink_data(updated_gplink_string, ou_index, console);
+        update_ou_gplink_data(updated_gplink_string, ou_index);
         set_policy_item_icon(policy_index, checked, option);
         policy_results->update(policy_index);
     }
@@ -489,7 +491,7 @@ void console_policy_remove_link(const QList<ConsoleWidget *> &console_list, Poli
                 const QModelIndex ou_index = target_console->search_item(policy_root, PolicyOURole_DN, ou_dn, {ItemType_PolicyOU});
 
                 if (ou_index.isValid()) {
-                    update_ou_item_gplink_data(gplink_new_string, ou_index, target_console);
+                    update_ou_gplink_data(gplink_new_string, ou_index);
 
                     for (const QString &dn : dn_list) {
                         const QModelIndex gpo_index = get_ou_child_policy_index(target_console, ou_index, dn);
@@ -778,7 +780,8 @@ void console_policy_update_policy_results(ConsoleWidget *console, PolicyResultsW
 bool policy_is_enforced(QStandardItem *policy_item)
 {
     bool is_enforced = false;
-    const QString gplink_string = policy_item->parent()->data(PolicyOURole_Gplink_String).toString();
+    const QString ou_dn = policy_item->parent()->data(PolicyOURole_DN).toString();
+    const QString gplink_string = g_gplink_manager->ou_gplink(ou_dn);
     const Gplink gplink = Gplink(gplink_string);
     is_enforced = gplink.enforced_gpo_dn_list().contains(policy_item->data(PolicyRole_DN).toString());
 
@@ -788,7 +791,8 @@ bool policy_is_enforced(QStandardItem *policy_item)
 bool policy_is_disabled(QStandardItem *policy_item)
 {
     bool is_disabled = false;
-    const QString gplink_string = policy_item->parent()->data(PolicyOURole_Gplink_String).toString();
+    const QString ou_dn = policy_item->parent()->data(PolicyOURole_DN).toString();
+    const QString gplink_string = g_gplink_manager->ou_gplink(ou_dn);
     const Gplink gplink = Gplink(gplink_string);
     is_disabled = gplink.disabled_gpo_dn_list().contains(policy_item->data(PolicyRole_DN).toString());
 

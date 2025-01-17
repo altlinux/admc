@@ -24,13 +24,14 @@
 #include "adldap.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
-#include "console_widget/console_widget.h"
+//#include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
 #include "managers/icon_manager.h"
+#include "managers/gplink_manager.h"
 
 #include <QAction>
 #include <QHeaderView>
@@ -140,22 +141,17 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
     model->removeRows(0, model->rowCount());
 
-    const QString base = g_adconfig->domain_dn();
-    const SearchScope scope = SearchScope_All;
-    const QList<QString> attributes = {ATTRIBUTE_NAME, ATTRIBUTE_GPLINK, ATTRIBUTE_OBJECT_CATEGORY};
-    const QString filter = filter_CONDITION(Condition_Contains, ATTRIBUTE_GPLINK, gpo);
-    const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
+    const QStringList ou_linked_list = g_gplink_manager->linked_ou_list(gpo);
 
-    for (const AdObject &object : results.values()) {
+    for (const QString &ou_dn : ou_linked_list) {
         const QList<QStandardItem *> row = make_item_row(PolicyResultsColumn_COUNT);
 
-        const QString dn = object.get_dn();
-        const QString name = dn_get_name(dn);
+        const QString name = dn_get_name(ou_dn);
         row[PolicyResultsColumn_Name]->setText(name);
 
-        row[PolicyResultsColumn_Path]->setText(dn_get_parent_canonical(dn));
+        row[PolicyResultsColumn_Path]->setText(dn_get_parent_canonical(ou_dn));
 
-        const QString gplink_string = object.get_string(ATTRIBUTE_GPLINK);
+        const QString gplink_string = g_gplink_manager->ou_gplink(ou_dn);
         const Gplink gplink = Gplink(gplink_string);
 
         const Qt::CheckState enforced_checkstate = [&]() {
@@ -185,9 +181,12 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
             item->setCheckState(checkstate);
         }
 
-        row[0]->setData(dn, PolicyResultsRole_DN);
+        row[0]->setData(ou_dn, PolicyResultsRole_DN);
         row[0]->setData(gplink_string, PolicyResultsRole_GplinkString);
-        const QIcon icon = g_icon_manager->get_object_icon(object);
+
+        const QString obj_category = ou_dn == g_adconfig->domain_dn() ? OBJECT_CATEGORY_DOMAIN_DNS :
+                                                                        OBJECT_CATEGORY_OU;
+        const QIcon icon = g_icon_manager->get_object_icon(obj_category);
         row[0]->setIcon(icon);
 
         model->appendRow(row);

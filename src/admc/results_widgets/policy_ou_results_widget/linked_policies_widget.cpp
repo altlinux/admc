@@ -121,7 +121,7 @@ LinkedPoliciesWidget::LinkedPoliciesWidget(ConsoleWidget *console_arg, QWidget *
 
         gplink = gplink_arg;
         const QModelIndex scope_tree_ou_index = console->get_current_scope_item();
-        update_ou_item_gplink_data(gplink.to_string(), scope_tree_ou_index, console);
+        update_ou_gplink_data(gplink.to_string(), scope_tree_ou_index);
 
         g_status->add_message(tr("Organizational unit ") + scope_tree_ou_index.data().toString() + tr("'s link orders have been succesfuly changed."),
                               StatusType_Success);
@@ -198,7 +198,7 @@ void LinkedPoliciesWidget::on_item_changed(QStandardItem *item) {
     gplink.set_option(gpo_dn, option, is_checked);
 
     const QModelIndex scope_tree_ou_index = console->get_current_scope_item();
-    update_ou_item_gplink_data(gplink_string, scope_tree_ou_index, console);
+    update_ou_gplink_data(gplink_string, scope_tree_ou_index);
     emit gplink_changed(scope_tree_ou_index);
 
     hide_busy_indicator();
@@ -330,7 +330,7 @@ void LinkedPoliciesWidget::modify_gplink(void (*modify_function)(Gplink &, const
     update_link_items();
 
     const QModelIndex scope_tree_ou_index = console->get_current_scope_item();
-    update_ou_item_gplink_data(gplink_string, scope_tree_ou_index, console);
+    update_ou_gplink_data(gplink_string, scope_tree_ou_index);
     emit gplink_changed(scope_tree_ou_index);
 
     hide_busy_indicator();

@@ -36,7 +36,6 @@
 
 enum PolicyOURole {
     PolicyOURole_DN = MyConsoleRole_LAST + 1,
-    PolicyOURole_Gplink_String,
     PolicyOURole_Inheritance_Block,
 
     PolicyOURole_LAST,
@@ -102,6 +101,6 @@ QModelIndex get_ou_child_policy_index(ConsoleWidget *console, const QModelIndex 
 //Searches OU's index with given dn under "Group policy objects" item
 QModelIndex search_gpo_ou_index(ConsoleWidget *console, const QString &ou_dn);
 
-void update_ou_item_gplink_data(const QString &gplink, const QModelIndex &ou_index, ConsoleWidget *console);
+void update_ou_gplink_data(const QString &gplink, const QModelIndex &ou_index);
 
 #endif /* POLICY_OU_IMPL_H */

@@ -34,6 +34,7 @@
 #include "status.h"
 #include "utils.h"
 #include "managers/icon_manager.h"
+#include "managers/gplink_manager.h"
 #include "fsmo/fsmo_utils.h"
 
 #include <QDebug>
@@ -122,7 +123,6 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
     const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
     const Gplink gplink = Gplink(gplink_string);
     const QList<QString> gpo_list = gplink.get_gpo_list();
-    console->get_item(index)->setData(gplink_string, PolicyOURole_Gplink_String);
 
     policy_ou_impl_add_objects_from_dns(console, ad, gpo_list, index);
 
@@ -428,7 +428,7 @@ void PolicyOUImpl::link_gpo_to_ou(const QModelIndex &ou_index, const QString &ou
     if (!success)
         return;
 
-    update_ou_item_gplink_data(new_gplink_string, ou_index, console);
+    update_ou_gplink_data(new_gplink_string, ou_index);
 
     const QList<QString> added_gpo_list = [&]() {
         QList<QString> out;
@@ -543,9 +543,9 @@ QModelIndex get_ou_child_policy_index(ConsoleWidget *console, const QModelIndex 
     return policy_index;
 }
 
-void update_ou_item_gplink_data(const QString &gplink, const QModelIndex &ou_index, ConsoleWidget *console) {
-    QStandardItem *ou_item = console->get_item(ou_index);
-    ou_item->setData(gplink, PolicyOURole_Gplink_String);
+void update_ou_gplink_data(const QString &gplink, const QModelIndex &ou_index) {
+    const QString ou_dn = ou_index.data(PolicyOURole_DN).toString();
+    g_gplink_manager->set_gplink(ou_dn, gplink);
 }
 
 QModelIndex search_gpo_ou_index(ConsoleWidget *console, const QString &ou_dn) {

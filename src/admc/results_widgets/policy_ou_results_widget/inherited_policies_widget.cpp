@@ -27,6 +27,7 @@
 #include "console_impls/item_type.h"
 #include "gplink.h"
 #include "managers/icon_manager.h"
+#include "managers/gplink_manager.h"
 #include "globals.h"
 
 #include <QStandardItemModel>
@@ -79,9 +80,8 @@ void InheritedPoliciesWidget::update(const QModelIndex &index)
 
 void InheritedPoliciesWidget::hide_not_enforced_inherited_links(bool hide)
 {
-    const Gplink gplink = Gplink(selected_scope_index.
-                                 data(PolicyOURole_Gplink_String).
-                                 toString());
+    const QString ou_dn = selected_scope_index.data(PolicyOURole_DN).toString();
+    const Gplink gplink = Gplink(g_gplink_manager->ou_gplink(ou_dn));
     const QStringList gplink_strings = gplink.get_gpo_list();
     for (int row = 0; row < model->rowCount(); ++row) {
         if (!gplink_strings.contains(model->item(row)->data(RowRole_DN).toString()) &&
@@ -96,7 +96,8 @@ void InheritedPoliciesWidget::add_enabled_policy_items(const QModelIndex &index,
     if (index.data(ConsoleRole_Type) != ItemType_PolicyOU)
         return;
 
-    QString gplink_string = index.data(PolicyOURole_Gplink_String).toString();
+    const QString ou_dn = index.data(PolicyOURole_DN).toString();
+    const QString gplink_string = g_gplink_manager->ou_gplink(ou_dn);
     const Gplink gplink = Gplink(gplink_string);
 
     const QStringList enforced_links = gplink.enforced_gpo_dn_list();
