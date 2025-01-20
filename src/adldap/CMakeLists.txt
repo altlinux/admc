@@ -90,6 +90,7 @@ set(ADLDAP_SAMBA_SOURCES
     samba/libsmb_xattr.c
     samba/security_descriptor.c
     samba/smb_context.cpp
+    samba/sddl.c
 )
 
 if (VERSION_SMB_MINOR LESS 20)
