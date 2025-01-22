@@ -219,6 +219,8 @@ set(ADMC_SOURCES
     permission_control_widgets/extended_permissions_widget.cpp
     permission_control_widgets/delegation_permissions_widget.cpp
 
+    permission_control_widgets/sddl_view_dialog.cpp
+
     admc.qrc
 )
 
