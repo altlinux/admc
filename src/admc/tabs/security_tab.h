@@ -28,6 +28,7 @@ class SecurityTabEdit;
 class QStandardItemModel;
 struct security_descriptor;
 class PermissionsWidget;
+class SDDLViewDialog;
 
 namespace Ui {
 class SecurityTab;
@@ -61,6 +62,7 @@ private:
     security_descriptor *sd;
     bool is_policy;
     QList<PermissionsWidget*> permissions_widgets;
+    SDDLViewDialog *sddl_view;
 
     void load(AdInterface &ad, const AdObject &object);
     void on_remove_trustee_button();
@@ -72,6 +74,7 @@ private:
     void load_applied_objects_cmbbox(const QStringList &target_class_list);
     void on_applied_objs_cmbbox();
     void on_clear_all();
+    void on_show_sddl_sd();
 
 signals:
     void current_trustee_changed(const QByteArray &current_trustee);

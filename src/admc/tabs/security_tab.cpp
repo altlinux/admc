@@ -27,6 +27,7 @@
 #include "utils.h"
 #include "permission_control_widgets/permissions_widget.h"
 #include "globals.h"
+#include "permission_control_widgets/sddl_view_dialog.h"
 
 #include <QDebug>
 #include <QLabel>
@@ -35,6 +36,7 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <algorithm>
+#include <QMenu>
 
 
 SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
@@ -54,6 +56,8 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 
     ui->trustee_view->setModel(trustee_model);
 
+    sddl_view = new SDDLViewDialog(this);
+
     permissions_widgets.append(ui->common_permissions_widget);
     permissions_widgets.append(ui->extended_permissions_widget);
     permissions_widgets.append(ui->creation_deletion_permissions_widget);
@@ -66,6 +70,7 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
                     if ((!ui->clear_all_button->isEnabled() && widget->there_are_selected_permissions())) {
                         ui->clear_all_button->setEnabled(true);
                     }
+                    sddl_view->update(sd);
         });
     }
 
@@ -102,6 +107,8 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
                 }
             }
             ui->clear_all_button->setEnabled(clear_enabled);
+
+            sddl_view->set_trustee(current_trustee);
     });
 
     connect(
@@ -120,6 +127,12 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     connect(
         ui->clear_all_button, &QAbstractButton::clicked,
         this, &SecurityTab::on_clear_all);
+
+    QMenu *more_menu = new QMenu(this);
+    QAction *show_sddl_action = new QAction(tr("Show descriptor in SDDL"));
+    more_menu->addActions({show_sddl_action});
+    connect(show_sddl_action, &QAction::triggered, this, &SecurityTab::on_show_sddl_sd);
+    ui->more_button->setMenu(more_menu);
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {
@@ -128,6 +141,8 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
 
     security_descriptor_free(sd);
     sd = object.get_security_descriptor();
+
+    sddl_view->update(sd);
 
     const QStringList target_class_list = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
 
@@ -180,9 +195,7 @@ bool SecurityTab::verify_acl_order() const {
 
 SecurityTab::~SecurityTab() {
     delete ui;
-    if (sd != nullptr) {
-        security_descriptor_free(sd);
-    }
+    security_descriptor_free(sd);
 }
 
 // Load sd data into trustee model and right models
@@ -307,6 +320,10 @@ void SecurityTab::on_clear_all() {
 
     tab_edit->edited();
     ui->clear_all_button->setDisabled(true);
+}
+
+void SecurityTab::on_show_sddl_sd() {
+    sddl_view->show();
 }
 
 void SecurityTabEdit::load(AdInterface &ad, const AdObject &object) {
