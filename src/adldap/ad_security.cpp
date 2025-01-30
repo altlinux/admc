@@ -35,12 +35,9 @@
 #define UNUSED_ARG(x) (void) (x)
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
-dom_sid dom_sid_from_bytes(const QByteArray &bytes);
 QByteArray dom_sid_string_to_bytes(const dom_sid &sid);
 bool ace_match_without_access_mask(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow, ace_match_flags match_flags);
 bool ace_match(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow);
-QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd);
-void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace> &new_dacl);
 uint32_t ad_security_map_access_mask(const uint32_t access_mask);
 int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2);
 
@@ -201,7 +198,12 @@ security_descriptor *security_descriptor_make_from_bytes(const QByteArray &sd_by
 }
 
 void security_descriptor_free(security_descriptor *sd) {
+    if (sd == nullptr) {
+        return;
+    }
+
     talloc_free(sd);
+    sd = nullptr;
 }
 
 security_descriptor *security_descriptor_copy(security_descriptor *sd) {

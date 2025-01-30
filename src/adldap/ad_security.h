@@ -36,6 +36,7 @@ class AdConfig;
 class AdObject;
 struct security_descriptor;
 struct dom_sid;
+struct security_ace;
 class CommonTaskManager;
 typedef void TALLOC_CTX;
 
@@ -103,6 +104,7 @@ bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString d
 bool ad_security_get_user_cant_change_pass(const AdObject *object, AdConfig *adconfig);
 bool ad_security_set_user_cant_change_pass(AdInterface *ad, const QString &dn, const bool enabled);
 bool ad_security_replace_security_descriptor(AdInterface &ad, const QString &dn, security_descriptor *new_sd);
+void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace> &new_dacl);
 
 // Returns the full right name, adding "Write" or
 // "Read" depending on access mask.
@@ -119,6 +121,7 @@ QList<QByteArray> security_descriptor_get_trustee_list(security_descriptor *sd);
 SecurityRightState security_descriptor_get_right_state(const security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right);
 void security_descriptor_print(security_descriptor *sd, AdInterface &ad);
 bool security_descriptor_verify_acl_order(security_descriptor *sd);
+QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd);
 
 // Remove all ACE's from DACL for given trustee. Note
 // that inherited ACE's are untouched, so trustee might
@@ -146,5 +149,7 @@ QList<SecurityRight> children_class_read_write_prop_rights(AdConfig *adconfig, c
 QList<SecurityRight> read_all_children_class_info_rights(AdConfig *adconfig, const QString &obj_class);
 QList<SecurityRight> read_write_property_rights(AdConfig *adconfig, const QString &attribute);
 QList<SecurityRight> create_children_class_right(AdConfig *adconfig, const QString &obj_class);
+
+dom_sid dom_sid_from_bytes(const QByteArray &bytes);
 
 #endif /* AD_SECURITY_H */
