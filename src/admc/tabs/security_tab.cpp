@@ -40,7 +40,7 @@
 
 
 SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
-: QWidget(parent) {
+: QWidget(parent), sd(nullptr), previous_sd(nullptr) {
     ui = new Ui::SecurityTab();
     ui->setupUi(this);
 
@@ -49,8 +49,6 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     edit_list->append({
         tab_edit,
     });
-
-    sd = nullptr;
 
     trustee_model = new QStandardItemModel(0, 1, this);
 
@@ -130,9 +128,13 @@ SecurityTab::SecurityTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 
     QMenu *more_menu = new QMenu(this);
     QAction *show_sddl_action = new QAction(tr("Show descriptor in SDDL"));
-    more_menu->addActions({show_sddl_action});
+    restore_sd_action = new QAction(tr("Rollback to the previous descriptor"));
+    more_menu->addActions({show_sddl_action, restore_sd_action});
     connect(show_sddl_action, &QAction::triggered, this, &SecurityTab::on_show_sddl_sd);
+    connect(restore_sd_action, &QAction::triggered, this, &SecurityTab::on_restore_previous_sd);
+
     ui->more_button->setMenu(more_menu);
+    connect(more_menu, &QMenu::aboutToShow, this, &SecurityTab::on_more_menu);
 }
 
 void SecurityTab::load(AdInterface &ad, const AdObject &object) {
@@ -144,13 +146,13 @@ void SecurityTab::load(AdInterface &ad, const AdObject &object) {
 
     sddl_view->update(sd);
 
-    const QStringList target_class_list = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+    target_class_list = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
 
     for (PermissionsWidget *widget : permissions_widgets) {
         widget->init(target_class_list, sd);
     }
 
-    load_current_sd(ad);
+    load_sd(ad, sd);
 
     if (ui->applied_objects_cmbBox->count() == 0) {
         load_applied_objects_cmbbox(target_class_list);
@@ -196,6 +198,7 @@ bool SecurityTab::verify_acl_order() const {
 SecurityTab::~SecurityTab() {
     delete ui;
     security_descriptor_free(sd);
+    security_descriptor_free(previous_sd);
 }
 
 // Load sd data into trustee model and right models
@@ -203,7 +206,7 @@ SecurityTab::~SecurityTab() {
 // here but it is called implicitly because
 // setCurrentIndex() emits currentChanged() signal
 // which calls set_current_trustee() on permission widgets
-void SecurityTab::load_current_sd(AdInterface &ad) {
+void SecurityTab::load_sd(AdInterface &ad, security_descriptor *sd_arg) {
     // Save previous selected trustee before reloading
     // trustee model. This is for the case where we
     // need to restore selection later.
@@ -222,7 +225,7 @@ void SecurityTab::load_current_sd(AdInterface &ad) {
 
     // Load trustee model
     trustee_model->removeRows(0, trustee_model->rowCount());
-    const QList<QByteArray> trustee_list = security_descriptor_get_trustee_list(sd);
+    const QList<QByteArray> trustee_list = security_descriptor_get_trustee_list(sd_arg);
     add_trustees(trustee_list, ad);
 
     // Select a trustee
@@ -326,6 +329,51 @@ void SecurityTab::on_show_sddl_sd() {
     sddl_view->show();
 }
 
+void SecurityTab::on_restore_previous_sd() {
+    if (previous_sd == nullptr) {
+        return;
+    }
+
+    show_busy_indicator();
+
+    AdInterface ad;
+    if (!ad.is_connected()) {
+        hide_busy_indicator();
+        return;
+    }
+
+    security_descriptor_free(sd);
+    sd = security_descriptor_copy(previous_sd);
+
+    // Block signals to avoid possible chaos
+    ui->trustee_view->selectionModel()->blockSignals(true);
+    load_sd(ad, sd);
+
+    for (PermissionsWidget *permission_widget : permissions_widgets) {
+        permission_widget->blockSignals(true);
+        permission_widget->init(target_class_list, sd);
+        if ((!ui->clear_all_button->isEnabled() && permission_widget->there_are_selected_permissions())) {
+            ui->clear_all_button->setEnabled(true);
+        }
+    }
+
+    sddl_view->update(sd);
+
+    tab_edit->edited();
+
+    ui->trustee_view->selectionModel()->blockSignals(false);
+    for (PermissionsWidget *permission_widget : permissions_widgets) {
+        permission_widget->blockSignals(false);
+    }
+    on_applied_objs_cmbbox();
+
+    hide_busy_indicator();
+}
+
+void SecurityTab::on_more_menu() {
+    restore_sd_action->setEnabled(previous_sd != nullptr);
+}
+
 void SecurityTabEdit::load(AdInterface &ad, const AdObject &object) {
     security_tab->load(ad, object);
 }
@@ -346,6 +394,15 @@ bool SecurityTabEdit::verify(AdInterface &ad, const QString &target) const {
 
 bool SecurityTabEdit::apply(AdInterface &ad, const QString &target) const {
     bool total_success = true;
+
+    const AdObject target_object = ad.search_object(target, {ATTRIBUTE_SECURITY_DESCRIPTOR});
+    if (!target_object.is_empty()) {
+        security_descriptor_free(security_tab->previous_sd);
+        security_tab->previous_sd = target_object.get_security_descriptor();
+    }
+    else {
+        total_success = false;
+    }
 
     total_success = (total_success && ad_security_replace_security_descriptor(ad, target, security_tab->sd));
 
@@ -418,7 +475,7 @@ void SecurityTab::on_remove_trustee_button() {
     // NOTE: we do this instead of removing selected
     // indexes because not all trustee's are guaranteed
     // to have been removed
-    load_current_sd(ad);
+    load_sd(ad, sd);
 
     const bool removed_any = !removed_trustee_list.isEmpty();
 

@@ -60,21 +60,26 @@ private:
     SecurityTabEdit *tab_edit;
     QStandardItemModel *trustee_model;
     security_descriptor *sd;
+    security_descriptor *previous_sd;
     bool is_policy;
     QList<PermissionsWidget*> permissions_widgets;
     SDDLViewDialog *sddl_view;
+    QAction *restore_sd_action;
+    QStringList target_class_list;
 
     void load(AdInterface &ad, const AdObject &object);
     void on_remove_trustee_button();
     void on_add_trustee_button();
     void on_add_well_known_trustee();
     void add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad);
-    void load_current_sd(AdInterface &ad);
+    void load_sd(AdInterface &ad, security_descriptor *sd_arg);
     QByteArray get_current_trustee() const;
     void load_applied_objects_cmbbox(const QStringList &target_class_list);
     void on_applied_objs_cmbbox();
     void on_clear_all();
     void on_show_sddl_sd();
+    void on_restore_previous_sd();
+    void on_more_menu();
 
 signals:
     void current_trustee_changed(const QByteArray &current_trustee);
