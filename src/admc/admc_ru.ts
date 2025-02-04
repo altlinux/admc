@@ -1924,7 +1924,12 @@
         <translation>Снять все</translation>
     </message>
     <message>
-        <location filename="results_widgets/policy_ou_results_widget/linked_policies_widget.cpp" line="52"/>
+        <location filename="results_widgets/policy_ou_results_widget/linked_policies_widget.cpp" line="41"/>
+        <source>Edit...</source>
+        <translation>Изменить...</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/policy_ou_results_widget/linked_policies_widget.cpp" line="54"/>
         <source>Order</source>
         <translation type="unfinished">Порядок</translation>
     </message>
@@ -3766,6 +3771,39 @@
     </message>
 </context>
 <context>
+    <name>SDDLViewDialog</name>
+    <message>
+        <location filename="permission_control_widgets/sddl_view_dialog.ui" line="14"/>
+        <source>SDDL view</source>
+        <translation>SDDL вид</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/sddl_view_dialog.ui" line="44"/>
+        <source>Security descriptor (SDDL)</source>
+        <translation>Дескриптор безопасности (SDDL)</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/sddl_view_dialog.ui" line="64"/>
+        <source>Show descriptor for current trustee</source>
+        <translation>Показывать десприптор для выбранного доверенного лица</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/sddl_view_dialog.cpp" line="45"/>
+        <source>Failed to get SDDL formatted security descriptor</source>
+        <translation>Не удалось получить дескриптор в SDDL формате</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/sddl_view_dialog.cpp" line="54"/>
+        <source>: Domain sid parse failed</source>
+        <translation>: Не удалось извлечь доменный идентификатор безопасности</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/sddl_view_dialog.cpp" line="83"/>
+        <source>: SDDL encode failed</source>
+        <translation>: Не удалось закодировать в SDDL</translation>
+    </message>
+</context>
+<context>
     <name>SamNameEdit</name>
     <message>
         <location filename="attribute_edits/sam_name_edit.cpp" line="79"/>
@@ -3864,11 +3902,26 @@
         <translation>Делегирование задач</translation>
     </message>
     <message>
+        <location filename="tabs/security_tab.ui" line="293"/>
+        <source>More...</source>
+        <translation>Дополнительно...</translation>
+    </message>
+    <message>
         <source>Delegation</source>
         <translation type="vanished">Делегирование</translation>
     </message>
     <message>
-        <location filename="tabs/security_tab.cpp" line="212"/>
+        <location filename="tabs/security_tab.cpp" line="130"/>
+        <source>Show descriptor in SDDL</source>
+        <translation>Показать дескриптор в SDDL</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="131"/>
+        <source>Rollback to the previous descriptor</source>
+        <translation>Вернуться к предыдущему дескриптору</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="253"/>
         <source>This object</source>
         <translation>Этот объект</translation>
     </message>
