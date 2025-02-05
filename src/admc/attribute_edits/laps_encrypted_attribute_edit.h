@@ -1,8 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 BaseALT Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LAPS_EXPIRY_EDIT_H
-#define LAPS_EXPIRY_EDIT_H
+#ifndef LAPS_ENCRYPED_ATTRIBUTE_EDIT_H
+#define LAPS_ENCRYPED_ATTRIBUTE_EDIT_H
 
 #include "attribute_edits/attribute_edit.h"
 
-class QDateTimeEdit;
-class QPushButton;
+class QLineEdit;
+class QJsonDocument;
 
-class LAPSExpiryEdit final : public AttributeEdit {
+class LAPSEncryptedAttributeEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    LAPSExpiryEdit(QDateTimeEdit *edit_arg, QPushButton *reset_expiry_button, const QString &attribute_name_arg, QObject *parent);
+    LAPSEncryptedAttributeEdit(QLineEdit *edit_arg, const QString &attribute_arg, const QString &json_field_arg, QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
+    void set_enabled(const bool enabled) override;
 
 private:
-    QDateTimeEdit *edit;
-    QString attribute_name;
+    QLineEdit *edit;
+    QString attribute;
+    QString json_field;
 
-    void reset_expiry();
+    friend class StringOtherEdit;
+
+    QJsonDocument get_jsondocument_from_attribute_value(AdInterface &ad, const AdObject &object, const QString &attribute_name) const;
+    QByteArray create_attribute_value_from_jsondocument(AdInterface &ad, const QJsonDocument* document) const;
+
+    uint8_t* create_header(uint32_t size) const;
 };
 
-#endif /* LAPS_EXPIRY_EDIT_H */
+#endif /* LAPS_ENCRYPED_ATTRIBUTE_EDIT_H */
