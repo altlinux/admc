@@ -30,9 +30,16 @@ link_libraries(
     adldap
 )
 
+
 if (RESOLV_LIBRARY)
     link_libraries(${RESOLV_LIBRARY})
 endif()
+
+find_package(CNGDpApi)
+
+include_directories(${CNG_DPAPI_INCLUDE_DIR})
+link_directories(${CNG_DPAPI_LIBRARY_DIR})
+link_libraries(${CNG_DPAPI_LIBRARY})
 
 set(ADMC_SOURCES
     status.cpp
@@ -135,6 +142,7 @@ set(ADMC_SOURCES
     tabs/delegation_tab.cpp
     tabs/select_well_known_trustee_dialog.cpp
     tabs/laps_tab.cpp
+    tabs/laps_v2_tab.cpp
     tabs/error_tab.cpp
     tabs/group_policy_tab.cpp
 
@@ -173,6 +181,7 @@ set(ADMC_SOURCES
     attribute_edits/logon_computers_edit.cpp
     attribute_edits/logon_computers_dialog.cpp
     attribute_edits/protect_deletion_edit.cpp
+    attribute_edits/laps_encrypted_attribute_edit.cpp
     attribute_edits/laps_expiry_edit.cpp
     attribute_edits/general_name_edit.cpp
     attribute_edits/dn_edit.cpp
