@@ -43,6 +43,7 @@
 #include "tabs/general_user_tab.h"
 #include "tabs/group_policy_tab.h"
 #include "tabs/laps_tab.h"
+#include "tabs/laps_v2_tab.h"
 #include "tabs/managed_by_tab.h"
 #include "tabs/membership_tab.h"
 #include "tabs/object_tab.h"
@@ -239,9 +240,24 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg, C
             return out;
         }();
 
-        if (laps_enabled) {
+        const bool laps_v2_enabled = [&]() {
+            const QList<QString> attribute_list = object.attributes();
+            const bool out = ((attribute_list.contains(ATTRIBUTE_LAPS_V2_ENCRYPTED_PASSWORD)
+                        ||    attribute_list.contains(ATTRIBUTE_LAPS_V2_DSRM_ENCRYPTED_PASSWORD)
+                        ||    attribute_list.contains(ATTRIBUTE_LAPS_V2_PASSWORD))
+                        &&    attribute_list.contains(ATTRIBUTE_LAPS_V2_EXPIRATION_TIME));
+            return out;
+        }();
+
+        if (laps_enabled && !laps_v2_enabled) {
             auto laps_tab = new LAPSTab(&edit_list, this);
             ui->tab_widget->add_tab(laps_tab, tr("LAPS"));
+        }
+
+        if (laps_v2_enabled)
+        {
+            auto laps_v2_tab = new LAPSV2Tab(&edit_list, this);
+            ui->tab_widget->add_tab(laps_v2_tab, tr("LAPS"));
         }
     }
 

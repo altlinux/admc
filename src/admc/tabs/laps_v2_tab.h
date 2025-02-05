@@ -2,7 +2,6 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2025 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tabs/laps_tab.h"
-#include "tabs/ui_laps_tab.h"
+#ifndef LAPS_V2_TAB_H
+#define LAPS_V2_TAB_H
 
-#include "adldap.h"
-#include "attribute_edits/laps_expiry_edit.h"
-#include "attribute_edits/string_edit.h"
+#include <QWidget>
 
-LAPSTab::LAPSTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
-: QWidget(parent) {
-    ui = new Ui::LAPSTab();
-    ui->setupUi(this);
+class AttributeEdit;
 
-    auto pass_edit = new StringEdit(ui->pass_lineedit, ATTRIBUTE_LAPS_PASSWORD, this);
-    auto laps_edit = new LAPSExpiryEdit(ui->expiry_datetimeedit, ui->reset_expiry_button, ATTRIBUTE_LAPS_EXPIRATION, this);
-
-    edit_list->append({
-        pass_edit,
-        laps_edit,
-    });
+namespace Ui {
+class LAPSV2Tab;
 }
 
-LAPSTab::~LAPSTab() {
-    delete ui;
-}
+class LAPSV2Tab final : public QWidget {
+    Q_OBJECT
+
+public:
+    Ui::LAPSV2Tab *ui;
+
+    LAPSV2Tab(QList<AttributeEdit *> *edit_list, QWidget *parent);
+    ~LAPSV2Tab();
+private slots:
+    void on_show_password_button_toggled(bool checked);
+    void on_copy_password_button_clicked();
+    void on_expiration_datetimeedit_dateTimeChanged(const QDateTime &dateTime);
+};
+
+#endif /* LAPS_V2_TAB_H */
