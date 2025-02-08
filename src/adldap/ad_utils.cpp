@@ -389,6 +389,10 @@ bool load_adldap_translation(QTranslator &translator, const QLocale &locale) {
 }
 
 QByteArray guid_string_to_bytes(const QString &guid_string) {
+    if (guid_string.isEmpty()) {
+        return QByteArray();
+    }
+
     const QList<QByteArray> segment_list = [&]() {
         QList<QByteArray> out;
 
@@ -486,4 +490,15 @@ QHash<int, QString> attribute_value_bit_string_map(const QString &attribute)
         };
     }
     return bit_string_map;
+}
+
+QList<QString> bytearray_list_to_string_list(const QList<QByteArray> &bytearray_list) {
+    QList<QString> out;
+
+    for (const QByteArray &bytes : bytearray_list) {
+        const QString string = bytes;
+        out.append(string);
+    }
+
+    return out;
 }

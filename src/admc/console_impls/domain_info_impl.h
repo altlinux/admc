@@ -39,10 +39,10 @@ class DomainInfoImpl : public ConsoleImpl {
 public:
     explicit DomainInfoImpl(ConsoleWidget *console_arg);
 
-    void selected_as_scope(const QModelIndex &index);
+    void selected_as_scope(const QModelIndex &index) override;
     void refresh(const QList<QModelIndex> &index_list) override;
 
-    virtual QList<QAction *> get_all_custom_actions() const;
+    virtual QList<QAction *> get_all_custom_actions() const override;
     QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
 

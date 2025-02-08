@@ -67,8 +67,14 @@ bool CreateObjectHelper::accept() const {
     const QString name = get_created_name();
     const QString dn = get_created_dn();
 
+    auto fail_msg = [name]() {
+        const QString message = QString(tr("Failed to create object %1")).arg(name);
+        g_status->add_message(message, StatusType_Error);
+    };
+
     const bool verify_name_success = verify_object_name(name, parent_dialog);
     if (!verify_name_success) {
+        fail_msg();
         return false;
     }
 
@@ -76,13 +82,9 @@ bool CreateObjectHelper::accept() const {
     const bool verify_success = AttributeEdit::verify(m_edit_list, ad, dn);
 
     if (!verify_success) {
+        fail_msg();
         return false;
     }
-
-    auto fail_msg = [name]() {
-        const QString message = QString(tr("Failed to create object %1")).arg(name);
-        g_status->add_message(message, StatusType_Error);
-    };
 
     bool final_success = true;
 
@@ -111,7 +113,7 @@ bool CreateObjectHelper::accept() const {
         const bool is_computer = (m_object_class == CLASS_COMPUTER);
 
         if (is_user_or_person) {
-            const int uac = [this, dn, &ad]() {
+            const int uac = [dn, &ad]() {
                 const AdObject object = ad.search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
                 const int out = object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
 

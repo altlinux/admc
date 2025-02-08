@@ -29,6 +29,10 @@ extern "C" {
 #ifndef GP_MANAGE_H
 #define GP_MANAGE_H
 
+// time.h and unistd.h Are needed before including ndr.h when building against old samba (4.16)
+#include <time.h>
+#include <unistd.h>
+
 #include <ndr.h>
 #include <gen_ndr/security.h>
 #include <talloc.h>

@@ -695,6 +695,34 @@
     </message>
 </context>
 <context>
+    <name>CreatePSODialog</name>
+    <message>
+        <location filename="create_dialogs/create_pso_dialog.ui" line="14"/>
+        <source>Password settings object creation</source>
+        <translation>Создание объекта парольных настроек</translation>
+    </message>
+    <message>
+        <location filename="create_dialogs/create_pso_dialog.ui" line="23"/>
+        <source>Protect against deletion</source>
+        <translation>Защитить от удаления</translation>
+    </message>
+    <message>
+        <location filename="create_dialogs/create_pso_dialog.cpp" line="66"/>
+        <source>At least one password setting (except precedence) should not be default</source>
+        <translation>Как минимум одна настройка пароля (не учитывая приоритет) не должна быть по умолчанию</translation>
+    </message>
+    <message>
+        <location filename="create_dialogs/create_pso_dialog.cpp" line="83"/>
+        <source>Failed to create password settings object %1</source>
+        <translation>Не удалось создать объект парольных настроек %1</translation>
+    </message>
+    <message>
+        <location filename="create_dialogs/create_pso_dialog.cpp" line="89"/>
+        <source>Password settings object %1 has been successfully created.</source>
+        <translation>Объект парольных настроек %1 успешно создан.</translation>
+    </message>
+</context>
+<context>
     <name>CreatePolicyDialog</name>
     <message>
         <location filename="create_policy_dialog.ui" line="26"/>
@@ -781,84 +809,108 @@
 <context>
     <name>CreateUserDialog</name>
     <message>
-        <location filename="create_user_dialog.ui" line="14"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="14"/>
         <source>Create User</source>
         <translation>Создать пользователя</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="22"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="22"/>
         <source>First name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="32"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="32"/>
         <source>Last name:</source>
         <translation>Фамилия:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="42"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="42"/>
         <source>Full name:</source>
         <translation>Полное имя:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="52"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="52"/>
         <source>Initials:</source>
         <translation>Инициалы:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="62"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="62"/>
         <source>Logon name:</source>
         <translation>Имя для входа:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="69"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="69"/>
         <source>Logon name (pre-Windows 2000):</source>
         <translation>Имя для входа (до Windows 2000):</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="76"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="76"/>
         <source>Password:</source>
         <translation>Пароль:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="90"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="90"/>
         <source>Confirm password:</source>
         <translation>Подтвердите пароль:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="128"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="128"/>
         <source>Show password</source>
         <translation>Показывать пароль</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="137"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="137"/>
         <source>Account options:</source>
         <translation>Параметры учётной записи:</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="143"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="143"/>
         <source>User must change password on next logon</source>
         <translation>Пользователь должен сменить пароль при следующем входе в систему</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="153"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="153"/>
         <source>User cannot change password</source>
         <translation>Пользователь не может изменить пароль</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="160"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="160"/>
         <source>Don&apos;t expire password</source>
         <translation>Пароль не истекает</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.ui" line="167"/>
+        <location filename="create_dialogs/create_user_dialog.ui" line="167"/>
         <source>Account disabled</source>
         <translation>Учётная запись отключена</translation>
     </message>
     <message>
-        <location filename="create_user_dialog.cpp" line="98"/>
+        <location filename="create_dialogs/create_user_dialog.cpp" line="98"/>
         <source>Create %1</source>
         <translation>Создать объект - %1</translation>
+    </message>
+</context>
+<context>
+    <name>CreationDeletionPermissionsWidget</name>
+    <message>
+        <location filename="permission_control_widgets/creation_deletion_permissions_widget.cpp" line="85"/>
+        <source>Create </source>
+        <translation>Создание </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/creation_deletion_permissions_widget.cpp" line="85"/>
+        <location filename="permission_control_widgets/creation_deletion_permissions_widget.cpp" line="88"/>
+        <source> objects</source>
+        <translation> объектов</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/creation_deletion_permissions_widget.cpp" line="88"/>
+        <source>Delete </source>
+        <translation>Удаление </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/creation_deletion_permissions_widget.cpp" line="91"/>
+        <source>Undefined</source>
+        <translation>Не определено</translation>
     </message>
 </context>
 <context>
@@ -867,6 +919,55 @@
         <location filename="console_widget/customize_columns_dialog.cpp" line="43"/>
         <source>Customize Columns</source>
         <translation>Настроить колонки</translation>
+    </message>
+</context>
+<context>
+    <name>DelegationPermissionsWidget</name>
+    <message>
+        <source>Common tasks delegation</source>
+        <translation type="vanished">Делегирование обычных задач</translation>
+    </message>
+    <message>
+        <source>Create/delete child objects</source>
+        <translation type="vanished">Создание/удаление дочерних объектов</translation>
+    </message>
+    <message>
+        <source>Read/write properties</source>
+        <translation type="vanished">Чтение/запись свойств</translation>
+    </message>
+    <message>
+        <source>Create </source>
+        <translation type="vanished">Создание </translation>
+    </message>
+    <message>
+        <source> objects</source>
+        <translation type="vanished"> объектов</translation>
+    </message>
+    <message>
+        <source>Delete </source>
+        <translation type="vanished">Удаление </translation>
+    </message>
+    <message>
+        <source>Write </source>
+        <translation type="vanished">Запись </translation>
+    </message>
+    <message>
+        <source> property</source>
+        <translation type="vanished"> свойства</translation>
+    </message>
+    <message>
+        <source>Read </source>
+        <translation type="vanished">Чтение </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="44"/>
+        <source>Name</source>
+        <translation>Имя</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/delegation_permissions_widget.cpp" line="45"/>
+        <source>Assigned</source>
+        <translation>Назначено</translation>
     </message>
 </context>
 <context>
@@ -1793,7 +1894,17 @@
         <translation type="unfinished">Переместить вниз</translation>
     </message>
     <message>
-        <location filename="policy_ou_results_widget/linked_policies_widget.cpp" line="48"/>
+        <location filename="results_widgets/policy_ou_results_widget/linked_policies_widget.cpp" line="39"/>
+        <source>Set all</source>
+        <translation>Выставить все</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/policy_ou_results_widget/linked_policies_widget.cpp" line="40"/>
+        <source>Unset all</source>
+        <translation>Снять все</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/policy_ou_results_widget/linked_policies_widget.cpp" line="52"/>
         <source>Order</source>
         <translation type="unfinished">Порядок</translation>
     </message>
@@ -2537,7 +2648,12 @@
         <translation>Изменить суффиксы UPN</translation>
     </message>
     <message>
-        <location filename="console_impls/object_impl.cpp" line="109"/>
+        <location filename="console_impls/object_impl.cpp" line="124"/>
+        <source>Create password setting object</source>
+        <translation>Создать объект парольных настроек</translation>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl.cpp" line="126"/>
         <source>New</source>
         <translation>Создать</translation>
     </message>
@@ -2744,6 +2860,122 @@
     </message>
 </context>
 <context>
+    <name>PSOEditWidget</name>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="17"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="23"/>
+        <source>Account lockout duration (mins):</source>
+        <translation>Длительность блокировки учетной записи (минуты):</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="30"/>
+        <source>Name:</source>
+        <translation>Имя:</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="38"/>
+        <source>Password Settings</source>
+        <translation>Настройки паролей</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="103"/>
+        <source>Minimum password length:</source>
+        <translation>Минимальная длина пароля:</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="47"/>
+        <source>Enable complexity requirements</source>
+        <translation>Включить требования сложности</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="60"/>
+        <source>Store passwords using reversible encryption</source>
+        <translation>Хранить пароли, используя обратимое шифрование</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="83"/>
+        <source>Precedence:</source>
+        <translation>Приоритет:</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="103"/>
+        <source>Apply to user/grop</source>
+        <translation>Применить к пользователю/группе</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="132"/>
+        <source>Add...</source>
+        <translation>Добавить...</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="142"/>
+        <source>Remove</source>
+        <translation>Удалить</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="177"/>
+        <source>Minimum password age (days):</source>
+        <translation>Минимальный срок действия пароля (дни):</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="194"/>
+        <source>Reset account lockout after (mins):</source>
+        <translation>Время до сброса блокировки (минуты):</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="227"/>
+        <source>PSO precedence should be greater than 0</source>
+        <translation>Приоритет должен быть больше 0</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="259"/>
+        <source>Maximum password age (days):</source>
+        <translation>Максимальный срок действия пароля (дни):</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="286"/>
+        <source>Password history length:</source>
+        <translation>Длина истории паролей:</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="293"/>
+        <source>Failed log on attempts allowed:</source>
+        <translation>Разрешено неудачных попыток входа:</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_edit_widget.cpp" line="207"/>
+        <source>Add applied users/group</source>
+        <translation>Добавить применяемых пользователей/группы</translation>
+    </message>
+</context>
+<context>
+    <name>PSOResultsWidget</name>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_results_widget.ui" line="14"/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_results_widget.ui" line="28"/>
+        <source>Edit...</source>
+        <translation>Изменить...</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_results_widget.ui" line="38"/>
+        <source>Cancel</source>
+        <translation>Отменить</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/pso_results_widget/pso_results_widget.ui" line="48"/>
+        <source>Apply</source>
+        <translation>Применить</translation>
+    </message>
+</context>
+<context>
     <name>PasswordDialog</name>
     <message>
         <location filename="password_dialog.ui" line="14"/>
@@ -2805,6 +3037,29 @@
         <location filename="attribute_edits/password_edit.cpp" line="82"/>
         <source>Password contains invalid characters</source>
         <translation>Пароль содержит недопустимые символы</translation>
+    </message>
+</context>
+<context>
+    <name>PermissionsWidget</name>
+    <message>
+        <location filename="permission_control_widgets/permissions_widget.cpp" line="40"/>
+        <source>Name</source>
+        <translation>Имя</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/permissions_widget.cpp" line="41"/>
+        <source>Allowed</source>
+        <translation>Разрешено</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/permissions_widget.cpp" line="42"/>
+        <source>Denied</source>
+        <translation>Запрещено</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/permissions_widget.cpp" line="245"/>
+        <source>There are no rights for this class of objects</source>
+        <translation>Нет прав для данного класса объектов</translation>
     </message>
 </context>
 <context>
@@ -3365,6 +3620,30 @@
     </message>
 </context>
 <context>
+    <name>ReadWritePermissionsWidget</name>
+    <message>
+        <location filename="permission_control_widgets/read_write_permissions_widget.cpp" line="94"/>
+        <source>Write </source>
+        <translation>Запись </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/read_write_permissions_widget.cpp" line="94"/>
+        <location filename="permission_control_widgets/read_write_permissions_widget.cpp" line="97"/>
+        <source> property</source>
+        <translation> свойства</translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/read_write_permissions_widget.cpp" line="97"/>
+        <source>Read </source>
+        <translation>Чтение </translation>
+    </message>
+    <message>
+        <location filename="permission_control_widgets/read_write_permissions_widget.cpp" line="100"/>
+        <source>Undefined</source>
+        <translation>Не определено</translation>
+    </message>
+</context>
+<context>
     <name>RenameGroupDialog</name>
     <message>
         <location filename="rename_group_dialog.ui" line="14"/>
@@ -3500,7 +3779,12 @@
 <context>
     <name>SecurityTab</name>
     <message>
-        <location filename="tabs/security_tab.ui" line="51"/>
+        <location filename="tabs/security_tab.ui" line="20"/>
+        <source>Users and Groups</source>
+        <translation>Пользователи и группы</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="58"/>
         <source>Add...</source>
         <translation>Добавить...</translation>
     </message>
@@ -3518,6 +3802,80 @@
         <location filename="tabs/security_tab.ui" line="74"/>
         <source>Permissions</source>
         <translation>Разрешения</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="105"/>
+        <source>Applied to: </source>
+        <translation>Применять : </translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="131"/>
+        <source>Clear all</source>
+        <translation>Очистить все</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="153"/>
+        <source>Common</source>
+        <translation>Обычные</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="133"/>
+        <source>Extended</source>
+        <translation>Расширенные</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="197"/>
+        <source>Creation/deletion</source>
+        <translation>Создание/удаление</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="219"/>
+        <source>Read/write</source>
+        <translation>Чтение/запись</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.ui" line="241"/>
+        <source>Task delegation</source>
+        <translation>Делегирование задач</translation>
+    </message>
+    <message>
+        <source>Delegation</source>
+        <translation type="vanished">Делегирование</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="212"/>
+        <source>This object</source>
+        <translation>Этот объект</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="213"/>
+        <source>This object and all child objects</source>
+        <translation>Этот объект и все дочерние объекты</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="214"/>
+        <source>All child objects</source>
+        <translation>Все дочерние объекты</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="244"/>
+        <source>Child objects: </source>
+        <translation>Дочерние объекты: </translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="302"/>
+        <source>Add Trustee</source>
+        <translation>Добавить доверенное лицо</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="335"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location filename="tabs/security_tab.cpp" line="335"/>
+        <source>Failed to add some trustee&apos;s because they are already in the list.</source>
+        <translation>Не удалось добавить некоторых доверенных лиц, так как они уже имеются в списке.</translation>
     </message>
 </context>
 <context>

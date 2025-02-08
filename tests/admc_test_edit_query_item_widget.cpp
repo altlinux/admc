@@ -21,7 +21,7 @@
 #include "admc_test_edit_query_item_widget.h"
 
 #include "console_impls/query_item_impl.h"
-#include "edit_query_item_widget.h"
+#include "edit_query_widgets/edit_query_item_widget.h"
 #include "filter_widget/filter_dialog.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/filter_widget_simple_tab.h"

@@ -109,14 +109,17 @@ void InheritedPoliciesWidget::add_enabled_policy_items(const QModelIndex &index,
         }
 
         bool policy_is_enforced = enforced_links.contains(gpo_dn);
-        const QList<QStandardItem *> row = make_item_row(InheritedPoliciesColumns_COUNT);
-        load_item(row, index, gpo_dn, policy_is_enforced);
+        QList<QStandardItem *> row;
 
         if (policy_is_enforced) {
+            row = make_item_row(InheritedPoliciesColumns_COUNT);
+            load_item(row, index, gpo_dn, policy_is_enforced);
             model->insertRow(row_number, row);
             ++row_number;
         }
         else if (index == selected_scope_index || !inheritance_blocked) {
+            row = make_item_row(InheritedPoliciesColumns_COUNT);
+            load_item(row, index, gpo_dn, policy_is_enforced);
             model->appendRow(row);
         }
     }

@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>EditQueryItemDialog</class>
- <widget class="QDialog" name="EditQueryItemDialog">
+ <class>CreatePSODialog</class>
+ <widget class="QDialog" name="CreatePSODialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>446</width>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Edit Query</string>
+   <string>Password settings object creation</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="EditQueryItemWidget" name="edit_query_item_widget" native="true"/>
+    <widget class="PSOEditWidget" name="pso_edit_widget" native="true"/>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="protect_deletion_checkbox">
+     <property name="text">
+      <string>Protect against deletion</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -31,9 +41,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>EditQueryItemWidget</class>
+   <class>PSOEditWidget</class>
    <extends>QWidget</extends>
-   <header>edit_query_item_widget.h</header>
+   <header>results_widgets/pso_results_widget/pso_edit_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -42,7 +52,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>EditQueryItemDialog</receiver>
+   <receiver>CreatePSODialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -58,7 +68,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>EditQueryItemDialog</receiver>
+   <receiver>CreatePSODialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

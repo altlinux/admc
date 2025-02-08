@@ -189,6 +189,7 @@ private:
 
     bool ldap_init();
     void ldap_free();
+    bool init_smb_context();
 };
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);

@@ -987,6 +987,59 @@
     </message>
 </context>
 <context>
+    <name>CommonTaskManager</name>
+    <message>
+        <location filename="common_task_manager.cpp" line="61"/>
+        <source>Create, delete and manage user accounts</source>
+        <translation>Создание, удаление и управление учётными записями пользователей</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="62"/>
+        <source>Reset user passwords and force password change at next logon</source>
+        <translation>Переустановить пароли пользователей и установить изменение пароля при следующем входе в систему</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="63"/>
+        <source>Read all user information</source>
+        <translation>Чтение информации о всех пользователях</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="64"/>
+        <source>Create, delete and manage groups</source>
+        <translation>Создание, удаление и управление группами</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="65"/>
+        <source>Modify the membership of group</source>
+        <translation>Изменение членства в группах</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="66"/>
+        <source>Manage Group Policy links</source>
+        <translation>Управление ссылками на групповые политики</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="67"/>
+        <source>Create, delete and manage inetOrgPerson accounts</source>
+        <translation>Создание, удаление и управление учётными записями inetOrgPerson</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="68"/>
+        <source>Reset inetOrgPerson passwords and force password change at next logon</source>
+        <translation>Переустановить пароли inetOrgPerson и установить изменение пароля при следующем входе в систему</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="69"/>
+        <source>Read all inetOrgPerson information</source>
+        <translation>Чтение всей информации для inetOrgPerson</translation>
+    </message>
+    <message>
+        <location filename="common_task_manager.cpp" line="51"/>
+        <source>Join a computer to the domain</source>
+        <translation>Присоединение компьютера к домену</translation>
+    </message>
+</context>
+<context>
     <name>ad_security.cpp</name>
     <message>
         <location filename="ad_security.cpp" line="841"/>
@@ -1029,7 +1082,57 @@
         <translation>Удалять все дочерние объекты</translation>
     </message>
     <message>
-        <location filename="ad_security.cpp" line="854"/>
+        <location filename="ad_security.cpp" line="855"/>
+        <source>Modify owner</source>
+        <translation>Сменить владельца</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="856"/>
+        <source>All validated writes</source>
+        <translation>Все проверенные операции записи</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="857"/>
+        <source>Modify permissions</source>
+        <translation>Сменить разрешения</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="858"/>
+        <source>Read permissions</source>
+        <translation>Чтение разрешений</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="859"/>
+        <source>Standard delete</source>
+        <translation>Удаление</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="860"/>
+        <source>Delete subtree</source>
+        <translation>Удалить поддерево</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="861"/>
+        <source>Read all properties</source>
+        <translation>Прочитать все свойства</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="862"/>
+        <source>Write all properties</source>
+        <translation>Записать все свойства</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="863"/>
+        <source>List contents</source>
+        <translation>Список содержимого</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="864"/>
+        <source>All extended rights</source>
+        <translation>Все расширенные права</translation>
+    </message>
+    <message>
+        <location filename="ad_security.cpp" line="867"/>
         <source>&lt;unknown right&gt;</source>
         <translation>&lt;неизвестные права&gt;</translation>
     </message>

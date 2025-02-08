@@ -2,6 +2,60 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.18.0
+-----------------------------------------------------------------------
+- Add custom permissions to security tab: create/delete child objects
+and read/write properties.
+- Add delegation tasks to security tab. Delegation tasks represent
+common tasks from RSAT's delegation dialog.
+- Extended rights are placed in a separate permissions tab.
+- Generic and standard permissions are placed in the common permissions
+tab. Common permissions are supplemented by following: list contents,
+read/write all properties, delete, delete subtree, read permissions,
+modify permissions, modify owner, all validated writes and all extended
+rights.
+- Add permissions scope selection to the security tab. Corresponding
+permissions can be applied to the target object, target and child objects,
+only to the child objects or to the child object with specific class.
+Delegation tasks are appliable only to target object.
+- Changed permissions unsetting behavior: superior permission unsetting
+unsets all subordinate permissions too. For example, "Full control"
+unsetting unsets all other permissions.
+- Fixed test fails, which were caused by arbitrary invalid domain controller
+selection.
+- Add "Set/unset all" and "Edit" actions to the links tab in the policy OU
+widget. "Set/unset all" actions set/unset state (enforced/disabled, depending
+on column) for all linked policies. "Edit" action opens GPUI for policy editing.
+These actions can be triggered via context menu.
+
+-----------------------------------------------------------------------
+ VERSION 0.17.2
+-----------------------------------------------------------------------
+- Fixed lost site and DC info in domain info widget (for child domain).
+
+-----------------------------------------------------------------------
+ VERSION 0.17.1
+-----------------------------------------------------------------------
+- Fix crashing on child domains after context menu request.
+
+-----------------------------------------------------------------------
+ VERSION 0.17.0
+-----------------------------------------------------------------------
+- Add password settings object's creation/deletion/edition. Password
+Settings Container contains these objects and located in the System
+container (objects tree).
+- Fix empty parentheses display in the domain info widget for undefined
+domain controller's version.
+- Add the ability to view which groups a group is a member of.
+
+-----------------------------------------------------------------------
+ VERSION 0.16.4
+-----------------------------------------------------------------------
+- Samba 4.20 compatibility update. Fixed related errors with security
+descriptor manipulations.
+- Fixed user creation incapability after Samba dependencies update.
+
+-----------------------------------------------------------------------
  VERSION 0.16.3
 -----------------------------------------------------------------------
 - Fix crashes after OU/user creation attempts by users with

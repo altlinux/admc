@@ -66,6 +66,9 @@
 
 #define MAX_DN_LENGTH 1024
 #define MAX_PASSWORD_LENGTH 255
+#ifndef UUID_STR_LEN
+#define UUID_STR_LEN 37
+#endif
 
 typedef struct sasl_defaults_gssapi {
     char *mech;
@@ -162,17 +165,8 @@ AdInterface::AdInterface() {
     // NOTE: initialize only once, because otherwise
     // wouldn't be able to have multiple active
     // AdInterface's instances at the same time
-    if (AdInterfacePrivate::smbc == NULL) {
-        smbc_init(get_auth_data_fn, 0);
-        AdInterfacePrivate::smbc = smbc_new_context();
-        smbc_setOptionUseKerberos(AdInterfacePrivate::smbc, true);
-        smbc_setOptionFallbackAfterKerberos(AdInterfacePrivate::smbc, true);
-        if (!smbc_init_context(AdInterfacePrivate::smbc)) {
-            d->error_message(connect_error_context, tr("Failed to initialize SMB context."));
-
-            return;
-        }
-        smbc_set_context(AdInterfacePrivate::smbc);
+    if (!init_smb_context()) {
+        return;
     }
 
     d->is_connected = true;
@@ -1540,8 +1534,10 @@ bool AdInterface::ldap_init() {
         return false;
     }
 
-    // Set maxssf
-    const char *sasl_secprops = "maxssf=56";
+    // Set SASL propertry min_ssf to the minimum acceptable security layer strength.
+    // SSF is a rough indication of how secure the connection is. A connection
+    // secured by 56-bit DES would have an SSF of 56.
+    const char *sasl_secprops = "minssf=56";
     result = ldap_set_option(d->ld, LDAP_OPT_X_SASL_SECPROPS, sasl_secprops);
     if (result != LDAP_SUCCESS) {
         option_error("LDAP_OPT_X_SASL_SECPROPS");
@@ -1618,6 +1614,24 @@ void AdInterface::ldap_free() {
     } else {
         ldap_memfree(d->ld);
     }
+}
+
+bool AdInterface::init_smb_context() {
+    const QString connect_error_context = tr("Failed to connect.");
+
+    if (AdInterfacePrivate::smbc == NULL) {
+        smbc_init(get_auth_data_fn, 0);
+        AdInterfacePrivate::smbc = smbc_new_context();
+        smbc_setOptionUseKerberos(AdInterfacePrivate::smbc, true);
+        smbc_setOptionFallbackAfterKerberos(AdInterfacePrivate::smbc, true);
+        if (!smbc_init_context(AdInterfacePrivate::smbc)) {
+            d->error_message(connect_error_context, tr("Failed to initialize SMB context."));
+
+            return false;
+        }
+        smbc_set_context(AdInterfacePrivate::smbc);
+    }
+    return true;
 }
 
 bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
@@ -2057,7 +2071,8 @@ void AdInterface::update_dc() {
 
     // Reinit ldap connection with updated DC
     ldap_free();
-    ldap_init();
+    d->is_connected = ldap_init();
+    d->is_connected = init_smb_context();
 }
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site) {

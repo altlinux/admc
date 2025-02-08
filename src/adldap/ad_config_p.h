@@ -42,6 +42,7 @@ public:
     QString configuration_dn;
     QString schema_dn;
     QString domain_sid;
+    QString root_domain_dn;
 
     QList<ObjectClass> filter_containers;
 
@@ -71,6 +72,13 @@ public:
     QList<QString> supported_control_list;
 
     QHash<QString, QString> sub_class_of_map;
+
+    // Contains classes of possible child objects for given container class.
+    // This also includes possible child classes of child classes (and etc).
+    QHash<QString, QStringList> class_possible_inferiors_map;
+    // Contains editable attributes for the object class and its child classes.
+    // Used when assigning custom permissions.
+    QHash<QString, QStringList> class_permissionable_attributes_map;
 };
 
 #endif /* AD_CONFIG_P_H */

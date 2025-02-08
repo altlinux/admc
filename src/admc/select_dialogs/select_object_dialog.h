@@ -36,6 +36,11 @@ enum SelectObjectDialogMultiSelection {
     SelectObjectDialogMultiSelection_No
 };
 
+struct SelectedObjectData {
+    QString dn;
+    QString category;
+};
+
 class SelectObjectDialog final : public QDialog {
     Q_OBJECT
 
@@ -48,6 +53,7 @@ public:
     static QList<QString> header_labels();
 
     QList<QString> get_selected() const;
+    QList<SelectedObjectData> get_selected_advanced() const;
 
 public slots:
     void accept() override;

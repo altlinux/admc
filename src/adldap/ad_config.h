@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2022 BaseALT Ltd.
@@ -61,6 +61,7 @@ public:
     QString policies_dn() const;
     bool control_is_supported(const QString &control_oid) const;
     QString domain_sid() const;
+    QString root_domain_dn() const;
 
     QString get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const;
 
@@ -104,6 +105,7 @@ public:
     QList<QString> get_extended_rights_list(const QList<QString> &class_list) const;
 
     QString guid_to_attribute(const QByteArray &guid) const;
+    QByteArray attribute_to_guid(const QString &attr) const;
 
     QString guid_to_class(const QByteArray &guid) const;
 
@@ -111,7 +113,33 @@ public:
 
     bool rights_applies_to_class(const QString &rights_cn, const QList<QString> &class_list) const;
 
+    QStringList get_possible_inferiors(const QString &obj_class) const;
+    QStringList get_permissionable_attributes(const QString &obj_class) const;
+
+    QByteArray guid_from_class(const ObjectClass &object_class);
+
+    bool class_is_auxiliary(const QString &obj_class) const;
+
+    // Gets all children class chain for given class
+    QList<QString> all_inferiors_list(const QString &obj_class) const;
+
+    // Gets all classes, for which there are extended rights
+    QList<QString> all_extended_right_classes() const;
+
 private:
+    void load_extended_rights(AdInterface &ad);
+    void load_attribute_schemas(AdInterface &ad);
+    void load_class_schemas(AdInterface &ad);
+
+    // Loads class and attribute display names
+    // NOTE: can't just store objects for these because the values require a decent amount of preprocessing which is best done once here, not everytime value is requested
+    void load_display_names(AdInterface &ad, const QString &locale_dir);
+
+    void load_columns(AdInterface &ad, const QString &locale_dir);
+    void load_filter_containers(AdInterface &ad, const QString &locale_dir);
+
+    void load_permissionable_attributes(const QString &obj_class, AdInterface &ad);
+
     AdConfigPrivate *d;
 };
 

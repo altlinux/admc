@@ -597,7 +597,7 @@ void ConsoleWidget::update_current_item_results_widget()
 QWidget *ConsoleWidget::get_result_widget_for_index(const QModelIndex &index)
 {
     ConsoleImpl *current_item_impl = d->get_impl(index);
-    QWidget *result_widget;
+    QWidget *result_widget = nullptr;
     if (current_item_impl)
         result_widget = current_item_impl->widget();
 

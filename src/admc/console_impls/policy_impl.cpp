@@ -28,10 +28,10 @@
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "globals.h"
-#include "policy_results_widget.h"
-#include "properties_dialog.h"
-#include "rename_policy_dialog.h"
-#include "select_object_dialog.h"
+#include "results_widgets/policy_results_widget.h"
+#include "properties_widgets/properties_dialog.h"
+#include "rename_dialogs/rename_policy_dialog.h"
+#include "select_dialogs/select_object_dialog.h"
 #include "status.h"
 #include "utils.h"
 #include "icon_manager/icon_manager.h"
@@ -358,78 +358,7 @@ void console_policy_load_item(QStandardItem *main_item, const AdObject &object) 
 void console_policy_edit(ConsoleWidget *console, const int item_type, const int dn_role) {
     const QString dn = get_selected_target_dn(console, item_type, dn_role);
 
-    AdInterface ad;
-    bool ad_fail = ad_failed(ad, console);
-    if (ad_fail) {
-        return;
-    }
-
-    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
-        QMessageBox::StandardButton answer = QMessageBox::question(console, QObject::tr("Edition is not available"),
-                                                                   QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
-                                                                   "group policy editing is prohibited by the setting. "
-                                                                   "Connect to PDC-Emulator?"));
-        if (answer == QMessageBox::Yes) {
-            connect_to_PDC_emulator(ad, console);
-            return;
-        }
-        else {
-            return;
-        }
-    }
-
-    // TODO: remove this when gpui is able to load
-    // policy name on their own
-    const QString policy_name = [&]() {
-        const AdObject object = ad.search_object(dn);
-        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
-    }();
-
-    const QString path = [&]() {
-        const AdObject object = ad.search_object(dn);
-        QString filesys_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-
-        const QString current_dc = ad.get_dc();
-
-        filesys_path.replace(QString("\\"), QString("/"));
-        auto contents = filesys_path.split("/", Qt::KeepEmptyParts);
-        if (contents.size() > 3 && !current_dc.isEmpty()) {
-            contents[2] = current_dc;
-        }
-        filesys_path = contents.join("/");
-        filesys_path.prepend(QString("smb:"));
-
-        return filesys_path;
-    }();
-
-    auto process = new QProcess(console);
-    process->setProgram("gpui-main");
-
-    const QList<QString> args = {
-        QString("-p"),
-        path,
-        QString("-n"),
-        policy_name,
-    };
-
-    process->setArguments(args);
-
-    auto on_gpui_error = [console](QProcess::ProcessError error) {
-        const bool failed_to_start = (error == QProcess::FailedToStart);
-
-        if (failed_to_start) {
-            const QString error_text = QObject::tr("Failed to start GPUI. Check that it's installed.");
-            qDebug() << error_text;
-            g_status->add_message(error_text, StatusType_Error);
-            error_log({error_text}, console);
-        }
-    };
-
-    QObject::connect(
-        process, &QProcess::errorOccurred,
-        console, on_gpui_error);
-
-    process->start(QIODevice::ReadOnly);
+    console_policy_edit(dn, console);
 }
 
 void console_policy_rename(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role) {
@@ -859,4 +788,79 @@ bool policy_is_disabled(QStandardItem *policy_item)
     is_disabled = gplink.disabled_gpo_dn_list().contains(policy_item->data(PolicyRole_DN).toString());
 
     return is_disabled;
+}
+
+void console_policy_edit(const QString &policy_dn, ConsoleWidget *console) {
+    AdInterface ad;
+    bool ad_fail = ad_failed(ad, console);
+    if (ad_fail) {
+        return;
+    }
+
+    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
+        QMessageBox::StandardButton answer = QMessageBox::question(console, QObject::tr("Edition is not available"),
+                                                                   QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
+                                                                   "group policy editing is prohibited by the setting. "
+                                                                   "Connect to PDC-Emulator?"));
+        if (answer == QMessageBox::Yes) {
+            connect_to_PDC_emulator(ad, console);
+            return;
+        }
+        else {
+            return;
+        }
+    }
+
+    // TODO: remove this when gpui is able to load
+    // policy name on their own
+    const QString policy_name = [&]() {
+        const AdObject object = ad.search_object(policy_dn);
+        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    }();
+
+    const QString path = [&]() {
+        const AdObject object = ad.search_object(policy_dn);
+        QString filesys_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+
+        const QString current_dc = ad.get_dc();
+
+        filesys_path.replace(QString("\\"), QString("/"));
+        auto contents = filesys_path.split("/", Qt::KeepEmptyParts);
+        if (contents.size() > 3 && !current_dc.isEmpty()) {
+            contents[2] = current_dc;
+        }
+        filesys_path = contents.join("/");
+        filesys_path.prepend(QString("smb:"));
+
+        return filesys_path;
+    }();
+
+    auto process = new QProcess(console);
+    process->setProgram("gpui-main");
+
+    const QList<QString> args = {
+        QString("-p"),
+        path,
+        QString("-n"),
+        policy_name,
+    };
+
+    process->setArguments(args);
+
+    auto on_gpui_error = [console](QProcess::ProcessError error) {
+        const bool failed_to_start = (error == QProcess::FailedToStart);
+
+        if (failed_to_start) {
+            const QString error_text = QObject::tr("Failed to start GPUI. Check that it's installed.");
+            qDebug() << error_text;
+            g_status->add_message(error_text, StatusType_Error);
+            error_log({error_text}, console);
+        }
+    };
+
+    QObject::connect(
+        process, &QProcess::errorOccurred,
+        console, on_gpui_error);
+
+    process->start(QIODevice::ReadOnly);
 }

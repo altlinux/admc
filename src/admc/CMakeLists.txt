@@ -22,12 +22,17 @@ include_directories(
         ${PROJECT_SOURCE_DIR}/src/adldap
 )
 
+find_library(RESOLV_LIBRARY libresolv.so)
+
 link_libraries(
     Qt5::Core
     Qt5::Widgets
     adldap
-    resolv
 )
+
+if (RESOLV_LIBRARY)
+    link_libraries(${RESOLV_LIBRARY})
+endif()
 
 set(ADMC_SOURCES
     status.cpp
@@ -38,50 +43,60 @@ set(ADMC_SOURCES
 
     main_window.cpp
     main_window_connection_error.cpp
-    find_widget.cpp
     tab_widget.cpp
-    policy_results_widget.cpp
-    edit_query_item_widget.cpp
+    create_object_helper.cpp
+    rename_object_helper.cpp
 
-    policy_ou_results_widget/policy_ou_results_widget.cpp
-    policy_ou_results_widget/inherited_policies_widget.cpp
-    policy_ou_results_widget/linked_policies_widget.cpp
-    policy_ou_results_widget/drag_drop_links_model.cpp
+    results_widgets/policy_ou_results_widget/policy_ou_results_widget.cpp
+    results_widgets/policy_ou_results_widget/inherited_policies_widget.cpp
+    results_widgets/policy_ou_results_widget/linked_policies_widget.cpp
+    results_widgets/policy_ou_results_widget/drag_drop_links_model.cpp
+    results_widgets/policy_results_widget.cpp
+    results_widgets/domain_info_results_widget/domain_info_results_widget.cpp
+    results_widgets/pso_results_widget/pso_edit_widget.cpp
+    results_widgets/pso_results_widget/pso_results_widget.cpp
+
+    create_dialogs/create_user_dialog.cpp
+    create_dialogs/create_group_dialog.cpp
+    create_dialogs/create_computer_dialog.cpp
+    create_dialogs/create_ou_dialog.cpp
+    create_dialogs/create_shared_folder_dialog.cpp
+    create_dialogs/create_contact_dialog.cpp
+    create_dialogs/create_policy_dialog.cpp
+    create_dialogs/create_query_item_dialog.cpp
+    create_dialogs/create_query_folder_dialog.cpp
+    create_dialogs/create_pso_dialog.cpp
+
+    rename_dialogs/rename_other_dialog.cpp
+    rename_dialogs/rename_policy_dialog.cpp
+    rename_dialogs/rename_user_dialog.cpp
+    rename_dialogs/rename_group_dialog.cpp
+
+    select_dialogs/select_object_dialog.cpp
+    select_dialogs/select_object_match_dialog.cpp
+    select_dialogs/select_object_advanced_dialog.cpp
+    select_dialogs/select_container_dialog.cpp
+    select_dialogs/select_policy_dialog.cpp
+
+    edit_query_widgets/edit_query_item_dialog.cpp
+    edit_query_widgets/edit_query_folder_dialog.cpp
+    edit_query_widgets/edit_query_item_widget.cpp
+
+    properties_widgets/properties_dialog.cpp
+    properties_widgets/properties_multi_dialog.cpp
+    properties_widgets/properties_warning_dialog.cpp
+
+    find_widgets/find_policy_dialog.cpp
+    find_widgets/find_object_dialog.cpp
+    find_widgets/find_widget.cpp
 
     console_filter_dialog.cpp
     password_dialog.cpp
-    rename_object_helper.cpp
-    rename_other_dialog.cpp
-    rename_policy_dialog.cpp
-    rename_user_dialog.cpp
-    rename_group_dialog.cpp
-    create_object_helper.cpp
-    create_user_dialog.cpp
-    create_group_dialog.cpp
-    create_computer_dialog.cpp
-    create_ou_dialog.cpp
-    create_shared_folder_dialog.cpp
-    create_contact_dialog.cpp
-    create_policy_dialog.cpp
-    create_query_item_dialog.cpp
-    create_query_folder_dialog.cpp
-    find_object_dialog.cpp
-    select_object_dialog.cpp
-    select_object_match_dialog.cpp
-    select_object_advanced_dialog.cpp
-    select_container_dialog.cpp
-    select_policy_dialog.cpp
     about_dialog.cpp
-    edit_query_item_dialog.cpp
-    edit_query_folder_dialog.cpp
-    properties_dialog.cpp
-    properties_multi_dialog.cpp
-    properties_warning_dialog.cpp
     security_sort_warning_dialog.cpp
     connection_options_dialog.cpp
     changelog_dialog.cpp
     error_log_dialog.cpp
-    find_policy_dialog.cpp
 
     fsmo/fsmo_dialog.cpp
     fsmo/fsmo_tab.cpp
@@ -96,7 +111,7 @@ set(ADMC_SOURCES
     filter_widget/class_filter_widget.cpp
     filter_widget/class_filter_dialog.cpp
     filter_widget/select_base_widget.cpp
-    
+
     tabs/general_user_tab.cpp
     tabs/general_group_tab.cpp
     tabs/general_ou_tab.cpp
@@ -196,7 +211,12 @@ set(ADMC_SOURCES
     console_impls/found_policy_impl.cpp
     console_impls/domain_info_impl.cpp
 
-    domain_info_results_widget/domain_info_results_widget.cpp
+    permission_control_widgets/permissions_widget.cpp
+    permission_control_widgets/creation_deletion_permissions_widget.cpp
+    permission_control_widgets/read_write_permissions_widget.cpp
+    permission_control_widgets/common_permissions_widget.cpp
+    permission_control_widgets/extended_permissions_widget.cpp
+    permission_control_widgets/delegation_permissions_widget.cpp
 
     admc.qrc
 )

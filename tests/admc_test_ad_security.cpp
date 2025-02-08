@@ -67,16 +67,18 @@ void ADMCTestAdSecurity::cleanup() {
 }
 
 void ADMCTestAdSecurity::add_right() {
-    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), true);
+    SecurityRight right{SEC_ADS_CREATE_CHILD, QByteArray(), QByteArray(), 0};
+    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right, true);
 
     check_state(test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), TestAdSecurityType_Allow);
 }
 
 void ADMCTestAdSecurity::remove_right() {
-    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), true);
+    SecurityRight right{SEC_ADS_CREATE_CHILD, QByteArray(), QByteArray(), 0};
+    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right, true);
     check_state(test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), TestAdSecurityType_Allow);
 
-    security_descriptor_remove_right(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), true);
+    security_descriptor_remove_right(sd, ad.adconfig(), class_list, test_trustee, right, true);
     check_state(test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), TestAdSecurityType_None);
 }
 
@@ -87,7 +89,8 @@ void ADMCTestAdSecurity::remove_trustee() {
     };
 
     for (const uint32_t &mask : mask_list) {
-        security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, mask, QByteArray(), true);
+        SecurityRight right{mask, QByteArray(), QByteArray(), 0};
+        security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right, true);
     }
 
     for (const uint32_t &mask : mask_list) {
@@ -112,13 +115,15 @@ void ADMCTestAdSecurity::handle_generic_read_and_write_sharing_bit() {
 
     for (const uint32_t &mask : opposite_map.keys()) {
         const uint32_t opposite = opposite_map[mask];
-        security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, mask, QByteArray(), true);
-        security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, opposite, QByteArray(), true);
+        SecurityRight right{mask, QByteArray(), QByteArray(), 0};
+        SecurityRight right_opposite{opposite, QByteArray(), QByteArray(), 0};
+        security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right, true);
+        security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right_opposite, true);
 
         check_state(test_trustee, mask, QByteArray(), TestAdSecurityType_Allow);
         check_state(test_trustee, opposite, QByteArray(), TestAdSecurityType_Allow);
 
-        security_descriptor_remove_right(sd, ad.adconfig(), class_list, test_trustee, mask, QByteArray(), true);
+        security_descriptor_remove_right(sd, ad.adconfig(), class_list, test_trustee, right, true);
 
         check_state(test_trustee, opposite, QByteArray(), TestAdSecurityType_Allow);
     }
@@ -216,8 +221,10 @@ void ADMCTestAdSecurity::add_to_unset_opposite() {
     QFETCH(QByteArray, object_type);
     QFETCH(TestAdSecurityType, expected_result);
 
-    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, access_mask, object_type, first_allow);
-    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, access_mask, object_type, !first_allow);
+    SecurityRight right{(uint32_t)access_mask, object_type, QByteArray(), 0};
+
+    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right, first_allow);
+    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right, !first_allow);
 
     check_state(test_trustee, access_mask, object_type, expected_result);
 }
@@ -233,7 +240,7 @@ void ADMCTestAdSecurity::remove_to_set_subordinates_data() {
     QTest::addColumn<int>("superior_mask");
     QTest::addColumn<QByteArray>("subordinate_right_type");
     QTest::addColumn<QList<int>>("subordinate_mask_list");
-    QTest::addColumn<TestAdSecurityType>("exptected_state");
+    QTest::addColumn<TestAdSecurityType>("expected_state");
 
     const QByteArray type_web_info = ad.adconfig()->get_right_guid("Web-Information");
     const QByteArray type_change_password = ad.adconfig()->get_right_guid("User-Change-Password");
@@ -245,7 +252,6 @@ void ADMCTestAdSecurity::remove_to_set_subordinates_data() {
     QTest::newRow("allow generic write") << true << SEC_ADS_GENERIC_WRITE << type_web_info << QList<int>({SEC_ADS_WRITE_PROP}) << TestAdSecurityType_Allow;
     QTest::newRow("deny generic write") << false << SEC_ADS_GENERIC_WRITE << type_web_info << QList<int>({SEC_ADS_WRITE_PROP}) << TestAdSecurityType_Deny;
     QTest::newRow("allow all extended rights") << true << SEC_ADS_CONTROL_ACCESS << type_change_password << QList<int>({SEC_ADS_CONTROL_ACCESS}) << TestAdSecurityType_Allow;
-    QTest::newRow("allow all extended rights") << true << SEC_ADS_CONTROL_ACCESS << type_change_password << QList<int>({SEC_ADS_CONTROL_ACCESS}) << TestAdSecurityType_Allow;
     QTest::newRow("deny all extended rights") << false << SEC_ADS_CONTROL_ACCESS << type_change_password << QList<int>({SEC_ADS_CONTROL_ACCESS}) << TestAdSecurityType_Deny;
 }
 
@@ -254,28 +260,30 @@ void ADMCTestAdSecurity::remove_to_set_subordinates() {
     QFETCH(int, superior_mask);
     QFETCH(QByteArray, subordinate_right_type);
     QFETCH(QList<int>, subordinate_mask_list);
-    QFETCH(TestAdSecurityType, exptected_state);
+    QFETCH(TestAdSecurityType, expected_state);
+
+    SecurityRight right{(uint32_t)superior_mask, QByteArray(), QByteArray(), 0};
 
     // Add superior
-    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, superior_mask, QByteArray(), allow_superior);
+    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right, allow_superior);
 
     // Superior should be set
-    check_state(test_trustee, superior_mask, QByteArray(), exptected_state);
+    check_state(test_trustee, superior_mask, QByteArray(), expected_state);
 
     // Subordinate should be set
     for (const int &subordinate_mask : subordinate_mask_list) {
-        check_state(test_trustee, subordinate_mask, subordinate_right_type, exptected_state);
+        check_state(test_trustee, subordinate_mask, subordinate_right_type, expected_state);
     }
 
     // Remove superior
-    security_descriptor_remove_right(sd, ad.adconfig(), class_list, test_trustee, superior_mask, QByteArray(), allow_superior);
+    security_descriptor_remove_right(sd, ad.adconfig(), class_list, test_trustee, right, allow_superior);
 
     // Superior should be unset
     check_state(test_trustee, superior_mask, QByteArray(), TestAdSecurityType_None);
 
-    // But subordinates should remain
+    // But subordinates should be unset
     for (const int &subordinate_mask : subordinate_mask_list) {
-        check_state(test_trustee, subordinate_mask, subordinate_right_type, exptected_state);
+        check_state(test_trustee, subordinate_mask, subordinate_right_type, TestAdSecurityType_None);
     }
 }
 
@@ -308,7 +316,8 @@ void ADMCTestAdSecurity::remove_to_unset_superior() {
     // Add superiors
     // NOTE: there might be overlap but that's ok
     for (const int &superior_mask : superior_mask_list) {
-        security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, superior_mask, QByteArray(), allow);
+        SecurityRight right{(uint32_t)superior_mask, QByteArray(), QByteArray(), 0};
+        security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right, allow);
     }
 
     // Superior should be set
@@ -320,7 +329,8 @@ void ADMCTestAdSecurity::remove_to_unset_superior() {
     check_state(test_trustee, subordinate_mask, subordinate_right_type, state_before_remove);
 
     // Remove subordinate
-    security_descriptor_remove_right(sd, ad.adconfig(), class_list, test_trustee, subordinate_mask, subordinate_right_type, allow);
+    SecurityRight right{(uint32_t)subordinate_mask, subordinate_right_type, QByteArray(), 0};
+    security_descriptor_remove_right(sd, ad.adconfig(), class_list, test_trustee, right, allow);
 
     // Superiors should be unset
     for (const int &superior_mask : superior_mask_list) {
@@ -350,15 +360,19 @@ void ADMCTestAdSecurity::add_to_unset_opposite_superior() {
     QFETCH(TestAdSecurityType, expected_create_child);
     QFETCH(TestAdSecurityType, expected_full_control);
 
-    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_GENERIC_ALL, QByteArray(), first_allow);
-    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), !first_allow);
+    SecurityRight right_generic{SEC_ADS_GENERIC_ALL, QByteArray(), QByteArray(), 0};
+    SecurityRight right_create_child{SEC_ADS_CREATE_CHILD, QByteArray(), QByteArray(), 0};
+
+    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right_generic, first_allow);
+    security_descriptor_add_right(sd, ad.adconfig(), class_list, test_trustee, right_create_child, !first_allow);
 
     check_state(test_trustee, SEC_ADS_CREATE_CHILD, QByteArray(), expected_create_child);
     check_state(test_trustee, SEC_ADS_GENERIC_ALL, QByteArray(), expected_full_control);
 }
 
 void ADMCTestAdSecurity::check_state(const QByteArray &trustee, const uint32_t access_mask, const QByteArray &object_type, const TestAdSecurityType type) const {
-    const SecurityRightState state = security_descriptor_get_right(sd, trustee, access_mask, object_type);
+    SecurityRight right_generic{access_mask, object_type, QByteArray(), 0};
+    const SecurityRightState state = security_descriptor_get_right_state(sd, trustee, right_generic);
 
     const bool inherited_allow = state.get(SecurityRightStateInherited_Yes, SecurityRightStateType_Allow);
     const bool inherited_deny = state.get(SecurityRightStateInherited_Yes, SecurityRightStateType_Deny);

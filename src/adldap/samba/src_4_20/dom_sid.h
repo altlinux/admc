@@ -2,9 +2,9 @@
    Unix SMB/CIFS implementation.
    Samba utility functions
 
-   Copyright (C) Stefan (metze) Metzmacher  2002-2004
-   Copyright (C) Andrew Tridgell        1992-2004
-   Copyright (C) Jeremy Allison         1999
+   Copyright (C) Stefan (metze) Metzmacher 	2002-2004
+   Copyright (C) Andrew Tridgell 		1992-2004
+   Copyright (C) Jeremy Allison  		1999
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,9 +32,10 @@
 extern "C" {
 #endif
 
+#include "replace.h"
 #include <talloc.h>
-#include <util/data_blob.h>
-#include <gen_ndr/security.h>
+#include "util/data_blob.h"
+#include "gen_ndr/security.h"
 
 /* Some well-known SIDs */
 extern const struct dom_sid global_sid_World_Domain;
@@ -45,6 +46,7 @@ extern const struct dom_sid global_sid_NT_Authority;
 extern const struct dom_sid global_sid_Enterprise_DCs;
 extern const struct dom_sid global_sid_System;
 extern const struct dom_sid global_sid_NULL;
+extern const struct dom_sid global_sid_Self;
 extern const struct dom_sid global_sid_Authenticated_Users;
 extern const struct dom_sid global_sid_Network;
 extern const struct dom_sid global_sid_Asserted_Identity;
@@ -54,6 +56,8 @@ extern const struct dom_sid global_sid_Creator_Owner;
 extern const struct dom_sid global_sid_Creator_Group;
 extern const struct dom_sid global_sid_Owner_Rights;
 extern const struct dom_sid global_sid_Anonymous;
+extern const struct dom_sid global_sid_Compounded_Authentication;
+extern const struct dom_sid global_sid_Claims_Valid;
 extern const struct dom_sid global_sid_Builtin;
 extern const struct dom_sid global_sid_Builtin_Administrators;
 extern const struct dom_sid global_sid_Builtin_Users;
@@ -72,28 +76,38 @@ extern const struct dom_sid global_sid_Unix_NFS_Users;
 extern const struct dom_sid global_sid_Unix_NFS_Groups;
 extern const struct dom_sid global_sid_Unix_NFS_Mode;
 extern const struct dom_sid global_sid_Unix_NFS_Other;
+extern const struct dom_sid global_sid_Samba_SMB3;
+
+extern const struct dom_sid global_sid_Samba_NPA_Flags;
+#define SAMBA_NPA_FLAGS_NEED_IDLE 1
+#define SAMBA_NPA_FLAGS_WINBIND_OFF 2
+
+struct auth_SidAttr;
+
+bool dom_sid_lookup_is_predefined_domain(const char *domain);
 
 int dom_sid_compare_auth(const struct dom_sid *sid1,
-             const struct dom_sid *sid2);
+			 const struct dom_sid *sid2);
 int dom_sid_compare(const struct dom_sid *sid1, const struct dom_sid *sid2);
 int dom_sid_compare_domain(const struct dom_sid *sid1,
-               const struct dom_sid *sid2);
+			   const struct dom_sid *sid2);
 bool dom_sid_equal(const struct dom_sid *sid1, const struct dom_sid *sid2);
 bool sid_append_rid(struct dom_sid *sid, uint32_t rid);
 bool string_to_sid(struct dom_sid *sidout, const char *sidstr);
 bool dom_sid_parse_endp(const char *sidstr,struct dom_sid *sidout,
-            const char **endp);
+			const char **endp);
 bool dom_sid_parse(const char *sidstr, struct dom_sid *ret);
 struct dom_sid *dom_sid_parse_talloc(TALLOC_CTX *mem_ctx, const char *sidstr);
 struct dom_sid *dom_sid_parse_length(TALLOC_CTX *mem_ctx, const DATA_BLOB *sid);
 struct dom_sid *dom_sid_dup(TALLOC_CTX *mem_ctx, const struct dom_sid *dom_sid);
 struct dom_sid *dom_sid_add_rid(TALLOC_CTX *mem_ctx,
-                const struct dom_sid *domain_sid,
-                uint32_t rid);
+				const struct dom_sid *domain_sid,
+				uint32_t rid);
 NTSTATUS dom_sid_split_rid(TALLOC_CTX *mem_ctx, const struct dom_sid *sid,
-               struct dom_sid **domain, uint32_t *rid);
+			   struct dom_sid **domain, uint32_t *rid);
 bool dom_sid_in_domain(const struct dom_sid *domain_sid,
-               const struct dom_sid *sid);
+		       const struct dom_sid *sid);
+bool dom_sid_has_account_domain(const struct dom_sid *sid);
 bool dom_sid_is_valid_account_domain(const struct dom_sid *sid);
 
 #define DOM_SID_STR_BUFLEN (15*11+25)
@@ -110,16 +124,31 @@ bool sid_peek_rid(const struct dom_sid *sid, uint32_t *rid);
 bool sid_peek_check_rid(const struct dom_sid *exp_dom_sid, const struct dom_sid *sid, uint32_t *rid);
 void sid_copy(struct dom_sid *dst, const struct dom_sid *src);
 ssize_t sid_parse(const uint8_t *inbuf, size_t len, struct dom_sid *sid);
-int sid_compare_domain(const struct dom_sid *sid1, const struct dom_sid *sid2);
 NTSTATUS add_sid_to_array(TALLOC_CTX *mem_ctx, const struct dom_sid *sid,
-              struct dom_sid **sids, uint32_t *num);
+			  struct dom_sid **sids, uint32_t *num);
 NTSTATUS add_sid_to_array_unique(TALLOC_CTX *mem_ctx, const struct dom_sid *sid,
-                 struct dom_sid **sids, uint32_t *num_sids);
+				 struct dom_sid **sids, uint32_t *num_sids);
+NTSTATUS add_sid_to_array_attrs(TALLOC_CTX *mem_ctx,
+				const struct dom_sid *sid, uint32_t attrs,
+				struct auth_SidAttr **sids, uint32_t *num);
+NTSTATUS add_sid_to_array_attrs_unique(TALLOC_CTX *mem_ctx,
+				       const struct dom_sid *sid, uint32_t attrs,
+				       struct auth_SidAttr **sids, uint32_t *num_sids);
 void del_sid_from_array(const struct dom_sid *sid, struct dom_sid **sids,
-            uint32_t *num);
+			uint32_t *num);
 bool add_rid_to_array_unique(TALLOC_CTX *mem_ctx,
-                 uint32_t rid, uint32_t **pp_rids, size_t *p_num);
+			     uint32_t rid, uint32_t **pp_rids, size_t *p_num);
 bool is_null_sid(const struct dom_sid *sid);
+bool sids_contains_sid(const struct dom_sid *sids,
+		       const uint32_t num_sids,
+		       const struct dom_sid *sid);
+bool sid_attrs_contains_sid(const struct auth_SidAttr *sids,
+			    const uint32_t num_sids,
+			    const struct dom_sid *sid);
+bool sids_contains_sid_attrs(const struct auth_SidAttr *sids,
+			     const uint32_t num_sids,
+			     const struct dom_sid *sid,
+			     uint32_t attrs);
 
 #ifdef __cplusplus
 }

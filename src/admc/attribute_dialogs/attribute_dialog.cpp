@@ -98,7 +98,6 @@ AttributeDialog *AttributeDialog::make(const QString &attribute, const QList<QBy
 
     AttributeDialog *dialog = [&]() -> AttributeDialog * {
         if (type == AttributeType_LargeInteger && large_int_subtype == LargeIntegerSubtype_Timespan) {
-            qDebug() << "Attr: " << attribute;
             return time_span_attribute_dialog();
         }
 
