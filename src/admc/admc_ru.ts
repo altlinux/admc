@@ -1046,7 +1046,7 @@
     <message>
         <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="91"/>
         <source>Domain controllers count:</source>
-        <translation>Количество котроллеров домена:</translation>
+        <translation>Количество контроллеров домена:</translation>
     </message>
     <message>
         <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="134"/>

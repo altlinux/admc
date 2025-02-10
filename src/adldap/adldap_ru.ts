@@ -113,7 +113,7 @@
     <message>
         <location filename="ad_config.cpp" line="608"/>
         <source>Unexpire Password</source>
-        <translation>Востанавливать просроченый пароль</translation>
+        <translation>Восcтанавливать просроченный пароль</translation>
     </message>
     <message>
         <location filename="ad_config.cpp" line="609"/>
@@ -133,7 +133,7 @@
     <message>
         <location filename="ad_config.cpp" line="612"/>
         <source>Reanimate Tombstones</source>
-        <translation>Возраждать надгробия</translation>
+        <translation>Возрождать надгробия</translation>
     </message>
     <message>
         <location filename="ad_config.cpp" line="613"/>
@@ -263,7 +263,7 @@
     <message>
         <location filename="ad_config.cpp" line="638"/>
         <source>DS Replication Get Changes In Filtered Set</source>
-        <translation>DS репликация получять изменения в отфильтрованном наборе</translation>
+        <translation>DS репликация получать изменения в отфильтрованном наборе</translation>
     </message>
     <message>
         <location filename="ad_config.cpp" line="639"/>
