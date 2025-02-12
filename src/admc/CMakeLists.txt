@@ -249,9 +249,14 @@ set(ADMC_SOURCES
 
 set(ADMC_SOURCES ${ADMC_SOURCES} ${LAPS_SOURCES})
 
+set(ADMC_HEADERS
+    auth_dialogs/auth_dialog_base.h
+)
+
 add_executable(admc
     main.cpp
     ${ADMC_SOURCES}
+    ${ADMC_HEADERS}
 )
 target_clangformat_setup(admc)
 
@@ -259,6 +264,7 @@ target_clangformat_setup(admc)
 # Tests just link to this lib and use all of admc's code.
 add_library(admctest SHARED
     ${ADMC_SOURCES}
+    ${ADMC_HEADERS}
 )
 
 set(TS_FILES
