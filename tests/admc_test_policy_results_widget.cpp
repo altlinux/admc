@@ -26,6 +26,7 @@
 #include "gplink.h"
 #include "results_widgets/policy_results_widget.h"
 #include "utils.h"
+#include "managers/gplink_manager.h"
 
 #include <QStandardItemModel>
 #include <QTreeView>
@@ -42,6 +43,9 @@ void ADMCTestPolicyResultsWidget::initTestCase() {
 
     const bool gpo_add_success = ad.gpo_add(gpo_name, gpo);
     QVERIFY(gpo_add_success);
+
+    g_gplink_manager->update();
+    QVERIFY(!g_gplink_manager->update_failed());
 }
 
 void ADMCTestPolicyResultsWidget::cleanupTestCase() {
@@ -89,7 +93,7 @@ void ADMCTestPolicyResultsWidget::load() {
     gplink.add(gpo);
     gplink.set_option(gpo, GplinkOption_Enforced, true);
     ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
-
+    g_gplink_manager->set_gplink(ou_dn, gplink.to_string());
     widget->update(gpo);
 
     QCOMPARE(model->rowCount(), 1);
