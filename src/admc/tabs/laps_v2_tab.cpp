@@ -28,6 +28,7 @@
 #include "utils.h"
 
 #include <QClipboard>
+#include <QMessageBox>
 
 #define USERNAME "n"
 #define PASSWORD "p"
@@ -80,7 +81,7 @@ void LAPSV2Tab::on_show_error_dialog()
     {
         dialog_has_been_shown = true;
 
-        message_box_warning(this, tr("LAPS data decoding failed!"), tr("Check access rights to LAPS attributes!"));
+        message_box_warning(this->parentWidget(), tr("LAPS data decoding failed!"), tr("Check access rights to LAPS attributes!"));
     }
 }
 
