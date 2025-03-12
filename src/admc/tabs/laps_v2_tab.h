@@ -40,6 +40,11 @@ private slots:
     void on_show_password_button_toggled(bool checked);
     void on_copy_password_button_clicked();
     void on_expiration_datetimeedit_dateTimeChanged(const QDateTime &dateTime);
+
+    void on_show_error_dialog();
+
+private:
+    bool dialog_has_been_shown;
 };
 
 #endif /* LAPS_V2_TAB_H */

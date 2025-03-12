@@ -34,6 +34,9 @@ public:
     bool apply(AdInterface &ad, const QString &dn) const override;
     void set_enabled(const bool enabled) override;
 
+signals:
+    void show_error_dialog() const;
+
 private:
     QLineEdit *edit;
     QString attribute;
@@ -43,8 +46,8 @@ private:
 
     QJsonDocument get_jsondocument_from_attribute_value(AdInterface &ad, const AdObject &object, const QString &attribute_name) const;
     QByteArray create_attribute_value_from_jsondocument(AdInterface &ad, const QJsonDocument* document) const;
+    char* get_default_principal_name() const;
 
-    uint8_t* create_header(uint32_t size) const;
 };
 
 #endif /* LAPS_ENCRYPED_ATTRIBUTE_EDIT_H */

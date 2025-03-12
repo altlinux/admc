@@ -25,6 +25,8 @@
 #include "attribute_edits/laps_encrypted_attribute_edit.h"
 #include "attribute_edits/string_edit.h"
 
+#include "utils.h"
+
 #include <QClipboard>
 
 #define USERNAME "n"
@@ -32,6 +34,8 @@
 
 LAPSV2Tab::LAPSV2Tab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {
+    dialog_has_been_shown = false;
+
     ui = new Ui::LAPSV2Tab();
     ui->setupUi(this);
 
@@ -44,6 +48,9 @@ LAPSV2Tab::LAPSV2Tab(QList<AttributeEdit *> *edit_list, QWidget *parent)
         user_name_edit,
         pass_word_edit,
     });
+
+    connect(user_name_edit, &LAPSEncryptedAttributeEdit::show_error_dialog, this, &LAPSV2Tab::on_show_error_dialog);
+    connect(pass_word_edit, &LAPSEncryptedAttributeEdit::show_error_dialog, this, &LAPSV2Tab::on_show_error_dialog);
 }
 
 LAPSV2Tab::~LAPSV2Tab() {
@@ -65,5 +72,15 @@ void LAPSV2Tab::on_copy_password_button_clicked()
 void LAPSV2Tab::on_expiration_datetimeedit_dateTimeChanged(const QDateTime &dateTime)
 {
     ui->current_password_expiration_lineedit->setText(dateTime.toString());
+}
+
+void LAPSV2Tab::on_show_error_dialog()
+{
+    if (!dialog_has_been_shown)
+    {
+        dialog_has_been_shown = true;
+
+        message_box_warning(this, tr("LAPS data decoding failed!"), tr("Check access rights to LAPS attributes!"));
+    }
 }
 

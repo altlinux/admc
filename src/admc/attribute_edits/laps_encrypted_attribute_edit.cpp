@@ -31,11 +31,7 @@
 
 #include <cng-dpapi/cng-dpapi_client.h>
 
-typedef struct laps_header {
-    uint64_t password_update_timestamp; // 8 bytes
-    uint32_t encrypted_password_size;   // 4 bytes
-    uint32_t reserved;                  // 4 bytes
-} laps_header_t;
+#include <krb5.h>
 
 const uint32_t DATA_OFFSET = 16;
 
@@ -84,6 +80,8 @@ void LAPSEncryptedAttributeEdit::load(AdInterface &ad, const AdObject &object) {
 }
 
 bool LAPSEncryptedAttributeEdit::apply(AdInterface &ad, const QString &dn) const {
+    Q_UNUSED(ad);
+    Q_UNUSED(dn);
     return true;
 }
 
@@ -95,128 +93,115 @@ QJsonDocument LAPSEncryptedAttributeEdit::get_jsondocument_from_attribute_value(
 {
     const QByteArray encrypted_value = object.get_value(attribute_name);
 
-    QString sam_account_name;
-    const QStringList possible_names = ad.client_user().split('@');
+    QJsonDocument document;
+    QString value_string;
 
-    if (possible_names.size() > 0)
-    {
-        sam_account_name = possible_names[0];
-    }
+    QString domain_fqdn = ad.get_domain();
 
     uint8_t* value = NULL;
     uint32_t value_size = 0;
 
-    if (ncrypt_unprotect_secret(reinterpret_cast<const uint8_t*>(encrypted_value.data() + DATA_OFFSET),
-                                encrypted_value.size() - DATA_OFFSET,
+    const uint8_t *encrypted_value_p = reinterpret_cast<const uint8_t*>(encrypted_value.data() + DATA_OFFSET);
+    uint32_t encrypted_value_s = encrypted_value.size() - DATA_OFFSET;
+
+    char* dc = nullptr;
+    char* user_name = nullptr;
+    char* domain_name = nullptr;
+
+    dc = strdup(ad.get_dc().toLocal8Bit().constData());
+    if (!dc)
+    {
+        goto out;
+    }
+    user_name = get_default_principal_name();
+    if (!user_name)
+    {
+        goto out;
+    }
+    domain_name = strdup(domain_fqdn.toLocal8Bit().constData());
+    if (!domain_name)
+    {
+        goto out;
+    }
+
+    if (ncrypt_unprotect_secret(encrypted_value_p,
+                                encrypted_value_s,
                                 &value,
                                 &value_size,
-                                ad.get_dc().toStdString().c_str(),
-                                ad.get_domain().toStdString().c_str(),
-                                sam_account_name.toStdString().c_str()) != 0) {
-        qWarning() << "Unable to decode secret!\n";
+                                dc,
+                                domain_name,
+                                user_name) != 0) {
+        emit show_error_dialog();
 
-        return QJsonDocument();
+        goto out;
     }
 
-    QString value_string = QString::fromUtf16(reinterpret_cast<const ushort*>(value));
+    if (value_size == 0)
+    {
+        emit show_error_dialog();
 
-    // TODO: free(value);
+        goto out;
+    }
 
-    return QJsonDocument::fromJson(value_string.toUtf8());
+    value_string = QString::fromUtf16(reinterpret_cast<const ushort*>(value));
+
+    document = QJsonDocument::fromJson(value_string.toUtf8());
+
+out:
+    if (dc) { free(dc); }
+    if (user_name) { free(user_name); }
+    if (domain_name) { free(domain_name); }
+
+    return document;
 }
 
-QByteArray LAPSEncryptedAttributeEdit::create_attribute_value_from_jsondocument(AdInterface &ad, const QJsonDocument *document) const
-{
-    if (!document)
-    {
-        return "";
-    }
+char* LAPSEncryptedAttributeEdit::get_default_principal_name() const {
+    krb5_error_code result;
+    krb5_context context;
+    krb5_ccache default_cache;
+    krb5_principal default_principal;
 
-    QString value_string = document->toJson(QJsonDocument::Compact);
+    result = krb5_init_context(&context);
+    if (result) {
+        qDebug() << "Failed to init krb5 context";
 
-    const ushort *utf16_str = value_string.utf16();
-
-    QString sam_account_name;
-    const QStringList possible_names = ad.client_user().split('@');
-
-    if (possible_names.size() > 0)
-    {
-        sam_account_name = possible_names[0];
-    }
-
-    uint8_t* security_descriptor = NULL;
-
-    uint32_t value_size = value_string.size() * sizeof(ushort);
-    uint8_t* value =static_cast<uint8_t*>(malloc(value_size));
-
-    if (!value)
-    {
-        return "";
-    }
-
-    memcpy(value, utf16_str, value_size);
-
-    uint8_t* encrypted_value = NULL;
-    uint32_t encrypted_value_size = 0;
-
-    if (ncrypt_protect_secret(security_descriptor,
-                              value,
-                              value_size,
-                              &encrypted_value,
-                              &encrypted_value_size,
-                              ad.get_dc().toStdString().c_str(),
-                              ad.get_domain().toStdString().c_str(),
-                              sam_account_name.toStdString().c_str()) != 0) {
-        qWarning() << "Unable to encode secret!\n";
-
-        free(value);
-
-        return "";
-    }
-
-    free(value);
-
-    value_size = encrypted_value_size + DATA_OFFSET;
-    value = static_cast<uint8_t*>(malloc(value_size));
-    if (!value)
-    {
-        return "";
-    }
-
-    uint8_t* header = create_header(encrypted_value_size);
-    if (!header)
-    {
-        return "";
-    }
-
-    memcpy(value, header, DATA_OFFSET);
-    free(header);
-
-    memcpy(value + DATA_OFFSET, encrypted_value, encrypted_value_size);
-    // TODO: free(encrypted_value);
-
-    QByteArray result = QByteArray::fromRawData(reinterpret_cast<const char*>(value), static_cast<int>(value_size));
-
-    free(value);
-
-    return result;
-}
-
-uint8_t *LAPSEncryptedAttributeEdit::create_header(uint32_t size) const
-{
-    laps_header_t header = {};
-
-    header.encrypted_password_size = size;
-
-    header.reserved = 0;
-
-    uint8_t *result = static_cast<uint8_t*>(malloc(sizeof(laps_header_t)));
-    if (!result)
-    {
         return nullptr;
     }
 
-    memcpy(result, &header, sizeof(laps_header_t));
+    result = krb5_cc_default(context, &default_cache);
+    if (result) {
+        qDebug() << "Failed to get default krb5 ccache";
 
-    return result;
+        krb5_free_context(context);
+
+        return nullptr;
+    }
+
+    result = krb5_cc_get_principal(context, default_cache, &default_principal);
+    if (result) {
+        qDebug() << "Failed to get default krb5 principal";
+
+        krb5_cc_close(context, default_cache);
+        krb5_free_context(context);
+
+        return nullptr;
+    }
+
+    if (default_principal->length < 1)
+    {
+        qDebug() << "Failed to get default krb5 principal name";
+
+        krb5_cc_close(context, default_cache);
+        krb5_free_context(context);
+
+        return nullptr;
+    }
+
+    char *out = strdup(default_principal->data[0].data);
+
+    krb5_free_principal(context, default_principal);
+    krb5_cc_close(context, default_cache);
+    krb5_free_context(context);
+
+    return out;
 }
