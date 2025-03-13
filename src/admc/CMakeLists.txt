@@ -35,11 +35,9 @@ if (RESOLV_LIBRARY)
     link_libraries(${RESOLV_LIBRARY})
 endif()
 
-find_package(CNGDpApi)
+find_library(LIBCNG_DPAPI_LIBRARY libcng-dpapi.so REQUIRED)
 
-include_directories(${CNG_DPAPI_INCLUDE_DIR})
-link_directories(${CNG_DPAPI_LIBRARY_DIR})
-link_libraries(${CNG_DPAPI_LIBRARY})
+link_libraries(${LIBCNG_DPAPI_LIBRARY})
 
 set(ADMC_SOURCES
     status.cpp
