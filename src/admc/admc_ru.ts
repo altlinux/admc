@@ -4379,4 +4379,62 @@
         <translation>Ошибка</translation>
     </message>
 </context>
+<context>
+    <name>LAPSV2Tab</name>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="14"/>
+        <source>Form</source>
+        <translation>Form</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="22"/>
+        <source>LAPS local admin account password:</source>
+        <translation>Пароль учетной записи локального администратора LAPS:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="29"/>
+        <source>Current LAPS password expiration:</source>
+        <translation>Время завершения действия пароля LAPS:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="36"/>
+        <source>Local Administrator Password Solution</source>
+        <translation>Решение для пароля локального администратора</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="43"/>
+        <source>Set new LAPS password expiration:</source>
+        <translation>Установить новый срок истечения пароля LAPS:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="87"/>
+        <source>Show password</source>
+        <translation>Показать пароль</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="106"/>
+        <source>Expire now</source>
+        <translation>Обновить сейчас</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="126"/>
+        <source>Copy password</source>
+        <translation>Скопировать пароль</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="133"/>
+        <source>LAPS local admin account name:</source>
+        <translation>Имя учетной записи локального администратора LAPS:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.cpp" line="84"/>
+        <source>Failed to decode LAPS data.</source>
+        <translation>Не удалось декодировать данные LAPS.</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.cpp" line="84"/>
+        <source>Verify that you have the necessary permissions to access LAPS attributes!</source>
+        <translation>Проверьте, что у вас есть необходимые права доступа к атрибутам LAPS!</translation>
+    </message>
+</context>
 </TS>
