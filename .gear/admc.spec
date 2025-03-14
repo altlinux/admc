@@ -2,7 +2,7 @@
 
 Name: admc
 Version: 0.19.0
-Release: alt1
+Release: alt2
 
 Summary: Active Directory Management Center
 License: GPLv3+
