@@ -31,7 +31,7 @@ LAPSTab::LAPSTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui->setupUi(this);
 
     auto pass_edit = new StringEdit(ui->pass_lineedit, ATTRIBUTE_LAPS_PASSWORD, this);
-    auto laps_edit = new LAPSExpiryEdit(ui->expiry_datetimeedit, ui->reset_expiry_button, this);
+    auto laps_edit = new LAPSExpiryEdit(ui->expiry_datetimeedit, ui->reset_expiry_button, ATTRIBUTE_LAPS_EXPIRATION, this);
 
     edit_list->append({
         pass_edit,

@@ -3467,4 +3467,62 @@
         <translation></translation>
     </message>
 </context>
+<context>
+    <name>LAPSV2Tab</name>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="14"/>
+        <source>Form</source>
+        <translation>Form</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="22"/>
+        <source>LAPS local admin account password:</source>
+        <translation>LAPS local admin account password:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="29"/>
+        <source>Current LAPS password expiration:</source>
+        <translation>Current LAPS password expiration:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="36"/>
+        <source>Local Administrator Password Solution</source>
+        <translation>Local Administrator Password Solution</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="43"/>
+        <source>Set new LAPS password expiration:</source>
+        <translation>Set new LAPS password expiration:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="87"/>
+        <source>Show password</source>
+        <translation>Show password</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="106"/>
+        <source>Expire now</source>
+        <translation>Expire now</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="126"/>
+        <source>Copy password</source>
+        <translation>Copy password</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="133"/>
+        <source>LAPS local admin account name:</source>
+        <translation>LAPS local admin account name:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.cpp" line="84"/>
+        <source>Failed to decode LAPS data.</source>
+        <translation>Failed to decode LAPS data.</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.cpp" line="84"/>
+        <source>Verify that you have the necessary permissions to access LAPS attributes!</source>
+        <translation>Verify that you have the necessary permissions to access LAPS attributes!</translation>
+    </message>
+</context>
 </TS>

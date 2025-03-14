@@ -25,6 +25,8 @@ BuildRequires: qt5-base-common
 BuildRequires: doxygen
 BuildRequires: libuuid-devel
 BuildRequires: libkrb5-devel
+BuildRequires: libcng-dpapi-devel
+BuildRequires: libgkdi-devel
 
 Requires: libsasl2
 Requires: libsasl2-plugin-gssapi

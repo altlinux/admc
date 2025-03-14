@@ -2,7 +2,6 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2025 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LAPS_EXPIRY_EDIT_H
-#define LAPS_EXPIRY_EDIT_H
+#ifndef LAPS_V2_TAB_H
+#define LAPS_V2_TAB_H
 
-#include "attribute_edits/attribute_edit.h"
+#include <QWidget>
 
-class QDateTimeEdit;
-class QPushButton;
+class AttributeEdit;
 
-class LAPSExpiryEdit final : public AttributeEdit {
+namespace Ui {
+class LAPSV2Tab;
+}
+
+class LAPSV2Tab final : public QWidget {
     Q_OBJECT
-public:
-    LAPSExpiryEdit(QDateTimeEdit *edit_arg, QPushButton *reset_expiry_button, const QString &attribute_name_arg, QObject *parent);
 
-    void load(AdInterface &ad, const AdObject &object) override;
-    bool apply(AdInterface &ad, const QString &dn) const override;
+public:
+    Ui::LAPSV2Tab *ui;
+
+    LAPSV2Tab(QList<AttributeEdit *> *edit_list, QWidget *parent);
+    ~LAPSV2Tab();
+private slots:
+    void on_show_password_button_toggled(bool checked);
+    void on_copy_password_button_clicked();
+    void on_expiration_datetimeedit_dateTimeChanged(const QDateTime &dateTime);
+
+    void on_show_error_dialog();
 
 private:
-    QDateTimeEdit *edit;
-    QString attribute_name;
-
-    void reset_expiry();
+    bool dialog_has_been_shown;
 };
 
-#endif /* LAPS_EXPIRY_EDIT_H */
+#endif /* LAPS_V2_TAB_H */

@@ -359,6 +359,7 @@ LargeIntegerSubtype AdConfig::get_attribute_large_integer_subtype(const QString 
         ATTRIBUTE_BAD_PWD_TIME,
         ATTRIBUTE_CREATION_TIME,
         ATTRIBUTE_MSDS_USER_PASSWORD_EXPIRY_TIME_COMPUTED,
+        ATTRIBUTE_LAPS_V2_EXPIRATION_TIME,
     };
     static const QList<QString> timespans = {
         ATTRIBUTE_MAX_PWD_AGE,
