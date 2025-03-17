@@ -2,6 +2,13 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.20.0
+-----------------------------------------------------------------------
+- Native LAPS (Local administrator password solution) 2023 has been implemented.
+  The corresponding tab has been added to the properties of computer class
+  objects where LAPS is enabled.
+
+-----------------------------------------------------------------------
  VERSION 0.19.0
 -----------------------------------------------------------------------
 - Add action "Show descriptor in SDDL" in the "More" button menu in the
