@@ -24,6 +24,7 @@
 #include "adldap.h"
 #include "console_impls/object_impl.h"
 #include "globals.h"
+#include "config.h"
 #include "properties_warning_dialog.h"
 #include "security_sort_warning_dialog.h"
 #include "settings.h"
@@ -43,7 +44,9 @@
 #include "tabs/general_user_tab.h"
 #include "tabs/group_policy_tab.h"
 #include "tabs/laps_tab.h"
+#if ADMC_ENABLE_NATIVE_LAPS > 0
 #include "tabs/laps_v2_tab.h"
+#endif
 #include "tabs/managed_by_tab.h"
 #include "tabs/membership_tab.h"
 #include "tabs/object_tab.h"
@@ -240,6 +243,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg, C
             return out;
         }();
 
+#if ADMC_ENABLE_NATIVE_LAPS > 0
         const bool laps_v2_enabled = [&]() {
             const QList<QString> attribute_list = object.attributes();
             const bool out = ((attribute_list.contains(ATTRIBUTE_LAPS_V2_ENCRYPTED_PASSWORD)
@@ -248,17 +252,21 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg, C
                         &&    attribute_list.contains(ATTRIBUTE_LAPS_V2_EXPIRATION_TIME));
             return out;
         }();
-
+#else
+      const bool laps_v2_enabled = false;
+#endif
         if (laps_enabled && !laps_v2_enabled) {
             auto laps_tab = new LAPSTab(&edit_list, this);
             ui->tab_widget->add_tab(laps_tab, tr("LAPS"));
         }
 
+#if ADMC_ENABLE_NATIVE_LAPS > 0
         if (laps_v2_enabled)
         {
             auto laps_v2_tab = new LAPSV2Tab(&edit_list, this);
             ui->tab_widget->add_tab(laps_v2_tab, tr("LAPS"));
         }
+#endif
     }
 
     const bool need_security_tab = object.attributes().contains(ATTRIBUTE_SECURITY_DESCRIPTOR);

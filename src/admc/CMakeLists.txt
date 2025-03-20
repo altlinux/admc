@@ -9,10 +9,19 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+find_library(LIBCNG_DPAPI_LIBRARY libcng-dpapi.so)
+
 set(ADMC_APPLICATION_NAME "ADMC")
 set(ADMC_APPLICATION_DISPLAY_NAME "ADMC")
 set(ADMC_ORGANIZATION "BaseALT")
 set(ADMC_ORGANIZATION_DOMAIN "basealt.ru")
+
+if (LIBCNG_DPAPI_LIBRARY)
+    set(ADMC_ENABLE_NATIVE_LAPS 1)
+else()
+    set(ADMC_ENABLE_NATIVE_LAPS 0)
+endif()
+
 configure_file("config.h.in" "config.h")
 
 include_directories(
@@ -35,9 +44,18 @@ if (RESOLV_LIBRARY)
     link_libraries(${RESOLV_LIBRARY})
 endif()
 
-find_library(LIBCNG_DPAPI_LIBRARY libcng-dpapi.so REQUIRED)
 
-link_libraries(${LIBCNG_DPAPI_LIBRARY})
+if (LIBCNG_DPAPI_LIBRARY)
+    message("Found libcng-dpapi library in ${LIBCNG_DPAPI_LIBRARY} .")
+    link_libraries(${LIBCNG_DPAPI_LIBRARY})
+    set(LAPS_SOURCES
+        tabs/laps_v2_tab.cpp
+        attribute_edits/laps_encrypted_attribute_edit.cpp
+    )
+else()
+    message("Skipping libcng-dpapi library.")
+    set(LAPS_SOURCES "")
+endif()
 
 set(ADMC_SOURCES
     status.cpp
@@ -140,7 +158,6 @@ set(ADMC_SOURCES
     tabs/delegation_tab.cpp
     tabs/select_well_known_trustee_dialog.cpp
     tabs/laps_tab.cpp
-    tabs/laps_v2_tab.cpp
     tabs/error_tab.cpp
     tabs/group_policy_tab.cpp
 
@@ -179,7 +196,6 @@ set(ADMC_SOURCES
     attribute_edits/logon_computers_edit.cpp
     attribute_edits/logon_computers_dialog.cpp
     attribute_edits/protect_deletion_edit.cpp
-    attribute_edits/laps_encrypted_attribute_edit.cpp
     attribute_edits/laps_expiry_edit.cpp
     attribute_edits/general_name_edit.cpp
     attribute_edits/dn_edit.cpp
@@ -230,6 +246,8 @@ set(ADMC_SOURCES
 
     admc.qrc
 )
+
+set(ADMC_SOURCES ${ADMC_SOURCES} ${LAPS_SOURCES})
 
 add_executable(admc
     main.cpp

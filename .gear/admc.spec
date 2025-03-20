@@ -1,5 +1,14 @@
 %define _unpackaged_files_terminate_build 1
 
+%ifdef _priority_distbranch
+%define altbranch %_priority_distbranch
+%else
+%define altbranch %(rpm --eval %%_priority_distbranch)
+%endif
+%if "%altbranch" == "%nil"
+%define altbranch sisyphus
+%endif
+
 Name: admc
 Version: 0.19.0
 Release: alt1
@@ -25,8 +34,11 @@ BuildRequires: qt5-base-common
 BuildRequires: doxygen
 BuildRequires: libuuid-devel
 BuildRequires: libkrb5-devel
+
+%if "%altbranch" == "sisyphus" || "%altbranch" == "p11"
 BuildRequires: libcng-dpapi-devel
 BuildRequires: libgkdi-devel
+%endif
 
 Requires: libsasl2
 Requires: libsasl2-plugin-gssapi
