@@ -1,7 +1,16 @@
 %define _unpackaged_files_terminate_build 1
 
+%ifdef _priority_distbranch
+%define altbranch %_priority_distbranch
+%else
+%define altbranch %(rpm --eval %%_priority_distbranch)
+%endif
+%if "%altbranch" == "%nil"
+%define altbranch sisyphus
+%endif
+
 Name: admc
-Version: 0.20.0
+Version: 0.20.1
 Release: alt1
 
 Summary: Active Directory Management Center
@@ -25,8 +34,11 @@ BuildRequires: qt5-base-common
 BuildRequires: doxygen
 BuildRequires: libuuid-devel
 BuildRequires: libkrb5-devel
+
+%if "%altbranch" == "sisyphus" || "%altbranch" == "p11"
 BuildRequires: libcng-dpapi-devel
 BuildRequires: libgkdi-devel
+%endif
 
 Requires: libsasl2
 Requires: libsasl2-plugin-gssapi
@@ -112,6 +124,9 @@ Tests for ADMC
 %_bindir/admc_test_find_policy_dialog
 
 %changelog
+* Thu Mar 20 2025 Vladimir Rubanov <august@altlinux.org> 0.20.1-alt1
+- Add conditional build for native LAPS support.
+
 * Mon Mar 17 2025 Semyon Knyazev <samael@altlinux.org> 0.20.0-alt1
 - Native LAPS (Local administrator password solution) 2023 has been implemented.
   The corresponding tab has been added to the properties of computer class
