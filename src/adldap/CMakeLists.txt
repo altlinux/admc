@@ -32,6 +32,7 @@ set(ADLDAP_SOURCES
     ad_security.cpp
     gplink.cpp
     common_task_manager.cpp
+    krb5client.cpp
 )
 prefix_clangformat_setup(adldap ${ADLDAP_SOURCES})
 
