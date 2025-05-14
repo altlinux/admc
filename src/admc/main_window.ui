@@ -29,6 +29,7 @@
     </property>
     <addaction name="action_connection_options"/>
     <addaction name="action_edit_fsmo_roles"/>
+    <addaction name="action_change_user"/>
     <addaction name="separator"/>
     <addaction name="action_quit"/>
     <addaction name="separator"/>
@@ -419,6 +420,14 @@
    </property>
    <property name="text">
     <string>Show middle name when creating</string>
+   </property>
+  </action>
+  <action name="action_change_user">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Change user</string>
    </property>
   </action>
  </widget>

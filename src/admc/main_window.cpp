@@ -45,6 +45,7 @@
 #include "fsmo/fsmo_utils.h"
 #include "managers/icon_manager.h"
 #include "console_impls/domain_info_impl.h"
+#include "auth_dialogs/krb_auth_dialog.h"
 
 #include <QDesktopServices>
 #include <QLabel>
@@ -57,327 +58,33 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     country_combo_load_data();
 
-    g_status->init(ui->statusbar, ui->message_log_edit);
+    init_globals();
 
-    const QMap<QString, QAction*> category_action_map = {
-        {OBJECT_CATEGORY_OU, ui->action_create_ou},
-        {OBJECT_CATEGORY_PERSON, ui->action_create_user},
-        {OBJECT_CATEGORY_GROUP, ui->action_create_group},
-        {ADMC_CATEGORY_GO_NEXT_ACTION, ui->action_navigate_forward},
-        {ADMC_CATEGORY_GO_UP_ACTION, ui->action_navigate_up},
-        {ADMC_CATEGORY_GO_PREVIOUS_ACTION, ui->action_navigate_back},
-        {ADMC_CATEGORY_MANUAL_ACTION, ui->action_manual},
-        {ADMC_CATEGORY_REFRESH_ACTION, ui->action_refresh}
-    };
+    setup_status_bar(ad);
 
-    g_icon_manager->init(category_action_map);
+    setup_themes();
 
-    login_label = new QLabel();
-    login_label->setText(ad.client_user());
-    ui->statusbar->addPermanentWidget(login_label);
+    setup_languages();
 
-    ui->statusbar->addAction(ui->action_show_login);
+    restore_main_window_state();
 
-    //
-    // Console
-    //
-    auto domain_info_impl = new DomainInfoImpl(ui->console);
-    ui->console->register_impl(ItemType_DomainInfo, domain_info_impl);
+    setup_main_window_actions();
 
-    auto object_impl = new ObjectImpl(ui->console);
-    ui->console->register_impl(ItemType_Object, object_impl);
+    show_changelog_on_update();
 
-    auto policy_root_impl = new PolicyRootImpl(ui->console);
-    ui->console->register_impl(ItemType_PolicyRoot, policy_root_impl);
+    setup_simple_settings();
 
-    auto all_policies_folder_impl = new AllPoliciesFolderImpl(ui->console);
-    ui->console->register_impl(ItemType_AllPoliciesFolder, all_policies_folder_impl);
+    setup_authentication_dialog();
 
-    auto policy_ou_impl = new PolicyOUImpl(ui->console);
-    ui->console->register_impl(ItemType_PolicyOU, policy_ou_impl);
+    setup_console_actions();
+    restore_console_widget_state();
 
-    auto policy_impl = new PolicyImpl(ui->console);
-    ui->console->register_impl(ItemType_Policy, policy_impl);
-
-    auto query_item_impl = new QueryItemImpl(ui->console);
-    ui->console->register_impl(ItemType_QueryItem, query_item_impl);
-
-    auto query_folder_impl = new QueryFolderImpl(ui->console);
-    ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
-
-    query_item_impl->set_query_folder_impl(query_folder_impl);
-
-    object_impl->set_toolbar_actions(ui->action_create_user, ui->action_create_group, ui->action_create_ou);
-
-    // Setup console
-    const ConsoleWidgetActions console_actions = [&]() {
-        ConsoleWidgetActions out;
-
-        out.navigate_up = ui->action_navigate_up;
-        out.navigate_back = ui->action_navigate_back;
-        out.navigate_forward = ui->action_navigate_forward;
-        out.refresh = ui->action_refresh;
-        out.customize_columns = ui->action_customize_columns;
-        out.view_icons = ui->action_view_icons;
-        out.view_list = ui->action_view_list;
-        out.view_detail = ui->action_view_detail;
-        out.toggle_console_tree = ui->action_toggle_console_tree;
-        out.toggle_description_bar = ui->action_toggle_description_bar;
-
-        return out;
-    }();
-
-    ui->console->set_actions(console_actions);
-
-    // NOTE: "Action" menu actions need to be filled by the
-    // console
-    ui->console->setup_menubar_action_menu(ui->menu_action);
-
-    // NOTE: toolbar and message log(dock widget) have built
-    // in toggle actions, but there's no way to add them
-    // through designer so add them here.
-    ui->menu_view->insertAction(ui->action_toggle_message_log, ui->message_log->toggleViewAction());
-    ui->menu_view->insertAction(ui->action_toggle_toolbar, ui->toolbar->toggleViewAction());
-    ui->menu_view->removeAction(ui->action_toggle_message_log);
-    ui->menu_view->removeAction(ui->action_toggle_toolbar);
-
-    // Load console tree's
-    domain_info_impl->load_domain_info_item(ad);
-    ui->console->set_current_scope(ui->console->domain_info_index());
-    console_object_tree_init(ui->console, ad);
-    console_policy_tree_init(ui->console);
-    console_query_tree_init(ui->console);
-    ui->console->expand_item(ui->console->domain_info_index());
-
-    // Set current scope to object head to load it
-    const QModelIndex object_tree_root = get_object_tree_root(ui->console);
-    if (object_tree_root.isValid()) {
-        ui->console->set_current_scope(object_tree_root);
+    if (ad.is_connected()) {
+        init_on_connect(ad);
     }
-
-    // Display any errors that happened when loading the
-    // console
-    g_status->display_ad_messages(ad, this);
-
-    //
-    // Restore state
-    //
-
-    // NOTE: must restore state after everything is setup
-    const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
-    ui->console->restore_state(console_widget_state);
-
-    const bool restored_geometry = settings_restore_geometry(SETTING_main_window_geometry, this);
-    if (!restored_geometry) {
-        resize(1024, 768);
-        center_widget(this);
-    }
-
-    const QByteArray state = settings_get_variant(SETTING_main_window_state).toByteArray();
-    if (!state.isEmpty()) {
-        restoreState(state);
-    } else {
-        // Hide message log by default
-        ui->message_log->hide();
-    }
-
-    const bool first_time_opening_this_version = []() {
-        const QString last_version = settings_get_variant(SETTING_last_opened_version).toString();
-
-        return (last_version != ADMC_VERSION);
-    }();
-    if (first_time_opening_this_version) {
-        settings_set_variant(SETTING_last_opened_version, ADMC_VERSION);
-        open_changelog();
-    }
-
-    //
-    // Setup theme actions
-    //
-    const QStringList theme_list = g_icon_manager->available_themes();
-    const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
-    auto theme_action_group = new QActionGroup(this);
-    for (const QString &theme : theme_list) {
-        const QString localized_name = g_icon_manager->localized_theme_name(current_locale, theme);
-        const auto action = new QAction(localized_name, theme_action_group);
-
-        action->setCheckable(true);
-        theme_action_group->addAction(action);
-
-        bool is_checked;
-        const QString current_theme = settings_get_variant(SETTING_current_icon_theme).toString();
-        current_theme == theme ? is_checked = true : is_checked = false;
-
-        action->setChecked(is_checked);
-        ui->menu_theme->addAction(action);
-
-        connect(
-            action, &QAction::triggered,
-            this,
-            [this, theme](bool checked) {
-                if (checked == false)
-                    return;
-
-                g_icon_manager->set_theme(theme);
-
-                update();
-
-                // TODO: Replace total tree updating from base
-                // by tree item icons updating corresponding its item type.
-                // Add corresponding function like update_console_tree_icons(ConsoleWidget*)
-                // to icon manager
-                reload_console_tree();
-            });
-    }
-
-    //
-    // Setup language actions
-    //
-    const QList<QLocale::Language> language_list = {
-        QLocale::English,
-        QLocale::Russian,
-    };
-    auto language_group = new QActionGroup(this);
-    for (const QLocale::Language &language : language_list) {
-        const QLocale locale(language);
-
-        const QString language_name = [locale]() {
-            // NOTE: Russian nativeLanguageName starts with lowercase letter for some reason
-            QString name_out = locale.nativeLanguageName();
-
-            const QChar first_letter_uppercased = name_out[0].toUpper();
-
-            name_out.replace(0, 1, first_letter_uppercased);
-
-            return name_out;
-        }();
-
-        const auto action = new QAction(language_name, language_group);
-        action->setCheckable(true);
-        language_group->addAction(action);
-
-        const bool is_checked = [=]() {
-            const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
-
-            return (current_locale.language() == locale.language());
-        }();
-        action->setChecked(is_checked);
-
-        ui->menu_language->addAction(action);
-
-        connect(
-            action, &QAction::triggered,
-            this,
-            [this, language](bool checked) {
-                if (checked) {
-                    settings_set_variant(SETTING_locale, QLocale(language));
-
-                    message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
-                }
-            });
-    }
-
-    //
-    // Connect
-    //
-    connect(
-        ui->action_connection_options, &QAction::triggered,
-        this, &MainWindow::open_connection_options);
-    connect(
-        ui->action_edit_fsmo_roles, &QAction::triggered,
-        this, &MainWindow::edit_fsmo_roles);
-    connect(
-        ui->action_quit, &QAction::triggered,
-        this, &MainWindow::close);
-    connect(
-        ui->action_manual, &QAction::triggered,
-        this, &MainWindow::open_manual);
-    connect(
-        ui->action_changelog, &QAction::triggered,
-        this, &MainWindow::open_changelog);
-    connect(
-        ui->action_about, &QAction::triggered,
-        this, &MainWindow::open_about);
-    connect(
-        ui->action_filter_objects, &QAction::triggered,
-        object_impl, &ObjectImpl::open_console_filter_dialog);
-
-    const QHash<QString, QAction *> bool_action_map = {
-        {SETTING_confirm_actions, ui->action_confirm_actions},
-        {SETTING_last_name_before_first_name, ui->action_last_name_order},
-        {SETTING_log_searches, ui->action_log_searches},
-        {SETTING_timestamp_log, ui->action_timestamps},
-        {SETTING_show_login, ui->action_show_login},
-        {SETTING_show_non_containers_in_console_tree, ui->action_show_noncontainers},
-        {SETTING_advanced_features, ui->action_advanced_features},
-        {SETTING_load_optional_attribute_values, ui->action_load_optional_values},
-        {SETTING_show_middle_name_when_creating, ui->action_show_middle_name},
-    };
-
-    const QList<QString> simple_setting_list = {
-        SETTING_confirm_actions,
-        SETTING_last_name_before_first_name,
-        SETTING_log_searches,
-        SETTING_timestamp_log,
-        SETTING_show_login,
-        SETTING_load_optional_attribute_values,
-        SETTING_show_middle_name_when_creating
-    };
-
-    for (const QString &setting : bool_action_map.keys()) {
-        QAction *action = bool_action_map[setting];
-
-        const bool setting_enabled = settings_get_variant(setting).toBool();
-        action->setChecked(setting_enabled);
-    }
-
-    // Connect setting actions so that they update setting
-    // values
-    for (const QString &setting : simple_setting_list) {
-        QAction *action = bool_action_map[setting];
-
-        connect(
-            action, &QAction::toggled,
-            this,
-            [setting](bool checked) {
-                settings_set_variant(setting, checked);
-            });
-    }
-
-    // NOTE: For complex settings, we need to refresh object
-    // tree after setting changes. Because call order of
-    // slots is undefined we can't just make multiple slots,
-    // so need to use a custom slot.
-    const QList<QString> complex_setting_list = {
-        SETTING_show_non_containers_in_console_tree,
-        SETTING_advanced_features,
-    };
-
-    for (const QString &setting : complex_setting_list) {
-        QAction *action = bool_action_map[setting];
-
-        connect(
-            action, &QAction::toggled,
-            this,
-            [setting, object_impl](bool checked) {
-                settings_set_variant(setting, checked);
-
-                object_impl->refresh_tree();
-            });
-    }
-
-    // NOTE: Call these slots now to load initial state
-    connect(
-        ui->action_log_searches, &QAction::triggered,
-        this, &MainWindow::on_log_searches_changed);
-    on_log_searches_changed();
-    connect(
-        ui->action_show_login, &QAction::triggered,
-        this, &MainWindow::on_show_login_changed);
-    on_show_login_changed();
-
-    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation)) {
-            g_status->add_message(tr("You are connected to DC without PDC-Emulator role"), StatusType_Success);
+    else {
+        g_status->log_messages(ad.messages());
+        auth_dialog->open();
     }
 }
 
@@ -448,4 +155,384 @@ void MainWindow::edit_fsmo_roles() {
 
 void MainWindow::reload_console_tree() {
     ui->console->refresh_scope(ui->console->domain_info_index());
+}
+
+void MainWindow::setup_themes() {
+    const QStringList theme_list = g_icon_manager->available_themes();
+    const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
+    auto theme_action_group = new QActionGroup(this);
+    for (const QString &theme : theme_list) {
+        const QString localized_name = g_icon_manager->localized_theme_name(current_locale, theme);
+        const auto action = new QAction(localized_name, theme_action_group);
+
+        action->setCheckable(true);
+        theme_action_group->addAction(action);
+
+        bool is_checked;
+        const QString current_theme = settings_get_variant(SETTING_current_icon_theme).toString();
+        current_theme == theme ? is_checked = true : is_checked = false;
+
+        action->setChecked(is_checked);
+        ui->menu_theme->addAction(action);
+
+        connect(
+            action, &QAction::triggered,
+            this,
+            [this, theme](bool checked) {
+                if (checked == false)
+                    return;
+
+                g_icon_manager->set_theme(theme);
+
+                update();
+
+                // TODO: Replace total tree updating from base
+                // by tree item icons updating corresponding its item type.
+                // Add corresponding function like update_console_tree_icons(ConsoleWidget*)
+                // to icon manager
+                reload_console_tree();
+            });
+    }
+}
+
+void MainWindow::setup_languages() {
+    const QList<QLocale::Language> language_list = {
+        QLocale::English,
+        QLocale::Russian,
+    };
+    auto language_group = new QActionGroup(this);
+    for (const QLocale::Language &language : language_list) {
+        const QLocale locale(language);
+
+        const QString language_name = [locale]() {
+            // NOTE: Russian nativeLanguageName starts with lowercase letter for some reason
+            QString name_out = locale.nativeLanguageName();
+
+            const QChar first_letter_uppercased = name_out[0].toUpper();
+
+            name_out.replace(0, 1, first_letter_uppercased);
+
+            return name_out;
+        }();
+
+        const auto action = new QAction(language_name, language_group);
+        action->setCheckable(true);
+        language_group->addAction(action);
+
+        const bool is_checked = [=]() {
+            const QLocale current_locale = settings_get_variant(SETTING_locale).toLocale();
+
+            return (current_locale.language() == locale.language());
+        }();
+        action->setChecked(is_checked);
+
+        ui->menu_language->addAction(action);
+
+        connect(
+            action, &QAction::triggered,
+            this,
+            [this, language](bool checked) {
+                if (checked) {
+                    settings_set_variant(SETTING_locale, QLocale(language));
+
+                    message_box_information(this, tr("Info"), tr("Restart the app to switch to the selected language."));
+                }
+            });
+    }
+}
+
+void MainWindow::setup_simple_settings() {
+    const QHash<QString, QAction *> bool_action_map = {
+        {SETTING_confirm_actions, ui->action_confirm_actions},
+        {SETTING_last_name_before_first_name, ui->action_last_name_order},
+        {SETTING_log_searches, ui->action_log_searches},
+        {SETTING_timestamp_log, ui->action_timestamps},
+        {SETTING_show_login, ui->action_show_login},
+        {SETTING_show_non_containers_in_console_tree, ui->action_show_noncontainers},
+        {SETTING_advanced_features, ui->action_advanced_features},
+        {SETTING_load_optional_attribute_values, ui->action_load_optional_values},
+        {SETTING_show_middle_name_when_creating, ui->action_show_middle_name},
+    };
+
+    const QList<QString> simple_setting_list = {
+        SETTING_confirm_actions,
+        SETTING_last_name_before_first_name,
+        SETTING_log_searches,
+        SETTING_timestamp_log,
+        SETTING_show_login,
+        SETTING_load_optional_attribute_values,
+        SETTING_show_middle_name_when_creating
+    };
+
+    for (const QString &setting : bool_action_map.keys()) {
+        QAction *action = bool_action_map[setting];
+
+        const bool setting_enabled = settings_get_variant(setting).toBool();
+        action->setChecked(setting_enabled);
+    }
+
+    // Connect setting actions so that they update setting
+    // values
+    for (const QString &setting : simple_setting_list) {
+        QAction *action = bool_action_map[setting];
+
+        connect(
+            action, &QAction::toggled,
+            this,
+            [setting](bool checked) {
+                settings_set_variant(setting, checked);
+            });
+    }
+
+    // NOTE: Call these slots now to load initial state
+    connect(
+        ui->action_log_searches, &QAction::triggered,
+        this, &MainWindow::on_log_searches_changed);
+    on_log_searches_changed();
+    connect(
+        ui->action_show_login, &QAction::triggered,
+        this, &MainWindow::on_show_login_changed);
+    on_show_login_changed();
+}
+
+void MainWindow::setup_complex_settings(ObjectImpl *obj_impl) {
+    const QHash<QString, QAction*> complex_settings_map = {
+        {SETTING_show_non_containers_in_console_tree, ui->action_show_noncontainers},
+        {SETTING_advanced_features, ui->action_advanced_features}
+    };
+
+    for (const QString &setting : complex_settings_map.keys()) {
+        QAction *action = complex_settings_map[setting];
+
+        // NOTE: For complex settings, we need to refresh object
+        // tree after setting changes. Because call order of
+        // slots is undefined we can't just make multiple slots,
+        // so need to use a custom slot.
+        if (obj_impl) {
+            action->setDisabled(false);
+            connect(
+                action, &QAction::toggled,
+                this,
+                [setting, obj_impl](bool checked) {
+                    settings_set_variant(setting, checked);
+
+                    obj_impl->refresh_tree();
+                });
+        }
+        else {
+            action->setDisabled(true);
+        }
+    }
+}
+
+void MainWindow::init_globals() {
+    g_status->init(ui->statusbar, ui->message_log_edit);
+
+    const QMap<QString, QAction*> category_action_map = {
+        {OBJECT_CATEGORY_OU, ui->action_create_ou},
+        {OBJECT_CATEGORY_PERSON, ui->action_create_user},
+        {OBJECT_CATEGORY_GROUP, ui->action_create_group},
+    };
+
+    g_icon_manager->init(category_action_map);
+}
+
+void MainWindow::setup_console_actions() {
+    const ConsoleWidgetActions console_actions = [&]() {
+        ConsoleWidgetActions out;
+
+        out.navigate_up = ui->action_navigate_up;
+        out.navigate_back = ui->action_navigate_back;
+        out.navigate_forward = ui->action_navigate_forward;
+        out.refresh = ui->action_refresh;
+        out.customize_columns = ui->action_customize_columns;
+        out.view_icons = ui->action_view_icons;
+        out.view_list = ui->action_view_list;
+        out.view_detail = ui->action_view_detail;
+        out.toggle_console_tree = ui->action_toggle_console_tree;
+        out.toggle_description_bar = ui->action_toggle_description_bar;
+
+        return out;
+    }();
+
+    ui->console->set_actions(console_actions);
+
+    // NOTE: "Action" menu actions need to be filled by the
+    // console
+    ui->console->setup_menubar_action_menu(ui->menu_action);
+}
+
+void MainWindow::setup_main_window_actions() {
+    // NOTE: toolbar and message log(dock widget) have built
+    // in toggle actions, but there's no way to add them
+    // through designer so add them here.
+    ui->menu_view->insertAction(ui->action_toggle_message_log, ui->message_log->toggleViewAction());
+    ui->menu_view->insertAction(ui->action_toggle_toolbar, ui->toolbar->toggleViewAction());
+    ui->menu_view->removeAction(ui->action_toggle_message_log);
+    ui->menu_view->removeAction(ui->action_toggle_toolbar);
+
+    //
+    // Connect
+    //
+    connect(
+        ui->action_connection_options, &QAction::triggered,
+        this, &MainWindow::open_connection_options);
+    connect(
+        ui->action_edit_fsmo_roles, &QAction::triggered,
+        this, &MainWindow::edit_fsmo_roles);
+    connect(
+        ui->action_quit, &QAction::triggered,
+        this, &MainWindow::close);
+    connect(
+        ui->action_manual, &QAction::triggered,
+        this, &MainWindow::open_manual);
+    connect(
+        ui->action_changelog, &QAction::triggered,
+        this, &MainWindow::open_changelog);
+    connect(
+        ui->action_about, &QAction::triggered,
+        this, &MainWindow::open_about);
+}
+
+void MainWindow::restore_console_widget_state() {
+    // NOTE: must restore state after everything is setup
+    const QVariant console_widget_state = settings_get_variant(SETTING_console_widget_state);
+    ui->console->restore_state(console_widget_state);
+}
+
+void MainWindow::restore_main_window_state() {
+    const bool restored_geometry = settings_restore_geometry(SETTING_main_window_geometry, this);
+    if (!restored_geometry) {
+        resize(1024, 768);
+        center_widget(this);
+    }
+
+    const QByteArray state = settings_get_variant(SETTING_main_window_state).toByteArray();
+    if (!state.isEmpty()) {
+        restoreState(state);
+    } else {
+        // Hide message log by default
+        ui->message_log->hide();
+    }
+}
+
+void MainWindow::show_changelog_on_update() {
+    const bool first_time_opening_this_version = []() {
+        const QString last_version = settings_get_variant(SETTING_last_opened_version).toString();
+
+        return (last_version != ADMC_VERSION);
+    }();
+    if (first_time_opening_this_version) {
+        settings_set_variant(SETTING_last_opened_version, ADMC_VERSION);
+        open_changelog();
+    }
+}
+
+void MainWindow::setup_status_bar(const AdInterface &ad) {
+    login_label = new QLabel();
+    login_label->setText(ad.client_user());
+    ui->statusbar->addPermanentWidget(login_label);
+
+    ui->statusbar->addAction(ui->action_show_login);
+    ui->statusbar->addAction(ui->action_change_user);
+}
+
+void MainWindow::init_on_connect(AdInterface &ad) {
+    load_g_adconfig(ad);
+
+    auto domain_info_impl = new DomainInfoImpl(ui->console);
+    ui->console->register_impl(ItemType_DomainInfo, domain_info_impl);
+
+    auto object_impl = new ObjectImpl(ui->console);
+    ui->console->register_impl(ItemType_Object, object_impl);
+
+    auto policy_root_impl = new PolicyRootImpl(ui->console);
+    ui->console->register_impl(ItemType_PolicyRoot, policy_root_impl);
+
+    auto all_policies_folder_impl = new AllPoliciesFolderImpl(ui->console);
+    ui->console->register_impl(ItemType_AllPoliciesFolder, all_policies_folder_impl);
+
+    auto policy_ou_impl = new PolicyOUImpl(ui->console);
+    ui->console->register_impl(ItemType_PolicyOU, policy_ou_impl);
+
+    auto policy_impl = new PolicyImpl(ui->console);
+    ui->console->register_impl(ItemType_Policy, policy_impl);
+
+    auto query_item_impl = new QueryItemImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryItem, query_item_impl);
+
+    auto query_folder_impl = new QueryFolderImpl(ui->console);
+    ui->console->register_impl(ItemType_QueryFolder, query_folder_impl);
+
+    query_item_impl->set_query_folder_impl(query_folder_impl);
+
+    object_impl->set_toolbar_actions(ui->action_create_user, ui->action_create_group, ui->action_create_ou);
+
+    setup_complex_settings(object_impl);
+
+    connect(
+        ui->action_filter_objects, &QAction::triggered,
+                object_impl, &ObjectImpl::open_console_filter_dialog);
+
+    domain_info_impl->load_domain_info_item(ad);
+    ui->console->set_current_scope(ui->console->domain_info_index());
+    console_object_tree_init(ui->console, ad);
+    console_policy_tree_init(ui->console);
+    console_query_tree_init(ui->console);
+    ui->console->expand_item(ui->console->domain_info_index());
+
+    // Set current scope to object head to load it
+    const QModelIndex object_tree_root = get_object_tree_root(ui->console);
+    if (object_tree_root.isValid()) {
+        ui->console->set_current_scope(object_tree_root);
+    }
+
+    // Display any errors that happened when loading the
+    // console
+    g_status->display_ad_messages(ad, this);
+
+    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation)) {
+        g_status->add_message(tr("You are connected to DC without PDC-Emulator role"), StatusType_Success);
+    }
+    else {
+        ui->statusbar->clearMessage();
+    }
+
+    login_label->setText(ad.client_user());
+
+    inited = true;
+}
+
+void MainWindow::setup_authentication_dialog() {
+    auth_dialog = new KrbAuthDialog(this);
+    connect(auth_dialog, &KrbAuthDialog::authenticated, this, [this]() {
+        AdInterface ad;
+        if (inited) {
+            show_busy_indicator();
+            load_g_adconfig(ad);
+            reload_console_tree();
+            login_label->setText(ad.client_user());
+            hide_busy_indicator();
+        }
+        else {
+            show_busy_indicator();
+            init_on_connect(ad);
+            hide_busy_indicator();
+        }
+        g_status->add_message(tr("Logged in successfully"), StatusType_Success);
+
+        auth_dialog->hide();
+    });
+
+    connect(ui->action_change_user, &QAction::triggered, this, &MainWindow::on_change_user);
+    connect(auth_dialog, &QDialog::rejected, [this](){
+       if (!inited) {
+           close();
+       }
+    });
+}
+
+void MainWindow::on_change_user() {
+    auth_dialog->show();
+    auth_dialog->adjustSize();
 }
