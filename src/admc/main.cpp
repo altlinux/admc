@@ -95,47 +95,16 @@ int main(int argc, char **argv) {
 
     load_connection_options();
 
-    // In case of failure to connect to AD and load
-    // adconfig, we open a special alternative main window.
-    // We do this to acomplish 2 objectives:
-    // * First, we check that connection is possible at
-    //   startup and give the user an opportunity to
-    //   troubleshoot by adjusting connection options
-    //   (available in the alternative main window).
-    // * Secondly, we guarantee that the real MainWindow is
-    //   created only after adconfig has been loaded. This
-    //   is needed because many child widgets used by
-    //   MainWindow require adconfig to load their UI
-    //   elements.
-    //
-    // Control flow here is awkward for multiple
-    // reasons. First, the ad error log has to be
-    // displayed *after* main window is shown and
-    // parented to it to be modal. Secondly, we need
-    // adinterface to stay in this scope so that it is
-    // destroyed when scope is over. If it's created
-    // outside the scope, then it will stay alive for
-    // the whole duration of the app which is bad.
-    QMainWindow *first_main_window = nullptr;
+    QMainWindow *main_window = nullptr;
     {
         AdInterface ad;
-
-        if (ad.is_connected()) {
-            load_g_adconfig(ad);
-
-            first_main_window = new MainWindow(ad);
-            first_main_window->show();
-        } else {
-            first_main_window = new MainWindowConnectionError();
-            first_main_window->show();
-
-            ad_error_log(ad, first_main_window);
-        }
+        main_window = new MainWindow(ad);
+        main_window->show();
     }
 
     const int retval = app.exec();
 
-    delete first_main_window;
+    delete main_window;
 
     return retval;
 }
