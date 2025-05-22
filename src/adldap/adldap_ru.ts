@@ -1040,6 +1040,49 @@
     </message>
 </context>
 <context>
+    <name>Krb5Client</name>
+    <message>
+        <location filename="krb5client.cpp" line="64"/>
+        <source>Kerberos initialization failed</source>
+        <translation>Не удалось инициализировать Kerberos</translation>
+    </message>
+    <message>
+        <location filename="krb5client.cpp" line="70"/>
+        <source>Failed to create caches path</source>
+        <translation>Не удалось созддать путь для кешей</translation>
+    </message>
+    <message>
+        <location filename="krb5client.cpp" line="77"/>
+        <source>Failed to set caches path permissions</source>
+        <translation>Не удалось задать разрешения пути кешей</translation>
+    </message>
+    <message>
+        <location filename="krb5client.cpp" line="95"/>
+        <source>Authentication failed</source>
+        <translation>Ошибка аутиентификации</translation>
+    </message>
+    <message>
+        <location filename="krb5client.cpp" line="146"/>
+        <source>Failed to set KRB5CCNAME</source>
+        <translation>Не удалось задать KRB5CCNAME</translation>
+    </message>
+    <message>
+        <location filename="krb5client.cpp" line="330"/>
+        <source>Principal is not found</source>
+        <translation>Принципал не найден</translation>
+    </message>
+    <message>
+        <location filename="krb5client.cpp" line="346"/>
+        <source>Failed to switch principal</source>
+        <translation>Не удалось сменить принципала</translation>
+    </message>
+    <message>
+        <location filename="krb5client.cpp" line="354"/>
+        <source>Failed to refresh TGT</source>
+        <translation>Не удалось обновить TGT</translation>
+    </message>
+</context>
+<context>
     <name>ad_security.cpp</name>
     <message>
         <location filename="ad_security.cpp" line="841"/>

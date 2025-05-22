@@ -16,7 +16,7 @@
     <message>
         <location filename="about_dialog.ui" line="50"/>
         <source>Copyright (C) 2022 BaseALT Ltd.</source>
-        <translation>Авторские права: ООО «Базальт СПО», 2022.</translation>
+        <translation>Авторские права: ООО «Базальт СПО», 2025.</translation>
     </message>
 </context>
 <context>
@@ -1874,6 +1874,69 @@
     </message>
 </context>
 <context>
+    <name>KrbAuthDialog</name>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="26"/>
+        <source>Kerberos authentication</source>
+        <translation>Аутентификация Kerberos</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="55"/>
+        <source>Principal:</source>
+        <translation>Принципал:</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="62"/>
+        <source>Password:</source>
+        <translation>Пароль:</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="79"/>
+        <source>Show password</source>
+        <translation>Показать пароль</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="101"/>
+        <source>user@REALM</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="108"/>
+        <source>Ticket available</source>
+        <translation>Билет доступен</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="144"/>
+        <source>Sign in</source>
+        <translation>Войти</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="165"/>
+        <source>PLACEHOLDER</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.cpp" line="66"/>
+        <source>Enter your Kerberos principal</source>
+        <translation>Введите принципал Kerberos</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.cpp" line="71"/>
+        <source>Account already in use</source>
+        <translation>Аккаунт уже используется</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.cpp" line="76"/>
+        <source>Enter the password</source>
+        <translation>Введите пароль</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.cpp" line="106"/>
+        <source>Authentication failed</source>
+        <translation>Аутентификация не удалась</translation>
+    </message>
+</context>
+<context>
     <name>LAPSTab</name>
     <message>
         <location filename="tabs/laps_tab.ui" line="22"/>
@@ -2357,7 +2420,17 @@
         <translation>Показывать отчество при создании</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="293"/>
+        <location filename="main_window.ui" line="424"/>
+        <source>Change user</source>
+        <translation>Сменить пользователя</translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="436"/>
+        <source>Use system credentials on start</source>
+        <translation>Системные учётные данные при старте</translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="295"/>
         <source>Navigate Up</source>
         <translation>Наверх</translation>
     </message>
@@ -2407,7 +2480,12 @@
         <translation>Вы подключены к КД без роли PDC-Emulator</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="373"/>
+        <location filename="main_window.cpp" line="528"/>
+        <source>Logged in successfully</source>
+        <translation>Вход выполнен</translation>
+    </message>
+    <message>
+        <location filename="main_window.cpp" line="131"/>
         <source>Connected to host </source>
         <translation>Подключено к хосту </translation>
     </message>
