@@ -78,6 +78,7 @@
     <addaction name="action_show_noncontainers"/>
     <addaction name="action_load_optional_values"/>
     <addaction name="action_show_middle_name"/>
+    <addaction name="action_use_system_credentials"/>
     <addaction name="menu_language"/>
    </widget>
    <widget class="QMenu" name="menu_help">
@@ -428,6 +429,17 @@
    </property>
    <property name="text">
     <string>Change user</string>
+   </property>
+  </action>
+  <action name="action_use_system_credentials">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Use system credentials on start</string>
    </property>
   </action>
  </widget>

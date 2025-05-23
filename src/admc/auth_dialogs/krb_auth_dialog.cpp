@@ -22,6 +22,7 @@
 #include "ui_krb_auth_dialog.h"
 
 #include <stdexcept>
+#include "settings.h"
 
 
 KrbAuthDialog::KrbAuthDialog(QWidget *parent) : AuthDialogBase(parent),
@@ -50,6 +51,7 @@ void KrbAuthDialog::setupWidgets() {
     ui->ticket_available_label->setVisible(false);
 
     ui->principal_cmb_box->addItems(client->available_principals());
+    ui->principal_cmb_box->setCurrentText(settings_get_variant(SETTING_last_logged_user).toString());
 
     connect(ui->principal_cmb_box, &QComboBox::currentTextChanged, this, &KrbAuthDialog::on_principal_selected);
     connect(ui->show_passwd_checkbox, &QCheckBox::toggled, this, &KrbAuthDialog::on_show_passwd);
@@ -91,6 +93,8 @@ void KrbAuthDialog::on_sign_in() {
         show_error_message(e.what());
         return;
     }
+
+    settings_set_variant(SETTING_last_logged_user, principal);
 
     emit authenticated();
     ui->password_edit->clear();
