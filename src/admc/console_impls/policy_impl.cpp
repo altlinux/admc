@@ -705,7 +705,9 @@ void policy_add_links(const QList<ConsoleWidget *> &console_list, PolicyResultsW
             gplink.add(policy);
         }
 
-        ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink.to_string());
+        const QString gplink_str = gplink.to_string();
+        ad.attribute_replace_string(ou_dn, ATTRIBUTE_GPLINK, gplink_str);
+        g_gplink_manager->set_gplink(ou_dn, gplink_str);
     }
 
     // TODO: serch for all policy objects once, then add

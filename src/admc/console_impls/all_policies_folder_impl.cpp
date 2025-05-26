@@ -31,6 +31,7 @@
 #include "status.h"
 #include "utils.h"
 #include "fsmo/fsmo_utils.h"
+#include "managers/gplink_manager.h"
 
 #include <QAction>
 #include <QList>

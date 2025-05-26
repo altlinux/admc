@@ -60,7 +60,6 @@ bool GPLinkManager::update_failed() {
 }
 
 const QHash<QString, QString> &GPLinkManager::gplinks_map() const {
-    QMutexLocker locker(&mutex);
     return ou_links;
 }
 
