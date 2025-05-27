@@ -275,7 +275,8 @@ enum SystemFlagsBit {
 #define OBJECT_CATEGORY_PSO_CONTAINER "ms-DS-Password-Settings-Container"
 #define OBJECT_CATEGORY_PSO "ms-DS-Password-Settings"
 
-// These categories are not AD object categories. They are used within ADMC context
+// These categories are not AD object categories. They are used for project purposes
+// (for example, to setup icons)
 #define ADMC_CATEGORY_QUERY_ITEM "query-item"
 #define ADMC_CATEGORY_QUERY_FOLDER "query-folder"
 #define ADMC_CATEGORY_FSMO_ROLE "FSMO-role"

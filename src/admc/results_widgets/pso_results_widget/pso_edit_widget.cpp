@@ -88,7 +88,7 @@ void PSOEditWidget::update(const AdObject &passwd_settings_obj) {
         if (applied_object.is_empty()) {
             continue;
         }
-        QListWidgetItem *item = new QListWidgetItem(g_icon_manager->get_object_icon(applied_object),
+        QListWidgetItem *item = new QListWidgetItem(g_icon_manager->object_icon(applied_object),
                                                     dn_get_name(dn),
                                                     ui->applied_list_widget);
         item->setData(AppliedItemRole_DN, dn);
@@ -209,7 +209,7 @@ void PSOEditWidget::on_add() {
 
     connect(dialog, &SelectObjectDialog::accepted, this, [this, dialog]() {
        for (auto selected_data : dialog->get_selected_advanced()) {
-           QListWidgetItem *item = new QListWidgetItem(g_icon_manager->get_object_icon(dn_get_name(selected_data.category)),
+           QListWidgetItem *item = new QListWidgetItem(g_icon_manager->category_icon(dn_get_name(selected_data.category)),
                                                        dn_get_name(selected_data.dn),
                                                        ui->applied_list_widget);
            item->setData(AppliedItemRole_DN, selected_data.dn);

@@ -124,7 +124,7 @@ void FoundPolicyImpl::on_edit() {
 void found_policy_impl_load(const QList<QStandardItem *> &row, const AdObject &object) {
     QStandardItem *main_item = row[0];
 
-    const QIcon icon = g_icon_manager->get_object_icon(object);
+    const QIcon icon = g_icon_manager->object_icon(object);
     main_item->setIcon(icon);
     main_item->setData(object.get_dn(), FoundPolicyRole_DN);
 

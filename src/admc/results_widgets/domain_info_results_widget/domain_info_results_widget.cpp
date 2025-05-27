@@ -108,7 +108,7 @@ QList<QStandardItem *> DomainInfoResultsWidget::get_tree_items(AdInterface &ad) 
     }
 
     for (const AdObject &site_object : site_objects.values()) {
-        QStandardItem *site_item = add_tree_item(site_object.get_string(ATTRIBUTE_NAME), g_icon_manager->get_icon_for_type(ItemIconType_Site_Clean),
+        QStandardItem *site_item = add_tree_item(site_object.get_string(ATTRIBUTE_NAME), g_icon_manager->item_icon(ItemIcon_Site),
                                                  DomainInfoTreeItemType_Site, nullptr);
         site_item->setData(site_object.get_dn(), DomainInfoTreeItemRole_DN);
 
@@ -218,17 +218,17 @@ void DomainInfoResultsWidget::add_host_items(QStandardItem *site_item, const AdO
     }
     QString host;
     for (const AdObject &host_object : host_objects.values()) {
-        QStandardItem *host_item = add_tree_item(host_object.get_string(ATTRIBUTE_DNS_HOST_NAME), g_icon_manager->get_icon_for_type(ItemIconType_Domain_Clean),
+        QStandardItem *host_item = add_tree_item(host_object.get_string(ATTRIBUTE_DNS_HOST_NAME), g_icon_manager->item_icon(ItemIcon_Domain),
                                                  DomainInfoTreeItemType_Host, site_item);
         host_item->setData(host_object.get_dn(), DomainInfoTreeItemRole_DN);
         host = host_object.get_string(ATTRIBUTE_DNS_HOST_NAME);
 
-        QStandardItem *fsmo_roles_container_item = add_tree_item(tr("FSMO roles"), g_icon_manager->get_object_icon(ADMC_CATEGORY_FSMO_ROLE_CONTAINER),
+        QStandardItem *fsmo_roles_container_item = add_tree_item(tr("FSMO roles"), g_icon_manager->category_icon(ADMC_CATEGORY_FSMO_ROLE_CONTAINER),
                                                                  DomainInfoTreeItemType_FSMO_Container, host_item);
 
         if (host_fsmo_map.keys().contains(host_item->text())) {
             for (const QString &fsmo_role : host_fsmo_map[host_item->text()]) {
-                add_tree_item(fsmo_role, g_icon_manager->get_object_icon(ADMC_CATEGORY_FSMO_ROLE),
+                add_tree_item(fsmo_role, g_icon_manager->category_icon(ADMC_CATEGORY_FSMO_ROLE),
                               DomainInfoTreeItemType_FSMO_Role,fsmo_roles_container_item);
             }
         }

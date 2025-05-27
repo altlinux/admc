@@ -314,14 +314,14 @@ void PolicyImpl::set_policy_item_icon(const QModelIndex &policy_index, bool is_c
 void set_policy_link_icon(QStandardItem *policy_item, bool is_enforced, bool is_disabled) {
     if (is_enforced) {
         if (!is_disabled)
-            policy_item->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Policy_Enforced));
+            policy_item->setIcon(g_icon_manager->item_icon(ItemIcon_Policy_Enforced));
         else
-            policy_item->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Policy_Enforced_Disabled));
+            policy_item->setIcon(g_icon_manager->item_icon(ItemIcon_Policy_Enforced_Disabled));
     } else {
         if (!is_disabled)
-            policy_item->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Policy_Link));
+            policy_item->setIcon(g_icon_manager->item_icon(ItemIcon_Policy_Link));
         else
-            policy_item->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Policy_Link_Disabled));
+            policy_item->setIcon(g_icon_manager->item_icon(ItemIcon_Policy_Link_Disabled));
     }
 }
 
@@ -353,7 +353,7 @@ void console_policy_load_item(QStandardItem *main_item, const AdObject &object) 
 
         set_policy_link_icon(main_item, is_enforced, is_disabled);
     } else {
-        main_item->setIcon(g_icon_manager->get_object_icon(object));
+        main_item->setIcon(g_icon_manager->object_icon(object));
     }
 
     const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);

@@ -417,7 +417,7 @@ void LinkedPoliciesWidget::load_item_row(const AdObject &gpo_object, QList<QStan
     set_policy_link_icon(row[0], gplink.get_option(gpo_dn, GplinkOption_Enforced), gplink.get_option(gpo_dn, GplinkOption_Disabled));
 
     if (!gpo_is_valid) {
-        row[LinkedPoliciesColumn_Name]->setIcon(g_icon_manager->get_object_icon("block-indicator"));
+        row[LinkedPoliciesColumn_Name]->setIcon(g_icon_manager->category_icon("block-indicator"));
 
         for (QStandardItem *item : row) {
             item->setToolTip(tr("The GPO for this link could not be found. It maybe have been recently created and is being replicated or it could have been deleted."));

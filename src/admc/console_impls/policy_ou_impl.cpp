@@ -112,7 +112,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
         const QList<QStandardItem *> all_policies_row = console->add_scope_item(ItemType_AllPoliciesFolder, index);
         QStandardItem *all_policies_item = all_policies_row[0];
         all_policies_item->setText(tr("All policies"));
-        all_policies_item->setIcon(g_icon_manager->get_object_icon(ADMC_CATEGORY_ALL_POLICIES_FOLDER));
+        all_policies_item->setIcon(g_icon_manager->category_icon(ADMC_CATEGORY_ALL_POLICIES_FOLDER));
         // Set sort index for "All policies" to 1 so it's always
         // at the bottom of the policy tree
         console->set_item_sort_index(all_policies_item->index(), 2);
@@ -474,14 +474,14 @@ void PolicyOUImpl::change_gp_options() {
     if (checked)
     {
         res = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, GPOPTIONS_BLOCK_INHERITANCE);
-        icon_to_set = is_domain ? g_icon_manager->get_icon_for_type(ItemIconType_Domain_InheritanceBlocked) :
-                g_icon_manager->get_icon_for_type(ItemIconType_OU_InheritanceBlocked);
+        icon_to_set = is_domain ? g_icon_manager->item_icon(ItemIcon_Domain_InheritanceBlocked) :
+                g_icon_manager->item_icon(ItemIcon_OU_InheritanceBlocked);
     }
     else
     {
         res = ad.attribute_replace_string(dn, ATTRIBUTE_GPOPTIONS, GPOPTIONS_INHERIT);
-        icon_to_set = is_domain ? g_icon_manager->get_icon_for_type(ItemIconType_Domain_Clean) :
-                g_icon_manager->get_icon_for_type(ItemIconType_OU_Clean);
+        icon_to_set = is_domain ? g_icon_manager->item_icon(ItemIcon_Domain) :
+                g_icon_manager->item_icon(ItemIcon_OU);
     }
 
     if (!res) {
@@ -513,11 +513,11 @@ void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object) 
 
     if (object.get_string(ATTRIBUTE_GPOPTIONS) == GPOPTIONS_BLOCK_INHERITANCE) {
         if (index_is_domain(item->index()))
-            item->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_Domain_InheritanceBlocked));
+            item->setIcon(g_icon_manager->item_icon(ItemIcon_Domain_InheritanceBlocked));
         else
-            item->setIcon(g_icon_manager->get_icon_for_type(ItemIconType_OU_InheritanceBlocked));
+            item->setIcon(g_icon_manager->item_icon(ItemIcon_OU_InheritanceBlocked));
     } else {
-        item->setIcon(g_icon_manager->get_object_icon(object));
+        item->setIcon(g_icon_manager->object_icon(object));
     }
 
     bool inheritance_is_blocked = object.get_int(ATTRIBUTE_GPOPTIONS);

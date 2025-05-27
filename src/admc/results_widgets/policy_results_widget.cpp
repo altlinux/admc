@@ -186,7 +186,7 @@ void PolicyResultsWidget::update(const QString &new_gpo) {
 
         const QString obj_category = ou_dn == g_adconfig->domain_dn() ? OBJECT_CATEGORY_DOMAIN_DNS :
                                                                         OBJECT_CATEGORY_OU;
-        const QIcon icon = g_icon_manager->get_object_icon(obj_category);
+        const QIcon icon = g_icon_manager->category_icon(obj_category);
         row[0]->setIcon(icon);
 
         model->appendRow(row);

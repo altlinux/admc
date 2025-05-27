@@ -100,7 +100,7 @@ void DomainInfoImpl::load_domain_info_item(const AdInterface &ad) {
     }
     QStandardItem *domain_info_item = console->get_item(console->domain_info_index());
     domain_info_item->setText(tr("Active directory managment center [") + dc + ']');
-    domain_info_item->setIcon(g_icon_manager->get_object_icon(ADMC_CATEGORY_DOMAIN_INFO_ITEM));
+    domain_info_item->setIcon(g_icon_manager->category_icon(ADMC_CATEGORY_DOMAIN_INFO_ITEM));
 }
 
 void DomainInfoImpl::open_fsmo_dialog() {
