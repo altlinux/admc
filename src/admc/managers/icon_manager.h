@@ -26,6 +26,8 @@ enum ItemIcon {
     ItemIcon_Block_Indicator,
     ItemIcon_Policy_Enforce_Indicator,
     ItemIcon_Inheritance_Block_Indicator,
+    ItemIcon_Password_Settings_Object,
+    ItemIcon_PSO_Container, // Password settings container
 
     ItemIcon_COUNT
 };

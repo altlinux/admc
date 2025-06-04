@@ -284,6 +284,11 @@ enum SystemFlagsBit {
 #define ADMC_CATEGORY_GP_OBJECTS "group-policy-objects"
 #define ADMC_CATEGORY_ALL_POLICIES_FOLDER "all-policies-folder"
 #define ADMC_CATEGORY_DOMAIN_INFO_ITEM "domain-info-item"
+#define ADMC_CATEGORY_GO_UP_ACTION "go-up-action"
+#define ADMC_CATEGORY_GO_PREVIOUS_ACTION "go-previous-action"
+#define ADMC_CATEGORY_GO_NEXT_ACTION "go-next-action"
+#define ADMC_CATEGORY_MANUAL_ACTION "help-action"
+#define ADMC_CATEGORY_REFRESH_ACTION "refresh-action"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 

@@ -91,6 +91,11 @@ IconManager::IconManagerImpl::IconManagerImpl(IconManager *parent) : q(parent) {
         {ADMC_CATEGORY_FSMO_ROLE_CONTAINER, {"applications-system"}},
         {ADMC_CATEGORY_FSMO_ROLE, {"emblem-system"}},
         {ADMC_CATEGORY_DOMAIN_INFO_ITEM, {"network-workgroup"}},
+        {ADMC_CATEGORY_GO_PREVIOUS_ACTION, {"go-previous", "go-previous-symbolic"}},
+        {ADMC_CATEGORY_GO_NEXT_ACTION, {"go-next", "go-next-symbolic"}},
+        {ADMC_CATEGORY_GO_UP_ACTION, {"go-up", "go-up-symbolic"}},
+        {ADMC_CATEGORY_REFRESH_ACTION, {"view-refresh", "view-refresh-symbolic"}},
+        {ADMC_CATEGORY_MANUAL_ACTION, {"help"}},
 
         // Icons for some system containers and objects
         {OBJECT_CATEGORY_BUILTIN, {"emblem-system", "emblem-system-symbolic"}},
@@ -164,6 +169,12 @@ void IconManager::IconManagerImpl::update_action_icons() {
 }
 
 void IconManager::IconManagerImpl::update_icons_array() {
+    item_icons_array[ItemIcon_Block_Indicator] = q->category_icon(block_indicator);
+    item_icons_array[ItemIcon_Warning_Indicator] = q->category_icon(warning_indicator);
+    item_icons_array[ItemIcon_Inheritance_Block_Indicator] = q->category_icon(inheritance_indicator);
+    item_icons_array[ItemIcon_Policy_Enforce_Indicator] = q->category_icon(enforced_indicator);
+    item_icons_array[ItemIcon_Policy_Link_Indicator] = q->category_icon(link_indicator);
+
     item_icons_array[ItemIcon_Policy] = q->category_icon(OBJECT_CATEGORY_GP_CONTAINER);
     item_icons_array[ItemIcon_Policy_Link] = overlay_scope_item_icon(item_icons_array[ItemIcon_Policy], q->item_icon(ItemIcon_Policy_Link_Indicator),
                                                                   QSize(16, 16), QSize(12, 12), QPoint(-2, 7));
@@ -190,11 +201,8 @@ void IconManager::IconManagerImpl::update_icons_array() {
                                                                                     QSize(max_icon_size.width()/2, max_icon_size.height()/2),
                                                                                     QPoint(max_icon_size.width()/2, max_icon_size.width()/2));
     item_icons_array[ItemIcon_Group] = q->category_icon(OBJECT_CATEGORY_GROUP).pixmap(max_icon_size);
-    item_icons_array[ItemIcon_Block_Indicator] = q->category_icon(block_indicator);
-    item_icons_array[ItemIcon_Warning_Indicator] = q->category_icon(warning_indicator);
-    item_icons_array[ItemIcon_Inheritance_Block_Indicator] = q->category_icon(inheritance_indicator);
-    item_icons_array[ItemIcon_Policy_Enforce_Indicator] = q->category_icon(enforced_indicator);
-    item_icons_array[ItemIcon_Policy_Link_Indicator] = q->category_icon(link_indicator);
+    item_icons_array[ItemIcon_Password_Settings_Object] = q->category_icon(OBJECT_CATEGORY_PSO);
+    item_icons_array[ItemIcon_Password_Settings_Object] = q->category_icon(OBJECT_CATEGORY_PSO_CONTAINER);
 }
 
 const QIcon IconManager::item_icon(ItemIcon icon_type) const {
