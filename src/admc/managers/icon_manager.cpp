@@ -265,6 +265,38 @@ void IconManager::IconManagerImpl::append_actions(const QMap<QString, QAction *>
     category_action_map.insert(categorized_actions);
 }
 
+bool IconManager::IconManagerImpl::main_icons_are_valid() {
+    // Contains icons which can be considered as main (most frequently used)
+    const QList<QIcon> main_icons_list = {
+        q->category_icon(error_icon_name),
+        q->category_icon(fallback_icon_name),
+        q->category_icon(ADMC_CATEGORY_GO_NEXT_ACTION),
+        q->category_icon(ADMC_CATEGORY_GO_PREVIOUS_ACTION),
+        q->category_icon(ADMC_CATEGORY_GO_UP_ACTION),
+        q->category_icon(ADMC_CATEGORY_MANUAL_ACTION),
+        q->category_icon(ADMC_CATEGORY_REFRESH_ACTION),
+        item_icons_array[ItemIcon_Block_Indicator],
+        item_icons_array[ItemIcon_Warning_Indicator],
+        item_icons_array[ItemIcon_Inheritance_Block_Indicator],
+        item_icons_array[ItemIcon_Policy_Enforce_Indicator],
+        item_icons_array[ItemIcon_Policy_Link_Indicator],
+        item_icons_array[ItemIcon_Policy],
+        item_icons_array[ItemIcon_OU],
+        item_icons_array[ItemIcon_Domain],
+        item_icons_array[ItemIcon_Person],
+        item_icons_array[ItemIcon_Computer],
+        item_icons_array[ItemIcon_Group],
+    };
+
+    for (QIcon icon : main_icons_list) {
+        if (icon.isNull()) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 QStringList IconManager::available_themes() {
     QStringList available_themes = {impl->system_theme};
 
@@ -341,9 +373,17 @@ void IconManager::init(const QMap<QString, QAction *> &category_action_map) {
     impl->system_theme = QIcon::themeName();
 
     const QString current_theme = settings_get_variant(SETTING_current_icon_theme).toString();
-    const bool theme_is_available = available_themes().contains(current_theme);
+    QStringList themes = available_themes();
+    const bool theme_is_available = themes.contains(current_theme);
     if (theme_is_available) {
         set_theme(current_theme);
+        if (!impl->main_icons_are_valid()) {
+            // Switch to other theme if current theme doesn't contain any of main icons
+            themes.removeAll(current_theme);
+            if (!themes.isEmpty()) {
+                set_theme(themes.first());
+            }
+        }
     }
     else {
         set_theme(impl->system_theme);
