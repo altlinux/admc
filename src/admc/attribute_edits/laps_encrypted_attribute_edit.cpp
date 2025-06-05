@@ -28,6 +28,7 @@
 #include <QJsonValue>
 #include <QLineEdit>
 #include <QTextCodec>
+#include "krb5client.h"
 
 #include <cng-dpapi/cng-dpapi_client.h>
 
@@ -108,16 +109,22 @@ QJsonDocument LAPSEncryptedAttributeEdit::get_jsondocument_from_attribute_value(
     char* user_name = nullptr;
     char* domain_name = nullptr;
 
+    Krb5Client krb5_client;
+    const QString principal_name = krb5_client.current_principal().section('@', 0, 0);
+    QByteArray principal_name_bytes = principal_name.toUtf8();
+    user_name = principal_name_bytes.data();
+
     dc = strdup(ad.get_dc().toLocal8Bit().constData());
     if (!dc)
     {
         goto out;
     }
-    user_name = get_default_principal_name();
+
     if (!user_name)
     {
         goto out;
     }
+
     domain_name = strdup(domain_fqdn.toLocal8Bit().constData());
     if (!domain_name)
     {
@@ -153,55 +160,4 @@ out:
     if (domain_name) { free(domain_name); }
 
     return document;
-}
-
-char* LAPSEncryptedAttributeEdit::get_default_principal_name() const {
-    krb5_error_code result;
-    krb5_context context;
-    krb5_ccache default_cache;
-    krb5_principal default_principal;
-
-    result = krb5_init_context(&context);
-    if (result) {
-        qDebug() << "Failed to init krb5 context";
-
-        return nullptr;
-    }
-
-    result = krb5_cc_default(context, &default_cache);
-    if (result) {
-        qDebug() << "Failed to get default krb5 ccache";
-
-        krb5_free_context(context);
-
-        return nullptr;
-    }
-
-    result = krb5_cc_get_principal(context, default_cache, &default_principal);
-    if (result) {
-        qDebug() << "Failed to get default krb5 principal";
-
-        krb5_cc_close(context, default_cache);
-        krb5_free_context(context);
-
-        return nullptr;
-    }
-
-    if (default_principal->length < 1)
-    {
-        qDebug() << "Failed to get default krb5 principal name";
-
-        krb5_cc_close(context, default_cache);
-        krb5_free_context(context);
-
-        return nullptr;
-    }
-
-    char *out = strdup(default_principal->data[0].data);
-
-    krb5_free_principal(context, default_principal);
-    krb5_cc_close(context, default_cache);
-    krb5_free_context(context);
-
-    return out;
 }
