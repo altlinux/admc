@@ -149,6 +149,16 @@
         <source>Don&apos;t require Kerberos pre-authentication</source>
         <translation>Не требовать предварительной аутентификации Kerberos</translation>
     </message>
+    <message>
+        <location filename="tabs/account_tab.ui" line="233"/>
+        <source>Password settings:</source>
+        <translation>Настройки паролей:</translation>
+    </message>
+    <message>
+        <location filename="tabs/account_tab.ui" line="240"/>
+        <source>PLACEHOLDER</source>
+        <translation></translation>
+    </message>
 </context>
 <context>
     <name>AddressMultiTab</name>
@@ -2968,6 +2978,29 @@
     </message>
 </context>
 <context>
+    <name>PSOAppliedEdit</name>
+    <message>
+        <location filename="attribute_edits/pso_applied_edit.cpp" line="13"/>
+        <source>Default</source>
+        <translation>По умолчанию</translation>
+    </message>
+    <message>
+        <location filename="attribute_edits/pso_applied_edit.cpp" line="37"/>
+        <source>Not found</source>
+        <translation>Не найдено</translation>
+    </message>
+    <message>
+        <location filename="attribute_edits/pso_applied_edit.cpp" line="44"/>
+        <source> (directly)</source>
+        <translation> (напрямую)</translation>
+    </message>
+    <message>
+        <location filename="attribute_edits/pso_applied_edit.cpp" line="47"/>
+        <source> (via group membership)</source>
+        <translation> (через членство в группе)</translation>
+    </message>
+</context>
+<context>
     <name>PSOEditWidget</name>
     <message>
         <location filename="results_widgets/pso_results_widget/pso_edit_widget.ui" line="17"/>
@@ -3580,7 +3613,12 @@
         <translation>Подтверждение действия</translation>
     </message>
     <message>
-        <location filename="utils.cpp" line="520"/>
+        <location filename="console_impls/object_impl.cpp" line="1967"/>
+        <source>Failed to find password settings container</source>
+        <translation>Не удалось найти контейнер парольных настроек</translation>
+    </message>
+    <message>
+        <location filename="utils.cpp" line="470"/>
         <source>Enabled</source>
         <translation>Включено</translation>
     </message>
