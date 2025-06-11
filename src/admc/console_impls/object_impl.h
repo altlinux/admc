@@ -179,5 +179,6 @@ void console_object_rename(const QList<ConsoleWidget *> &console_list, const QLi
 void console_object_delete(const QList<ConsoleWidget *> &console_list, const QList<QModelIndex> &index_list, const int dn_role);
 void console_object_properties(const QList<ConsoleWidget *> &console_list, const QList<QModelIndex> &index_list, const int dn_role, const QList<QString> &class_list);
 bool console_object_deletion_dialog(ConsoleWidget *console, const QList<QModelIndex> &index_deleted_list);
+void console_tree_add_password_settings(ConsoleWidget *console, AdInterface &ad);
 
 #endif /* OBJECT_IMPL_H */

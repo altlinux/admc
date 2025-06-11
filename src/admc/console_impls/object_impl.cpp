@@ -1789,6 +1789,7 @@ void console_object_tree_init(ConsoleWidget *console, AdInterface &ad) {
 
     const QString domain = g_adconfig->domain().toLower();
     root->setText(domain);
+    console->set_item_sort_index(row[0]->index(), 0);
 }
 
 QModelIndex get_object_tree_root(ConsoleWidget *console) {
@@ -1958,4 +1959,25 @@ bool console_object_deletion_dialog(ConsoleWidget *console, const QList<QModelIn
         return answer == QMessageBox::Yes;
     }
     return true;
+}
+
+void console_tree_add_password_settings(ConsoleWidget *console, AdInterface &ad) {
+    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_PSO_CONTAINER);
+    auto search_results = ad.search(g_adconfig->domain_dn(), SearchScope_All, filter, {});
+    const QString err = QObject::tr("Failed to find password settings container");
+    if (search_results.isEmpty()) {
+        g_status->add_message(err, StatusType_Error);
+        return;
+    }
+
+    const AdObject pso_container_obj = search_results.values()[0];
+    if (pso_container_obj.is_empty()) {
+        g_status->add_message(err, StatusType_Error);
+        return;
+    }
+
+    const QList<QStandardItem *> row = console->add_scope_item(ItemType_Object, console->domain_info_index());
+    console_object_item_data_load(row[0], pso_container_obj);
+    row[0]->setText(pso_container_obj.get_string(ATTRIBUTE_NAME));
+    console->set_item_sort_index(row[0]->index(), 3);
 }

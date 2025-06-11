@@ -92,6 +92,7 @@ void console_policy_tree_init(ConsoleWidget *console) {
     policy_tree_head->setText(QCoreApplication::translate("policy_root_impl", "Group Policy Objects"));
     policy_tree_head->setDragEnabled(false);
     policy_tree_head->setIcon(g_icon_manager->category_icon(ADMC_CATEGORY_GP_OBJECTS));
+    console->set_item_sort_index(head_row[0]->index(), 1);
 }
 
 QModelIndex get_policy_tree_root(ConsoleWidget *console) {

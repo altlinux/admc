@@ -67,6 +67,7 @@ void DomainInfoImpl::refresh(const QList<QModelIndex> &index_list) {
         console_object_tree_init(console, ad);
         console_policy_tree_init(console);
         console_query_tree_init(console);
+        console_tree_add_password_settings(console, ad);
     }
     console->expand_item(console->domain_info_index());
 }

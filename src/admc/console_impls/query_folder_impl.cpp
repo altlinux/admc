@@ -345,6 +345,7 @@ void console_query_tree_init(ConsoleWidget *console) {
     root->setIcon(g_icon_manager->category_icon(ADMC_CATEGORY_QUERY_FOLDER));
     root->setDragEnabled(false);
     root->setData(true, QueryItemRole_IsRoot);
+    console->set_item_sort_index(root_row[0]->index(), 2);
 
     // Add rest of tree
     const QHash<QString, QVariant> folder_list = settings_get_variant(SETTING_query_folders).toHash();
