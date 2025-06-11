@@ -28,6 +28,7 @@
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/unlock_edit.h"
 #include "attribute_edits/upn_edit.h"
+#include "attribute_edits/pso_applied_edit.h"
 #include "settings.h"
 
 // NOTE: the "can't change password" checkbox does not
@@ -47,6 +48,7 @@ AccountTab::AccountTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QWidg
     auto expiry_widget_edit = new ExpiryEdit(ui->expiry_widget, this);
     auto logon_hours_edit = new LogonHoursEdit(ui->logon_hours_button, this);
     auto logon_computers_edit = new LogonComputersEdit(ui->logon_computers_button, this);
+    auto pso_applied_edit = new PSOAppliedEdit(ui->pso_label, this);
 
     const QHash<AccountOption, QCheckBox *> check_map = {
         {AccountOption_Disabled, ui->disabled_check},
@@ -75,6 +77,7 @@ AccountTab::AccountTab(AdInterface &ad, QList<AttributeEdit *> *edit_list, QWidg
         expiry_widget_edit,
         logon_hours_edit,
         logon_computers_edit,
+        pso_applied_edit
     });
 
     const bool logon_computers_enabled = settings_get_variant(SETTING_feature_logon_computers).toBool();

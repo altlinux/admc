@@ -199,6 +199,7 @@ set(ADMC_SOURCES
     attribute_edits/laps_expiry_edit.cpp
     attribute_edits/general_name_edit.cpp
     attribute_edits/dn_edit.cpp
+    attribute_edits/pso_applied_edit.cpp
 
     attribute_edits/upn_multi_edit.cpp
     attribute_edits/account_option_multi_edit.cpp
