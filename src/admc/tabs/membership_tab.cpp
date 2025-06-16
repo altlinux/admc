@@ -225,7 +225,6 @@ bool MembershipTabEdit::apply(AdInterface &ad, const QString &target) const {
 
             // Change primary group
             if (current_primary_values != original_primary_values) {
-                const QString original_primary_group = original_primary_values.values()[0];
                 const QString group_dn = current_primary_values.values()[0];
 
                 const bool success = ad.user_set_primary_group(group_dn, target);
