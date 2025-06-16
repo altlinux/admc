@@ -152,6 +152,14 @@ void MembershipTabEdit::load(AdInterface &ad, const AdObject &object) {
             // user sid  = "S-foo-bar-baz-abc"
             // group rid = "xyz"
             // group sid = "S-foo-bar-baz-xyz"
+            const QString obj_category = object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
+            const bool is_group = dn_get_name(obj_category) == OBJECT_CATEGORY_GROUP;
+            if (obj_category.isEmpty() || is_group) {
+                primary_button->hide();
+                primary_group_label->hide();
+                break;
+            }
+
             const QString group_rid = object.get_string(ATTRIBUTE_PRIMARY_GROUP_ID);
             const QByteArray user_sid = object.get_value(ATTRIBUTE_OBJECT_SID);
             const QString user_sid_string = attribute_display_value(ATTRIBUTE_OBJECT_SID, user_sid, g_adconfig);
