@@ -548,7 +548,7 @@ void update_ou_gplink_data(const QString &gplink, const QModelIndex &ou_index) {
     g_gplink_manager->set_gplink(ou_dn, gplink);
 }
 
-QModelIndex search_gpo_ou_index(ConsoleWidget *console, const QString &ou_dn) {
+QModelIndex search_policy_ou_index(ConsoleWidget *console, const QString &ou_dn) {
     QModelIndex gp_objects_index = console->search_item(QModelIndex(), {ItemType_PolicyRoot});
     QModelIndex ou_dn_item_index = console->search_item(gp_objects_index, PolicyOURole_DN,
                                                         ou_dn, {ItemType_PolicyOU});

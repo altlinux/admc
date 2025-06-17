@@ -53,22 +53,24 @@ GroupPolicyTab::GroupPolicyTab(QList<AttributeEdit *> *edit_list, ConsoleWidget 
 
     edit_list->append({options_edit});
 
-    target_ou_index = search_gpo_ou_index(console, ou_dn);
+    target_ou_index = search_policy_ou_index(console, ou_dn);
 
-    if (console && target_ou_index.isValid()) {
-
-        inheritance_widget->update(target_ou_index);
+    if (console) {
+        inheritance_widget->update(ou_dn);
         connect(gpo_options_check, &QCheckBox::toggled, [this](bool toggled) {
             inheritance_widget->hide_not_enforced_inherited_links(toggled);
-            });
-        connect(options_edit, &GpoptionsEdit::gp_options_changed, [this](bool inheritance_blocked) {
-            console->get_item(target_ou_index)->setData(inheritance_blocked, PolicyOURole_Inheritance_Block);
-            inheritance_widget->update(target_ou_index);
+        });
+        connect(options_edit, &GpoptionsEdit::gp_options_changed, [this, ou_dn](bool inheritance_blocked) {
+            inheritance_widget->update(ou_dn);
 
-            PolicyOUResultsWidget *result_ou_widget = dynamic_cast<PolicyOUResultsWidget*>(console->get_result_widget_for_index(target_ou_index));
-            if (result_ou_widget)
-                result_ou_widget->update_inheritance_widget(target_ou_index);
-            });
+            if (target_ou_index.isValid()) {
+                console->get_item(target_ou_index)->setData(inheritance_blocked, PolicyOURole_Inheritance_Block);
+                PolicyOUResultsWidget *result_ou_widget = dynamic_cast<PolicyOUResultsWidget*>(console->get_result_widget_for_index(target_ou_index));
+                if (result_ou_widget) {
+                    result_ou_widget->update_inheritance_widget(target_ou_index);
+                }
+            }
+        });
     }
 }
 

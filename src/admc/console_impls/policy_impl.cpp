@@ -232,7 +232,7 @@ void PolicyImpl::on_edit() {
 }
 
 void PolicyImpl::on_ou_gplink_changed(const QString &ou_dn, const Gplink &gplink, const QString &policy_dn, GplinkOption option) {
-    QModelIndex ou_item_index = search_gpo_ou_index(console, ou_dn);
+    QModelIndex ou_item_index = search_policy_ou_index(console, ou_dn);
     if (!ou_item_index.isValid())
         return;
 

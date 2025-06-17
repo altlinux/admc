@@ -41,8 +41,6 @@ PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
 }
 
 void PolicyRootImpl::fetch(const QModelIndex &index) {
-    g_gplink_manager->update();
-
     AdInterface ad;
     if (ad_failed(ad, console)) {
         return;

@@ -99,7 +99,7 @@ void policy_ou_impl_load_item_data(QStandardItem *item, const AdObject &object);
 QModelIndex get_ou_child_policy_index(ConsoleWidget *console, const QModelIndex &ou_index, const QString &policy_dn);
 
 //Searches OU's index with given dn under "Group policy objects" item
-QModelIndex search_gpo_ou_index(ConsoleWidget *console, const QString &ou_dn);
+QModelIndex search_policy_ou_index(ConsoleWidget *console, const QString &ou_dn);
 
 void update_ou_gplink_data(const QString &gplink, const QModelIndex &ou_index);
 

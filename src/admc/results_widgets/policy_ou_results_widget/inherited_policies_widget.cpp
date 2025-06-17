@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2025 BaseALT Ltd.
@@ -29,6 +29,8 @@
 #include "managers/icon_manager.h"
 #include "managers/gplink_manager.h"
 #include "globals.h"
+#include "ad_object.h"
+#include "ad_utils.h"
 
 #include <QStandardItemModel>
 #include <QStringList>
@@ -37,8 +39,7 @@
 InheritedPoliciesWidget::InheritedPoliciesWidget(ConsoleWidget *console_arg, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::InheritedPoliciesWidget),
-    console(console_arg)
-{
+    console(console_arg) {
     ui->setupUi(this);
 
     model = new QStandardItemModel(0, InheritedPoliciesColumns_COUNT, this);
@@ -47,7 +48,6 @@ InheritedPoliciesWidget::InheritedPoliciesWidget(ConsoleWidget *console_arg, QWi
                 {InheritedPoliciesColumns_Prority, tr("Priority")},
                 {InheritedPoliciesColumns_Name, tr("Name")},
                 {InheritedPoliciesColumns_Location, tr("Location")},
-                {InheritedPoliciesColumns_Status, tr("Status")},
             });
     ui->view->set_model(model);
     const QVariant state = settings_get_variant(SETTING_inheritance_widget_state);
@@ -55,32 +55,40 @@ InheritedPoliciesWidget::InheritedPoliciesWidget(ConsoleWidget *console_arg, QWi
                                 InheritedPoliciesColumns_Prority,
                                 InheritedPoliciesColumns_Name,
                                 InheritedPoliciesColumns_Location,
-                                InheritedPoliciesColumns_Status
                             });
     ui->view->set_drag_drop_enabled(false);
 }
 
-InheritedPoliciesWidget::~InheritedPoliciesWidget()
-{
+InheritedPoliciesWidget::~InheritedPoliciesWidget() {
     const QVariant state = ui->view->save_state();
     settings_set_variant(SETTING_inheritance_widget_state, state);
 
     delete ui;
 }
 
-void InheritedPoliciesWidget::update(const QModelIndex &index)
-{
+void InheritedPoliciesWidget::update(const QModelIndex &ou_index) {
+    selected_scope_index = ou_index;
+    ou_dn = ou_index.data(PolicyOURole_DN).toString();
+    update(ou_dn);
+}
+
+void InheritedPoliciesWidget::update(const QString &ou_dn_arg) {
+    show_busy_indicator();
+    ou_dn = ou_dn_arg;
+    AdInterface ad;
+    if (!ad.is_connected()) {
+        return;
+    }
+
     model->removeRows(0, model->rowCount());
-    selected_scope_index = index;
-    add_enabled_policy_items(index);
+    add_enabled_policy_items(ad, ou_dn_arg);
     remove_link_duplicates();
     set_priority_to_items();
     model->sort(InheritedPoliciesColumns_Prority);
+    hide_busy_indicator();
 }
 
-void InheritedPoliciesWidget::hide_not_enforced_inherited_links(bool hide)
-{
-    const QString ou_dn = selected_scope_index.data(PolicyOURole_DN).toString();
+void InheritedPoliciesWidget::hide_not_enforced_inherited_links(bool hide) {
     const Gplink gplink = Gplink(g_gplink_manager->ou_gplink(ou_dn));
     const QStringList gplink_strings = gplink.get_gpo_list();
     for (int row = 0; row < model->rowCount(); ++row) {
@@ -91,20 +99,19 @@ void InheritedPoliciesWidget::hide_not_enforced_inherited_links(bool hide)
     }
 }
 
-void InheritedPoliciesWidget::add_enabled_policy_items(const QModelIndex &index, bool inheritance_blocked)
-{
-    if (index.data(ConsoleRole_Type) != ItemType_PolicyOU)
+void InheritedPoliciesWidget::add_enabled_policy_items(AdInterface &ad, const QString ou_dn, bool inheritance_blocked) {
+    const AdObject ou_obj = ad.search_object(ou_dn, {ATTRIBUTE_NAME,
+                                                     ATTRIBUTE_GPOPTIONS,
+                                                     ATTRIBUTE_GPLINK});
+    if (ou_obj.is_empty()) {
         return;
+    }
 
-    const QString ou_dn = index.data(PolicyOURole_DN).toString();
-    const QString gplink_string = g_gplink_manager->ou_gplink(ou_dn);
-    const Gplink gplink = Gplink(gplink_string);
-
+    const Gplink gplink = Gplink(ou_obj.get_string(ATTRIBUTE_GPLINK));
     const QStringList enforced_links = gplink.enforced_gpo_dn_list();
     const QStringList disabled_links = gplink.disabled_gpo_dn_list();
-    int row_number = 0;
-    for (QString gpo_dn : gplink.get_gpo_list())
-    {
+    int enforced_policy_row = 0;
+    for (QString gpo_dn : gplink.get_gpo_list()) {
         if (disabled_links.contains(gpo_dn)) {
             continue;
         }
@@ -114,19 +121,20 @@ void InheritedPoliciesWidget::add_enabled_policy_items(const QModelIndex &index,
 
         if (policy_is_enforced) {
             row = make_item_row(InheritedPoliciesColumns_COUNT);
-            load_item(row, index, gpo_dn, policy_is_enforced);
-            model->insertRow(row_number, row);
-            ++row_number;
+            load_item(row, ad, ou_obj.get_string(ATTRIBUTE_NAME), gpo_dn, policy_is_enforced);
+            model->insertRow(enforced_policy_row, row);
+            ++enforced_policy_row;
         }
-        else if (index == selected_scope_index || !inheritance_blocked) {
+        else if (!inheritance_blocked) {
             row = make_item_row(InheritedPoliciesColumns_COUNT);
-            load_item(row, index, gpo_dn, policy_is_enforced);
+            load_item(row, ad, ou_obj.get_string(ATTRIBUTE_NAME), gpo_dn, policy_is_enforced);
             model->appendRow(row);
         }
     }
 
-    bool inheritance_is_blocked = index.data(PolicyOURole_Inheritance_Block).toBool() || inheritance_blocked;
-    add_enabled_policy_items(index.parent(), inheritance_is_blocked);
+
+    bool inheritance_is_blocked = ou_obj.get_string(ATTRIBUTE_GPOPTIONS) == GPOPTIONS_BLOCK_INHERITANCE || inheritance_blocked;
+    add_enabled_policy_items(ad, dn_get_parent(ou_dn), inheritance_is_blocked);
 }
 
 void InheritedPoliciesWidget::remove_link_duplicates() {
@@ -143,24 +151,25 @@ void InheritedPoliciesWidget::remove_link_duplicates() {
     }
 }
 
-void InheritedPoliciesWidget::set_priority_to_items()
-{
+void InheritedPoliciesWidget::set_priority_to_items() {
     for(int row = 0; row < model->rowCount(); ++row) {
         model->item(row, InheritedPoliciesColumns_Prority)->
                 setData(row + 1, Qt::DisplayRole);
     }
 }
 
-void InheritedPoliciesWidget::load_item(const QList<QStandardItem *> row, const QModelIndex &ou_index, const QString &policy_dn, bool is_enforced)
-{
-    QModelIndex enforced_policy_index = console->search_item(ou_index, PolicyRole_DN, policy_dn, {ItemType_Policy});
-    const QString dn = enforced_policy_index.data(PolicyRole_DN).toString();
-    set_data_for_row(row, dn, RowRole_DN);
+void InheritedPoliciesWidget::load_item(const QList<QStandardItem *> row, AdInterface &ad, const QString &ou_name, const QString &policy_dn, bool is_enforced) {
+    AdObject gpo = ad.search_object(policy_dn, {ATTRIBUTE_DISPLAY_NAME});
+    if (gpo.is_empty()) {
+        return;
+    }
+
+    set_data_for_row(row, policy_dn, RowRole_DN);
     set_data_for_row(row, is_enforced, RowRole_IsEnforced);
 
-    row[InheritedPoliciesColumns_Name]->setText(enforced_policy_index.data(Qt::DisplayRole).toString());
-    row[InheritedPoliciesColumns_Location]->setText(ou_index.data(Qt::DisplayRole).toString());
-    row[InheritedPoliciesColumns_Status]->setText(enforced_policy_index.data(PolicyRole_GPO_Status).toString());
+    const QString name = gpo.get_string(ATTRIBUTE_DISPLAY_NAME);
+    row[InheritedPoliciesColumns_Name]->setText(name);
+    row[InheritedPoliciesColumns_Location]->setText(ou_name);
     if (is_enforced)
         row[0]->setIcon(g_icon_manager->item_icon(ItemIcon_Policy_Enforced));
     else

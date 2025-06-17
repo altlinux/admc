@@ -31,6 +31,7 @@ class QStandardItemModel;
 class ConsoleWidget;
 class QStandardItem;
 class QStringList;
+class AdInterface;
 
 class InheritedPoliciesWidget final : public QWidget
 {
@@ -42,7 +43,6 @@ public:
         InheritedPoliciesColumns_Prority,
         InheritedPoliciesColumns_Name,
         InheritedPoliciesColumns_Location,
-        InheritedPoliciesColumns_Status,
 
         InheritedPoliciesColumns_COUNT
     };
@@ -55,7 +55,8 @@ public:
     explicit InheritedPoliciesWidget(ConsoleWidget *console_arg, QWidget *parent = nullptr);
     ~InheritedPoliciesWidget();
 
-    void update(const QModelIndex &index);
+    void update(const QModelIndex &ou_index);
+    void update(const QString &ou_dn_arg);
     void hide_not_enforced_inherited_links(bool hide);
 
 private:
@@ -63,11 +64,12 @@ private:
     Ui::InheritedPoliciesWidget *ui;
     ConsoleWidget *console;
     QModelIndex selected_scope_index;
+    QString ou_dn;
 
-    void add_enabled_policy_items(const QModelIndex &index, bool inheritance_blocked = false);
+    void add_enabled_policy_items(AdInterface &ad, const QString ou_dn, bool inheritance_blocked = false);
     void remove_link_duplicates();
     void set_priority_to_items();
-    void load_item(const QList<QStandardItem *> row, const QModelIndex &ou_index, const QString &policy_dn, bool is_enforced);
+    void load_item(const QList<QStandardItem *> row, AdInterface &ad, const QString &ou_name, const QString &policy_dn, bool is_enforced);
 };
 
 #endif // INHERITED_POLICIES_WIDGET_H
