@@ -339,6 +339,11 @@ void MainWindow::init_globals() {
         {OBJECT_CATEGORY_OU, ui->action_create_ou},
         {OBJECT_CATEGORY_PERSON, ui->action_create_user},
         {OBJECT_CATEGORY_GROUP, ui->action_create_group},
+        {ADMC_CATEGORY_GO_PREVIOUS_ACTION, ui->action_navigate_back},
+        {ADMC_CATEGORY_GO_NEXT_ACTION, ui->action_navigate_forward},
+        {ADMC_CATEGORY_MANUAL_ACTION, ui->action_manual},
+        {ADMC_CATEGORY_GO_UP_ACTION, ui->action_navigate_up},
+        {ADMC_CATEGORY_REFRESH_ACTION, ui->action_refresh}
     };
 
     g_icon_manager->init(category_action_map);
