@@ -538,11 +538,6 @@ void MainWindow::setup_authentication_dialog() {
     });
 
     connect(ui->action_change_user, &QAction::triggered, this, &MainWindow::on_change_user);
-    connect(auth_dialog, &QDialog::rejected, [this](){
-       if (!inited) {
-           close();
-       }
-    });
 }
 
 void MainWindow::on_change_user() {
