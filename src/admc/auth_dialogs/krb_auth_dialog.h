@@ -50,6 +50,7 @@ private:
     virtual void on_show_passwd(bool show) override;
     virtual void show_error_message(const QString &error = QString()) override;
 
+    void on_use_system_credentials(bool use_system);
     void on_principal_selected(const QString &principal);
     void hide_passwd_widgets(bool hide);
 

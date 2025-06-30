@@ -32,7 +32,7 @@ class Krb5Client::Krb5ClientImpl final {
 public:
     krb5_context context;
     QString curr_principal;
-    QString def_principal;
+    QString sys_principal;
     QHash<QString, Krb5TGTData> principal_tgt_map;
     QHash<QString, krb5_ccache> principal_cache_map;
     bool use_default_cache;
@@ -44,7 +44,7 @@ public:
 
     void kinit(const QString &principal, const QString &password);
     void load_caches();
-    void load_cache_data(krb5_ccache ccache, bool is_default);
+    void load_cache_data(krb5_ccache ccache, bool is_system);
     Krb5TgtState tgt_state_from_creds(const krb5_creds &creds);
     void update_tgt_state_from_creds(Krb5TGTData &data, const krb5_creds &creds);
     void throw_error(const QString &error, krb5_error_code err_code);
@@ -178,10 +178,10 @@ void Krb5Client::Krb5ClientImpl::load_caches() {
         load_cache_data(ccache, false);
     }
 
-    curr_principal = def_principal;
+    curr_principal = sys_principal;
 }
 
-void Krb5Client::Krb5ClientImpl::load_cache_data(krb5_ccache ccache, bool is_default) {
+void Krb5Client::Krb5ClientImpl::load_cache_data(krb5_ccache ccache, bool is_system) {
     krb5_error_code res;
     krb5_principal principal;
     krb5_creds creds;
@@ -221,8 +221,8 @@ void Krb5Client::Krb5ClientImpl::load_cache_data(krb5_ccache ccache, bool is_def
         return;
     }
 
-    if (is_default) {
-        def_principal = tgt_data.principal;
+    if (is_system) {
+        sys_principal = tgt_data.principal;
     }
     tgt_data.state = tgt_state_from_creds(creds);
     tgt_data.realm = principal->realm.data;
@@ -391,8 +391,8 @@ QString Krb5Client::current_principal() const {
     return impl->curr_principal;
 }
 
-QString Krb5Client::default_principal() const {
-    return impl->def_principal;
+QString Krb5Client::system_principal() const {
+    return impl->sys_principal;
 }
 
 bool Krb5Client::principal_has_cache(const QString &principal) const {

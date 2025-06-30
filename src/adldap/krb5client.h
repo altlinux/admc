@@ -49,7 +49,7 @@ public:
     void refresh_tgt(const QString &principal);
     Krb5TGTData tgt_data(const QString &principal) const;
     QString current_principal() const;
-    QString default_principal() const;
+    QString system_principal() const;
     bool principal_has_cache(const QString &principal) const;
     QStringList available_principals() const;
     QStringList active_tgt_principals() const;

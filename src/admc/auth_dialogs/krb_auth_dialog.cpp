@@ -51,11 +51,16 @@ void KrbAuthDialog::setupWidgets() {
     ui->ticket_available_label->setVisible(false);
 
     ui->principal_cmb_box->addItems(client->available_principals());
-    ui->principal_cmb_box->setCurrentText(settings_get_variant(SETTING_last_logged_user).toString());
 
     connect(ui->principal_cmb_box, &QComboBox::currentTextChanged, this, &KrbAuthDialog::on_principal_selected);
     connect(ui->show_passwd_checkbox, &QCheckBox::toggled, this, &KrbAuthDialog::on_show_passwd);
     connect(ui->sign_in_button, &QPushButton::clicked, this, &KrbAuthDialog::on_sign_in);
+    connect(ui->system_cache_chkbox, &QCheckBox::toggled, this, &KrbAuthDialog::on_use_system_credentials);
+
+    bool creds_are_system = !settings_get_variant(SETTING_use_system_credentials).isNull() &&
+                             settings_get_variant(SETTING_use_system_credentials).toBool();
+    ui->system_cache_chkbox->setChecked(creds_are_system);
+    on_use_system_credentials(creds_are_system);
 
     ui->principal_cmb_box->setFocus();
 
@@ -136,5 +141,22 @@ void KrbAuthDialog::hide_passwd_widgets(bool hide) {
     ui->show_passwd_checkbox->setHidden(hide);
     ui->ticket_available_label->setVisible(hide);
     ui->principal_cmb_box->setFocus();
+    adjustSize();
+}
+
+void KrbAuthDialog::on_use_system_credentials(bool use_system) {
+    const QString principal = use_system ? client->system_principal() :
+                                           client->current_principal();
+    if (principal.isEmpty() && use_system) {
+        show_error_message(tr("Failed to find system credentials"));
+    }
+    else {
+        ui->error_label->setHidden(true);
+    }
+
+    settings_set_variant(SETTING_use_system_credentials, use_system);
+    ui->principal_cmb_box->setCurrentText(principal);
+    ui->principal_cmb_box->setDisabled(use_system);
+    hide_passwd_widgets(!principal.isEmpty());
     adjustSize();
 }
