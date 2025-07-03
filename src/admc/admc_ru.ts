@@ -15,8 +15,9 @@
     </message>
     <message>
         <location filename="about_dialog.ui" line="50"/>
-        <source>Copyright (C) 2022 BaseALT Ltd.</source>
-        <translation>Авторские права: ООО «Базальт СПО», 2025.</translation>
+        <source>Copyright (C) 2025 BaseALT Ltd.</source>
+        <oldsource>Copyright (C) 2022 BaseALT Ltd.</oldsource>
+        <translation type="unfinished">Авторские права: ООО «Базальт СПО», 2025.</translation>
     </message>
 </context>
 <context>
@@ -1916,7 +1917,17 @@
         <translation>Билет доступен</translation>
     </message>
     <message>
-        <location filename="auth_dialogs/krb_auth_dialog.ui" line="144"/>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="139"/>
+        <source>Use system credentials</source>
+        <translation>Использовать системные учётные данные</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="145"/>
+        <source>System cache</source>
+        <translation>Системный кеш</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="189"/>
         <source>Sign in</source>
         <translation>Войти</translation>
     </message>
@@ -1944,6 +1955,11 @@
         <location filename="auth_dialogs/krb_auth_dialog.cpp" line="106"/>
         <source>Authentication failed</source>
         <translation>Аутентификация не удалась</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.cpp" line="152"/>
+        <source>Failed to find system credentials</source>
+        <translation>Не удалость найти системные учётные данные</translation>
     </message>
 </context>
 <context>
