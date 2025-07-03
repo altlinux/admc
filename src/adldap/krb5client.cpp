@@ -38,6 +38,7 @@ public:
     bool use_default_cache;
     static const QString ccaches_path;
     static const QString ccache_name_prefix;
+    static QString sys_ccache;
 
     explicit Krb5ClientImpl();
     ~Krb5ClientImpl();
@@ -52,10 +53,12 @@ public:
     void cleanup_and_throw(const QString &error, krb5_error_code err_code, krb5_ccache ccache, krb5_creds *creds,
                            krb5_principal principal, char *principal_unparsed);
     QString principal_from_ccache(krb5_ccache ccache);
+    bool cache_is_system(krb5_ccache ccache);
 };
 
 const QString Krb5Client::Krb5ClientImpl::ccaches_path = QString("/tmp/admc_uid") + QString::number(getuid()) + "/ccaches/";
 const QString Krb5Client::Krb5ClientImpl::ccache_name_prefix = "krb5cc_";
+QString Krb5Client::Krb5ClientImpl::sys_ccache = QString();
 
 Krb5Client::Krb5ClientImpl::Krb5ClientImpl() : context(NULL) {
     krb5_error_code res = krb5_init_context(&context);
@@ -144,7 +147,7 @@ void Krb5Client::Krb5ClientImpl::kinit(const QString &principal, const QString &
         cleanup_and_throw(setenv_fail, 0, ccache, &creds, princ, nullptr);
     }
 
-    load_cache_data(ccache, true);
+    load_cache_data(ccache, cache_is_system(ccache));
 
     curr_principal = principal;
 }
@@ -152,13 +155,30 @@ void Krb5Client::Krb5ClientImpl::kinit(const QString &principal, const QString &
 void Krb5Client::Krb5ClientImpl::load_caches() {
     // Load default cache data
     krb5_ccache def_ccache = nullptr;
-    krb5_error_code res = krb5_cc_default(context, &def_ccache);
-    if (res) {
-        qDebug() << "Failed to get default cache";
-        krb5_cc_close(context, def_ccache);
-        return;
+    if (sys_ccache.isEmpty()) {
+        krb5_error_code res = krb5_cc_default(context, &def_ccache);
+        if (res) {
+            qDebug() << "Failed to get default cache";
+            krb5_cc_close(context, def_ccache);
+            return;
+        }
+
+        if (cache_is_system(def_ccache)) {
+            sys_ccache = QString(krb5_cc_get_type(context, def_ccache)) + QString(":") +
+                    QString(krb5_cc_get_name(context, def_ccache));
+        }
     }
-    load_cache_data(def_ccache, true);
+    else {
+        const QByteArray sys_cache_bytes = sys_ccache.toUtf8();
+        krb5_error_code res = krb5_cc_resolve(context, sys_cache_bytes.constData(), &def_ccache);
+        if (res) {
+            qDebug() << "Failed to get system cache";
+            krb5_cc_close(context, def_ccache);
+            return;
+        }
+    }
+
+    load_cache_data(def_ccache, cache_is_system(def_ccache));
 
     krb5_ccache ccache = nullptr;
 
@@ -284,7 +304,7 @@ void Krb5Client::Krb5ClientImpl::cleanup(krb5_ccache ccache, krb5_creds *creds, 
     }
 }
 
-void Krb5Client::Krb5ClientImpl::cleanup_and_throw(const QString &error, krb5_error_code err_code, krb5_ccache ccache, krb5_creds *creds, krb5_principal principal, char *principal_unparsed) {
+void Krb5Client::Krb5ClientImpl:: cleanup_and_throw(const QString &error, krb5_error_code err_code, krb5_ccache ccache, krb5_creds *creds, krb5_principal principal, char *principal_unparsed) {
     cleanup(ccache, creds, principal, principal_unparsed);
     throw_error(error, err_code);
 }
@@ -309,6 +329,10 @@ QString Krb5Client::Krb5ClientImpl::principal_from_ccache(krb5_ccache ccache) {
 
     cleanup(nullptr, nullptr, principal, princ);
     return princ;
+}
+
+bool Krb5Client::Krb5ClientImpl::cache_is_system(krb5_ccache ccache) {
+    return QString(krb5_cc_get_type(context, ccache)).contains("KEYRING");
 }
 
 Krb5Client::Krb5Client() : impl(std::unique_ptr<Krb5ClientImpl>(new Krb5ClientImpl)) {
