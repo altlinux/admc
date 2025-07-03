@@ -33,6 +33,8 @@ public:
     using QDialog::QDialog;
     virtual ~AuthDialogBase() = default;
 
+    virtual void logout() = 0;
+
 protected:
     virtual void setupWidgets() = 0;
     virtual void on_sign_in() = 0;

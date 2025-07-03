@@ -438,3 +438,8 @@ QStringList Krb5Client::active_tgt_principals() const {
 
     return out;
 }
+
+void Krb5Client::logout() {
+    qputenv("KRB5CCNAME", "MEMORY:empty_ccache");
+    impl->curr_principal = QString();
+}

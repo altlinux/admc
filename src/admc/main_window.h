@@ -72,6 +72,8 @@ private:
     void init_on_connect(AdInterface &ad);
     void setup_authentication_dialog();
     void on_change_user();
+    void on_logout();
+    void disable_actions_on_logout(bool disable);
 };
 
 #endif /* MAIN_WINDOW_H */

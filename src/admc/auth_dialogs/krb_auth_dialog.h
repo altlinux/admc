@@ -42,6 +42,8 @@ public:
     explicit KrbAuthDialog(QWidget *parent = nullptr);
     ~KrbAuthDialog();
 
+    virtual void logout() override;
+
 private:
     Ui::KrbAuthDialog *ui;
 

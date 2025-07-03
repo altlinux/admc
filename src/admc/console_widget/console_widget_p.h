@@ -47,6 +47,7 @@ enum ConsoleRole {
     ConsoleRole_SortIndex = Qt::UserRole + 2,
 
     ConsoleRole_IsScope = Qt::UserRole + 3,
+    ConsoleRole_IsHidden
 
     // NOTE: don't go above ConsoleRole_Type and
     // ConsoleRole_LAST (defined in public header)

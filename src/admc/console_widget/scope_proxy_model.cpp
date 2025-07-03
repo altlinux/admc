@@ -40,9 +40,10 @@ bool ScopeProxyModel::hasChildren(const QModelIndex &parent) const {
 bool ScopeProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
     const QModelIndex source_index = sourceModel()->index(source_row, 0, source_parent);
 
-    const bool is_scope = source_index.data(ConsoleRole_IsScope).toBool();
+    const bool is_accepted = source_index.data(ConsoleRole_IsScope).toBool() ||
+                                source_index.data(ConsoleRole_IsHidden).toBool();
 
-    return is_scope;
+    return is_accepted;
 }
 
 bool ScopeProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const {

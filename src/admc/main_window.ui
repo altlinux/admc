@@ -441,6 +441,11 @@
     <string>Use system credentials on start</string>
    </property>
   </action>
+  <action name="action_logout">
+   <property name="text">
+    <string>Logout</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

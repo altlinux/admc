@@ -397,6 +397,9 @@ void MainWindow::setup_main_window_actions() {
     connect(
         ui->action_about, &QAction::triggered,
         this, &MainWindow::open_about);
+    connect(
+        ui->action_logout, &QAction::triggered,
+        this, &MainWindow::on_logout);
 }
 
 void MainWindow::restore_console_widget_state() {
@@ -440,6 +443,7 @@ void MainWindow::setup_status_bar(const AdInterface &ad) {
 
     ui->statusbar->addAction(ui->action_show_login);
     ui->statusbar->addAction(ui->action_change_user);
+    ui->statusbar->addAction(ui->action_logout);
 }
 
 void MainWindow::init_on_connect(AdInterface &ad) {
@@ -517,6 +521,8 @@ void MainWindow::setup_authentication_dialog() {
         if (inited) {
             show_busy_indicator();
             load_g_adconfig(ad);
+            ui->console->hide_scope_and_results(false);
+            disable_actions_on_logout(false);
             reload_console_tree();
             login_label->setText(ad.client_user());
             hide_busy_indicator();
@@ -537,4 +543,35 @@ void MainWindow::setup_authentication_dialog() {
 void MainWindow::on_change_user() {
     auth_dialog->show();
     auth_dialog->adjustSize();
+}
+
+void MainWindow::on_logout() {
+    ui->console->clear_scope_tree();
+    ui->console->hide_scope_and_results(true);
+    disable_actions_on_logout(true);
+    login_label->setText(tr("Authentication required"));
+    auth_dialog->logout();
+    ui->console->refresh_scope(ui->console->domain_info_index());
+    auth_dialog->show();
+}
+
+void MainWindow::disable_actions_on_logout(bool disable) {
+    const QList<QAction*> actions_to_disable = {
+        ui->action_navigate_back,
+        ui->action_navigate_forward,
+        ui->action_navigate_up,
+        ui->action_create_user,
+        ui->action_create_ou,
+        ui->action_create_group,
+        ui->action_refresh,
+        ui->action_connection_options,
+        ui->action_edit_fsmo_roles
+    };
+
+    for (auto action : actions_to_disable) {
+        action->setDisabled(disable);
+    }
+
+    ui->menu_action->setDisabled(disable);
+    ui->menu_theme->setDisabled(disable);
 }

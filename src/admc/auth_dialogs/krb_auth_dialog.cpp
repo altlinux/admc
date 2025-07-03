@@ -44,6 +44,10 @@ KrbAuthDialog::~KrbAuthDialog() {
     delete ui;
 }
 
+void KrbAuthDialog::logout() {
+    client->logout();
+}
+
 void KrbAuthDialog::setupWidgets() {
     ui->error_label->setHidden(true);
     ui->error_label->setStyleSheet("color: red");

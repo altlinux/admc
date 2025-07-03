@@ -620,6 +620,12 @@ QPersistentModelIndex ConsoleWidget::domain_info_index() {
     return d->domain_info_index;
 }
 
+void ConsoleWidget::hide_scope_and_results(bool hide) {
+    d->results_stacked_widget->setVisible(!hide);
+    d->scope_view->setColumnHidden(0, hide);
+    d->description_bar->setVisible(!hide);
+}
+
 void ConsoleWidget::resizeEvent(QResizeEvent *event) {
     d->update_description();
     QWidget::resizeEvent(event);

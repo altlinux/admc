@@ -189,6 +189,8 @@ public:
 
     QPersistentModelIndex domain_info_index();
 
+    void hide_scope_and_results(bool hide);
+
 signals:
     // Emitted when selection in the whole console
     // widget changes, both in scope and results panes.
