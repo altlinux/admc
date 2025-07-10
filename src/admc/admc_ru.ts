@@ -2456,7 +2456,12 @@
         <translation>Системные учётные данные при старте</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="295"/>
+        <location filename="main_window.ui" line="446"/>
+        <source>Logout</source>
+        <translation>Выход из аккаунта</translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="300"/>
         <source>Navigate Up</source>
         <translation>Наверх</translation>
     </message>
@@ -2511,7 +2516,12 @@
         <translation>Вход выполнен</translation>
     </message>
     <message>
-        <location filename="main_window.cpp" line="131"/>
+        <location filename="main_window.cpp" line="553"/>
+        <source>Authentication required</source>
+        <translation>Требуется аутентификация</translation>
+    </message>
+    <message>
+        <location filename="main_window.cpp" line="132"/>
         <source>Connected to host </source>
         <translation>Подключено к хосту </translation>
     </message>
