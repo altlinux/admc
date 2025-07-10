@@ -33,7 +33,7 @@ public:
     using QDialog::QDialog;
     virtual ~AuthDialogBase() = default;
 
-    virtual void logout() = 0;
+    virtual void logout(bool delete_creds) = 0;
 
 protected:
     virtual void setupWidgets() = 0;

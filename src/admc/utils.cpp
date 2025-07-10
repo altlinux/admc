@@ -484,3 +484,10 @@ QString current_dc_dns_host_name(AdInterface &ad)
 
     return out;
 }
+
+bool creds_is_saved(const QString &username) {
+    QVariant remembered_users = settings_get_variant(SETTING_remembered_principals);
+    bool saved = !remembered_users.isNull() && !username.isEmpty() &&
+            remembered_users.toStringList().contains(username);
+    return saved;
+}

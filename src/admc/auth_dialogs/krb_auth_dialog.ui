@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>454</width>
-    <height>220</height>
+    <height>247</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -211,6 +211,13 @@
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="remember_checkbox">
+     <property name="text">
+      <string>Remember credentials</string>
      </property>
     </widget>
    </item>

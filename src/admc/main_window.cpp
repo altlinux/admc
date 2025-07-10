@@ -38,7 +38,6 @@
 #include "console_widget/console_widget.h"
 #include "fsmo/fsmo_dialog.h"
 #include "globals.h"
-#include "main_window_connection_error.h"
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
@@ -52,8 +51,8 @@
 #include <QLabel>
 #include <QModelIndex>
 
-MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
-: QMainWindow(parent) {
+MainWindow::MainWindow(AdInterface &ad, Krb5Client &krb5_client_arg, QWidget *parent)
+: QMainWindow(parent), krb5_client(&krb5_client_arg) {
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
@@ -71,8 +70,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     setup_main_window_actions();
 
-    show_changelog_on_update();
-
     setup_simple_settings();
 
     setup_authentication_dialog();
@@ -81,9 +78,11 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
 
     if (ad.is_connected()) {
         init_on_connect(ad);
+        show_changelog_on_update();
     }
     else {
         g_status->log_messages(ad.messages());
+        login_label->setText(tr("Authentication required"));
         auth_dialog->open();
     }
 }
@@ -101,6 +100,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
     const QVariant console_state = ui->console->save_state();
     settings_set_variant(SETTING_console_widget_state, console_state);
+
+    krb5_client->logout(!creds_is_saved(krb5_client->current_principal()));
 
     QMainWindow::closeEvent(event);
 }
@@ -439,6 +440,8 @@ void MainWindow::setup_status_bar(const AdInterface &ad) {
     ui->statusbar->addAction(ui->action_show_login);
     ui->statusbar->addAction(ui->action_change_user);
     ui->statusbar->addAction(ui->action_logout);
+
+
 }
 
 void MainWindow::init_on_connect(AdInterface &ad) {
@@ -516,7 +519,7 @@ void MainWindow::init_on_connect(AdInterface &ad) {
 }
 
 void MainWindow::setup_authentication_dialog() {
-    auth_dialog = new KrbAuthDialog(this);
+    auth_dialog = new KrbAuthDialog(this, krb5_client);
     connect(auth_dialog, &KrbAuthDialog::authenticated, this, [this]() {
         AdInterface ad;
         if (inited) {
@@ -549,9 +552,15 @@ void MainWindow::on_change_user() {
 void MainWindow::on_logout() {
     ui->console->clear_scope_tree();
     ui->console->hide_scope_and_results(true);
+
     disable_actions_on_logout(true);
+
     login_label->setText(tr("Authentication required"));
-    auth_dialog->logout();
+
+    bool delete_creds = !creds_is_saved(krb5_client->current_principal());
+    auth_dialog->logout(delete_creds);
+    krb5_client->logout(delete_creds);
+
     ui->console->refresh_scope(ui->console->domain_info_index());
     auth_dialog->show();
 }

@@ -93,6 +93,10 @@ Krb5Client::Krb5ClientImpl::~Krb5ClientImpl() {
 }
 
 void Krb5Client::Krb5ClientImpl::kinit(const QString &principal, const QString &password) {
+    if (principal_cache_map.contains(principal)) {
+        krb5_cc_destroy(context, principal_cache_map[principal]);
+    }
+
     krb5_creds creds;
     krb5_error_code res;
     QString error = QCoreApplication::translate("Krb5Client", "Authentication failed");
@@ -172,7 +176,6 @@ void Krb5Client::Krb5ClientImpl::load_caches() {
         const QByteArray sys_cache_bytes = sys_ccache.toUtf8();
         krb5_error_code res = krb5_cc_resolve(context, sys_cache_bytes.constData(), &def_ccache);
         if (res) {
-            qDebug() << "Failed to get system cache";
             krb5_cc_close(context, def_ccache);
             return;
         }
@@ -198,7 +201,9 @@ void Krb5Client::Krb5ClientImpl::load_caches() {
         load_cache_data(ccache, false);
     }
 
-    curr_principal = sys_principal;
+    if (curr_principal.isEmpty()) {
+        curr_principal == sys_principal;
+    }
 }
 
 void Krb5Client::Krb5ClientImpl::load_cache_data(krb5_ccache ccache, bool is_system) {
@@ -327,8 +332,10 @@ QString Krb5Client::Krb5ClientImpl::principal_from_ccache(krb5_ccache ccache) {
         return QString();
     }
 
+    QString out = QString::fromUtf8(princ);
     cleanup(nullptr, nullptr, principal, princ);
-    return princ;
+
+    return out;
 }
 
 bool Krb5Client::Krb5ClientImpl::cache_is_system(krb5_ccache ccache) {
@@ -374,6 +381,8 @@ void Krb5Client::set_current_principal(const QString &principal) {
 }
 
 void Krb5Client::refresh_tgt(const QString &principal) {
+    // TODO: Enable this function once a reliable method for updating tickets is implemented.
+    // This method isn't used yet.
     QString error = QCoreApplication::translate("Krb5Client", "Failed to refresh TGT");
     krb5_ccache ccache = impl->principal_cache_map.value(principal, nullptr);
     if (!ccache) {
@@ -439,7 +448,17 @@ QStringList Krb5Client::active_tgt_principals() const {
     return out;
 }
 
-void Krb5Client::logout() {
+void Krb5Client::logout(bool delete_creds) {
     qputenv("KRB5CCNAME", "MEMORY:empty_ccache");
+
+    bool creds_not_system = impl->curr_principal != impl->sys_principal;
+
+    if (delete_creds && creds_not_system) {
+        // Put arbitrary empty cache name to KRB5CCNAME env
+        krb5_cc_destroy(impl->context, impl->principal_cache_map[impl->curr_principal]);
+        impl->principal_cache_map.remove(impl->curr_principal);
+        impl->principal_tgt_map.remove(impl->curr_principal);
+    }
+
     impl->curr_principal = QString();
 }

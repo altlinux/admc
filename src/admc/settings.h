@@ -143,6 +143,7 @@ DEFINE_SETTING(SETTING_object_display_limit);
 DEFINE_SETTING(SETTING_custom_domain);
 DEFINE_SETTING(SETTING_current_icon_theme);
 DEFINE_SETTING(SETTING_last_logged_user)
+DEFINE_SETTING(SETTING_remembered_principals)
 
 // Feature flags
 //

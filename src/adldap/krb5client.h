@@ -53,7 +53,7 @@ public:
     bool principal_has_cache(const QString &principal) const;
     QStringList available_principals() const;
     QStringList active_tgt_principals() const;
-    void logout();
+    void logout(bool delete_creds);
 
 private:
     class Krb5ClientImpl;

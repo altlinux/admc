@@ -137,4 +137,6 @@ QString gpo_status_from_int(int status);
 
 QString current_dc_dns_host_name(AdInterface &ad);
 
+bool creds_is_saved(const QString &username);
+
 #endif /* UTILS_H */

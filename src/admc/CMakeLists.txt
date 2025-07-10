@@ -65,7 +65,6 @@ set(ADMC_SOURCES
     settings.cpp
 
     main_window.cpp
-    main_window_connection_error.cpp
     tab_widget.cpp
     create_object_helper.cpp
     rename_object_helper.cpp

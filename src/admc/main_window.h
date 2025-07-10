@@ -22,6 +22,8 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include <memory>
+#include "krb5client.h"
 
 class AdInterface;
 class QLabel;
@@ -39,7 +41,7 @@ class MainWindow final : public QMainWindow {
 public:
     Ui::MainWindow *ui;
 
-    MainWindow(AdInterface &ad, QWidget *parent = nullptr);
+    MainWindow(AdInterface &ad, Krb5Client &krb5_client_arg, QWidget *parent = nullptr);
     ~MainWindow();
 
 protected:
@@ -49,6 +51,7 @@ private:
     QLabel *login_label;
     AuthDialogBase *auth_dialog;
     bool inited = false;
+    Krb5Client *krb5_client = nullptr;
 
     void on_log_searches_changed();
     void on_show_login_changed();
@@ -74,6 +77,7 @@ private:
     void on_change_user();
     void on_logout();
     void disable_actions_on_logout(bool disable);
+    void init_krb5_client();
 };
 
 #endif /* MAIN_WINDOW_H */

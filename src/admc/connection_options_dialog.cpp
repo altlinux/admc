@@ -33,6 +33,7 @@
 #include <QPushButton>
 
 #include <functional>
+#include <QDebug>
 
 const QString CERT_STRATEGY_NEVER = CERT_STRATEGY_NEVER_define;
 const QString CERT_STRATEGY_HARD = "hard";
@@ -329,18 +330,4 @@ void load_connection_options(const QHash<QString, QVariant> &settings) {
     };
     const CertStrategy cert_strategy = cert_strategy_map.value(cert_strategy_string, CertStrategy_Never);
     AdInterface::set_cert_strategy(cert_strategy);
-
-    bool creds_are_system = settings_get_variant(SETTING_use_system_credentials).toBool();
-    const QString last_logged_user = settings_get_variant(SETTING_last_logged_user).toString();
-    if (!creds_are_system && !last_logged_user.isEmpty()) {
-        try {
-            Krb5Client krb5_client;
-            if (krb5_client.active_tgt_principals().contains(last_logged_user)) {
-                krb5_client.set_current_principal(last_logged_user);
-            }
-        }
-        catch (const std::runtime_error& e) {
-            qWarning(e.what());
-        }
-    }
 }

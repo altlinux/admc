@@ -22,8 +22,6 @@
 #define KRB_AUTH_DIALOG_H
 
 #include "auth_dialog_base.h"
-#include <memory>
-#include "krb5client.h"
 
 namespace Ui {
 class KrbAuthDialog;
@@ -39,10 +37,10 @@ class KrbAuthDialog final : public AuthDialogBase {
     Q_OBJECT
 
 public:
-    explicit KrbAuthDialog(QWidget *parent = nullptr);
+    explicit KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg);
     ~KrbAuthDialog();
 
-    virtual void logout() override;
+    virtual void logout(bool delete_creds) override;
 
 private:
     Ui::KrbAuthDialog *ui;
@@ -55,8 +53,9 @@ private:
     void on_use_system_credentials(bool use_system);
     void on_principal_selected(const QString &principal);
     void hide_passwd_widgets(bool hide);
+    void remember_principal(bool remember);
 
-    std::unique_ptr<Krb5Client> client = nullptr;
+    Krb5Client *client;
 };
 
 #endif // KRB_AUTH_DIALOG_H
