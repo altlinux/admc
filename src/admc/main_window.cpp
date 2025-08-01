@@ -78,7 +78,6 @@ MainWindow::MainWindow(AdInterface &ad, QWidget *parent)
     setup_authentication_dialog();
 
     setup_console_actions();
-    restore_console_widget_state();
 
     if (ad.is_connected()) {
         init_on_connect(ad);
@@ -491,6 +490,8 @@ void MainWindow::init_on_connect(AdInterface &ad) {
     console_tree_add_password_settings(ui->console, ad);
     g_gplink_manager->update();
     ui->console->expand_item(ui->console->domain_info_index());
+
+    restore_console_widget_state();
 
     // Set current scope to object head to load it
     const QModelIndex object_tree_root = get_object_tree_root(ui->console);
