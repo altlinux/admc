@@ -360,10 +360,6 @@ void MainWindow::setup_console_actions() {
     }();
 
     ui->console->set_actions(console_actions);
-
-    // NOTE: "Action" menu actions need to be filled by the
-    // console
-    ui->console->setup_menubar_action_menu(ui->menu_action);
 }
 
 void MainWindow::setup_main_window_actions() {
@@ -492,6 +488,10 @@ void MainWindow::init_on_connect(AdInterface &ad) {
     ui->console->expand_item(ui->console->domain_info_index());
 
     restore_console_widget_state();
+
+    // NOTE: "Action" menu actions need to be filled by the
+    // console
+    ui->console->setup_menubar_action_menu(ui->menu_action);
 
     // Set current scope to object head to load it
     const QModelIndex object_tree_root = get_object_tree_root(ui->console);
