@@ -35,9 +35,12 @@
 #include <QDebug>
 #include <QLibraryInfo>
 #include <QTranslator>
+#include <QGuiApplication>
 
 int main(int argc, char **argv) {
     Q_INIT_RESOURCE(adldap);
+
+    QGuiApplication::setDesktopFileName("admc");
 
     // NOTE: this is needed to pass this type from thread's
     // signal in find_widget.cpp. Without doing this,
@@ -52,6 +55,7 @@ int main(int argc, char **argv) {
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
     app.setWindowIcon(QIcon(":/admc/admc.ico"));
+
 
     const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
     const QString locale_dot_UTF8 = saved_locale.name() + ".UTF-8";
