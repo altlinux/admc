@@ -334,7 +334,6 @@ void MainWindow::setup_complex_settings(ObjectImpl *obj_impl) {
 
 void MainWindow::init_globals() {
     g_status->init(ui->statusbar, ui->message_log_edit);
-
     const QMap<QString, QAction*> category_action_map = {
         {OBJECT_CATEGORY_OU, ui->action_create_ou},
         {OBJECT_CATEGORY_PERSON, ui->action_create_user},
