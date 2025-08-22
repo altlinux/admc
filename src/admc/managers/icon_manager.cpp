@@ -71,30 +71,30 @@ IconManager::IconManagerImpl::IconManagerImpl(IconManager *parent) : q(parent) {
     // default icon themes for different DE's don't
     // fully intersect
     category_icon_names_map = {
-        {OBJECT_CATEGORY_DOMAIN_DNS, {"network-server"}},
-        {OBJECT_CATEGORY_CONTAINER, {"folder"}},
-        {OBJECT_CATEGORY_OU, {"folder-documents"}},
-        {OBJECT_CATEGORY_GROUP, {"system-users"}},
+        {OBJECT_CATEGORY_DOMAIN_DNS, {"network-server", "network-server-symbolic"}},
+        {OBJECT_CATEGORY_CONTAINER, {"folder", "folder-symbolic"}},
+        {OBJECT_CATEGORY_OU, {"folder-documents", "folder-documents-symbolic"}},
+        {OBJECT_CATEGORY_GROUP, {"system-users", "system-users-symbolic"}},
         {OBJECT_CATEGORY_PERSON, {"avatar-default", "avatar-default-symbolic"}},
-        {OBJECT_CATEGORY_COMPUTER, {"computer"}},
-        {OBJECT_CATEGORY_GP_CONTAINER, {"preferences-other"}},
-        {OBJECT_CATEGORY_VOLUME, {"folder-templates"}},
-        {OBJECT_CATEGORY_SERVERS_CONTAINER, {"folder"}},
-        {OBJECT_CATEGORY_SITE, {"go-home"}},
+        {OBJECT_CATEGORY_COMPUTER, {"computer", "computer-symbolic"}},
+        {OBJECT_CATEGORY_GP_CONTAINER, {"preferences-other","preferences-other-symbolic"}},
+        {OBJECT_CATEGORY_VOLUME, {"folder-templates", "folder-templates-symbolic"}},
+        {OBJECT_CATEGORY_SERVERS_CONTAINER, {"folder", "folder-symbolic"}},
+        {OBJECT_CATEGORY_SITE, {"go-home", "go-home-symbolic"}},
 
         // These categories are not AD object categories. They are used within ADMC context
-        {ADMC_CATEGORY_QUERY_ITEM, {"document-send"}},
-        {ADMC_CATEGORY_QUERY_FOLDER, {"folder"}},
-        {ADMC_CATEGORY_ALL_POLICIES_FOLDER, {"folder"}},
-        {ADMC_CATEGORY_GP_OBJECTS, {"folder"}},
-        {ADMC_CATEGORY_FSMO_ROLE_CONTAINER, {"applications-system"}},
-        {ADMC_CATEGORY_FSMO_ROLE, {"emblem-system"}},
-        {ADMC_CATEGORY_DOMAIN_INFO_ITEM, {"network-workgroup"}},
+        {ADMC_CATEGORY_QUERY_ITEM, {"document-send", "document-send-symbolc"}},
+        {ADMC_CATEGORY_QUERY_FOLDER, {"folder", "folder-symbolic"}},
+        {ADMC_CATEGORY_ALL_POLICIES_FOLDER, {"folder", "folder-symbolic"}},
+        {ADMC_CATEGORY_GP_OBJECTS, {"folder", "folder-symbolic"}},
+        {ADMC_CATEGORY_FSMO_ROLE_CONTAINER, {"applications-system", "applications-system-symbolic"}},
+        {ADMC_CATEGORY_FSMO_ROLE, {"emblem-system", "emblem-system-symbolic"}},
+        {ADMC_CATEGORY_DOMAIN_INFO_ITEM, {"network-workgroup", "network-workgroup-symbolic"}},
         {ADMC_CATEGORY_GO_PREVIOUS_ACTION, {"go-previous", "go-previous-symbolic"}},
         {ADMC_CATEGORY_GO_NEXT_ACTION, {"go-next", "go-next-symbolic"}},
         {ADMC_CATEGORY_GO_UP_ACTION, {"go-up", "go-up-symbolic"}},
         {ADMC_CATEGORY_REFRESH_ACTION, {"view-refresh", "view-refresh-symbolic"}},
-        {ADMC_CATEGORY_MANUAL_ACTION, {"help"}},
+        {ADMC_CATEGORY_MANUAL_ACTION, {"help", "help-about", "help-about-symbolic"}},
 
         // Icons for some system containers and objects
         {OBJECT_CATEGORY_BUILTIN, {"emblem-system", "emblem-system-symbolic"}},
@@ -104,12 +104,12 @@ IconManager::IconManagerImpl::IconManagerImpl(IconManager *parent) : q(parent) {
         {OBJECT_CATEGORY_PSO_CONTAINER, {"preferences-desktop"}},
 
         // Indicator icons (aren't AD object categories too)
-        {inheritance_indicator, {"changes-prevent"}},
-        {enforced_indicator, {"stop"}},
-        {block_indicator, {"dialog-error"}},
-        {link_indicator, {"mail-forward"}},
-        {search_indicator, {"system-search"}},
-        {warning_indicator, {"dialog-warning"}},
+        {inheritance_indicator, {"changes-prevent", "changes-prevent-symbolic"}},
+        {enforced_indicator, {"stop", "process-stop", "process-stop-symbolic"}},
+        {block_indicator, {"dialog-error", "dialog-error-symbolic"}},
+        {link_indicator, {"mail-forward", "mail-forward-symbolic"}},
+        {search_indicator, {"system-search", "system-search-symbolic"}},
+        {warning_indicator, {"dialog-warning", "dialog-warning-symbolic"}},
 
         // NOTE: Error icon used when no icon is
         // defined for given object category
