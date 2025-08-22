@@ -2,6 +2,27 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.22.0
+-----------------------------------------------------------------------
+- Fixed ADMC desktop icon view on GNOME.
+- Changed domain info and computer icons in custom theme (AD-integration).
+- Fixed empty custom icons theme on GNOME: GNOME theme is set as parent
+  theme and will be displayed instead of custom theme.
+- Set custom icon theme search in standard directories for themes.
+- Icon search supplemented with symbolic names.
+- Added logout for current user.
+- Added credentials save option to authentication dialog. Credentials are
+  located in /tmp/admc_uid*/ccaches/ directory.
+- Added temporary credentials cleanup on application crash.
+- Added "Show login window on startup" option. If this option is enabled,
+  system/last credentials won't be used on startup.
+- "Use system credentials" option has been moved from main window preferences
+  to authentication dialog.
+- Disabled main window closing when auth dialog closes on failed startup.
+- Fixed broken column view restoration.
+- Fixed broken "Action" main window menu.
+
+-----------------------------------------------------------------------
  VERSION 0.21.0
 -----------------------------------------------------------------------
 - Added Kerberos authentication. Changing the principal (user) is available 
