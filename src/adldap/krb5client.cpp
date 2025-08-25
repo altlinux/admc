@@ -189,7 +189,8 @@ void Krb5Client::Krb5ClientImpl::load_cache_data(krb5_ccache ccache, bool is_def
 
     res = krb5_cc_get_principal(context, ccache, &principal);
     if (res) {
-        cleanup(ccache, nullptr, principal, nullptr);
+        // If krb5_cc_get_principal fails, principal may be invalid
+        cleanup(ccache, nullptr, nullptr, nullptr);
         return;
     }
 
@@ -199,7 +200,8 @@ void Krb5Client::Krb5ClientImpl::load_cache_data(krb5_ccache ccache, bool is_def
         cleanup(ccache, nullptr, principal, princ);
         return;
     }
-    tgt_data.principal = princ;
+    // Copy the principal string before cleanup to avoid use-after-free
+    tgt_data.principal = QString::fromUtf8(princ);
     krb5_free_unparsed_name(context, princ);
 
     memset(&creds, 0, sizeof(creds));
@@ -265,22 +267,18 @@ void Krb5Client::Krb5ClientImpl::throw_error(const QString &error, krb5_error_co
 void Krb5Client::Krb5ClientImpl::cleanup(krb5_ccache ccache, krb5_creds *creds, krb5_principal principal, char *principal_unparsed) {
     if (ccache) {
         krb5_cc_close(context, ccache);
-        ccache = nullptr;
     }
 
     if (creds) {
         krb5_free_cred_contents(context, creds);
-        creds = nullptr;
     }
 
     if (principal) {
         krb5_free_principal(context, principal);
-        principal = nullptr;
     }
 
     if (principal_unparsed) {
         krb5_free_unparsed_name(context, principal_unparsed);
-        principal_unparsed = nullptr;
     }
 }
 
@@ -303,12 +301,15 @@ QString Krb5Client::Krb5ClientImpl::principal_from_ccache(krb5_ccache ccache) {
     char *princ = nullptr;
     res = krb5_unparse_name(context, principal, &princ);
     if (res) {
-        cleanup(nullptr, nullptr, principal, princ);
+        // If krb5_unparse_name fails, princ may be invalid
+        cleanup(nullptr, nullptr, principal, nullptr);
         return QString();
     }
 
+    // Copy the principal string before cleanup to avoid use-after-free
+    QString principal_str = QString::fromUtf8(princ);
     cleanup(nullptr, nullptr, principal, princ);
-    return princ;
+    return principal_str;
 }
 
 Krb5Client::Krb5Client() : impl(std::unique_ptr<Krb5ClientImpl>(new Krb5ClientImpl)) {
