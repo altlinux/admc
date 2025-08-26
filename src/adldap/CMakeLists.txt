@@ -64,7 +64,12 @@ if (EXISTS ${VERSION_H})
         file(REMOVE ${FILE_REMOVE_LIST})
     endif(VERSION_SMB_MINOR)
 
-    if (VERSION_SMB_MINOR GREATER_EQUAL 20)
+    if (VERSION_SMB_MINOR GREATER_EQUAL 22)
+        set(FILE_COPY_LIST ${FILE_UPDATE_LIST})
+        list(TRANSFORM FILE_COPY_LIST PREPEND "${SMB_SRC_PATH}/src_4_22/")
+        file(COPY ${FILE_COPY_LIST}
+             DESTINATION ${SMB_SRC_PATH})
+    elseif (VERSION_SMB_MINOR GREATER_EQUAL 20 AND VERSION_SMB_MINOR LESS 22)
         set(FILE_COPY_LIST ${FILE_UPDATE_LIST})
         list(TRANSFORM FILE_COPY_LIST PREPEND "${SMB_SRC_PATH}/src_4_20/")
         file(COPY ${FILE_COPY_LIST}
@@ -76,7 +81,7 @@ if (EXISTS ${VERSION_H})
              DESTINATION ${SMB_SRC_PATH})
         file(COPY ${SMB_SRC_PATH}/src_older/ndr_sec_helper.c
              DESTINATION ${SMB_SRC_PATH})
-    endif(VERSION_SMB_MINOR GREATER_EQUAL 20)
+    endif(VERSION_SMB_MINOR GREATER_EQUAL 22)
 else()
     message(WARNING "Failed to find Samba version. If its version is 20 or greater, use sources from src_4_20.")
 endif(EXISTS ${VERSION_H})
