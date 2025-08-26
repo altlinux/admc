@@ -81,7 +81,7 @@ if (EXISTS ${VERSION_H})
              DESTINATION ${SMB_SRC_PATH})
         file(COPY ${SMB_SRC_PATH}/src_older/ndr_sec_helper.c
              DESTINATION ${SMB_SRC_PATH})
-    endif(VERSION_SMB_MINOR GREATER_EQUAL 20)
+    endif(VERSION_SMB_MINOR GREATER_EQUAL 22)
 else()
     message(WARNING "Failed to find Samba version. If its version is 20 or greater, use sources from src_4_20.")
 endif(EXISTS ${VERSION_H})
