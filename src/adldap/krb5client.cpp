@@ -24,9 +24,24 @@
 #include <ctime>
 #include <QDebug>
 #include <unistd.h>
+#include <csignal>
 #include <sys/types.h>
 #include <QHash>
 #include <QDir>
+
+// Contains temporal kerberos credential cache names
+static std::vector<std::string> krb_temp_caches;
+
+static void crash_handler(int sig) {
+    const char* msg = "Crash! Cleaning kerberos temp caches...\n";
+    write(STDERR_FILENO, msg, strlen(msg));
+
+    for (std::string &ccache_file : krb_temp_caches) {
+        unlink(ccache_file.c_str());
+    }
+
+    _exit(128 + sig);
+}
 
 class Krb5Client::Krb5ClientImpl final {
 public:
@@ -54,6 +69,9 @@ public:
                            krb5_principal principal, char *principal_unparsed);
     QString principal_from_ccache(krb5_ccache ccache);
     bool cache_is_system(krb5_ccache ccache);
+
+private:
+    void setup_crash_handlers();
 };
 
 const QString Krb5Client::Krb5ClientImpl::ccaches_path = QString("/tmp/admc_uid") + QString::number(getuid()) + "/ccaches/";
@@ -82,6 +100,8 @@ Krb5Client::Krb5ClientImpl::Krb5ClientImpl() : context(NULL) {
     }
 
     load_caches();
+
+    setup_crash_handlers();
 }
 
 
@@ -342,6 +362,21 @@ bool Krb5Client::Krb5ClientImpl::cache_is_system(krb5_ccache ccache) {
     return QString(krb5_cc_get_type(context, ccache)).contains("KEYRING");
 }
 
+void Krb5Client::Krb5ClientImpl::setup_crash_handlers() {
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = crash_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    sigaction(SIGSEGV, &sa, nullptr);
+    sigaction(SIGABRT, &sa, nullptr);
+    sigaction(SIGFPE, &sa, nullptr);
+    sigaction(SIGILL, &sa, nullptr);
+    sigaction(SIGINT, &sa, nullptr);
+    sigaction(SIGTERM, &sa, nullptr);
+}
+
 Krb5Client::Krb5Client() : impl(std::unique_ptr<Krb5ClientImpl>(new Krb5ClientImpl)) {
 
 }
@@ -449,16 +484,28 @@ QStringList Krb5Client::active_tgt_principals() const {
 }
 
 void Krb5Client::logout(bool delete_creds) {
+    // Put arbitrary empty cache name to KRB5CCNAME env
     qputenv("KRB5CCNAME", "MEMORY:empty_ccache");
 
     bool creds_not_system = impl->curr_principal != impl->sys_principal;
 
     if (delete_creds && creds_not_system) {
-        // Put arbitrary empty cache name to KRB5CCNAME env
         krb5_cc_destroy(impl->context, impl->principal_cache_map[impl->curr_principal]);
         impl->principal_cache_map.remove(impl->curr_principal);
         impl->principal_tgt_map.remove(impl->curr_principal);
     }
 
     impl->curr_principal = QString();
+}
+
+void Krb5Client::update_temp_caches(const QStringList &remembered_principals) {
+    krb_temp_caches.clear();
+    const QStringList principals_list = impl->principal_cache_map.keys();
+    QSet<QString> principals_set = QSet<QString>(principals_list.begin(), principals_list.end());
+    QSet<QString> unremembered_set = principals_set.subtract(QSet<QString>(remembered_principals.begin(),
+                                                                           remembered_principals.end()));
+    for (const QString &principal : unremembered_set) {
+        const QString cache_name = krb5_cc_get_name(impl->context, impl->principal_cache_map[principal]);
+        krb_temp_caches.push_back(cache_name.toStdString());
+    }
 }

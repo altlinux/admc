@@ -54,6 +54,7 @@ public:
     QStringList available_principals() const;
     QStringList active_tgt_principals() const;
     void logout(bool delete_creds);
+    void update_temp_caches(const QStringList &remembered_principals);
 
 private:
     class Krb5ClientImpl;

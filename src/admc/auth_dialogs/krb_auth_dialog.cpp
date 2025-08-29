@@ -182,6 +182,7 @@ void KrbAuthDialog::remember_principal(bool remember) {
         remembered_principals.removeAll(principal);
     }
 
+    client->update_temp_caches(remembered_principals);
     settings_set_variant(SETTING_remembered_principals, remembered_principals);
 }
 
