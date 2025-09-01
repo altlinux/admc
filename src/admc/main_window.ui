@@ -78,6 +78,7 @@
     <addaction name="action_show_noncontainers"/>
     <addaction name="action_load_optional_values"/>
     <addaction name="action_show_middle_name"/>
+    <addaction name="action_show_login_window_on_startup"/>
     <addaction name="menu_language"/>
    </widget>
    <widget class="QMenu" name="menu_help">
@@ -444,6 +445,14 @@
   <action name="action_logout">
    <property name="text">
     <string>Logout</string>
+   </property>
+  </action>
+  <action name="action_show_login_window_on_startup">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show login window on startup</string>
    </property>
   </action>
  </widget>

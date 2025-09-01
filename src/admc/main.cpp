@@ -98,11 +98,10 @@ int main(int argc, char **argv) {
     }
 
     std::unique_ptr<Krb5Client> krb5_client = nullptr;
-
-    // bool creds_are_system = settings_get_variant(SETTING_use_system_credentials).toBool();
-    const QString last_logged_user = settings_get_variant(SETTING_last_logged_user).toString();
     try {
         krb5_client = std::unique_ptr<Krb5Client>(new Krb5Client);
+
+        const QString last_logged_user = settings_get_variant(SETTING_last_logged_user).toString();
         if (!last_logged_user.isEmpty() && krb5_client->active_tgt_principals().contains(last_logged_user)) {
             krb5_client->set_current_principal(last_logged_user);
         }
@@ -115,6 +114,11 @@ int main(int argc, char **argv) {
 
     QMainWindow *main_window = nullptr;
     {
+        const bool show_login_window = settings_get_variant(SETTING_show_login_window_on_startup).toBool();
+        if (show_login_window) {
+            krb5_client->logout(false);
+        }
+
         AdInterface ad;
         main_window = new MainWindow(ad, *krb5_client);
         main_window->show();
