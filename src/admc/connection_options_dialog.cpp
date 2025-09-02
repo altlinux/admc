@@ -35,11 +35,11 @@
 #include <functional>
 #include <QDebug>
 
-const QString CERT_STRATEGY_NEVER = CERT_STRATEGY_NEVER_define;
-const QString CERT_STRATEGY_HARD = "hard";
-const QString CERT_STRATEGY_DEMAND = "demand";
-const QString CERT_STRATEGY_ALLOW = "allow";
-const QString CERT_STRATEGY_TRY = "try";
+const QString CERT_STRATEGY_NEVER = QCoreApplication::translate("ConnectionOptionsDialog", "never");
+const QString CERT_STRATEGY_HARD = QCoreApplication::translate("ConnectionOptionsDialog", "hard");
+const QString CERT_STRATEGY_DEMAND = QCoreApplication::translate("ConnectionOptionsDialog", "demand");
+const QString CERT_STRATEGY_ALLOW = QCoreApplication::translate("ConnectionOptionsDialog", "allow");
+const QString CERT_STRATEGY_TRY = QCoreApplication::translate("ConnectionOptionsDialog", "try");
 
 ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 : QDialog(parent) {

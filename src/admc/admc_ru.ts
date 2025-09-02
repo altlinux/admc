@@ -479,46 +479,74 @@
         <translation>Найти хосты</translation>
     </message>
     <message>
+        <location filename="connection_options_dialog.ui" line="157"/>
+        <source>Restore defaults</source>
+        <translation>По умолчанию</translation>
+    </message>
+    <message>
         <source>Host:</source>
         <translation type="vanished">Хост:</translation>
     </message>
     <message>
-        <location filename="connection_options_dialog.ui" line="76"/>
+        <location filename="connection_options_dialog.ui" line="134"/>
         <source>No hosts found.</source>
         <translation>Хосты не найдены.</translation>
     </message>
     <message>
-        <location filename="connection_options_dialog.ui" line="86"/>
         <source>Select:</source>
         <translation type="vanished">Выбрать:</translation>
     </message>
     <message>
-        <location filename="connection_options_dialog.ui" line="99"/>
+        <location filename="connection_options_dialog.ui" line="97"/>
         <source>Custom:</source>
         <translation>Другой:</translation>
     </message>
     <message>
-        <location filename="connection_options_dialog.cpp" line="133"/>
+        <location filename="connection_options_dialog.cpp" line="136"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="connection_options_dialog.cpp" line="133"/>
         <source>Select or enter a host.</source>
         <translation type="vanished">Выберите или введите хост.</translation>
     </message>
     <message>
-        <location filename="connection_options_dialog.cpp" line="131"/>
+        <location filename="connection_options_dialog.cpp" line="38"/>
+        <source>never</source>
+        <translation>никогда</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="39"/>
+        <source>hard</source>
+        <translation>строго</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="40"/>
+        <source>demand</source>
+        <translation>требовать</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="41"/>
+        <source>allow</source>
+        <translation>разрешать</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="42"/>
+        <source>try</source>
+        <translation>пробовать</translation>
+    </message>
+    <message>
+        <location filename="connection_options_dialog.cpp" line="136"/>
         <source>Select a host.</source>
         <translation>Выберите хост.</translation>
     </message>
     <message>
-        <location filename="connection_options_dialog.cpp" line="179"/>
+        <location filename="connection_options_dialog.cpp" line="191"/>
         <source>You are connected to DC without PDC-Emulator role. Group policy editing is prohibited by the setting.</source>
         <translation>Вы подключены к КД без роли PDC-Emulator - редактирование групповых политик запрещено настройкой.</translation>
     </message>
     <message>
-        <location filename="connection_options_dialog.cpp" line="182"/>
+        <location filename="connection_options_dialog.cpp" line="194"/>
         <source>You are connected to DC without PDC-Emulator role. Group policy editing is available.</source>
         <translation>Вы подключены к КД без роли PDC-Emulator - редактирование групповых политик доступно.</translation>
     </message>
@@ -1937,7 +1965,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="auth_dialogs/krb_auth_dialog.cpp" line="66"/>
+        <location filename="auth_dialogs/krb_auth_dialog.ui" line="220"/>
+        <source>Remember credentials</source>
+        <translation>Запомнить учётные данные</translation>
+    </message>
+    <message>
+        <location filename="auth_dialogs/krb_auth_dialog.cpp" line="86"/>
         <source>Enter your Kerberos principal</source>
         <translation>Введите принципал Kerberos</translation>
     </message>
@@ -1978,6 +2011,64 @@
         <location filename="tabs/laps_tab.ui" line="63"/>
         <source>Reset expiry</source>
         <translation>Сбросить срок истекания</translation>
+    </message>
+</context>
+<context>
+    <name>LAPSV2Tab</name>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="14"/>
+        <source>Form</source>
+        <translation>Form</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="92"/>
+        <source>LAPS local admin account password:</source>
+        <translation>Пароль учетной записи локального администратора LAPS:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="132"/>
+        <source>Current LAPS password expiration:</source>
+        <translation>Время завершения действия пароля LAPS:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="99"/>
+        <source>Local Administrator Password Solution</source>
+        <translation>Решение для пароля локального администратора</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="139"/>
+        <source>Set new LAPS password expiration:</source>
+        <translation>Установить новый срок истечения пароля LAPS:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="119"/>
+        <source>Show password</source>
+        <translation>Показать пароль</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="55"/>
+        <source>Expire now</source>
+        <translation>Обновить сейчас</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="42"/>
+        <source>Copy password</source>
+        <translation>Скопировать пароль</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.ui" line="35"/>
+        <source>LAPS local admin account name:</source>
+        <translation>Имя учетной записи локального администратора LAPS:</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.cpp" line="84"/>
+        <source>Failed to decode LAPS data.</source>
+        <translation>Не удалось декодировать данные LAPS.</translation>
+    </message>
+    <message>
+        <location filename="tabs/laps_v2_tab.cpp" line="84"/>
+        <source>Verify that you have the necessary permissions to access LAPS attributes!</source>
+        <translation>Проверьте, что у вас есть необходимые права доступа к атрибутам LAPS!</translation>
     </message>
 </context>
 <context>
@@ -2461,7 +2552,12 @@
         <translation>Выход из аккаунта</translation>
     </message>
     <message>
-        <location filename="main_window.ui" line="300"/>
+        <location filename="main_window.ui" line="455"/>
+        <source>Show login window on startup</source>
+        <translation>Показывать окно логина при старте</translation>
+    </message>
+    <message>
+        <location filename="main_window.ui" line="301"/>
         <source>Navigate Up</source>
         <translation>Наверх</translation>
     </message>
