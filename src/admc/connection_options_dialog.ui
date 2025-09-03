@@ -121,7 +121,8 @@
              <string>Find hosts</string>
             </property>
             <property name="icon">
-             <iconset theme="find"/>
+             <iconset theme="find">
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -146,14 +147,31 @@
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="button_box">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="bottomMargin">
+      <number>0</number>
      </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
-     </property>
-    </widget>
+     <item>
+      <widget class="QPushButton" name="restore_defaults_button">
+       <property name="text">
+        <string>Restore defaults</string>
+       </property>
+       <property name="icon">
+        <iconset theme="document-revert"/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="button_box">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

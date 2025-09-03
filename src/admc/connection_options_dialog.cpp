@@ -114,7 +114,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 
     settings_setup_dialog_geometry(SETTING_connection_options_dialog_geometry, this);
 
-    connect(ui->button_box->button(QDialogButtonBox::RestoreDefaults), &QPushButton::clicked,
+    connect(ui->restore_defaults_button, &QPushButton::clicked,
         this, &ConnectionOptionsDialog::load_default_options);
 
     connect(ui->host_default_button, &QRadioButton::toggled,
