@@ -46,6 +46,7 @@ public:
 
 protected:
     void closeEvent(QCloseEvent *event);
+    void resizeEvent(QResizeEvent *event);
 
 private:
     QLabel *login_label;
@@ -78,6 +79,7 @@ private:
     void on_logout();
     void disable_actions_on_logout(bool disable);
     void init_krb5_client();
+    void resize_status_message();
 };
 
 #endif /* MAIN_WINDOW_H */

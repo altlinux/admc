@@ -109,6 +109,11 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     QMainWindow::closeEvent(event);
 }
 
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    resize_status_message();
+    QMainWindow::resizeEvent(event);
+}
+
 void MainWindow::on_log_searches_changed() {
     const bool enabled = ui->action_log_searches->isChecked();
     AdInterface::set_log_searches(enabled);
@@ -446,7 +451,9 @@ void MainWindow::setup_status_bar(const AdInterface &ad) {
     ui->statusbar->addAction(ui->action_change_user);
     ui->statusbar->addAction(ui->action_logout);
 
-
+    connect(ui->statusbar, &QStatusBar::messageChanged, [this](const QString &) {
+       resize_status_message();
+    });
 }
 
 void MainWindow::init_on_connect(AdInterface &ad) {
@@ -589,4 +596,14 @@ void MainWindow::disable_actions_on_logout(bool disable) {
 
     ui->menu_action->setDisabled(disable);
     ui->menu_theme->setDisabled(disable);
+}
+
+void MainWindow::resize_status_message() {
+    const QString elided_message = ui->statusbar->fontMetrics().elidedText(ui->statusbar->currentMessage(),
+                                                                           Qt::ElideRight,
+                                                                           width()/2);
+    ui->statusbar->setToolTip(ui->statusbar->currentMessage());
+    ui->statusbar->blockSignals(true);
+    ui->statusbar->showMessage(elided_message);
+    ui->statusbar->blockSignals(false);
 }
