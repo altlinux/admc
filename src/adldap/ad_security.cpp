@@ -662,7 +662,7 @@ bool  ace_match_without_access_mask(const security_ace &ace, const QByteArray &t
 
     // Inherited and at the same time inheritable aces have to match for target object and its child objects
     const bool ace_is_inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_CONTAINER_INHERIT | SEC_ACE_FLAG_INHERITED_ACE);
-    bool flags_match = match_flags.match_inheritance ? ace_is_inherited || bitmask_is_set(ace.flags, right.flags) :
+    bool flags_match = match_flags.match_inheritance ? ace_is_inherited || ace.flags == right.flags :
                                          ace.flags == right.flags;
 
     const bool object_present = ace_types_with_object.contains(ace.type) &&
