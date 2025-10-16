@@ -42,7 +42,7 @@ BuildRequires: libgkdi-devel
 
 Requires: libsasl2
 Requires: libsasl2-plugin-gssapi
-Requires: ad-integration-themes
+Requires: ad-integration-themes >= 3.0
 
 Source0: %name-%version.tar
 
