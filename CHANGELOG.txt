@@ -2,6 +2,14 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.22.1
+-----------------------------------------------------------------------
+- Fixed frozen permission checkboxes in security tab.
+- Fixed mixing of log message and principal in the status bar
+  (log message length is limited).
+- Fixed crash on LAPS tab usage.
+
+-----------------------------------------------------------------------
  VERSION 0.22.0
 -----------------------------------------------------------------------
 - Fixed ADMC desktop icon view on GNOME.
