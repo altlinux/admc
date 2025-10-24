@@ -78,6 +78,6 @@ void FSMOTab::change_master() {
     if (success) {
         load(ad);
         const QString new_master_dn = rootDSE.get_string(ATTRIBUTE_SERVER_NAME);
-        emit master_changed(new_master_dn, fsmo_string_from_dn(role_dn));
+        emit master_changed(new_master_dn, role_dn);
     }
 }

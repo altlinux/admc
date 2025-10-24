@@ -47,7 +47,7 @@ private:
 
 signals:
     // TODO: Remove tabs and use signal from fsmo_dialog directly
-    void master_changed(const QString &new_master_dn, const QString &string_fsmo_role);
+    void master_changed(const QString &new_master_dn, const QString &fsmo_role_dn);
 };
 
 #endif /* FSMO_TAB_H */

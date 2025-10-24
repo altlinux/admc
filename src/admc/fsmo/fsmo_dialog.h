@@ -47,7 +47,7 @@ private slots:
     void gpo_edit_PDC_check_toggled(bool is_checked);
 
 signals:
-    void master_changed(const QString &new_master_dn, const QString &string_fsmo_role);
+    void master_changed(const QString &new_master_dn, const QString &fsmo_role_dn);
 };
 
 #endif /* FSMO_DIALOG_H */
