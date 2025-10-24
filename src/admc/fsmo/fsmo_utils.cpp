@@ -97,3 +97,48 @@ QString fsmo_string_from_dn(const QString &fsmo_role_dn)
     }
     return QString();
 }
+
+bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out) {
+    const QString domain_dn = g_adconfig->domain_dn();
+    const QString schema_dn = g_adconfig->schema_dn();
+    const QString partitions_dn = g_adconfig->partitions_dn();
+
+    const QString dn_lower = role_dn.toLower();
+
+    if (dn_lower == domain_dn.toLower()) {
+        role_out = FSMORole_PDCEmulation;
+        return true;
+    }
+
+    if (dn_lower == schema_dn.toLower()) {
+        role_out = FSMORole_Schema;
+        return true;
+    }
+
+    if (dn_lower == partitions_dn.toLower()) {
+        role_out = FSMORole_DomainNaming;
+        return true;
+    }
+
+    if (dn_lower == QString("cn=infrastructure,dc=domaindnszones,%1").arg(domain_dn).toLower()) {
+        role_out = FSMORole_DomainDNS;
+        return true;
+    }
+
+    if (dn_lower == QString("cn=infrastructure,dc=forestdnszones,%1").arg(domain_dn).toLower()) {
+        role_out = FSMORole_ForestDNS;
+        return true;
+    }
+
+    if (dn_lower == QString("cn=infrastructure,%1").arg(domain_dn).toLower()) {
+        role_out = FSMORole_Infrastructure;
+        return true;
+    }
+
+    if (dn_lower == QString("cn=rid manager$,cn=system,%1").arg(domain_dn).toLower()) {
+        role_out = FSMORole_RidAllocation;
+        return true;
+    }
+
+     return false;
+}

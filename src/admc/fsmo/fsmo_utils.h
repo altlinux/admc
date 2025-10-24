@@ -1,6 +1,7 @@
 #ifndef FSMO_UTILS_H
 #define FSMO_UTILS_H
 
+
 class QString;
 class AdInterface;
 class ConsoleWidget;
@@ -27,7 +28,7 @@ QString fsmo_string_from_dn(const QString &fsmo_role_dn);
 // store's role's master in it's attributes
 QString dn_from_role(FSMORole role);
 
-FSMORole fsmo_role_from_dn(const QString &role_dn);
+bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out);
 
 QString current_master_for_role(AdInterface &ad, FSMORole role);
 
