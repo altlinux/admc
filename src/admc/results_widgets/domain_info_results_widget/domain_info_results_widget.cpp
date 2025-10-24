@@ -34,6 +34,8 @@
 
 #include <QStandardItemModel>
 #include <QPushButton>
+#include <QComboBox>
+#include <QMessageBox>
 
 DomainInfoResultsWidget::DomainInfoResultsWidget(ConsoleWidget *console_arg) :
     QWidget(console_arg), ui(new Ui::DomainInfoResultsWidget), console(console_arg) {
@@ -43,8 +45,8 @@ DomainInfoResultsWidget::DomainInfoResultsWidget(ConsoleWidget *console_arg) :
     ui->tree->setModel(model);
     ui->tree->setHeaderHidden(true);
 
-    connect(console, &ConsoleWidget::fsmo_master_changed, this, &DomainInfoResultsWidget::update_fsmo_roles);
     update();
+    connect(console, &ConsoleWidget::fsmo_master_changed, this, &DomainInfoResultsWidget::update_fsmo_table_role);
 }
 
 DomainInfoResultsWidget::~DomainInfoResultsWidget() {
@@ -54,29 +56,23 @@ DomainInfoResultsWidget::~DomainInfoResultsWidget() {
 void DomainInfoResultsWidget::update() {
     update_defaults();
 
-    DomainInfo_SearchResults results = search_results();
+    AdInterface ad;
+    if (!ad.is_connected()) {
+        return;
+    }
+
+    DomainInfo_SearchResults results = search_results(ad);
     populate_widgets(results);
+
+    QList<AdObject> host_object_list;
+    for (const QString &site_dn : results.site_hosts_map.keys()) {
+        host_object_list.append(results.site_hosts_map.value(site_dn, {}));
+    }
+    ui->fsmo_table->update(ad, host_object_list);
 }
 
-void DomainInfoResultsWidget::update_fsmo_roles(const QString &new_master_dn, const QString &fsmo_role_string) {
-    QList<QStandardItem*> fsmo_role_item_list = model->findItems(fsmo_role_string, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
-    if (fsmo_role_item_list.isEmpty()) {
-        return;
-    }
-
-    const QModelIndex start_index = model->index(0, 0, QModelIndex());
-    QModelIndexList new_master_index_list = model->match(start_index, DomainInfoTreeItemRole_DN,
-                                                         new_master_dn, 1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
-    if (new_master_index_list.isEmpty()) {
-        return;
-    }
-
-    QStandardItem *fsmo_role_item = fsmo_role_item_list[0];
-    QModelIndex new_master_index = new_master_index_list[0];
-    QModelIndex roles_container_index = model->match(new_master_index, DomainInfoTreeItemRole_ItemType, DomainInfoTreeItemType_FSMO_Container,
-                                                     1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive))[0];
-    model->itemFromIndex(roles_container_index)->appendRow(
-                fsmo_role_item->parent()->takeRow(fsmo_role_item->row()));
+void DomainInfoResultsWidget::update_fsmo_table_role(const QString &new_master_dn, const QString &fsmo_role_string) {
+    ui->fsmo_table->update_role_owner(new_master_dn, fsmo_role_string);
 }
 
 void DomainInfoResultsWidget::update_defaults() {
@@ -91,44 +87,26 @@ void DomainInfoResultsWidget::update_defaults() {
         ui->dc_version_value
     };
     for (auto label : labels) {
-        set_label_failed(label, false);
+        set_label_undefined(label, false);
     }
 }
 
-QList<QStandardItem *> DomainInfoResultsWidget::get_tree_items(AdInterface &ad) {
-    const QString sites_container_dn = "CN=Sites,CN=Configuration," + g_adconfig->root_domain_dn();
-    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_SITE);
-    const QHash<QString, AdObject> site_objects = ad.search(sites_container_dn, SearchScope_Children,
-                                                            filter, {ATTRIBUTE_DN, ATTRIBUTE_NAME/*, ATTRIBUTE_GPLINK*/});
-
-    QList<QStandardItem *> site_items;
-    if (site_objects.isEmpty()) {
-        g_status->add_message("Failed to find domain sites.", StatusType_Error);
-        return site_items;
-    }
-
-    for (const AdObject &site_object : site_objects.values()) {
-        QStandardItem *site_item = add_tree_item(site_object.get_string(ATTRIBUTE_NAME), g_icon_manager->item_icon(ItemIcon_Site),
-                                                 DomainInfoTreeItemType_Site, nullptr);
-        site_item->setData(site_object.get_dn(), DomainInfoTreeItemRole_DN);
-
-        add_host_items(site_item, site_object, ad);
-
-        site_items.append(site_item);
-    }
-
-    return site_items;
-}
-
-DomainInfo_SearchResults DomainInfoResultsWidget::search_results() {
+DomainInfo_SearchResults DomainInfoResultsWidget::search_results(AdInterface &ad) {
     DomainInfo_SearchResults results;
 
-    AdInterface ad;
-    if (!ad.is_connected()) {
-        return results;
-    }
+    const QString sites_container_dn = "CN=Sites,CN=Configuration," + g_adconfig->root_domain_dn();
+    const QString site_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_SITE);
+    const QHash<QString, AdObject> site_objects = ad.search(sites_container_dn, SearchScope_Children,
+                                                            site_filter, {ATTRIBUTE_DN, ATTRIBUTE_NAME/*, ATTRIBUTE_GPLINK*/});
+    results.sites = site_objects.values();
 
-    results.tree_items = get_tree_items(ad);
+    for (const AdObject &obj : site_objects.values()) {
+        const QString servers_container_dn = "CN=Servers," + obj.get_dn();
+        const QString server_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_SERVER);
+        const QHash<QString, AdObject> host_objects = ad.search(servers_container_dn, SearchScope_Children,
+                                                                server_filter, {ATTRIBUTE_DN, ATTRIBUTE_NAME, ATTRIBUTE_DNS_HOST_NAME});
+        results.site_hosts_map.insert(obj.get_dn(), host_objects.values());
+    }
 
     const QStringList root_dse_attributes = {
         ATTRIBUTE_DOMAIN_FUNCTIONALITY_LEVEL,
@@ -164,12 +142,8 @@ DomainInfo_SearchResults DomainInfoResultsWidget::search_results() {
     return results;
 }
 
-void DomainInfoResultsWidget::populate_widgets(DomainInfo_SearchResults results) {
-    for (auto item : results.tree_items) {
-        model->appendRow(item);
-    }
-    model->sort(0);
-    ui->tree->expandToDepth(1);
+void DomainInfoResultsWidget::populate_widgets(const DomainInfo_SearchResults &results) {
+    update_site_tree(results);
 
     // Set dc and sites count to label text
     // Search is performed in the tree to avoid excessive ldap queries
@@ -183,7 +157,7 @@ void DomainInfoResultsWidget::populate_widgets(DomainInfo_SearchResults results)
         int count = model->match(start_index, DomainInfoTreeItemRole_ItemType, type,
                              -1, Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive)).count();
         if (!count) {
-            set_label_failed(type_label_hash[type], true);
+            set_label_undefined(type_label_hash[type], true);
         }
         type_label_hash[type]->setText(QString::number(count));
     }
@@ -197,7 +171,7 @@ void DomainInfoResultsWidget::populate_widgets(DomainInfo_SearchResults results)
     };
     for (QLabel *label : label_results_hash.keys()) {
         if (label_results_hash[label].isEmpty()) {
-            set_label_failed(label, true);
+            set_label_undefined(label, true);
         }
         else {
             label->setText(label_results_hash[label]);
@@ -205,39 +179,17 @@ void DomainInfoResultsWidget::populate_widgets(DomainInfo_SearchResults results)
     }
 }
 
-void DomainInfoResultsWidget::add_host_items(QStandardItem *site_item, const AdObject &site_object, AdInterface &ad) {
-    const QString servers_container_dn = "CN=Servers," + site_object.get_dn();
-    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_SERVER);
-    const QHash<QString, AdObject> host_objects = ad.search(servers_container_dn, SearchScope_Children,
-                                                            filter, {ATTRIBUTE_DN, ATTRIBUTE_NAME, ATTRIBUTE_DNS_HOST_NAME});
-
-    QHash<QString, QStringList> host_fsmo_map;
-    for (int role = 0; role < FSMORole_COUNT; ++role) {
-        const QString host = current_master_for_role(ad, FSMORole(role));
-        host_fsmo_map[host].append(string_fsmo_role(FSMORole(role)));
-    }
-    QString host;
-    for (const AdObject &host_object : host_objects.values()) {
-        QStandardItem *host_item = add_tree_item(host_object.get_string(ATTRIBUTE_DNS_HOST_NAME), g_icon_manager->item_icon(ItemIcon_Domain),
+void DomainInfoResultsWidget::add_tree_site_host_items(QStandardItem *site_item, const QList<AdObject> &host_objects_list) {
+    for (const AdObject &host_object : host_objects_list) {
+        QStandardItem *host_item = create_tree_item(host_object.get_string(ATTRIBUTE_DNS_HOST_NAME), g_icon_manager->item_icon(ItemIcon_Domain),
                                                  DomainInfoTreeItemType_Host, site_item);
         host_item->setData(host_object.get_dn(), DomainInfoTreeItemRole_DN);
-        host = host_object.get_string(ATTRIBUTE_DNS_HOST_NAME);
-
-        QStandardItem *fsmo_roles_container_item = add_tree_item(tr("FSMO roles"), g_icon_manager->category_icon(ADMC_CATEGORY_FSMO_ROLE_CONTAINER),
-                                                                 DomainInfoTreeItemType_FSMO_Container, host_item);
-
-        if (host_fsmo_map.keys().contains(host_item->text())) {
-            for (const QString &fsmo_role : host_fsmo_map[host_item->text()]) {
-                add_tree_item(fsmo_role, g_icon_manager->category_icon(ADMC_CATEGORY_FSMO_ROLE),
-                              DomainInfoTreeItemType_FSMO_Role,fsmo_roles_container_item);
-            }
-        }
     }
 }
 
-void DomainInfoResultsWidget::set_label_failed(QLabel *label, bool failed)
+void DomainInfoResultsWidget::set_label_undefined(QLabel *label, bool undefined)
 {
-    if (failed) {
+    if (undefined) {
         label->setStyleSheet("color: red");
         label->setText(tr("Undefined"));
     }
@@ -247,7 +199,7 @@ void DomainInfoResultsWidget::set_label_failed(QLabel *label, bool failed)
     }
 }
 
-QStandardItem* DomainInfoResultsWidget::add_tree_item(const QString &text, const QIcon &icon, DomainInfoTreeItemType type, QStandardItem *parent_item) {
+QStandardItem* DomainInfoResultsWidget::create_tree_item(const QString &text, const QIcon &icon, DomainInfoTreeItemType type, QStandardItem *parent_item) {
     QStandardItem *item = new QStandardItem(icon, text);
     item->setEditable(false);
     item->setData(type, DomainInfoTreeItemRole_ItemType);
@@ -255,6 +207,30 @@ QStandardItem* DomainInfoResultsWidget::add_tree_item(const QString &text, const
         parent_item->appendRow(item);
     }
     return item;
+}
+
+void DomainInfoResultsWidget::update_site_tree(const DomainInfo_SearchResults &results) {
+    if (results.sites.isEmpty()) {
+        g_status->add_message("Failed to find domain sites.", StatusType_Error);
+        return;
+    }
+
+    QList<QStandardItem *> site_items;
+    for (const AdObject &site_object : results.sites) {
+        QStandardItem *site_item = create_tree_item(site_object.get_string(ATTRIBUTE_NAME), g_icon_manager->item_icon(ItemIcon_Site),
+                                                 DomainInfoTreeItemType_Site, nullptr);
+        site_item->setData(site_object.get_dn(), DomainInfoTreeItemRole_DN);
+
+        add_tree_site_host_items(site_item, results.site_hosts_map.value(site_object.get_dn(), {}));
+
+        site_items.append(site_item);
+    }
+
+    for (auto item : site_items) {
+        model->appendRow(item);
+    }
+    model->sort(0);
+    ui->tree->expandToDepth(1);
 }
 
 QString DomainInfoResultsWidget::schema_version_to_string(int version) {

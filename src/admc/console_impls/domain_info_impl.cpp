@@ -114,7 +114,7 @@ void DomainInfoImpl::open_fsmo_dialog() {
 
     auto dialog = new FSMODialog(ad, console);
     dialog->open();
-    connect(dialog, &FSMODialog::master_changed, domain_info_results_widget, &DomainInfoResultsWidget::update_fsmo_roles);
+    connect(dialog, &FSMODialog::master_changed, domain_info_results_widget, &DomainInfoResultsWidget::update_fsmo_table_role);
 }
 
 void DomainInfoImpl::open_connection_options() {

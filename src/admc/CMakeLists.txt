@@ -75,6 +75,7 @@ set(ADMC_SOURCES
     results_widgets/policy_ou_results_widget/drag_drop_links_model.cpp
     results_widgets/policy_results_widget.cpp
     results_widgets/domain_info_results_widget/domain_info_results_widget.cpp
+    results_widgets/domain_info_results_widget/fsmo_table_widget.cpp
     results_widgets/pso_results_widget/pso_edit_widget.cpp
     results_widgets/pso_results_widget/pso_results_widget.cpp
 

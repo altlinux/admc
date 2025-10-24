@@ -21,6 +21,7 @@
 #define DOMAIN_INFO_RESULTS_WIDGET_H
 
 #include <QWidget>
+#include <QHash>
 
 namespace Ui {
 class DomainInfoResultsWidget;
@@ -32,12 +33,11 @@ class QStandardItemModel;
 class AdObject;
 class QStandardItem;
 class QSpinBox;
-template <typename T, typename U>
-class QHash;
 class QLabel;
 
 struct DomainInfo_SearchResults {
-    QList<QStandardItem*> tree_items;
+    QList<AdObject> sites;
+    QHash<QString, QList<AdObject>> site_hosts_map; // Site DNs - keys
     QString domain_functional_level;
     QString forest_functional_level;
     QString domain_schema_version;
@@ -59,8 +59,6 @@ class DomainInfoResultsWidget : public QWidget
         DomainInfoTreeItemType_Site,
         DomainInfoTreeItemType_ServersContainer,
         DomainInfoTreeItemType_Host,
-        DomainInfoTreeItemType_FSMO_Container,
-        DomainInfoTreeItemType_FSMO_Role,
 
         DomainInfoTreeItemType_COUNT
     };
@@ -80,7 +78,7 @@ public:
     void update();
 
 public slots:
-    void  update_fsmo_roles(const QString &new_master_dn, const QString &fsmo_role_string);
+    void  update_fsmo_table_role(const QString &new_master_dn, const QString &fsmo_role_string);
 
 private:
     Ui::DomainInfoResultsWidget *ui;
@@ -89,12 +87,12 @@ private:
     QStandardItemModel *model;
 
     void update_defaults();
-    QList<QStandardItem*> get_tree_items(AdInterface &ad);
-    DomainInfo_SearchResults search_results();
-    void populate_widgets(DomainInfo_SearchResults results);
-    void add_host_items(QStandardItem *site_item, const AdObject &site_object, AdInterface &ad);
-    void set_label_failed(QLabel *label, bool failed);
-    QStandardItem *add_tree_item(const QString &text, const QIcon &icon, DomainInfoTreeItemType type, QStandardItem *parent_item = nullptr);
+    DomainInfo_SearchResults search_results(AdInterface &ad);
+    void populate_widgets(const DomainInfo_SearchResults &results);
+    void add_tree_site_host_items(QStandardItem *site_item, const QList<AdObject> &host_objects_list);
+    void set_label_undefined(QLabel *label, bool undefined);
+    QStandardItem *create_tree_item(const QString &text, const QIcon &icon, DomainInfoTreeItemType type, QStandardItem *parent_item = nullptr);
+    void update_site_tree(const DomainInfo_SearchResults &results);
 
     QString schema_version_to_string(int version);
     QString functionality_level_to_string(int level);
