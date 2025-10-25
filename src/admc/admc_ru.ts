@@ -1078,7 +1078,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="domain_info_results_widget/domain_info_results_widget.ui" line="64"/>
+        <location filename="results_widgets/domain_info_results_widget/domain_info_results_widget.ui" line="97"/>
+        <source>Domain about</source>
+        <translation>О домене</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/domain_info_results_widget.ui" line="148"/>
         <source>Sites count:</source>
         <translation>Количество сайтов:</translation>
     </message>
@@ -1606,6 +1611,62 @@
         <location filename="console_impls/found_policy_impl.cpp" line="39"/>
         <source>Edit...</source>
         <translation type="unfinished">Изменить...</translation>
+    </message>
+</context>
+<context>
+    <name>FsmoTableWidget</name>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.ui" line="14"/>
+        <source>Form</source>
+        <translation>Form</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.ui" line="38"/>
+        <source>FSMO roles</source>
+        <translation>FSMO роли</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="22"/>
+        <source>FSMO role</source>
+        <translation>FSMO роль</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="22"/>
+        <source>Host</source>
+        <translation>Хост</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="22"/>
+        <source>Role capture</source>
+        <translation>Захват роли</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="62"/>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="129"/>
+        <source>Capture</source>
+        <translation>Захватить</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="68"/>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="89"/>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="121"/>
+        <source>Captured</source>
+        <translation>Захвачено</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="111"/>
+        <source>FSMO capture</source>
+        <translation>Захват FSMO</translation>
+    </message>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="111"/>
+        <source>Take over the role </source>
+        <translation>Захватить роль </translation>
+    </message>
+    <message>
+        <location filename="results_widgets/domain_info_results_widget/fsmo_table_widget.cpp" line="127"/>
+        <source>Failed to capture role</source>
+        <translation>Не удалось захватить роль</translation>
     </message>
 </context>
 <context>
