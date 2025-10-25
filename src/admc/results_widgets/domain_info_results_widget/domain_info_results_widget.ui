@@ -73,108 +73,135 @@
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
-            <layout class="QGridLayout" name="gridLayout_2">
-             <property name="leftMargin">
-              <number>5</number>
+            <widget class="QGroupBox" name="domain_about_group_box">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
              </property>
-             <property name="topMargin">
-              <number>5</number>
+             <property name="title">
+              <string>Domain about</string>
              </property>
-             <property name="rightMargin">
-              <number>5</number>
-             </property>
-             <property name="bottomMargin">
-              <number>5</number>
-             </property>
-             <property name="verticalSpacing">
-              <number>10</number>
-             </property>
-             <item row="6" column="0">
-              <widget class="QLabel" name="forest_functionality_label">
-               <property name="text">
-                <string>Forest functionality level:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="sites_count_label">
-               <property name="text">
-                <string>Sites count:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="dc_count_label">
-               <property name="text">
-                <string>Domain controllers count:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="0">
-              <widget class="QLabel" name="domain_functionality_label">
-               <property name="text">
-                <string>Domain functionality level:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="dc_version_value">
-               <property name="text">
-                <string>PLACEHOLDER</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLabel" name="domain_schema_value">
-               <property name="text">
-                <string>PLACEHOLDER</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="dc_version_label">
-               <property name="text">
-                <string>Domain controller version:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="1">
-              <widget class="QLabel" name="forest_functionality_value">
-               <property name="text">
-                <string>PLACEHOLDER</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="1">
-              <widget class="QLabel" name="domain_functionality_value">
-               <property name="text">
-                <string>PLACEHOLDER</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLabel" name="dc_count_value">
-               <property name="text">
-                <string>PLACEHOLDER</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLabel" name="sites_count_value">
-               <property name="text">
-                <string>PLACEHOLDER</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="domain_schema_version_label">
-               <property name="text">
-                <string>Domain schema version:</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_2">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>5</number>
+                </property>
+                <property name="verticalSpacing">
+                 <number>2</number>
+                </property>
+                <item row="3" column="1">
+                 <widget class="QLabel" name="domain_schema_value">
+                  <property name="text">
+                   <string>PLACEHOLDER</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLabel" name="dc_version_value">
+                  <property name="text">
+                   <string>PLACEHOLDER</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="1">
+                 <widget class="QLabel" name="domain_functionality_value">
+                  <property name="text">
+                   <string>PLACEHOLDER</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="0">
+                 <widget class="QLabel" name="domain_functionality_label">
+                  <property name="text">
+                   <string>Domain functionality level:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="sites_count_label">
+                  <property name="text">
+                   <string>Sites count:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLabel" name="sites_count_value">
+                  <property name="text">
+                   <string>PLACEHOLDER</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="0">
+                 <widget class="QLabel" name="forest_functionality_label">
+                  <property name="text">
+                   <string>Forest functionality level:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="domain_schema_version_label">
+                  <property name="text">
+                   <string>Domain schema version:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLabel" name="dc_count_value">
+                  <property name="text">
+                   <string>PLACEHOLDER</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="dc_count_label">
+                  <property name="text">
+                   <string>Domain controllers count:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="dc_version_label">
+                  <property name="text">
+                   <string>Domain controller version:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="1">
+                 <widget class="QLabel" name="forest_functionality_value">
+                  <property name="text">
+                   <string>PLACEHOLDER</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
            </item>
           </layout>
          </widget>
