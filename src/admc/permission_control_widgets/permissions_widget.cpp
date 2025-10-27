@@ -45,6 +45,7 @@ PermissionsWidget::PermissionsWidget(QWidget *parent) :
 
     rights_view = new QTreeView(this);
     rights_view->setModel(rights_model);
+    rights_view->setSelectionBehavior(QAbstractItemView::SelectItems);
 
     v_layout = new QVBoxLayout;
     v_layout->setContentsMargins(0, 0, 0, 0);
