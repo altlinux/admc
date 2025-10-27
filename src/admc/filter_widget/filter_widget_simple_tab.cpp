@@ -46,7 +46,9 @@ QString FilterWidgetSimpleTab::get_filter() const {
         const QString name = ui->name_edit->text();
 
         if (!name.isEmpty()) {
-            return filter_CONDITION(Condition_Contains, ATTRIBUTE_NAME, name);
+            const QString filter = filter_OR({filter_CONDITION(Condition_Contains, ATTRIBUTE_NAME, name),
+                                       filter_CONDITION(Condition_Contains, ATTRIBUTE_SAM_ACCOUNT_NAME, name)});
+            return filter;
         } else {
             return QString();
         }
