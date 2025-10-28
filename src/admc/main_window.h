@@ -44,6 +44,9 @@ public:
     MainWindow(AdInterface &ad, Krb5Client &krb5_client_arg, QWidget *parent = nullptr);
     ~MainWindow();
 
+    void show_changelog_on_update();
+    void open_auth_dialog();
+
 protected:
     void closeEvent(QCloseEvent *event);
     void resizeEvent(QResizeEvent *event);
@@ -71,7 +74,6 @@ private:
     void setup_main_window_actions();
     void restore_console_widget_state();
     void restore_main_window_state();
-    void show_changelog_on_update();
     void setup_status_bar(const AdInterface &ad);
     void init_on_connect(AdInterface &ad);
     void setup_authentication_dialog();

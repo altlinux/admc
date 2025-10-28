@@ -78,7 +78,6 @@ MainWindow::MainWindow(AdInterface &ad, Krb5Client &krb5_client_arg, QWidget *pa
 
     if (ad.is_connected()) {
         init_on_connect(ad);
-        show_changelog_on_update();
     }
     else {
         if (!krb5_client->current_principal().isEmpty()) {
@@ -86,7 +85,6 @@ MainWindow::MainWindow(AdInterface &ad, Krb5Client &krb5_client_arg, QWidget *pa
         }
         g_status->log_messages(ad.messages());
         login_label->setText(tr("Authentication required"));
-        auth_dialog->open();
     }
 }
 
@@ -442,6 +440,10 @@ void MainWindow::show_changelog_on_update() {
     }
 }
 
+void MainWindow::open_auth_dialog() {
+    auth_dialog->open();
+}
+
 void MainWindow::setup_status_bar(const AdInterface &ad) {
     login_label = new QLabel();
     login_label->setText(ad.client_user());
@@ -526,6 +528,8 @@ void MainWindow::init_on_connect(AdInterface &ad) {
     }
 
     login_label->setText(ad.client_user());
+
+    show_changelog_on_update();
 
     inited = true;
 }

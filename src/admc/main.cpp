@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
 
     load_connection_options();
 
-    QMainWindow *main_window = nullptr;
+    MainWindow *main_window = nullptr;
     {
         const bool show_login_window = settings_get_variant(SETTING_show_login_window_on_startup).toBool();
         if (show_login_window) {
@@ -122,6 +122,13 @@ int main(int argc, char **argv) {
         AdInterface ad;
         main_window = new MainWindow(ad, *krb5_client);
         main_window->show();
+
+        if (ad.is_connected()) {
+            main_window->show_changelog_on_update();
+        }
+        else {
+            main_window->open_auth_dialog();
+        }
     }
 
     const int retval = app.exec();
