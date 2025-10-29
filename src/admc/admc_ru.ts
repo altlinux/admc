@@ -2235,7 +2235,7 @@
     <message>
         <location filename="attribute_dialogs/list_attribute_dialog.cpp" line="87"/>
         <source>One or more values are empty. Edit or remove them to proceed.</source>
-        <translation>Одна или более значений пуста. Редактируйте или удалите эти значения чтобы продолжить.</translation>
+        <translation>Одно или более значений пусты. Редактируйте или удалите эти значения чтобы продолжить.</translation>
     </message>
     <message>
         <location filename="attribute_dialogs/list_attribute_dialog.cpp" line="102"/>
@@ -2996,7 +2996,7 @@
     <message>
         <location filename="console_impls/object_impl.cpp" line="967"/>
         <source>Are you sure you want to reset this account?</source>
-        <translation>Вы точно хотиту сбросить эту учетную запись?</translation>
+        <translation>Вы точно хотите сбросить эту учетную запись?</translation>
     </message>
     <message>
         <location filename="console_impls/object_impl.cpp" line="1262"/>
