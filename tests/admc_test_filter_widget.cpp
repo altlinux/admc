@@ -78,7 +78,7 @@ void ADMCTestFilterWidget::test_simple_tab() {
     QLineEdit *name_edit = simple_tab->ui->name_edit;
     name_edit->setText("test");
 
-    const QString correct_filter = "(&(name=*test*)(objectClass=user))";
+    const QString correct_filter = "(&(|(name=*test*)(sAMAccountName=*test*))(objectClass=user))";
     const QString filter = filter_widget->get_filter();
     QCOMPARE(correct_filter, filter);
 
