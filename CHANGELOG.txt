@@ -2,6 +2,19 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.22.2
+-----------------------------------------------------------------------
+- Fixed "Telephones" tab Russian translations spelling.
+- Fixed computer account reset confirmation Russian translations spelling.
+- Fixed modal dialogs appearing behind main window on start.
+- Changed selection behaviour in security permissions table.
+- Added sAMAccountName filter to simple object search: the search will take
+  the sAMAccountName into account.
+- Added spaces check (required fields) for objects creation.
+- Added FSMO capture table to domain info widget. Role can be captured by
+  current domain controller with corresponding button in the table.
+
+-----------------------------------------------------------------------
  VERSION 0.22.1
 -----------------------------------------------------------------------
 - Fixed frozen permission checkboxes in security tab.
