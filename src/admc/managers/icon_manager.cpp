@@ -196,7 +196,7 @@ void IconManager::IconManagerImpl::update_icons_array() {
     item_icons_array[ItemIcon_Site] = q->category_icon(OBJECT_CATEGORY_SITE);
     item_icons_array[ItemIcon_Computer] = q->category_icon(OBJECT_CATEGORY_COMPUTER).pixmap(max_icon_size);
     item_icons_array[ItemIcon_Computer_Blocked] = overlay_scope_item_icon(item_icons_array[ItemIcon_Computer],
-                                                                                    q->item_icon(ItemIcon_Computer_Blocked), max_icon_size,
+                                                                                    q->item_icon(ItemIcon_Block_Indicator), max_icon_size,
                                                                                     QSize(max_icon_size.width()/2, max_icon_size.height()/2),
                                                                                     QPoint(max_icon_size.width()/2, max_icon_size.width()/2));
     item_icons_array[ItemIcon_Group] = q->category_icon(OBJECT_CATEGORY_GROUP).pixmap(max_icon_size);
