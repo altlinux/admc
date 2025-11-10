@@ -3424,7 +3424,12 @@
         <translation>Удалить связь между политикой и подразделением? Обратите внимание, что сама политика не будет удалена.</translation>
     </message>
     <message>
-        <location filename="console_impls/policy_impl.cpp" line="438"/>
+        <location filename="console_impls/policy_impl.cpp" line="540"/>
+        <source>Are you sure you want to delete these policies and all their links?</source>
+        <translation>Удалить эти политики и все их связи?</translation>
+    </message>
+    <message>
+        <location filename="console_impls/policy_impl.cpp" line="541"/>
         <source>Are you sure you want to delete this policy and all of it&apos;s links?</source>
         <translation>Удалить эту политику и все её связи?</translation>
     </message>

@@ -922,6 +922,22 @@
         <oldsource>Failed to unlock user &quot;%1&quot;</oldsource>
         <translation>Пользователь %1 был разблокирован.</translation>
     </message>
+    <message>
+        <source>Search:
+	filter = &quot;%1&quot;
+	attributes = %2
+	scope = &quot;%3&quot;
+	base = &quot;%4&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System policy &quot;</source>
+        <translation>Системная политика &quot;</translation>
+    </message>
+    <message>
+        <source>&quot; is critical and cannot be deleted.</source>
+        <translation>&quot; критическая и не может быть удалена.</translation>
+    </message>
 </context>
 <context>
     <name>AdInterfacePrivate</name>
