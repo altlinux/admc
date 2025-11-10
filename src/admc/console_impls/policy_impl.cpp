@@ -534,11 +534,12 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
         }
     }
 
-    const QList<QString> dn_list = get_selected_dn_list(console_list[0], item_type, dn_role);
+    QList<QString> dn_list = get_selected_dn_list(console_list[0], item_type, dn_role);
 
-    const QString confirmation_text = QCoreApplication::translate("PolicyImpl", "Are you sure you want to delete this policy and all of it's links?");
+    const QString confirmation_text = dn_list.size() > 1 ?
+            QCoreApplication::translate("PolicyImpl", "Are you sure you want to delete these policies and all their links?") :
+            QCoreApplication::translate("PolicyImpl", "Are you sure you want to delete this policy and all of it's links?");
     const bool confirmed = confirmation_dialog(confirmation_text, console_list[0]);
-    QStringList not_deleted_dn_list;
     if (!confirmed) {
         return;
     }
@@ -548,17 +549,15 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
     const QList<QString> deleted_list = [&]() {
         QList<QString> out;
         for (const QString &dn : dn_list) {
-            bool deleted_object = false;
-            ad.gpo_delete(dn, &deleted_object);
+            bool gpc_is_deleted = false;
+            ad.gpo_delete(dn, &gpc_is_deleted);
 
             // NOTE: object may get deleted successfuly but
             // deleting GPT fails which makes gpo_delete() fail
             // as a whole, but we still want to remove gpo from
             // the console in that case
-            if (deleted_object) {
+            if (gpc_is_deleted) {
                 out.append(dn);
-            } else {
-                not_deleted_dn_list.append(dn);
             }
         }
 
@@ -605,24 +604,6 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
     hide_busy_indicator();
 
     g_status->log_messages(ad);
-    if (!not_deleted_dn_list.isEmpty()) {
-        QString message;
-        if (not_deleted_dn_list.size() == 1) {
-            message = PolicyImpl::tr("Failed to delete group policy");
-            AdObject not_deleted_object = ad.search_object(not_deleted_dn_list.first());
-            if (!not_deleted_object.is_empty() && not_deleted_object.get_bool("isCriticalSystemObject"))
-                message += PolicyImpl::tr(": this is a critical policy");
-        } else {
-            message = PolicyImpl::tr("Failed to delete the following group policies: \n");
-            for (QString not_deleted_dn : not_deleted_dn_list) {
-                AdObject not_deleted_object = ad.search_object(not_deleted_dn);
-                message += '\n' + not_deleted_object.get_string("displayName");
-                if (not_deleted_object.get_bool("isCriticalSystemObject"))
-                    message += PolicyImpl::tr(" (critical policy)");
-            }
-        }
-        QMessageBox::warning(console_list[0], "", message);
-    }
 }
 
 void console_policy_properties(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const int item_type, const int dn_role) {

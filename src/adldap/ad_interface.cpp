@@ -1407,7 +1407,14 @@ bool AdInterface::gpo_delete(const QString &dn, bool *deleted_object) {
 
     // NOTE: get filesys path before deleting object,
     // otherwise it won't be available!
-    const AdObject object = search_object(dn, {ATTRIBUTE_GPC_FILE_SYS_PATH, ATTRIBUTE_DISPLAY_NAME});
+    const AdObject object = search_object(dn, {ATTRIBUTE_GPC_FILE_SYS_PATH, ATTRIBUTE_DISPLAY_NAME, ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT});
+    if (object.get_bool(ATTRIBUTE_IS_CRITICAL_SYSTEM_OBJECT)) {
+        d->error_message_plain(tr("System policy \"") + object.get_string(ATTRIBUTE_DISPLAY_NAME) +
+                               tr("\" is critical and cannot be deleted."));
+        *deleted_object = false;
+        return false;
+    }
+
     const QString filesys_path = object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
 
     const QString name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
