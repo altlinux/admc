@@ -355,7 +355,6 @@ LargeIntegerSubtype AdConfig::get_attribute_large_integer_subtype(const QString 
         ATTRIBUTE_LAST_LOGON,
         ATTRIBUTE_LAST_LOGON_TIMESTAMP,
         ATTRIBUTE_PWD_LAST_SET,
-        ATTRIBUTE_LOCKOUT_TIME,
         ATTRIBUTE_BAD_PWD_TIME,
         ATTRIBUTE_CREATION_TIME,
         ATTRIBUTE_MSDS_USER_PASSWORD_EXPIRY_TIME_COMPUTED,
