@@ -2,6 +2,14 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.22.3
+-----------------------------------------------------------------------
+- Changed lockoutTime attribute from datetime to integer format.
+- Disabled critical domain GPO deletion, remove warning dialog in favor
+  of message logging, and update multi-policy deletion confirmation.
+- Fixed blocked computer icon.
+
+-----------------------------------------------------------------------
  VERSION 0.22.2
 -----------------------------------------------------------------------
 - Fixed "Telephones" tab Russian translations spelling.
