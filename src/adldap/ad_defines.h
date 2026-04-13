@@ -275,6 +275,7 @@ enum SystemFlagsBit {
 #define CLASS_MS_IMAGING_PSPS "msImaging-PSPs"
 #define CLASS_DNS_NODE "dnsNode"
 #define CLASS_CROSS_REF "crossRef"
+#define CLASS_NTDS_DSA "nTDSDSA"
 // NOTE: for schema object
 #define CLASS_dMD "dMD"
 #define CLASS_CONTROL_ACCESS_RIGHT "controlAccessRight"
