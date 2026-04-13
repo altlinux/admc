@@ -128,6 +128,8 @@ public:
     // Gets all classes, for which there are extended rights
     QList<QString> all_extended_right_classes() const;
 
+    QStringList get_site_related_classes() const;
+
 private:
     void load_extended_rights(AdInterface &ad);
     void load_attribute_schemas(AdInterface &ad);

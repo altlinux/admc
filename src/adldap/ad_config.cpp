@@ -643,6 +643,24 @@ QList<QString> AdConfig::all_extended_right_classes() const {
     return out;
 }
 
+QStringList AdConfig::get_site_related_classes() const {
+    const QStringList site_related_classes = {
+        CLASS_SITE,
+        CLASS_INTER_SITE_TRANSPORT_CONTAINER,
+        CLASS_INTER_SITE_TRANSPORT,
+        CLASS_SUBNET_CONTAINER,
+        CLASS_SUBNET,
+        CLASS_SERVERS_CONTAINER,
+        CLASS_SERVER,
+        CLASS_NTDS_SITE_SETTINGS,
+        CLASS_SITE_LINK,
+        CLASS_SITE_LINK_BRIDGE,
+        CLASS_NTDS_DSA
+    };
+
+    return site_related_classes;
+}
+
 void AdConfig::load_extended_rights(AdInterface &ad)
 {
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);
