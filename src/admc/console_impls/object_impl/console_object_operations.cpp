@@ -256,16 +256,17 @@ void ConsoleObjectTreeOperations::add_objects_to_console(ConsoleWidget *console,
             // Instead it means all the objects that can
             // have children(some of which are not
             // "container" class).
+            const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
             const bool is_container = [=]() {
                 const QList<QString> filter_containers = g_adconfig->get_filter_containers();
-                const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
 
                 return filter_containers.contains(object_class);
             }();
 
             const bool show_non_containers_ON = settings_get_variant(SETTING_show_non_containers_in_console_tree).toBool();
+            const bool is_site_related = g_adconfig->get_site_related_classes().contains(object_class);
 
-            return (is_container || show_non_containers_ON);
+            return (is_container || show_non_containers_ON || is_site_related);
         }();
 
         const QList<QStandardItem *> row = [&]() {
