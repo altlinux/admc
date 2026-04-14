@@ -533,7 +533,12 @@
         <translation>Не удалось инициализировать библиотеку SMB.</translation>
     </message>
     <message>
-        <location filename="ad_interface.cpp" line="551"/>
+        <location filename="ad_interface.cpp" line="161"/>
+        <source>Failed to initialize LDAP connection.</source>
+        <translation>Не удалось инициализировать LDAP соединение.</translation>
+    </message>
+    <message>
+        <location filename="ad_interface.cpp" line="441"/>
         <source>Search:
 	filter = &quot;%1&quot;
 	attributes = %2
