@@ -2,6 +2,13 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.23.1
+-----------------------------------------------------------------------
+- Disabled the "Show Non-Container Objects in Console Tree" and
+  "Advanced Features" options for the sites subtree display.
+- Fixed a crash when changing credentials while the network is disconnected.
+
+-----------------------------------------------------------------------
  VERSION 0.23.0
 -----------------------------------------------------------------------
 - The Sites container has been added to the console tree.
