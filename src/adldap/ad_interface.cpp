@@ -158,6 +158,7 @@ AdInterface::AdInterface() {
     }
 
     if (!ldap_init()) {
+        d->error_message(connect_error_context, tr("Failed to initialize LDAP connection."));
         return;
     }
 
