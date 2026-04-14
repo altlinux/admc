@@ -539,6 +539,18 @@ void MainWindow::setup_authentication_dialog() {
     auth_dialog = new KrbAuthDialog(this, krb5_client);
     connect(auth_dialog, &KrbAuthDialog::authenticated, this, [this]() {
         AdInterface ad;
+        if (!ad.is_connected()) {
+            ui->console->clear_scope_tree();
+            ui->console->hide_scope_and_results(true);
+            disable_actions_on_logout(true);
+            ui->console->refresh_scope(ui->console->domain_info_index());
+            auth_dialog->hide();
+            login_label->setText(krb5_client->current_principal());
+            g_status->log_messages(ad.messages());
+            krb5_client->logout(false);
+            return;
+        }
+
         if (inited) {
             show_busy_indicator();
             load_g_adconfig(ad);
