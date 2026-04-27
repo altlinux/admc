@@ -266,7 +266,7 @@ void ConsoleObjectTreeOperations::add_objects_to_console(ConsoleWidget *console,
             const bool show_non_containers_ON = settings_get_variant(SETTING_show_non_containers_in_console_tree).toBool();
             const bool is_site_related = g_adconfig->get_site_related_classes().contains(object_class);
 
-            return (is_container || show_non_containers_ON || is_site_related);
+            return (is_container || show_non_containers_ON || is_site_related || object_class == CLASS_PSO);
         }();
 
         const QList<QStandardItem *> row = [&]() {
