@@ -645,6 +645,7 @@ QList<QString> AdConfig::all_extended_right_classes() const {
 
 QStringList AdConfig::get_site_related_classes() const {
     const QStringList site_related_classes = {
+        CLASS_SITES_CONTAINER,
         CLASS_SITE,
         CLASS_INTER_SITE_TRANSPORT_CONTAINER,
         CLASS_INTER_SITE_TRANSPORT,
