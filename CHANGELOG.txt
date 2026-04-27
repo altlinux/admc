@@ -2,6 +2,14 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.23.2
+-----------------------------------------------------------------------
+- Disabled the "Show Non-Container Objects in Console Tree" and
+  "Advanced Features" options for the password settings subtree display.
+- Fixed bug with domain object tree items visibility for "Advances features"
+  mode.
+
+-----------------------------------------------------------------------
  VERSION 0.23.1
 -----------------------------------------------------------------------
 - Disabled the "Show Non-Container Objects in Console Tree" and
