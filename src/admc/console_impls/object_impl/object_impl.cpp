@@ -96,10 +96,11 @@ void ObjectImpl::fetch(const QModelIndex &index) {
             out = filter_OR({object_filter, out});
         }
 
-        out = advanced_features_filter(out);
-
-        // Disable advances features option for site-related objects
-        out = filter_OR({get_classes_filter(g_adconfig->get_site_related_classes()), out});
+        const QString fetched_obj_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
+        // Disable advances features option for site-related and pso objects
+        if (!g_adconfig->get_site_related_classes().contains(fetched_obj_class)) {
+            out = advanced_features_filter(out);
+        }
 
         return out;
     }();
