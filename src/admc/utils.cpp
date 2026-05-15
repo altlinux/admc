@@ -404,11 +404,17 @@ void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_e
             const QString middle_name = middle_name_edit->text().trimmed();
 
             const bool last_name_first = settings_get_variant(SETTING_last_name_before_first_name).toBool();
-            if (!first_name.isEmpty() && !last_name.isEmpty()) {
+            if (!first_name.isEmpty() && !middle_name.isEmpty() && !last_name.isEmpty()) {
                 if (last_name_first) {
                     return last_name + " " + first_name + " " + middle_name;
                 } else {
                     return first_name + " " + middle_name + " " + last_name;
+                }
+            } else if (!first_name.isEmpty() && !last_name.isEmpty()) {
+                if (last_name_first) {
+                    return last_name + " " + first_name;
+                } else {
+                    return first_name + " " + last_name;
                 }
             } else if (!first_name.isEmpty()) {
                 return first_name + middle_name;
