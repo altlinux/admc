@@ -18,6 +18,7 @@
  */
 
 #include "pso_edit_widget.h"
+#include "ad_defines.h"
 #include "ui_pso_edit_widget.h"
 #include "ad_interface.h"
 #include "ad_object.h"
@@ -26,6 +27,7 @@
 #include "managers/icon_manager.h"
 #include "status.h"
 #include "globals.h"
+#include "ad_config.h"
 
 #include <chrono>
 
@@ -189,19 +191,30 @@ bool PSOEditWidget::settings_are_default() {
 }
 
 void PSOEditWidget::update_defaults() {
-    // TODO: Get defaults from Default Domain Policy.
+    AdInterface ad;
+    if (!ad.is_connected()) {
+        return;
+    }
+    AdObject result = ad.search_object(g_adconfig->domain_dn(), {ATTRIBUTE_PWD_PROPERTIES,
+                                                                    ATTRIBUTE_PWD_HISTORY_LENGTH,
+                                                                    ATTRIBUTE_MIN_PWD_LENGTH,
+                                                                    ATTRIBUTE_MIN_PWD_AGE,
+                                                                    ATTRIBUTE_MAX_PWD_AGE,
+                                                                    ATTRIBUTE_LOCKOUT_DURATION,
+                                                                    ATTRIBUTE_LOCKOUT_THRESHOLD,
+                                                                    ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW});
 
-    ui->min_passwd_len_spinbox->setValue(7);
-    ui->history_length_spinbox->setValue(24);
-    ui->logon_attempts_spinbox->setValue(0);
+    ui->min_passwd_len_spinbox->setValue(result.get_int(ATTRIBUTE_MIN_PWD_LENGTH));
+    ui->history_length_spinbox->setValue(result.get_int(ATTRIBUTE_PWD_HISTORY_LENGTH));
+    ui->logon_attempts_spinbox->setValue(result.get_int(ATTRIBUTE_LOCKOUT_THRESHOLD));
 
-    ui->lockout_duration_spinbox->setValue(30);
-    ui->reset_lockout_spinbox->setValue(30);
-    ui->min_age_spinbox->setValue(1);
-    ui->max_age_spinbox->setValue(42);
+    ui->lockout_duration_spinbox->setValue(spinbox_timespan_units(result, ATTRIBUTE_LOCKOUT_DURATION));
+    ui->reset_lockout_spinbox->setValue(spinbox_timespan_units(result, ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW));
+    ui->min_age_spinbox->setValue(spinbox_timespan_units(result, ATTRIBUTE_MIN_PWD_AGE));
+    ui->max_age_spinbox->setValue(spinbox_timespan_units(result, ATTRIBUTE_MAX_PWD_AGE));
 
-    ui->complexity_req_checkbox->setChecked(true);
-    ui->store_passwd_checkbox->setChecked(false);
+    ui->complexity_req_checkbox->setChecked(result.get_int(ATTRIBUTE_PWD_PROPERTIES) & SAM_MASK_DOMAIN_PASSWORD_COMPLEX);
+    ui->store_passwd_checkbox->setChecked(result.get_int(ATTRIBUTE_PWD_PROPERTIES) & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT);
 
     ui->applied_list_widget->clear();
 }
