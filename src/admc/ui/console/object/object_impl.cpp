@@ -1130,7 +1130,6 @@ void ObjectImpl::retranslate_ui() {
     reset_account_action->setText(tr("Reset account"));
     edit_upn_suffixes_action->setText(tr("Edit UPN suffixes"));
     new_menu->setTitle(tr("New"));
-    create_pso_action->setText(tr("Create password setting object"));
     create_subnet_action->setText(tr("Create subnet"));
     create_site_action->setText(tr("Create site"));
     create_site_link_action->setText(tr("Create site link"));
