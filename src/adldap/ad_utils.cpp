@@ -39,8 +39,7 @@
 #define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
 
-const QTimeZone utc_tz = QTimeZone::utc();
-const QDateTime ntfs_epoch = QDateTime(QDate(1601, 1, 1), QTime(), utc_tz);
+const QDateTime ntfs_epoch = QDateTime(QDate(1601, 1, 1), QTime(), QTimeZone::utc());
 
 QString escape_name_for_dn(const QString &unescaped);
 
