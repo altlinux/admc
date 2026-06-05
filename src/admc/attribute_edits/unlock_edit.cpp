@@ -30,9 +30,10 @@ UnlockEdit::UnlockEdit(QCheckBox *check_arg, QObject *parent)
     check = check_arg;
 
     connect(
-        check, &QCheckBox::stateChanged,
+        check, &QCheckBox::checkStateChanged,
         this, &AttributeEdit::edited);
 }
+
 
 QString UnlockEdit::label_text() {
     return tr("Unlock account");

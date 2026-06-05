@@ -928,14 +928,6 @@
         <translation>Пользователь %1 был разблокирован.</translation>
     </message>
     <message>
-        <source>Search:
-	filter = &quot;%1&quot;
-	attributes = %2
-	scope = &quot;%3&quot;
-	base = &quot;%4&quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>System policy &quot;</source>
         <translation>Системная политика &quot;</translation>
     </message>

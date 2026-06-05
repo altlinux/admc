@@ -34,7 +34,8 @@ static std::vector<std::string> krb_temp_caches;
 
 static void crash_handler(int sig) {
     const char* msg = "Crash! Cleaning kerberos temp caches...\n";
-    write(STDERR_FILENO, msg, strlen(msg));
+    // Best-effort write to stderr from a signal handler.
+    (void)::write(STDERR_FILENO, msg, static_cast<size_t>(strlen(msg)));
 
     for (std::string &ccache_file : krb_temp_caches) {
         unlink(ccache_file.c_str());

@@ -267,7 +267,7 @@ void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
     }
 
     const bool parent_is_same = [&]() {
-        for (const QModelIndex &index : copied_list) {
+        for (const QPersistentModelIndex &index : copied_list) {
             const QModelIndex this_parent = index.parent();
 
             if (this_parent == parent_index) {

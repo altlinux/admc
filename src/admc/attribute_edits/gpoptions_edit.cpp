@@ -30,8 +30,9 @@ GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QObject *parent)
     check = check_arg;
 
     connect(
-        check, &QCheckBox::stateChanged,
+        check, &QCheckBox::checkStateChanged,
         this, &AttributeEdit::edited);
+
 }
 
 void GpoptionsEdit::load(AdInterface &ad, const AdObject &object) {

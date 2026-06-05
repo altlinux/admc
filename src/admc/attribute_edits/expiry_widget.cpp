@@ -25,6 +25,8 @@
 #include "globals.h"
 
 #include <QButtonGroup>
+#include <QTimeZone>
+
 
 const QTime END_OF_DAY(23, 59);
 
@@ -89,7 +91,7 @@ bool ExpiryWidget::apply(AdInterface &ad, const QString &dn) const {
     if (never) {
         return ad.attribute_replace_string(dn, ATTRIBUTE_ACCOUNT_EXPIRES, AD_LARGE_INTEGER_DATETIME_NEVER_2);
     } else {
-        const QDateTime datetime = QDateTime(ui->date_edit->date(), END_OF_DAY, Qt::UTC);
+        const QDateTime datetime = QDateTime(ui->date_edit->date(), END_OF_DAY, QTimeZone::utc());
 
         return ad.attribute_replace_datetime(dn, ATTRIBUTE_ACCOUNT_EXPIRES, datetime);
     }

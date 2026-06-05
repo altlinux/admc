@@ -35,8 +35,9 @@ AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption o
     check = check_arg;
 
     connect(
-        check, &QCheckBox::stateChanged,
+        check, &QCheckBox::checkStateChanged,
         this, &AttributeEdit::edited);
+
 }
 
 void AccountOptionEdit::load(AdInterface &ad, const AdObject &object) {
