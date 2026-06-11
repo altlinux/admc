@@ -61,6 +61,7 @@
 #include "ui/dialog/select/object.h"
 #include "ui/status.h"
 #include "ui/utils.h"
+#include "core/console/object/operations.h"
 
 void ConsoleObjectTreeOperations::console_object_move_and_rename(
     const QList<ConsoleWidget *> &console_list,
@@ -500,6 +501,10 @@ void ConsoleObjectTreeOperations::console_tree_add_password_settings(
     ConsoleWidget *console,
     AdInterface &ad)
 {
+    QStandardItem *password_settings_root = console->add_scope_item(ItemType_PasswordSettings, console->domain_info_index())[0];
+    password_settings_root->setText(QObject::tr("Fine-grained password policies"));
+    password_settings_root->setIcon(g_icon_manager->item_icon(ItemIcon_Password_Settings_Object));
+    password_settings_root->setDragEnabled(false);
     auto search_results = ad_search_pso_container(ad);
     if (ad_is_pso_container_not_found(search_results)) {
         const QString error =
@@ -508,11 +513,10 @@ void ConsoleObjectTreeOperations::console_tree_add_password_settings(
         return;
     }
 
+    object_item_data_load(search_results.values()[0], password_settings_root);
+
     const int PSO_CONTAINER_SORT_INDEX = 3;
-    console_tree_add_root_child(console,
-                                search_results.values()[0],
-                                PSO_CONTAINER_SORT_INDEX,
-                                QObject::tr("Fine-grained password policies"));
+    console->set_item_sort_index(password_settings_root->index(), PSO_CONTAINER_SORT_INDEX);
 }
 
 QString ConsoleObjectTreeOperations::console_object_count_string(
