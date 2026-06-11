@@ -613,8 +613,7 @@ bool ConsoleObjectTreeOperations::console_object_deletion_dialog(ConsoleWidget *
 }
 
 void ConsoleObjectTreeOperations::console_tree_add_password_settings(ConsoleWidget *console, AdInterface &ad) {
-    const QList<QStandardItem *> head_row = console->add_scope_item(ItemType_PasswordSettings, console->domain_info_index());
-    auto password_settings_root = head_row[0];
+    QStandardItem *password_settings_root = console->add_scope_item(ItemType_PasswordSettings, console->domain_info_index())[0];
     password_settings_root->setText(QCoreApplication::translate("password_settings_impl", "Password settings"));
     password_settings_root->setIcon(g_icon_manager->item_icon(ItemIcon_Password_Settings_Object));
     password_settings_root->setDragEnabled(false);
