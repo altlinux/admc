@@ -34,6 +34,7 @@ enum ItemType {
     ItemType_FindPolicy,
     ItemType_FoundPolicy,
     ItemType_DomainInfo,
+    ItemType_PasswordSettings,
 
     ItemType_LAST,
 };
