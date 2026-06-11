@@ -89,6 +89,7 @@ set(ADMC_SOURCES
     ui/console/policy_root_impl.cpp
     ui/console/query_item_impl.cpp
     ui/console/query_folder_impl.cpp
+    ui/console/password_settings_impl.cpp
     ui/dialog/about.cpp
     ui/dialog/attribute/attribute.cpp
     ui/dialog/attribute/bool.cpp

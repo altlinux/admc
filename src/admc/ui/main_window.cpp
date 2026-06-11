@@ -38,6 +38,7 @@
 #include "ui/console/all_policies_folder_impl.h"
 #include "ui/console/domain_info_impl.h"
 #include "ui/console/object/object_impl.h"
+#include "ui/console/password_settings_impl.h"
 #include "ui/console/policy_impl.h"
 #include "ui/console/policy_ou_impl.h"
 #include "ui/console/policy_root_impl.h"
@@ -531,6 +532,9 @@ void MainWindow::init_on_connect(AdInterface &ad) {
     }
     query_item_impl = new QueryItemImpl(ui->console);
     ui->console->register_impl(ItemType_QueryItem, query_item_impl);
+
+    auto pso_impl = new PasswordSettingsImpl(ui->console);
+    ui->console->register_impl(ItemType_PasswordSettings, pso_impl);
 
     if (query_folder_impl) {
         delete query_folder_impl;

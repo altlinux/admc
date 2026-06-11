@@ -62,7 +62,6 @@ namespace ConsoleObjectTreeOperations {
     // case.
     void console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes);
 
-    QList<QString> object_impl_column_labels();
     void console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
 
     // NOTE: this may return an invalid index if there's no tree
