@@ -25,8 +25,6 @@
 #include "../ui_results_widget_base.h"
 
 #include <QModelIndex>
-// #include <QDebug>
-
 
 PSOResultsWidget::PSOResultsWidget(QWidget *parent) :
     ResultsWidgetBase(parent), pso_edit_widget(new PSOEditWidget(this)) {
