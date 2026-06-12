@@ -217,6 +217,8 @@ void PSOEditWidget::update_defaults() {
     ui->store_passwd_checkbox->setChecked(result.get_int(ATTRIBUTE_PWD_PROPERTIES) & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT);
 
     ui->applied_list_widget->clear();
+
+    ui->name_edit->setReadOnly(true);
 }
 
 void PSOEditWidget::on_add() {
