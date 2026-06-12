@@ -31,8 +31,6 @@
 
 #include <chrono>
 
-// #include <QDebug>
-
 PSOEditWidget::PSOEditWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PSOEditWidget) {
