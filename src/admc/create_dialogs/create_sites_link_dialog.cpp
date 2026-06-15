@@ -44,7 +44,6 @@ CreateSitesLinkDialog::CreateSitesLinkDialog(AdInterface &ad, SitesLinkType type
     auto search_res = ad.search(g_adconfig->sites_container_dn(), SearchScope_All, filter, {ATTRIBUTE_DN});
     for (const QString &dn : search_res.keys()) {
         QListWidgetItem *item = new QListWidgetItem(item_icon, dn_get_name(dn));
-
         item->setData(Qt::UserRole, dn);
         ui->sites_link_common_wget->left_list_wget()->addItem(item);
     }
