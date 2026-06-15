@@ -58,7 +58,6 @@ void SitesLinkEdit::load(AdInterface &ad, const AdObject &object) {
     }
 
     const QString search_category = type == SitesLinkType::Link ? OBJECT_CATEGORY_SITE : OBJECT_CATEGORY_SITE_LINK;
-
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CATEGORY, search_category);
     auto search_res = ad.search(g_adconfig->sites_container_dn(), SearchScope_Children, filter, {ATTRIBUTE_DN});
 
@@ -69,7 +68,6 @@ void SitesLinkEdit::load(AdInterface &ad, const AdObject &object) {
             sites_link_common_wget->left_list_wget()->addItem(item);
         }
     }
-
 
     if (type == SitesLinkType::Link && sites_link_part_wget) {
         int cost = object.get_int(ATTRIBUTE_LINK_COST);
