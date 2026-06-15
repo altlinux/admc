@@ -338,6 +338,9 @@ QString IconManager::localized_theme_name(const QLocale locale, const QString &t
     const QDir theme_dir = theme_is_system ? QDir(system_icons_dir_path).filePath(theme) :
                                                                  QDir(system_icons_dir_path).filePath(impl->custom_theme);
     QFile index_theme_file(theme_dir.filePath("index.theme"));
+    if (! index_theme_file.exists()) {
+        return QString();
+    }
     index_theme_file.open(QIODevice::ReadOnly);
 
     QString theme_name;
