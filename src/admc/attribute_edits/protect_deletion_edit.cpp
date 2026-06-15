@@ -37,7 +37,6 @@ ProtectDeletionEdit::ProtectDeletionEdit(QCheckBox *check_arg, QObject *parent)
     connect(
         check, &QCheckBox::checkStateChanged,
         this, &AttributeEdit::edited);
-
 }
 
 void ProtectDeletionEdit::set_enabled(const bool enabled) {
