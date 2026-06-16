@@ -27,11 +27,10 @@
 #include <QModelIndex>
 // #include <QDebug>
 
-
-PSOResultsWidget::PSOResultsWidget(QWidget *parent) :
-    ResultsWidgetBase(parent), pso_edit_widget(new PSOEditWidget(this)) {
-
-    ui->verticalLayout->addWidget(pso_edit_widget);
+PSOResultsWidget::PSOResultsWidget(QWidget *parent)
+: ResultsWidgetBase(parent)
+, pso_edit_widget(new PSOEditWidget(this)) {
+    ui->verticalLayout->insertWidget(0, pso_edit_widget);
 }
 
 void PSOResultsWidget::update(const QModelIndex &index) {
