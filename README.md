@@ -110,4 +110,4 @@ $ ./admc-test
 
 ## Screenshots
 
-![image](https://i.imgur.com/GuRmwnq.png)
+![image](./share/admc-screenshot.png)
