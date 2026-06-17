@@ -107,22 +107,6 @@ QSet<StandardAction> PasswordSettingsImpl::get_standard_actions(const QModelInde
     return out;
 }
 
-void password_settings_impl_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {
-    if (!parent.isValid()) {
-        return;
-    }
-
-    const bool parent_was_fetched = console_item_get_was_fetched(parent);
-    if (!parent_was_fetched) {
-        return;
-    }
-
-    for (const AdObject &object : object_list) {
-        const QList<QStandardItem *> row = console->add_scope_item(ItemType_Object, parent);
-        object_load(object, row);
-    }
-}
-
 QList<QString> PasswordSettingsImpl::column_labels() const {
     return object_column_labels();
 }
