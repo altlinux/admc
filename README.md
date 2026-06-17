@@ -7,10 +7,12 @@ Computers" and "Group Policy Management".
 
 ## Dependencies
 Required:
+* [ad-integration-themes](https://github.com/Samael-fhts/ad-integration-themes)
 * [GLIBC](https://www.gnu.org/software/libc/) (for `resolv` library)
 * [Kerberos](https://github.com/krb5/krb5) 5 (`libkrb5`)
 * [LDAP](https://www.openldap.org/) (`libldap`)
-* [Qt6](https://www.qt.io/) (base, core, widgets, help, tools, linguist tools)
+* [Qt6](https://www.qt.io/) (base, core, widgets, help, tools, linguist tools,
+  svg)
 * [SASL](https://www.cyrusimap.org/sasl/) (`libsasl2`)
 * [Samba](https://www.samba.org/) (`libsmbclient`, `libndr`)
 * [libcng-dpapi](https://github.com/august-alt/libcng-dpapi)
@@ -30,6 +32,7 @@ follows:
 $ su -
 $ apt-get update
 $ apt-get install \
+    ad-integration-themes \
     libcng-dpapi-devel \
     libgkdi-devel \
     libkrb5-devel \
@@ -40,6 +43,7 @@ $ apt-get install \
     qt6-base-devel \
     qt6-linguist \
     qt6-qtbase \
+    qt6-svg \
     qt6-tools-devel \
     samba-devel
 ```
