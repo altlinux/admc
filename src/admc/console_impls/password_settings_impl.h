@@ -52,6 +52,4 @@ private:
     QAction *create_pso_action;
 };
 
-void password_settings_impl_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent);
-
 #endif /* PASSWORD_SETTINGS_IMPL_H */
