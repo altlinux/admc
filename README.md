@@ -112,6 +112,10 @@ Launch tests from the build directory:
 $ ./admc-test
 ```
 
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) file for contributing guidelines.
+
 ## Screenshots
 
 ![image](./share/admc-screenshot.png)
