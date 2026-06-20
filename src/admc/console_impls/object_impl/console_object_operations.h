@@ -2,6 +2,7 @@
 #define OPERATIONS_H
 
 #include "ad_defines.h"
+#include <QString>
 
 class ConsoleWidget;
 class QModelIndex;
@@ -53,7 +54,8 @@ namespace ConsoleObjectTreeOperations {
     bool console_object_deletion_dialog(ConsoleWidget *console, const QList<QModelIndex> &index_deleted_list);
 
     // Adds object as direct child to the root tree item
-    void console_tree_add_root_child(ConsoleWidget *console, AdObject &obj, int sort_idx);
+    void console_tree_add_root_child(ConsoleWidget *console, AdObject &obj, int sort_idx,
+                                     const QString& custom_object_name = QString());
     // Adds password settings container to the root item childs
     void console_tree_add_password_settings(ConsoleWidget *console, AdInterface &ad);
     void console_tree_add_sites_container(ConsoleWidget *console, AdInterface &ad);

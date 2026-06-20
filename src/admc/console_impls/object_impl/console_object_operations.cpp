@@ -605,7 +605,8 @@ void ConsoleObjectTreeOperations::console_tree_add_password_settings(ConsoleWidg
     }
 
     const int pso_container_sort_idx = 3;
-    console_tree_add_root_child(console, search_results.values()[0], pso_container_sort_idx);
+    console_tree_add_root_child(console, search_results.values()[0], pso_container_sort_idx,
+                                QObject::tr("Fine-grained password policies"));
 }
 
 QString ConsoleObjectTreeOperations::console_object_count_string(ConsoleWidget *console, const QModelIndex &index) {
@@ -936,10 +937,15 @@ void ConsoleObjectTreeOperations::console_object_properties(const QList<ConsoleW
     }
 }
 
-void ConsoleObjectTreeOperations::console_tree_add_root_child(ConsoleWidget *console, AdObject &obj, int sort_idx) {
+void ConsoleObjectTreeOperations::console_tree_add_root_child(ConsoleWidget *console, AdObject &obj, int sort_idx,
+                                                              const QString& custom_object_name) {
     const QList<QStandardItem *> row = console->add_scope_item(ItemType_Object, console->domain_info_index());
     console_object_item_data_load(row[0], obj);
-    row[0]->setText(obj.get_string(ATTRIBUTE_NAME));
+    if (custom_object_name.isEmpty()) {
+        row[0]->setText(obj.get_string(ATTRIBUTE_NAME));
+    } else {
+        row[0]->setText(custom_object_name);
+    }
     console->set_item_sort_index(row[0]->index(), sort_idx);
 }
 
