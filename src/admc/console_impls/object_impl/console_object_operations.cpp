@@ -392,35 +392,31 @@ void ConsoleObjectTreeOperations::console_object_item_data_load(QStandardItem *i
 }
 
 void ConsoleObjectTreeOperations::console_object_item_load_icon(QStandardItem *item, bool disabled) {
+    auto set_item_icon = [item, disabled](const ItemIcon &disabled_icon,
+                                          const ItemIcon &enabled_icon) {
+        ItemIcon item_icon = disabled ? disabled_icon : enabled_icon;
+        item->setIcon(g_icon_manager->item_icon(item_icon));
+    };
+    auto set_category_icon = [item](auto &icon) {
+        item->setIcon(g_icon_manager->category_icon(icon));
+    };
     const QString category = dn_get_name(item->data(ObjectRole_ObjectCategory).toString());
-    QIcon icon;
 
     if (item->data(ConsoleRole_Type).toInt() == ItemType_QueryItem) {
-        icon = g_icon_manager->category_icon(ADMC_CATEGORY_QUERY_ITEM);
-        item->setIcon(icon);
-        return;
+        set_category_icon(ADMC_CATEGORY_QUERY_ITEM);
     }
-
-    if (category == OBJECT_CATEGORY_PERSON) {
-        icon = disabled ? g_icon_manager->item_icon(ItemIcon_Person_Blocked) :
-                          g_icon_manager->item_icon(ItemIcon_Person);
-        item->setIcon(icon);
-        return;
+    else if (category == OBJECT_CATEGORY_PERSON) {
+        set_item_icon(ItemIcon_Person_Blocked, ItemIcon_Person);
     }
     else if (category == OBJECT_CATEGORY_COMPUTER) {
-        icon = disabled ? g_icon_manager->item_icon(ItemIcon_Computer_Blocked) :
-                          g_icon_manager->item_icon(ItemIcon_Computer);
-        item->setIcon(icon);
-        return;
+        set_item_icon(ItemIcon_Computer_Blocked, ItemIcon_Computer);
     }
     else if (category == OBJECT_CATEGORY_GROUP) {
-        icon = g_icon_manager->item_icon(ItemIcon_Group);
-        item->setIcon(icon);
-        return;
+        item->setIcon(g_icon_manager->item_icon(ItemIcon_Group));
     }
-
-    icon = g_icon_manager->category_icon(category);
-    item->setIcon(icon);
+    else {
+        set_category_icon(category);
+    }
 }
 
 void ConsoleObjectTreeOperations::console_object_search(ConsoleWidget *console, const QModelIndex &index, const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes) {
