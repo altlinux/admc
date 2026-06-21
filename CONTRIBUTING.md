@@ -422,3 +422,39 @@ commits.  Make sure that you don't re-format files that are not affected by the
 change you are committing.  Coding style changes of huge chunks of code have to
 be committed separately.
 
+## Writing commit messages
+We recommend to use [Conventional Commits](https://www.conventionalcommits.org/)
+for writing commit messages.
+
+The format is well-documented and formalized, and such commit messages can be
+parsed automatically by scripts/bots (e.g. for preparing release notes.)
+
+- The length of the first line in the commit message SHOULD be around 50
+  characters in length (including change type and scope), and MUST NOT be longer
+  than 72 characters.  It helps to keep the Git history readable in all
+  circumstances.
+- Take your time and write detailed commit descriptions (in other words, the
+  body of the message), unless the change you have made is trivial.  This allows
+  a viewer to quickly understand what was changed and why, without the need to
+  look inside the code.  The commit message body MUST be separated from the
+  short description (the first line) by an empty line.  The length of each line
+  in the commit message body MUST NOT be greater than 72 characters.
+- While the Conventional Commits specification does not formalize the commit
+  message body format, we suggest to use [GNU
+  ChangeLog](https://www.gnu.org/prep/standards/html_node/Style-of-Change-Logs.html)
+  format inside commit description body in the cases when it is useful to
+  indicate what file was changed, and which part of it.
+
+A commit message example:
+```
+feat(core): Add "foo-procedure"
+
+A long description of the changes that has been made.  If it is too long
+we must add line breaks.  This optionally follows by the list of files
+that were changed in the commit in the GNU ChangeLog format.
+
+* src/core/file.c (foo-procedure): New procedure.
+* src/core/file.h: Export it.
+
+Signed-off-by: Vasiliy I. Pupkin <vip@altlinux.org>
+```
