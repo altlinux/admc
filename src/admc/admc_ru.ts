@@ -4002,7 +4002,12 @@
         <location filename="console_impls/object_impl/console_object_operations.cpp" line="609"/>
         <source>Fine-grained password policies</source>
         <translation>Детализированные политики паролей</translation>
-   </message>
+    </message>
+    <message>
+        <location filename="console_impls/object_impl/console_object_operations.cpp" line="963"/>
+        <source>Sites</source>
+        <translation>Сайты</translation>
+    </message>
     <message>
         <location filename="utils.cpp" line="470"/>
         <source>Enabled</source>

@@ -959,7 +959,8 @@ void ConsoleObjectTreeOperations::console_tree_add_sites_container(ConsoleWidget
     }
 
     const int sites_container_sort_idx = 4;
-    console_tree_add_root_child(console, search_results.values()[0], sites_container_sort_idx);
+    console_tree_add_root_child(console, search_results.values()[0], sites_container_sort_idx,
+                                QObject::tr("Sites"));
 }
 
 CreateObjectDialog *ConsoleObjectTreeOperations::create_dialog(const QString &object_class, AdInterface &ad, const QString &parent_dn, ConsoleWidget *parent) {
