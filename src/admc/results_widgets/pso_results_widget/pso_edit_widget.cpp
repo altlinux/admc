@@ -77,8 +77,14 @@ void PSOEditWidget::update(const AdObject &passwd_settings_obj) {
     ui->min_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE)));
     ui->max_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE)));
 
-    ui->complexity_req_checkbox->setChecked(passwd_settings_obj.get_bool(ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED));
-    ui->store_passwd_checkbox->setChecked(passwd_settings_obj.get_bool(ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED));
+    if (is_global) {
+        int pwd_properties = passwd_settings_obj.get_int(ATTRIBUTE_PWD_PROPERTIES);
+        ui->complexity_req_checkbox->setChecked(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_COMPLEX);
+        ui->store_passwd_checkbox->setChecked(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT);
+    } else {
+        ui->complexity_req_checkbox->setChecked(passwd_settings_obj.get_bool(ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED));
+        ui->store_passwd_checkbox->setChecked(passwd_settings_obj.get_bool(ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED));
+    }
 
     ui->applied_list_widget->clear();
     dn_applied_list = passwd_settings_obj.get_strings(ATTRIBUTE_PSO_APPLIES_TO);
@@ -138,14 +144,19 @@ QHash<QString, QList<QByteArray>> PSOEditWidget::pso_settings_values() {
                                .count() *
                            MILLIS_TO_100_NANOS)};
 
-    settings[ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED] = {
-        QString(ui->complexity_req_checkbox->isChecked() ? LDAP_BOOL_TRUE :
-        LDAP_BOOL_FALSE).toUtf8()
-    };
-    settings[ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED] = {
-        QString(ui->store_passwd_checkbox->isChecked() ? LDAP_BOOL_TRUE :
-        LDAP_BOOL_FALSE).toUtf8()
-    };
+    if (is_global) {
+        settings[ATTRIBUTE_PWD_PROPERTIES] = {QByteArray::number(ui->complexity_req_checkbox->isChecked() * SAM_MASK_DOMAIN_PASSWORD_COMPLEX +
+                                                                 ui->store_passwd_checkbox->isChecked() * SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT)};
+    } else {
+        settings[ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED] = {
+            QString(ui->complexity_req_checkbox->isChecked() ? LDAP_BOOL_TRUE :
+                                                               LDAP_BOOL_FALSE)
+                .toUtf8()};
+        settings[ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED] = {
+            QString(ui->store_passwd_checkbox->isChecked() ? LDAP_BOOL_TRUE :
+                                                             LDAP_BOOL_FALSE)
+                .toUtf8()};
+    }
 
     if (dn_applied_list.isEmpty()) {
         settings[ATTRIBUTE_PSO_APPLIES_TO] = QList<QByteArray>();
