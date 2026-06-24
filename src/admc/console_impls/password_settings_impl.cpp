@@ -41,7 +41,9 @@
 
 PasswordSettingsImpl::PasswordSettingsImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    set_results_widget(new PSOResultsWidget(console_arg));
+    auto result_widget(new PSOResultsWidget(console_arg));
+    result_widget->update(global_password_settings());
+    set_results_widget(result_widget);
 
     create_pso_action = new QAction(tr("Create password settings object"), this);
 
