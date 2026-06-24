@@ -42,7 +42,6 @@ public:
     ~PSOEditWidget();
 
     void update(const AdObject &passwd_settings_obj);
-    void update_defaults();
     void set_read_only(bool read_only);
 
     /*!
