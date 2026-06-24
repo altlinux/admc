@@ -75,6 +75,8 @@ private:
     void on_add();
     void on_remove();
 
+    void update_fields(const AdObject &passwd_settings_obj);
+
     QString replace_attribute(QString attribute_name);
 
     /*!

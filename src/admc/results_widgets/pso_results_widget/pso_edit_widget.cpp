@@ -46,7 +46,7 @@ PSOEditWidget::PSOEditWidget(QWidget *parent) :
     connect(ui->add_button, &QPushButton::clicked, this, &PSOEditWidget::on_add);
     connect(ui->remove_button, &QPushButton::clicked, this, &PSOEditWidget::on_remove);
 
-    update_defaults();
+    update_fields(global_password_settings());
 }
 
 PSOEditWidget::~PSOEditWidget() {
@@ -64,51 +64,7 @@ void PSOEditWidget::update(const AdObject &passwd_settings_obj) {
         ui->line->setVisible(!is_global);
     }
 
-    ui->name_edit->setText(passwd_settings_obj.get_string(replace_attribute(ATTRIBUTE_CN)));
-    ui->name_edit->setReadOnly(true);
-
-    ui->precedence_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE)));
-    ui->min_passwd_len_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH)));
-    ui->history_length_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH)));
-    ui->logon_attempts_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD)));
-
-    ui->lockout_duration_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION)));
-    ui->reset_lockout_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW)));
-    ui->min_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE)));
-    ui->max_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE)));
-
-    if (is_global) {
-        int pwd_properties = passwd_settings_obj.get_int(ATTRIBUTE_PWD_PROPERTIES);
-        ui->complexity_req_checkbox->setChecked(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_COMPLEX);
-        ui->store_passwd_checkbox->setChecked(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT);
-    } else {
-        ui->complexity_req_checkbox->setChecked(passwd_settings_obj.get_bool(ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED));
-        ui->store_passwd_checkbox->setChecked(passwd_settings_obj.get_bool(ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED));
-    }
-
-    ui->applied_list_widget->clear();
-    dn_applied_list = passwd_settings_obj.get_strings(ATTRIBUTE_PSO_APPLIES_TO);
-
-    if (dn_applied_list.isEmpty()) {
-        ui->remove_button->setDisabled(true);
-        return;
-    }
-
-    AdInterface ad;
-    if (!ad.is_connected()) {
-        return;
-    }
-
-    for (const QString &dn : dn_applied_list) {
-        AdObject applied_object = ad.search_object(dn, {ATTRIBUTE_OBJECT_CATEGORY});
-        if (applied_object.is_empty()) {
-            continue;
-        }
-        QListWidgetItem *item = new QListWidgetItem(g_icon_manager->object_icon(applied_object),
-                                                    dn_get_name(dn),
-                                                    ui->applied_list_widget);
-        item->setData(AppliedItemRole_DN, dn);
-    }
+    update_fields(passwd_settings_obj);
 }
 
 QHash<QString, QList<QByteArray>> PSOEditWidget::pso_settings_values() {
@@ -293,3 +249,51 @@ QString PSOEditWidget::replace_attribute(QString attribute_name) {
                                 QString()) :
                         attribute_name;
 };
+
+void PSOEditWidget::update_fields(const AdObject &passwd_settings_obj) {
+    ui->name_edit->setText(passwd_settings_obj.get_string(replace_attribute(ATTRIBUTE_CN)));
+    ui->name_edit->setReadOnly(true);
+
+    ui->precedence_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE)));
+    ui->min_passwd_len_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH)));
+    ui->history_length_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH)));
+    ui->logon_attempts_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD)));
+
+    ui->lockout_duration_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION)));
+    ui->reset_lockout_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW)));
+    ui->min_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE)));
+    ui->max_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE)));
+
+    if (is_global) {
+        int pwd_properties = passwd_settings_obj.get_int(ATTRIBUTE_PWD_PROPERTIES);
+        ui->complexity_req_checkbox->setChecked(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_COMPLEX);
+        ui->store_passwd_checkbox->setChecked(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT);
+    } else {
+        ui->complexity_req_checkbox->setChecked(passwd_settings_obj.get_bool(ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED));
+        ui->store_passwd_checkbox->setChecked(passwd_settings_obj.get_bool(ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED));
+    }
+
+    ui->applied_list_widget->clear();
+    dn_applied_list = passwd_settings_obj.get_strings(ATTRIBUTE_PSO_APPLIES_TO);
+
+    if (dn_applied_list.isEmpty()) {
+        ui->remove_button->setDisabled(true);
+        return;
+    }
+
+    AdInterface ad;
+    if (!ad.is_connected()) {
+        return;
+    }
+
+    for (const QString &dn : dn_applied_list) {
+        AdObject applied_object = ad.search_object(dn, {ATTRIBUTE_OBJECT_CATEGORY});
+        if (applied_object.is_empty()) {
+            continue;
+        }
+        QListWidgetItem *item = new QListWidgetItem(g_icon_manager->object_icon(applied_object),
+            dn_get_name(dn),
+            ui->applied_list_widget);
+        item->setData(AppliedItemRole_DN, dn);
+    }
+}
