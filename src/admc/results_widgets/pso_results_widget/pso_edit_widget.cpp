@@ -168,22 +168,6 @@ bool PSOEditWidget::settings_are_default() {
     return true;
 }
 
-void PSOEditWidget::update_defaults() {
-    const AdObject &result = global_password_settings();
-
-    ui->min_passwd_len_spinbox->setValue(result.get_int(ATTRIBUTE_MIN_PWD_LENGTH));
-    ui->history_length_spinbox->setValue(result.get_int(ATTRIBUTE_PWD_HISTORY_LENGTH));
-    ui->logon_attempts_spinbox->setValue(result.get_int(ATTRIBUTE_LOCKOUT_THRESHOLD));
-
-    ui->lockout_duration_spinbox->setValue(spinbox_timespan_units(result, ATTRIBUTE_LOCKOUT_DURATION));
-    ui->reset_lockout_spinbox->setValue(spinbox_timespan_units(result, ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW));
-    ui->min_age_spinbox->setValue(spinbox_timespan_units(result, ATTRIBUTE_MIN_PWD_AGE));
-    ui->max_age_spinbox->setValue(spinbox_timespan_units(result, ATTRIBUTE_MAX_PWD_AGE));
-
-    ui->complexity_req_checkbox->setChecked(result.get_int(ATTRIBUTE_PWD_PROPERTIES) & SAM_MASK_DOMAIN_PASSWORD_COMPLEX);
-    ui->store_passwd_checkbox->setChecked(result.get_int(ATTRIBUTE_PWD_PROPERTIES) & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT);
-}
-
 void PSOEditWidget::on_add() {
     auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, this);
     dialog->setWindowTitle(tr("Add applied users/group"));
