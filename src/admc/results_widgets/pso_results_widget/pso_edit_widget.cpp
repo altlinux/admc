@@ -202,18 +202,7 @@ bool PSOEditWidget::settings_are_default() {
 }
 
 void PSOEditWidget::update_defaults() {
-    AdInterface ad;
-    if (!ad.is_connected()) {
-        return;
-    }
-    AdObject result = ad.search_object(g_adconfig->domain_dn(), {ATTRIBUTE_PWD_PROPERTIES,
-                                                                    ATTRIBUTE_PWD_HISTORY_LENGTH,
-                                                                    ATTRIBUTE_MIN_PWD_LENGTH,
-                                                                    ATTRIBUTE_MIN_PWD_AGE,
-                                                                    ATTRIBUTE_MAX_PWD_AGE,
-                                                                    ATTRIBUTE_LOCKOUT_DURATION,
-                                                                    ATTRIBUTE_LOCKOUT_THRESHOLD,
-                                                                    ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW});
+    const AdObject &result = global_password_settings();
 
     ui->min_passwd_len_spinbox->setValue(result.get_int(ATTRIBUTE_MIN_PWD_LENGTH));
     ui->history_length_spinbox->setValue(result.get_int(ATTRIBUTE_PWD_HISTORY_LENGTH));
@@ -226,10 +215,6 @@ void PSOEditWidget::update_defaults() {
 
     ui->complexity_req_checkbox->setChecked(result.get_int(ATTRIBUTE_PWD_PROPERTIES) & SAM_MASK_DOMAIN_PASSWORD_COMPLEX);
     ui->store_passwd_checkbox->setChecked(result.get_int(ATTRIBUTE_PWD_PROPERTIES) & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT);
-
-    ui->applied_list_widget->clear();
-
-    ui->name_edit->setReadOnly(true);
 }
 
 void PSOEditWidget::on_add() {
