@@ -29,6 +29,8 @@
 #include <QStandardItem>
 #include <QString>
 
+#include "adldap.h"
+
 class AdInterface;
 class QPlainTextEdit;
 
@@ -72,5 +74,7 @@ void set_horizontal_header_labels_from_map(
 
 void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute);
 int count_non_empty_containers(const QList<QModelIndex> &list);
+
+AdObject global_password_settings();
 
 #endif

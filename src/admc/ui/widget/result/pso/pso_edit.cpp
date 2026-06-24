@@ -29,6 +29,7 @@
 #include "ui/status.h"
 #include "core/globals.h"
 #include "ad_config.h"
+#include "core/utils.h"
 
 #include <chrono>
 
@@ -47,7 +48,6 @@ PSOEditWidget::PSOEditWidget(QWidget *parent) :
     connect(ui->remove_button, &QPushButton::clicked, this, &PSOEditWidget::on_remove);
 
     update_defaults();
-    default_setting_values = pso_settings_values();
 }
 
 PSOEditWidget::~PSOEditWidget() {
@@ -55,18 +55,28 @@ PSOEditWidget::~PSOEditWidget() {
 }
 
 void PSOEditWidget::update(const AdObject &passwd_settings_obj) {
-    ui->name_edit->setText(passwd_settings_obj.get_string(ATTRIBUTE_CN));
+    is_global = passwd_settings_obj.contains(ATTRIBUTE_CN);
+    ui->name_edit->setVisible(!is_global);
+    ui->name_label->setVisible(!is_global);
+    ui->precedence_label->setVisible(!is_global);
+    ui->precedence_spinbox->setVisible(!is_global);
+    ui->groupBox->setVisible(!is_global);
+    ui->line->setVisible(!is_global);
+    ui->groupBox_2->setTitle(is_global ? tr("Global password settings") :
+                                             tr("Password settings"));
+
+    ui->name_edit->setText(passwd_settings_obj.get_string(replace_attribute(ATTRIBUTE_CN)));
     ui->name_edit->setReadOnly(true);
 
-    ui->precedence_spinbox->setValue(passwd_settings_obj.get_int(ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE));
-    ui->min_passwd_len_spinbox->setValue(passwd_settings_obj.get_int(ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH));
-    ui->history_length_spinbox->setValue(passwd_settings_obj.get_int(ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH));
-    ui->logon_attempts_spinbox->setValue(passwd_settings_obj.get_int(ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD));
+    ui->precedence_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE)));
+    ui->min_passwd_len_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH)));
+    ui->history_length_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH)));
+    ui->logon_attempts_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD)));
 
-    ui->lockout_duration_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, ATTRIBUTE_MS_DS_LOCKOUT_DURATION));
-    ui->reset_lockout_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW));
-    ui->min_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE));
-    ui->max_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE));
+    ui->lockout_duration_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION)));
+    ui->reset_lockout_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW)));
+    ui->min_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE)));
+    ui->max_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj, replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE)));
 
     ui->complexity_req_checkbox->setChecked(passwd_settings_obj.get_bool(ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED));
     ui->store_passwd_checkbox->setChecked(passwd_settings_obj.get_bool(ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED));
@@ -101,30 +111,33 @@ QHash<QString, QList<QByteArray>> PSOEditWidget::pso_settings_values() {
 
     QHash<QString, QList<QByteArray>> settings;
 
-    settings[ATTRIBUTE_CN] = {ui->name_edit->text().trimmed().toUtf8()};
+    settings[replace_attribute(ATTRIBUTE_CN)] = {ui->name_edit->text().trimmed().toUtf8()};
 
-    settings[ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE] = {QByteArray::number(ui->precedence_spinbox->value())};
-    settings[ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH] = {QByteArray::number(ui->min_passwd_len_spinbox->value())};
-    settings[ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH] = {QByteArray::number(ui->history_length_spinbox->value())};
-    settings[ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD] = {QByteArray::number(ui->logon_attempts_spinbox->value())};
+    settings[replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE)] = {QByteArray::number(ui->precedence_spinbox->value())};
+    settings[replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH)] = {QByteArray::number(ui->min_passwd_len_spinbox->value())};
+    settings[replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH)] = {QByteArray::number(ui->history_length_spinbox->value())};
+    settings[replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD)] = {QByteArray::number(ui->logon_attempts_spinbox->value())};
 
-    settings[ATTRIBUTE_MS_DS_LOCKOUT_DURATION] = {
+    settings[replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION)] = {
         QByteArray::number(-duration_cast<milliseconds>(
-        minutes(ui->lockout_duration_spinbox->value())).count() * MILLIS_TO_100_NANOS)
-    };
-    settings[ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW] = {
+                               minutes(ui->lockout_duration_spinbox->value()))
+                               .count() *
+                           MILLIS_TO_100_NANOS)};
+    settings[replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW)] = {
         QByteArray::number(-duration_cast<milliseconds>(
         minutes(ui->reset_lockout_spinbox->value())).count() * MILLIS_TO_100_NANOS)
     };
 
-    settings[ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE] = {
+    settings[replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE)] = {
         QByteArray::number(-duration_cast<milliseconds>(
-        hours(24 * ui->min_age_spinbox->value())).count() * MILLIS_TO_100_NANOS)
-    };
-    settings[ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE] = {
+                               hours(24 * ui->min_age_spinbox->value()))
+                               .count() *
+                           MILLIS_TO_100_NANOS)};
+    settings[replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE)] = {
         QByteArray::number(-duration_cast<milliseconds>(
-        hours(24 * ui->max_age_spinbox->value())).count() * MILLIS_TO_100_NANOS)
-    };
+                               hours(24 * ui->max_age_spinbox->value()))
+                               .count() *
+                           MILLIS_TO_100_NANOS)};
 
     settings[ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED] = {
         QString(ui->complexity_req_checkbox->isChecked() ? LDAP_BOOL_TRUE :
@@ -174,14 +187,14 @@ bool PSOEditWidget::settings_are_default() {
     const QStringList excluded_attrs = {
         ATTRIBUTE_CN,
         ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE,
-        ATTRIBUTE_APPLIES_TO
-    };
-    for (const QString &attr : default_setting_values.keys()) {
+        ATTRIBUTE_APPLIES_TO};
+    auto defaults = global_password_settings().get_attributes_data();
+    for (const QString &attr : defaults.keys()) {
         if (excluded_attrs.contains(attr)) {
             continue;
         }
 
-        if (default_setting_values[attr] != current_values[attr]) {
+        if (defaults[pso_attributes_to_global_attributes[attr]] != current_values[attr]) {
             return false;
         }
     }
@@ -290,3 +303,12 @@ bool PSOEditWidget::event(QEvent *event) {
     }
     return QObject::event(event);
 }
+QString PSOEditWidget::replace_attribute(QString attribute_name) {
+    if (!is_global) {
+        return attribute_name;
+    }
+    if (pso_attributes_to_global_attributes.contains(attribute_name)) {
+        return pso_attributes_to_global_attributes[attribute_name];
+    }
+    return QString();
+};
