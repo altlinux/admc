@@ -149,8 +149,8 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
     description_layout->setContentsMargins(0, 0, 0, 0);
     description_layout->setSpacing(0);
     d->description_bar->setLayout(description_layout);
-    description_layout->addWidget(d->description_bar_left);
     description_layout->addSpacing(10);
+    description_layout->addWidget(d->description_bar_left);
     description_layout->addStretch();
     description_layout->addWidget(d->description_bar_right);
     description_layout->addSpacing(10);
