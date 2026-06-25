@@ -4102,6 +4102,10 @@
         <source>Loading...</source>
         <translation>Загрузка...</translation>
     </message>
+    <message>
+        <source>Could not open a theme: </source>
+        <translation>Невозможно загрузить тему: </translation>
+    </message>
 </context>
 <context>
     <name>QueryFolderImpl</name>

@@ -341,7 +341,13 @@ QString IconManager::localized_theme_name(const QLocale locale, const QString &t
     if (! index_theme_file.exists()) {
         return QString();
     }
-    index_theme_file.open(QIODevice::ReadOnly);
+    if (! index_theme_file.open(QIODevice::ReadOnly)) {
+        g_status->add_message(
+            QObject::tr("Could not open a theme: ")
+            + theme_dir.filePath("index.theme"),
+            StatusType_Error);
+        return QString();
+    }
 
     QString theme_name;
     QTextStream in(&index_theme_file);
