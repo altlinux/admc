@@ -193,6 +193,7 @@ void PSOEditWidget::on_remove() {
 
 void PSOEditWidget::set_read_only(bool read_only) {
     QList<QSpinBox*> spinbox_children = findChildren<QSpinBox*>(QString(), Qt::FindChildrenRecursively);
+    ui->name_edit->setReadOnly(true);
     for (auto spinbox : spinbox_children) {
         spinbox->setReadOnly(read_only);
     }
@@ -236,7 +237,6 @@ QString PSOEditWidget::replace_attribute(QString attribute_name) {
 
 void PSOEditWidget::update_fields(const AdObject &passwd_settings_obj) {
     ui->name_edit->setText(passwd_settings_obj.get_string(replace_attribute(ATTRIBUTE_CN)));
-    ui->name_edit->setReadOnly(true);
 
     ui->precedence_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE)));
     ui->min_passwd_len_spinbox->setValue(passwd_settings_obj.get_int(replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH)));
