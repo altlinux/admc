@@ -31,6 +31,7 @@
 #include "console_widget/console_impl.h"
 #include "console_widget/console_widget.h"
 #include "console_object_operations.h"
+#include "tabs/general_computer_tab.h"
 
 class QStandardItem;
 class AdObject;
@@ -151,6 +152,7 @@ private:
     QStackedWidget *stacked_widget;
     GeneralGroupTab *group_results_widget;
     GeneralUserTab *user_results_widget;
+    GeneralComputerTab *computer_results_widget;
     PSOResultsWidget *pso_results_widget;
     SubnetResultsWidget *subnet_results_widget;
 

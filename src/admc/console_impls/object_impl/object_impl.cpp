@@ -481,8 +481,10 @@ void ObjectImpl::selected_as_scope(const QModelIndex &index)
     else if (object.is_class(CLASS_SUBNET)) {
         stacked_widget->setCurrentWidget(subnet_results_widget);
         subnet_results_widget->update(object);
-    }
-    else {
+    } else if (object.is_class(CLASS_COMPUTER)) {
+        stacked_widget->setCurrentWidget(computer_results_widget);
+        computer_results_widget->update(ad, object);
+    } else {
         stacked_widget->setCurrentWidget(view());
     }
 }
@@ -506,6 +508,11 @@ void ObjectImpl::update_results_widget(const QModelIndex &index) const {
 
     if (object.is_class(CLASS_GROUP)) {
         group_results_widget->update(ad, object);
+        return;
+    }
+
+    if (object.is_class(CLASS_COMPUTER)) {
+        computer_results_widget->update(ad, object);
         return;
     }
 
@@ -950,9 +957,11 @@ void ObjectImpl::setup_widgets() {
     set_results_view(new ResultsView(console));
     group_results_widget = new GeneralGroupTab();
     user_results_widget = new GeneralUserTab();
+    computer_results_widget = new GeneralComputerTab();
     pso_results_widget = new PSOResultsWidget();
     subnet_results_widget = new SubnetResultsWidget();
     stacked_widget->addWidget(group_results_widget);
+    stacked_widget->addWidget(computer_results_widget);
     stacked_widget->addWidget(user_results_widget);
     stacked_widget->addWidget(pso_results_widget);
     stacked_widget->addWidget(subnet_results_widget);

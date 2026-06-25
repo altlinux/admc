@@ -23,6 +23,8 @@
 
 #include <QWidget>
 
+#include "ad_interface.h"
+
 class AttributeEdit;
 class AdObject;
 
@@ -37,7 +39,15 @@ public:
     Ui::GeneralComputerTab *ui;
 
     GeneralComputerTab(QList<AttributeEdit *> *edit_list, QWidget *parent);
+    GeneralComputerTab(QWidget *parent = nullptr);
     ~GeneralComputerTab();
+
+    void update(AdInterface &ad, const AdObject &object);
+
+private:
+    QList<AttributeEdit *> m_edit_list;
+
+    QList<AttributeEdit *> create_edits();
 };
 
 #endif /* GENERAL_COMPUTER_TAB_H */
