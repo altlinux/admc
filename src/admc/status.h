@@ -47,6 +47,8 @@ class Status {
 public:
     void init(QStatusBar *statusbar, QTextEdit *message_log);
 
+    void show_message(const QString &msg);
+    void clear_message();
     void add_message(const QString &msg, const StatusType &type);
 
     void display_ad_messages(const QList<AdMessage> &messages, QWidget *parent);

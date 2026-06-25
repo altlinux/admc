@@ -4098,6 +4098,10 @@
         <source> (System)</source>
         <translation> (Системная)</translation>
     </message>
+    <message>
+        <source>Loading...</source>
+        <translation>Загрузка...</translation>
+    </message>
 </context>
 <context>
     <name>QueryFolderImpl</name>

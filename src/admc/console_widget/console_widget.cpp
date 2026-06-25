@@ -27,6 +27,8 @@
 #include "console_widget/results_view.h"
 #include "console_widget/scope_proxy_model.h"
 #include "console_impls/item_type.h"
+#include "globals.h"
+#include "status.h"
 
 #include <QAction>
 #include <QApplication>
@@ -1017,6 +1019,8 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
         return;
     }
 
+    g_status->show_message(QObject::tr("Loading..."));
+
     const QModelIndex current = scope_proxy_model->mapToSource(current_proxy);
     const QModelIndex previous = scope_proxy_model->mapToSource(previous_proxy);
 
@@ -1092,6 +1096,7 @@ void ConsoleWidgetPrivate::on_current_scope_item_changed(const QModelIndex &curr
     fetch_scope(current);
 
     update_description();
+    g_status->clear_message();
 }
 
 void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex &parent, int first, int last) {
