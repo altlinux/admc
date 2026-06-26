@@ -2,6 +2,7 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +54,8 @@ void KrbAuthDialog::logout(bool delete_creds) {
 void KrbAuthDialog::setupWidgets() {
     ui->error_label->setHidden(true);
     ui->error_label->setStyleSheet("color: red");
+    ui->error_label->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    ui->error_label->setWordWrap(true);
 
     ui->ticket_available_label->setVisible(false);
 
