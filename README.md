@@ -12,7 +12,7 @@ Required:
 * [Kerberos](https://github.com/krb5/krb5) 5 (`libkrb5`)
 * [LDAP](https://www.openldap.org/) (`libldap`)
 * [Qt6](https://www.qt.io/) (base, core, widgets, help, tools, linguist tools,
-  svg)
+  svg, translations)
 * [SASL](https://www.cyrusimap.org/sasl/) (`libsasl2`, `libsasl2-plugin-gssapi`)
 * [Samba](https://www.samba.org/) (`libsmbclient`, `libndr`)
 * [libcng-dpapi](https://github.com/august-alt/libcng-dpapi)
@@ -46,6 +46,7 @@ $ apt-get install \
     qt6-qtbase \
     qt6-svg \
     qt6-tools-devel \
+    qt6-translations \
     samba-devel
 ```
 
