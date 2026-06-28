@@ -13,7 +13,7 @@ Required:
 * [LDAP](https://www.openldap.org/) (`libldap`)
 * [Qt6](https://www.qt.io/) (base, core, widgets, help, tools, linguist tools,
   svg)
-* [SASL](https://www.cyrusimap.org/sasl/) (`libsasl2`)
+* [SASL](https://www.cyrusimap.org/sasl/) (`libsasl2`, `libsasl2-plugin-gssapi`)
 * [Samba](https://www.samba.org/) (`libsmbclient`, `libndr`)
 * [libcng-dpapi](https://github.com/august-alt/libcng-dpapi)
 * [libgkdi](https://github.com/august-alt/libgkdi/)
@@ -38,6 +38,7 @@ $ apt-get install \
     libkrb5-devel \
     libldap-devel \
     libsasl2-devel \
+    libsasl2-plugin-gssapi \
     libsmbclient-devel \
     libuuid-devel \
     qt6-base-devel \
