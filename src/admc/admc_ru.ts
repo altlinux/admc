@@ -5075,6 +5075,11 @@
         <source>Query file is corrupted.</source>
         <translation>Файл запроса повреждён.</translation>
     </message>
+    <message>
+        <location filename="console_impls/query_folder_impl.cpp" line="319"/>
+        <source>Could not open a query file.</source>
+        <translation>Невозможно открыть файл запроса.</translation>
+    </message>
 </context>
 <context>
     <name>query_folder.cpp</name>

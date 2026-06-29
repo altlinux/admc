@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2020-2025 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -315,7 +316,17 @@ void QueryFolderImpl::on_import() {
     for (const QString &file_path : path_list) {
         const QHash<QString, QVariant> data = [&]() {
             QFile file(file_path);
-            file.open(QIODevice::ReadOnly);
+            if (file.open(QIODevice::ReadOnly) == false) {
+                const QString error_text
+                    = QString(QCoreApplication::translate(
+                                  "query.cpp",
+                                  "Could not open a query file."));
+                message_box_warning(
+                    console,
+                    QCoreApplication::translate("query.cpp", "Error"),
+                    error_text);
+                return QHash<QString, QVariant>();
+            }
             const QByteArray json_bytes = file.readAll();
 
             const QJsonDocument json_document = QJsonDocument::fromJson(json_bytes);
