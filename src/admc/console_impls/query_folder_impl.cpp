@@ -297,52 +297,54 @@ void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
 }
 
 void QueryFolderImpl::on_import() {
-    const QModelIndex parent_index = console->get_selected_item(ItemType_QueryFolder);
+    const QModelIndex parent_index
+        = console->get_selected_item(ItemType_QueryFolder);
 
-    const QList<QString> path_list = [&]() {
-        const QString caption = QCoreApplication::translate("query_item_impl.cpp", "Import Query");
-        const QString dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-        const QString file_filter = QCoreApplication::translate("query_item_impl.cpp", "JSON (*.json)");
-
-        const QList<QString> out = QFileDialog::getOpenFileNames(console, caption, dir, file_filter);
-
-        return out;
-    }();
+    const QString caption =
+        QCoreApplication::translate("query_item_impl.cpp", "Import Query");
+    const QString dir =
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    const QString file_filter =
+        QCoreApplication::translate("query_item_impl.cpp", "JSON (*.json)");
+    const QList<QString> path_list =
+        QFileDialog::getOpenFileNames(console, caption, dir, file_filter);
 
     if (path_list.isEmpty()) {
         return;
     }
 
     for (const QString &file_path : path_list) {
-        const QHash<QString, QVariant> data = [&]() {
-            QFile file(file_path);
-            if (file.open(QIODevice::ReadOnly) == false) {
-                const QString error_text
-                    = QString(QCoreApplication::translate(
-                                  "query.cpp",
-                                  "Could not open a query file."));
-                message_box_warning(
-                    console,
-                    QCoreApplication::translate("query.cpp", "Error"),
-                    error_text);
-                return QHash<QString, QVariant>();
-            }
-            const QByteArray json_bytes = file.readAll();
+        QHash<QString, QVariant> data = QHash<QString, QVariant>();
+        QFile file(file_path);
+        if (file.open(QIODevice::ReadOnly) == false) {
+            const QString error_text = QCoreApplication::translate(
+                "query.cpp",
+                "Could not open a query file.");
+            message_box_warning(
+                console,
+                QCoreApplication::translate("query.cpp", "Error"),
+                error_text);
+            console_query_item_load_hash(console, data, parent_index);
+            continue;
+        }
+        const QByteArray json_bytes = file.readAll();
 
-            const QJsonDocument json_document = QJsonDocument::fromJson(json_bytes);
+        const QJsonDocument json_document = QJsonDocument::fromJson(json_bytes);
 
-            if (json_document.isNull()) {
-                const QString error_text = QString(QCoreApplication::translate("query.cpp", "Query file is corrupted."));
-                message_box_warning(console, QCoreApplication::translate("query.cpp", "Error"), error_text);
+        if (json_document.isNull()) {
+            const QString error_text = QCoreApplication::translate(
+                "query.cpp",
+                "Query file is corrupted.");
+            message_box_warning(console,
+                                QCoreApplication::translate("query.cpp",
+                                                            "Error"),
+                                error_text);
 
-                return QHash<QString, QVariant>();
-            }
+            console_query_item_load_hash(console, data, parent_index);
+            continue;
+        }
 
-            const QHash<QString, QVariant> out = json_document.toVariant().toHash();
-
-            return out;
-        }();
-
+        data = json_document.toVariant().toHash();
         console_query_item_load_hash(console, data, parent_index);
     }
 
