@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2020-2025 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,7 +139,8 @@ int main(int argc, char **argv) {
             main_window->show_changelog_on_update();
         }
         else {
-            if (krb5_client->active_tgt_principals().isEmpty()) {
+            bool no_principals = krb5_client->active_tgt_principals().isEmpty();
+            if (show_login_window || no_principals) {
                 main_window->open_auth_dialog();
             } else {
                 error_window = new MainWindowConnectionError(main_window);
