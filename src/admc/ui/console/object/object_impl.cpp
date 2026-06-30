@@ -229,22 +229,11 @@ void ObjectImpl::activate(const QModelIndex &index) {
 }
 
 QList<QAction *> ObjectImpl::get_all_custom_actions() const {
-    QList<QAction *> out = {
-        new_action,
-        find_action,
-        add_to_group_action,
-        enable_action,
-        disable_action,
-        reset_password_action,
-        reset_account_action,
-        edit_upn_suffixes_action,
-        move_action,
-        create_pso_action,
-        create_subnet_action,
-        create_site_action,
-        create_site_link_action,
-        create_site_link_bridge_action
-    };
+    QList<QAction *> out = {new_action, find_action, add_to_group_action,
+        enable_action, disable_action, reset_password_action,
+        reset_account_action, edit_upn_suffixes_action, move_action,
+        create_subnet_action, create_site_action, create_site_link_action,
+        create_site_link_bridge_action};
 
     return out;
 }
@@ -303,10 +292,6 @@ QSet<QAction *> ObjectImpl::get_custom_actions(
 
         if (is_domain) {
             out.insert(edit_upn_suffixes_action);
-        }
-
-        if (is_pso_container) {
-            out.insert(create_pso_action);
         }
 
         if (is_sites_container) {
@@ -1059,7 +1044,6 @@ void ObjectImpl::setup_actions() {
         new_menu->addAction(action);
     }
 
-    create_pso_action = new QAction(tr("Create password setting object"), this);
     create_subnet_action = new QAction(tr("Create subnet"), this);
     create_site_action = new QAction(tr("Create site"), this);
     create_site_link_action = new QAction(tr("Create site link"), this);
@@ -1067,7 +1051,6 @@ void ObjectImpl::setup_actions() {
         new QAction(tr("Create site link bridge"), this);
 
     QHash<QString, QAction *> all_create_action_map {standard_create_action_map};
-    all_create_action_map[CLASS_PSO] = create_pso_action;
     all_create_action_map[CLASS_SUBNET] = create_subnet_action;
     all_create_action_map[CLASS_SITE] = create_site_action;
     all_create_action_map[CLASS_SITE_LINK] = create_site_link_action;
