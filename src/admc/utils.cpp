@@ -486,6 +486,10 @@ bool creds_is_saved(const QString &username) {
     return saved;
 }
 
+/**
+* @brief Gets global password settings as AD object 
+* @return An AD object representing global password settings
+*/
 AdObject global_password_settings() {
     AdInterface ad;
     if (!ad.is_connected()) {

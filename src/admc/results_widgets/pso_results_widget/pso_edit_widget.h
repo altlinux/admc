@@ -34,6 +34,11 @@ class QLineEdit;
 class QSpinBox;
 class QCheckBox;
 
+/**
+ * @class PSOEditWidget 
+ * @brief Used to represent password settings including global settings and PSOs
+ * in PSOResultsWidget and new PSO being created in CreatePSOWidget
+*/
 class PSOEditWidget final : public QWidget {
     Q_OBJECT
 

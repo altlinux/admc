@@ -35,6 +35,9 @@
 PSOEditWidget::PSOEditWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PSOEditWidget) {
+/**
+* @brief Creates PSOEditWidget and initializes it with global values  
+*/
 
     ui->setupUi(this);
 
@@ -53,6 +56,15 @@ PSOEditWidget::~PSOEditWidget() {
     delete ui;
 }
 
+/** 
+* @brief Sets fields of PSOEditWidget according to a given object
+* @param passwd_settings_obj The object with new values
+* @details Object can be a PSO or object representing global password settings 
+* those types of objects are distiguished based on objects' CN, if CN is present 
+* the object is considered to be a PSO, othervise it's treated as global 
+* settings object. If settings are global the following fields are not 
+* displayed: name, precedence and list of users policy is applied to
+*/
 void PSOEditWidget::update(const AdObject &passwd_settings_obj) {
     if (is_global != !passwd_settings_obj.contains(ATTRIBUTE_CN)) {
         is_global = !passwd_settings_obj.contains(ATTRIBUTE_CN);
@@ -67,6 +79,10 @@ void PSOEditWidget::update(const AdObject &passwd_settings_obj) {
     update_fields(passwd_settings_obj);
 }
 
+/**
+* @brief Returns current values of widget fieds set by the user
+* @return Hashmap of new values
+*/
 QHash<QString, QList<QByteArray>> PSOEditWidget::pso_settings_values() {
     using namespace std::chrono;
 
@@ -126,6 +142,10 @@ QHash<QString, QList<QByteArray>> PSOEditWidget::pso_settings_values() {
 }
 
 QHash<QString, QList<QString> > PSOEditWidget::pso_settings_string_values() {
+/**
+* @brief Returns current values of widget fieds set by the user
+* @return Hashmap of new values
+*/
     QHash<QString, QList<QString>> string_value_settings;
     QHash<QString, QList<QByteArray>> byte_value_settings = pso_settings_values();
 
@@ -140,14 +160,24 @@ QHash<QString, QList<QString> > PSOEditWidget::pso_settings_string_values() {
     return string_value_settings;
 }
 
+/**
+* @brief Returns list of users to which the PSO applies
+*/
 QStringList PSOEditWidget::applied_dn_list() const {
     return dn_applied_list;
 }
 
+/**
+* @brief Returns the name edit object
+*/
 QLineEdit *PSOEditWidget::name_line_edit() {
     return ui->name_edit;
 }
 
+/**
+* @brief Compares current field values to their respective defaults (global 
+* settings)
+*/
 bool PSOEditWidget::settings_are_default() {
     auto current_values = pso_settings_values();
     const QStringList excluded_attrs = {
@@ -210,6 +240,13 @@ void PSOEditWidget::set_read_only(bool read_only) {
 }
 
 int PSOEditWidget::spinbox_timespan_units(const AdObject &obj, const QString &attribute) {
+/**
+* @brief Reads specified timespan attribute from given PSO object and converts 
+* it to apropriate units
+* @param obj PSO object to read attribute from
+* @param attribute The attribute to retrieve
+* @return Attribute value in specified units
+*/
     using namespace std::chrono;
 
     qint64 hundred_nanos = -obj.get_value(attribute).toLongLong();
@@ -231,6 +268,13 @@ int PSOEditWidget::spinbox_timespan_units(const AdObject &obj, const QString &at
     return 0;
 }
 
+/**
+* @brief Deduces apropriate attribute name from PSO atribute name based on 
+* whether or not PSO is global. Basicaly method converts PSO attributes to 
+* global password settings attributes if needed
+* @param attribute_name Initial attribute to be converted
+* @return The apropriate attribute considering object type
+*/
 QString PSOEditWidget::replace_attribute(QString attribute_name) {
     return is_global ? (pso_attributes_to_global_attributes.contains(attribute_name) ?
                                 pso_attributes_to_global_attributes[attribute_name] :
@@ -238,6 +282,10 @@ QString PSOEditWidget::replace_attribute(QString attribute_name) {
                         attribute_name;
 };
 
+/** 
+* @brief Sets fields of PSOEditWidget according to a given object
+* @param passwd_settings_obj The object with new values
+*/
 void PSOEditWidget::update_fields(const AdObject &passwd_settings_obj) {
     ui->name_edit->setText(passwd_settings_obj.get_string(replace_attribute(ATTRIBUTE_CN)));
 
