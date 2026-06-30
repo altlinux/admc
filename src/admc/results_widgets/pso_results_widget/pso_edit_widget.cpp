@@ -215,12 +215,15 @@ int PSOEditWidget::spinbox_timespan_units(const AdObject &obj, const QString &at
     qint64 hundred_nanos = -obj.get_value(attribute).toLongLong();
     milliseconds msecs(hundred_nanos / MILLIS_TO_100_NANOS);
 
-    if (attribute == ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW || attribute == ATTRIBUTE_MS_DS_LOCKOUT_DURATION) {
+    if (attribute ==
+            replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW) ||
+        attribute == replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION)) {
         int mins = duration_cast<minutes>(msecs).count();
         return mins;
     }
 
-    if (attribute == ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE || attribute == ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE) {
+    if (attribute == replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE) ||
+        attribute == replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE)) {
         int days = duration_cast<hours>(msecs).count() / 24;
         return days;
     }
