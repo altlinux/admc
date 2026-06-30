@@ -59,8 +59,8 @@ public:
     void log_messages(const AdInterface &ad);
 
 private:
-    QStatusBar *m_status_bar;
-    QTextEdit *m_message_log;
+    QStatusBar *m_status_bar = nullptr;
+    QTextEdit *m_message_log = nullptr;
 };
 
 // Opens a dialog containing ad error messages in a

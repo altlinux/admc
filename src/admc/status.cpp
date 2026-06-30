@@ -46,12 +46,16 @@ void Status::init(QStatusBar *statusbar, QTextEdit *message_log) {
  * Show a message without adding it to the message log.
  */
 void Status::show_message(const QString &msg) {
-    m_status_bar->showMessage(msg);
-    m_status_bar->repaint();
+    if (m_status_bar != nullptr) {
+        m_status_bar->showMessage(msg);
+        m_status_bar->repaint();
+    }
 }
 
 void Status::clear_message() {
-    m_status_bar->clearMessage();
+    if (m_status_bar != nullptr) {
+        m_status_bar->clearMessage();
+    }
 }
 
 void Status::add_message(const QString &msg, const StatusType &type) {
