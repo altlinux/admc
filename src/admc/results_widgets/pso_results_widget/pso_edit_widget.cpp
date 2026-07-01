@@ -74,6 +74,8 @@ void PSOEditWidget::update(const AdObject &passwd_settings_obj) {
         ui->precedence_spinbox->setVisible(!is_global);
         ui->groupBox->setVisible(!is_global);
         ui->line->setVisible(!is_global);
+        ui->groupBox_2->setTitle(is_global ? tr("Global password settings") :
+                                             tr("Password settings"));
     }
 
     update_fields(passwd_settings_obj);
