@@ -45,14 +45,15 @@ PasswordSettingsImpl::PasswordSettingsImpl(ConsoleWidget *console_arg)
     result_widget->update(global_password_settings());
     set_results_widget(result_widget);
 
-    create_pso_action = new QAction(tr("Create password settings object"), this);
+    create_pso_action =
+        new QAction(tr("Create password settings object"), this);
 
-    connect(
-        create_pso_action, &QAction::triggered,
-        this, [this]() {
-            const QString parent_dn = get_selected_target_dn(console, ItemType_PasswordSettings, ObjectRole_DN);
-            ConsoleObjectTreeOperations::console_object_create({console}, CLASS_PSO, parent_dn);
-        });
+    connect(create_pso_action, &QAction::triggered, this, [this]() {
+        const QString parent_dn = get_selected_target_dn(
+            console, ItemType_PasswordSettings, ObjectRole_DN);
+        ConsoleObjectTreeOperations::console_object_create(
+            {console}, CLASS_PSO, parent_dn);
+    });
 }
 
 void PasswordSettingsImpl::fetch(const QModelIndex &index) {
@@ -63,11 +64,14 @@ void PasswordSettingsImpl::fetch(const QModelIndex &index) {
 
     const QString base = g_adconfig->pso_container_dn();
     const SearchScope scope = SearchScope_Children;
-    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_PSO_CONTAINER);
+    const QString filter = filter_CONDITION(
+        Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_PSO_CONTAINER);
     const QList<QString> attributes = QList<QString>();
-    const QHash<QString, AdObject> results = ad.search(base, scope, "", attributes);
+    const QHash<QString, AdObject> results =
+        ad.search(base, scope, "", attributes);
 
-    ConsoleObjectTreeOperations::add_objects_to_console(console, results.values(), index);
+    ConsoleObjectTreeOperations::add_objects_to_console(
+        console, results.values(), index);
 }
 
 void PasswordSettingsImpl::refresh(const QList<QModelIndex> &index_list) {
@@ -81,7 +85,8 @@ QList<QAction *> PasswordSettingsImpl::get_all_custom_actions() const {
     return {create_pso_action};
 }
 
-QSet<QAction *> PasswordSettingsImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> PasswordSettingsImpl::get_custom_actions(
+    const QModelIndex &index, const bool single_selection) const {
     UNUSED_ARG(index);
     UNUSED_ARG(single_selection);
 
@@ -89,7 +94,8 @@ QSet<QAction *> PasswordSettingsImpl::get_custom_actions(const QModelIndex &inde
     return {all_actions.begin(), all_actions.end()};
 }
 
-QSet<StandardAction> PasswordSettingsImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> PasswordSettingsImpl::get_standard_actions(
+    const QModelIndex &index, const bool single_selection) const {
     UNUSED_ARG(index);
     UNUSED_ARG(single_selection);
 

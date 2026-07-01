@@ -43,8 +43,10 @@ public:
     void properties(const QList<QModelIndex> &index_list) override;
 
     QList<QAction *> get_all_custom_actions() const override;
-    QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const override;
-    QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const override;
+    QSet<QAction *> get_custom_actions(
+        const QModelIndex &index, const bool single_selection) const override;
+    QSet<StandardAction> get_standard_actions(
+        const QModelIndex &index, const bool single_selection) const override;
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
