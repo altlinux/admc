@@ -78,33 +78,22 @@ void PasswordSettingsImpl::refresh(const QList<QModelIndex> &index_list) {
 }
 
 QList<QAction *> PasswordSettingsImpl::get_all_custom_actions() const {
-    QList<QAction *> out;
-
-    out.append(create_pso_action);
-
-    return out;
+    return {create_pso_action};
 }
 
 QSet<QAction *> PasswordSettingsImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
     UNUSED_ARG(index);
     UNUSED_ARG(single_selection);
 
-    QSet<QAction *> out;
-
-    out.insert(create_pso_action);
-
-    return out;
+    auto all_actions = get_all_custom_actions();
+    return {all_actions.begin(), all_actions.end()};
 }
 
 QSet<StandardAction> PasswordSettingsImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
     UNUSED_ARG(index);
     UNUSED_ARG(single_selection);
 
-    QSet<StandardAction> out;
-
-    out.insert(StandardAction_Refresh);
-
-    return out;
+    return {StandardAction_Refresh, StandardAction_Properties};
 }
 
 QList<QString> PasswordSettingsImpl::column_labels() const {
@@ -113,4 +102,9 @@ QList<QString> PasswordSettingsImpl::column_labels() const {
 
 QList<int> PasswordSettingsImpl::default_columns() const {
     return ConsoleObjectTreeOperations::object_impl_default_columns();
+}
+
+void PasswordSettingsImpl::properties(const QList<QModelIndex> &index_list) {
+    ConsoleObjectTreeOperations::console_object_properties(
+        {console}, index_list, ObjectRole_DN, {CLASS_PSO_CONTAINER});
 }
