@@ -485,3 +485,22 @@ bool creds_is_saved(const QString &username) {
             remembered_users.toStringList().contains(username);
     return saved;
 }
+
+/**
+* @brief Gets global password settings as AD object 
+* @return An AD object representing global password settings
+*/
+AdObject global_password_settings() {
+    AdInterface ad;
+    if (!ad.is_connected()) {
+        return AdObject();
+    }
+    return ad.search_object(g_adconfig->domain_dn(), {ATTRIBUTE_PWD_PROPERTIES,
+                                                         ATTRIBUTE_PWD_HISTORY_LENGTH,
+                                                         ATTRIBUTE_MIN_PWD_LENGTH,
+                                                         ATTRIBUTE_MIN_PWD_AGE,
+                                                         ATTRIBUTE_MAX_PWD_AGE,
+                                                         ATTRIBUTE_LOCKOUT_DURATION,
+                                                         ATTRIBUTE_LOCKOUT_THRESHOLD,
+                                                         ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW});
+}

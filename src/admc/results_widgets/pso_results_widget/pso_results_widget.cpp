@@ -25,13 +25,16 @@
 #include "../ui_results_widget_base.h"
 
 #include <QModelIndex>
-// #include <QDebug>
-
 
 PSOResultsWidget::PSOResultsWidget(QWidget *parent) :
     ResultsWidgetBase(parent), pso_edit_widget(new PSOEditWidget(this)) {
 
     ui->verticalLayout->addWidget(pso_edit_widget);
+
+    ui->edit_button->setDisabled(true);
+    ui->cancel_button->setDisabled(true);
+    ui->apply_button->setDisabled(true);
+    pso_edit_widget->set_read_only(true);
 }
 
 void PSOResultsWidget::update(const QModelIndex &index) {

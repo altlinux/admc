@@ -20,6 +20,7 @@
  */
 
 #include "main_window.h"
+#include "console_impls/password_settings_impl.h"
 #include "ui_main_window.h"
 
 #include "about_dialog.h"
@@ -482,6 +483,9 @@ void MainWindow::init_on_connect(AdInterface &ad) {
 
     auto policy_impl = new PolicyImpl(ui->console);
     ui->console->register_impl(ItemType_Policy, policy_impl);
+
+    auto pso_impl = new PasswordSettingsImpl(ui->console);
+    ui->console->register_impl(ItemType_PasswordSettings, pso_impl);
 
     auto query_item_impl = new QueryItemImpl(ui->console);
     ui->console->register_impl(ItemType_QueryItem, query_item_impl);

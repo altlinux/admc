@@ -613,6 +613,10 @@ bool ConsoleObjectTreeOperations::console_object_deletion_dialog(ConsoleWidget *
 }
 
 void ConsoleObjectTreeOperations::console_tree_add_password_settings(ConsoleWidget *console, AdInterface &ad) {
+    QStandardItem *password_settings_root = console->add_scope_item(ItemType_PasswordSettings, console->domain_info_index())[0];
+    password_settings_root->setText(QCoreApplication::translate("password_settings_impl", "Password settings"));
+    password_settings_root->setIcon(g_icon_manager->item_icon(ItemIcon_Password_Settings_Object));
+    password_settings_root->setDragEnabled(false);
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_PSO_CONTAINER);
     auto search_results = ad.search(g_adconfig->domain_dn(), SearchScope_All, filter, {});
     const QString err = QObject::tr("Password settings container is not available");
@@ -621,9 +625,10 @@ void ConsoleObjectTreeOperations::console_tree_add_password_settings(ConsoleWidg
         return;
     }
 
+    console_object_item_data_load(password_settings_root, search_results.values()[0]);
+
     const int pso_container_sort_idx = 3;
-    console_tree_add_root_child(console, search_results.values()[0], pso_container_sort_idx,
-                                QObject::tr("Fine-grained password policies"));
+    console->set_item_sort_index(password_settings_root->index(), pso_container_sort_idx);
 }
 
 QString ConsoleObjectTreeOperations::console_object_count_string(ConsoleWidget *console, const QModelIndex &index) {
