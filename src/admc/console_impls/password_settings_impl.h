@@ -45,6 +45,8 @@ public:
     QList<QAction *> get_all_custom_actions() const override;
     QSet<QAction *> get_custom_actions(
         const QModelIndex &index, const bool single_selection) const override;
+    QSet<QAction *> get_disabled_custom_actions(
+        const QModelIndex &index, const bool single_selection) const override;
     QSet<StandardAction> get_standard_actions(
         const QModelIndex &index, const bool single_selection) const override;
 
@@ -53,6 +55,7 @@ public:
 
 private:
     QAction *create_pso_action;
+    bool is_PSO_container_available = false;
 };
 
 #endif /* PASSWORD_SETTINGS_IMPL_H */

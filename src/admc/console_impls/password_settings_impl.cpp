@@ -69,6 +69,7 @@ void PasswordSettingsImpl::fetch(const QModelIndex &index) {
     const QList<QString> attributes = QList<QString>();
     const QHash<QString, AdObject> results =
         ad.search(base, scope, "", attributes);
+    is_PSO_container_available = !results.isEmpty();
 
     ConsoleObjectTreeOperations::add_objects_to_console(
         console, results.values(), index);
@@ -92,6 +93,15 @@ QSet<QAction *> PasswordSettingsImpl::get_custom_actions(
 
     auto all_actions = get_all_custom_actions();
     return {all_actions.begin(), all_actions.end()};
+}
+
+QSet<QAction *> PasswordSettingsImpl::get_disabled_custom_actions(
+    const QModelIndex &index, const bool single_selection) const {
+    UNUSED_ARG(index);
+    UNUSED_ARG(single_selection);
+
+    return is_PSO_container_available ? QSet<QAction *>{} :
+                                        QSet<QAction *>{create_pso_action};
 }
 
 QSet<StandardAction> PasswordSettingsImpl::get_standard_actions(
