@@ -620,14 +620,10 @@ void ConsoleObjectTreeOperations::console_tree_add_password_settings(ConsoleWidg
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_PSO_CONTAINER);
     auto search_results = ad.search(g_adconfig->domain_dn(), SearchScope_All, filter, {});
     const QString err = QObject::tr("Password settings container is not available");
-    if (search_results.isEmpty() || search_results.values()[0].is_empty()) {
-        g_status->add_message(err, StatusType_Info);
-        return;
+    if (!search_results.isEmpty() && !search_results.values()[0].is_empty()) {
+        console_object_item_data_load(password_settings_root, search_results.values()[0]);
     }
     console->set_item_sort_index(password_settings_root->index(), 3);
-
-    console_object_item_data_load(password_settings_root, search_results.values()[0]);
-
 }
 
 QString ConsoleObjectTreeOperations::console_object_count_string(ConsoleWidget *console, const QModelIndex &index) {
