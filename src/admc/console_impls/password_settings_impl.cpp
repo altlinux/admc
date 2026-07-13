@@ -41,9 +41,7 @@
 
 PasswordSettingsImpl::PasswordSettingsImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
-    auto result_widget(new PSOResultsWidget(console_arg));
-    result_widget->update(global_password_settings());
-    set_results_widget(result_widget);
+    results_widget = new PSOResultsWidget(console_arg);
 
     create_pso_action =
         new QAction(tr("Create password settings object"), this);
@@ -61,6 +59,10 @@ void PasswordSettingsImpl::fetch(const QModelIndex &index) {
     if (ad_failed(ad, console)) {
         return;
     }
+
+    //TODO:(kozyrevid) refactor this cast and other like it
+    dynamic_cast<PSOResultsWidget *>(results_widget)
+        ->update(global_password_settings());
 
     QHash<QString, AdObject> results = ad.search(
         g_adconfig->pso_container_dn(), SearchScope_All, "", QStringList());
