@@ -510,10 +510,10 @@ void ConsoleObjectTreeOperations::console_tree_add_password_settings(
         const QString error =
             QObject::tr("Password settings container is not available");
         g_status->add_message(error, StatusType_Info);
-        return;
+    } 
+    else{
+        object_item_data_load(search_results.values()[0], password_settings_root);
     }
-
-    object_item_data_load(search_results.values()[0], password_settings_root);
 
     const int PSO_CONTAINER_SORT_INDEX = 3;
     console->set_item_sort_index(password_settings_root->index(), PSO_CONTAINER_SORT_INDEX);
