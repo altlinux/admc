@@ -62,14 +62,13 @@ void PasswordSettingsImpl::fetch(const QModelIndex &index) {
         return;
     }
 
-    const QString base = g_adconfig->pso_container_dn();
-    const SearchScope scope = SearchScope_Children;
-    const QString filter = filter_CONDITION(
-        Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_PSO_CONTAINER);
-    const QList<QString> attributes = QList<QString>();
-    const QHash<QString, AdObject> results =
-        ad.search(base, scope, "", attributes);
+    QHash<QString, AdObject> results = ad.search(
+        g_adconfig->pso_container_dn(), SearchScope_All, "", QStringList());
     is_PSO_container_available = !results.isEmpty();
+    results.removeIf([](QHash<QString, AdObject>::iterator object) {
+        return object.value().get_string(ATTRIBUTE_OBJECT_CLASS) ==
+               CLASS_PSO_CONTAINER;
+    });
 
     ConsoleObjectTreeOperations::add_objects_to_console(
         console, results.values(), index);
