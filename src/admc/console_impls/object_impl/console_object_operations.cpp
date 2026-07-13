@@ -624,11 +624,10 @@ void ConsoleObjectTreeOperations::console_tree_add_password_settings(ConsoleWidg
         g_status->add_message(err, StatusType_Info);
         return;
     }
+    console->set_item_sort_index(password_settings_root->index(), 3);
 
     console_object_item_data_load(password_settings_root, search_results.values()[0]);
 
-    const int pso_container_sort_idx = 3;
-    console->set_item_sort_index(password_settings_root->index(), pso_container_sort_idx);
 }
 
 QString ConsoleObjectTreeOperations::console_object_count_string(ConsoleWidget *console, const QModelIndex &index) {
