@@ -47,7 +47,4 @@ private:
     void on_format_combo();
 };
 
-QString octet_bytes_to_string(const QByteArray bytes, const OctetDisplayFormat format);
-QByteArray octet_string_to_bytes(const QString string, const OctetDisplayFormat format);
-
 #endif /* OCTET_ATTRIBUTE_DIALOG_H */

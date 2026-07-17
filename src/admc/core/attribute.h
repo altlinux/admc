@@ -41,4 +41,10 @@ bool attribute_validate_octal(const QString& value);
 bool attribute_validate_input(const OctetDisplayFormat format,
                               const QString input);
 
+/* Helper procedures. */
+QString octet_bytes_to_string(const QByteArray bytes,
+                              const OctetDisplayFormat format);
+QByteArray octet_string_to_bytes(const QString string,
+                                 const OctetDisplayFormat format);
+
 #endif /* ifndef ATTRIBUTE_H */

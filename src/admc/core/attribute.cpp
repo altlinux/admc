@@ -26,6 +26,7 @@
 #include <QString>
 
 #include "core/attribute.h"
+#include "core/utils.h"
 
 int attribute_format_base(const OctetDisplayFormat format) {
     switch (format) {
@@ -35,6 +36,86 @@ int attribute_format_base(const OctetDisplayFormat format) {
     case OctetDisplayFormat_Octal: return 8;
     }
     return 0;
+}
+
+/* Helper procedures. */
+
+QString octet_bytes_to_string(const QByteArray bytes,
+                              const OctetDisplayFormat format) {
+    QString out;
+
+    for (int i = 0; i < bytes.size(); i++) {
+        if (i > 0) {
+            out += " ";
+        }
+
+        const char byte_char = bytes[i];
+        uint8_t byte = (uint8_t) byte_char;
+
+        char buffer[100];
+
+        const int base = attribute_format_base(format);
+
+        itoa((int) byte, buffer, base);
+
+        const QString byte_string_unpadded(buffer);
+
+        int string_length = 0;
+        switch (format) {
+        case OctetDisplayFormat_Hexadecimal:
+            string_length = 2;
+            break;
+        case OctetDisplayFormat_Binary:
+            string_length = 8;
+            break;
+        case OctetDisplayFormat_Decimal:
+        case OctetDisplayFormat_Octal:
+            string_length = 3;
+            break;
+        default:
+            // XXX: Can it ever happen?
+            string_length = 0;
+        }
+
+        // "5" => "005"
+        // "f" => "0f"
+        const QString byte_string =
+            byte_string_unpadded.rightJustified(string_length, '0');
+
+        out += byte_string;
+    }
+
+    return out;
+}
+
+QByteArray octet_string_to_bytes(const QString string,
+                                 const OctetDisplayFormat format) {
+    if (string.isEmpty()) {
+        return QByteArray();
+    }
+
+    const QList<QString> string_split = string.split(" ");
+
+    QByteArray out;
+
+    for (const QString &byte_string_padded : string_split) {
+        // NOTE: remove padding because strtol doesn't understand it
+        // "005" => "5"
+        QString byte_string = byte_string_padded;
+        while ((byte_string[0] == '0') && (byte_string.size() > 0)) {
+            byte_string.remove(0, 1);
+        }
+
+        const QByteArray byte_bytes = byte_string.toLocal8Bit();
+        const char *byte_cstr = byte_bytes.constData();
+        const int base = attribute_format_base(format);
+        const long int byte_li = strtol(byte_cstr, NULL, base);
+        const char byte = (char) byte_li;
+
+        out.append(byte);
+    }
+
+    return out;
 }
 
 /* Value validation procedures. */
