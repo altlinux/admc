@@ -58,6 +58,7 @@ else()
 endif()
 
 set(ADMC_SOURCES
+    core/ad.cpp
     core/changelog.cpp
     core/utils.cpp
     status.cpp

@@ -22,6 +22,7 @@
 #include "console_impls/object_impl/console_object_operations.h"
 #include "console_impls/object_impl/object_impl.h"
 #include "console_impls/item_type.h"
+#include "core/ad.h"
 #include "globals.h"
 #include "managers/icon_manager.h"
 #include "console_impls/policy_ou_impl.h"
@@ -71,25 +72,15 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(const QList<Con
     // glitches because that kind of move is not
     // considered in the update logic. Instead, we skip
     // these kinds of objects.
-    QHash<QString, QString> old_to_new_dn_map;
-    for (const QString &old_dn : old_to_new_dn_map_arg.keys()) {
-        const QString new_dn = old_to_new_dn_map_arg[old_dn];
-        const bool dn_changed = (new_dn != old_dn);
-        if (dn_changed) {
-            old_to_new_dn_map[old_dn] = new_dn;
-        }
-    }
+    QHash<QString, QString> old_to_new_dn_map =
+        ad_select_changed_dn(old_to_new_dn_map_arg);
 
     const QList<QString> old_dn_list = old_to_new_dn_map.keys();
     const QList<QString> new_dn_list = old_to_new_dn_map.values();
 
     // NOTE: search for objects once here to reuse them
     // multiple times later
-    QHash<QString, AdObject> object_map;
-    for (const QString &dn : new_dn_list) {
-        const AdObject object = ad.search_object(dn);
-        object_map[dn] = object;
-    }
+    QHash<QString, AdObject> object_map = ad_search_objects(ad, new_dn_list);
 
     auto apply_changes = [&old_to_new_dn_map, &old_dn_list, &new_parent_dn, &object_map](ConsoleWidget *target_console) {
         // For object tree, we add items representing
