@@ -88,3 +88,40 @@ bool string_contains_bad_chars(const QString &string, const QString &bad_chars) 
     return out;
 
 }
+
+// NOTE: not included in base lib, so had to copypaste. Maybe find some other
+// more popular implementation and use that (with appropriate license).
+// Preferrably something that automatically pads the result (leading 0's).
+// -- Dmitry Degtyarev
+/**
+ * C++ version 0.4 char* style "itoa":
+ * Written by Lukás Chmela
+ * Released under GPLv3.
+ */
+char *itoa(int value, char *result, int base) {
+    // check that the base is valid
+    if (base < 2 || base > 36) {
+        *result = '\0';
+        return result;
+    }
+
+    char *ptr = result, *ptr1 = result, tmp_char;
+    int tmp_value;
+
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + (tmp_value - value * base)];
+    } while (value);
+
+    // Apply negative sign
+    if (tmp_value < 0)
+        *ptr++ = '-';
+    *ptr-- = '\0';
+    while (ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr-- = *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    return result;
+}

@@ -23,6 +23,7 @@
 #include "attribute_dialogs/ui_octet_attribute_dialog.h"
 
 #include "adldap.h"
+#include "core/utils.h"
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
@@ -36,7 +37,6 @@
 
 OctetDisplayFormat current_format(QComboBox *format_combo);
 int format_base(const OctetDisplayFormat format);
-char *itoa(int value, char *result, int base);
 
 OctetAttributeDialog::OctetAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
 : AttributeDialog(attribute, read_only, parent) {
@@ -308,38 +308,4 @@ int format_base(const OctetDisplayFormat format) {
         case OctetDisplayFormat_Octal: return 8;
     }
     return 0;
-}
-
-/**
- * C++ version 0.4 char* style "itoa":
- * Written by Lukás Chmela
- * Released under GPLv3.
- */
-// NOTE: not included in base lib, so had to copypaste. Maybe find some other more popular implementation and use that (with appropriate license). Preferrably something that automatically pads the result (leading 0's).
-char *itoa(int value, char *result, int base) {
-    // check that the base is valid
-    if (base < 2 || base > 36) {
-        *result = '\0';
-        return result;
-    }
-
-    char *ptr = result, *ptr1 = result, tmp_char;
-    int tmp_value;
-
-    do {
-        tmp_value = value;
-        value /= base;
-        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + (tmp_value - value * base)];
-    } while (value);
-
-    // Apply negative sign
-    if (tmp_value < 0)
-        *ptr++ = '-';
-    *ptr-- = '\0';
-    while (ptr1 < ptr) {
-        tmp_char = *ptr;
-        *ptr-- = *ptr1;
-        *ptr1++ = tmp_char;
-    }
-    return result;
 }
