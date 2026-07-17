@@ -58,6 +58,7 @@ else()
 endif()
 
 set(ADMC_SOURCES
+    core/changelog.cpp
     core/utils.cpp
     status.cpp
     search_thread.cpp

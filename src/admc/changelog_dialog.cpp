@@ -23,6 +23,7 @@
 #include "ui_changelog_dialog.h"
 
 #include "config.h"
+#include "core/changelog.h"
 #include "settings.h"
 
 #include <QCoreApplication>
@@ -30,69 +31,17 @@
 #include <QStandardPaths>
 #include <QFile>
 
-/**
- * Read a change log file and return its contents.
- *
- * @return The change log file contents or an error message on errors.
- */
-QString ChangelogDialog::read_changelog() const {
-    const QString fail_text = tr("Failed to open changelog file.");
-    const QLocale saved_locale =
-        settings_get_variant(SETTING_locale).toLocale();
-
-    QString changelog_file_name;
-    if (saved_locale.language() == QLocale::Russian) {
-        changelog_file_name = "CHANGELOG_ru.txt";
-    } else {
-        changelog_file_name = "CHANGELOG.txt";
-    }
-
-#ifdef QT_DEBUG
-    QString changelog_path =
-        QString("%1/%2").arg(QCoreApplication::applicationDirPath(),
-                             changelog_file_name);
-#else
-    QString changelog_path =
-        QStandardPaths::locate(
-            QStandardPaths::GenericDataLocation,
-            QString("doc/admc-%1/%2").arg(ADMC_VERSION,
-                                          changelog_file_name));
-#endif
-
-    if (changelog_path.isEmpty()) {
-        return fail_text;
-    }
-
-    QFile file(changelog_path);
-
-    const bool open_success = file.open(QIODevice::ReadOnly);
-    if (!open_success) {
-        qDebug() << "Failed to open changelog file";
-
-        return fail_text;
-    }
-
-    QString changelog_text = file.readAll();
-
-    file.close();
-
-    // Remove forced word wrap contained in
-    // CHANGELOG.txt so that resizing the dialog
-    // expands text width (all wrapped lines start
-    // with 2 spaces)
-    changelog_text.replace("\n  ", " ");
-
-    return changelog_text;
-}
-
 ChangelogDialog::ChangelogDialog(QWidget *parent)
 : QDialog(parent) {
     ui = new Ui::ChangelogDialog();
     ui->setupUi(this);
-
     setAttribute(Qt::WA_DeleteOnClose);
-
-    QString changelog_text = read_changelog();
+    const QLocale saved_locale =
+        settings_get_variant(SETTING_locale).toLocale();
+    QString changelog_text = changelog_read(saved_locale);
+    if (changelog_text.isEmpty()) {
+        changelog_text = tr("Failed to open changelog file.");
+    }
     ui->edit->setPlainText(changelog_text);
     settings_setup_dialog_geometry(SETTING_changelog_dialog_geometry, this);
 }
