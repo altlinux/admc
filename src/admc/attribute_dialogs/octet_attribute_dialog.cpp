@@ -23,6 +23,7 @@
 #include "attribute_dialogs/ui_octet_attribute_dialog.h"
 
 #include "adldap.h"
+#include "core/attribute.h"
 #include "core/utils.h"
 #include "globals.h"
 #include "settings.h"
@@ -36,7 +37,6 @@
 #include <QRegularExpression>
 
 OctetDisplayFormat current_format(QComboBox *format_combo);
-int format_base(const OctetDisplayFormat format);
 
 OctetAttributeDialog::OctetAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
 : AttributeDialog(attribute, read_only, parent) {
@@ -113,86 +113,13 @@ void OctetAttributeDialog::on_format_combo() {
     }
 }
 
-/**
- * Check if a value is a proper hexadecimal value.
- */
-static bool validate_hexadecimal(const QString& value) {
-    const QRegularExpression rx("^([0-9a-f]{2})$");
-    return rx.match(value).hasMatch();
-}
-
-/**
- * Check if a value is a proper binary value.
- */
-static bool validate_binary(const QString& value) {
-    const QRegularExpression rx("^([0-1]{8})$");
-    return rx.match(value).hasMatch();
-}
-
-/**
- * Check if a value is a proper decimal value in the 0..255 range.
- */
-static bool validate_decimal(const QString& value) {
-    const QRegularExpression rx("^([0-9]{3})$");
-    if (! rx.match(value).hasMatch()) {
-        return false;
-    }
-
-    const int number = value.toInt();
-    if ((number < 0) || (number > 255)) {
-        return false;
-    }
-
-    return true;
-}
-
-/**
- * Check if a value is a proper octal value in the 0..377 range.
- */
-static bool validate_octal(const QString& value) {
-    const QRegularExpression rx("^([0-7]{3})$");
-
-    if (! rx.match(value).hasMatch()) {
-        return false;
-    }
-
-    const int number = value.toInt();
-    if ((number < 0) || (number > 377)) {
-        return false;
-    }
-
-    return true;
-}
-
-typedef bool(*predicate_t)(const QString& value);
-
-/**
- * A hash table that maps display formats and predicates to check their
- * validity.
- */
-static QHash<OctetDisplayFormat, predicate_t> validators = {
-    {OctetDisplayFormat_Binary,      validate_binary},
-    {OctetDisplayFormat_Decimal,     validate_decimal},
-    {OctetDisplayFormat_Hexadecimal, validate_hexadecimal},
-    {OctetDisplayFormat_Octal,       validate_octal}
-};
-
 bool OctetAttributeDialog::check_input(const OctetDisplayFormat format) {
     const QString text = ui->edit->toPlainText();
-    bool ok = true;
-
     if (text.isEmpty()) {
         return true;
     }
 
-    const QList<QString> text_split = text.split(" ");
-    predicate_t is_valid = validators[format];
-    for (const QString &element : text_split) {
-        if (! is_valid(element)) {
-            ok = false;
-            break;
-        }
-    }
+    bool ok = attribute_validate_input(format, text);
 
     if (! ok) {
         const QString title = tr("Error");
@@ -238,7 +165,7 @@ QString octet_bytes_to_string(const QByteArray bytes, const OctetDisplayFormat f
 
         char buffer[100];
 
-        const int base = format_base(format);
+        const int base = attribute_format_base(format);
 
         itoa((int) byte, buffer, base);
 
@@ -290,7 +217,7 @@ QByteArray octet_string_to_bytes(const QString string, const OctetDisplayFormat 
 
         const QByteArray byte_bytes = byte_string.toLocal8Bit();
         const char *byte_cstr = byte_bytes.constData();
-        const int base = format_base(format);
+        const int base = attribute_format_base(format);
         const long int byte_li = strtol(byte_cstr, NULL, base);
         const char byte = (char) byte_li;
 
@@ -298,14 +225,4 @@ QByteArray octet_string_to_bytes(const QString string, const OctetDisplayFormat 
     }
 
     return out;
-}
-
-int format_base(const OctetDisplayFormat format) {
-    switch (format) {
-        case OctetDisplayFormat_Hexadecimal: return 16;
-        case OctetDisplayFormat_Binary: return 2;
-        case OctetDisplayFormat_Decimal: return 10;
-        case OctetDisplayFormat_Octal: return 8;
-    }
-    return 0;
 }

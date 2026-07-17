@@ -21,14 +21,8 @@
 #ifndef OCTET_ATTRIBUTE_DIALOG_H
 #define OCTET_ATTRIBUTE_DIALOG_H
 
+#include "core/attribute.h"
 #include "attribute_dialogs/attribute_dialog.h"
-
-enum OctetDisplayFormat {
-    OctetDisplayFormat_Hexadecimal = 0,
-    OctetDisplayFormat_Binary,
-    OctetDisplayFormat_Decimal,
-    OctetDisplayFormat_Octal,
-};
 
 namespace Ui {
 class OctetAttributeDialog;
