@@ -45,6 +45,7 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, co
     }
     ui->middle_name_edit->setVisible(show_middle_name);
     ui->middle_name_label->setVisible(show_middle_name);
+    setTabOrder(ui->last_name_edit, ui->middle_name_edit);
 
     auto first_name_edit = new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
     auto last_name_edit = new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
