@@ -224,3 +224,45 @@ bool does_list_contain_empty_values(const QList<QByteArray> value_list) {
     }
     return false;
 }
+
+/**
+ * Convert a byte array to string, according to the specified editor type.
+ *
+ * @param bytes A byte array to convert.
+ * @param editor_type An editor type.
+ * @return A newly created string.
+ */
+QString bytes_to_string(const QByteArray& bytes,
+                        ListAttributeDialogType editor_type) {
+    switch (editor_type) {
+    case ListAttributeDialogType_Octet:
+        return octet_bytes_to_string(bytes, OctetDisplayFormat_Hexadecimal);
+
+    case ListAttributeDialogType_String:
+    case ListAttributeDialogType_Datetime:
+        return QString(bytes);
+    }
+
+    return QString();
+}
+
+/**
+ * Convert a string to a byte array, according to the specified editor type.
+ *
+ * @param string A string to convert.
+ * @param editor_type An editor type.
+ * @return A newly created byte array.
+ */
+QByteArray string_to_bytes(const QString& string,
+                           ListAttributeDialogType editor_type) {
+    switch (editor_type) {
+    case ListAttributeDialogType_Octet:
+        return octet_string_to_bytes(string, OctetDisplayFormat_Hexadecimal);
+
+    case ListAttributeDialogType_String:
+    case ListAttributeDialogType_Datetime:
+        return string.toUtf8();
+    }
+
+    return QByteArray();
+}

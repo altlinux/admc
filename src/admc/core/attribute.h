@@ -32,6 +32,12 @@ enum OctetDisplayFormat {
     OctetDisplayFormat_Octal,
 };
 
+enum ListAttributeDialogType {
+    ListAttributeDialogType_String,
+    ListAttributeDialogType_Octet,
+    ListAttributeDialogType_Datetime,
+};
+
 int attribute_format_base(const OctetDisplayFormat format);
 
 /* Value validation procedures. */
@@ -49,5 +55,9 @@ QString octet_bytes_to_string(const QByteArray bytes,
 QByteArray octet_string_to_bytes(const QString string,
                                  const OctetDisplayFormat format);
 bool does_list_contain_empty_values(const QList<QByteArray> value_list);
+QString bytes_to_string(const QByteArray& bytes,
+                        ListAttributeDialogType editor_type);
+QByteArray string_to_bytes(const QString& string,
+                           ListAttributeDialogType editor_type);
 
 #endif /* ifndef ATTRIBUTE_H */

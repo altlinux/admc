@@ -116,7 +116,8 @@ QList<QByteArray> ListAttributeDialog::get_value_list() const {
     for (int i = 0; i < ui->list_widget->count(); i++) {
         const QListWidgetItem *item = ui->list_widget->item(i);
         const QString new_value_string = item->text();
-        const QByteArray new_value = string_to_bytes(new_value_string);
+        const QByteArray new_value = string_to_bytes(new_value_string,
+                                                     get_type());
 
         new_values.append(new_value);
     }
@@ -129,7 +130,7 @@ void ListAttributeDialog::set_value_max_length(const int max_length_arg) {
 }
 
 void ListAttributeDialog::add_value(const QByteArray value) {
-    const QString text = bytes_to_string(value);
+    const QString text = bytes_to_string(value, get_type());
     const QList<QListWidgetItem *> find_results = ui->list_widget->findItems(text, Qt::MatchExactly);
     const bool value_already_exists = !find_results.isEmpty();
 
@@ -154,24 +155,3 @@ ListAttributeDialogType ListAttributeDialog::get_type() const {
     return ListAttributeDialogType_String;
 }
 
-QString ListAttributeDialog::bytes_to_string(const QByteArray bytes) const {
-    const ListAttributeDialogType editor_type = get_type();
-    switch (editor_type) {
-        case ListAttributeDialogType_String: return QString(bytes);
-        case ListAttributeDialogType_Octet: return octet_bytes_to_string(bytes, OctetDisplayFormat_Hexadecimal);
-        case ListAttributeDialogType_Datetime: return QString(bytes);
-    }
-    return QString();
-}
-
-QByteArray ListAttributeDialog::string_to_bytes(const QString string) const {
-    const ListAttributeDialogType editor_type = get_type();
-
-    switch (editor_type) {
-        case ListAttributeDialogType_String: return string.toUtf8();
-        case ListAttributeDialogType_Octet: return octet_string_to_bytes(string, OctetDisplayFormat_Hexadecimal);
-        case ListAttributeDialogType_Datetime: return string.toUtf8();
-    }
-
-    return QByteArray();
-}

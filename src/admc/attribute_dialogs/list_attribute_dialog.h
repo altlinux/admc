@@ -21,15 +21,10 @@
 #ifndef LIST_ATTRIBUTE_DIALOG_H
 #define LIST_ATTRIBUTE_DIALOG_H
 
+#include "core/attribute.h"
 #include "attribute_dialogs/attribute_dialog.h"
 
 class QListWidgetItem;
-
-enum ListAttributeDialogType {
-    ListAttributeDialogType_String,
-    ListAttributeDialogType_Octet,
-    ListAttributeDialogType_Datetime,
-};
 
 namespace Ui {
 class ListAttributeDialog;
@@ -62,8 +57,6 @@ private:
     void on_add_button();
     void on_remove_button();
     void add_value(const QByteArray value);
-    QString bytes_to_string(const QByteArray bytes) const;
-    QByteArray string_to_bytes(const QString string) const;
     ListAttributeDialogType get_type() const;
     void add_values_from_editor(AttributeDialog *editor);
     void edit_values_from_editor(AttributeDialog *editor);
