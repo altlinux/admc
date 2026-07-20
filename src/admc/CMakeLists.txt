@@ -61,6 +61,7 @@ set(ADMC_SOURCES
     core/ad.cpp
     core/attribute.cpp
     core/changelog.cpp
+    core/country_manager.cpp
     core/utils.cpp
     status.cpp
     search_thread.cpp

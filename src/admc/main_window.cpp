@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -22,6 +22,7 @@
 #include "main_window.h"
 #include "ui_main_window.h"
 
+#include "core/country_manager.h"
 #include "about_dialog.h"
 #include "adldap.h"
 #include "attribute_edits/country_combo.h"
@@ -58,7 +59,8 @@ MainWindow::MainWindow(AdInterface &ad, Krb5Client &krb5_client_arg, QWidget *pa
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
-    country_combo_load_data();
+    // TODO: Handle the return value.
+    CountryManager::get_instance().load();
 
     init_globals();
 

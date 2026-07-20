@@ -26,7 +26,6 @@ class AdObject;
 class AdInterface;
 class QString;
 
-void country_combo_load_data();
 void country_combo_init(QComboBox *combo);
 void country_combo_load(QComboBox *combo, const AdObject &object);
 bool country_combo_apply(const QComboBox *combo, AdInterface &ad, const QString &dn);
