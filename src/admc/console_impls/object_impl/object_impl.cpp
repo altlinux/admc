@@ -21,6 +21,7 @@
 
 #include "console_impls/object_impl/object_impl.h"
 
+#include "core/ad.h"
 #include "adldap.h"
 #include "attribute_dialogs/list_attribute_dialog.h"
 #include "console_filter_dialog.h"
@@ -674,12 +675,7 @@ void ObjectImpl::on_add_to_group() {
             const QList<QString> target_list = get_selected_dn_list_object();
 
             const QList<QString> groups = dialog->get_selected();
-
-            for (const QString &target : target_list) {
-                for (auto group : groups) {
-                    ad.group_add_member(group, target);
-                }
-            }
+            ad_add_members_to_groups(ad, target_list, groups);
 
             hide_busy_indicator();
 

@@ -44,6 +44,16 @@ QHash<QString, AdObject> ad_search_objects(AdInterface &ad,
     return object_map;
 }
 
+void ad_add_members_to_groups(AdInterface &ad,
+                              const  QList<QString> &targets,
+                              const QList<QString> &groups) {
+    for (const QString &target : targets) {
+        for (auto group : groups) {
+            ad.group_add_member(group, target);
+        }
+    }
+}
+
 /**
  * Select only changed DNs in the specified hash map of old-to-new DNs.
  *
@@ -61,3 +71,4 @@ QHash<QString, QString> ad_select_changed_dn(QHash<QString, QString> map) {
     }
     return changed_dn;
 }
+
