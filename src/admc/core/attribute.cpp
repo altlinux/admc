@@ -21,6 +21,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QByteArray>
 #include <QList>
 #include <QRegularExpression>
 #include <QString>
@@ -204,4 +205,22 @@ bool attribute_validate_input(const OctetDisplayFormat format,
         }
     }
     return true;
+}
+
+/**
+ * Check if a value list contain empty values.
+ *
+ * @param value_list A list of QByteArray values.
+ * @return True if the list contains any empty values, false if it is not.
+ */
+bool does_list_contain_empty_values(const QList<QByteArray> value_list) {
+    for (const QByteArray &value : value_list) {
+        const QString value_string = QString(value);
+        const bool value_is_all_spaces = (value.count(' ') == value.length());
+        const bool value_is_empty = value.isEmpty() || value_is_all_spaces;
+        if (value_is_empty) {
+            return true;
+        }
+    }
+    return false;
 }

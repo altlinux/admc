@@ -67,17 +67,7 @@ void ListAttributeDialog::accept() {
     const AttributeType type = g_adconfig->get_attribute_type(get_attribute());
     if (type != AttributeType_Boolean) {
         const QList<QByteArray> value_list = get_value_list();
-        for (const QByteArray &value : value_list) {
-            const QString value_string = QString(value);
-            const bool value_is_all_spaces =
-                (value.count(' ') == value.length());
-            const bool value_is_empty = value.isEmpty() || value_is_all_spaces;
-
-            if (value_is_empty) {
-                contains_empty_values = true;
-                break;
-            }
-        }
+        contains_empty_values = does_list_contain_empty_values(value_list);
     }
 
     if (contains_empty_values) {

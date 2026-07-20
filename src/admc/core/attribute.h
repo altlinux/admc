@@ -21,6 +21,8 @@
 #ifndef ATTRIBUTE_H
 #define ATTRIBUTE_H
 
+#include <QByteArray>
+#include <QList>
 #include <QString>
 
 enum OctetDisplayFormat {
@@ -46,5 +48,6 @@ QString octet_bytes_to_string(const QByteArray bytes,
                               const OctetDisplayFormat format);
 QByteArray octet_string_to_bytes(const QString string,
                                  const OctetDisplayFormat format);
+bool does_list_contain_empty_values(const QList<QByteArray> value_list);
 
 #endif /* ifndef ATTRIBUTE_H */
