@@ -25,6 +25,8 @@
 #include <QList>
 #include <QString>
 
+#include "adldap.h"
+
 enum OctetDisplayFormat {
     OctetDisplayFormat_Hexadecimal = 0,
     OctetDisplayFormat_Binary,
@@ -59,5 +61,6 @@ QString bytes_to_string(const QByteArray& bytes,
                         ListAttributeDialogType editor_type);
 QByteArray string_to_bytes(const QString& string,
                            ListAttributeDialogType editor_type);
+ListAttributeDialogType attribute_type_to_list_dialog_type(AttributeType type);
 
 #endif /* ifndef ATTRIBUTE_H */

@@ -141,17 +141,6 @@ void ListAttributeDialog::add_value(const QByteArray value) {
 
 ListAttributeDialogType ListAttributeDialog::get_type() const {
     const AttributeType type = g_adconfig->get_attribute_type(get_attribute());
-
-    switch (type) {
-        case AttributeType_Octet: return ListAttributeDialogType_Octet;
-        case AttributeType_Sid: return ListAttributeDialogType_Octet;
-
-        case AttributeType_UTCTime: return ListAttributeDialogType_Datetime;
-        case AttributeType_GeneralizedTime: return ListAttributeDialogType_Datetime;
-
-        default: break;
-    }
-
-    return ListAttributeDialogType_String;
+    return attribute_type_to_list_dialog_type(type);
 }
 

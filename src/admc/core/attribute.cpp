@@ -26,6 +26,7 @@
 #include <QRegularExpression>
 #include <QString>
 
+#include "adldap.h"
 #include "core/attribute.h"
 #include "core/utils.h"
 
@@ -265,4 +266,21 @@ QByteArray string_to_bytes(const QString& string,
     }
 
     return QByteArray();
+}
+
+ListAttributeDialogType attribute_type_to_list_dialog_type(AttributeType type) {
+    switch (type) {
+    case AttributeType_Octet:
+    case AttributeType_Sid:
+        return ListAttributeDialogType_Octet;
+
+    case AttributeType_UTCTime:
+        return ListAttributeDialogType_Datetime;
+
+    case AttributeType_GeneralizedTime:
+        return ListAttributeDialogType_Datetime;
+
+    default:
+        return ListAttributeDialogType_String;
+    }
 }
