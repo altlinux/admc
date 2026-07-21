@@ -2872,6 +2872,11 @@
         <source>Connected to host </source>
         <translation>Подключено к хосту </translation>
     </message>
+    <message>
+        <location filename="main_window.cpp" line="69"/>
+        <source>Could not properly load country list</source>
+        <translation>Не удалось корректно загрузить список стран</translation>
+    </message>
 </context>
 <context>
     <name>MainWindowConnectionError</name>

@@ -59,12 +59,16 @@ MainWindow::MainWindow(AdInterface &ad, Krb5Client &krb5_client_arg, QWidget *pa
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
-    // TODO: Handle the return value.
-    CountryManager::get_instance().load();
+    bool is_country_list_loaded = CountryManager::get_instance().load();
 
     init_globals();
 
     setup_status_bar(ad);
+
+    if (! is_country_list_loaded) {
+        g_status->add_message(tr("Could not properly load country list"),
+                              StatusType_Error);
+    }
 
     setup_themes();
 
