@@ -34,5 +34,7 @@ void ad_add_members_to_groups(AdInterface &ad,
                               const QList<QString> &targets,
                               const QList<QString> &groups);
 QHash<QString, QString> ad_select_changed_dn(QHash<QString, QString> map);
+bool ad_object_is_person(const AdObject &object);
+
 
 #endif  /* ifndef AD_H */

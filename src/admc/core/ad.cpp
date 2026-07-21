@@ -72,3 +72,12 @@ QHash<QString, QString> ad_select_changed_dn(QHash<QString, QString> map) {
     return changed_dn;
 }
 
+/**
+ * Check if the specified AD object is a person.
+ *
+ * @param object An AD object to check.
+ * @return True if the object is a person, false otherwise.
+ */
+bool ad_object_is_person(const AdObject &object) {
+    return (object.is_class(CLASS_USER) || object.is_class(CLASS_INET_ORG_PERSON));
+}

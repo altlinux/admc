@@ -24,6 +24,7 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl/object_impl.h"
+#include "core/ad.h"
 #include "globals.h"
 #include "config.h"
 #include "properties_warning_dialog.h"
@@ -147,7 +148,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg, C
 
     const AdObject object = ad.search_object(target);
 
-    const bool is_person = (object.is_class(CLASS_USER) || object.is_class(CLASS_INET_ORG_PERSON));
+    const bool is_person = ad_object_is_person(object);
 
     //
     // Create tabs
