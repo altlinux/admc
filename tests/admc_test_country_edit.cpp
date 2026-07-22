@@ -31,8 +31,6 @@
 void ADMCTestCountryEdit::init() {
     ADMCTest::init();
 
-    country_combo_load_data();
-
     combo = new QComboBox(parent_widget);
 
     edit = new CountryEdit(combo, parent_widget);
