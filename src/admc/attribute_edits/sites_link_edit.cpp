@@ -19,25 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "sites_link_edit.h"
-#include "tabs/sites_link_tab/sites_link_widget.h"
-#include "tabs/sites_link_tab/sites_link_common_widget.h"
-#include "tabs/sites_link_tab/sites_link_part_widget.h"
-#include <QSpinBox>
-#include <QListWidget>
 #include <QLabel>
 #include <QLineEdit>
+#include <QListWidget>
+#include <QPushButton>
+#include <QSpinBox>
+
+#include <attribute_edits/string_edit.h>
+#include "ad_config.h"
+#include "ad_defines.h"
+#include "ad_filter.h"
 #include "ad_interface.h"
 #include "ad_object.h"
-#include "ad_defines.h"
-#include "globals.h"
-#include "ad_config.h"
-#include "ad_filter.h"
 #include "ad_utils.h"
+#include "globals.h"
 #include "managers/icon_manager.h"
+#include "sites_link_edit.h"
+#include "tabs/sites_link_tab/sites_link_common_widget.h"
+#include "tabs/sites_link_tab/sites_link_part_widget.h"
+#include "tabs/sites_link_tab/sites_link_widget.h"
 #include "utils.h"
-#include <QPushButton>
-#include <attribute_edits/string_edit.h>
 
 SitesLinkEdit::SitesLinkEdit(SitesLinkWidget *link_wget_arg, QObject *parent) :
     AttributeEdit(parent),
