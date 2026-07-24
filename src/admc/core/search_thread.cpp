@@ -23,8 +23,6 @@
 
 #include "adldap.h"
 #include "settings.h"
-#include "status.h"
-#include "utils.h"
 
 #include <QHash>
 
