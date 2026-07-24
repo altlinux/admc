@@ -51,7 +51,7 @@ void SitesLinkEdit::load(AdInterface &ad, const AdObject &object) {
     const QIcon item_icon = type == SitesLinkType::Link ? g_icon_manager->item_icon(ItemIcon_Site) :
                                                             g_icon_manager->item_icon(ItemIcon_Site_Link);
 
-    for (const QString dn : linked_dn_list) {
+    for (const QString &dn : linked_dn_list) {
         QListWidgetItem *item = new QListWidgetItem(item_icon, dn_get_name(dn));
         item->setData(Qt::UserRole, dn);
         sites_link_common_wget->right_list_wget()->addItem(item);
@@ -61,7 +61,7 @@ void SitesLinkEdit::load(AdInterface &ad, const AdObject &object) {
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CATEGORY, search_category);
     auto search_res = ad.search(g_adconfig->sites_container_dn(), SearchScope_Children, filter, {ATTRIBUTE_DN});
 
-    for (const QString dn : search_res.keys()) {
+    for (const QString &dn : search_res.keys()) {
         if (!linked_dn_list.contains(dn)) {
             QListWidgetItem *item = new QListWidgetItem(item_icon, dn_get_name(dn));
             item->setData(Qt::UserRole, dn);
