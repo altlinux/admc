@@ -28,6 +28,7 @@ private:
     SitesLinkCommonWidget *sites_link_common_wget;
     SitesLinkPartWidget *sites_link_part_wget;
     SitesLinkType type;
+    bool is_link_type;
     StringEdit *description_edit;
 
     void setup_widgets();
