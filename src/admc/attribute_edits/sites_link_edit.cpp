@@ -44,24 +44,26 @@ SitesLinkEdit::SitesLinkEdit(SitesLinkWidget *link_wget_arg, QObject *parent) :
     AttributeEdit(parent),
     sites_link_common_wget(link_wget_arg->common_widget()),
     sites_link_part_wget(link_wget_arg->sites_link_part_widget()),
-    type(link_wget_arg->get_type()) {
-
+    type(link_wget_arg->get_type())
+{
     is_link_type = (type == SitesLinkType::Link);
     setup_widgets();
 }
 
-SitesLinkEdit::SitesLinkEdit(SitesLinkType type_arg, SitesLinkCommonWidget *common_link_wget_arg, QObject *parent) :
+SitesLinkEdit::SitesLinkEdit(SitesLinkType type_arg,
+                             SitesLinkCommonWidget *common_link_wget_arg,
+                             QObject *parent) :
     AttributeEdit(parent),
     sites_link_common_wget(common_link_wget_arg),
     sites_link_part_wget(nullptr),
-    type(type_arg) {
-
+    type(type_arg)
+{
     is_link_type = (type == SitesLinkType::Link);
     setup_widgets();
 }
 
 void SitesLinkEdit::load(AdInterface &ad, const AdObject &object) {
-    if (!ad.is_connected() || !sites_link_common_wget) {
+    if ((! ad.is_connected()) || (! sites_link_common_wget)) {
         return;
     }
 
@@ -85,12 +87,18 @@ void SitesLinkEdit::load(AdInterface &ad, const AdObject &object) {
 
     const QString search_category =
         is_link_type ? OBJECT_CATEGORY_SITE : OBJECT_CATEGORY_SITE_LINK;
-    const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CATEGORY, search_category);
-    auto search_res = ad.search(g_adconfig->sites_container_dn(), SearchScope_Children, filter, {ATTRIBUTE_DN});
+    const QString filter = filter_CONDITION(Condition_Equals,
+                                            ATTRIBUTE_OBJECT_CATEGORY,
+                                            search_category);
+    auto search_res = ad.search(g_adconfig->sites_container_dn(),
+                                SearchScope_Children,
+                                filter,
+                                { ATTRIBUTE_DN });
 
     for (const QString &dn : search_res.keys()) {
         if (!linked_dn_list.contains(dn)) {
-            QListWidgetItem *item = new QListWidgetItem(item_icon, dn_get_name(dn));
+            QListWidgetItem *item =
+                new QListWidgetItem(item_icon, dn_get_name(dn));
             item->setData(Qt::UserRole, dn);
             sites_link_common_wget->left_list_wget()->addItem(item);
         }
@@ -106,21 +114,24 @@ void SitesLinkEdit::load(AdInterface &ad, const AdObject &object) {
 }
 
 bool SitesLinkEdit::apply(AdInterface &ad, const QString &dn) const {
-    if (!ad.is_connected() || !sites_link_common_wget) {
+    if ((! ad.is_connected()) || (! sites_link_common_wget)) {
         return false;
     }
 
     QHash<QString, QList<QByteArray>> values = {};
 
-    if (!description_edit->apply(ad, dn)) {
+    if (! description_edit->apply(ad, dn)) {
         return false;
     }
 
     const QString link_attr =
         is_link_type ? ATTRIBUTE_SITE_LIST : ATTRIBUTE_SITE_LINK_LIST;
-    for (int i = 0; i < sites_link_common_wget->right_list_wget()->count(); ++i) {
-        auto linked_dn = sites_link_common_wget->right_list_wget()->item(i)->data(Qt::UserRole).toString();
-        if (!linked_dn.isEmpty()) {
+    auto right_list_wget = sites_link_common_wget->right_list_wget();
+    const int count = right_list_wget->count();
+    for (int i = 0; i < count; ++i) {
+        auto linked_dn =
+            right_list_wget->item(i)->data(Qt::UserRole).toString();
+        if (! linked_dn.isEmpty()) {
             values[link_attr] << linked_dn.toUtf8();
         }
     }
@@ -130,11 +141,12 @@ bool SitesLinkEdit::apply(AdInterface &ad, const QString &dn) const {
         values[ATTRIBUTE_LINK_COST] << QByteArray::number(cost);
 
         int repl_interval = sites_link_part_wget->replicate_spinbox()->value();
-        values[ATTRIBUTE_LINK_REPLICATION_INTERVAL] << QByteArray::number(repl_interval);
+        values[ATTRIBUTE_LINK_REPLICATION_INTERVAL] <<
+            QByteArray::number(repl_interval);
     }
 
     for (auto attr : values.keys()) {
-        if (!ad.attribute_replace_values(dn, attr, values[attr])) {
+        if (! ad.attribute_replace_values(dn, attr, values[attr])) {
             return false;
         }
     }
@@ -147,7 +159,8 @@ bool SitesLinkEdit::verify(AdInterface &ad, const QString &dn) const {
     Q_UNUSED(dn);
 
     const int min_linked_objects_count = 2;
-    if (sites_link_common_wget->right_list_wget()->count() < min_linked_objects_count) {
+    auto right_list_wget = sites_link_common_wget->right_list_wget();
+    if (right_list_wget->count() < min_linked_objects_count) {
         const QString warning_text = is_link_type ?
                     tr("Site link object must link at least two sites") :
                     tr("Link bridge object must link at least two site links");
@@ -163,20 +176,34 @@ void SitesLinkEdit::setup_widgets() {
         return;
     }
 
-    description_edit = new StringEdit(sites_link_common_wget->description_line_edit(), ATTRIBUTE_DESCRIPTION, this);
-    connect(description_edit, &AttributeEdit::edited, this, &AttributeEdit::edited);
+    description_edit = new StringEdit(
+        sites_link_common_wget->description_line_edit(),
+        ATTRIBUTE_DESCRIPTION,
+        this);
+    connect(description_edit,
+            &AttributeEdit::edited,
+            this,
+            &AttributeEdit::edited);
 
     sites_link_common_wget->set_lists_labels(type);
 
-    connect(sites_link_common_wget->add_button(), &QPushButton::clicked, this, &AttributeEdit::edited);
-    connect(sites_link_common_wget->remove_button(), &QPushButton::clicked, this, &AttributeEdit::edited);
+    connect(sites_link_common_wget->add_button(),
+            &QPushButton::clicked,
+            this,
+            &AttributeEdit::edited);
+    connect(sites_link_common_wget->remove_button(),
+            &QPushButton::clicked,
+            this,
+            &AttributeEdit::edited);
 
     if (sites_link_part_wget) {
-        connect(sites_link_part_wget->replicate_spinbox(), &QSpinBox::textChanged,
+        connect(sites_link_part_wget->replicate_spinbox(),
+                &QSpinBox::textChanged,
                 this, [this](const QString&) {
             emit AttributeEdit::edited();
         });
-        connect(sites_link_part_wget->cost_spinbox(), &QSpinBox::textChanged,
+        connect(sites_link_part_wget->cost_spinbox(),
+                &QSpinBox::textChanged,
                 this, [this](const QString&) {
             emit AttributeEdit::edited();
         });
