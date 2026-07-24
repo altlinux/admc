@@ -1,6 +1,6 @@
 #include "gplink_manager.h"
 
-#include "search_thread.h"
+#include "core/search_thread.h"
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_config.h"

@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -22,6 +22,7 @@
 #include "utils.h"
 #include "core/utils.h"
 
+#include "core/search_thread.h"
 #include "adldap.h"
 #include "console_widget/console_widget.h"
 #include "globals.h"
@@ -49,6 +50,7 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QTreeView>
+#include <QWidget>
 
 QMessageBox *message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
 int get_range_upper(const QString &attribute);
@@ -434,4 +436,12 @@ bool creds_is_saved(const QString &username) {
     bool saved = !remembered_users.isNull() && !username.isEmpty() &&
             remembered_users.toStringList().contains(username);
     return saved;
+}
+
+void search_thread_display_errors(SearchThread *thread, QWidget *parent) {
+    if (thread->failed_to_connect()) {
+        error_log({QCoreApplication::translate("object_impl.cpp", "Failed to connect to server while searching for objects.")}, parent);
+    } else if (thread->hit_object_display_limit()) {
+        error_log({QCoreApplication::translate("object_impl.cpp", "Could not load all objects. Increase object display limit in Filter Options or reduce number of objects by applying a filter. Filter Options is accessible from main window's menubar via the \"View\" menu.")}, parent);
+    }
 }

@@ -62,9 +62,9 @@ set(ADMC_SOURCES
     core/attribute.cpp
     core/changelog.cpp
     core/country_manager.cpp
+    core/search_thread.cpp
     core/utils.cpp
     status.cpp
-    search_thread.cpp
     globals.cpp
     utils.cpp
     settings.cpp

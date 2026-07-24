@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +35,7 @@ m_hit_object_display_limit(false) {
     static int id_max = 0;
     id = id_max;
     id_max++;
+
 }
 
 void SearchThread::stop() {
@@ -96,12 +98,4 @@ bool SearchThread::hit_object_display_limit() const {
 
 QList<AdMessage> SearchThread::get_ad_messages() const {
     return ad_messages;
-}
-
-void search_thread_display_errors(SearchThread *thread, QWidget *parent) {
-    if (thread->failed_to_connect()) {
-        error_log({QCoreApplication::translate("object_impl.cpp", "Failed to connect to server while searching for objects.")}, parent);
-    } else if (thread->hit_object_display_limit()) {
-        error_log({QCoreApplication::translate("object_impl.cpp", "Could not load all objects. Increase object display limit in Filter Options or reduce number of objects by applying a filter. Filter Options is accessible from main window's menubar via the \"View\" menu.")}, parent);
-    }
 }

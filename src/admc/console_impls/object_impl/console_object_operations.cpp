@@ -33,7 +33,7 @@
 #include <QStandardItem>
 #include "settings.h"
 #include "ad_object.h"
-#include "search_thread.h"
+#include "core/search_thread.h"
 #include "create_dialogs/create_computer_dialog.h"
 #include "create_dialogs/create_contact_dialog.h"
 #include "create_dialogs/create_group_dialog.h"

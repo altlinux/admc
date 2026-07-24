@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,10 +70,5 @@ private:
 
     void run() override;
 };
-
-// Call this in your finished() slot to display any
-// error dialogs. Search thread can't display them
-// because it is run in non-GUI thread.
-void search_thread_display_errors(SearchThread *thread, QWidget *parent);
 
 #endif /* SEARCH_THREAD_H */

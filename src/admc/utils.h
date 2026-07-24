@@ -21,6 +21,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "core/search_thread.h"
+
 class QAbstractItemModel;
 class QAbstractItemView;
 class QAbstractProxyModel;
@@ -42,6 +44,7 @@ class AdObject;
 class QPersistentModelIndex;
 class ConsoleWidget;
 class QMessageBox;
+class QWidget;
 template <typename T>
 class QList;
 template <typename K, typename T>
@@ -138,5 +141,7 @@ QString gpo_status_from_int(int status);
 QString current_dc_dns_host_name(AdInterface &ad);
 
 bool creds_is_saved(const QString &username);
+
+void search_thread_display_errors(SearchThread *thread, QWidget *parent);
 
 #endif /* UTILS_H */
