@@ -28,14 +28,22 @@
 
 #include <QHash>
 
-SearchThread::SearchThread(const QString base_arg, const SearchScope scope_arg, const QString &filter_arg, const QList<QString> attributes_arg) :
-stop_flag(false), base(base_arg), scope(scope_arg), filter(filter_arg), attributes(attributes_arg), id(0), m_failed_to_connect(false),
-m_hit_object_display_limit(false) {
-
+SearchThread::SearchThread(const QString base_arg,
+                           const SearchScope scope_arg,
+                           const QString &filter_arg,
+                           const QList<QString> attributes_arg) :
+    stop_flag(false),
+    base(base_arg),
+    scope(scope_arg),
+    filter(filter_arg),
+    attributes(attributes_arg),
+    id(0),
+    m_failed_to_connect(false),
+    m_hit_object_display_limit(false)
+{
     static int id_max = 0;
     id = id_max;
     id_max++;
-
 }
 
 void SearchThread::stop() {
@@ -52,14 +60,16 @@ void SearchThread::run() {
 
     AdCookie cookie;
 
-    const int object_display_limit = settings_get_variant(SETTING_object_display_limit).toInt();
+    const int object_display_limit =
+        settings_get_variant(SETTING_object_display_limit).toInt();
 
     int total_results_count = 0;
 
     while (true) {
         QHash<QString, AdObject> results;
 
-        const bool success = ad.search_paged(base, scope, filter, attributes, &results, &cookie);
+        const bool success =
+            ad.search_paged(base, scope, filter, attributes, &results, &cookie);
 
         total_results_count += results.count();
 

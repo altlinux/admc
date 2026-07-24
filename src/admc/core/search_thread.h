@@ -45,7 +45,10 @@ class SearchThread final : public QThread {
     Q_OBJECT
 
 public:
-    SearchThread(const QString base, const SearchScope scope, const QString &filter, const QList<QString> attributes);
+    SearchThread(const QString base,
+                 const SearchScope scope,
+                 const QString &filter,
+                 const QList<QString> attributes);
 
     void stop();
     int get_id() const;
