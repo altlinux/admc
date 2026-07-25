@@ -26,7 +26,7 @@
 #include "core/attribute.h"
 #include "core/utils.h"
 #include "globals.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "utils.h"
 
 #include <QFont>

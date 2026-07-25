@@ -22,7 +22,7 @@
 #include "filter_widget/class_filter_dialog.h"
 #include "filter_widget/ui_class_filter_dialog.h"
 
-#include "settings.h"
+#include "core/settings.h"
 
 #include <QPushButton>
 

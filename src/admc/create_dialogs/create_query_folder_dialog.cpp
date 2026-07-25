@@ -23,7 +23,7 @@
 #include "ui_create_query_folder_dialog.h"
 
 #include "console_impls/query_folder_impl.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "utils.h"
 
 CreateQueryFolderDialog::CreateQueryFolderDialog(QWidget *parent)

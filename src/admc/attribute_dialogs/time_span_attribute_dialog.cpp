@@ -20,7 +20,7 @@
 #include "time_span_attribute_dialog.h"
 #include "ui_time_span_attribute_dialog.h"
 
-#include "settings.h"
+#include "core/settings.h"
 #include "utils.h"
 #include "ad_display.cpp"
 #include "ad_defines.h"

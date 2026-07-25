@@ -29,7 +29,7 @@
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
 #include "globals.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "status.h"
 #include "utils.h"
 #include "core/managers/icon_manager.h"

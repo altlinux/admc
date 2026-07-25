@@ -29,7 +29,7 @@
 #include "config.h"
 #include "properties_warning_dialog.h"
 #include "security_sort_warning_dialog.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "status.h"
 #include "tab_widget.h"
 #include "tabs/account_tab.h"

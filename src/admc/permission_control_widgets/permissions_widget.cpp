@@ -20,7 +20,7 @@
 #include "permissions_widget.h"
 
 #include "utils.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "samba/ndr_security.h"
 #include "adldap.h"
 #include "globals.h"

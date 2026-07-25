@@ -28,7 +28,7 @@
 #include "console_impls/object_impl/object_impl.h"
 #include "globals.h"
 #include "core/search_thread.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "status.h"
 #include "utils.h"
 

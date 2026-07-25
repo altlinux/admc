@@ -24,7 +24,7 @@
 
 #include "config.h"
 #include "core/changelog.h"
-#include "settings.h"
+#include "core/settings.h"
 
 #include <QCoreApplication>
 #include <QDebug>

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2020-2025 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +26,7 @@
 #include "attribute_edits/computer_sam_name_edit.h"
 #include "attribute_edits/upn_edit.h"
 #include "create_object_helper.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "utils.h"
 
 CreateComputerDialog::CreateComputerDialog(const QString &parent_dn, QWidget *parent)

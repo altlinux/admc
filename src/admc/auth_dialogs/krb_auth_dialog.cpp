@@ -23,7 +23,7 @@
 #include "ui_krb_auth_dialog.h"
 
 #include <stdexcept>
-#include "settings.h"
+#include "core/settings.h"
 #include "krb5client.h"
 #include "utils.h"
 #include <QDebug>

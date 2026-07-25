@@ -28,7 +28,7 @@
 #include "attribute_dialogs/octet_attribute_dialog.h"
 #include "attribute_dialogs/string_attribute_dialog.h"
 #include "globals.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "utils.h"
 
 #include <QAction>

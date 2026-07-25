@@ -27,7 +27,7 @@
 #include "globals.h"
 #include "properties_widgets/properties_dialog.h"
 #include "select_dialogs/select_object_dialog.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "utils.h"
 
 #include <QDebug>

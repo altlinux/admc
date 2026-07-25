@@ -23,7 +23,7 @@
 #include "attribute_edits/ui_logon_computers_dialog.h"
 
 #include "adldap.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "utils.h"
 
 #include <QPushButton>

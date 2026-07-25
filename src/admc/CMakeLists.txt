@@ -65,11 +65,11 @@ set(ADMC_SOURCES
     core/managers/gplink_manager.cpp
     core/managers/icon_manager.cpp
     core/search_thread.cpp
+    core/settings.cpp
     core/utils.cpp
     status.cpp
     globals.cpp
     utils.cpp
-    settings.cpp
 
     main_window.cpp
     tab_widget.cpp

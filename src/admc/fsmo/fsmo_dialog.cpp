@@ -26,7 +26,7 @@
 #include "fsmo/fsmo_tab.h"
 #include "fsmo/fsmo_utils.h"
 #include "globals.h"
-#include "settings.h"
+#include "core/settings.h"
 
 #include <QMessageBox>
 

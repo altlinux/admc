@@ -27,7 +27,7 @@
 #include "globals.h"
 #include "select_object_advanced_dialog.h"
 #include "select_object_match_dialog.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "utils.h"
 
 #include <QStandardItemModel>

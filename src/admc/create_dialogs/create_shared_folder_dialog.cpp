@@ -26,7 +26,7 @@
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/upn_edit.h"
 #include "create_object_helper.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "utils.h"
 
 CreateSharedFolderDialog::CreateSharedFolderDialog(const QString &parent_dn, QWidget *parent)

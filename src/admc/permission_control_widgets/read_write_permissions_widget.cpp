@@ -1,7 +1,7 @@
 #include "read_write_permissions_widget.h"
 
 #include "adldap.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "samba/ndr_security.h"
 #include "utils.h"
 #include "globals.h"

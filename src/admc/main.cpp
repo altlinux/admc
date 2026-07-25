@@ -25,7 +25,7 @@
 #include "globals.h"
 #include "main_window.h"
 #include "main_window_connection_error.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "status.h"
 #include "utils.h"
 #include "connection_options_dialog.h"

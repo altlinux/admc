@@ -24,7 +24,7 @@
 #include "attribute_edits/gpoptions_edit.h"
 #include "globals.h"
 #include "select_dialogs/select_policy_dialog.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "utils.h"
 #include "console_widget/console_widget.h"
 #include "results_widgets/policy_ou_results_widget/policy_ou_results_widget.h"

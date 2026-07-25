@@ -31,7 +31,7 @@
 #include <QModelIndex>
 #include "utils.h"
 #include <QStandardItem>
-#include "settings.h"
+#include "core/settings.h"
 #include "ad_object.h"
 #include "core/search_thread.h"
 #include "create_dialogs/create_computer_dialog.h"

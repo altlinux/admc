@@ -23,7 +23,7 @@
 #include "attribute_edits/ui_schedule_hours_dialog.h"
 
 #include "ad_utils.h"
-#include "settings.h"
+#include "core/settings.h"
 
 #include <QDateTime>
 #include <QStandardItemModel>

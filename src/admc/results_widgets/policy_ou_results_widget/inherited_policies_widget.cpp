@@ -20,7 +20,7 @@
 #include "inherited_policies_widget.h"
 #include "ui_inherited_policies_widget.h"
 #include "utils.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_impl.h"
 #include "console_widget/console_widget.h"

@@ -27,7 +27,7 @@
 #include <QLocale>
 #include <QString>
 
-#include "settings.h"
+#include "core/settings.h"
 #include "country_manager.h"
 
 CountryManager::CountryManager() {

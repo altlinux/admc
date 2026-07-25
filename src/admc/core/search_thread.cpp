@@ -22,7 +22,7 @@
 #include "search_thread.h"
 
 #include "adldap.h"
-#include "settings.h"
+#include "core/settings.h"
 
 #include <QHash>
 

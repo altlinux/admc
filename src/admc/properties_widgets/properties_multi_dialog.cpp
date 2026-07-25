@@ -31,7 +31,7 @@
 #include "multi_tabs/general_user_multi_tab.h"
 #include "multi_tabs/organization_multi_tab.h"
 #include "multi_tabs/profile_multi_tab.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "status.h"
 #include "tab_widget.h"
 #include "utils.h"

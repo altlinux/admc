@@ -23,7 +23,7 @@
 #include "adldap.h"
 #include "globals.h"
 #include "utils.h"
-#include "settings.h"
+#include "core/settings.h"
 #include <QDebug>
 
 HexNumberAttributeDialog::HexNumberAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)

@@ -25,7 +25,7 @@
 #include "ad_filter.h"
 #include "find_widget.h"
 #include "globals.h"
-#include "settings.h"
+#include "core/settings.h"
 
 #include <QMenuBar>
 
