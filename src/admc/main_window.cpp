@@ -19,17 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "main_window.h"
-#include "ui_main_window.h"
+#include <QDesktopServices>
+#include <QLabel>
+#include <QModelIndex>
+#include <QActionGroup>
 
-#include "core/managers/country_manager.h"
 #include "about_dialog.h"
 #include "adldap.h"
 #include "attribute_edits/country_combo.h"
+#include "auth_dialogs/krb_auth_dialog.h"
 #include "changelog_dialog.h"
 #include "config.h"
 #include "connection_options_dialog.h"
 #include "console_impls/all_policies_folder_impl.h"
+#include "console_impls/domain_info_impl.h"
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl/object_impl.h"
 #include "console_impls/policy_impl.h"
@@ -38,21 +41,17 @@
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_widget/console_widget.h"
+#include "core/managers/country_manager.h"
+#include "core/managers/gplink_manager.h"
+#include "core/managers/icon_manager.h"
 #include "fsmo/fsmo_dialog.h"
+#include "fsmo/fsmo_utils.h"
 #include "globals.h"
+#include "main_window.h"
 #include "settings.h"
 #include "status.h"
+#include "ui_main_window.h"
 #include "utils.h"
-#include "fsmo/fsmo_utils.h"
-#include "core/managers/icon_manager.h"
-#include "console_impls/domain_info_impl.h"
-#include "auth_dialogs/krb_auth_dialog.h"
-#include "core/managers/gplink_manager.h"
-
-#include <QDesktopServices>
-#include <QLabel>
-#include <QModelIndex>
-#include <QActionGroup>
 
 MainWindow::MainWindow(AdInterface &ad, Krb5Client &krb5_client_arg, QWidget *parent)
 : QMainWindow(parent), krb5_client(&krb5_client_arg) {
