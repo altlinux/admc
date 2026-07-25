@@ -35,7 +35,7 @@
 #include "status.h"
 #include "utils.h"
 #include "core/managers/icon_manager.h"
-#include "managers/gplink_manager.h"
+#include "core/managers/gplink_manager.h"
 #include "fsmo/fsmo_utils.h"
 
 #include <QDebug>

@@ -47,7 +47,7 @@
 #include "core/managers/icon_manager.h"
 #include "console_impls/domain_info_impl.h"
 #include "auth_dialogs/krb_auth_dialog.h"
-#include "managers/gplink_manager.h"
+#include "core/managers/gplink_manager.h"
 
 #include <QDesktopServices>
 #include <QLabel>

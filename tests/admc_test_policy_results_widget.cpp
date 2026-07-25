@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +27,7 @@
 #include "gplink.h"
 #include "results_widgets/policy_results_widget.h"
 #include "utils.h"
-#include "managers/gplink_manager.h"
+#include "core/managers/gplink_manager.h"
 
 #include <QStandardItemModel>
 #include <QTreeView>

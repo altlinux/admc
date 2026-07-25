@@ -31,7 +31,7 @@
 #include "status.h"
 #include "globals.h"
 #include "core/managers/icon_manager.h"
-#include "managers/gplink_manager.h"
+#include "core/managers/gplink_manager.h"
 
 #include <QSet>
 #include <QAction>
