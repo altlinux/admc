@@ -4,7 +4,7 @@
 #include "ad_config.h"
 #include "ad_filter.h"
 #include "ad_object.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include <QTableWidget>
 
 

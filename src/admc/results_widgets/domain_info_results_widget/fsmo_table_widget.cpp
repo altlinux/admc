@@ -3,7 +3,7 @@
 
 #include "fsmo/fsmo_utils.h"
 #include <QMessageBox>
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "status.h"
 #include "globals.h"
 #include "utils.h"

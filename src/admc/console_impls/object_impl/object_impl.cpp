@@ -42,7 +42,7 @@
 #include "utils.h"
 #include "tabs/general_user_tab.h"
 #include "tabs/general_group_tab.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "results_widgets/pso_results_widget/pso_results_widget.h"
 #include "results_widgets/subnet_results_widget/subnet_results_widget.h"
 

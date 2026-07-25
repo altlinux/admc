@@ -4,7 +4,7 @@
 #include "ad_defines.h"
 #include "ad_utils.h"
 #include "globals.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 
 
 SubnetEditWidget::SubnetEditWidget(QWidget *parent) :

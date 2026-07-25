@@ -34,7 +34,7 @@
 #include "select_dialogs/select_policy_dialog.h"
 #include "status.h"
 #include "utils.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "managers/gplink_manager.h"
 #include "fsmo/fsmo_utils.h"
 

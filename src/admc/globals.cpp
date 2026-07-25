@@ -23,7 +23,7 @@
 #include "adldap.h"
 #include "settings.h"
 #include "status.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "managers/gplink_manager.h"
 
 #include <QLocale>

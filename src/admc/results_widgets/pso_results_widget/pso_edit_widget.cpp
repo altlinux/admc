@@ -23,7 +23,7 @@
 #include "ad_object.h"
 #include "ad_utils.h"
 #include "select_dialogs/select_object_dialog.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "status.h"
 #include "globals.h"
 

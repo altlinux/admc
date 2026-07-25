@@ -62,6 +62,7 @@ set(ADMC_SOURCES
     core/attribute.cpp
     core/changelog.cpp
     core/managers/country_manager.cpp
+    core/managers/icon_manager.cpp
     core/search_thread.cpp
     core/utils.cpp
     status.cpp
@@ -241,7 +242,6 @@ set(ADMC_SOURCES
     console_widget/console_drag_model.cpp
     console_widget/console_impl.cpp
 
-    managers/icon_manager.cpp
     managers/gplink_manager.cpp
 
     console_impls/object_impl/object_impl.cpp

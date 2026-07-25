@@ -33,7 +33,7 @@
 #include "ad_object.h"
 #include "ad_utils.h"
 #include "globals.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "sites_link_edit.h"
 #include "tabs/sites_link_tab/sites_link_common_widget.h"
 #include "tabs/sites_link_tab/sites_link_part_widget.h"

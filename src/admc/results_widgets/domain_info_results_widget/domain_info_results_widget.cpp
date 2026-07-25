@@ -27,7 +27,7 @@
 #include "globals.h"
 #include "status.h"
 #include "fsmo/fsmo_utils.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "utils.h"
 
 #include <QStandardItemModel>

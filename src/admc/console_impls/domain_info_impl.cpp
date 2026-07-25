@@ -30,7 +30,7 @@
 #include "utils.h"
 #include "status.h"
 #include "globals.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "managers/gplink_manager.h"
 
 #include <QSet>

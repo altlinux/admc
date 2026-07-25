@@ -32,7 +32,7 @@
 #include "settings.h"
 #include "status.h"
 #include "utils.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "drag_drop_links_model.h"
 
 #include <QAction>

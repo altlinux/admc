@@ -29,7 +29,7 @@
 #include "gplink.h"
 #include "status.h"
 #include "utils.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "managers/gplink_manager.h"
 
 #include <QList>

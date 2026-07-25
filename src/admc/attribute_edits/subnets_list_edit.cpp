@@ -2,7 +2,7 @@
 
 #include <QListWidget>
 #include "globals.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "ad_filter.h"
 #include "ad_object.h"
 #include "ad_interface.h"

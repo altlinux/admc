@@ -24,7 +24,7 @@
 #include "console_impls/item_type.h"
 #include "core/ad.h"
 #include "globals.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "console_impls/query_folder_impl.h"

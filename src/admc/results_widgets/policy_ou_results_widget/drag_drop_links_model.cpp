@@ -1,7 +1,7 @@
 #include "drag_drop_links_model.h"
 #include "utils.h"
 #include "globals.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "ad_interface.h"
 #include "console_impls/policy_impl.h"
 

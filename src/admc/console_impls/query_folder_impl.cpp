@@ -32,7 +32,7 @@
 #include "globals.h"
 #include "settings.h"
 #include "utils.h"
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 
 #include <QFileDialog>
 #include <QJsonDocument>

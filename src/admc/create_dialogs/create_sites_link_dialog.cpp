@@ -28,7 +28,7 @@
 #include "globals.h"
 #include "ad_config.h"
 #include <QListWidget>
-#include "managers/icon_manager.h"
+#include "core/managers/icon_manager.h"
 #include "ad_utils.h"
 #include "utils.h"
 #include "status.h"
