@@ -22,7 +22,7 @@
 #include "main_window.h"
 #include "ui_main_window.h"
 
-#include "core/country_manager.h"
+#include "core/managers/country_manager.h"
 #include "about_dialog.h"
 #include "adldap.h"
 #include "attribute_edits/country_combo.h"

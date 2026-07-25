@@ -21,7 +21,7 @@
 
 #include "attribute_edits/country_combo.h"
 
-#include "core/country_manager.h"
+#include "core/managers/country_manager.h"
 
 #include "adldap.h"
 #include "globals.h"
