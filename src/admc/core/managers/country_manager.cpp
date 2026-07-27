@@ -30,6 +30,8 @@
 #include "core/settings.h"
 #include "country_manager.h"
 
+static const QString COUNTRIES_FILE = "countries.csv";
+
 CountryManager::CountryManager() {
     // Do nothing.
 }
@@ -44,7 +46,7 @@ bool CountryManager::load() {
         return false;
     }
 
-    QFile file(":/admc/countries.csv");
+    QFile file(":/admc/" + COUNTRIES_FILE);
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << "ERROR: Failed to load countries file!\n";
         return false;
@@ -80,7 +82,7 @@ bool CountryManager::load() {
         }
 
         if (line_split.size() != CountryColumn_COUNT) {
-            qDebug() << "country.csv contains malformed line: " << line;
+            qDebug() << COUNTRIES_FILE << "contains malformed line: " << line;
 
             continue;
         }
