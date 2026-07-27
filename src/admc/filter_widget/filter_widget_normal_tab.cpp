@@ -23,7 +23,7 @@
 #include "filter_widget/ui_filter_widget_normal_tab.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 
 #include <algorithm>
 

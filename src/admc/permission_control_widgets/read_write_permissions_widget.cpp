@@ -4,7 +4,7 @@
 #include "core/settings.h"
 #include "samba/ndr_security.h"
 #include "utils.h"
-#include "globals.h"
+#include "core/globals.h"
 
 #include <QStandardItemModel>
 #include <QStandardItem>

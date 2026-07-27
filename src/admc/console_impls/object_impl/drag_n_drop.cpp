@@ -21,7 +21,7 @@
 
 #include "console_impls/object_impl/drag_n_drop.h"
 #include <QModelIndex>
-#include <globals.h>
+#include <core/globals.h>
 #include "console_impls/object_impl/object_impl.h"
 
 ObjectDragDrop::DropType ObjectDragDrop::console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target) {

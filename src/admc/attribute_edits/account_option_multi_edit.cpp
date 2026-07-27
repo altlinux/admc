@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "attribute_edits/account_option_edit.h"
-#include "globals.h"
+#include "core/globals.h"
 
 #include <QCheckBox>
 

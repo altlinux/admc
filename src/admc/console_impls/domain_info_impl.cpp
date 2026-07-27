@@ -29,7 +29,7 @@
 #include "fsmo/fsmo_dialog.h"
 #include "utils.h"
 #include "status.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/managers/icon_manager.h"
 #include "core/managers/gplink_manager.h"
 

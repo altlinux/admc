@@ -27,7 +27,7 @@
 #include "console_impls/policy_root_impl.h"
 #include "console_widget/results_view.h"
 #include "create_dialogs/create_policy_dialog.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "gplink.h"
 #include "status.h"
 #include "utils.h"

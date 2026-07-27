@@ -25,7 +25,7 @@
 #include "adldap.h"
 #include "console_impls/policy_impl.h"
 #include "console_widget/console_widget.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 #include "status.h"
 #include "utils.h"

@@ -28,7 +28,7 @@
 #include "console_impls/policy_impl.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "results_widgets/policy_results_widget.h"
 #include "properties_widgets/properties_dialog.h"
 #include "rename_dialogs/rename_policy_dialog.h"

@@ -22,7 +22,7 @@
 #include "fsmo_utils.h"
 
 #include "ad_config.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "adldap.h"
 #include "utils.h"
 #include "core/settings.h"

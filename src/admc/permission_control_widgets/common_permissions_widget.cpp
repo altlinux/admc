@@ -20,7 +20,7 @@
 #include "common_permissions_widget.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 #include "utils.h"
 

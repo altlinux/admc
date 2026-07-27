@@ -4,7 +4,7 @@
 #include "ad_filter.h"
 #include "ad_interface.h"
 #include "ad_object.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "ad_utils.h"
 
 SiteDnAttrsUpdater::SiteDnAttrsUpdater(const QString &site_dn) : dn(site_dn) {

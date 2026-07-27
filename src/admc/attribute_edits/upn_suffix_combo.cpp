@@ -22,7 +22,7 @@
 #include "attribute_edits/upn_suffix_combo.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 
 #include <QComboBox>
 

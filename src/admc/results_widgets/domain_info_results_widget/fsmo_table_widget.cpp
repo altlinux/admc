@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include "core/managers/icon_manager.h"
 #include "status.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "utils.h"
 #include "adldap.h"
 #include <QPushButton>

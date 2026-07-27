@@ -27,7 +27,7 @@
 #include "select_well_known_trustee_dialog.h"
 #include "utils.h"
 #include "permission_control_widgets/permissions_widget.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "permission_control_widgets/sddl_view_dialog.h"
 
 #include <QDebug>

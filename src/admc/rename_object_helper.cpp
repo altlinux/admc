@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "attribute_edits/attribute_edit.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "status.h"
 #include "utils.h"
 

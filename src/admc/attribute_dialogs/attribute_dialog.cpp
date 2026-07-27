@@ -25,7 +25,7 @@
 #include "ad_utils.h"
 
 #include "ad_display.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "attribute_dialogs/bool_attribute_dialog.h"
 #include "attribute_dialogs/datetime_attribute_dialog.h"
 #include "attribute_dialogs/list_attribute_dialog.h"

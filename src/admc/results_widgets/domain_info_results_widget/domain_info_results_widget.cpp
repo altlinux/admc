@@ -24,7 +24,7 @@
 #include "core/settings.h"
 #include "console_impls/object_impl/console_object_operations.h"
 #include "console_impls/item_type.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "status.h"
 #include "fsmo/fsmo_utils.h"
 #include "core/managers/icon_manager.h"

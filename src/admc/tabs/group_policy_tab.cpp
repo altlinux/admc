@@ -22,7 +22,7 @@
 
 #include "adldap.h"
 #include "attribute_edits/gpoptions_edit.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "select_dialogs/select_policy_dialog.h"
 #include "core/settings.h"
 #include "utils.h"

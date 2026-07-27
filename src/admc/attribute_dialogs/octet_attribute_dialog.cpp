@@ -25,7 +25,7 @@
 #include "adldap.h"
 #include "core/attribute.h"
 #include "core/utils.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 #include "utils.h"
 

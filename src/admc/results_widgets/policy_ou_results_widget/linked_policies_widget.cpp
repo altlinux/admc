@@ -28,7 +28,7 @@
 #include "console_impls/policy_root_impl.h"
 #include "console_widget/console_widget.h"
 #include "console_widget/results_view.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 #include "status.h"
 #include "utils.h"

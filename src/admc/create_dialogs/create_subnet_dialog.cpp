@@ -26,7 +26,7 @@
 #include "ad_filter.h"
 #include "ad_object.h"
 #include "ad_config.h"
-#include "globals.h"
+#include "core/globals.h"
 #include <QPushButton>
 #include "utils.h"
 #include "ad_utils.h"

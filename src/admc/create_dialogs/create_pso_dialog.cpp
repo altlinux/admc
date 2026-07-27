@@ -23,7 +23,7 @@
 #include "utils.h"
 #include "ad_utils.h"
 #include "status.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "attribute_edits/protect_deletion_edit.h"
 
 #include <QPushButton>

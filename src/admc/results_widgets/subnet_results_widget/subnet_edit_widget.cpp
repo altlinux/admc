@@ -3,7 +3,7 @@
 #include "ad_object.h"
 #include "ad_defines.h"
 #include "ad_utils.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/managers/icon_manager.h"
 
 

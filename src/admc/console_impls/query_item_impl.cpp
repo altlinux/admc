@@ -28,7 +28,7 @@
 #include "console_widget/results_view.h"
 #include "create_dialogs/create_query_item_dialog.h"
 #include "edit_query_widgets/edit_query_item_dialog.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 #include "utils.h"
 #include "core/managers/icon_manager.h"

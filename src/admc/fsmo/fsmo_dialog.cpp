@@ -25,7 +25,7 @@
 #include "adldap.h"
 #include "fsmo/fsmo_tab.h"
 #include "fsmo/fsmo_utils.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 
 #include <QMessageBox>

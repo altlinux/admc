@@ -22,7 +22,7 @@
 #include "attribute_edits/delegation_edit.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "utils.h"
 
 #include <QRadioButton>

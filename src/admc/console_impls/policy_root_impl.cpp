@@ -26,7 +26,7 @@
 #include "console_impls/item_type.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_widget/results_view.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "gplink.h"
 #include "status.h"
 #include "utils.h"

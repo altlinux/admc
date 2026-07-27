@@ -25,7 +25,7 @@
 #include "ad_utils.h"
 #include "ad_object.h"
 #include "core/settings.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "status.h"
 
 #include <QPainter>

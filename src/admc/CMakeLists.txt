@@ -61,6 +61,7 @@ set(ADMC_SOURCES
     core/ad.cpp
     core/attribute.cpp
     core/changelog.cpp
+    core/globals.cpp
     core/managers/country_manager.cpp
     core/managers/gplink_manager.cpp
     core/managers/icon_manager.cpp
@@ -68,7 +69,6 @@ set(ADMC_SOURCES
     core/settings.cpp
     core/utils.cpp
     status.cpp
-    globals.cpp
     utils.cpp
 
     main_window.cpp

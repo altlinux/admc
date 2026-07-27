@@ -1,5 +1,5 @@
 #include "server_dn_attrs_updater.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "ad_config.h"
 #include "ad_defines.h"
 #include "ad_filter.h"

@@ -28,7 +28,7 @@
 #include "console_impls/policy_impl.h"
 #include "create_dialogs/create_policy_dialog.h"
 #include "find_widgets/find_policy_dialog.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "gplink.h"
 #include "results_widgets/policy_ou_results_widget/policy_ou_results_widget.h"
 #include "select_dialogs/select_policy_dialog.h"

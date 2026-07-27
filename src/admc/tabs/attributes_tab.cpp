@@ -24,7 +24,7 @@
 
 #include "adldap.h"
 #include "attribute_dialogs/attribute_dialog.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 #include "tabs/attributes_tab_filter_menu.h"
 #include "tabs/attributes_tab_proxy.h"

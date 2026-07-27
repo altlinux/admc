@@ -25,7 +25,7 @@
 #include "adldap.h"
 #include "console_impls/object_impl/object_impl.h"
 #include "core/ad.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "config.h"
 #include "properties_warning_dialog.h"
 #include "security_sort_warning_dialog.h"

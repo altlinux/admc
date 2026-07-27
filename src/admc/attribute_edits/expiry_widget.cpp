@@ -23,7 +23,7 @@
 #include "attribute_edits/ui_expiry_widget.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 
 #include <QButtonGroup>
 

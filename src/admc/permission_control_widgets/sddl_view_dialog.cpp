@@ -4,7 +4,7 @@
 #include "samba/security_descriptor.h"
 #include "samba/sddl.h"
 #include "samba/dom_sid.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "ad_config.h"
 #include "status.h"
 #include "ad_security.h"

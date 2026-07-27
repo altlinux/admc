@@ -23,7 +23,7 @@
 #include "attribute_dialogs/ui_bool_attribute_dialog.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 
 BoolAttributeDialog::BoolAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)

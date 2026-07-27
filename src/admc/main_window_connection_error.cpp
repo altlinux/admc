@@ -24,7 +24,7 @@
 
 #include "adldap.h"
 #include "connection_options_dialog.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "main_window.h"
 #include "core/settings.h"
 #include "utils.h"

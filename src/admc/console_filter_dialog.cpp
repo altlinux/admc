@@ -25,7 +25,7 @@
 #include "adldap.h"
 #include "filter_widget/class_filter_widget.h"
 #include "filter_widget/filter_dialog.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 
 #define FILTER_CUSTOM_DIALOG_STATE "FILTER_CUSTOM_DIALOG_STATE"

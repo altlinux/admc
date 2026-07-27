@@ -24,7 +24,7 @@
 #include "tabs/ui_membership_tab.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "properties_widgets/properties_dialog.h"
 #include "select_dialogs/select_object_dialog.h"
 #include "core/settings.h"

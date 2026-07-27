@@ -28,7 +28,7 @@
 #include "gplink.h"
 #include "core/managers/icon_manager.h"
 #include "core/managers/gplink_manager.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "ad_object.h"
 #include "ad_utils.h"
 

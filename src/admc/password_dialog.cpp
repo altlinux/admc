@@ -26,7 +26,7 @@
 #include "attribute_edits/account_option_edit.h"
 #include "attribute_edits/password_edit.h"
 #include "attribute_edits/unlock_edit.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 #include "status.h"
 #include "utils.h"

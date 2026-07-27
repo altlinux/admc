@@ -20,7 +20,7 @@
 #include "attribute_edits/laps_encrypted_attribute_edit.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "utils.h"
 
 #include <QJsonDocument>

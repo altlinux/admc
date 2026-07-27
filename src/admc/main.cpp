@@ -22,7 +22,7 @@
 
 #include "adldap.h"
 #include "config.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "main_window.h"
 #include "main_window_connection_error.h"
 #include "core/settings.h"

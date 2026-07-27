@@ -4,7 +4,7 @@
 #include "ad_interface.h"
 #include "utils.h"
 #include "ad_filter.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "ad_config.h"
 
 SubnetResultsWidget::SubnetResultsWidget(QWidget *parent) :

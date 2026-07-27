@@ -24,7 +24,7 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl/object_impl.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "select_object_advanced_dialog.h"
 #include "select_object_match_dialog.h"
 #include "core/settings.h"

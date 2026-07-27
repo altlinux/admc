@@ -21,7 +21,7 @@
 #include "attribute_edits/datetime_edit.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "utils.h"
 
 #include <QDateTimeEdit>

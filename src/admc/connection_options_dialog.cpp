@@ -26,7 +26,7 @@
 #include "core/settings.h"
 #include "utils.h"
 #include "fsmo/fsmo_utils.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "status.h"
 #include "krb5client.h"
 #include <stdexcept>

@@ -28,7 +28,7 @@
 #include "console_widget/results_view.h"
 #include "console_widget/scope_proxy_model.h"
 #include "console_impls/item_type.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "status.h"
 
 #include <QAction>

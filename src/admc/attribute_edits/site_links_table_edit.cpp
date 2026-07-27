@@ -1,6 +1,6 @@
 #include "site_links_table_edit.h"
 #include "ad_interface.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "ad_config.h"
 #include "ad_filter.h"
 #include "ad_object.h"

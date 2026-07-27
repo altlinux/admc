@@ -1,7 +1,7 @@
 #include "subnets_list_edit.h"
 
 #include <QListWidget>
-#include "globals.h"
+#include "core/globals.h"
 #include "core/managers/icon_manager.h"
 #include "ad_filter.h"
 #include "ad_object.h"

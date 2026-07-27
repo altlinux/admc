@@ -28,7 +28,7 @@
 #include "ad_object.h"
 #include "ad_config.h"
 #include "ad_filter.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "gplink.h"
 #include "utils.h"
 

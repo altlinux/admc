@@ -23,7 +23,7 @@
 #include "filter_widget/ui_class_filter_widget.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "utils.h"
 
 #include <QCheckBox>

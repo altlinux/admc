@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "error_log_dialog.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 
 #include <QCoreApplication>

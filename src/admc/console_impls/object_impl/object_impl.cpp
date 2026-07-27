@@ -32,7 +32,7 @@
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_widget/results_view.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "password_dialog.h"
 #include "select_dialogs/select_container_dialog.h"
 #include "select_dialogs/select_object_dialog.h"

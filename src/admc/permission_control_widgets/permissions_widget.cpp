@@ -23,7 +23,7 @@
 #include "core/settings.h"
 #include "samba/ndr_security.h"
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 
 #include <QTreeView>
 #include <QStandardItemModel>

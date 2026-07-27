@@ -24,7 +24,7 @@
 
 #include "adldap.h"
 #include "filter_widget/class_filter_dialog.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "utils.h"
 
 SelectClassesWidget::SelectClassesWidget(QWidget *parent)

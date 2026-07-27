@@ -27,7 +27,7 @@
 #include "console_impls/find_policy_impl.h"
 #include "console_impls/found_policy_impl.h"
 #include "console_impls/item_type.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/search_thread.h"
 #include "core/settings.h"
 #include "status.h"

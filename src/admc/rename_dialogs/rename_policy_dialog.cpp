@@ -23,7 +23,7 @@
 #include "ui_rename_policy_dialog.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "rename_object_helper.h"
 #include "core/settings.h"
 #include "status.h"

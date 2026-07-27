@@ -21,7 +21,7 @@
 #include "attribute_dialogs/ui_hex_number_attribute_dialog.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "utils.h"
 #include "core/settings.h"
 #include <QDebug>

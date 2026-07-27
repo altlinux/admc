@@ -22,7 +22,7 @@
 #include "ui_fsmo_tab.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "status.h"
 #include "utils.h"
 #include "fsmo/fsmo_utils.h"

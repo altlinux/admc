@@ -24,7 +24,7 @@
 #include "core/managers/country_manager.h"
 
 #include "adldap.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "core/settings.h"
 #include "status.h"
 #include "utils.h"
