@@ -65,4 +65,6 @@ private:
     CountryManager();
 };
 
+QList<QString> country_manager_parse_line(QString line);
+
 #endif  /* ifndef COUNTRY_MANAGER_H */

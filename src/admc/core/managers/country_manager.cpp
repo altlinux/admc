@@ -37,6 +37,69 @@ CountryManager::CountryManager() {
 }
 
 /**
+ * This is an one-pass CSV line parser that reads a line from left to right and
+ * parses it into separate fields, with proper quoted fields handling.
+ *
+ *       [*]          double-quote?
+ *        |    ,-------------------------,
+ *        |    |                         |
+ *        V    V      double-quote?      |
+ * [STATE_READ_FIELD]------------->[STATE_READ_QUOTED_FIELD]
+ *  |          A   |                |                     A
+ *  |          |   |                |                     |
+ *  `----------'   |                `---------------------'
+ *                 | end-of-line?
+ *                 V
+ *                [*]
+ *
+ * @param line A line to parse.
+ * @return A list of parsed fields.
+ */
+QList<QString> country_manager_parse_line(QString line) {
+    static const char SEPARATOR = ',';
+    enum {
+        STATE_READ_FIELD,
+        STATE_READ_QUOTED_FIELD
+    };
+    QList<QString> result;
+    QString field;
+    int state = STATE_READ_FIELD;
+    qsizetype end = line.length();
+    for (qsizetype index = 0; index < end; index++) {
+        QChar ch = line[index];
+        switch (state) {
+        case STATE_READ_FIELD:
+            if (ch == '\"') {
+                state = STATE_READ_QUOTED_FIELD;
+            } else if (ch == SEPARATOR) {
+                result.append(field);
+                field = "";
+            } else if ((ch == '\r') || (ch == '\n')) {
+                if (! field.isEmpty()) {
+                    result.append(field);
+                    field = "";
+                }
+                index++;
+            } else {
+                field += ch;
+            }
+            break;
+        case STATE_READ_QUOTED_FIELD:
+            if (ch == '\"') {
+                state = STATE_READ_FIELD;
+            } else {
+                field += ch;
+            }
+            break;
+        }
+    }
+    if (! field.isEmpty()) {
+        result.append(field);
+    }
+    return result;
+}
+
+/**
  * Load countries from a CSV file into hash maps.  Map country code to country
  * string and country abbreviation.
  */
@@ -58,28 +121,7 @@ bool CountryManager::load() {
     while (!file.atEnd()) {
         const QByteArray line_array = file.readLine();
         const QString line = QString(line_array);
-
-        // Split line by comma's, taking into
-        // account that some comma's are inside
-        // quoted parts and ignoring those.
-        //
-        // NOTE: there's definitely a better way to
-        // do this
-        QList<QString> line_split;
-        if (line.contains('\"')) {
-            QList<QString> split_by_quotes = line.split('\"');
-            split_by_quotes.removeAll("");
-
-            if (split_by_quotes.size() == 2) {
-                QList<QString> split_rest = split_by_quotes[1].split(',');
-                split_rest.removeAll("");
-
-                line_split.append(split_by_quotes[0]);
-                line_split.append(split_rest);
-            }
-        } else {
-            line_split = line.split(',');
-        }
+        QList<QString> line_split = country_manager_parse_line(line);
 
         if (line_split.size() != CountryColumn_COUNT) {
             qDebug() << COUNTRIES_FILE << "contains malformed line: " << line;
