@@ -175,8 +175,7 @@ void KrbAuthDialog::hide_passwd_widgets(bool hide) {
 }
 
 void KrbAuthDialog::remember_principal(bool remember) {
-    QVariant setting = settings_get_variant(SETTING_remembered_principals);
-    QStringList remembered_principals = setting.isNull() ? QStringList() : setting.toStringList();
+    QStringList remembered_principals = settings_get_remembered_principals();
     const QString principal = ui->principal_cmb_box->currentText();
 
     if (remember && !remembered_principals.contains(principal)) {
