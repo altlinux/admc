@@ -26,6 +26,7 @@
 #include "samba/ndr_security.h"
 #include "adldap.h"
 #include "core/globals.h"
+#include "core/utils.h"
 
 #include <QTreeView>
 #include <QStandardItemModel>

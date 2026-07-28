@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
+#include "core/utils.h"
 #include "ad_interface.h"
 #include "console_impls/policy_impl.h"
 

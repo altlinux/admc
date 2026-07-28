@@ -55,17 +55,6 @@
 QMessageBox *message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
 int get_range_upper(const QString &attribute);
 
-QList<QStandardItem *> make_item_row(const int count) {
-    QList<QStandardItem *> row;
-
-    for (int i = 0; i < count; i++) {
-        const auto item = new QStandardItem();
-        row.append(item);
-    }
-
-    return row;
-}
-
 void set_horizontal_header_labels_from_map(
     QStandardItemModel *model,
     const QMap<int, QString> &labels_map)

@@ -28,6 +28,7 @@
 #include "core/globals.h"
 #include "properties_widgets/properties_dialog.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "utils.h"
 
 #include <QStandardItemModel>

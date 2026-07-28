@@ -23,6 +23,7 @@
 
 #include <QList>
 #include <QRegularExpression>
+#include <QStandardItem>
 #include <QString>
 #include <QVariant>
 
@@ -124,4 +125,21 @@ char *itoa(int value, char *result, int base) {
         *ptr1++ = tmp_char;
     }
     return result;
+}
+
+/**
+ * Make a list of QStandardItem instances of the specified size.
+ *
+ * @param count Number of items to create.
+ * @return A list of items.
+ */
+QList<QStandardItem *> make_item_row(const int count) {
+    QList<QStandardItem *> row;
+
+    for (int i = 0; i < count; i++) {
+        const auto item = new QStandardItem();
+        row.append(item);
+    }
+
+    return row;
 }

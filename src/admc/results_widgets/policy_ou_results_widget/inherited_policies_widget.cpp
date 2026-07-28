@@ -21,6 +21,7 @@
 #include "ui_inherited_policies_widget.h"
 #include "utils.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_impl.h"
 #include "console_widget/console_widget.h"

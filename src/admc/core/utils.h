@@ -23,6 +23,7 @@
 #define CORE_UTILS_H
 
 #include <QList>
+#include <QStandardItem>
 
 QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list);
 QList<QString> variant_list_to_string_list(const QList<QVariant> &variant_list);
@@ -31,5 +32,6 @@ QString generate_new_name(const QList<QString> &existing_name_list,
                           const QString &name_base);
 bool string_contains_bad_chars(const QString &string, const QString &bad_chars);
 char *itoa(int value, char *result, int base);
+QList<QStandardItem *> make_item_row(const int count);
 
 #endif

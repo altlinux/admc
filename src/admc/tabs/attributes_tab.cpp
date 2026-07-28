@@ -26,6 +26,7 @@
 #include "attribute_dialogs/attribute_dialog.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "tabs/attributes_tab_filter_menu.h"
 #include "tabs/attributes_tab_proxy.h"
 #include "utils.h"

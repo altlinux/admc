@@ -30,6 +30,7 @@
 #include "console_widget/results_view.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "status.h"
 #include "utils.h"
 #include "core/managers/icon_manager.h"
