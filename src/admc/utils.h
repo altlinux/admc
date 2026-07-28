@@ -24,22 +24,16 @@
 
 #include "core/search_thread.h"
 
-class QAbstractItemModel;
 class QAbstractItemView;
 class QAbstractProxyModel;
 class QString;
-class QCheckBox;
 class QStandardItem;
 class QStandardItemModel;
-class QMenu;
 class QTreeView;
 class QLineEdit;
 class QPlainTextEdit;
-class QPoint;
-class QWidget;
 class QModelIndex;
 class QVariant;
-class QIcon;
 class AdInterface;
 class AdObject;
 class QPersistentModelIndex;

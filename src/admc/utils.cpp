@@ -29,9 +29,7 @@
 #include "core/settings.h"
 #include "status.h"
 
-#include <QAbstractItemModel>
 #include <QAbstractItemView>
-#include <QCheckBox>
 #include <QCursor>
 #include <QGuiApplication>
 #include <QHash>
@@ -44,12 +42,10 @@
 #include <QModelIndex>
 #include <QPersistentModelIndex>
 #include <QPlainTextEdit>
-#include <QPoint>
 #include <QScreen>
 #include <QSortFilterProxyModel>
 #include <QStandardItem>
 #include <QStandardItemModel>
-#include <QTreeView>
 #include <QWidget>
 
 QMessageBox *message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
