@@ -22,10 +22,10 @@
 #include "utils.h"
 #include "core/utils.h"
 
-#include "core/search_thread.h"
 #include "adldap.h"
 #include "console_widget/console_widget.h"
 #include "core/globals.h"
+#include "core/search_thread.h"
 #include "core/settings.h"
 #include "status.h"
 
