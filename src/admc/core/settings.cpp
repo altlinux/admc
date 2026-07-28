@@ -113,9 +113,15 @@ void settings_set_variant(const QString setting, const QVariant &value) {
     settings.setValue(setting, value);
 }
 
+/**
+ * Get a list of remembered principals.
+ */
+QStringList settings_get_remembered_principals() {
+    QVariant principals = settings_get_variant(SETTING_remembered_principals);
+    return principals.isNull() ? QStringList() : principals.toStringList();
+}
+
 bool settings_are_creds_saved(const QString &username) {
-    QVariant remembered_users = settings_get_variant(SETTING_remembered_principals);
-    bool saved = !remembered_users.isNull() && !username.isEmpty() &&
-        remembered_users.toStringList().contains(username);
-    return saved;
+    QStringList principals = settings_get_remembered_principals();
+    return (! username.isEmpty()) && principals.contains(username);
 }

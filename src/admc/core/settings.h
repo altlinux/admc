@@ -176,5 +176,6 @@ bool settings_restore_geometry(const QString setting, QWidget *widget);
 void settings_save_header_state(const QString setting, QHeaderView *header);
 bool settings_restore_header_state(const QString setting, QHeaderView *header);
 bool settings_are_creds_saved(const QString &username);
+QStringList settings_get_remembered_principals();
 
 #endif /* SETTINGS_H */
