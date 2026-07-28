@@ -108,7 +108,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     const QVariant console_state = ui->console->save_state();
     settings_set_variant(SETTING_console_widget_state, console_state);
 
-    krb5_client->logout(!creds_is_saved(krb5_client->current_principal()));
+    krb5_client->logout(!settings_are_creds_saved(krb5_client->current_principal()));
 
     QMainWindow::closeEvent(event);
 }
@@ -583,7 +583,7 @@ void MainWindow::on_logout() {
 
     login_label->setText(tr("Authentication required"));
 
-    bool delete_creds = !creds_is_saved(krb5_client->current_principal());
+    bool delete_creds = !settings_are_creds_saved(krb5_client->current_principal());
     auth_dialog->logout(delete_creds);
     krb5_client->logout(delete_creds);
 

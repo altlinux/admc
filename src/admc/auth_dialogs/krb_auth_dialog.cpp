@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -74,7 +74,7 @@ void KrbAuthDialog::setupWidgets() {
 
     const QString curr_principal = client->current_principal();
     bool remember_checked = (!client->system_principal().isEmpty() && curr_principal == client->system_principal())
-            || creds_is_saved(curr_principal);
+            || settings_are_creds_saved(curr_principal);
     ui->remember_checkbox->setChecked(remember_checked);
     ui->remember_checkbox->setDisabled(curr_principal == client->system_principal());
 
@@ -101,7 +101,7 @@ void KrbAuthDialog::on_sign_in() {
     }
 
     if (!client->current_principal().isEmpty()) {
-        bool delete_creds = !creds_is_saved(client->current_principal());
+        bool delete_creds = !settings_are_creds_saved(client->current_principal());
         logout(delete_creds);
         client->logout(delete_creds);
     }
@@ -157,7 +157,8 @@ void KrbAuthDialog::on_principal_selected(const QString &principal) {
 
     ui->error_label->hide();
 
-    bool checked = (!principal.isEmpty() && principal == client->system_principal()) || creds_is_saved(principal);
+    bool checked = (!principal.isEmpty() && principal == client->system_principal()) ||
+        settings_are_creds_saved(principal);
     ui->remember_checkbox->setChecked(checked);
     ui->remember_checkbox->setDisabled(principal == client->system_principal());
 

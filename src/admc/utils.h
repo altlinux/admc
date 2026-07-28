@@ -137,8 +137,6 @@ void setup_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *last_name_e
 
 QString gpo_status_from_int(int status);
 
-bool creds_is_saved(const QString &username);
-
 void search_thread_display_errors(SearchThread *thread, QWidget *parent);
 
 #endif /* UTILS_H */

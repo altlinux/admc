@@ -410,13 +410,6 @@ QString gpo_status_from_int(int status) {
     }
 }
 
-bool creds_is_saved(const QString &username) {
-    QVariant remembered_users = settings_get_variant(SETTING_remembered_principals);
-    bool saved = !remembered_users.isNull() && !username.isEmpty() &&
-            remembered_users.toStringList().contains(username);
-    return saved;
-}
-
 void search_thread_display_errors(SearchThread *thread, QWidget *parent) {
     if (thread->failed_to_connect()) {
         error_log({QCoreApplication::translate("object_impl.cpp", "Failed to connect to server while searching for objects.")}, parent);
