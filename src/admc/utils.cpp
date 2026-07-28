@@ -65,7 +65,8 @@ void set_horizontal_header_labels_from_map(
 }
 
 void set_line_edit_to_decimal_numbers_only(QLineEdit *edit) {
-    edit->setValidator(new QRegularExpressionValidator(QRegularExpression("[0-9]*"), edit));
+    edit->setValidator(
+        new QRegularExpressionValidator(QRegularExpression("[0-9]*"), edit));
 }
 
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
@@ -105,7 +106,9 @@ bool confirmation_dialog(const QString &text, QWidget *parent) {
     return reply == QMessageBox::Yes;
 }
 
-void set_data_for_row(const QList<QStandardItem *> &row, const QVariant &data, const int role) {
+void set_data_for_row(const QList<QStandardItem *> &row,
+                      const QVariant &data,
+                      const int role) {
     for (QStandardItem *item : row) {
         item->setData(data, role);
     }
@@ -130,7 +133,9 @@ bool ad_failed(const AdInterface &ad, QWidget *parent) {
 QString get_classes_filter(const QList<QString> &class_list) {
     QList<QString> class_filters;
     for (const QString &object_class : class_list) {
-        const QString class_filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, object_class);
+        const QString class_filter = filter_CONDITION(Condition_Equals,
+                                                      ATTRIBUTE_OBJECT_CLASS,
+                                                      object_class);
         class_filters.append(class_filter);
     }
 
@@ -141,9 +146,7 @@ QString get_classes_filter(const QList<QString> &class_list) {
 
 QString is_container_filter() {
     const QList<QString> accepted_classes = g_adconfig->get_filter_containers();
-
     const QString out = get_classes_filter(accepted_classes);
-
     return out;
 }
 
@@ -191,7 +194,9 @@ void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
     }
 }
 
-QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &indexes) {
+QList<QPersistentModelIndex> persistent_index_list(
+    const QList<QModelIndex> &indexes)
+{
     QList<QPersistentModelIndex> out;
 
     for (const QModelIndex &index : indexes) {
@@ -201,7 +206,9 @@ QList<QPersistentModelIndex> persistent_index_list(const QList<QModelIndex> &ind
     return out;
 }
 
-QList<QModelIndex> normal_index_list(const QList<QPersistentModelIndex> &indexes) {
+QList<QModelIndex> normal_index_list(
+    const QList<QPersistentModelIndex> &indexes)
+{
     QList<QModelIndex> out;
 
     for (const QPersistentModelIndex &index : indexes) {
@@ -214,11 +221,15 @@ QList<QModelIndex> normal_index_list(const QList<QPersistentModelIndex> &indexes
 // Hide advanced view only" objects if advanced view setting
 // is off
 QString advanced_features_filter(const QString &filter) {
-    const bool advanced_features_OFF = !settings_get_variant(SETTING_advanced_features).toBool();
+    const bool advanced_features_OFF =
+        (! settings_get_variant(SETTING_advanced_features).toBool());
 
     if (advanced_features_OFF) {
-        const QString advanced_features = filter_CONDITION(Condition_NotEquals, ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY, LDAP_BOOL_TRUE);
-        const QString out = filter_AND({filter, advanced_features});
+        const QString advanced_features = filter_CONDITION(
+            Condition_NotEquals,
+            ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY,
+            LDAP_BOOL_TRUE);
+        const QString out = filter_AND({ filter, advanced_features });
 
         return out;
     } else {
@@ -229,9 +240,12 @@ QString advanced_features_filter(const QString &filter) {
 // NOTE: configuration and schema objects are hidden so that
 // they don't show up in regular searches. Have to use
 // search_object() and manually add them to search results.
-void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad, const QString &base) {
-    const bool dev_mode = settings_get_variant(SETTING_feature_dev_mode).toBool();
-    if (!dev_mode) {
+void dev_mode_search_results(QHash<QString, AdObject> &results,
+                             AdInterface &ad,
+                             const QString &base) {
+    const bool dev_mode =
+        settings_get_variant(SETTING_feature_dev_mode).toBool();
+    if (! dev_mode) {
         return;
     }
 
@@ -246,7 +260,10 @@ void dev_mode_search_results(QHash<QString, AdObject> &results, AdInterface &ad,
     }
 }
 
-QMessageBox *message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent) {
+QMessageBox *message_box_generic(const QMessageBox::Icon icon,
+                                 const QString &title,
+                                 const QString &text,
+                                 QWidget *parent) {
     auto message_box = new QMessageBox(parent);
     message_box->setAttribute(Qt::WA_DeleteOnClose);
     message_box->setStandardButtons(QMessageBox::Ok);
@@ -259,23 +276,32 @@ QMessageBox *message_box_generic(const QMessageBox::Icon icon, const QString &ti
     return message_box;
 }
 
-QMessageBox *message_box_critical(QWidget *parent, const QString &title, const QString &text) {
+QMessageBox *message_box_critical(QWidget *parent,
+                                  const QString &title,
+                                  const QString &text) {
     return message_box_generic(QMessageBox::Critical, title, text, parent);
 }
 
-QMessageBox *message_box_information(QWidget *parent, const QString &title, const QString &text) {
+QMessageBox *message_box_information(QWidget *parent,
+                                     const QString &title,
+                                     const QString &text) {
     return message_box_generic(QMessageBox::Information, title, text, parent);
 }
 
-QMessageBox *message_box_question(QWidget *parent, const QString &title, const QString &text) {
+QMessageBox *message_box_question(QWidget *parent,
+                                  const QString &title,
+                                  const QString &text) {
     return message_box_generic(QMessageBox::Question, title, text, parent);
 }
 
-QMessageBox *message_box_warning(QWidget *parent, const QString &title, const QString &text) {
+QMessageBox *message_box_warning(QWidget *parent,
+                                 const QString &title,
+                                 const QString &text) {
     return message_box_generic(QMessageBox::Warning, title, text, parent);
 }
 
-QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list, const int dn_role) {
+QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list,
+                                     const int dn_role) {
     QList<QString> out;
 
     for (const QModelIndex &index : index_list) {
@@ -286,14 +312,18 @@ QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list, const
     return out;
 }
 
-QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type, const int dn_role) {
+QList<QString> get_selected_dn_list(ConsoleWidget *console,
+                                    const int type,
+                                    const int dn_role) {
     const QList<QModelIndex> indexes = console->get_selected_items(type);
     const QList<QString> out = index_list_to_dn_list(indexes, dn_role);
 
     return out;
 }
 
-QString get_selected_target_dn(ConsoleWidget *console, const int type, const int dn_role) {
+QString get_selected_target_dn(ConsoleWidget *console,
+                               const int type,
+                               const int dn_role) {
     const QList<QString> dn_list = get_selected_dn_list(console, type, dn_role);
 
     if (!dn_list.isEmpty()) {
@@ -307,7 +337,8 @@ void center_widget(QWidget *widget) {
     QScreen *primary_screen = QGuiApplication::primaryScreen();
 
     if (primary_screen != nullptr) {
-        widget->move(primary_screen->geometry().center() - widget->frameGeometry().center());
+        widget->move(primary_screen->geometry().center() -
+                     widget->frameGeometry().center());
     }
 }
 
@@ -385,28 +416,43 @@ void setup_full_name_autofill(
 }
 
 void set_line_edit_to_hex_numbers_only(QLineEdit *edit) {
-    edit->setValidator(new QRegularExpressionValidator(QRegularExpression("[0-9a-f]*"), edit));
+    edit->setValidator(
+        new QRegularExpressionValidator(QRegularExpression("[0-9a-f]*"), edit));
 }
 
 void set_line_edit_to_time_span_format(QLineEdit *edit) {
-    QRegularExpression time_span_reg_exp("([0-9]{1,4}:[0-2][0-3]:[0-5][0-9]:[0-5][0-9])|^\\(never\\)&|^\\(none\\)&");
+    QRegularExpression time_span_reg_exp(
+        "([0-9]{1,4}:[0-2][0-3]:[0-5][0-9]:[0-5][0-9])|^\\(never\\)&|^\\(none\\)&");
     edit->setValidator(new QRegularExpressionValidator(time_span_reg_exp));
 }
 
 QString gpo_status_from_int(int status) {
     switch (status) {
-    case 0: return QObject::tr("Enabled");
-    case 1: return QObject::tr("User configuration disabled");
-    case 2: return QObject::tr("Computer configuration disabled");
-    case 3: return QObject::tr("Disabled");
-    default: return QObject::tr("Undefined GPO status");
+    case 0:
+        return QObject::tr("Enabled");
+    case 1:
+        return QObject::tr("User configuration disabled");
+    case 2:
+        return QObject::tr("Computer configuration disabled");
+    case 3:
+        return QObject::tr("Disabled");
+    default:
+        return QObject::tr("Undefined GPO status");
     }
 }
 
 void search_thread_display_errors(SearchThread *thread, QWidget *parent) {
     if (thread->failed_to_connect()) {
-        error_log({QCoreApplication::translate("object_impl.cpp", "Failed to connect to server while searching for objects.")}, parent);
+        error_log(
+            { QCoreApplication::translate(
+                    "object_impl.cpp",
+                    "Failed to connect to server while searching for objects.") },
+            parent);
     } else if (thread->hit_object_display_limit()) {
-        error_log({QCoreApplication::translate("object_impl.cpp", "Could not load all objects. Increase object display limit in Filter Options or reduce number of objects by applying a filter. Filter Options is accessible from main window's menubar via the \"View\" menu.")}, parent);
+        error_log(
+            { QCoreApplication::translate(
+                    "object_impl.cpp",
+                    "Could not load all objects. Increase object display limit in Filter Options or reduce number of objects by applying a filter. Filter Options is accessible from main window's menubar via the \"View\" menu.") },
+            parent);
     }
 }
