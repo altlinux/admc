@@ -23,7 +23,7 @@
 #include "attribute_edits/manager_edit.h"
 #include "attribute_edits/manager_widget.h"
 #include "attribute_edits/ui_manager_widget.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "properties_widgets/properties_dialog.h"
 
 #include <QLineEdit>

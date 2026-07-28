@@ -23,7 +23,7 @@
 
 #include "ad_filter.h"
 #include "console_widget/results_view.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "gplink.h"
 #include "results_widgets/policy_results_widget.h"
 #include "utils.h"

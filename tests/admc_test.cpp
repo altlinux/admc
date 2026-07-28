@@ -30,7 +30,7 @@
 #include "filter_widget/ui_filter_widget_simple_tab.h"
 #include "filter_widget/ui_select_base_widget.h"
 #include "find_widgets/find_widget.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "select_dialogs/select_container_dialog.h"
 #include "select_dialogs/select_object_advanced_dialog.h"
 #include "select_dialogs/select_object_dialog.h"

@@ -23,7 +23,7 @@
 #include "console_impls/object_impl/object_impl.h"
 #include "filter_widget/select_base_widget.h"
 #include "filter_widget/ui_select_base_widget.h"
-#include "globals.h"
+#include "core/globals.h"
 #include "select_dialogs/select_container_dialog.h"
 
 #include <QComboBox>

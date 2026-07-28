@@ -22,7 +22,7 @@
 #include <QList>
 #include <QString>
 
-#include "globals.h"
+#include "core/globals.h"
 #include "ad_config.h"
 #include "ad_interface.h"
 #include "ad_object.h"

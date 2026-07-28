@@ -28,7 +28,7 @@
 #include "create_dialogs/create_shared_folder_dialog.h"
 #include "create_dialogs/create_user_dialog.h"
 #include "samba/dom_sid.h"
-#include "settings.h"
+#include "core/settings.h"
 #include "ui_create_computer_dialog.h"
 #include "ui_create_contact_dialog.h"
 #include "ui_create_group_dialog.h"

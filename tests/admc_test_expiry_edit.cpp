@@ -23,7 +23,7 @@
 #include "attribute_edits/expiry_edit.h"
 #include "attribute_edits/expiry_widget.h"
 #include "attribute_edits/ui_expiry_widget.h"
-#include "globals.h"
+#include "core/globals.h"
 
 #include <QDateEdit>
 #include <QFormLayout>

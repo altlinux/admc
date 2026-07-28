@@ -21,7 +21,7 @@
 #include "admc_test_delegation_edit.h"
 
 #include "attribute_edits/delegation_edit.h"
-#include "globals.h"
+#include "core/globals.h"
 
 #include <QRadioButton>
 
