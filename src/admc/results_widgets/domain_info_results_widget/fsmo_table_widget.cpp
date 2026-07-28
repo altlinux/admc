@@ -3,6 +3,7 @@
 
 #include "fsmo/fsmo_utils.h"
 #include <QMessageBox>
+#include "core/ad.h"
 #include "core/managers/icon_manager.h"
 #include "status.h"
 #include "core/globals.h"
@@ -51,7 +52,7 @@ void FsmoTableWidget::update(AdInterface &ad, const QList<AdObject> &hosts_list)
         dn_dns_name_map[host_obj.get_dn()] = host_obj.get_string(ATTRIBUTE_DNS_HOST_NAME);
     }
 
-    current_dc_dns_name = current_dc_dns_host_name(ad);
+    current_dc_dns_name = ad_current_dc_dns_host_name(ad);
     for (int row = 0; row < FSMORole_COUNT; ++row) {
         const QString current_master = current_master_for_role(ad, FSMORole(row));
         QTableWidgetItem *host_item = new QTableWidgetItem(g_icon_manager->item_icon(ItemIcon_Domain),

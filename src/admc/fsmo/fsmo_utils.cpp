@@ -22,6 +22,7 @@
 #include "fsmo_utils.h"
 
 #include "ad_config.h"
+#include "core/ad.h"
 #include "core/globals.h"
 #include "adldap.h"
 #include "utils.h"
@@ -79,7 +80,7 @@ bool current_dc_is_master_for_role(AdInterface &ad, FSMORole role)
 {
     QString role_dn = dn_from_role(role);
     QString current_master = current_master_for_role_dn(ad, role_dn);
-    QString current_dc = current_dc_dns_host_name(ad);
+    QString current_dc = ad_current_dc_dns_host_name(ad);
     return current_master == current_dc;
 }
 

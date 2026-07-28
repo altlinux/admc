@@ -81,3 +81,12 @@ QHash<QString, QString> ad_select_changed_dn(QHash<QString, QString> map) {
 bool ad_object_is_person(const AdObject &object) {
     return (object.is_class(CLASS_USER) || object.is_class(CLASS_INET_ORG_PERSON));
 }
+
+QString ad_current_dc_dns_host_name(AdInterface &ad) {
+    const AdObject rootDSE = ad.search_object("");
+    const QString server_name = rootDSE.get_string(ATTRIBUTE_SERVER_NAME);
+    const AdObject server = ad.search_object(server_name);
+    const QString out = server.get_string(ATTRIBUTE_DNS_HOST_NAME);
+
+    return out;
+}

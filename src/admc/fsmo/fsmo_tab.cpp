@@ -22,6 +22,7 @@
 #include "ui_fsmo_tab.h"
 
 #include "adldap.h"
+#include "core/ad.h"
 #include "core/globals.h"
 #include "status.h"
 #include "utils.h"
@@ -48,7 +49,7 @@ FSMOTab::~FSMOTab() {
 void FSMOTab::load(AdInterface &ad) {
     const QString current_master = current_master_for_role_dn(ad, role_dn);
 
-    const QString new_master = current_dc_dns_host_name(ad);
+    const QString new_master = ad_current_dc_dns_host_name(ad);
 
     ui->current_edit->setText(current_master);
     ui->new_edit->setText(new_master);
