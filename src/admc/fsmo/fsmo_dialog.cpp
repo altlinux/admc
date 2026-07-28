@@ -25,6 +25,7 @@
 #include "adldap.h"
 #include "fsmo/fsmo_tab.h"
 #include "fsmo/fsmo_utils.h"
+#include "core/fsmo.h"
 #include "core/globals.h"
 #include "core/settings.h"
 
@@ -51,7 +52,7 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
     for (int role_i = 0; role_i < FSMORole_COUNT; role_i++) {
         const FSMORole role = (FSMORole) role_i;
         const QString title = role_mapping[role];
-        const QString role_dn = dn_from_role(role);
+        const QString role_dn = fsmo_dn_from_role(role);
 
         auto tab = new FSMOTab(title, role_dn);
         ui->tab_widget->add_tab(tab, title);

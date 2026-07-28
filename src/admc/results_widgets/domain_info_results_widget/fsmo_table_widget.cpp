@@ -4,6 +4,7 @@
 #include "fsmo/fsmo_utils.h"
 #include <QMessageBox>
 #include "core/ad.h"
+#include "core/fsmo.h"
 #include "core/managers/icon_manager.h"
 #include "status.h"
 #include "core/globals.h"
@@ -24,7 +25,7 @@ FsmoTableWidget::FsmoTableWidget(QWidget *parent) :
     ui->fsmo_table->setSortingEnabled(false);
     for (int role = 0; role < FSMORole_COUNT; ++role) {
         QTableWidgetItem *fsmo_item = new QTableWidgetItem(g_icon_manager->category_icon(ADMC_CATEGORY_FSMO_ROLE),
-                                                           string_fsmo_role(FSMORole(role)));
+                                                           fsmo_role_to_string(FSMORole(role)));
         ui->fsmo_table->setItem(role, (int)FsmoColumn_Role, fsmo_item);
         fsmo_item->setFlags(fsmo_item->flags() & ~Qt::ItemIsEditable);
         fsmo_item->setData(ItemRole_FsmoRole, role);
@@ -113,7 +114,7 @@ void FsmoTableWidget::on_fsmo_capture() {
 
     if (ans == QMessageBox::Yes) {
         FSMORole role = (FSMORole)ui->fsmo_table->item(row, FsmoColumn_Role)->data(ItemRole_FsmoRole).toInt();
-        const QString role_dn = dn_from_role(role);
+        const QString role_dn = fsmo_dn_from_role(role);
         const AdObject rootDSE = ad.search_object("");
         const QString new_master_service = rootDSE.get_string(ATTRIBUTE_DS_SERVICE_NAME);
 

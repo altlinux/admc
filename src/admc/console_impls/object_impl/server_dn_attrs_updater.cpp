@@ -20,6 +20,7 @@
  */
 
 #include "server_dn_attrs_updater.h"
+#include "core/fsmo.h"
 #include "core/globals.h"
 #include "ad_config.h"
 #include "ad_defines.h"
@@ -89,7 +90,7 @@ void ServerDnAttrsUpdater::update_fsmo_role_owner(AdInterface &ad, const QString
     QStringList server_fsmo_roles;
     for (int role = 0; role < (int)FSMORole_COUNT; ++role) {
         if (dn == current_master_for_role(ad, (FSMORole)role)) {
-            server_fsmo_roles.append(dn_from_role((FSMORole)role));
+            server_fsmo_roles.append(fsmo_dn_from_role((FSMORole)role));
         }
     }
 

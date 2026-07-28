@@ -21,6 +21,7 @@
 #ifndef FSMO_UTILS_H
 #define FSMO_UTILS_H
 
+#include "core/fsmo.h"
 
 class QString;
 class AdInterface;
@@ -28,25 +29,9 @@ class ConsoleWidget;
 
 extern bool gpo_edit_without_PDC_disabled;
 
-enum FSMORole {
-    FSMORole_DomainDNS,
-    FSMORole_ForestDNS,
-    FSMORole_PDCEmulation,
-    FSMORole_Schema,
-    FSMORole_DomainNaming,
-    FSMORole_Infrastructure,
-    FSMORole_RidAllocation,
-
-    FSMORole_COUNT,
-};
-
 QString string_fsmo_role(FSMORole role);
 
 QString fsmo_string_from_dn(const QString &fsmo_role_dn);
-
-// Returns the DN of the object that
-// store's role's master in it's attributes
-QString dn_from_role(FSMORole role);
 
 bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out);
 
