@@ -24,28 +24,25 @@
 
 #include "core/search_thread.h"
 
-class QAbstractItemView;
-class QAbstractProxyModel;
-class QString;
-class QStandardItem;
-class QStandardItemModel;
-class QTreeView;
-class QLineEdit;
-class QPlainTextEdit;
-class QModelIndex;
-class QVariant;
 class AdInterface;
 class AdObject;
-class QPersistentModelIndex;
 class ConsoleWidget;
+class QAbstractItemView;
+class QAbstractProxyModel;
+class QLineEdit;
 class QMessageBox;
+class QModelIndex;
+class QPersistentModelIndex;
+class QPlainTextEdit;
+class QStandardItem;
+class QStandardItemModel;
+class QString;
+class QTreeView;
+class QVariant;
 class QWidget;
-template <typename T>
-class QList;
-template <typename K, typename T>
-class QMap;
-template <typename K, typename T>
-class QHash;
+template <typename K, typename T> class QHash;
+template <typename K, typename T> class QMap;
+template <typename T> class QList;
 
 #define UNUSED_ARG(x) (void) (x)
 
