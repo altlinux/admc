@@ -48,9 +48,6 @@
 #include <QStandardItemModel>
 #include <QWidget>
 
-QMessageBox *message_box_generic(const QMessageBox::Icon icon, const QString &title, const QString &text, QWidget *parent);
-int get_range_upper(const QString &attribute);
-
 void set_horizontal_header_labels_from_map(
     QStandardItemModel *model,
     const QMap<int, QString> &labels_map)
@@ -148,6 +145,26 @@ QString is_container_filter() {
     const QString out = get_classes_filter(accepted_classes);
 
     return out;
+}
+
+int get_range_upper(const QString &attribute) {
+    if (attribute == ATTRIBUTE_UPN_SUFFIXES) {
+        const int upn_max_length =
+            g_adconfig->get_attribute_range_upper(
+                ATTRIBUTE_USER_PRINCIPAL_NAME);
+
+        // NOTE: schema doesn't define a max length for
+        // "upn suffixes", but we do need a limit. Use
+        // half of total max length of upn as a good
+        // estimate.
+        const int upn_suffix_max_length = upn_max_length / 2;
+
+        return upn_suffix_max_length;
+    } else {
+        const int out = g_adconfig->get_attribute_range_upper(attribute);
+
+        return out;
+    }
 }
 
 void limit_edit(QLineEdit *edit, const QString &attribute) {
@@ -365,26 +382,6 @@ void setup_full_name_autofill(
     QObject::connect(
         middle_name_edit, &QLineEdit::textChanged,
         middle_name_edit, autofill_full_name);
-}
-
-int get_range_upper(const QString &attribute) {
-    if (attribute == ATTRIBUTE_UPN_SUFFIXES) {
-        const int upn_max_length =
-            g_adconfig->get_attribute_range_upper(
-                ATTRIBUTE_USER_PRINCIPAL_NAME);
-
-        // NOTE: schema doesn't define a max length for
-        // "upn suffixes", but we do need a limit. Use
-        // half of total max length of upn as a good
-        // estimate.
-        const int upn_suffix_max_length = upn_max_length / 2;
-
-        return upn_suffix_max_length;
-    } else {
-        const int out = g_adconfig->get_attribute_range_upper(attribute);
-
-        return out;
-    }
 }
 
 void set_line_edit_to_hex_numbers_only(QLineEdit *edit) {
