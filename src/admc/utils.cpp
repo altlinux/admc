@@ -24,6 +24,7 @@
 
 #include "adldap.h"
 #include "console_widget/console_widget.h"
+#include "core/ad.h"
 #include "core/globals.h"
 #include "core/search_thread.h"
 #include "core/settings.h"
@@ -150,28 +151,8 @@ QString is_container_filter() {
     return out;
 }
 
-int get_range_upper(const QString &attribute) {
-    if (attribute == ATTRIBUTE_UPN_SUFFIXES) {
-        const int upn_max_length =
-            g_adconfig->get_attribute_range_upper(
-                ATTRIBUTE_USER_PRINCIPAL_NAME);
-
-        // NOTE: schema doesn't define a max length for
-        // "upn suffixes", but we do need a limit. Use
-        // half of total max length of upn as a good
-        // estimate.
-        const int upn_suffix_max_length = upn_max_length / 2;
-
-        return upn_suffix_max_length;
-    } else {
-        const int out = g_adconfig->get_attribute_range_upper(attribute);
-
-        return out;
-    }
-}
-
 void limit_edit(QLineEdit *edit, const QString &attribute) {
-    const int range_upper = get_range_upper(attribute);
+    const int range_upper = ad_get_range_upper(attribute);
 
     if (range_upper > 0) {
         edit->setMaxLength(range_upper);
@@ -179,7 +160,7 @@ void limit_edit(QLineEdit *edit, const QString &attribute) {
 }
 
 void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
-    const int range_upper = get_range_upper(attribute);
+    const int range_upper = ad_get_range_upper(attribute);
 
     if (range_upper > 0) {
         QObject::connect(

@@ -22,6 +22,8 @@
 #include <QList>
 #include <QString>
 
+#include "globals.h"
+#include "ad_config.h"
 #include "ad_interface.h"
 #include "ad_object.h"
 
@@ -89,4 +91,24 @@ QString ad_current_dc_dns_host_name(AdInterface &ad) {
     const QString out = server.get_string(ATTRIBUTE_DNS_HOST_NAME);
 
     return out;
+}
+
+int ad_get_range_upper(const QString &attribute) {
+    if (attribute == ATTRIBUTE_UPN_SUFFIXES) {
+        const int upn_max_length =
+            g_adconfig->get_attribute_range_upper(
+                ATTRIBUTE_USER_PRINCIPAL_NAME);
+
+        // NOTE: schema doesn't define a max length for
+        // "upn suffixes", but we do need a limit. Use
+        // half of total max length of upn as a good
+        // estimate.
+        const int upn_suffix_max_length = upn_max_length / 2;
+
+        return upn_suffix_max_length;
+    } else {
+        const int out = g_adconfig->get_attribute_range_upper(attribute);
+
+        return out;
+    }
 }

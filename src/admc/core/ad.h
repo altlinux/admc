@@ -36,6 +36,6 @@ void ad_add_members_to_groups(AdInterface &ad,
 QHash<QString, QString> ad_select_changed_dn(QHash<QString, QString> map);
 bool ad_object_is_person(const AdObject &object);
 QString ad_current_dc_dns_host_name(AdInterface &ad);
-
+int ad_get_range_upper(const QString &attribute);
 
 #endif  /* ifndef AD_H */
