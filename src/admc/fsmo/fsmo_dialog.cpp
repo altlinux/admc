@@ -54,11 +54,7 @@ FSMODialog::~FSMODialog() {
     delete ui;
 }
 
-void FSMODialog::gpo_edit_PDC_check_toggled(bool is_checked)
-{
+void FSMODialog::gpo_edit_PDC_check_toggled(bool is_checked) {
     gpo_edit_without_PDC_disabled = is_checked;
-    if (!is_checked)
-        ui->warning_widget->setVisible(true);
-    else
-        ui->warning_widget->setVisible(false);
+    ui->warning_widget->setVisible(! is_checked);
 }
