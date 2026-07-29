@@ -89,7 +89,7 @@ void ServerDnAttrsUpdater::update_fsmo_role_owner(AdInterface &ad, const QString
 
     QStringList server_fsmo_roles;
     for (int role = 0; role < (int)FSMORole_COUNT; ++role) {
-        if (dn == current_master_for_role(ad, (FSMORole)role)) {
+        if (dn == fsmo_current_master_for_role(ad, (FSMORole)role)) {
             server_fsmo_roles.append(fsmo_dn_from_role((FSMORole)role));
         }
     }

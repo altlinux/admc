@@ -36,26 +36,12 @@
 
 bool gpo_edit_without_PDC_disabled = true;
 
-void connect_host_with_role(AdInterface &ad, FSMORole role)
-{
-    QString current_master = current_master_for_role(ad, role);
-    settings_set_variant(SETTING_host, current_master);
-    AdInterface::set_dc(current_master);
-    ad.update_dc();
-}
-
 void connect_to_PDC_emulator(AdInterface &ad, ConsoleWidget *console)
 {
-    connect_host_with_role(ad, FSMORole_PDCEmulation);
+    fsmo_connect_host_with_role(ad, FSMORole_PDCEmulation);
     console->refresh_scope(console->domain_info_index());
     g_status->add_message(QObject::tr("PDC-Emulator is connected"),
                           StatusType_Success);
-}
-
-QString current_master_for_role(AdInterface &ad, FSMORole role)
-{
-    QString role_dn = fsmo_dn_from_role(role);
-    return ad_current_master_for_role_dn(ad, role_dn);
 }
 
 QString fsmo_string_from_dn(const QString &fsmo_role_dn)

@@ -55,7 +55,7 @@ void FsmoTableWidget::update(AdInterface &ad, const QList<AdObject> &hosts_list)
 
     current_dc_dns_name = ad_current_dc_dns_host_name(ad);
     for (int row = 0; row < FSMORole_COUNT; ++row) {
-        const QString current_master = current_master_for_role(ad, FSMORole(row));
+        const QString current_master = fsmo_current_master_for_role(ad, FSMORole(row));
         QTableWidgetItem *host_item = new QTableWidgetItem(g_icon_manager->item_icon(ItemIcon_Domain),
                                                            current_master);
         ui->fsmo_table->setItem(row, (int)FsmoColumn_Host, host_item);

@@ -26,6 +26,7 @@
 
 #include "ad_config.h"
 #include "core/ad.h"
+#include "core/settings.h"
 #include "fsmo.h"
 #include "globals.h"
 
@@ -86,4 +87,16 @@ bool fsmo_is_current_dc_master_for_role(AdInterface &ad, FSMORole role) {
     QString current_master = ad_current_master_for_role_dn(ad, role_dn);
     QString current_dc = ad_current_dc_dns_host_name(ad);
     return current_master == current_dc;
+}
+
+QString fsmo_current_master_for_role(AdInterface &ad, FSMORole role) {
+    QString role_dn = fsmo_dn_from_role(role);
+    return ad_current_master_for_role_dn(ad, role_dn);
+}
+
+void fsmo_connect_host_with_role(AdInterface &ad, FSMORole role) {
+    QString current_master = fsmo_current_master_for_role(ad, role);
+    settings_set_variant(SETTING_host, current_master);
+    AdInterface::set_dc(current_master);
+    ad.update_dc();
 }

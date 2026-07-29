@@ -35,10 +35,6 @@ QString fsmo_string_from_dn(const QString &fsmo_role_dn);
 
 bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out);
 
-QString current_master_for_role(AdInterface &ad, FSMORole role);
-
-void connect_host_with_role(AdInterface &ad, FSMORole role);
-
 void connect_to_PDC_emulator(AdInterface &ad, ConsoleWidget *console);
 
 #endif // FSMO_UTILS_H
