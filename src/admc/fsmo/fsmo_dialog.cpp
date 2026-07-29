@@ -52,7 +52,7 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
     ui->gpo_edit_PDC_check->setChecked(gpo_edit_without_PDC_disabled);
     connect(ui->gpo_edit_PDC_check, &QCheckBox::toggled, this, &FSMODialog::gpo_edit_PDC_check_toggled);
 
-    settings_setup_dialog_geometry(SETTING_fsmo_dialog_geometry, this);
+    fsmo_setup_dialog_geometry(this);
 }
 
 FSMODialog::~FSMODialog() {

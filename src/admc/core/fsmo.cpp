@@ -207,3 +207,12 @@ void fsmo_role_for_each(
         callback(role, title, role_dn);
     }
 }
+
+/**
+ * Setup a FSMO dialog geometry from the stored values.
+ *
+ * @param dialog An FSMO dialog to use.
+ */
+void fsmo_setup_dialog_geometry(QDialog *dialog) {
+    settings_setup_dialog_geometry(SETTING_fsmo_dialog_geometry, dialog);
+}

@@ -22,6 +22,7 @@
 #ifndef CORE_FSMO_H
 #define CORE_FSMO_H
 
+#include <QDialog>
 #include <QHash>
 #include <QString>
 #include <functional>
@@ -56,5 +57,6 @@ bool fsmo_set_master(AdInterface& ad,
 QHash<FSMORole, QString> fsmo_role_mapping();
 void fsmo_role_for_each(
     const function<void(FSMORole, const QString&, const QString&)>& callback);
+void fsmo_setup_dialog_geometry(QDialog *dialog);
 
 #endif  /* ifndef CORE_FSMO_H */
