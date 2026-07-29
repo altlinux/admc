@@ -36,22 +36,10 @@
 
 bool gpo_edit_without_PDC_disabled = true;
 
-QString current_master_for_role_dn(AdInterface &ad, QString role_dn)
-{
-    const AdObject role_object = ad.search_object(role_dn);
-    const QString master_settings_dn =
-        role_object.get_string(ATTRIBUTE_FSMO_ROLE_OWNER);
-    const QString master_dn = dn_get_parent(master_settings_dn);
-    const AdObject master_object = ad.search_object(master_dn);
-    const QString current_master =
-        master_object.get_string(ATTRIBUTE_DNS_HOST_NAME);
-    return current_master;
-}
-
 bool current_dc_is_master_for_role(AdInterface &ad, FSMORole role)
 {
     QString role_dn = fsmo_dn_from_role(role);
-    QString current_master = current_master_for_role_dn(ad, role_dn);
+    QString current_master = ad_current_master_for_role_dn(ad, role_dn);
     QString current_dc = ad_current_dc_dns_host_name(ad);
     return current_master == current_dc;
 }
@@ -75,7 +63,7 @@ void connect_to_PDC_emulator(AdInterface &ad, ConsoleWidget *console)
 QString current_master_for_role(AdInterface &ad, FSMORole role)
 {
     QString role_dn = fsmo_dn_from_role(role);
-    return current_master_for_role_dn(ad, role_dn);
+    return ad_current_master_for_role_dn(ad, role_dn);
 }
 
 QString fsmo_string_from_dn(const QString &fsmo_role_dn)

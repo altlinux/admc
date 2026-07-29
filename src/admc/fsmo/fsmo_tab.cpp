@@ -47,7 +47,7 @@ FSMOTab::~FSMOTab() {
 }
 
 void FSMOTab::load(AdInterface &ad) {
-    const QString current_master = current_master_for_role_dn(ad, role_dn);
+    const QString current_master = ad_current_master_for_role_dn(ad, role_dn);
 
     const QString new_master = ad_current_dc_dns_host_name(ad);
 

@@ -23,6 +23,7 @@
 #include "ui_connection_options_dialog.h"
 
 #include "adldap.h"
+#include "core/ad.h"
 #include "core/fsmo.h"
 #include "core/settings.h"
 #include "utils.h"
@@ -189,7 +190,7 @@ void ConnectionOptionsDialog::accept() {
     emit host_changed(selected_host);
 
     if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation) &&
-            !current_master_for_role_dn(ad, fsmo_dn_from_role(FSMORole_PDCEmulation)).isEmpty()) {
+            !ad_current_master_for_role_dn(ad, fsmo_dn_from_role(FSMORole_PDCEmulation)).isEmpty()) {
         if (gpo_edit_without_PDC_disabled)
             g_status->add_message(tr("You are connected to DC without PDC-Emulator role. "
                                      "Group policy editing is prohibited by the setting."), StatusType_Success);

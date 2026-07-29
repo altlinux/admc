@@ -37,5 +37,6 @@ QHash<QString, QString> ad_select_changed_dn(QHash<QString, QString> map);
 bool ad_object_is_person(const AdObject &object);
 QString ad_current_dc_dns_host_name(AdInterface &ad);
 int ad_get_range_upper(const QString &attribute);
+QString ad_current_master_for_role_dn(AdInterface &ad, QString role_dn);
 
 #endif  /* ifndef AD_H */

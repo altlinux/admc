@@ -26,6 +26,7 @@
 #include "ad_config.h"
 #include "ad_interface.h"
 #include "ad_object.h"
+#include "adldap.h"
 
 /**
  * Search AD objects from the specified list.
@@ -111,4 +112,18 @@ int ad_get_range_upper(const QString &attribute) {
 
         return out;
     }
+}
+
+/**
+ * Returns the DNS host name of role's master object (DC.)
+ */
+QString ad_current_master_for_role_dn(AdInterface &ad, QString role_dn) {
+    const AdObject role_object = ad.search_object(role_dn);
+    const QString master_settings_dn =
+        role_object.get_string(ATTRIBUTE_FSMO_ROLE_OWNER);
+    const QString master_dn = dn_get_parent(master_settings_dn);
+    const AdObject master_object = ad.search_object(master_dn);
+    const QString current_master =
+        master_object.get_string(ATTRIBUTE_DNS_HOST_NAME);
+    return current_master;
 }

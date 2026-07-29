@@ -37,9 +37,6 @@ bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out);
 
 QString current_master_for_role(AdInterface &ad, FSMORole role);
 
-// Returns dns host name of role's master object (DC)
-QString current_master_for_role_dn(AdInterface &ad, QString role_dn);
-
 bool current_dc_is_master_for_role(AdInterface &ad, FSMORole role);
 
 void connect_host_with_role(AdInterface &ad, FSMORole role);
