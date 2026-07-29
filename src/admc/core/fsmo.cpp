@@ -169,3 +169,23 @@ bool fsmo_set_master(AdInterface& ad,
                                        ATTRIBUTE_FSMO_ROLE_OWNER,
                                        new_master_service);
 }
+
+/**
+ * Get the mapping between FSMO roles and their names.
+ *
+ * @return A QHash table with the role mapping.
+ */
+QHash<FSMORole, QString> fsmo_role_mapping() {
+    auto tr = [](const char *name) {
+        return QCoreApplication::translate("FSMODialog", name);
+    };
+    return {
+        { FSMORole_DomainDNS,      tr("Domain DNS") },
+        { FSMORole_ForestDNS,      tr("Forest DNS") },
+        { FSMORole_PDCEmulation,   tr("PDC Emulation") },
+        { FSMORole_Schema,         tr("Schema") },
+        { FSMORole_DomainNaming,   tr("Domain Naming") },
+        { FSMORole_Infrastructure, tr("Infrastructure") },
+        { FSMORole_RidAllocation,  tr("Rid Allocation") },
+    };
+}

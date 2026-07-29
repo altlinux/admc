@@ -39,16 +39,7 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const QHash<FSMORole, QString> role_mapping = {
-        { FSMORole_DomainDNS,      tr("Domain DNS") },
-        { FSMORole_ForestDNS,      tr("Forest DNS") },
-        { FSMORole_PDCEmulation,   tr("PDC Emulation") },
-        { FSMORole_Schema,         tr("Schema") },
-        { FSMORole_DomainNaming,   tr("Domain Naming") },
-        { FSMORole_Infrastructure, tr("Infrastructure") },
-        { FSMORole_RidAllocation,  tr("Rid Allocation") },
-    };
-
+    const QHash<FSMORole, QString> role_mapping = fsmo_role_mapping();
     for (int role_i = 0; role_i < FSMORole_COUNT; role_i++) {
         const FSMORole role = (FSMORole) role_i;
         const QString title = role_mapping[role];

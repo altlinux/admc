@@ -22,6 +22,7 @@
 #ifndef CORE_FSMO_H
 #define CORE_FSMO_H
 
+#include <QHash>
 #include <QString>
 #include <functional>
 
@@ -50,5 +51,6 @@ bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out);
 bool fsmo_set_master(AdInterface& ad,
                      const AdObject &root_dse,
                      const QString &role_dn);
+QHash<FSMORole, QString> fsmo_role_mapping();
 
 #endif  /* ifndef CORE_FSMO_H */
