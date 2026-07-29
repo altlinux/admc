@@ -19,21 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "fsmo/fsmo_dialog.h"
-#include "ui_fsmo_dialog.h"
+#include <QMessageBox>
 
 #include "adldap.h"
-#include "fsmo/fsmo_tab.h"
-#include "fsmo/fsmo_utils.h"
 #include "core/fsmo.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "fsmo/fsmo_dialog.h"
+#include "fsmo/fsmo_tab.h"
+#include "fsmo/fsmo_utils.h"
+#include "ui_fsmo_dialog.h"
 
-#include <QMessageBox>
-
-
-FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
-: QDialog(parent) {
+FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent) : QDialog(parent) {
     ui = new Ui::FSMODialog();
     ui->setupUi(this);
 
@@ -50,7 +47,8 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
 
     ui->warning_widget->setVisible(false);
     ui->gpo_edit_PDC_check->setChecked(gpo_edit_without_PDC_disabled);
-    connect(ui->gpo_edit_PDC_check, &QCheckBox::toggled, this, &FSMODialog::gpo_edit_PDC_check_toggled);
+    connect(ui->gpo_edit_PDC_check, &QCheckBox::toggled,
+            this, &FSMODialog::gpo_edit_PDC_check_toggled);
 
     fsmo_setup_dialog_geometry(this);
 }
