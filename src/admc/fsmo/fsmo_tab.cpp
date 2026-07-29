@@ -70,9 +70,7 @@ void FSMOTab::change_master() {
     }
 
     const AdObject rootDSE = ad.search_object("");
-    const QString new_master_service = rootDSE.get_string(ATTRIBUTE_DS_SERVICE_NAME);
-
-    const bool success = ad.attribute_replace_string(role_dn, ATTRIBUTE_FSMO_ROLE_OWNER, new_master_service);
+    const bool success = fsmo_set_master(ad, rootDSE, role_dn);
 
     g_status->display_ad_messages(ad, this);
 

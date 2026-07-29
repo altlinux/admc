@@ -159,3 +159,13 @@ bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out) {
 
      return false;
 }
+
+bool fsmo_set_master(AdInterface& ad,
+                     const AdObject &root_dse,
+                     const QString &role_dn) {
+    const QString new_master_service =
+        root_dse.get_string(ATTRIBUTE_DS_SERVICE_NAME);
+    return ad.attribute_replace_string(role_dn,
+                                       ATTRIBUTE_FSMO_ROLE_OWNER,
+                                       new_master_service);
+}

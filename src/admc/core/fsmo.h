@@ -26,6 +26,7 @@
 #include <functional>
 
 #include "ad_interface.h"
+#include "ad_object.h"
 
 enum FSMORole {
     FSMORole_DomainDNS,
@@ -46,5 +47,8 @@ bool fsmo_is_current_dc_master_for_role(AdInterface &ad, FSMORole role);
 QString fsmo_current_master_for_role(AdInterface &ad, FSMORole role);
 void fsmo_connect_host_with_role(AdInterface &ad, FSMORole role);
 bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out);
+bool fsmo_set_master(AdInterface& ad,
+                     const AdObject &root_dse,
+                     const QString &role_dn);
 
 #endif  /* ifndef CORE_FSMO_H */
