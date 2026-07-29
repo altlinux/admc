@@ -31,8 +31,6 @@ extern bool gpo_edit_without_PDC_disabled;
 
 QString string_fsmo_role(FSMORole role);
 
-bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out);
-
 void connect_to_PDC_emulator(AdInterface &ad, ConsoleWidget *console);
 
 #endif // FSMO_UTILS_H
