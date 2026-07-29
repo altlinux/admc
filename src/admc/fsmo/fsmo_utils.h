@@ -23,13 +23,10 @@
 
 #include "core/fsmo.h"
 
-class QString;
 class AdInterface;
 class ConsoleWidget;
 
 extern bool gpo_edit_without_PDC_disabled;
-
-QString string_fsmo_role(FSMORole role);
 
 void connect_to_PDC_emulator(AdInterface &ad, ConsoleWidget *console);
 

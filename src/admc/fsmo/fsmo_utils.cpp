@@ -26,12 +26,9 @@
 #include "core/fsmo.h"
 #include "core/globals.h"
 #include "adldap.h"
-#include "utils.h"
-#include "core/settings.h"
 #include "console_widget/console_widget.h"
 #include "status.h"
 
-#include <QString>
 #include <QModelIndex>
 
 bool gpo_edit_without_PDC_disabled = true;
