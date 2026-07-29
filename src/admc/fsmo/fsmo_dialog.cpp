@@ -34,6 +34,7 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent) : QDialog(parent) {
 
     fsmo_role_for_each(
         [&](FSMORole role, const QString& title, const QString &dn) {
+            Q_UNUSED(role);
             auto tab = new FSMOTab(title, dn);
             ui->tab_widget->add_tab(tab, title);
             tab->load(ad);
