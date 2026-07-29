@@ -44,16 +44,6 @@ void connect_to_PDC_emulator(AdInterface &ad, ConsoleWidget *console)
                           StatusType_Success);
 }
 
-QString fsmo_string_from_dn(const QString &fsmo_role_dn)
-{
-    for (int role = 0; role < FSMORole_COUNT; ++role) {
-        if (fsmo_dn_from_role(FSMORole(role)) == fsmo_role_dn) {
-            return fsmo_role_to_string(FSMORole(role));
-        }
-    }
-    return QString();
-}
-
 bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out) {
     const QString domain_dn = g_adconfig->domain_dn();
     const QString schema_dn = g_adconfig->schema_dn();

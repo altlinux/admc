@@ -100,3 +100,12 @@ void fsmo_connect_host_with_role(AdInterface &ad, FSMORole role) {
     AdInterface::set_dc(current_master);
     ad.update_dc();
 }
+
+QString fsmo_string_from_dn(const QString &fsmo_role_dn) {
+    for (int role = 0; role < FSMORole_COUNT; ++role) {
+        if (fsmo_dn_from_role(FSMORole(role)) == fsmo_role_dn) {
+            return fsmo_role_to_string(FSMORole(role));
+        }
+    }
+    return QString();
+}
