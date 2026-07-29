@@ -29,6 +29,8 @@
 #include "ad_interface.h"
 #include "ad_object.h"
 
+using namespace std;
+
 enum FSMORole {
     FSMORole_DomainDNS,
     FSMORole_ForestDNS,
@@ -52,5 +54,7 @@ bool fsmo_set_master(AdInterface& ad,
                      const AdObject &root_dse,
                      const QString &role_dn);
 QHash<FSMORole, QString> fsmo_role_mapping();
+void fsmo_role_for_each(
+    const function<void(FSMORole, const QString&, const QString&)>& callback);
 
 #endif  /* ifndef CORE_FSMO_H */

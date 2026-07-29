@@ -189,3 +189,21 @@ QHash<FSMORole, QString> fsmo_role_mapping() {
         { FSMORole_RidAllocation,  tr("Rid Allocation") },
     };
 }
+
+/**
+ * Iterate over FSMO roles (@see fsmo_role_mapping()), call a callback procedure
+ * over each role.
+ *
+ * @param callback A procedure to call.
+ */
+void fsmo_role_for_each(
+    const function<void(FSMORole, const QString&, const QString&)>& callback)
+{
+    const QHash<FSMORole, QString> role_mapping = fsmo_role_mapping();
+    for (int role_i = 0; role_i < FSMORole_COUNT; role_i++) {
+        const FSMORole role = (FSMORole) role_i;
+        const QString title = role_mapping[role];
+        const QString role_dn = fsmo_dn_from_role(role);
+        callback(role, title, role_dn);
+    }
+}

@@ -39,17 +39,14 @@ FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    const QHash<FSMORole, QString> role_mapping = fsmo_role_mapping();
-    for (int role_i = 0; role_i < FSMORole_COUNT; role_i++) {
-        const FSMORole role = (FSMORole) role_i;
-        const QString title = role_mapping[role];
-        const QString role_dn = fsmo_dn_from_role(role);
-
-        auto tab = new FSMOTab(title, role_dn);
-        ui->tab_widget->add_tab(tab, title);
-        tab->load(ad);
-        connect(tab, &FSMOTab::master_changed, this, &FSMODialog::master_changed);
-    }
+    fsmo_role_for_each(
+        [&](FSMORole role, const QString& title, const QString &dn) {
+            auto tab = new FSMOTab(title, dn);
+            ui->tab_widget->add_tab(tab, title);
+            tab->load(ad);
+            connect(tab, &FSMOTab::master_changed,
+                    this, &FSMODialog::master_changed);
+        });
 
     ui->warning_widget->setVisible(false);
     ui->gpo_edit_PDC_check->setChecked(gpo_edit_without_PDC_disabled);
