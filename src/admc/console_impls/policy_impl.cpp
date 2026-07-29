@@ -28,6 +28,7 @@
 #include "console_impls/policy_impl.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
+#include "core/fsmo.h"
 #include "core/globals.h"
 #include "results_widgets/policy_results_widget.h"
 #include "properties_widgets/properties_dialog.h"
@@ -513,7 +514,7 @@ void console_policy_delete(const QList<ConsoleWidget *> &console_list, PolicyRes
         return;
     }
 
-    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
+    if (!fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
         QMessageBox::StandardButton answer = QMessageBox::question(console_list[0], QObject::tr("Deletion is not available"),
                                                                    QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
                                                                    "group policy deletion is prohibited by the setting. "
@@ -775,7 +776,7 @@ void console_policy_edit(const QString &policy_dn, ConsoleWidget *console) {
         return;
     }
 
-    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
+    if (!fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
         QMessageBox::StandardButton answer = QMessageBox::question(console, QObject::tr("Edition is not available"),
                                                                    QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
                                                                    "group policy editing is prohibited by the setting. "

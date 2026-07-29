@@ -25,6 +25,8 @@
 #include <QString>
 #include <functional>
 
+#include "ad_interface.h"
+
 enum FSMORole {
     FSMORole_DomainDNS,
     FSMORole_ForestDNS,
@@ -39,5 +41,6 @@ enum FSMORole {
 
 QString fsmo_dn_from_role(FSMORole role);
 QString fsmo_role_to_string(FSMORole role);
+bool fsmo_is_current_dc_master_for_role(AdInterface &ad, FSMORole role);
 
 #endif  /* ifndef CORE_FSMO_H */

@@ -36,14 +36,6 @@
 
 bool gpo_edit_without_PDC_disabled = true;
 
-bool current_dc_is_master_for_role(AdInterface &ad, FSMORole role)
-{
-    QString role_dn = fsmo_dn_from_role(role);
-    QString current_master = ad_current_master_for_role_dn(ad, role_dn);
-    QString current_dc = ad_current_dc_dns_host_name(ad);
-    return current_master == current_dc;
-}
-
 void connect_host_with_role(AdInterface &ad, FSMORole role)
 {
     QString current_master = current_master_for_role(ad, role);

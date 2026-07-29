@@ -37,8 +37,6 @@ bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out);
 
 QString current_master_for_role(AdInterface &ad, FSMORole role);
 
-bool current_dc_is_master_for_role(AdInterface &ad, FSMORole role);
-
 void connect_host_with_role(AdInterface &ad, FSMORole role);
 
 void connect_to_PDC_emulator(AdInterface &ad, ConsoleWidget *console);

@@ -28,6 +28,7 @@
 #include "console_impls/policy_impl.h"
 #include "create_dialogs/create_policy_dialog.h"
 #include "find_widgets/find_policy_dialog.h"
+#include "core/fsmo.h"
 #include "core/globals.h"
 #include "gplink.h"
 #include "results_widgets/policy_ou_results_widget/policy_ou_results_widget.h"
@@ -257,7 +258,7 @@ void PolicyOUImpl::create_and_link_gpo() {
         return;
     }
 
-    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
+    if (!fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
         QMessageBox::StandardButton answer = QMessageBox::question(console, QObject::tr("Creation is not available"),
                                                                    QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
                                                                    "group policy creation is prohibited by the setting. "

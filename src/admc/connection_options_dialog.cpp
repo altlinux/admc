@@ -189,7 +189,7 @@ void ConnectionOptionsDialog::accept() {
 
     emit host_changed(selected_host);
 
-    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation) &&
+    if (!fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation) &&
             !ad_current_master_for_role_dn(ad, fsmo_dn_from_role(FSMORole_PDCEmulation)).isEmpty()) {
         if (gpo_edit_without_PDC_disabled)
             g_status->add_message(tr("You are connected to DC without PDC-Emulator role. "

@@ -25,6 +25,7 @@
 #include <functional>
 
 #include "ad_config.h"
+#include "core/ad.h"
 #include "fsmo.h"
 #include "globals.h"
 
@@ -78,4 +79,11 @@ QString fsmo_role_to_string(FSMORole role) {
     };
 
     return QString();
+}
+
+bool fsmo_is_current_dc_master_for_role(AdInterface &ad, FSMORole role) {
+    QString role_dn = fsmo_dn_from_role(role);
+    QString current_master = ad_current_master_for_role_dn(ad, role_dn);
+    QString current_dc = ad_current_dc_dns_host_name(ad);
+    return current_master == current_dc;
 }

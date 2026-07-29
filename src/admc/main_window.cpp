@@ -41,6 +41,7 @@
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_widget/console_widget.h"
+#include "core/fsmo.h"
 #include "core/managers/country_manager.h"
 #include "core/managers/gplink_manager.h"
 #include "core/managers/icon_manager.h"
@@ -518,7 +519,7 @@ void MainWindow::init_on_connect(AdInterface &ad) {
     // console
     g_status->display_ad_messages(ad, this);
 
-    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation)) {
+    if (!fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation)) {
         g_status->add_message(tr("You are connected to DC without PDC-Emulator role"), StatusType_Success);
     }
     else {
