@@ -19,32 +19,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_impls/policy_impl.h"
+#include <QAction>
+#include <QDebug>
+#include <QMessageBox>
+#include <QStandardItem>
 
 #include "adldap.h"
 #include "console_impls/find_policy_impl.h"
 #include "console_impls/found_policy_impl.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
+#include "console_impls/policy_impl.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "core/fsmo.h"
 #include "core/globals.h"
+#include "core/managers/gplink_manager.h"
+#include "core/managers/icon_manager.h"
 #include "core/utils.h"
-#include "results_widgets/policy_results_widget.h"
+#include "fsmo/fsmo_utils.h"
 #include "properties_widgets/properties_dialog.h"
 #include "rename_dialogs/rename_policy_dialog.h"
+#include "results_widgets/policy_results_widget.h"
 #include "select_dialogs/select_object_dialog.h"
 #include "status.h"
 #include "utils.h"
-#include "core/managers/icon_manager.h"
-#include "fsmo/fsmo_utils.h"
-#include "core/managers/gplink_manager.h"
-
-#include <QAction>
-#include <QDebug>
-#include <QMessageBox>
-#include <QStandardItem>
 
 void policy_add_links(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const QList<QString> &policy_list, const QList<QString> &ou_list);
 void console_policy_update_policy_results(ConsoleWidget *console, PolicyResultsWidget *policy_results);
