@@ -64,7 +64,7 @@ QList<QAction *> FoundPolicyImpl::get_all_custom_actions() const {
 }
 
 QSet<QAction *> FoundPolicyImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
+    Q_UNUSED(index);
 
     QSet<QAction *> out;
 
@@ -77,7 +77,7 @@ QSet<QAction *> FoundPolicyImpl::get_custom_actions(const QModelIndex &index, co
 }
 
 QSet<StandardAction> FoundPolicyImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
+    Q_UNUSED(index);
 
     QSet<StandardAction> out;
 
@@ -92,21 +92,21 @@ QSet<StandardAction> FoundPolicyImpl::get_standard_actions(const QModelIndex &in
 }
 
 void FoundPolicyImpl::rename(const QList<QModelIndex> &index_list) {
-    UNUSED_ARG(index_list);
+    Q_UNUSED(index_list);
 
     PolicyResultsWidget *policy_results = nullptr;
     console_policy_rename(console_list, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
 }
 
 void FoundPolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
-    UNUSED_ARG(index_list);
+    Q_UNUSED(index_list);
 
     PolicyResultsWidget *policy_results = nullptr;
     console_policy_delete(console_list, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);
 }
 
 void FoundPolicyImpl::properties(const QList<QModelIndex> &index_list) {
-    UNUSED_ARG(index_list);
+    Q_UNUSED(index_list);
 
     PolicyResultsWidget *policy_results = nullptr;
     console_policy_properties(console_list, policy_results, ItemType_FoundPolicy, FoundPolicyRole_DN);

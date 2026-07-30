@@ -45,7 +45,7 @@ void ProtectDeletionEdit::set_enabled(const bool enabled) {
 }
 
 void ProtectDeletionEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const bool enabled = ad_security_get_protected_against_deletion(object);
 

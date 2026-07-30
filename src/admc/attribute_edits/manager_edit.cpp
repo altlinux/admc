@@ -39,7 +39,7 @@ ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attri
 }
 
 void ManagerEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     widget->load(object);
 }

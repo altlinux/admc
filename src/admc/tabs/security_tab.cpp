@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
@@ -382,7 +382,7 @@ void SecurityTabEdit::load(AdInterface &ad, const AdObject &object) {
 }
 
 bool SecurityTabEdit::verify(AdInterface &ad, const QString &target) const {
-    UNUSED_ARG(target);
+    Q_UNUSED(target);
     if (security_tab->is_policy) {
         // To apply security tab for policies we need user
         // to have admin rights to be able to sync perms of

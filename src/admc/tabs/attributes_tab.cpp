@@ -290,7 +290,7 @@ void AttributesTabEdit::edit_attribute() {
 }
 
 void AttributesTabEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     original.clear();
     object_dn = object.get_dn();

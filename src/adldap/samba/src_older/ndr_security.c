@@ -27,18 +27,18 @@
 
 #include "adldap_config.h"
 
-#define UNUSED_ARG(x) (void)(x)
+#include <qtpreprocessorsupport.h>
 
 static void ndr_print_flags_dom_sid(struct ndr_print *ndr, const char *name, int unused, const struct dom_sid *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_dom_sid(ndr, name, r);
 }
 
 static enum ndr_err_code ndr_push_se_privilege(struct ndr_push *ndr, int ndr_flags, uint64_t r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_hyper(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -46,7 +46,7 @@ static enum ndr_err_code ndr_push_se_privilege(struct ndr_push *ndr, int ndr_fla
 
 static enum ndr_err_code ndr_pull_se_privilege(struct ndr_pull *ndr, int ndr_flags, uint64_t *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint64_t v;
     NDR_CHECK(ndr_pull_hyper(ndr, NDR_SCALARS, &v));
@@ -88,7 +88,7 @@ _PUBLIC_ void ndr_print_se_privilege(struct ndr_print *ndr, const char *name, ui
 
 static enum ndr_err_code ndr_push_lsa_SystemAccessModeFlags(struct ndr_push *ndr, int ndr_flags, uint32_t r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_uint32(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -96,7 +96,7 @@ static enum ndr_err_code ndr_push_lsa_SystemAccessModeFlags(struct ndr_push *ndr
 
 static enum ndr_err_code ndr_pull_lsa_SystemAccessModeFlags(struct ndr_pull *ndr, int ndr_flags, uint32_t *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint32_t v;
     NDR_CHECK(ndr_pull_uint32(ndr, NDR_SCALARS, &v));
@@ -126,7 +126,7 @@ _PUBLIC_ void ndr_print_lsa_SystemAccessModeFlags(struct ndr_print *ndr, const c
 
 _PUBLIC_ enum ndr_err_code ndr_push_security_ace_flags(struct ndr_push *ndr, int ndr_flags, uint8_t r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_uint8(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -134,7 +134,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_security_ace_flags(struct ndr_push *ndr, int
 
 _PUBLIC_ enum ndr_err_code ndr_pull_security_ace_flags(struct ndr_pull *ndr, int ndr_flags, uint8_t *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint8_t v;
     NDR_CHECK(ndr_pull_uint8(ndr, NDR_SCALARS, &v));
@@ -159,7 +159,7 @@ _PUBLIC_ void ndr_print_security_ace_flags(struct ndr_print *ndr, const char *na
 
 _PUBLIC_ enum ndr_err_code ndr_push_security_ace_type(struct ndr_push *ndr, int ndr_flags, enum security_ace_type r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_enum_uint8(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -167,7 +167,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_security_ace_type(struct ndr_push *ndr, int 
 
 _PUBLIC_ enum ndr_err_code ndr_pull_security_ace_type(struct ndr_pull *ndr, int ndr_flags, enum security_ace_type *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint8_t v;
     NDR_CHECK(ndr_pull_enum_uint8(ndr, NDR_SCALARS, &v));
@@ -195,7 +195,7 @@ _PUBLIC_ void ndr_print_security_ace_type(struct ndr_print *ndr, const char *nam
 
 static enum ndr_err_code ndr_push_security_ace_object_flags(struct ndr_push *ndr, int ndr_flags, uint32_t r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_uint32(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -203,7 +203,7 @@ static enum ndr_err_code ndr_push_security_ace_object_flags(struct ndr_push *ndr
 
 static enum ndr_err_code ndr_pull_security_ace_object_flags(struct ndr_pull *ndr, int ndr_flags, uint32_t *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint32_t v;
     NDR_CHECK(ndr_pull_uint32(ndr, NDR_SCALARS, &v));
@@ -562,7 +562,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_security_ace(struct ndr_push *ndr, int ndr_f
 
 static void ndr_print_flags_security_ace(struct ndr_print *ndr, const char *name, int unused, const struct security_ace *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_security_ace(ndr, name, r);
 }
@@ -584,7 +584,7 @@ _PUBLIC_ void ndr_print_security_ace(struct ndr_print *ndr, const char *name, co
 
 static enum ndr_err_code ndr_push_security_acl_revision(struct ndr_push *ndr, int ndr_flags, enum security_acl_revision r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_enum_uint1632(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -592,7 +592,7 @@ static enum ndr_err_code ndr_push_security_acl_revision(struct ndr_push *ndr, in
 
 static enum ndr_err_code ndr_pull_security_acl_revision(struct ndr_pull *ndr, int ndr_flags, enum security_acl_revision *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint16_t v;
     NDR_CHECK(ndr_pull_enum_uint1632(ndr, NDR_SCALARS, &v));
@@ -673,7 +673,7 @@ _PUBLIC_ enum ndr_err_code ndr_pull_security_acl(struct ndr_pull *ndr, int ndr_f
 
 static void ndr_print_flags_security_acl(struct ndr_print *ndr, const char *name, int unused, const struct security_acl *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_security_acl(ndr, name, r);
 }
@@ -698,7 +698,7 @@ _PUBLIC_ void ndr_print_security_acl(struct ndr_print *ndr, const char *name, co
 
 _PUBLIC_ enum ndr_err_code ndr_push_security_descriptor_revision(struct ndr_push *ndr, int ndr_flags, enum security_descriptor_revision r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_enum_uint8(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -706,7 +706,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_security_descriptor_revision(struct ndr_push
 
 _PUBLIC_ enum ndr_err_code ndr_pull_security_descriptor_revision(struct ndr_pull *ndr, int ndr_flags, enum security_descriptor_revision *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint8_t v;
     NDR_CHECK(ndr_pull_enum_uint8(ndr, NDR_SCALARS, &v));
@@ -726,7 +726,7 @@ _PUBLIC_ void ndr_print_security_descriptor_revision(struct ndr_print *ndr, cons
 
 _PUBLIC_ enum ndr_err_code ndr_push_security_descriptor_type(struct ndr_push *ndr, int ndr_flags, uint16_t r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_uint16(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -734,7 +734,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_security_descriptor_type(struct ndr_push *nd
 
 _PUBLIC_ enum ndr_err_code ndr_pull_security_descriptor_type(struct ndr_pull *ndr, int ndr_flags, uint16_t *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint16_t v;
     NDR_CHECK(ndr_pull_uint16(ndr, NDR_SCALARS, &v));
@@ -917,7 +917,7 @@ _PUBLIC_ enum ndr_err_code ndr_pull_security_descriptor(struct ndr_pull *ndr, in
 
 static void ndr_print_flags_security_descriptor(struct ndr_print *ndr, const char *name, int unused, const struct security_descriptor *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_security_descriptor(ndr, name, r);
 }
@@ -1020,7 +1020,7 @@ _PUBLIC_ enum ndr_err_code ndr_pull_sec_desc_buf(struct ndr_pull *ndr, int ndr_f
 
 static void ndr_print_flags_sec_desc_buf(struct ndr_print *ndr, const char *name, int unused, const struct sec_desc_buf *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_sec_desc_buf(ndr, name, r);
 }
@@ -1042,7 +1042,7 @@ _PUBLIC_ void ndr_print_sec_desc_buf(struct ndr_print *ndr, const char *name, co
 
 _PUBLIC_ enum ndr_err_code ndr_push_security_GroupAttrs(struct ndr_push *ndr, int ndr_flags, uint32_t r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_uint32(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -1050,7 +1050,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_security_GroupAttrs(struct ndr_push *ndr, in
 
 _PUBLIC_ enum ndr_err_code ndr_pull_security_GroupAttrs(struct ndr_pull *ndr, int ndr_flags, uint32_t *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint32_t v;
     NDR_CHECK(ndr_pull_uint32(ndr, NDR_SCALARS, &v));
@@ -1130,7 +1130,7 @@ _PUBLIC_ enum ndr_err_code ndr_pull_security_token(struct ndr_pull *ndr, int ndr
 
 static void ndr_print_flags_security_token(struct ndr_print *ndr, const char *name, int unused, const struct security_token *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_security_token(ndr, name, r);
 }
@@ -1209,7 +1209,7 @@ _PUBLIC_ enum ndr_err_code ndr_pull_security_unix_token(struct ndr_pull *ndr, in
 
 static void ndr_print_flags_security_unix_token(struct ndr_print *ndr, const char *name, int unused, const struct security_unix_token *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
     
     ndr_print_security_unix_token(ndr, name, r);
 }
@@ -1234,7 +1234,7 @@ _PUBLIC_ void ndr_print_security_unix_token(struct ndr_print *ndr, const char *n
 
 _PUBLIC_ enum ndr_err_code ndr_push_security_secinfo(struct ndr_push *ndr, int ndr_flags, uint32_t r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_uint32(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -1242,7 +1242,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_security_secinfo(struct ndr_push *ndr, int n
 
 _PUBLIC_ enum ndr_err_code ndr_pull_security_secinfo(struct ndr_pull *ndr, int ndr_flags, uint32_t *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint32_t v;
     NDR_CHECK(ndr_pull_uint32(ndr, NDR_SCALARS, &v));
@@ -1313,7 +1313,7 @@ _PUBLIC_ enum ndr_err_code ndr_pull_LSAP_TOKEN_INFO_INTEGRITY(struct ndr_pull *n
 
 static void ndr_print_flags_LSAP_TOKEN_INFO_INTEGRITY(struct ndr_print *ndr, const char *name, int unused, const struct LSAP_TOKEN_INFO_INTEGRITY *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_LSAP_TOKEN_INFO_INTEGRITY(ndr, name, r);
 }
@@ -1342,7 +1342,7 @@ _PUBLIC_ size_t ndr_size_LSAP_TOKEN_INFO_INTEGRITY(const struct LSAP_TOKEN_INFO_
 
 _PUBLIC_ enum ndr_err_code ndr_push_kerb_EncTypes(struct ndr_push *ndr, int ndr_flags, uint32_t r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_uint32(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -1350,7 +1350,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_kerb_EncTypes(struct ndr_push *ndr, int ndr_
 
 _PUBLIC_ enum ndr_err_code ndr_pull_kerb_EncTypes(struct ndr_pull *ndr, int ndr_flags, uint32_t *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint32_t v;
     NDR_CHECK(ndr_pull_uint32(ndr, NDR_SCALARS, &v));
@@ -1376,7 +1376,7 @@ _PUBLIC_ void ndr_print_kerb_EncTypes(struct ndr_print *ndr, const char *name, u
 
 _PUBLIC_ enum ndr_err_code ndr_push_security_autoinherit(struct ndr_push *ndr, int ndr_flags, uint32_t r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_uint32(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -1384,7 +1384,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_security_autoinherit(struct ndr_push *ndr, i
 
 _PUBLIC_ enum ndr_err_code ndr_pull_security_autoinherit(struct ndr_pull *ndr, int ndr_flags, uint32_t *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint32_t v;
     NDR_CHECK(ndr_pull_uint32(ndr, NDR_SCALARS, &v));

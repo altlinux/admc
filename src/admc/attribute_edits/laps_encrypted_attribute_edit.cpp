@@ -52,7 +52,7 @@ LAPSEncryptedAttributeEdit::LAPSEncryptedAttributeEdit(QLineEdit *edit_arg, cons
 }
 
 void LAPSEncryptedAttributeEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     QJsonDocument json_document = get_jsondocument_from_attribute_value(ad, object, attribute);
 

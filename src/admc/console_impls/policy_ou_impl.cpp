@@ -132,9 +132,9 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
 }
 
 bool PolicyOUImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    UNUSED_ARG(target);
-    UNUSED_ARG(target_type);
-    UNUSED_ARG(dropped_list);
+    Q_UNUSED(target);
+    Q_UNUSED(target_type);
+    Q_UNUSED(dropped_list);
 
     const bool dropped_are_policy = (dropped_type_list == QSet<int>({ItemType_Policy}));
 
@@ -142,8 +142,8 @@ bool PolicyOUImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, co
 }
 
 void PolicyOUImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    UNUSED_ARG(target_type);
-    UNUSED_ARG(dropped_type_list);
+    Q_UNUSED(target_type);
+    Q_UNUSED(dropped_type_list);
 
     const QString ou_dn = target.data(PolicyOURole_DN).toString();
 
@@ -188,7 +188,7 @@ QList<QAction *> PolicyOUImpl::get_all_custom_actions() const {
 }
 
 QSet<QAction *> PolicyOUImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
+    Q_UNUSED(index);
 
     QSet<QAction *> out;
 
@@ -211,8 +211,8 @@ QSet<QAction *> PolicyOUImpl::get_custom_actions(const QModelIndex &index, const
 }
 
 QSet<StandardAction> PolicyOUImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
-    UNUSED_ARG(single_selection);
+    Q_UNUSED(index);
+    Q_UNUSED(single_selection);
 
     QSet<StandardAction> out;
 

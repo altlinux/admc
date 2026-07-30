@@ -37,7 +37,7 @@ StringListEdit::StringListEdit(QPushButton *button_arg, const QString &attribute
 }
 
 void StringListEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     values = object.get_values(attribute);
 }

@@ -32,7 +32,7 @@ GeneralNameEdit::GeneralNameEdit(QLabel *label_arg, QObject *parent)
 }
 
 void GeneralNameEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const bool is_gpc = object.is_class(CLASS_GP_CONTAINER);
     QString name_attribute;

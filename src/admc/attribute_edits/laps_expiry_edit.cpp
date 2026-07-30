@@ -42,7 +42,7 @@ LAPSExpiryEdit::LAPSExpiryEdit(QDateTimeEdit *edit_arg, QPushButton *reset_expir
 }
 
 void LAPSExpiryEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const QDateTime datetime = object.get_datetime(attribute_name, g_adconfig);
     const QDateTime datetime_local = datetime.toLocalTime();

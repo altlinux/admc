@@ -49,7 +49,7 @@ void UpnEdit::init_suffixes(AdInterface &ad) {
 }
 
 void UpnEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     upn_suffix_combo_load(upn_suffix_combo, object);
 

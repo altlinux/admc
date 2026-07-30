@@ -90,7 +90,7 @@ OrganizationTab::~OrganizationTab() {
 }
 
 void OrganizationTabEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const QList<QString> reports = object.get_strings(ATTRIBUTE_DIRECT_REPORTS);
 

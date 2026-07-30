@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
@@ -80,9 +80,9 @@ PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
 }
 
 bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    UNUSED_ARG(target);
-    UNUSED_ARG(target_type);
-    UNUSED_ARG(dropped_list);
+    Q_UNUSED(target);
+    Q_UNUSED(target_type);
+    Q_UNUSED(dropped_list);
 
     const bool dropped_are_policy_ou = (dropped_type_list == QSet<int>({ItemType_PolicyOU}));
 
@@ -90,8 +90,8 @@ bool PolicyImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
 }
 
 void PolicyImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    UNUSED_ARG(target_type);
-    UNUSED_ARG(dropped_type_list);
+    Q_UNUSED(target_type);
+    Q_UNUSED(dropped_type_list);
 
     const QString policy_dn = target.data(PolicyRole_DN).toString();
     const QList<QString> policy_list = {policy_dn};
@@ -178,7 +178,7 @@ QSet<QAction *> PolicyImpl::get_custom_actions(const QModelIndex &index, const b
 }
 
 QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
+    Q_UNUSED(index);
 
     QSet<StandardAction> out;
 
@@ -194,7 +194,7 @@ QSet<StandardAction> PolicyImpl::get_standard_actions(const QModelIndex &index, 
 }
 
 void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
-    UNUSED_ARG(index_list);
+    Q_UNUSED(index_list);
 
     console_policy_rename({console}, policy_results, ItemType_Policy, PolicyRole_DN);
 }
@@ -220,7 +220,7 @@ void PolicyImpl::refresh(const QList<QModelIndex> &index_list) {
 }
 
 void PolicyImpl::properties(const QList<QModelIndex> &index_list) {
-    UNUSED_ARG(index_list);
+    Q_UNUSED(index_list);
 
     console_policy_properties({console}, policy_results, ItemType_Policy, PolicyRole_DN);
 }

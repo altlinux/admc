@@ -40,7 +40,7 @@ CountryEdit::CountryEdit(QComboBox *combo_arg, QObject *parent)
 }
 
 void CountryEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     country_combo_load(combo, object);
 }

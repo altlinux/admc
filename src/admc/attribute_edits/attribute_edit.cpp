@@ -23,8 +23,8 @@
 #include "utils.h"
 
 bool AttributeEdit::verify(AdInterface &ad, const QString &dn) const {
-    UNUSED_ARG(ad);
-    UNUSED_ARG(dn);
+    Q_UNUSED(ad);
+    Q_UNUSED(dn);
 
     return true;
 }
@@ -62,17 +62,17 @@ void AttributeEdit::load(const QList<AttributeEdit *> &edit_list, AdInterface &a
 }
 
 void AttributeEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
-    UNUSED_ARG(object);
+    Q_UNUSED(ad);
+    Q_UNUSED(object);
 }
 
 bool AttributeEdit::apply(AdInterface &ad, const QString &dn) const {
-    UNUSED_ARG(ad);
-    UNUSED_ARG(dn);
+    Q_UNUSED(ad);
+    Q_UNUSED(dn);
 
     return true;
 }
 
 void AttributeEdit::set_enabled(const bool enabled) {
-    UNUSED_ARG(enabled);
+    Q_UNUSED(enabled);
 }

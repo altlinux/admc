@@ -42,7 +42,7 @@ GroupTypeEdit::GroupTypeEdit(QComboBox *combo_arg, QObject *parent)
 }
 
 void GroupTypeEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const GroupType type = object.get_group_type();
 

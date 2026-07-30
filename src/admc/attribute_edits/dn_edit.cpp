@@ -37,7 +37,7 @@ DNEdit::DNEdit(QLineEdit *edit_arg, QObject *parent)
 }
 
 void DNEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const QString dn = object.get_dn();
     const QString dn_as_canonical = dn_canonical(dn);

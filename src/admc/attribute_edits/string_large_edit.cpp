@@ -42,7 +42,7 @@ StringLargeEdit::StringLargeEdit(QPlainTextEdit *edit_arg, const QString &attrib
 }
 
 void StringLargeEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const QString value = object.get_string(attribute);
 

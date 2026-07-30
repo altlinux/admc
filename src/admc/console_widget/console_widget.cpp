@@ -1099,7 +1099,7 @@ void ConsoleWidgetPrivate::on_scope_items_about_to_be_removed(const QModelIndex 
 }
 
 void ConsoleWidgetPrivate::on_focus_changed(QWidget *old, QWidget *now) {
-    UNUSED_ARG(old);
+    Q_UNUSED(old);
 
     QAbstractItemView *new_focused_view = qobject_cast<QAbstractItemView *>(now);
 

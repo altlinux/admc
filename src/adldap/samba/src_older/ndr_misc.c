@@ -28,8 +28,6 @@
 // #include "includes.h"
 // #include "bin/default/librpc/gen_ndr/ndr_misc.h"
 
-#define UNUSED_ARG(x) (void)(x)
-
 _PUBLIC_ enum ndr_err_code ndr_push_GUID(struct ndr_push *ndr, int ndr_flags, const struct GUID *r)
 {
     NDR_PUSH_CHECK_FLAGS(ndr, ndr_flags);
@@ -70,7 +68,7 @@ _PUBLIC_ enum ndr_err_code ndr_pull_GUID(struct ndr_pull *ndr, int ndr_flags, st
 
 static void ndr_print_flags_GUID(struct ndr_print *ndr, const char *name, int unused, const struct GUID *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_GUID(ndr, name, r);
 }
@@ -110,7 +108,7 @@ _PUBLIC_ enum ndr_err_code ndr_pull_ndr_syntax_id(struct ndr_pull *ndr, int ndr_
 
 static void ndr_print_flags_ndr_syntax_id(struct ndr_print *ndr, const char *name, int unused, const struct ndr_syntax_id *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_ndr_syntax_id(ndr, name, r);
 }
@@ -155,7 +153,7 @@ _PUBLIC_ enum ndr_err_code ndr_pull_policy_handle(struct ndr_pull *ndr, int ndr_
 
 static void ndr_print_flags_policy_handle(struct ndr_print *ndr, const char *name, int unused, const struct policy_handle *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_policy_handle(ndr, name, r);
 }
@@ -172,7 +170,7 @@ _PUBLIC_ void ndr_print_policy_handle(struct ndr_print *ndr, const char *name, c
 
 _PUBLIC_ enum ndr_err_code ndr_push_netr_SchannelType(struct ndr_push *ndr, int unused, enum netr_SchannelType r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     NDR_CHECK(ndr_push_enum_uint1632(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -180,7 +178,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_netr_SchannelType(struct ndr_push *ndr, int 
 
 _PUBLIC_ enum ndr_err_code ndr_pull_netr_SchannelType(struct ndr_pull *ndr, int ndr_flags, enum netr_SchannelType *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint16_t v;
     NDR_CHECK(ndr_pull_enum_uint1632(ndr, NDR_SCALARS, &v));
@@ -237,7 +235,7 @@ _PUBLIC_ enum ndr_err_code ndr_pull_KRB5_EDATA_NTSTATUS(struct ndr_pull *ndr, in
 
 static void ndr_print_flags_KRB5_EDATA_NTSTATUS(struct ndr_print *ndr, const char *name, int unused, const struct KRB5_EDATA_NTSTATUS *r)
 {
-    UNUSED_ARG(unused);
+    Q_UNUSED(unused);
 
     ndr_print_KRB5_EDATA_NTSTATUS(ndr, name, r);
 }
@@ -255,7 +253,7 @@ _PUBLIC_ void ndr_print_KRB5_EDATA_NTSTATUS(struct ndr_print *ndr, const char *n
 
 _PUBLIC_ enum ndr_err_code ndr_push_winreg_Type(struct ndr_push *ndr, int ndr_flags, enum winreg_Type r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_enum_uint32(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -263,7 +261,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_winreg_Type(struct ndr_push *ndr, int ndr_fl
 
 _PUBLIC_ enum ndr_err_code ndr_pull_winreg_Type(struct ndr_pull *ndr, int ndr_flags, enum winreg_Type *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint32_t v;
     NDR_CHECK(ndr_pull_enum_uint32(ndr, NDR_SCALARS, &v));
@@ -767,7 +765,7 @@ _PUBLIC_ size_t ndr_size_winreg_Data_GPO(const union winreg_Data_GPO *r, uint32_
 
 _PUBLIC_ enum ndr_err_code ndr_push_netr_SamDatabaseID(struct ndr_push *ndr, int ndr_flags, enum netr_SamDatabaseID r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_enum_uint32(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -775,7 +773,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_netr_SamDatabaseID(struct ndr_push *ndr, int
 
 _PUBLIC_ enum ndr_err_code ndr_pull_netr_SamDatabaseID(struct ndr_pull *ndr, int ndr_flags, enum netr_SamDatabaseID *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint32_t v;
     NDR_CHECK(ndr_pull_enum_uint32(ndr, NDR_SCALARS, &v));
@@ -797,7 +795,7 @@ _PUBLIC_ void ndr_print_netr_SamDatabaseID(struct ndr_print *ndr, const char *na
 
 _PUBLIC_ enum ndr_err_code ndr_push_svcctl_ServerType(struct ndr_push *ndr, int ndr_flags, uint32_t r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     NDR_CHECK(ndr_push_uint32(ndr, NDR_SCALARS, r));
     return NDR_ERR_SUCCESS;
@@ -805,7 +803,7 @@ _PUBLIC_ enum ndr_err_code ndr_push_svcctl_ServerType(struct ndr_push *ndr, int 
 
 _PUBLIC_ enum ndr_err_code ndr_pull_svcctl_ServerType(struct ndr_pull *ndr, int ndr_flags, uint32_t *r)
 {
-    UNUSED_ARG(ndr_flags);
+    Q_UNUSED(ndr_flags);
 
     uint32_t v;
     NDR_CHECK(ndr_pull_uint32(ndr, NDR_SCALARS, &v));

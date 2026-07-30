@@ -123,7 +123,7 @@ void ObjectImpl::fetch(const QModelIndex &index) {
 }
 
 bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    UNUSED_ARG(target_type);
+    Q_UNUSED(target_type);
 
     const bool dropped_are_all_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
 
@@ -148,8 +148,8 @@ bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
 }
 
 void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    UNUSED_ARG(target_type);
-    UNUSED_ARG(dropped_type_list);
+    Q_UNUSED(target_type);
+    Q_UNUSED(dropped_type_list);
 
     const QString target_dn = target.data(ObjectRole_DN).toString();
 
@@ -329,7 +329,7 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
 }
 
 QSet<QAction *> ObjectImpl::get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(single_selection);
+    Q_UNUSED(single_selection);
 
     QSet<QAction *> out;
 
@@ -387,7 +387,7 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(const QModelIndex &index, 
 }
 
 QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(single_selection);
+    Q_UNUSED(single_selection);
 
     QSet<StandardAction> out;
 

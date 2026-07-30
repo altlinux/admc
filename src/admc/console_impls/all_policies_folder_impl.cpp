@@ -82,8 +82,8 @@ QList<QAction *> AllPoliciesFolderImpl::get_all_custom_actions() const {
 }
 
 QSet<QAction *> AllPoliciesFolderImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
-    UNUSED_ARG(single_selection);
+    Q_UNUSED(index);
+    Q_UNUSED(single_selection);
 
     QSet<QAction *> out;
 
@@ -93,8 +93,8 @@ QSet<QAction *> AllPoliciesFolderImpl::get_custom_actions(const QModelIndex &ind
 }
 
 QSet<StandardAction> AllPoliciesFolderImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
-    UNUSED_ARG(single_selection);
+    Q_UNUSED(index);
+    Q_UNUSED(single_selection);
 
     QSet<StandardAction> out;
 

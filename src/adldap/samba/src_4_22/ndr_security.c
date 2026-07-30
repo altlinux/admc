@@ -21,8 +21,6 @@
 
 #include "samba/secace.h"
 
-#define UNUSED_ARG(x) (void)(x)
-
 static void ndr_print_flags_dom_sid(struct ndr_print *ndr, const char *name, ndr_flags_type unused, const struct dom_sid *r)
 {
 	ndr_print_dom_sid(ndr, name, r);

@@ -37,7 +37,7 @@ LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QObject *parent)
 }
 
 void LogonComputersEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     current_value = object.get_value(ATTRIBUTE_USER_WORKSTATIONS);
 }

@@ -36,7 +36,7 @@ GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QObject *parent)
 }
 
 void GpoptionsEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const QString value = object.get_string(ATTRIBUTE_GPOPTIONS);
     const bool checked = (value == GPOPTIONS_BLOCK_INHERITANCE);

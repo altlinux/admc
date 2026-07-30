@@ -46,15 +46,15 @@ SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QObject *p
 }
 
 void SamNameEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const QString value = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
     edit->setText(value);
 }
 
 bool SamNameEdit::verify(AdInterface &ad, const QString &dn) const {
-    UNUSED_ARG(ad);
-    UNUSED_ARG(dn);
+    Q_UNUSED(ad);
+    Q_UNUSED(dn);
 
     const bool out = sam_name_edit_verify(edit);
 

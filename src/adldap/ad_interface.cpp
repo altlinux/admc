@@ -63,8 +63,6 @@
 #define UNUSED(x) x
 #endif
 
-#define UNUSED_ARG(x) (void) (x)
-
 #define MAX_DN_LENGTH 1024
 #define MAX_PASSWORD_LENGTH 255
 #ifndef UUID_STR_LEN
@@ -101,14 +99,14 @@ SMBContext AdInterfacePrivate::s_smb_context = SMBContext();
 QMutex AdInterfacePrivate::mutex;
 
 void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup, int maxLenWorkgroup, char *pUsername, int maxLenUsername, char *pPassword, int maxLenPassword) {
-    UNUSED_ARG(pServer);
-    UNUSED_ARG(pShare);
-    UNUSED_ARG(pWorkgroup);
-    UNUSED_ARG(maxLenWorkgroup);
-    UNUSED_ARG(pUsername);
-    UNUSED_ARG(maxLenUsername);
-    UNUSED_ARG(pPassword);
-    UNUSED_ARG(maxLenPassword);
+    Q_UNUSED(pServer);
+    Q_UNUSED(pShare);
+    Q_UNUSED(pWorkgroup);
+    Q_UNUSED(maxLenWorkgroup);
+    Q_UNUSED(pUsername);
+    Q_UNUSED(maxLenUsername);
+    Q_UNUSED(pPassword);
+    Q_UNUSED(maxLenPassword);
 }
 
 AdInterface::AdInterface() {
@@ -2230,7 +2228,7 @@ QList<QString> query_server_for_hosts(const char *dname) {
  * Callback for ldap_sasl_interactive_bind_s
  */
 int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
-    UNUSED_ARG(flags);
+    Q_UNUSED(flags);
 
     sasl_defaults_gssapi *defaults = (sasl_defaults_gssapi *) indefaults;
     sasl_interact_t *interact = (sasl_interact_t *) in;

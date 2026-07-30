@@ -32,8 +32,6 @@
 
 #include <QDebug>
 
-#define UNUSED_ARG(x) (void) (x)
-
 QByteArray dom_sid_to_bytes(const dom_sid &sid);
 QByteArray dom_sid_string_to_bytes(const dom_sid &sid);
 bool ace_match_without_access_mask(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow, ace_match_flags match_flags);

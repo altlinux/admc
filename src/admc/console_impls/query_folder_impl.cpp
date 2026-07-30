@@ -157,9 +157,9 @@ void QueryFolderImpl::on_edit_query_folder() {
 }
 
 bool QueryFolderImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    UNUSED_ARG(dropped_list);
-    UNUSED_ARG(target);
-    UNUSED_ARG(target_type);
+    Q_UNUSED(dropped_list);
+    Q_UNUSED(target);
+    Q_UNUSED(target_type);
 
     const bool dropped_is_target = dropped_list.contains(target);
 
@@ -173,8 +173,8 @@ bool QueryFolderImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list,
 }
 
 void QueryFolderImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
-    UNUSED_ARG(dropped_type_list);
-    UNUSED_ARG(target_type);
+    Q_UNUSED(dropped_type_list);
+    Q_UNUSED(target_type);
 
     console_query_move(console, dropped_list, target);
 }
@@ -190,7 +190,7 @@ QList<QAction *> QueryFolderImpl::get_all_custom_actions() const {
 }
 
 QSet<QAction *> QueryFolderImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
+    Q_UNUSED(index);
 
     QStandardItem *item = console->get_item(index);
     const bool is_root = item->data(QueryItemRole_IsRoot).toBool();
@@ -212,7 +212,7 @@ QSet<QAction *> QueryFolderImpl::get_custom_actions(const QModelIndex &index, co
 }
 
 QSet<StandardAction> QueryFolderImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
+    Q_UNUSED(index);
 
     QStandardItem *item = console->get_item(index);
     const bool is_root = item->data(QueryItemRole_IsRoot).toBool();

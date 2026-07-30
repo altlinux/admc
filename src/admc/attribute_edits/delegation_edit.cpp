@@ -41,7 +41,7 @@ DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_bu
 }
 
 void DelegationEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const bool is_on = object.get_account_option(AccountOption_TrustedForDelegation, g_adconfig);
 

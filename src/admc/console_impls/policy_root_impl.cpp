@@ -67,8 +67,8 @@ void PolicyRootImpl::refresh(const QList<QModelIndex> &index_list) {
 }
 
 QSet<StandardAction> PolicyRootImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
-    UNUSED_ARG(index);
-    UNUSED_ARG(single_selection);
+    Q_UNUSED(index);
+    Q_UNUSED(single_selection);
 
     QSet<StandardAction> out;
 

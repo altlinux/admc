@@ -49,15 +49,15 @@ PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QCh
 }
 
 void PasswordEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
-    UNUSED_ARG(object);
+    Q_UNUSED(ad);
+    Q_UNUSED(object);
 
     edit->clear();
     confirm_edit->clear();
 }
 
 bool PasswordEdit::verify(AdInterface &ad, const QString &) const {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     const QString pass = edit->text();
     const QString confirm_pass = confirm_edit->text();

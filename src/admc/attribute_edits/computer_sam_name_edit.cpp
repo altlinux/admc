@@ -46,7 +46,7 @@ ComputerSamNameEdit::ComputerSamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_
 }
 
 void ComputerSamNameEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     // NOTE: display value without the '$' at the end
     QString value = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
@@ -59,8 +59,8 @@ void ComputerSamNameEdit::load(AdInterface &ad, const AdObject &object) {
 // NOTE: requirements are from here
 // https://social.technet.microsoft.com/wiki/contents/articles/11216.active-directory-requirements-for-creating-objects.aspx#Note_Regarding_the_quot_quot_Character_in_sAMAccountName
 bool ComputerSamNameEdit::verify(AdInterface &ad, const QString &dn) const {
-    UNUSED_ARG(ad);
-    UNUSED_ARG(dn);
+    Q_UNUSED(ad);
+    Q_UNUSED(dn);
 
     const bool out = sam_name_edit_verify(edit);
 

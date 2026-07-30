@@ -36,7 +36,7 @@ ScheduleHoursEdit::ScheduleHoursEdit(QPushButton *button_arg, QObject *parent)
 }
 
 void ScheduleHoursEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
+    Q_UNUSED(ad);
 
     if (object.is_class(CLASS_USER) || object.is_class(CLASS_INET_ORG_PERSON)) {
         schedule_attribute = ATTRIBUTE_LOGON_HOURS;

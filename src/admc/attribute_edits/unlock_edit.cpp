@@ -39,8 +39,8 @@ QString UnlockEdit::label_text() {
 }
 
 void UnlockEdit::load(AdInterface &ad, const AdObject &object) {
-    UNUSED_ARG(ad);
-    UNUSED_ARG(object);
+    Q_UNUSED(ad);
+    Q_UNUSED(object);
 
     check->setChecked(false);
 }
