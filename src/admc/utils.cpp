@@ -272,12 +272,7 @@ QString get_selected_target_dn(ConsoleWidget *console,
                                const int type,
                                const int dn_role) {
     const QList<QString> dn_list = get_selected_dn_list(console, type, dn_role);
-
-    if (!dn_list.isEmpty()) {
-        return dn_list[0];
-    } else {
-        return QString();
-    }
+    return (! dn_list.isEmpty()) ? dn_list[0] : QString();
 }
 
 void center_widget(QWidget *widget) {
