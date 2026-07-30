@@ -151,3 +151,27 @@ void set_data_for_row(const QList<QStandardItem *> &row,
         item->setData(data, role);
     }
 }
+
+QList<QPersistentModelIndex> persistent_index_list(
+    const QList<QModelIndex> &indexes)
+{
+    QList<QPersistentModelIndex> out;
+
+    for (const QModelIndex &index : indexes) {
+        out.append(QPersistentModelIndex(index));
+    }
+
+    return out;
+}
+
+QList<QModelIndex> normal_index_list(
+    const QList<QPersistentModelIndex> &indexes)
+{
+    QList<QModelIndex> out;
+
+    for (const QPersistentModelIndex &index : indexes) {
+        out.append(QModelIndex(index));
+    }
+
+    return out;
+}

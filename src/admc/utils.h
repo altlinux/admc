@@ -90,11 +90,6 @@ QString is_container_filter();
 void limit_edit(QLineEdit *edit, const QString &attribute);
 void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute);
 
-QList<QPersistentModelIndex> persistent_index_list(
-    const QList<QModelIndex> &indexes);
-QList<QModelIndex> normal_index_list(
-    const QList<QPersistentModelIndex> &indexes);
-
 QString advanced_features_filter(const QString &filter);
 
 void dev_mode_search_results(QHash<QString, AdObject> &results,

@@ -167,30 +167,6 @@ void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
     }
 }
 
-QList<QPersistentModelIndex> persistent_index_list(
-    const QList<QModelIndex> &indexes)
-{
-    QList<QPersistentModelIndex> out;
-
-    for (const QModelIndex &index : indexes) {
-        out.append(QPersistentModelIndex(index));
-    }
-
-    return out;
-}
-
-QList<QModelIndex> normal_index_list(
-    const QList<QPersistentModelIndex> &indexes)
-{
-    QList<QModelIndex> out;
-
-    for (const QPersistentModelIndex &index : indexes) {
-        out.append(QModelIndex(index));
-    }
-
-    return out;
-}
-
 // Hide advanced view only" objects if advanced view setting
 // is off
 QString advanced_features_filter(const QString &filter) {

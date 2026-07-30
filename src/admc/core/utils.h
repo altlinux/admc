@@ -36,5 +36,9 @@ QList<QStandardItem *> make_item_row(const int count);
 void set_data_for_row(const QList<QStandardItem *> &row,
                       const QVariant &data,
                       const int role);
+QList<QPersistentModelIndex> persistent_index_list(
+    const QList<QModelIndex> &indexes);
+QList<QModelIndex> normal_index_list(
+    const QList<QPersistentModelIndex> &indexes);
 
 #endif

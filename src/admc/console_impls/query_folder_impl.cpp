@@ -31,6 +31,7 @@
 #include "edit_query_widgets/edit_query_folder_dialog.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "utils.h"
 #include "core/managers/icon_manager.h"
 

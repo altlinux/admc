@@ -28,6 +28,7 @@
 #include "utils.h"
 #include "permission_control_widgets/permissions_widget.h"
 #include "core/globals.h"
+#include "core/utils.h"
 #include "permission_control_widgets/sddl_view_dialog.h"
 
 #include <QDebug>
