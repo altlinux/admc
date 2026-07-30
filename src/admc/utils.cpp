@@ -265,9 +265,7 @@ QList<QString> get_selected_dn_list(ConsoleWidget *console,
                                     const int type,
                                     const int dn_role) {
     const QList<QModelIndex> indexes = console->get_selected_items(type);
-    const QList<QString> out = index_list_to_dn_list(indexes, dn_role);
-
-    return out;
+    return index_list_to_dn_list(indexes, dn_role);
 }
 
 QString get_selected_target_dn(ConsoleWidget *console,
