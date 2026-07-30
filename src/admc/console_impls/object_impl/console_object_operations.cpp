@@ -19,46 +19,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QMessageBox>
+#include <QModelIndex>
+#include <QStandardItem>
+
+#include "ad_object.h"
+#include "console_impls/find_object_impl.h"
+#include "console_impls/item_type.h"
 #include "console_impls/object_impl/console_object_operations.h"
 #include "console_impls/object_impl/object_impl.h"
-#include "console_impls/item_type.h"
-#include "core/ad.h"
-#include "core/globals.h"
-#include "core/utils.h"
-#include "core/managers/icon_manager.h"
+#include "console_impls/object_impl/server_dn_attrs_updater.h"
+#include "console_impls/object_impl/site_dn_attrs_updater.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "console_impls/query_folder_impl.h"
-#include <QModelIndex>
-#include "utils.h"
-#include <QStandardItem>
-#include "core/settings.h"
-#include "ad_object.h"
+#include "core/ad.h"
+#include "core/globals.h"
+#include "core/managers/icon_manager.h"
 #include "core/search_thread.h"
+#include "core/settings.h"
+#include "core/utils.h"
 #include "create_dialogs/create_computer_dialog.h"
 #include "create_dialogs/create_contact_dialog.h"
 #include "create_dialogs/create_group_dialog.h"
 #include "create_dialogs/create_ou_dialog.h"
+#include "create_dialogs/create_pso_dialog.h"
 #include "create_dialogs/create_shared_folder_dialog.h"
+#include "create_dialogs/create_site_dialog.h"
+#include "create_dialogs/create_sites_link_dialog.h"
+#include "create_dialogs/create_subnet_dialog.h"
 #include "create_dialogs/create_user_dialog.h"
 #include "find_widgets/find_object_dialog.h"
+#include "properties_widgets/properties_dialog.h"
+#include "properties_widgets/properties_multi_dialog.h"
 #include "rename_dialogs/rename_group_dialog.h"
 #include "rename_dialogs/rename_object_dialog.h"
 #include "rename_dialogs/rename_other_dialog.h"
 #include "rename_dialogs/rename_user_dialog.h"
 #include "select_dialogs/select_container_dialog.h"
 #include "select_dialogs/select_object_dialog.h"
-#include "console_impls/find_object_impl.h"
 #include "status.h"
-#include "properties_widgets/properties_dialog.h"
-#include "properties_widgets/properties_multi_dialog.h"
-#include "create_dialogs/create_pso_dialog.h"
-#include <QMessageBox>
-#include "create_dialogs/create_site_dialog.h"
-#include "create_dialogs/create_subnet_dialog.h"
-#include "create_dialogs/create_sites_link_dialog.h"
-#include "console_impls/object_impl/site_dn_attrs_updater.h"
-#include "console_impls/object_impl/server_dn_attrs_updater.h"
+#include "utils.h"
 
 void ConsoleObjectTreeOperations::console_object_move_and_rename(const QList<ConsoleWidget *> &console_list,
                                                       AdInterface &ad,

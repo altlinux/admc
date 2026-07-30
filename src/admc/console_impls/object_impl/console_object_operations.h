@@ -22,8 +22,9 @@
 #ifndef OPERATIONS_H
 #define OPERATIONS_H
 
-#include "ad_defines.h"
 #include <QString>
+
+#include "ad_defines.h"
 
 class ConsoleWidget;
 class QModelIndex;
