@@ -107,14 +107,6 @@ bool confirmation_dialog(const QString &text, QWidget *parent) {
     return reply == QMessageBox::Yes;
 }
 
-void set_data_for_row(const QList<QStandardItem *> &row,
-                      const QVariant &data,
-                      const int role) {
-    for (QStandardItem *item : row) {
-        item->setData(data, role);
-    }
-}
-
 bool ad_connected_base(const AdInterface &ad, QWidget *parent) {
     if (!ad.is_connected()) {
         ad_error_log(ad, parent);

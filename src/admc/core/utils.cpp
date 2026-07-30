@@ -143,3 +143,11 @@ QList<QStandardItem *> make_item_row(const int count) {
 
     return row;
 }
+
+void set_data_for_row(const QList<QStandardItem *> &row,
+                      const QVariant &data,
+                      const int role) {
+    for (QStandardItem *item : row) {
+        item->setData(data, role);
+    }
+}
