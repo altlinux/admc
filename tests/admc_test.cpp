@@ -75,8 +75,8 @@ void ADMCTest::initTestCase() {
     g_adconfig->load(ad, QLocale(QLocale::English));
     AdInterface::set_config(g_adconfig);
 
-    if (!current_dc_is_master_for_role(ad, FSMORole_PDCEmulation)) {
-        connect_host_with_role(ad, FSMORole_PDCEmulation);
+    if (!fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation)) {
+        fsmo_connect_host_with_role(ad, FSMORole_PDCEmulation);
     }
 
     // Cleanup before all tests in-case this test suite was
