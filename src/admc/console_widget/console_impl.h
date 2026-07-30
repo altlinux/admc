@@ -41,59 +41,81 @@ class ConsoleImpl : public QObject {
 public:
     ConsoleImpl(ConsoleWidget *console_arg);
 
-    // Called when a scope item of this type. Fetching
-    // happens when using the user selects or expands an
-    // item for the first time. Typically this is where you
-    // would load children of an item, if they need to be
-    // loaded dynamically. If children of your item type are
-    // static, you don't need to implement this.
+    /**
+    * @brief Called when a scope item of this type. Fetching
+    * happens when using the user selects or expands an
+    * item for the first time. Typically this is where you
+    * would load children of an item, if they need to be
+    * loaded dynamically. If children of your item type are
+    * static, you don't need to implement this.
+    */
     virtual void fetch(const QModelIndex &index);
 
-    // Called when items are dragged on top of an item of
-    // this type to determine whether dropping is allowed.
-    // Note that dragged items may be of any type and even
-    // contain mixed types.
+    /**
+    * @brief Called when items are dragged on top of an item of
+    * this type to determine whether dropping is allowed.
+    * Note that dragged items may be of any type and even
+    * contain mixed types.
+    */
     virtual bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
 
-    // Called when items are dropped onto item of this type.
-    // In the implementation, move items or perform other
-    // operations as necessary.
+    /**
+    * @brief Called when items are dropped onto item of this type.
+    * In the implementation, move items or perform other
+    * operations as necessary.
+    */
     virtual void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
 
-    // Called when description bar text needs to be updated
-    // and currently selected scope item is of this type.
-    // Return whatever text should be displayed.
+    /**
+    * @brief Called when description bar text needs to be updated
+    * and currently selected scope item is of this type.
+    * Return whatever text should be displayed.
+    */
     virtual QString get_description(const QModelIndex &index) const;
 
-    // Called when an item of this type is activated, by
-    // being double clicked or pressed enter on. Implement
-    // appropriate response if needed.
+    /**
+    * @brief Called when an item of this type is activated, by
+    * being double clicked or pressed enter on. Implement
+    * appropriate response if needed.
+    */
     virtual void activate(const QModelIndex &index);
 
-    // Called when an item of this type is selected in the
-    // scope pane.
+    /**
+    * @brief Called when an item of this type is selected in the
+    * scope pane.
+    */
     virtual void selected_as_scope(const QModelIndex &index);
 
-    // Return all custom actions that are available for this
-    // type. This will be used to determine the order of
-    // actions in the menu.
+    /**
+    * @brief Return all custom actions that are available for this
+    * type. This will be used to determine the order of
+    * actions in the menu.
+    */
     virtual QList<QAction *> get_all_custom_actions() const;
 
-    // Return a set of custom actions that should be
-    // disabled
+    /**
+    * @brief Return a set of custom actions that should be
+    * disabled
+    */
     virtual QSet<QAction *> get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const;
 
-    // Return all custom actions that are available for this
-    // item. This should be a subset of all possible
-    // actions.
+    /**
+    * @brief Return all custom actions that are available for this
+    * item. This should be a subset of all possible
+    * actions.
+    */
     virtual QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const;
 
-    // Return a set of standard actions that should be
-    // displayed for this item
+    /**
+    * @brief Return a set of standard actions that should be
+    * displayed for this item
+    */
     virtual QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const;
 
-    // Return a set of standard actions that should be
-    // disabled
+    /**
+    * @brief Return a set of standard actions that should be
+    * disabled
+    */
     virtual QSet<StandardAction> get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const;
 
     // NOTE: It is possible to select indexes of mixed type.
