@@ -71,7 +71,7 @@ void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
 }
 
 bool settings_restore_geometry(const QString setting, QWidget *widget) {
-    const QByteArray geometry = settings_get_variant(setting).toByteArray();
+    const QByteArray geometry = settings_get_byte_array(setting);
     if (!geometry.isEmpty()) {
         widget->restoreGeometry(geometry);
 
@@ -140,4 +140,8 @@ QString settings_get_string(const QString &setting) {
 
 int settings_get_int(const QString &setting) {
     return settings_get_variant(setting).toInt();
+}
+
+QByteArray settings_get_byte_array(const QString &setting) {
+    return settings_get_variant(setting).toByteArray();
 }

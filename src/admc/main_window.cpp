@@ -429,7 +429,7 @@ void MainWindow::restore_main_window_state() {
     }
 
     const QByteArray state =
-        settings_get_variant(SETTING_main_window_state).toByteArray();
+        settings_get_byte_array(SETTING_main_window_state);
     if (!state.isEmpty()) {
         restoreState(state);
     } else {

@@ -182,5 +182,6 @@ const QLocale settings_get_current_locale();
 bool settings_get_bool(const QString &setting);
 QString settings_get_string(const QString &setting);
 int settings_get_int(const QString &setting);
+QByteArray settings_get_byte_array(const QString &setting);
 
 #endif /* SETTINGS_H */
