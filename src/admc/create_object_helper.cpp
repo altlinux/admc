@@ -177,7 +177,5 @@ QString CreateObjectHelper::get_created_name() const {
 
 QString CreateObjectHelper::get_created_dn() const {
     const QString name = get_created_name();
-    const QString dn = dn_from_name_and_parent(name, parent_dn, m_object_class);
-
-    return dn;
+    return dn_from_name_and_parent(name, parent_dn, m_object_class);
 }
