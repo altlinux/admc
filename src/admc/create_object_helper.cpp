@@ -170,9 +170,7 @@ void CreateObjectHelper::on_edited() {
 QString CreateObjectHelper::get_created_name() const {
     // NOTE: trim whitespaces because server will do it
     // anyway and we want a correct name
-    const QString name = name_edit->text().trimmed();
-
-    return name;
+    return name_edit->text().trimmed();
 }
 
 QString CreateObjectHelper::get_created_dn() const {
