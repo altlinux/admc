@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
     font.setPointSize(scaledSize);
     app.setFont(font);
 
-    const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
+    const QLocale saved_locale = settings_get_current_locale();
     const QString locale_dot_UTF8 = saved_locale.name() + ".UTF-8";
     const char* locale_for_c = std::setlocale(LC_ALL, locale_dot_UTF8.toLocal8Bit().data());
     if (!locale_for_c) {

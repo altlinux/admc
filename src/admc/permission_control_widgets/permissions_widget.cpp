@@ -58,7 +58,7 @@ PermissionsWidget::PermissionsWidget(QWidget *parent) :
         rights_model, &QStandardItemModel::itemChanged,
         this, &PermissionsWidget::on_item_changed);
 
-    const QLocale saved_locale = settings_get_variant(SETTING_locale).toLocale();
+    const QLocale saved_locale = settings_get_current_locale();
     language = saved_locale.language();
 }
 

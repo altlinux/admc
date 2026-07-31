@@ -151,7 +151,7 @@ bool CountryManager::load() {
 }
 
 const QHash<int, QString> &CountryManager::get_name_map() const {
-    const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
+    const QLocale locale = settings_get_current_locale();
     const bool locale_is_ru = (locale.language() == QLocale::Russian);
     if (locale_is_ru) {
         return country_strings_ru;

@@ -54,7 +54,7 @@ void country_combo_init(QComboBox *combo) {
         settings_get_bool(SETTING_feature_current_locale_first);
     QLocale top_locale;
     if (current_locale_first) {
-        top_locale = settings_get_variant(SETTING_locale).toLocale();
+        top_locale = settings_get_current_locale();
     } else {
         top_locale = QLocale(QLocale::Russian, QLocale::Russia);
     }

@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -36,8 +36,7 @@ ChangelogDialog::ChangelogDialog(QWidget *parent)
     ui = new Ui::ChangelogDialog();
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
-    const QLocale saved_locale =
-        settings_get_variant(SETTING_locale).toLocale();
+    const QLocale saved_locale = settings_get_current_locale();
     QString changelog_text = changelog_read(saved_locale);
     if (changelog_text.isEmpty()) {
         changelog_text = tr("Failed to open changelog file.");

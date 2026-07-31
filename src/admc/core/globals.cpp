@@ -36,7 +36,7 @@ IconManager *g_icon_manager = new IconManager();
 GPLinkManager *g_gplink_manager = new GPLinkManager();
 
 void load_g_adconfig(AdInterface &ad) {
-    const QLocale locale = settings_get_variant(SETTING_locale).toLocale();
+    const QLocale locale = settings_get_current_locale();
     g_adconfig->load(ad, locale);
     AdInterface::set_config(g_adconfig);
 }
