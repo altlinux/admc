@@ -139,4 +139,6 @@ QString current_dc_dns_host_name(AdInterface &ad);
 
 bool creds_is_saved(const QString &username);
 
+AdObject global_password_settings();
+
 #endif /* UTILS_H */

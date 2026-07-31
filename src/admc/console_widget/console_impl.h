@@ -141,7 +141,6 @@ protected:
     void set_results_view(ResultsView *view);
     void set_results_widget(QWidget *widget);
 
-private:
     ResultsView *results_view;
     QWidget *results_widget;
 };

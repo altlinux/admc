@@ -22,6 +22,8 @@
 
 #include <QWidget>
 
+#include "ad_defines.h"
+
 namespace Ui {
 class PSOEditWidget;
 }
@@ -32,6 +34,11 @@ class QLineEdit;
 class QSpinBox;
 class QCheckBox;
 
+/**
+ * @class PSOEditWidget 
+ * @brief Used to represent password settings including global settings and PSOs
+ * in PSOResultsWidget and new PSO being created in CreatePSOWidget
+*/
 class PSOEditWidget final : public QWidget {
     Q_OBJECT
 
@@ -40,7 +47,6 @@ public:
     ~PSOEditWidget();
 
     void update(const AdObject &passwd_settings_obj);
-    void update_defaults();
     void set_read_only(bool read_only);
 
     /*!
@@ -60,10 +66,22 @@ public:
 private:
     Ui::PSOEditWidget *ui;
     QStringList dn_applied_list;
-    QHash<QString, QList<QByteArray>> default_setting_values;
+    bool is_global;
+    QHash<QString, QString> pso_attributes_to_global_attributes = {
+        {ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH, ATTRIBUTE_MIN_PWD_LENGTH},
+        {ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH, ATTRIBUTE_PWD_HISTORY_LENGTH},
+        {ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD, ATTRIBUTE_LOCKOUT_THRESHOLD},
+        {ATTRIBUTE_MS_DS_LOCKOUT_DURATION, ATTRIBUTE_LOCKOUT_DURATION},
+        {ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW, ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW},
+        {ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE, ATTRIBUTE_MIN_PWD_AGE},
+        {ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE, ATTRIBUTE_MAX_PWD_AGE}};
 
     void on_add();
     void on_remove();
+
+    void update_fields(const AdObject &passwd_settings_obj);
+
+    QString replace_attribute(QString attribute_name);
 
     /*!
      * Returns appropriate timespan unit value depending on given attribute.

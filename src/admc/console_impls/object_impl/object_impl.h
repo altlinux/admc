@@ -136,7 +136,6 @@ private:
     QAction *reset_account_action;
     QAction *edit_upn_suffixes_action;
     QAction *new_action;
-    QAction *create_pso_action;
     QAction *create_subnet_action;
     QAction *create_site_action;
     QAction *create_site_link_action;
