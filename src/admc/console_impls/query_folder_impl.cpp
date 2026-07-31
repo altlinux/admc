@@ -352,8 +352,10 @@ void console_query_tree_init(ConsoleWidget *console) {
     console->set_item_sort_index(root_row[0]->index(), 2);
 
     // Add rest of tree
-    const QHash<QString, QVariant> folder_list = settings_get_variant(SETTING_query_folders).toHash();
-    const QHash<QString, QVariant> item_list = settings_get_variant(SETTING_query_items).toHash();
+    const QHash<QString, QVariant> folder_list =
+        settings_get_hash(SETTING_query_folders);
+    const QHash<QString, QVariant> item_list =
+        settings_get_hash(SETTING_query_items);
 
     QStack<QPersistentModelIndex> folder_stack;
     folder_stack.append(root->index());

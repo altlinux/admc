@@ -145,3 +145,7 @@ int settings_get_int(const QString &setting) {
 QByteArray settings_get_byte_array(const QString &setting) {
     return settings_get_variant(setting).toByteArray();
 }
+
+QHash<QString, QVariant> settings_get_hash(const QString &setting) {
+    return settings_get_variant(setting).toHash();
+}

@@ -84,7 +84,8 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
 
     settings_restore_header_state(SETTING_attributes_tab_header_state, view->header());
 
-    const QHash<QString, QVariant> state = settings_get_variant(SETTING_attributes_tab_header_state).toHash();
+    const QHash<QString, QVariant> state =
+        settings_get_hash(SETTING_attributes_tab_header_state);
 
     // This is the default sort, overriden by saved
     // sort when state is restored
