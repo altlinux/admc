@@ -184,7 +184,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg, C
 
     ui->tab_widget->add_tab(general_tab, tr("General"));
 
-    const bool advanced_view_ON = settings_get_variant(SETTING_advanced_features).toBool();
+    const bool advanced_view_ON = settings_get_bool(SETTING_advanced_features);
 
     if (advanced_view_ON && !object.is_empty()) {
         auto object_tab = new ObjectTab(&edit_list, this);
@@ -211,7 +211,7 @@ PropertiesDialog::PropertiesDialog(AdInterface &ad, const QString &target_arg, C
 
         ui->tab_widget->add_tab(account_tab, tr("Account"));
 
-        const bool profile_tab_enabled = settings_get_variant(SETTING_feature_profile_tab).toBool();
+        const bool profile_tab_enabled = settings_get_bool(SETTING_feature_profile_tab);
         if (profile_tab_enabled) {
             auto profile_tab = new ProfileTab(&edit_list, this);
             ui->tab_widget->add_tab(profile_tab, tr("Profile"));

@@ -94,7 +94,7 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
 
     QItemSelectionModel *selection_model = view->selectionModel();
 
-    optional_attrs_values_is_loaded = settings_get_variant(SETTING_load_optional_attribute_values).toBool();
+    optional_attrs_values_is_loaded = settings_get_bool(SETTING_load_optional_attribute_values);
     load_optional_attrs_button->setVisible(!optional_attrs_values_is_loaded);
 
     connect(

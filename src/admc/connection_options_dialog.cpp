@@ -66,7 +66,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     const int port = settings_get_variant(SETTING_port).toInt();
     ui->port_spinbox->setValue(port);
 
-    const bool sasl_nocanon = settings_get_variant(SETTING_sasl_nocanon).toBool();
+    const bool sasl_nocanon = settings_get_bool(SETTING_sasl_nocanon);
     ui->canonize_check->setChecked(sasl_nocanon);
 
     const QString cert_strategy = settings_get_variant(SETTING_cert_strategy).toString();
@@ -80,7 +80,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     custom_host_list = get_domain_hosts(custom_domain, QString());
 
     // Populate hosts list
-    bool domain_is_default = settings_get_variant(SETTING_domain_is_default).toBool();
+    bool domain_is_default = settings_get_bool(SETTING_domain_is_default);
     QStringList host_list;
 
     QString domain;
@@ -156,7 +156,7 @@ void ConnectionOptionsDialog::accept() {
         selected_host = item->text();
     }
 
-    const bool domain_was_default = settings_get_variant(SETTING_domain_is_default).toBool();
+    const bool domain_was_default = settings_get_bool(SETTING_domain_is_default);
     const bool domain_is_default = ui->host_default_button->isChecked();
     const bool custom_domain_changed = settings_get_variant(SETTING_custom_domain).toString() != custom_domain;
 

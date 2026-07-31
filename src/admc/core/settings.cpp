@@ -129,3 +129,7 @@ bool settings_are_creds_saved(const QString &username) {
 const QLocale settings_get_current_locale() {
     return settings_get_variant(SETTING_locale).toLocale();
 }
+
+bool settings_get_bool(const QString &setting) {
+    return settings_get_variant(setting).toBool();
+}

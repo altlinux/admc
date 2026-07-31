@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -71,7 +71,7 @@ void Status::add_message(const QString &msg, const StatusType &type) {
 
     const QString timestamped_msg = QString("%1 %2").arg(timestamp, msg);
 
-    const bool timestamps_ON = settings_get_variant(SETTING_timestamp_log).toBool();
+    const bool timestamps_ON = settings_get_bool(SETTING_timestamp_log);
 
     QColor color;
     switch (type) {

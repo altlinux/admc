@@ -68,7 +68,7 @@ void KrbAuthDialog::setupWidgets() {
     connect(ui->remember_checkbox, &QCheckBox::toggled, this, &KrbAuthDialog::remember_principal);
 
     bool use_system_creds = !settings_get_variant(SETTING_use_system_credentials).isNull() &&
-                             settings_get_variant(SETTING_use_system_credentials).toBool();
+                             settings_get_bool(SETTING_use_system_credentials);
     ui->system_cache_chkbox->setChecked(use_system_creds);
     on_use_system_credentials(use_system_creds);
 

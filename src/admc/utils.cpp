@@ -93,8 +93,7 @@ void hide_busy_indicator() {
 }
 
 bool confirmation_dialog(const QString &text, QWidget *parent) {
-    const bool confirm_actions =
-        settings_get_variant(SETTING_confirm_actions).toBool();
+    const bool confirm_actions = settings_get_bool(SETTING_confirm_actions);
     if (! confirm_actions) {
         return true;
     }
@@ -171,7 +170,7 @@ void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
 // is off
 QString advanced_features_filter(const QString &filter) {
     const bool advanced_features_OFF =
-        (! settings_get_variant(SETTING_advanced_features).toBool());
+        (! settings_get_bool(SETTING_advanced_features));
 
     if (advanced_features_OFF) {
         const QString advanced_features = filter_CONDITION(
@@ -192,8 +191,7 @@ QString advanced_features_filter(const QString &filter) {
 void dev_mode_search_results(QHash<QString, AdObject> &results,
                              AdInterface &ad,
                              const QString &base) {
-    const bool dev_mode =
-        settings_get_variant(SETTING_feature_dev_mode).toBool();
+    const bool dev_mode = settings_get_bool(SETTING_feature_dev_mode);
     if (! dev_mode) {
         return;
     }
@@ -331,7 +329,7 @@ void setup_full_name_autofill(
         const QString last_name = last_name_edit->text().trimmed();
         const QString middle_name = middle_name_edit->text().trimmed();
         const bool last_name_first =
-            settings_get_variant(SETTING_last_name_before_first_name).toBool();
+            settings_get_bool(SETTING_last_name_before_first_name);
 
         QStringList names{first_name, middle_name};
         if (last_name_first) {

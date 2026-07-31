@@ -260,7 +260,7 @@ void ConsoleObjectTreeOperations::add_objects_to_console(ConsoleWidget *console,
         const bool is_container =
             filter_containers.contains(object_class);
         const bool show_non_containers_ON =
-            settings_get_variant(SETTING_show_non_containers_in_console_tree).toBool();
+            settings_get_bool(SETTING_show_non_containers_in_console_tree);
         const bool is_site_related =
             g_adconfig->get_site_related_classes().contains(object_class);
 
@@ -579,7 +579,7 @@ bool ConsoleObjectTreeOperations::console_object_deletion_dialog(ConsoleWidget *
         contains_objects_message = QCoreApplication::translate("ObjectImpl", " Containers to be deleted contain other objects.");
     }
 
-    const bool confirm_actions = settings_get_variant(SETTING_confirm_actions).toBool();
+    const bool confirm_actions = settings_get_bool(SETTING_confirm_actions);
     if (not_empty_containers_count > 0 || confirm_actions) {
         QMessageBox::StandardButton answer = QMessageBox::question(console, QObject::tr("Confirm action"), main_message + contains_objects_message);
         return answer == QMessageBox::Yes;

@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -178,5 +179,6 @@ bool settings_restore_header_state(const QString setting, QHeaderView *header);
 bool settings_are_creds_saved(const QString &username);
 QStringList settings_get_remembered_principals();
 const QLocale settings_get_current_locale();
+bool settings_get_bool(const QString &setting);
 
 #endif /* SETTINGS_H */

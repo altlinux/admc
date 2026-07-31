@@ -284,7 +284,7 @@ void MainWindow::setup_simple_settings() {
     for (const QString &setting : bool_action_map.keys()) {
         QAction *action = bool_action_map[setting];
 
-        const bool setting_enabled = settings_get_variant(setting).toBool();
+        const bool setting_enabled = settings_get_bool(setting);
         action->setChecked(setting_enabled);
     }
 

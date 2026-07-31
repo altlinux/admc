@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -51,7 +51,7 @@ void country_combo_init(QComboBox *combo) {
     // flag "SETTING_feature_current_locale_first".
     QString country_russia;
     const bool current_locale_first =
-        settings_get_variant(SETTING_feature_current_locale_first).toBool();
+        settings_get_bool(SETTING_feature_current_locale_first);
     QLocale top_locale;
     if (current_locale_first) {
         top_locale = settings_get_variant(SETTING_locale).toLocale();

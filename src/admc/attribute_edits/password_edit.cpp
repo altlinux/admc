@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -44,7 +44,7 @@ PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QCh
         show_password_check, &QCheckBox::toggled,
         this, &PasswordEdit::on_show_password_check);
 
-    const bool show_password_is_ON = settings_get_variant(SETTING_show_password).toBool();
+    const bool show_password_is_ON = settings_get_bool(SETTING_show_password);
     show_password_check->setChecked(show_password_is_ON);
 }
 

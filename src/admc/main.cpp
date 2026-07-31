@@ -2,7 +2,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -126,7 +126,8 @@ int main(int argc, char **argv) {
     MainWindow *main_window = nullptr;
     MainWindowConnectionError *error_window = nullptr;
     {
-        const bool show_login_window = settings_get_variant(SETTING_show_login_window_on_startup).toBool();
+        const bool show_login_window =
+            settings_get_bool(SETTING_show_login_window_on_startup);
         if (show_login_window) {
             krb5_client->logout(false);
         }
