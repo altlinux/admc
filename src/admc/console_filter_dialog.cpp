@@ -48,7 +48,7 @@ ConsoleFilterDialog::ConsoleFilterDialog(QWidget *parent)
     };
     ui->class_filter_widget->set_classes(class_list_for_widget, class_list_for_widget);
 
-    custom_filter = settings_get_variant(SETTING_object_filter).toString();
+    custom_filter = settings_get_string(SETTING_object_filter);
 
     const int object_display_limit = settings_get_variant(SETTING_object_display_limit).toInt();
     ui->limit_spinbox->setValue(object_display_limit);

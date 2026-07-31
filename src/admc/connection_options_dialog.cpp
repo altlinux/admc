@@ -69,14 +69,14 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     const bool sasl_nocanon = settings_get_bool(SETTING_sasl_nocanon);
     ui->canonize_check->setChecked(sasl_nocanon);
 
-    const QString cert_strategy = settings_get_variant(SETTING_cert_strategy).toString();
+    const QString cert_strategy = settings_get_string(SETTING_cert_strategy);
     const int cert_strategy_index = ui->cert_combo->findText(cert_strategy);
     ui->cert_combo->setCurrentIndex(cert_strategy_index);
 
     default_domain = get_default_domain_from_krb5();
     default_host_list = get_domain_hosts(default_domain, QString());
 
-    custom_domain = settings_get_variant(SETTING_custom_domain).toString();
+    custom_domain = settings_get_string(SETTING_custom_domain);
     custom_host_list = get_domain_hosts(custom_domain, QString());
 
     // Populate hosts list
@@ -158,7 +158,8 @@ void ConnectionOptionsDialog::accept() {
 
     const bool domain_was_default = settings_get_bool(SETTING_domain_is_default);
     const bool domain_is_default = ui->host_default_button->isChecked();
-    const bool custom_domain_changed = settings_get_variant(SETTING_custom_domain).toString() != custom_domain;
+    const bool custom_domain_changed =
+        (settings_get_string(SETTING_custom_domain) != custom_domain);
 
     const QHash<QString, QVariant> settings = {
         {SETTING_port, port},
@@ -218,7 +219,7 @@ void ConnectionOptionsDialog::load_default_options() {
 
 void ConnectionOptionsDialog::set_saved_host_current_item()
 {
-    const QString saved_host = settings_get_variant(SETTING_host).toString();
+    const QString saved_host = settings_get_string(SETTING_host);
 
     if (!saved_host.isEmpty()) {
         const QList<QListWidgetItem *> item_list = ui->host_select_list->findItems(saved_host, Qt::MatchExactly);

@@ -927,7 +927,7 @@ void ObjectImpl::setup_widgets() {
 }
 
 void ObjectImpl::setup_filters() {
-    object_filter = settings_get_variant(SETTING_object_filter).toString();
+    object_filter = settings_get_string(SETTING_object_filter);
     object_filter_enabled = settings_get_bool(SETTING_object_filter_enabled);
 }
 

@@ -133,3 +133,7 @@ const QLocale settings_get_current_locale() {
 bool settings_get_bool(const QString &setting) {
     return settings_get_variant(setting).toBool();
 }
+
+QString settings_get_string(const QString &setting) {
+    return settings_get_variant(setting).toString();
+}

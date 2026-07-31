@@ -186,7 +186,7 @@ void MainWindow::setup_themes() {
 
         bool is_checked;
         const QString current_theme =
-            settings_get_variant(SETTING_current_icon_theme).toString();
+            settings_get_string(SETTING_current_icon_theme);
         current_theme == theme ? is_checked = true : is_checked = false;
 
         action->setChecked(is_checked);
@@ -440,7 +440,7 @@ void MainWindow::restore_main_window_state() {
 
 void MainWindow::show_changelog_on_update() {
     const QString last_version =
-        settings_get_variant(SETTING_last_opened_version).toString();
+        settings_get_string(SETTING_last_opened_version);
     bool first_time_opening_this_version = (last_version != ADMC_VERSION);
 
     if (first_time_opening_this_version) {

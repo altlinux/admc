@@ -112,7 +112,8 @@ int main(int argc, char **argv) {
     try {
         krb5_client = std::unique_ptr<Krb5Client>(new Krb5Client);
 
-        const QString last_logged_user = settings_get_variant(SETTING_last_logged_user).toString();
+        const QString last_logged_user =
+            settings_get_string(SETTING_last_logged_user);
         if (!last_logged_user.isEmpty() && krb5_client->active_tgt_principals().contains(last_logged_user)) {
             krb5_client->set_current_principal(last_logged_user);
         }
