@@ -63,7 +63,7 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
     }
 
     // Load saved options
-    const int port = settings_get_variant(SETTING_port).toInt();
+    const int port = settings_get_int(SETTING_port);
     ui->port_spinbox->setValue(port);
 
     const bool sasl_nocanon = settings_get_bool(SETTING_sasl_nocanon);

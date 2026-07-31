@@ -59,7 +59,7 @@ void SearchThread::run() {
     AdCookie cookie;
 
     const int object_display_limit =
-        settings_get_variant(SETTING_object_display_limit).toInt();
+        settings_get_int(SETTING_object_display_limit);
 
     int total_results_count = 0;
 

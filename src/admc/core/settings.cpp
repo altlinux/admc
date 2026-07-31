@@ -137,3 +137,7 @@ bool settings_get_bool(const QString &setting) {
 QString settings_get_string(const QString &setting) {
     return settings_get_variant(setting).toString();
 }
+
+int settings_get_int(const QString &setting) {
+    return settings_get_variant(setting).toInt();
+}
