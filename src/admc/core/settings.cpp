@@ -125,3 +125,7 @@ bool settings_are_creds_saved(const QString &username) {
     QStringList principals = settings_get_remembered_principals();
     return (! username.isEmpty()) && principals.contains(username);
 }
+
+const QLocale settings_get_current_locale() {
+    return settings_get_variant(SETTING_locale).toLocale();
+}

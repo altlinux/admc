@@ -177,5 +177,6 @@ void settings_save_header_state(const QString setting, QHeaderView *header);
 bool settings_restore_header_state(const QString setting, QHeaderView *header);
 bool settings_are_creds_saved(const QString &username);
 QStringList settings_get_remembered_principals();
+const QLocale settings_get_current_locale();
 
 #endif /* SETTINGS_H */

@@ -171,8 +171,7 @@ void MainWindow::reload_console_tree() {
 
 void MainWindow::setup_themes() {
     const QStringList theme_list = g_icon_manager->available_themes();
-    const QLocale current_locale =
-        settings_get_variant(SETTING_locale).toLocale();
+    const QLocale current_locale = settings_get_current_locale();
     auto theme_action_group = new QActionGroup(this);
     for (const QString &theme : theme_list) {
         const QString localized_name =
@@ -232,9 +231,7 @@ void MainWindow::setup_languages() {
         action->setCheckable(true);
         language_group->addAction(action);
 
-        const QLocale current_locale =
-            settings_get_variant(SETTING_locale).toLocale();
-
+        const QLocale current_locale = settings_get_current_locale();
         bool is_checked = (current_locale.language() == locale.language());
         action->setChecked(is_checked);
 
