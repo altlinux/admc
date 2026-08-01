@@ -125,6 +125,10 @@ void settings_save_main_window_state(const QByteArray &state) {
     settings_set_variant(SETTING_main_window_state, state);
 }
 
+void settings_save_console_state(const QVariant &state) {
+    settings_set_variant(SETTING_console_widget_state, state);
+}
+
 /**
  * Get a list of remembered principals.
  */

@@ -163,6 +163,7 @@ QVariant settings_get_variant(const QString setting);
 void settings_set_variant(const QString setting, const QVariant &value);
 void settings_save_main_window_geometry(const QByteArray &geometry);
 void settings_save_main_window_state(const QByteArray &state);
+void settings_save_console_state(const QVariant &state);
 
 // Does two things. First it restores previously saved
 // geometry, if it exists. Then it connects to dialogs
