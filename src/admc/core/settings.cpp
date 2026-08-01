@@ -133,6 +133,10 @@ void settings_save_console_state(const QVariant &state) {
     settings_set_variant(SETTING_console_widget_state, state);
 }
 
+QByteArray settings_load_console_state() {
+    return settings_get_variant(SETTING_console_widget_state);
+}
+
 /**
  * Get a list of remembered principals.
  */

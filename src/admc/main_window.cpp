@@ -410,8 +410,7 @@ void MainWindow::setup_main_window_actions() {
 
 void MainWindow::restore_console_widget_state() {
     // NOTE: must restore state after everything is setup
-    const QVariant console_widget_state =
-        settings_get_variant(SETTING_console_widget_state);
+    const QVariant console_widget_state = settings_load_console_state();
     ui->console->restore_state(console_widget_state);
 }
 
