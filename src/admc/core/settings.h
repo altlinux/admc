@@ -165,7 +165,7 @@ void settings_save_main_window_geometry(const QByteArray &geometry);
 void settings_save_main_window_state(const QByteArray &state);
 QByteArray settings_load_main_window_state();
 void settings_save_console_state(const QVariant &state);
-QByteArray settings_load_console_state();
+QVariant settings_load_console_state();
 
 // Does two things. First it restores previously saved
 // geometry, if it exists. Then it connects to dialogs
