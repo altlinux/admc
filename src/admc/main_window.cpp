@@ -422,8 +422,7 @@ void MainWindow::restore_main_window_state() {
         center_widget(this);
     }
 
-    const QByteArray state =
-        settings_get_byte_array(SETTING_main_window_state);
+    const QByteArray state = settings_load_main_window_state();
     if (!state.isEmpty()) {
         restoreState(state);
     } else {

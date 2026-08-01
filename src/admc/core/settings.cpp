@@ -125,6 +125,10 @@ void settings_save_main_window_state(const QByteArray &state) {
     settings_set_variant(SETTING_main_window_state, state);
 }
 
+QByteArray settings_load_main_window_state() {
+    return settings_get_byte_array(SETTING_main_window_state);
+}
+
 void settings_save_console_state(const QVariant &state) {
     settings_set_variant(SETTING_console_widget_state, state);
 }
