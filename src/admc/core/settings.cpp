@@ -117,6 +117,10 @@ void settings_set_variant(const QString setting, const QVariant &value) {
     settings.setValue(setting, value);
 }
 
+void settings_save_main_window_geometry(const QByteArray &geometry) {
+    settings_set_variant(SETTING_main_window_geometry, geometry);
+}
+
 /**
  * Get a list of remembered principals.
  */
