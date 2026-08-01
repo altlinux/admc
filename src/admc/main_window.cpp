@@ -96,9 +96,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     settings_save_main_window_geometry(saveGeometry());
-
-    const QByteArray state = saveState();
-    settings_set_variant(SETTING_main_window_state, state);
+    settings_save_main_window_state(saveState());
 
     const QVariant console_state = ui->console->save_state();
     settings_set_variant(SETTING_console_widget_state, console_state);
