@@ -23,6 +23,7 @@
 #define CORE_UTILS_H
 
 #include <QList>
+#include <QRegularExpressionValidator>
 #include <QStandardItem>
 
 QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list);
@@ -40,5 +41,6 @@ QList<QPersistentModelIndex> persistent_index_list(
     const QList<QModelIndex> &indexes);
 QList<QModelIndex> normal_index_list(
     const QList<QPersistentModelIndex> &indexes);
+QRegularExpressionValidator* make_decimal_numbers_validator(QObject *parent);
 
 #endif

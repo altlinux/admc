@@ -66,8 +66,7 @@ void set_horizontal_header_labels_from_map(
 }
 
 void set_line_edit_to_decimal_numbers_only(QLineEdit *edit) {
-    edit->setValidator(
-        new QRegularExpressionValidator(QRegularExpression("[0-9]*"), edit));
+    edit->setValidator(make_decimal_numbers_validator(edit));
 }
 
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {

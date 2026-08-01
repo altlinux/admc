@@ -175,3 +175,13 @@ QList<QModelIndex> normal_index_list(
 
     return out;
 }
+
+/**
+ * Make a validator which ensures that a string contains only decimal numbers.
+ *
+ * @return A new validator instance.
+ */
+QRegularExpressionValidator* make_decimal_numbers_validator(QObject *parent) {
+    return new QRegularExpressionValidator(QRegularExpression("[0-9]*"),
+                                           parent);
+}
