@@ -81,6 +81,10 @@ bool settings_restore_geometry(const QString setting, QWidget *widget) {
     }
 }
 
+bool settings_restore_main_window_geometry(QWidget* widget) {
+    return settings_restore_geometry(SETTING_main_window_geometry, widget);
+}
+
 void settings_save_header_state(const QString setting, QHeaderView *header) {
     const QByteArray state = header->saveState();
     settings_set_variant(setting, state);

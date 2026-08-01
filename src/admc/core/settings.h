@@ -173,6 +173,7 @@ void settings_setup_dialog_geometry(const QString setting, QDialog *dialog);
 // should check for the return and perform default
 // sizing in the false case.
 bool settings_restore_geometry(const QString setting, QWidget *widget);
+bool settings_restore_main_window_geometry(QWidget* widget);
 
 void settings_save_header_state(const QString setting, QHeaderView *header);
 bool settings_restore_header_state(const QString setting, QHeaderView *header);

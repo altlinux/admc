@@ -421,8 +421,7 @@ void MainWindow::restore_console_widget_state() {
 }
 
 void MainWindow::restore_main_window_state() {
-    const bool restored_geometry =
-        settings_restore_geometry(SETTING_main_window_geometry, this);
+    const bool restored_geometry = settings_restore_main_window_geometry(this);
     if (!restored_geometry) {
         resize(1024, 768);
         center_widget(this);
