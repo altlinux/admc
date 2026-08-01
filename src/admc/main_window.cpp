@@ -431,12 +431,8 @@ void MainWindow::restore_main_window_state() {
 }
 
 void MainWindow::show_changelog_on_update() {
-    const QString last_version =
-        settings_get_string(SETTING_last_opened_version);
-    bool first_time_opening_this_version = (last_version != ADMC_VERSION);
-
-    if (first_time_opening_this_version) {
-        settings_set_variant(SETTING_last_opened_version, ADMC_VERSION);
+    if (settings_has_admc_been_updated()) {
+        settings_save_last_opened_version();
         open_changelog();
     }
 }

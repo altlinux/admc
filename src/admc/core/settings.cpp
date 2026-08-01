@@ -137,6 +137,26 @@ QVariant settings_load_console_state() {
     return settings_get_variant(SETTING_console_widget_state);
 }
 
+QString settings_load_last_opened_version() {
+    return settings_get_string(SETTING_last_opened_version);
+}
+
+void settings_save_last_opened_version() {
+    settings_set_variant(SETTING_last_opened_version, ADMC_VERSION);
+}
+
+/**
+ * Check if the current ADMC version matches the version number stored in the
+ * settings.
+ *
+ * @return True if ADMC has been updated (thus the current version does not
+ * match the saved one), false otherwise.
+ */
+bool settings_has_admc_been_updated() {
+    const QString last_version = settings_load_last_opened_version();
+    return (last_version != ADMC_VERSION);
+}
+
 /**
  * Get a list of remembered principals.
  */
