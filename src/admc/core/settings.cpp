@@ -21,7 +21,7 @@
 
 #include "core/settings.h"
 
-#include "config.h"
+#include "core/config.h"
 #include "connection_options_dialog.h"
 
 #include <QAction>

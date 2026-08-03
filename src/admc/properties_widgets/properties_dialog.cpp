@@ -26,7 +26,7 @@
 #include "console_impls/object_impl/object_impl.h"
 #include "core/ad.h"
 #include "core/globals.h"
-#include "config.h"
+#include "core/config.h"
 #include "properties_warning_dialog.h"
 #include "security_sort_warning_dialog.h"
 #include "core/settings.h"

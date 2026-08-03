@@ -22,8 +22,8 @@
 #include "changelog_dialog.h"
 #include "ui_changelog_dialog.h"
 
-#include "config.h"
 #include "core/changelog.h"
+#include "core/config.h"
 #include "core/settings.h"
 
 #include <QCoreApplication>

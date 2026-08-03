@@ -24,7 +24,7 @@
 #include <QStandardPaths>
 #include <QString>
 
-#include "config.h"
+#include "core/config.h"
 
 /**
  * Read a change log file and return its contents.

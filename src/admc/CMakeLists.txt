@@ -22,7 +22,7 @@ else()
     set(ADMC_ENABLE_NATIVE_LAPS 0)
 endif()
 
-configure_file("config.h.in" "config.h")
+configure_file("core/config.h.in" "core/config.h")
 
 include_directories(
     PRIVATE

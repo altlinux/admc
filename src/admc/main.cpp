@@ -21,7 +21,7 @@
  */
 
 #include "adldap.h"
-#include "config.h"
+#include "core/config.h"
 #include "core/globals.h"
 #include "main_window.h"
 #include "main_window_connection_error.h"
