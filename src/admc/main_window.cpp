@@ -24,7 +24,7 @@
 #include <QModelIndex>
 #include <QActionGroup>
 
-#include "about_dialog.h"
+#include "ui/about_dialog.h"
 #include "adldap.h"
 #include "attribute_edits/country_combo.h"
 #include "auth_dialogs/krb_auth_dialog.h"
