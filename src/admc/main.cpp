@@ -20,23 +20,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "adldap.h"
-#include "core/config.h"
-#include "core/globals.h"
-#include "main_window.h"
-#include "main_window_connection_error.h"
-#include "core/settings.h"
-#include "status.h"
-#include "utils.h"
-#include "connection_options_dialog.h"
-#include "locale.h"
-
 #include <QApplication>
 #include <QDebug>
-#include <QLibraryInfo>
-#include <QTranslator>
 #include <QGuiApplication>
+#include <QLibraryInfo>
 #include <QScreen>
+#include <QTranslator>
+
+#include "adldap.h"
+#include "connection_options_dialog.h"
+#include "core/config.h"
+#include "core/globals.h"
+#include "core/settings.h"
+#include "locale.h"
+#include "main_window.h"
+#include "main_window_connection_error.h"
+#include "status.h"
+#include "utils.h"
 
 int main(int argc, char **argv) {
     Q_INIT_RESOURCE(adldap);
