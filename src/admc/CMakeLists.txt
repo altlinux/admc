@@ -69,6 +69,7 @@ set(ADMC_SOURCES
     core/search_thread.cpp
     core/settings.cpp
     core/utils.cpp
+    ui/changelog_dialog.cpp
     status.cpp
     utils.cpp
 
@@ -133,7 +134,6 @@ set(ADMC_SOURCES
     about_dialog.cpp
     security_sort_warning_dialog.cpp
     connection_options_dialog.cpp
-    changelog_dialog.cpp
     error_log_dialog.cpp
 
     fsmo/fsmo_dialog.cpp

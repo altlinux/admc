@@ -28,7 +28,7 @@
 #include "adldap.h"
 #include "attribute_edits/country_combo.h"
 #include "auth_dialogs/krb_auth_dialog.h"
-#include "changelog_dialog.h"
+#include "ui/changelog_dialog.h"
 #include "connection_options_dialog.h"
 #include "console_impls/all_policies_folder_impl.h"
 #include "console_impls/domain_info_impl.h"
