@@ -33,7 +33,7 @@
 #include "console_impls/query_item_impl.h"
 #include "console_widget/results_view.h"
 #include "core/globals.h"
-#include "password_dialog.h"
+#include "ui/password_dialog.h"
 #include "select_dialogs/select_container_dialog.h"
 #include "select_dialogs/select_object_dialog.h"
 #include "find_widgets/find_object_dialog.h"

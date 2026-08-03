@@ -72,6 +72,7 @@ set(ADMC_SOURCES
     ui/about_dialog.cpp
     ui/changelog_dialog.cpp
     ui/error_log_dialog.cpp
+    ui/password_dialog.cpp
     status.cpp
     utils.cpp
 
@@ -132,7 +133,6 @@ set(ADMC_SOURCES
     find_widgets/find_widget.cpp
 
     console_filter_dialog.cpp
-    password_dialog.cpp
 
     security_sort_warning_dialog.cpp
     connection_options_dialog.cpp

@@ -27,9 +27,9 @@
 #include "attribute_edits/unlock_edit.h"
 #include "core/globals.h"
 #include "core/settings.h"
-#include "password_dialog.h"
 #include "status.h"
-#include "ui_password_dialog.h"
+#include "ui/password_dialog.h"
+#include "ui/ui_password_dialog.h"
 #include "utils.h"
 
 PasswordDialog::PasswordDialog(AdInterface &ad, const
