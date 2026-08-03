@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -19,8 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "password_dialog.h"
-#include "ui_password_dialog.h"
+#include <QPushButton>
 
 #include "adldap.h"
 #include "attribute_edits/account_option_edit.h"
@@ -28,22 +27,27 @@
 #include "attribute_edits/unlock_edit.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "password_dialog.h"
 #include "status.h"
+#include "ui_password_dialog.h"
 #include "utils.h"
 
-#include <QPushButton>
-
-PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
-: QDialog(parent) {
+PasswordDialog::PasswordDialog(AdInterface &ad, const
+                               QString &target_arg,
+                               QWidget *parent)
+    : QDialog(parent)
+{
     ui = new Ui::PasswordDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
-
-    auto password_main_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, ui->show_password_check, this);
-
-    pass_expired_edit = new AccountOptionEdit(ui->expired_check, AccountOption_PasswordExpired, this);
-
+    auto password_main_edit = new PasswordEdit(ui->password_main_edit,
+                                               ui->password_confirm_edit,
+                                               ui->show_password_check,
+                                               this);
+    pass_expired_edit = new AccountOptionEdit(ui->expired_check,
+                                              AccountOption_PasswordExpired,
+                                              this);
     auto unlock_edit = new UnlockEdit(ui->unlock_check, this);
 
     target = target_arg;
@@ -71,7 +75,8 @@ PasswordDialog::PasswordDialog(AdInterface &ad, const QString &target_arg, QWidg
         ui->expired_check->setChecked(true);
     } else {
         ui->expired_check->setEnabled(false);
-        ui->expired_check->setToolTip(tr("Option is unavailable because a conflicting account option is currently enabled."));
+        ui->expired_check->setToolTip(
+            tr("Option is unavailable because a conflicting account option is currently enabled."));
     }
 
     required_list = {
