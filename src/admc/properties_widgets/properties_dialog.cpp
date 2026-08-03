@@ -19,17 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "properties_dialog.h"
-#include "ui_properties_dialog.h"
+#include <QAbstractItemView>
+#include <QAction>
+#include <QDebug>
+#include <QLabel>
+#include <QPushButton>
 
 #include "adldap.h"
 #include "console_impls/object_impl/object_impl.h"
 #include "core/ad.h"
-#include "core/globals.h"
 #include "core/config.h"
+#include "core/globals.h"
+#include "core/settings.h"
+#include "properties_dialog.h"
 #include "properties_warning_dialog.h"
 #include "security_sort_warning_dialog.h"
-#include "core/settings.h"
 #include "status.h"
 #include "tab_widget.h"
 #include "tabs/account_tab.h"
@@ -43,12 +47,15 @@
 #include "tabs/general_ou_tab.h"
 #include "tabs/general_policy_tab.h"
 #include "tabs/general_shared_folder_tab.h"
+#include "tabs/general_site_tab.h"
 #include "tabs/general_user_tab.h"
 #include "tabs/group_policy_tab.h"
 #include "tabs/laps_tab.h"
+
 #if ADMC_ENABLE_NATIVE_LAPS > 0
 #include "tabs/laps_v2_tab.h"
 #endif
+
 #include "tabs/managed_by_tab.h"
 #include "tabs/membership_tab.h"
 #include "tabs/object_tab.h"
@@ -56,16 +63,10 @@
 #include "tabs/os_tab.h"
 #include "tabs/profile_tab.h"
 #include "tabs/security_tab.h"
-#include "tabs/telephones_tab.h"
 #include "tabs/sites_link_tab/sites_link_general_tab.h"
-#include "tabs/general_site_tab.h"
+#include "tabs/telephones_tab.h"
+#include "ui_properties_dialog.h"
 #include "utils.h"
-
-#include <QAbstractItemView>
-#include <QAction>
-#include <QDebug>
-#include <QLabel>
-#include <QPushButton>
 
 QHash<QString, PropertiesDialog *> PropertiesDialog::instances;
 
