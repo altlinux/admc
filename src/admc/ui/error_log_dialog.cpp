@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "error_log_dialog.h"
-#include "ui_error_log_dialog.h"
+#include "ui/error_log_dialog.h"
+#include "ui/ui_error_log_dialog.h"
 
 #include "core/settings.h"
 
