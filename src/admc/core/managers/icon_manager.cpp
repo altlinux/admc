@@ -116,6 +116,7 @@ IconManager::IconManagerImpl::IconManagerImpl(IconManager *parent) : q(parent) {
         {ADMC_CATEGORY_GO_UP_ACTION, {"go-up", "go-up-symbolic"}},
         {ADMC_CATEGORY_REFRESH_ACTION, {"view-refresh", "view-refresh-symbolic"}},
         {ADMC_CATEGORY_MANUAL_ACTION, {"help", "help-about", "help-about-symbolic"}},
+        {ADMC_CATEGORY_PINNED_CONTAINER, {"Container", "help-about", "help-about-symbolic"}},
 
         // Icons for some system containers and objects
         {OBJECT_CATEGORY_BUILTIN, {"emblem-system", "emblem-system-symbolic"}},
@@ -243,6 +244,7 @@ void IconManager::IconManagerImpl::update_icons_array() {
     item_icons_array[ItemIcon_Site_NTDS_Settings] = q->category_icon(OBJECT_CATEGORY_NTDS_SITE_SETTINGS);
     item_icons_array[ItemIcon_Sites_Container] = q->category_icon(OBJECT_CATEGORY_SITES_CONTAINER);
     item_icons_array[ItemIcon_Server] = q->category_icon(OBJECT_CATEGORY_DOMAIN_DNS); // Domain icon for site server (for now)
+    item_icons_array[ItemIcon_Pinned_Container] = q->category_icon(ADMC_CATEGORY_PINNED_CONTAINER);
 }
 
 const QIcon IconManager::item_icon(ItemIcon icon_type) const {

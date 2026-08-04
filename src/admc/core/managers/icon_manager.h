@@ -38,6 +38,7 @@ enum ItemIcon {
     ItemIcon_InterSite_Transport_Container,
     ItemIcon_InterSite_Transport,
     ItemIcon_Server,
+    ItemIcon_Pinned_Container,
 
     ItemIcon_COUNT
 };

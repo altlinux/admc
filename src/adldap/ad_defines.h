@@ -323,6 +323,7 @@ enum SystemFlagsBit {
 #define ADMC_CATEGORY_GO_NEXT_ACTION "go-next-action"
 #define ADMC_CATEGORY_MANUAL_ACTION "help-action"
 #define ADMC_CATEGORY_REFRESH_ACTION "refresh-action"
+#define ADMC_CATEGORY_PINNED_CONTAINER "pinned-container"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
