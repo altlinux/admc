@@ -324,6 +324,15 @@ enum SystemFlagsBit {
 #define ADMC_CATEGORY_MANUAL_ACTION "help-action"
 #define ADMC_CATEGORY_REFRESH_ACTION "refresh-action"
 #define ADMC_CATEGORY_PINNED_CONTAINER "pinned-container"
+#define ADMC_CATEGORY_OU_INHERITANCE_BLOCKED "ou-inheritance-blocked"
+#define ADMC_CATEGORY_GP_LINK "gp-link"
+#define ADMC_CATEGORY_GP_ENFORCED "gp-link-enforced"
+#define ADMC_CATEGORY_GP_DISABLED "gp-link-disabled"
+#define ADMC_CATEGORY_GP_ENFORCED_DISABLED "gp-link-enforced-disabled"
+#define ADMC_CATEGORY_DOMAIN_INHERITANCE_BLOCKED "domain-inheritance-blocked"
+#define ADMC_CATEGORY_PERSON_BLOCKED "person-blocked"
+#define ADMC_CATEGORY_COMPUTER_BLOCKED "computer-blocked"
+
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 
