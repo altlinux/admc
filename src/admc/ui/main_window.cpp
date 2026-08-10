@@ -372,9 +372,9 @@ void MainWindow::setup_complex_settings(ObjectImpl *obj_impl) {
 void MainWindow::init_globals() {
     g_status->init(ui->statusbar, ui->message_log_edit);
     const QMap<QString, QAction*> category_action_map = {
-        { OBJECT_CATEGORY_OU, ui->action_create_ou },
-        { OBJECT_CATEGORY_PERSON, ui->action_create_user },
-        { OBJECT_CATEGORY_GROUP, ui->action_create_group },
+        { ADMC_CATEGORY_OU_ADD, ui->action_create_ou },
+        { ADMC_CATEGORY_PERSON_ADD, ui->action_create_user },
+        { ADMC_CATEGORY_GROUP_ADD, ui->action_create_group },
         { ADMC_CATEGORY_GO_PREVIOUS_ACTION, ui->action_navigate_back },
         { ADMC_CATEGORY_GO_NEXT_ACTION, ui->action_navigate_forward },
         { ADMC_CATEGORY_MANUAL_ACTION, ui->action_manual },

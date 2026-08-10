@@ -332,7 +332,9 @@ enum SystemFlagsBit {
 #define ADMC_CATEGORY_DOMAIN_INHERITANCE_BLOCKED "domain-inheritance-blocked"
 #define ADMC_CATEGORY_PERSON_BLOCKED "person-blocked"
 #define ADMC_CATEGORY_COMPUTER_BLOCKED "computer-blocked"
-
+#define ADMC_CATEGORY_PERSON_ADD "person-add"
+#define ADMC_CATEGORY_GROUP_ADD "group-add"
+#define ADMC_CATEGORY_OU_ADD "ou-add"
 
 #define LOCKOUT_UNLOCKED_VALUE "0"
 

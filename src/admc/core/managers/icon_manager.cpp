@@ -117,6 +117,9 @@ IconManager::IconManagerImpl::IconManagerImpl(IconManager *parent) : q(parent) {
         {ADMC_CATEGORY_REFRESH_ACTION, {"view-refresh", "view-refresh-symbolic"}},
         {ADMC_CATEGORY_MANUAL_ACTION, {"help", "help-about", "help-about-symbolic"}},
         {ADMC_CATEGORY_PINNED_CONTAINER, {"Container", "folder", "folder-symbolic"}},
+        {ADMC_CATEGORY_GROUP_ADD, {OBJECT_CATEGORY_GROUP, "system-users", "system-users-symbolic"}},
+        {ADMC_CATEGORY_OU_ADD, {OBJECT_CATEGORY_OU, "folder-documents", "folder-documents-symbolic"}},
+        {ADMC_CATEGORY_PERSON_ADD, {OBJECT_CATEGORY_PERSON, "avatar-default", "avatar-default-symbolic"}},
 
         // Icons for some system containers and objects
         {OBJECT_CATEGORY_BUILTIN, {"emblem-system", "emblem-system-symbolic"}},
@@ -234,6 +237,9 @@ void IconManager::IconManagerImpl::update_icons_array() {
     item_icons_array[ItemIcon_Sites_Container] = q->category_icon(OBJECT_CATEGORY_SITES_CONTAINER);
     item_icons_array[ItemIcon_Server] = q->category_icon(OBJECT_CATEGORY_DOMAIN_DNS); // Domain icon for site server (for now)
     item_icons_array[ItemIcon_Pinned_Container] = q->category_icon(ADMC_CATEGORY_PINNED_CONTAINER);
+    item_icons_array[ItemIcon_Person_Add] = q->category_icon(ADMC_CATEGORY_PERSON_ADD);
+    item_icons_array[ItemIcon_OU_Add] = q->category_icon(ADMC_CATEGORY_OU_ADD);
+    item_icons_array[ItemIcon_Group_Add] = q->category_icon(ADMC_CATEGORY_GROUP_ADD);
 }
 
 const QIcon IconManager::item_icon(ItemIcon icon_type) const {
