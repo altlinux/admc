@@ -60,7 +60,8 @@ public:
     // system_theme field contains current system theme
     // name that may not be fallback.
     QString system_theme;
-    QString custom_theme = "ad-integration-themes";
+    const QString system_icons_dir_path = "/usr/share/icons";
+    const QDir custom_themes_dir = system_icons_dir_path + "/ad-integration-themes";
 
     //Enums positions where scope item icon can be overlayed
     //by another icon
@@ -327,8 +328,8 @@ bool IconManager::IconManagerImpl::main_icons_are_valid() {
 }
 
 QStringList IconManager::available_themes() {
-    const QStringList available_themes = {impl->system_theme, impl->custom_theme};
-
+    QStringList available_themes = impl->custom_themes_dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    available_themes.prepend(impl->system_theme);
     return available_themes;
 }
 
@@ -343,10 +344,9 @@ QString IconManager::localized_theme_name(const QLocale locale, const QString &t
     const QString search_string = "Name=";
     const QString search_string_localized = language_string_map.contains(language) ? QString("Name%1=").arg(language_string_map[language]):
                                                                                      QString();
-    const QString system_icons_dir_path = "/usr/share/icons";
     const bool theme_is_system = theme == impl->system_theme;
-    const QDir theme_dir = theme_is_system ? QDir(system_icons_dir_path).filePath(theme) :
-                                                                 QDir(system_icons_dir_path).filePath(impl->custom_theme);
+    const QDir theme_dir = theme_is_system ? QDir(impl->system_icons_dir_path).filePath(theme) :
+                                                                 QDir(impl->custom_themes_dir).filePath(theme);
     QFile index_theme_file(theme_dir.filePath("index.theme"));
     if (! index_theme_file.exists()) {
         return QString();
@@ -386,6 +386,9 @@ QString IconManager::localized_theme_name(const QLocale locale, const QString &t
 }
 
 IconManager::IconManager() : impl(std::unique_ptr<IconManagerImpl>(new IconManagerImpl(this))) {
+
+    QIcon::setThemeSearchPaths(QIcon::themeSearchPaths()
+        << "/usr/share/icons/ad-integration-themes");
 }
 
 void IconManager::init(const QMap<QString, QAction *> &category_action_map) {

@@ -42,7 +42,7 @@ BuildRequires: libgkdi-devel
 
 Requires: libsasl2
 Requires: libsasl2-plugin-gssapi
-Requires: ad-integration-themes >= 3.0
+Requires: ad-integration-themes >= 4.0
 Requires: qt6-svg
 Requires: qt6-translations
 
