@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +21,8 @@
 
 #include "admc_test_octet_attribute_dialog.h"
 
-#include "attribute_dialogs/octet_attribute_dialog.h"
-#include "attribute_dialogs/ui_octet_attribute_dialog.h"
+#include "ui/dialog/attribute/octet.h"
+#include "ui/dialog/attribute/ui_octet.h"
 
 #include <QComboBox>
 #include <QPlainTextEdit>

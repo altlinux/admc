@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_dialogs/octet_attribute_dialog.h"
-#include "attribute_dialogs/ui_octet_attribute_dialog.h"
+#include "ui/dialog/attribute/octet.h"
+#include "ui/dialog/attribute/ui_octet.h"
 
 #include "adldap.h"
 #include "core/attribute.h"

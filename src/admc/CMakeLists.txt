@@ -77,6 +77,7 @@ set(ADMC_SOURCES
     ui/dialog/attribute/hex_number.cpp
     ui/dialog/attribute/list.cpp
     ui/dialog/attribute/number.cpp
+    ui/dialog/attribute/octet.cpp
     ui/dialog/auth/krb_auth.cpp
     ui/dialog/changelog.cpp
     ui/dialog/connection_options.cpp
@@ -234,7 +235,6 @@ set(ADMC_SOURCES
     attribute_edits/account_option_multi_edit.cpp
 
     attribute_dialogs/string_attribute_dialog.cpp
-    attribute_dialogs/octet_attribute_dialog.cpp
     attribute_dialogs/time_span_attribute_dialog.cpp
 
     console_widget/console_widget.cpp

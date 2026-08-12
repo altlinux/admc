@@ -24,7 +24,7 @@
 
 #include "adldap.h"
 #include "ui/dialog/attribute/attribute.h"
-#include "attribute_dialogs/octet_attribute_dialog.h"
+#include "ui/dialog/attribute/octet.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "utils.h"
