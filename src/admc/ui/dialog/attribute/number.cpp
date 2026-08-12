@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_dialogs/number_attribute_dialog.h"
-#include "attribute_dialogs/ui_number_attribute_dialog.h"
+#include "ui/dialog/attribute/number.h"
+#include "ui/dialog/attribute/ui_number.h"
 
 #include "adldap.h"
 #include "core/globals.h"

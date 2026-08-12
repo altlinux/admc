@@ -29,10 +29,9 @@
 #include "ui/dialog/attribute/bool.h"
 #include "ui/dialog/attribute/datetime.h"
 #include "ui/dialog/attribute/list.h"
-#include "attribute_dialogs/number_attribute_dialog.h"
+#include "ui/dialog/attribute/number.h"
 #include "attribute_dialogs/octet_attribute_dialog.h"
 #include "attribute_dialogs/string_attribute_dialog.h"
-#include "attribute_dialogs/number_attribute_dialog.h"
 #include "ui/dialog/attribute/hex_number.h"
 #include "attribute_dialogs/time_span_attribute_dialog.h"
 
