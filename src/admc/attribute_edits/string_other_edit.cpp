@@ -22,7 +22,7 @@
 #include "attribute_edits/string_other_edit.h"
 
 #include "adldap.h"
-#include "attribute_dialogs/list_attribute_dialog.h"
+#include "ui/dialog/attribute/list.h"
 #include "attribute_edits/string_edit.h"
 #include "core/globals.h"
 

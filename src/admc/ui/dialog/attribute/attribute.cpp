@@ -28,7 +28,7 @@
 #include "core/globals.h"
 #include "ui/dialog/attribute/bool.h"
 #include "ui/dialog/attribute/datetime.h"
-#include "attribute_dialogs/list_attribute_dialog.h"
+#include "ui/dialog/attribute/list.h"
 #include "attribute_dialogs/number_attribute_dialog.h"
 #include "attribute_dialogs/octet_attribute_dialog.h"
 #include "attribute_dialogs/string_attribute_dialog.h"

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_dialogs/list_attribute_dialog.h"
-#include "attribute_dialogs/ui_list_attribute_dialog.h"
+#include "ui/dialog/attribute/list.h"
+#include "ui/dialog/attribute/ui_list.h"
 
 #include "adldap.h"
 #include "ui/dialog/attribute/attribute.h"

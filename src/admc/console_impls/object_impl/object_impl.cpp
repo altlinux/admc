@@ -23,7 +23,7 @@
 
 #include "core/ad.h"
 #include "adldap.h"
-#include "attribute_dialogs/list_attribute_dialog.h"
+#include "ui/dialog/attribute/list.h"
 #include "ui/dialog/console_filter.h"
 #include "console_impls/find_object_impl.h"
 #include "console_impls/item_type.h"
