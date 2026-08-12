@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "time_span_attribute_dialog.h"
-#include "ui_time_span_attribute_dialog.h"
+#include "ui/dialog/attribute/time_span.h"
+#include "ui/dialog/attribute/ui_time_span.h"
 
 #include "core/settings.h"
 #include "utils.h"

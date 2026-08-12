@@ -33,7 +33,7 @@
 #include "ui/dialog/attribute/octet.h"
 #include "ui/dialog/attribute/string.h"
 #include "ui/dialog/attribute/hex_number.h"
-#include "attribute_dialogs/time_span_attribute_dialog.h"
+#include "ui/dialog/attribute/time_span.h"
 
 
 #include <QLabel>
