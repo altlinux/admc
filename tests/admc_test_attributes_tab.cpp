@@ -23,8 +23,8 @@
 
 #include "ui/dialog/attribute/list.h"
 #include "ui/dialog/attribute/ui_list.h"
-#include "attribute_dialogs/string_attribute_dialog.h"
-#include "attribute_dialogs/ui_string_attribute_dialog.h"
+#include "ui/dialog/attribute/string.h"
+#include "ui/dialog/attribute/ui_string.h"
 #include "tabs/ui_attributes_tab.h"
 
 #include <QDialog>

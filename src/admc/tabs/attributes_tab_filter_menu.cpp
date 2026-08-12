@@ -26,7 +26,7 @@
 #include "ui/dialog/attribute/datetime.h"
 #include "ui/dialog/attribute/list.h"
 #include "ui/dialog/attribute/octet.h"
-#include "attribute_dialogs/string_attribute_dialog.h"
+#include "ui/dialog/attribute/string.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "utils.h"

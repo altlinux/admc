@@ -31,7 +31,7 @@
 #include "ui/dialog/attribute/list.h"
 #include "ui/dialog/attribute/number.h"
 #include "ui/dialog/attribute/octet.h"
-#include "attribute_dialogs/string_attribute_dialog.h"
+#include "ui/dialog/attribute/string.h"
 #include "ui/dialog/attribute/hex_number.h"
 #include "attribute_dialogs/time_span_attribute_dialog.h"
 

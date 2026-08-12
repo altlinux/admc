@@ -23,7 +23,7 @@
 
 #include "ui/dialog/attribute/list.h"
 #include "ui/dialog/attribute/ui_list.h"
-#include "attribute_dialogs/string_attribute_dialog.h"
+#include "ui/dialog/attribute/string.h"
 #include "attribute_edits/string_other_edit.h"
 
 #include <QFormLayout>
