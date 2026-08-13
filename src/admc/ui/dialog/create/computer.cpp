@@ -19,14 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/create/computer.h"
-#include "ui/dialog/create/ui_computer.h"
-
 #include "adldap.h"
 #include "attribute_edits/computer_sam_name_edit.h"
 #include "attribute_edits/upn_edit.h"
-#include "create_object_helper.h"
 #include "core/settings.h"
+#include "create_object_helper.h"
+#include "ui/dialog/create/computer.h"
+#include "ui/dialog/create/ui_computer.h"
 #include "utils.h"
 
 CreateComputerDialog::CreateComputerDialog(const QString &parent_dn, QWidget *parent)

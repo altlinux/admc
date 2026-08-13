@@ -19,18 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/select/policy.h"
-#include "ui/dialog/select/ui_policy.h"
+#include <QPushButton>
+#include <QStandardItemModel>
 
 #include "adldap.h"
 #include "console_impls/policy_impl.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "ui/dialog/select/policy.h"
+#include "ui/dialog/select/ui_policy.h"
 #include "ui/status.h"
 #include "utils.h"
-
-#include <QPushButton>
-#include <QStandardItemModel>
 
 SelectPolicyDialog::SelectPolicyDialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {

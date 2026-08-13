@@ -19,17 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/changelog.h"
-#include "ui/dialog/ui_changelog.h"
-
-#include "core/changelog.h"
-#include "core/config.h"
-#include "core/settings.h"
-
 #include <QCoreApplication>
 #include <QDebug>
 #include <QStandardPaths>
 #include <QFile>
+
+#include "core/changelog.h"
+#include "core/config.h"
+#include "core/settings.h"
+#include "ui/dialog/changelog.h"
+#include "ui/dialog/ui_changelog.h"
 
 ChangelogDialog::ChangelogDialog(QWidget *parent)
 : QDialog(parent) {

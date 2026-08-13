@@ -19,13 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/rename/group.h"
-#include "ui/dialog/rename/ui_group.h"
-
 #include "ad_defines.h"
 #include "attribute_edits/sam_name_edit.h"
-#include "rename_object_helper.h"
 #include "core/settings.h"
+#include "rename_object_helper.h"
+#include "ui/dialog/rename/group.h"
+#include "ui/dialog/rename/ui_group.h"
 #include "utils.h"
 
 RenameGroupDialog::RenameGroupDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)

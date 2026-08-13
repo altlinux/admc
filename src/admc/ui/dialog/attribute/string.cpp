@@ -19,12 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/attribute/string.h"
-#include "ui/dialog/attribute/ui_string.h"
-
 #include "adldap.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "ui/dialog/attribute/string.h"
+#include "ui/dialog/attribute/ui_string.h"
 #include "utils.h"
 
 StringAttributeDialog::StringAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)

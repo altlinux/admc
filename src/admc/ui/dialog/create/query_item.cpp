@@ -19,11 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/create/query_item.h"
-#include "ui/dialog/create/ui_query_item.h"
-
 #include "console_impls/query_folder_impl.h"
 #include "core/settings.h"
+#include "ui/dialog/create/query_item.h"
+#include "ui/dialog/create/ui_query_item.h"
 
 CreateQueryItemDialog::CreateQueryItemDialog(const QList<QString> &sibling_name_list_arg, QWidget *parent)
 : QDialog(parent) {

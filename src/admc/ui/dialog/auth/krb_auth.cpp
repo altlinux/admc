@@ -18,16 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-#include "ui/dialog/auth/krb_auth.h"
-#include "ui/dialog/auth/ui_krb_auth.h"
-
+#include <QDebug>
 #include <stdexcept>
+
 #include "core/settings.h"
 #include "krb5client.h"
+#include "ui/dialog/auth/krb_auth.h"
+#include "ui/dialog/auth/ui_krb_auth.h"
 #include "utils.h"
-#include <QDebug>
-
 
 KrbAuthDialog::KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg) : AuthDialogBase(parent),
     ui(new Ui::KrbAuthDialog), client(krb_client_arg) {

@@ -17,15 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QString>
+
+#include "ad_defines.h"
+#include "ad_display.cpp"
+#include "core/settings.h"
 #include "ui/dialog/attribute/time_span.h"
 #include "ui/dialog/attribute/ui_time_span.h"
-
-#include "core/settings.h"
 #include "utils.h"
-#include "ad_display.cpp"
-#include "ad_defines.h"
-
-#include <QString>
 
 TimeSpanAttributeDialog::TimeSpanAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent) :
     AttributeDialog(attribute, read_only, parent),

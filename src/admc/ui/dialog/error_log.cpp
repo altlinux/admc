@@ -19,10 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "core/settings.h"
 #include "ui/dialog/error_log.h"
 #include "ui/dialog/ui_error_log.h"
-
-#include "core/settings.h"
 
 ErrorLogDialog::ErrorLogDialog(QWidget *parent)
 : QDialog(parent) {

@@ -19,16 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/rename/policy.h"
-#include "ui/dialog/rename/ui_policy.h"
+#include <QRegularExpression>
 
 #include "adldap.h"
 #include "core/globals.h"
-#include "rename_object_helper.h"
 #include "core/settings.h"
+#include "rename_object_helper.h"
+#include "ui/dialog/rename/policy.h"
+#include "ui/dialog/rename/ui_policy.h"
 #include "ui/status.h"
 #include "utils.h"
-#include <QRegularExpression>
 
 RenamePolicyDialog::RenamePolicyDialog(AdInterface &ad, const QString &target_dn_arg, QWidget *parent)
 : QDialog(parent) {

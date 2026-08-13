@@ -19,16 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/select/container.h"
-#include "ui/dialog/select/ui_container.h"
-
-#include "adldap.h"
-#include "core/globals.h"
-#include "core/settings.h"
-#include "ui/status.h"
-#include "utils.h"
-#include "core/managers/icon_manager.h"
-
 #include <QDialogButtonBox>
 #include <QHeaderView>
 #include <QPushButton>
@@ -36,6 +26,15 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <QVBoxLayout>
+
+#include "adldap.h"
+#include "core/globals.h"
+#include "core/managers/icon_manager.h"
+#include "core/settings.h"
+#include "ui/dialog/select/container.h"
+#include "ui/dialog/select/ui_container.h"
+#include "ui/status.h"
+#include "utils.h"
 
 QStandardItem *make_container_node(const AdObject &object);
 

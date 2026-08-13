@@ -19,12 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/attribute/bool.h"
-#include "ui/dialog/attribute/ui_bool.h"
-
 #include "adldap.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "ui/dialog/attribute/bool.h"
+#include "ui/dialog/attribute/ui_bool.h"
 
 BoolAttributeDialog::BoolAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
 : AttributeDialog(attribute, read_only, parent) {

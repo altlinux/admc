@@ -19,14 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/console_filter.h"
-#include "ui/dialog/ui_console_filter.h"
-
 #include "adldap.h"
-#include "filter_widget/class_filter_widget.h"
-#include "filter_widget/filter_dialog.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "filter_widget/class_filter_widget.h"
+#include "filter_widget/filter_dialog.h"
+#include "ui/dialog/console_filter.h"
+#include "ui/dialog/ui_console_filter.h"
 
 #define FILTER_CUSTOM_DIALOG_STATE "FILTER_CUSTOM_DIALOG_STATE"
 #define FILTER_CLASSES_STATE "FILTER_CLASSES_STATE"

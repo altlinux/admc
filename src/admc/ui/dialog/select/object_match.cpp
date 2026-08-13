@@ -19,16 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/select/object_match.h"
-#include "ui/dialog/select/ui_object_match.h"
-
-#include "console_impls/object_impl/object_impl.h"
-#include "ui/dialog/select/object.h"
-#include "core/settings.h"
-#include "utils.h"
-
 #include <QPushButton>
 #include <QStandardItemModel>
+
+#include "console_impls/object_impl/object_impl.h"
+#include "core/settings.h"
+#include "ui/dialog/select/object.h"
+#include "ui/dialog/select/object_match.h"
+#include "ui/dialog/select/ui_object_match.h"
+#include "utils.h"
 
 SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
 : QDialog(parent) {

@@ -19,19 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/select/object.h"
-#include "ui/dialog/select/ui_object.h"
+#include <QStandardItemModel>
 
 #include "adldap.h"
 #include "console_impls/object_impl/object_impl.h"
 #include "core/globals.h"
+#include "core/settings.h"
 #include "core/utils.h"
+#include "ui/dialog/select/object.h"
 #include "ui/dialog/select/object_advanced.h"
 #include "ui/dialog/select/object_match.h"
-#include "core/settings.h"
+#include "ui/dialog/select/ui_object.h"
 #include "utils.h"
-
-#include <QStandardItemModel>
 
 enum SelectColumn {
     SelectColumn_Name,

@@ -19,14 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "adldap.h"
+#include "core/globals.h"
+#include "core/settings.h"
+#include "main_window.h"
+#include "ui/dialog/connection_options.h"
 #include "ui/dialog/main_window_connection_error.h"
 #include "ui/dialog/ui_main_window_connection_error.h"
-
-#include "adldap.h"
-#include "ui/dialog/connection_options.h"
-#include "core/globals.h"
-#include "main_window.h"
-#include "core/settings.h"
 #include "utils.h"
 
 MainWindowConnectionError::MainWindowConnectionError(MainWindow *main_window_arg)

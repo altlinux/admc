@@ -19,10 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "core/config.h"
 #include "ui/dialog/about.h"
 #include "ui/dialog/ui_about.h"
-
-#include "core/config.h"
 
 AboutDialog::AboutDialog(QWidget *parent)
 : QDialog(parent) {

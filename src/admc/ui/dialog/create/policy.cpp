@@ -19,19 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/create/policy.h"
-#include "ui/dialog/create/ui_policy.h"
+#include <QPushButton>
+#include <QRegularExpression>
 
 #include "adldap.h"
 #include "console_impls/policy_impl.h"
-#include "ui/widget/console/console_widget.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "ui/dialog/create/policy.h"
+#include "ui/dialog/create/ui_policy.h"
 #include "ui/status.h"
+#include "ui/widget/console/console_widget.h"
 #include "utils.h"
-
-#include <QPushButton>
-#include <QRegularExpression>
 
 CreatePolicyDialog::CreatePolicyDialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {

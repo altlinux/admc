@@ -19,19 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/create/sites_link.h"
-#include "ui/dialog/create/ui_sites_link.h"
+#include <QListWidget>
+
+#include "ad_config.h"
 #include "ad_defines.h"
+#include "ad_filter.h"
 #include "ad_interface.h"
 #include "ad_object.h"
-#include "ad_filter.h"
-#include "core/globals.h"
-#include "ad_config.h"
-#include <QListWidget>
-#include "core/managers/icon_manager.h"
 #include "ad_utils.h"
-#include "utils.h"
+#include "core/globals.h"
+#include "core/managers/icon_manager.h"
+#include "ui/dialog/create/sites_link.h"
+#include "ui/dialog/create/ui_sites_link.h"
 #include "ui/status.h"
+#include "utils.h"
 
 CreateSitesLinkDialog::CreateSitesLinkDialog(AdInterface &ad,
                                              SitesLinkType type_arg,

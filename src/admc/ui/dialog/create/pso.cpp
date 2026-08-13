@@ -17,17 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/create/pso.h"
-#include "ui/dialog/create/ui_pso.h"
-#include "ad_interface.h"
-#include "utils.h"
-#include "ad_utils.h"
-#include "ui/status.h"
-#include "core/globals.h"
-#include "attribute_edits/protect_deletion_edit.h"
-
 #include <QPushButton>
 #include <QLineEdit>
+
+#include "ad_interface.h"
+#include "ad_utils.h"
+#include "attribute_edits/protect_deletion_edit.h"
+#include "core/globals.h"
+#include "ui/dialog/create/pso.h"
+#include "ui/dialog/create/ui_pso.h"
+#include "ui/status.h"
+#include "utils.h"
 
 CreatePSODialog::CreatePSODialog(const QString &parent_dn_arg, QWidget *parent) :
     CreateObjectDialog(parent),

@@ -19,25 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/attribute/attribute.h"
+#include <QLabel>
+#include <QDebug>
 
 #include "ad_config.h"
-#include "ad_utils.h"
-
 #include "ad_display.h"
+#include "ad_utils.h"
 #include "core/globals.h"
+#include "ui/dialog/attribute/attribute.h"
 #include "ui/dialog/attribute/bool.h"
 #include "ui/dialog/attribute/datetime.h"
+#include "ui/dialog/attribute/hex_number.h"
 #include "ui/dialog/attribute/list.h"
 #include "ui/dialog/attribute/number.h"
 #include "ui/dialog/attribute/octet.h"
 #include "ui/dialog/attribute/string.h"
-#include "ui/dialog/attribute/hex_number.h"
 #include "ui/dialog/attribute/time_span.h"
-
-
-#include <QLabel>
-#include <QDebug>
 
 AttributeDialog *AttributeDialog::make(
     const QString &attribute,

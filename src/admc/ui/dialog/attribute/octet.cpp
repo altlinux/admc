@@ -19,22 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/attribute/octet.h"
-#include "ui/dialog/attribute/ui_octet.h"
+#include <QFont>
+#include <QFontDatabase>
+#include <QRegularExpression>
+#include <cstdint>
+#include <cstdlib>
 
 #include "adldap.h"
 #include "core/attribute.h"
-#include "core/utils.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "core/utils.h"
+#include "ui/dialog/attribute/octet.h"
+#include "ui/dialog/attribute/ui_octet.h"
 #include "utils.h"
-
-#include <QFont>
-#include <QFontDatabase>
-
-#include <cstdint>
-#include <cstdlib>
-#include <QRegularExpression>
 
 OctetDisplayFormat current_format(QComboBox *format_combo);
 

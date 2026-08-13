@@ -19,14 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/attribute/list.h"
-#include "ui/dialog/attribute/ui_list.h"
-
 #include "adldap.h"
-#include "ui/dialog/attribute/attribute.h"
-#include "ui/dialog/attribute/octet.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "ui/dialog/attribute/attribute.h"
+#include "ui/dialog/attribute/list.h"
+#include "ui/dialog/attribute/octet.h"
+#include "ui/dialog/attribute/ui_list.h"
 #include "utils.h"
 
 ListAttributeDialog::ListAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)

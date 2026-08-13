@@ -19,15 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/rename/user.h"
-#include "ui/dialog/rename/ui_user.h"
-
 #include "adldap.h"
 #include "attribute_edits/sam_name_edit.h"
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/upn_edit.h"
-#include "rename_object_helper.h"
 #include "core/settings.h"
+#include "rename_object_helper.h"
+#include "ui/dialog/rename/ui_user.h"
+#include "ui/dialog/rename/user.h"
 #include "utils.h"
 
 RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)

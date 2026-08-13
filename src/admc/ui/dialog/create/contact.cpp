@@ -19,13 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/create/contact.h"
-#include "ui/dialog/create/ui_contact.h"
-
 #include "adldap.h"
 #include "attribute_edits/string_edit.h"
-#include "create_object_helper.h"
 #include "core/settings.h"
+#include "create_object_helper.h"
+#include "ui/dialog/create/contact.h"
+#include "ui/dialog/create/ui_contact.h"
 #include "utils.h"
 
 CreateContactDialog::CreateContactDialog(const QString &parent_dn, QWidget *parent)

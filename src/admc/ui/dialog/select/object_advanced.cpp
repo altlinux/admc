@@ -19,14 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/select/object_advanced.h"
-#include "ui/dialog/select/ui_object_advanced.h"
+#include <QMenuBar>
 
 #include "adldap.h"
 #include "core/globals.h"
 #include "core/settings.h"
-
-#include <QMenuBar>
+#include "ui/dialog/select/object_advanced.h"
+#include "ui/dialog/select/ui_object_advanced.h"
 
 SelectObjectAdvancedDialog::SelectObjectAdvancedDialog(const QList<QString> classes, QWidget *parent)
 : QDialog(parent) {

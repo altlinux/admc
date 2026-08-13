@@ -19,17 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/create/group.h"
-#include "ui/dialog/create/ui_group.h"
-
 #include "adldap.h"
 #include "attribute_edits/group_scope_edit.h"
 #include "attribute_edits/group_type_edit.h"
 #include "attribute_edits/sam_name_edit.h"
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/upn_edit.h"
-#include "create_object_helper.h"
 #include "core/settings.h"
+#include "create_object_helper.h"
+#include "ui/dialog/create/group.h"
+#include "ui/dialog/create/ui_group.h"
 #include "utils.h"
 
 CreateGroupDialog::CreateGroupDialog(const QString &parent_dn, QWidget *parent)

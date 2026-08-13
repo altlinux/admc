@@ -19,11 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "core/settings.h"
+#include "rename_object_helper.h"
 #include "ui/dialog/rename/other.h"
 #include "ui/dialog/rename/ui_other.h"
-
-#include "rename_object_helper.h"
-#include "core/settings.h"
 
 RenameOtherDialog::RenameOtherDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {

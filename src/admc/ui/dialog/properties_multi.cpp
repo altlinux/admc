@@ -19,27 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/properties_multi.h"
-#include "ui/dialog/ui_properties_multi.h"
+#include <QAction>
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QPushButton>
 
 #include "adldap.h"
 #include "attribute_edits/attribute_edit.h"
 #include "core/globals.h"
+#include "core/settings.h"
 #include "multi_tabs/account_multi_tab.h"
 #include "multi_tabs/address_multi_tab.h"
 #include "multi_tabs/general_other_multi_tab.h"
 #include "multi_tabs/general_user_multi_tab.h"
 #include "multi_tabs/organization_multi_tab.h"
 #include "multi_tabs/profile_multi_tab.h"
-#include "core/settings.h"
+#include "ui/dialog/properties_multi.h"
+#include "ui/dialog/ui_properties_multi.h"
 #include "ui/status.h"
 #include "ui/widget/tab.h"
 #include "utils.h"
-
-#include <QAction>
-#include <QCheckBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
 
 PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QString> &target_list_arg, const QList<QString> &class_list)
 : QDialog() {

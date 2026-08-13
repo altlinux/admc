@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QPushButton>
+
 #include "ui/dialog/properties_warning.h"
 #include "ui/dialog/ui_properties_warning.h"
-
-#include <QPushButton>
 
 PropertiesWarningDialog::PropertiesWarningDialog(const PropertiesWarningType type, QWidget *parent)
 : QDialog(parent) {

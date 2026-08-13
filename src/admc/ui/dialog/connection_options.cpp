@@ -19,24 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/connection_options.h"
-#include "ui/dialog/ui_connection_options.h"
+#include <QDebug>
+#include <QPushButton>
+#include <functional>
+#include <stdexcept>
 
 #include "adldap.h"
 #include "core/ad.h"
 #include "core/fsmo.h"
-#include "core/settings.h"
-#include "utils.h"
-#include "fsmo/fsmo_utils.h"
 #include "core/globals.h"
-#include "ui/status.h"
+#include "core/settings.h"
+#include "fsmo/fsmo_utils.h"
 #include "krb5client.h"
-#include <stdexcept>
-
-#include <QPushButton>
-
-#include <functional>
-#include <QDebug>
+#include "ui/dialog/connection_options.h"
+#include "ui/dialog/ui_connection_options.h"
+#include "ui/status.h"
+#include "utils.h"
 
 const QString CERT_STRATEGY_NEVER = QCoreApplication::translate("ConnectionOptionsDialog", "never");
 const QString CERT_STRATEGY_HARD = QCoreApplication::translate("ConnectionOptionsDialog", "hard");
