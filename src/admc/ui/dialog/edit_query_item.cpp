@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "edit_query_item_dialog.h"
-#include "ui_edit_query_item_dialog.h"
+#include "ui/dialog/edit_query_item.h"
+#include "ui/dialog/ui_edit_query_item.h"
 
 #include "console_impls/query_folder_impl.h"
 #include "core/settings.h"

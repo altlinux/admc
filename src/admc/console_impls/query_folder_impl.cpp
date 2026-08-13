@@ -28,7 +28,7 @@
 #include "ui/widget/console/results_view.h"
 #include "ui/dialog/create/query_folder.h"
 #include "ui/dialog/create/query_item.h"
-#include "edit_query_widgets/edit_query_folder_dialog.h"
+#include "ui/dialog/edit_query_folder.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "core/utils.h"

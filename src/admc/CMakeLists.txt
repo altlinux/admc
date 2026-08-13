@@ -97,6 +97,8 @@ set(ADMC_SOURCES
     ui/dialog/create/sites_link.cpp
     ui/dialog/create/subnet.cpp
     ui/dialog/create/user.cpp
+    ui/dialog/edit_query_item.cpp
+    ui/dialog/edit_query_folder.cpp
     ui/dialog/error_log.cpp
     ui/dialog/main_window_connection_error.cpp
     ui/dialog/password.cpp
@@ -137,9 +139,6 @@ set(ADMC_SOURCES
     results_widgets/results_widget_base.cpp
     results_widgets/subnet_results_widget/subnet_results_widget.cpp
     results_widgets/subnet_results_widget/subnet_edit_widget.cpp
-
-    edit_query_widgets/edit_query_item_dialog.cpp
-    edit_query_widgets/edit_query_folder_dialog.cpp
 
     properties_widgets/properties_dialog.cpp
     properties_widgets/properties_multi_dialog.cpp
