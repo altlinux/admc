@@ -24,7 +24,7 @@
 
 #include "adldap.h"
 #include "core/settings.h"
-#include "admc_translator.h"
+#include "core/admc_translator.h"
 
 AdmcTranslator::AdmcTranslator() {
     translator = new QTranslator();

@@ -26,7 +26,6 @@
 
 #include "ui/dialog/about.h"
 #include "adldap.h"
-#include "admc_translator.h"
 #include "attribute_edits/country_combo.h"
 #include "ui/dialog/auth/krb_auth.h"
 #include "ui/dialog/changelog.h"
@@ -41,6 +40,7 @@
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
 #include "console_widget/console_widget.h"
+#include "core/admc_translator.h"
 #include "core/config.h"
 #include "core/fsmo.h"
 #include "core/globals.h"

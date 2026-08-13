@@ -27,8 +27,8 @@
 #include <QScreen>
 
 #include "adldap.h"
-#include "admc_translator.h"
 #include "ui/dialog/connection_options.h"
+#include "core/admc_translator.h"
 #include "core/config.h"
 #include "core/globals.h"
 #include "core/settings.h"
