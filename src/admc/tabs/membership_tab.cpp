@@ -26,7 +26,7 @@
 #include "adldap.h"
 #include "core/globals.h"
 #include "core/utils.h"
-#include "properties_widgets/properties_dialog.h"
+#include "ui/dialog/properties.h"
 #include "ui/dialog/select/object.h"
 #include "core/settings.h"
 #include "utils.h"

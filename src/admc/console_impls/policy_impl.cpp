@@ -38,7 +38,7 @@
 #include "core/managers/icon_manager.h"
 #include "core/utils.h"
 #include "fsmo/fsmo_utils.h"
-#include "properties_widgets/properties_dialog.h"
+#include "ui/dialog/properties.h"
 #include "ui/dialog/rename/policy.h"
 #include "results_widgets/policy_results_widget.h"
 #include "ui/dialog/select/object.h"

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "properties_warning_dialog.h"
-#include "ui_properties_warning_dialog.h"
+#include "ui/dialog/properties_warning.h"
+#include "ui/dialog/ui_properties_warning.h"
 
 #include <QPushButton>
 

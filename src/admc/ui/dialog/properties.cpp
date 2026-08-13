@@ -31,8 +31,8 @@
 #include "core/config.h"
 #include "core/globals.h"
 #include "core/settings.h"
-#include "properties_dialog.h"
-#include "properties_warning_dialog.h"
+#include "ui/dialog/properties.h"
+#include "ui/dialog/properties_warning.h"
 #include "ui/dialog/security_sort_warning.h"
 #include "ui/status.h"
 #include "ui/widget/tab.h"
@@ -65,7 +65,7 @@
 #include "tabs/security_tab.h"
 #include "tabs/sites_link_tab/sites_link_general_tab.h"
 #include "tabs/telephones_tab.h"
-#include "ui_properties_dialog.h"
+#include "ui/dialog/ui_properties.h"
 #include "utils.h"
 
 QHash<QString, PropertiesDialog *> PropertiesDialog::instances;

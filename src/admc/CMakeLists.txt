@@ -102,6 +102,9 @@ set(ADMC_SOURCES
     ui/dialog/error_log.cpp
     ui/dialog/main_window_connection_error.cpp
     ui/dialog/password.cpp
+    ui/dialog/properties.cpp
+    ui/dialog/properties_multi.cpp
+    ui/dialog/properties_warning.cpp
     ui/dialog/rename/group.cpp
     ui/dialog/rename/other.cpp
     ui/dialog/rename/policy.cpp
@@ -139,10 +142,6 @@ set(ADMC_SOURCES
     results_widgets/results_widget_base.cpp
     results_widgets/subnet_results_widget/subnet_results_widget.cpp
     results_widgets/subnet_results_widget/subnet_edit_widget.cpp
-
-    properties_widgets/properties_dialog.cpp
-    properties_widgets/properties_multi_dialog.cpp
-    properties_widgets/properties_warning_dialog.cpp
 
     find_widgets/find_policy_dialog.cpp
     find_widgets/find_object_dialog.cpp

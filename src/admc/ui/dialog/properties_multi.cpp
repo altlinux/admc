@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "properties_multi_dialog.h"
-#include "ui_properties_multi_dialog.h"
+#include "ui/dialog/properties_multi.h"
+#include "ui/dialog/ui_properties_multi.h"
 
 #include "adldap.h"
 #include "attribute_edits/attribute_edit.h"
