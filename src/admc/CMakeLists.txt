@@ -117,6 +117,7 @@ set(ADMC_SOURCES
     ui/widget/console/results_view.cpp
     ui/widget/console/console_drag_model.cpp
     ui/widget/console/console_impl.cpp
+    ui/widget/edit_query_item.cpp
     ui/widget/tab.cpp
     utils.cpp
 
@@ -139,7 +140,6 @@ set(ADMC_SOURCES
 
     edit_query_widgets/edit_query_item_dialog.cpp
     edit_query_widgets/edit_query_folder_dialog.cpp
-    edit_query_widgets/edit_query_item_widget.cpp
 
     properties_widgets/properties_dialog.cpp
     properties_widgets/properties_multi_dialog.cpp

@@ -33,7 +33,7 @@
   <customwidget>
    <class>EditQueryItemWidget</class>
    <extends>QWidget</extends>
-   <header>edit_query_widgets/edit_query_item_widget.h</header>
+   <header>ui/widget/edit_query_item.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
