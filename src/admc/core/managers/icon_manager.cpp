@@ -57,8 +57,6 @@ public:
     const QString fallback_icon_name = "fallback";
 
     QString theme;
-    // system_theme field contains current system theme
-    // name that may not be fallback.
     QString system_theme;
     const QString system_icons_dir_path = "/usr/share/icons";
     const QDir custom_themes_dir = system_icons_dir_path + "/ad-integration-themes";
@@ -215,17 +213,17 @@ void IconManager::IconManagerImpl::update_icons_array() {
     item_icons_array[ItemIcon_Policy_Link] = q->category_icon(ADMC_CATEGORY_GP_LINK);
     item_icons_array[ItemIcon_Policy_Link_Disabled] = q->category_icon(ADMC_CATEGORY_GP_DISABLED);
     item_icons_array[ItemIcon_Policy_Enforced] = q->category_icon(ADMC_CATEGORY_GP_ENFORCED);
-    item_icons_array[ItemIcon_Policy_Enforced_Disabled] = q->category_icon(ADMC_CATEGORY_GP_ENFORCED_DISABLED);;
+    item_icons_array[ItemIcon_Policy_Enforced_Disabled] = q->category_icon(ADMC_CATEGORY_GP_ENFORCED_DISABLED);
     item_icons_array[ItemIcon_OU] = q->category_icon(OBJECT_CATEGORY_OU);
     item_icons_array[ItemIcon_OU_InheritanceBlocked] = q->category_icon(ADMC_CATEGORY_OU_INHERITANCE_BLOCKED);
     item_icons_array[ItemIcon_Domain] = q->category_icon(OBJECT_CATEGORY_DOMAIN_DNS);
     item_icons_array[ItemIcon_Domain_InheritanceBlocked] = q->category_icon(ADMC_CATEGORY_DOMAIN_INHERITANCE_BLOCKED);
-    item_icons_array[ItemIcon_Person] = q->category_icon(OBJECT_CATEGORY_PERSON).pixmap(max_icon_size);
+    item_icons_array[ItemIcon_Person] = q->category_icon(OBJECT_CATEGORY_PERSON);
     item_icons_array[ItemIcon_Person_Blocked] = q->category_icon(ADMC_CATEGORY_PERSON_BLOCKED);
     item_icons_array[ItemIcon_Site] = q->category_icon(OBJECT_CATEGORY_SITE);
-    item_icons_array[ItemIcon_Computer] = q->category_icon(OBJECT_CATEGORY_COMPUTER).pixmap(max_icon_size);
+    item_icons_array[ItemIcon_Computer] = q->category_icon(OBJECT_CATEGORY_COMPUTER);
     item_icons_array[ItemIcon_Computer_Blocked] = q->category_icon(ADMC_CATEGORY_COMPUTER_BLOCKED);
-    item_icons_array[ItemIcon_Group] = q->category_icon(OBJECT_CATEGORY_GROUP).pixmap(max_icon_size);
+    item_icons_array[ItemIcon_Group] = q->category_icon(OBJECT_CATEGORY_GROUP);
     item_icons_array[ItemIcon_Password_Settings_Object] = q->category_icon(OBJECT_CATEGORY_PSO);
     item_icons_array[ItemIcon_Password_Settings_Object] = q->category_icon(OBJECT_CATEGORY_PSO_CONTAINER);
     item_icons_array[ItemIcon_InterSite_Transport] = q->category_icon(OBJECT_CATEGORY_INTER_SITE_TRANSPORT);
