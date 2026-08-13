@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rename_policy_dialog.h"
-#include "ui_rename_policy_dialog.h"
+#include "ui/dialog/rename/policy.h"
+#include "ui/dialog/rename/ui_policy.h"
 
 #include "adldap.h"
 #include "core/globals.h"

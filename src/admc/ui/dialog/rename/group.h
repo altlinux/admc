@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RENAME_OTHER_DIALOG_H
-#define RENAME_OTHER_DIALOG_H
+#ifndef RENAME_GROUP_DIALOG_H
+#define RENAME_GROUP_DIALOG_H
 
-#include "rename_object_dialog.h"
+#include "ui/dialog/rename/object.h"
 
 class AdInterface;
 class RenameObjectHelper;
 
 namespace Ui {
-class RenameOtherDialog;
+class RenameGroupDialog;
 }
 
-class RenameOtherDialog final : public RenameObjectDialog {
+class RenameGroupDialog final : public RenameObjectDialog {
     Q_OBJECT
 
 public:
-    Ui::RenameOtherDialog *ui;
+    Ui::RenameGroupDialog *ui;
 
-    RenameOtherDialog(AdInterface &ad, const QString &target, QWidget *parent);
-    ~RenameOtherDialog();
+    RenameGroupDialog(AdInterface &ad, const QString &target, QWidget *parent);
+    ~RenameGroupDialog();
 
     void accept() override;
     QString get_new_dn() const override;
@@ -46,4 +47,4 @@ private:
     RenameObjectHelper *helper;
 };
 
-#endif /* RENAME_OTHER_DIALOG_H */
+#endif /* RENAME_GROUP_DIALOG_H */

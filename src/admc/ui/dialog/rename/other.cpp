@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rename_other_dialog.h"
-#include "ui_rename_other_dialog.h"
+#include "ui/dialog/rename/other.h"
+#include "ui/dialog/rename/ui_other.h"
 
 #include "rename_object_helper.h"
 #include "core/settings.h"

@@ -100,6 +100,10 @@ set(ADMC_SOURCES
     ui/dialog/error_log.cpp
     ui/dialog/main_window_connection_error.cpp
     ui/dialog/password.cpp
+    ui/dialog/rename/group.cpp
+    ui/dialog/rename/other.cpp
+    ui/dialog/rename/policy.cpp
+    ui/dialog/rename/user.cpp
     ui/dialog/security_sort_warning.cpp
     ui/dialog/select/object.cpp
     ui/dialog/select/object_match.cpp
@@ -126,11 +130,6 @@ set(ADMC_SOURCES
     results_widgets/results_widget_base.cpp
     results_widgets/subnet_results_widget/subnet_results_widget.cpp
     results_widgets/subnet_results_widget/subnet_edit_widget.cpp
-
-    rename_dialogs/rename_other_dialog.cpp
-    rename_dialogs/rename_policy_dialog.cpp
-    rename_dialogs/rename_user_dialog.cpp
-    rename_dialogs/rename_group_dialog.cpp
 
     edit_query_widgets/edit_query_item_dialog.cpp
     edit_query_widgets/edit_query_folder_dialog.cpp

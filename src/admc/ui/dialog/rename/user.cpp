@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rename_user_dialog.h"
-#include "ui_rename_user_dialog.h"
+#include "ui/dialog/rename/user.h"
+#include "ui/dialog/rename/ui_user.h"
 
 #include "adldap.h"
 #include "attribute_edits/sam_name_edit.h"

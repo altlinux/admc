@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rename_group_dialog.h"
-#include "ui_rename_group_dialog.h"
+#include "ui/dialog/rename/group.h"
+#include "ui/dialog/rename/ui_group.h"
 
 #include "ad_defines.h"
 #include "attribute_edits/sam_name_edit.h"
