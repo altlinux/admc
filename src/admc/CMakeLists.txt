@@ -84,6 +84,19 @@ set(ADMC_SOURCES
     ui/dialog/changelog.cpp
     ui/dialog/connection_options.cpp
     ui/dialog/console_filter.cpp
+    ui/dialog/create/computer.cpp
+    ui/dialog/create/contact.cpp
+    ui/dialog/create/group.cpp
+    ui/dialog/create/ou.cpp
+    ui/dialog/create/policy.cpp
+    ui/dialog/create/pso.cpp
+    ui/dialog/create/query_folder.cpp
+    ui/dialog/create/query_item.cpp
+    ui/dialog/create/shared_folder.cpp
+    ui/dialog/create/site.cpp
+    ui/dialog/create/sites_link.cpp
+    ui/dialog/create/subnet.cpp
+    ui/dialog/create/user.cpp
     ui/dialog/error_log.cpp
     ui/dialog/main_window_connection_error.cpp
     ui/dialog/password.cpp
@@ -113,20 +126,6 @@ set(ADMC_SOURCES
     results_widgets/results_widget_base.cpp
     results_widgets/subnet_results_widget/subnet_results_widget.cpp
     results_widgets/subnet_results_widget/subnet_edit_widget.cpp
-
-    create_dialogs/create_user_dialog.cpp
-    create_dialogs/create_group_dialog.cpp
-    create_dialogs/create_computer_dialog.cpp
-    create_dialogs/create_ou_dialog.cpp
-    create_dialogs/create_shared_folder_dialog.cpp
-    create_dialogs/create_contact_dialog.cpp
-    create_dialogs/create_policy_dialog.cpp
-    create_dialogs/create_query_item_dialog.cpp
-    create_dialogs/create_query_folder_dialog.cpp
-    create_dialogs/create_pso_dialog.cpp
-    create_dialogs/create_subnet_dialog.cpp
-    create_dialogs/create_sites_link_dialog.cpp
-    create_dialogs/create_site_dialog.cpp
 
     rename_dialogs/rename_other_dialog.cpp
     rename_dialogs/rename_policy_dialog.cpp

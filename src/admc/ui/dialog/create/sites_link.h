@@ -1,7 +1,7 @@
 #ifndef SITES_LINK_CREATION_DIALOG_H
 #define SITES_LINK_CREATION_DIALOG_H
 
-#include "create_object_dialog.h"
+#include "ui/dialog/create/object.h"
 #include "tabs/sites_link_tab/sites_link_type.h"
 
 namespace Ui {

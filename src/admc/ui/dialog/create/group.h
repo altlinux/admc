@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +19,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_CONTACT_DIALOG_H
-#define CREATE_CONTACT_DIALOG_H
+#ifndef CREATE_GROUP_DIALOG_H
+#define CREATE_GROUP_DIALOG_H
 
-#include "create_object_dialog.h"
+#include "ui/dialog/create/object.h"
 
 class CreateObjectHelper;
 
 namespace Ui {
-class CreateContactDialog;
+class CreateGroupDialog;
 }
 
-class CreateContactDialog final : public CreateObjectDialog {
+class CreateGroupDialog final : public CreateObjectDialog {
     Q_OBJECT
 
 public:
-    Ui::CreateContactDialog *ui;
+    Ui::CreateGroupDialog *ui;
 
-    CreateContactDialog(const QString &parent_dn, QWidget *parent);
-    ~CreateContactDialog();
+    CreateGroupDialog(const QString &parent_dn, QWidget *parent);
+    ~CreateGroupDialog();
 
     void accept() override;
     QString get_created_dn() const override;
 
 private:
     CreateObjectHelper *helper;
+
+    void autofill_sam_name();
 };
 
-#endif /* CREATE_CONTACT_DIALOG_H */
+#endif /* CREATE_GROUP_DIALOG_H */

@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,20 +22,20 @@
 #include "admc_test_create_object_dialog.h"
 
 #include "adldap.h"
-#include "create_dialogs/create_computer_dialog.h"
-#include "create_dialogs/create_contact_dialog.h"
-#include "create_dialogs/create_group_dialog.h"
-#include "create_dialogs/create_ou_dialog.h"
-#include "create_dialogs/create_shared_folder_dialog.h"
-#include "create_dialogs/create_user_dialog.h"
+#include "ui/dialog/create/computer.h"
+#include "ui/dialog/create/contact.h"
+#include "ui/dialog/create/group.h"
+#include "ui/dialog/create/ou.h"
+#include "ui/dialog/create/shared_folder.h"
+#include "ui/dialog/create/user.h"
 #include "samba/dom_sid.h"
 #include "core/settings.h"
-#include "ui_create_computer_dialog.h"
-#include "ui_create_contact_dialog.h"
-#include "ui_create_group_dialog.h"
-#include "ui_create_ou_dialog.h"
-#include "ui_create_shared_folder_dialog.h"
-#include "ui_create_user_dialog.h"
+#include "ui/dialog/create/ui_computer.h"
+#include "ui/dialog/create/ui_contact.h"
+#include "ui/dialog/create/ui_group.h"
+#include "ui/dialog/create/ui_ou.h"
+#include "ui/dialog/create/ui_shared_folder.h"
+#include "ui/dialog/create/ui_user.h"
 
 void test_lineedit_autofill(QLineEdit *src_edit, QLineEdit *dest_edit);
 void test_full_name_autofill(QLineEdit *first_name_edit, QLineEdit *middle_name_edit, QLineEdit *last_name_edit, QLineEdit *full_name_edit);

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_subnet_dialog.h"
-#include "ui_create_subnet_dialog.h"
+#include "ui/dialog/create/subnet.h"
+#include "ui/dialog/create/ui_subnet.h"
 #include <arpa/inet.h>
 #include "ad_interface.h"
 #include "ad_filter.h"

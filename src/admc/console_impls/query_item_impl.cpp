@@ -26,7 +26,7 @@
 #include "console_impls/object_impl/object_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_widget/results_view.h"
-#include "create_dialogs/create_query_item_dialog.h"
+#include "ui/dialog/create/query_item.h"
 #include "edit_query_widgets/edit_query_item_dialog.h"
 #include "core/globals.h"
 #include "core/settings.h"

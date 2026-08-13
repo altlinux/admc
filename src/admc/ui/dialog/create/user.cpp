@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_user_dialog.h"
-#include "ui_create_user_dialog.h"
+#include "ui/dialog/create/user.h"
+#include "ui/dialog/create/ui_user.h"
 
 #include "adldap.h"
 #include "attribute_edits/account_option_edit.h"

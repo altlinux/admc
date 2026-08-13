@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2025-2026 BaseALT Ltd.
+ * Copyright (C) 2025 Semyon Knyazev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,33 +19,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_COMPUTER_DIALOG_H
-#define CREATE_COMPUTER_DIALOG_H
+#ifndef CREATE_SUBNET_DIALOG_H
+#define CREATE_SUBNET_DIALOG_H
 
-#include "create_object_dialog.h"
-
-class CreateObjectHelper;
+#include "ui/dialog/create/object.h"
 
 namespace Ui {
-class CreateComputerDialog;
+class CreateSubnetDialog;
 }
 
-class CreateComputerDialog final : public CreateObjectDialog {
+class AdInterface;
+
+class CreateSubnetDialog final : public CreateObjectDialog {
     Q_OBJECT
 
 public:
-    Ui::CreateComputerDialog *ui;
-
-    CreateComputerDialog(const QString &parent_dn, QWidget *parent);
-    ~CreateComputerDialog();
+    explicit CreateSubnetDialog(AdInterface &ad, const QString &parent_dn_arg, QWidget *parent = nullptr);
+    ~CreateSubnetDialog();
 
     void accept() override;
     QString get_created_dn() const override;
 
 private:
-    CreateObjectHelper *helper;
+    Ui::CreateSubnetDialog *ui;
+    QString parent_dn;
+    QString created_dn;
 
-    void autofill_sam_name();
+
+    void check_prefix_validity(const QString &address);
+    bool validate_ipv4_prefix(quint32 ip, int prefix);
+    bool validate_ipv6_prefix(const quint8 ipv6[16], int prefix);
 };
 
-#endif /* CREATE_COMPUTER_DIALOG_H */
+#endif // CREATE_SUBNET_DIALOG_H

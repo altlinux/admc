@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_ou_dialog.h"
-#include "ui_create_ou_dialog.h"
+#include "ui/dialog/create/shared_folder.h"
+#include "ui/dialog/create/ui_shared_folder.h"
 
 #include "adldap.h"
 #include "attribute_edits/protect_deletion_edit.h"
@@ -30,33 +30,34 @@
 #include "core/settings.h"
 #include "utils.h"
 
-CreateOUDialog::CreateOUDialog(const QString &parent_dn, QWidget *parent)
+CreateSharedFolderDialog::CreateSharedFolderDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {
-    ui = new Ui::CreateOUDialog();
+    ui = new Ui::CreateSharedFolderDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    auto deletion_edit = new ProtectDeletionEdit(ui->deletion_check, this);
+    auto path_edit = new StringEdit(ui->path_edit, ATTRIBUTE_UNC_NAME, this);
 
     const QList<AttributeEdit *> edit_list = {
-        deletion_edit,
+        path_edit,
     };
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
+        ui->path_edit,
     };
 
-    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_OU, parent_dn, this);
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, CLASS_SHARED_FOLDER, parent_dn, this);
 
-    settings_setup_dialog_geometry(SETTING_create_ou_dialog_geometry, this);
+    settings_setup_dialog_geometry(SETTING_create_shared_folder_dialog_geometry, this);
 }
 
-CreateOUDialog::~CreateOUDialog() {
+CreateSharedFolderDialog::~CreateSharedFolderDialog() {
     delete ui;
 }
 
-void CreateOUDialog::accept() {
+void CreateSharedFolderDialog::accept() {
     const bool accepted = helper->accept();
 
     if (accepted) {
@@ -64,6 +65,6 @@ void CreateOUDialog::accept() {
     }
 }
 
-QString CreateOUDialog::get_created_dn() const {
+QString CreateSharedFolderDialog::get_created_dn() const {
     return helper->get_created_dn();
 }

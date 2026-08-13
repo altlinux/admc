@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_pso_dialog.h"
-#include "ui_create_pso_dialog.h"
+#include "ui/dialog/create/pso.h"
+#include "ui/dialog/create/ui_pso.h"
 #include "ad_interface.h"
 #include "utils.h"
 #include "ad_utils.h"

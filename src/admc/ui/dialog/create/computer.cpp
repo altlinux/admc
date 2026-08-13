@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_computer_dialog.h"
-#include "ui_create_computer_dialog.h"
+#include "ui/dialog/create/computer.h"
+#include "ui/dialog/create/ui_computer.h"
 
 #include "adldap.h"
 #include "attribute_edits/computer_sam_name_edit.h"

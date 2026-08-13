@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2025-2026 BaseALT Ltd.
- * Copyright (C) 2025 Semyon Knyazev
+ * Copyright (C) 2020-2026 BaseALT Ltd.
+ * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,34 +19,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_SITE_DIALOG_H
-#define CREATE_SITE_DIALOG_H
+#ifndef CREATE_CONTACT_DIALOG_H
+#define CREATE_CONTACT_DIALOG_H
 
-#include "create_object_dialog.h"
+#include "ui/dialog/create/object.h"
 
 class CreateObjectHelper;
-class AdInterface;
 
 namespace Ui {
-class CreateSiteDialog;
+class CreateContactDialog;
 }
 
-class CreateSiteDialog : public CreateObjectDialog {
+class CreateContactDialog final : public CreateObjectDialog {
     Q_OBJECT
 
 public:
-    explicit CreateSiteDialog(AdInterface &ad, QWidget *parent = nullptr);
-    ~CreateSiteDialog();
+    Ui::CreateContactDialog *ui;
+
+    CreateContactDialog(const QString &parent_dn, QWidget *parent);
+    ~CreateContactDialog();
 
     void accept() override;
     QString get_created_dn() const override;
 
 private:
-    Ui::CreateSiteDialog *ui;
-
-    CreateObjectHelper *create_site_helper;
-    CreateObjectHelper *create_ntds_settings_helper;
-    CreateObjectHelper *create_servers_container_helper;
+    CreateObjectHelper *helper;
 };
 
-#endif // CREATE_SITE_DIALOG_H
+#endif /* CREATE_CONTACT_DIALOG_H */

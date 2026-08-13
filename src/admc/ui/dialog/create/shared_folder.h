@@ -1,7 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
+ * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,33 +19,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_PSO_DIALOG_H
-#define CREATE_PSO_DIALOG_H
+#ifndef CREATE_SHARED_FOLDER_DIALOG_H
+#define CREATE_SHARED_FOLDER_DIALOG_H
 
-#include "create_object_dialog.h"
+#include "ui/dialog/create/object.h"
+
+class CreateObjectHelper;
 
 namespace Ui {
-class CreatePSODialog;
+class CreateSharedFolderDialog;
 }
 
-class PSOEditWidget;
-class ProtectDeletionEdit;
-
-class CreatePSODialog final : public CreateObjectDialog {
-
+class CreateSharedFolderDialog final : public CreateObjectDialog {
     Q_OBJECT
 
 public:
-    explicit CreatePSODialog(const QString &parent_dn_arg, QWidget *parent = nullptr);
-    ~CreatePSODialog();
+    Ui::CreateSharedFolderDialog *ui;
+
+    CreateSharedFolderDialog(const QString &parent_dn, QWidget *parent);
+    ~CreateSharedFolderDialog();
 
     void accept() override;
     QString get_created_dn() const override;
 
 private:
-    Ui::CreatePSODialog *ui;
-    const QString parent_dn;
-    ProtectDeletionEdit *deletion_edit;
+    CreateObjectHelper *helper;
 };
 
-#endif // CREATE_PSO_DIALOG_H
+#endif /* CREATE_SHARED_FOLDER_DIALOG_H */

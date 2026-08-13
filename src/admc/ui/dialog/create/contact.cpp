@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_contact_dialog.h"
-#include "ui_create_contact_dialog.h"
+#include "ui/dialog/create/contact.h"
+#include "ui/dialog/create/ui_contact.h"
 
 #include "adldap.h"
 #include "attribute_edits/string_edit.h"

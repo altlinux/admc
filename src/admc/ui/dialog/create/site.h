@@ -19,36 +19,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CREATE_SUBNET_DIALOG_H
-#define CREATE_SUBNET_DIALOG_H
+#ifndef CREATE_SITE_DIALOG_H
+#define CREATE_SITE_DIALOG_H
 
-#include "create_dialogs/create_object_dialog.h"
+#include "ui/dialog/create/object.h"
 
-namespace Ui {
-class CreateSubnetDialog;
-}
-
+class CreateObjectHelper;
 class AdInterface;
 
-class CreateSubnetDialog final : public CreateObjectDialog {
+namespace Ui {
+class CreateSiteDialog;
+}
+
+class CreateSiteDialog : public CreateObjectDialog {
     Q_OBJECT
 
 public:
-    explicit CreateSubnetDialog(AdInterface &ad, const QString &parent_dn_arg, QWidget *parent = nullptr);
-    ~CreateSubnetDialog();
+    explicit CreateSiteDialog(AdInterface &ad, QWidget *parent = nullptr);
+    ~CreateSiteDialog();
 
     void accept() override;
     QString get_created_dn() const override;
 
 private:
-    Ui::CreateSubnetDialog *ui;
-    QString parent_dn;
-    QString created_dn;
+    Ui::CreateSiteDialog *ui;
 
-
-    void check_prefix_validity(const QString &address);
-    bool validate_ipv4_prefix(quint32 ip, int prefix);
-    bool validate_ipv6_prefix(const quint8 ipv6[16], int prefix);
+    CreateObjectHelper *create_site_helper;
+    CreateObjectHelper *create_ntds_settings_helper;
+    CreateObjectHelper *create_servers_container_helper;
 };
 
-#endif // CREATE_SUBNET_DIALOG_H
+#endif // CREATE_SITE_DIALOG_H

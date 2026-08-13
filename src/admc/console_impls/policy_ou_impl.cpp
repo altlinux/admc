@@ -26,7 +26,7 @@
 #include "console_impls/item_type.h"
 #include "console_impls/object_impl/console_object_operations.h"
 #include "console_impls/policy_impl.h"
-#include "create_dialogs/create_policy_dialog.h"
+#include "ui/dialog/create/policy.h"
 #include "find_widgets/find_policy_dialog.h"
 #include "core/fsmo.h"
 #include "core/globals.h"

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_sites_link_dialog.h"
-#include "ui_create_sites_link_dialog.h"
+#include "ui/dialog/create/sites_link.h"
+#include "ui/dialog/create/ui_sites_link.h"
 #include "ad_defines.h"
 #include "ad_interface.h"
 #include "ad_object.h"
