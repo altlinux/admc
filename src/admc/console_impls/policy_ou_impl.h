@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -33,7 +33,7 @@
 
 #include "ad_interface.h"
 #include "console_impls/my_console_role.h"
-#include "console_widget/console_impl.h"
+#include "ui/widget/console/console_impl.h"
 
 enum PolicyOURole {
     PolicyOURole_DN = MyConsoleRole_LAST + 1,

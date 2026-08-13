@@ -23,7 +23,7 @@
 #include "core/utils.h"
 
 #include "adldap.h"
-#include "console_widget/console_widget.h"
+#include "ui/widget/console/console_widget.h"
 #include "core/ad.h"
 #include "core/globals.h"
 #include "core/search_thread.h"

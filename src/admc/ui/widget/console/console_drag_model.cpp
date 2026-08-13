@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_widget/console_drag_model.h"
+#include "ui/widget/console/console_drag_model.h"
 
-#include "console_widget/console_widget.h"
-#include "console_widget/console_widget_p.h"
+#include "ui/widget/console/console_widget.h"
+#include "ui/widget/console/console_widget_p.h"
 
 #include <QMimeData>
 

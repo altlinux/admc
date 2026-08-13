@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 #include "domain_info_impl.h"
-#include "console_widget/console_widget.h"
+#include "ui/widget/console/console_widget.h"
 #include "results_widgets/domain_info_results_widget/domain_info_results_widget.h"
 #include "console_impls/object_impl/object_impl.h"
 #include "console_impls/policy_root_impl.h"

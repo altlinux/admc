@@ -22,7 +22,7 @@
 #include "admc_test_policy_results_widget.h"
 
 #include "ad_filter.h"
-#include "console_widget/results_view.h"
+#include "ui/widget/console/results_view.h"
 #include "core/globals.h"
 #include "gplink.h"
 #include "results_widgets/policy_results_widget.h"

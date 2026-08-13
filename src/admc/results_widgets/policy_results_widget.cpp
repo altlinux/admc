@@ -26,7 +26,7 @@
 #include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
 //#include "console_widget/console_widget.h"
-#include "console_widget/results_view.h"
+#include "ui/widget/console/results_view.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "core/utils.h"

@@ -39,7 +39,7 @@
 #include "console_impls/policy_root_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
-#include "console_widget/console_widget.h"
+#include "ui/widget/console/console_widget.h"
 #include "core/admc_translator.h"
 #include "core/config.h"
 #include "core/fsmo.h"

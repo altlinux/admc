@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_widget/console_impl.h"
+#include "ui/widget/console/console_impl.h"
 
-#include "console_widget/console_widget.h"
-#include "console_widget/results_view.h"
+#include "ui/widget/console/console_widget.h"
+#include "ui/widget/console/results_view.h"
 
 #include <QSet>
 #include <QVariant>

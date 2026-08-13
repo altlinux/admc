@@ -21,7 +21,7 @@
 
 #include "domain_info_results_widget.h"
 #include "ui_domain_info_results_widget.h"
-#include "console_widget/console_widget.h"
+#include "ui/widget/console/console_widget.h"
 #include "adldap.h"
 #include "core/settings.h"
 #include "console_impls/object_impl/console_object_operations.h"

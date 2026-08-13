@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +23,7 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl/console_object_operations.h"
-#include "console_widget/results_view.h"
+#include "ui/widget/console/results_view.h"
 #include "item_type.h"
 
 #include <QModelIndex>

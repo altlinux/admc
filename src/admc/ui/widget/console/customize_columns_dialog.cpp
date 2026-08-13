@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_widget/customize_columns_dialog.h"
-#include "console_widget/customize_columns_dialog_p.h"
+#include "ui/widget/console/customize_columns_dialog.h"
+#include "ui/widget/console/customize_columns_dialog_p.h"
 
 #include <QCheckBox>
 #include <QDialog>

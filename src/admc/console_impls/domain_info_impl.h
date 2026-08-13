@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2023-2025 Semyon Knyazev
  * Copyright (C) 2024 Gleb Popov
  * Copyright (C) 2026 Artyom V. Poptsov
@@ -27,7 +27,7 @@
  * Impl for root domain info item in the scope tree
  */
 
-#include "console_widget/console_impl.h"
+#include "ui/widget/console/console_impl.h"
 
 class ConsoleWidget;
 class QModelIndex;

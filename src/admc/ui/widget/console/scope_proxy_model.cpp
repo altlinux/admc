@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_widget/scope_proxy_model.h"
-
-#include "console_widget/console_widget_p.h"
+#include "ui/widget/console/scope_proxy_model.h"
+#include "ui/widget/console/console_widget_p.h"
 
 // This tricks the view into thinking that an item in tree
 // has children while the item is unfetched. This causes the

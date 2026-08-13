@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_widget/results_view.h"
+#include "ui/widget/console/results_view.h"
 
 #include <QHeaderView>
 #include <QListView>

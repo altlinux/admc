@@ -29,7 +29,7 @@
 #include "ui/dialog/select/policy.h"
 #include "core/settings.h"
 #include "utils.h"
-#include "console_widget/console_widget.h"
+#include "ui/widget/console/console_widget.h"
 #include "results_widgets/policy_ou_results_widget/policy_ou_results_widget.h"
 #include "results_widgets/policy_ou_results_widget/inherited_policies_widget.h"
 #include "console_impls/item_type.h"

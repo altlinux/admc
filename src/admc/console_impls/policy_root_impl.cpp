@@ -25,7 +25,7 @@
 #include "console_impls/all_policies_folder_impl.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_ou_impl.h"
-#include "console_widget/results_view.h"
+#include "ui/widget/console/results_view.h"
 #include "core/globals.h"
 #include "gplink.h"
 #include "ui/status.h"

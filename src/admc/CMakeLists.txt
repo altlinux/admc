@@ -111,6 +111,12 @@ set(ADMC_SOURCES
     ui/dialog/select/container.cpp
     ui/dialog/select/policy.cpp
     ui/status.cpp
+    ui/widget/console/console_widget.cpp
+    ui/widget/console/scope_proxy_model.cpp
+    ui/widget/console/customize_columns_dialog.cpp
+    ui/widget/console/results_view.cpp
+    ui/widget/console/console_drag_model.cpp
+    ui/widget/console/console_impl.cpp
     ui/widget/tab.cpp
     utils.cpp
 
@@ -233,13 +239,6 @@ set(ADMC_SOURCES
 
     attribute_edits/upn_multi_edit.cpp
     attribute_edits/account_option_multi_edit.cpp
-
-    console_widget/console_widget.cpp
-    console_widget/scope_proxy_model.cpp
-    console_widget/customize_columns_dialog.cpp
-    console_widget/results_view.cpp
-    console_widget/console_drag_model.cpp
-    console_widget/console_impl.cpp
 
     console_impls/object_impl/object_impl.cpp
     console_impls/object_impl/drag_n_drop.cpp

@@ -19,14 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_widget/console_widget.h"
-#include "console_widget/console_widget_p.h"
+#include "ui/widget/console/console_widget.h"
+#include "ui/widget/console/console_widget_p.h"
 
-#include "console_widget/console_drag_model.h"
-#include "console_widget/console_impl.h"
-#include "console_widget/customize_columns_dialog.h"
-#include "console_widget/results_view.h"
-#include "console_widget/scope_proxy_model.h"
+#include "ui/widget/console/console_drag_model.h"
+#include "ui/widget/console/console_impl.h"
+#include "ui/widget/console/customize_columns_dialog.h"
+#include "ui/widget/console/results_view.h"
+#include "ui/widget/console/scope_proxy_model.h"
 #include "console_impls/item_type.h"
 #include "core/globals.h"
 #include "ui/status.h"

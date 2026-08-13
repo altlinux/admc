@@ -30,8 +30,8 @@
 
 #include <QProcess>
 
-#include "console_widget/console_impl.h"
-#include "console_widget/console_widget.h"
+#include "ui/widget/console/console_impl.h"
+#include "ui/widget/console/console_widget.h"
 #include "gplink.h"
 
 class QStandardItem;
