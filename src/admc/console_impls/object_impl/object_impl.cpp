@@ -19,43 +19,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_impls/object_impl/object_impl.h"
+#include <QDebug>
+#include <QMenu>
+#include <QMessageBox>
+#include <QSet>
+#include <QStackedWidget>
+#include <QStandardItemModel>
+#include <algorithm>
 
-#include "core/ad.h"
 #include "adldap.h"
-#include "ui/dialog/attribute/list.h"
-#include "ui/dialog/console_filter.h"
 #include "console_impls/find_object_impl.h"
 #include "console_impls/item_type.h"
+#include "console_impls/object_impl/object_impl.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
-#include "ui/widget/console/results_view.h"
+#include "core/ad.h"
 #include "core/globals.h"
+#include "core/managers/icon_manager.h"
+#include "core/settings.h"
+#include "drag_n_drop.h"
+#include "ui/dialog/attribute/list.h"
+#include "ui/dialog/console_filter.h"
+#include "ui/dialog/find/object.h"
 #include "ui/dialog/password.h"
 #include "ui/dialog/select/container.h"
 #include "ui/dialog/select/object.h"
-#include "ui/dialog/find/object.h"
-#include "core/settings.h"
 #include "ui/status.h"
-#include "utils.h"
-#include "ui/widget/tab/general_user.h"
-#include "ui/widget/tab/general_group.h"
-#include "core/managers/icon_manager.h"
+#include "ui/widget/console/results_view.h"
 #include "ui/widget/result/pso/pso.h"
 #include "ui/widget/result/subnet/subnet.h"
-
-#include <QDebug>
-#include <QMenu>
-#include <QSet>
-#include <QStandardItemModel>
-#include <QStackedWidget>
-#include <QMessageBox>
-
-#include <algorithm>
-#include "drag_n_drop.h"
-
+#include "ui/widget/tab/general_group.h"
+#include "ui/widget/tab/general_user.h"
+#include "utils.h"
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
