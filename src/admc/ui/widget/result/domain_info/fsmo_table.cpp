@@ -1,5 +1,5 @@
-#include "fsmo_table_widget.h"
-#include "ui_fsmo_table_widget.h"
+#include "ui/widget/result/domain_info/fsmo_table.h"
+#include "ui/widget/result/domain_info/ui_fsmo_table.h"
 
 #include "fsmo/fsmo_utils.h"
 #include <QMessageBox>

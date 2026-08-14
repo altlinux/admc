@@ -220,7 +220,7 @@
   <customwidget>
    <class>FsmoTableWidget</class>
    <extends>QWidget</extends>
-   <header>results_widgets/domain_info_results_widget/fsmo_table_widget.h</header>
+   <header>ui/widget/result/domain_info/fsmo_table.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
