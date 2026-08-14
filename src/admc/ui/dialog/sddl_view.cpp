@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "sddl_view_dialog.h"
-#include "ui_sddl_view_dialog.h"
+#include "sddl_view.h"
+#include "ui_sddl_view.h"
 
 #include "samba/security_descriptor.h"
 #include "samba/sddl.h"

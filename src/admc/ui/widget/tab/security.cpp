@@ -29,7 +29,7 @@
 #include "ui/widget/permission_control/permissions.h"
 #include "core/globals.h"
 #include "core/utils.h"
-#include "permission_control_widgets/sddl_view_dialog.h"
+#include "ui/dialog/sddl_view.h"
 
 #include <QDebug>
 #include <QLabel>

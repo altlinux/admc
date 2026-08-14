@@ -113,6 +113,7 @@ set(ADMC_SOURCES
     ui/dialog/rename/other.cpp
     ui/dialog/rename/policy.cpp
     ui/dialog/rename/user.cpp
+    ui/dialog/sddl_view.cpp
     ui/dialog/security_sort_warning.cpp
     ui/dialog/select/object.cpp
     ui/dialog/select/object_match.cpp
@@ -254,8 +255,6 @@ set(ADMC_SOURCES
     console_impls/policy_ou_impl.cpp
     console_impls/found_policy_impl.cpp
     console_impls/domain_info_impl.cpp
-
-    permission_control_widgets/sddl_view_dialog.cpp
 
     admc.qrc
 )
