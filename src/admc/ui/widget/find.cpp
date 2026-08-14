@@ -29,6 +29,7 @@
 #include "core/globals.h"
 #include "core/search_thread.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "ui/status.h"
 #include "utils.h"
 

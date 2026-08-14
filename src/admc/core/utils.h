@@ -22,7 +22,9 @@
 #ifndef CORE_UTILS_H
 #define CORE_UTILS_H
 
+#include <QHash>
 #include <QList>
+#include <QModelIndex>
 #include <QRegularExpressionValidator>
 #include <QStandardItem>
 #include <QString>
@@ -47,7 +49,18 @@ QRegularExpressionValidator* make_decimal_numbers_validator(QObject *parent);
 // Filter that accepts only given classes
 QString get_classes_filter(const QList<QString> &class_list);
 
+QString advanced_features_filter(const QString &filter);
+
 // Filter that accepts only container classes
 QString is_container_filter();
+
+QString gpo_status_from_int(int status);
+
+QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list,
+                                     const int dn_role);
+
+void dev_mode_search_results(QHash<QString, AdObject> &results,
+                             AdInterface &ad,
+                             const QString &base);
 
 #endif

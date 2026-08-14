@@ -145,47 +145,6 @@ void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
     }
 }
 
-// Hide advanced view only" objects if advanced view setting
-// is off
-QString advanced_features_filter(const QString &filter) {
-    const bool advanced_features_OFF =
-        (! settings_get_bool(SETTING_advanced_features));
-
-    if (advanced_features_OFF) {
-        const QString advanced_features = filter_CONDITION(
-            Condition_NotEquals,
-            ATTRIBUTE_SHOW_IN_ADVANCED_VIEW_ONLY,
-            LDAP_BOOL_TRUE);
-        const QString out = filter_AND({ filter, advanced_features });
-
-        return out;
-    } else {
-        return filter;
-    }
-}
-
-// NOTE: configuration and schema objects are hidden so that
-// they don't show up in regular searches. Have to use
-// search_object() and manually add them to search results.
-void dev_mode_search_results(QHash<QString, AdObject> &results,
-                             AdInterface &ad,
-                             const QString &base) {
-    const bool dev_mode = settings_get_bool(SETTING_feature_dev_mode);
-    if (! dev_mode) {
-        return;
-    }
-
-    const QString domain_dn = g_adconfig->domain_dn();
-    const QString configuration_dn = g_adconfig->configuration_dn();
-    const QString schema_dn = g_adconfig->schema_dn();
-
-    if (base == domain_dn) {
-        results[configuration_dn] = ad.search_object(configuration_dn);
-    } else if (base == configuration_dn) {
-        results[schema_dn] = ad.search_object(schema_dn);
-    }
-}
-
 QMessageBox *message_box_generic(const QMessageBox::Icon icon,
                                  const QString &title,
                                  const QString &text,
@@ -224,18 +183,6 @@ QMessageBox *message_box_warning(QWidget *parent,
                                  const QString &title,
                                  const QString &text) {
     return message_box_generic(QMessageBox::Warning, title, text, parent);
-}
-
-QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list,
-                                     const int dn_role) {
-    QList<QString> out;
-
-    for (const QModelIndex &index : index_list) {
-        const QString dn = index.data(dn_role).toString();
-        out.append(dn);
-    }
-
-    return out;
 }
 
 QList<QString> get_selected_dn_list(ConsoleWidget *console,
@@ -343,21 +290,6 @@ void set_line_edit_to_time_span_format(QLineEdit *edit) {
     QRegularExpression time_span_reg_exp(
         "([0-9]{1,4}:[0-2][0-3]:[0-5][0-9]:[0-5][0-9])|^\\(never\\)&|^\\(none\\)&");
     edit->setValidator(new QRegularExpressionValidator(time_span_reg_exp));
-}
-
-QString gpo_status_from_int(int status) {
-    switch (status) {
-    case 0:
-        return QObject::tr("Enabled");
-    case 1:
-        return QObject::tr("User configuration disabled");
-    case 2:
-        return QObject::tr("Computer configuration disabled");
-    case 3:
-        return QObject::tr("Disabled");
-    default:
-        return QObject::tr("Undefined GPO status");
-    }
 }
 
 void search_thread_display_errors(SearchThread *thread, QWidget *parent) {

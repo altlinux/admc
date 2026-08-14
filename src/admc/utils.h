@@ -82,12 +82,6 @@ bool ad_failed(const AdInterface &ad, QWidget *parent);
 void limit_edit(QLineEdit *edit, const QString &attribute);
 void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute);
 
-QString advanced_features_filter(const QString &filter);
-
-void dev_mode_search_results(QHash<QString, AdObject> &results,
-                             AdInterface &ad,
-                             const QString &base);
-
 // NOTE: these f-ns replace QMessageBox static f-ns. The
 // static f-ns use exec(), which block execution and makes
 // testing a hassle. These f-ns use open().
@@ -104,8 +98,6 @@ QMessageBox *message_box_warning(QWidget *parent,
                                  const QString &title,
                                  const QString &text);
 
-QList<QString> index_list_to_dn_list(const QList<QModelIndex> &index_list,
-                                     const int dn_role);
 QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type,
                                     const int dn_role);
 QString get_selected_target_dn(ConsoleWidget *console,
@@ -142,8 +134,6 @@ void setup_full_name_autofill(QLineEdit *first_name_edit,
                               QLineEdit *last_name_edit,
                               QLineEdit *middle_name_edit,
                               QLineEdit *full_name_edit);
-
-QString gpo_status_from_int(int status);
 
 void search_thread_display_errors(SearchThread *thread, QWidget *parent);
 
