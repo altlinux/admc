@@ -146,6 +146,10 @@ set(ADMC_SOURCES
     ui/widget/result/domain_info/domain_info.cpp
     ui/widget/result/domain_info/fsmo_table.cpp
     ui/widget/result/policy.cpp
+    ui/widget/result/policy_ou/drag_drop_links_model.cpp
+    ui/widget/result/policy_ou/inherited_policies.cpp
+    ui/widget/result/policy_ou/linked_policies.cpp
+    ui/widget/result/policy_ou/policy_ou.cpp
     ui/widget/tab.cpp
     ui/widget/tab/general_user.cpp
     ui/widget/tab/general_group.cpp
@@ -182,10 +186,6 @@ set(ADMC_SOURCES
     create_object_helper.cpp
     rename_object_helper.cpp
 
-    results_widgets/policy_ou_results_widget/policy_ou_results_widget.cpp
-    results_widgets/policy_ou_results_widget/inherited_policies_widget.cpp
-    results_widgets/policy_ou_results_widget/linked_policies_widget.cpp
-    results_widgets/policy_ou_results_widget/drag_drop_links_model.cpp
     results_widgets/pso_results_widget/pso_edit_widget.cpp
     results_widgets/pso_results_widget/pso_results_widget.cpp
     results_widgets/subnet_results_widget/subnet_results_widget.cpp

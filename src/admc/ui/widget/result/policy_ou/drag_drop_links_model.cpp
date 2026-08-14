@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "drag_drop_links_model.h"
+#include "ui/widget/result/policy_ou/drag_drop_links_model.h"
 #include "utils.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"

@@ -20,8 +20,8 @@
  */
 
 #include "adldap.h"
-#include "linked_policies_widget.h"
-#include "ui_linked_policies_widget.h"
+#include "ui/widget/result/policy_ou/linked_policies.h"
+#include "ui/widget/result/policy_ou/ui_linked_policies.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/policy_ou_impl.h"

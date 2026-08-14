@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "policy_ou_results_widget.h"
-#include "ui_policy_ou_results_widget.h"
+#include "ui/widget/result/policy_ou/policy_ou.h"
+#include "ui/widget/result/policy_ou/ui_policy_ou.h"
 
 #include "ui/widget/console/console_widget.h"
-#include "linked_policies_widget.h"
-#include "inherited_policies_widget.h"
+#include "ui/widget/result/policy_ou/linked_policies.h"
+#include "ui/widget/result/policy_ou/inherited_policies.h"
 
 #include <QModelIndex>
 

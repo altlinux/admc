@@ -30,8 +30,8 @@
 #include "core/settings.h"
 #include "utils.h"
 #include "ui/widget/console/console_widget.h"
-#include "results_widgets/policy_ou_results_widget/policy_ou_results_widget.h"
-#include "results_widgets/policy_ou_results_widget/inherited_policies_widget.h"
+#include "ui/widget/result/policy_ou/policy_ou.h"
+#include "ui/widget/result/policy_ou/inherited_policies.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_ou_impl.h"
 

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "inherited_policies_widget.h"
-#include "ui_inherited_policies_widget.h"
+#include "ui/widget/result/policy_ou/inherited_policies.h"
+#include "ui/widget/result/policy_ou/ui_inherited_policies.h"
 #include "utils.h"
 #include "core/settings.h"
 #include "core/utils.h"
