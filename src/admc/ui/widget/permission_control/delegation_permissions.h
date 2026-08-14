@@ -22,7 +22,7 @@
 #ifndef DELEGATION_PERMISSIONS_WIDGET_H
 #define DELEGATION_PERMISSIONS_WIDGET_H
 
-#include "permissions_widget.h"
+#include "permissions.h"
 
 struct SecurityRight;
 class QRadioButton;

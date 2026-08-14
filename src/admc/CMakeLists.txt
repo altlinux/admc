@@ -142,6 +142,12 @@ set(ADMC_SOURCES
     ui/widget/multi_tab/address.cpp
     ui/widget/multi_tab/profile.cpp
     ui/widget/multi_tab/organization.cpp
+    ui/widget/permission_control/common_permissions.cpp
+    ui/widget/permission_control/creation_deletion_permissions.cpp
+    ui/widget/permission_control/delegation_permissions.cpp
+    ui/widget/permission_control/extended_permissions.cpp
+    ui/widget/permission_control/permissions.cpp
+    ui/widget/permission_control/read_write_permissions.cpp
     ui/widget/result/base.cpp
     ui/widget/result/domain_info/domain_info.cpp
     ui/widget/result/domain_info/fsmo_table.cpp
@@ -249,12 +255,6 @@ set(ADMC_SOURCES
     console_impls/found_policy_impl.cpp
     console_impls/domain_info_impl.cpp
 
-    permission_control_widgets/permissions_widget.cpp
-    permission_control_widgets/creation_deletion_permissions_widget.cpp
-    permission_control_widgets/read_write_permissions_widget.cpp
-    permission_control_widgets/common_permissions_widget.cpp
-    permission_control_widgets/extended_permissions_widget.cpp
-    permission_control_widgets/delegation_permissions_widget.cpp
     permission_control_widgets/sddl_view_dialog.cpp
 
     admc.qrc

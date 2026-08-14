@@ -23,7 +23,7 @@
 #ifndef READWRITEPERMISSIONSWIDGET_H
 #define READWRITEPERMISSIONSWIDGET_H
 
-#include "permissions_widget.h"
+#include "permissions.h"
 
 
 class ReadWritePermissionsWidget final : public PermissionsWidget {

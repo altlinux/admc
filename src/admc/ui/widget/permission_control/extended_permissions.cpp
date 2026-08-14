@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "extended_permissions_widget.h"
+#include "extended_permissions.h"
 
 #include "adldap.h"
 #include "core/globals.h"

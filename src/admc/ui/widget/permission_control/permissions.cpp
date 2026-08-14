@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "permissions_widget.h"
+#include "permissions.h"
 
 #include "utils.h"
 #include "core/settings.h"

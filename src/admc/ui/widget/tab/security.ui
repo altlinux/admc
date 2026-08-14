@@ -327,31 +327,31 @@
   <customwidget>
    <class>CommonPermissionsWidget</class>
    <extends>QWidget</extends>
-   <header>permission_control_widgets/common_permissions_widget.h</header>
+   <header>ui/widget/permission_control/common_permissions.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ExtendedPermissionsWidget</class>
    <extends>QWidget</extends>
-   <header>permission_control_widgets/extended_permissions_widget.h</header>
+   <header>ui/widget/permission_control/extended_permissions.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>DelegationPermissionsWidget</class>
    <extends>QWidget</extends>
-   <header>permission_control_widgets/delegation_permissions_widget.h</header>
+   <header>ui/widget/permission_control/delegation_permissions.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>CreationDeletionPermissionsWidget</class>
    <extends>QWidget</extends>
-   <header>permission_control_widgets/creation_deletion_permissions_widget.h</header>
+   <header>ui/widget/permission_control/creation_deletion_permissions.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ReadWritePermissionsWidget</class>
    <extends>QWidget</extends>
-   <header>permission_control_widgets/read_write_permissions_widget.h</header>
+   <header>ui/widget/permission_control/read_write_permissions.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

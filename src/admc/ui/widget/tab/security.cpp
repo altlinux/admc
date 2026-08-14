@@ -26,7 +26,7 @@
 #include "ui/dialog/select/object.h"
 #include "ui/dialog/select/well_known_trustee.h"
 #include "utils.h"
-#include "permission_control_widgets/permissions_widget.h"
+#include "ui/widget/permission_control/permissions.h"
 #include "core/globals.h"
 #include "core/utils.h"
 #include "permission_control_widgets/sddl_view_dialog.h"

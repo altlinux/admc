@@ -1,8 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
- * Copyright (C) 2024-2025 Semyon Knyazev
+ * Copyright (C) 2024-2026 BaseALT Ltd.
+ * Copyright (C) 2024 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,28 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EXTENDED_PERMISSIONS_WIDGET_H
-#define EXTENDED_PERMISSIONS_WIDGET_H
+#ifndef CREATIONDELETIONPERMISSIONSWIDGET_H
+#define CREATIONDELETIONPERMISSIONSWIDGET_H
 
-#include "permission_control_widgets/permissions_widget.h"
+#include "permissions.h"
 
-
-struct SecurityRight;
-
-class ExtendedPermissionsWidget final : public PermissionsWidget {
+class CreationDeletionPermissionsWidget final : public PermissionsWidget {
     Q_OBJECT
 
 public:
-    ExtendedPermissionsWidget(QWidget *parent = nullptr);
-    ~ExtendedPermissionsWidget();
+    explicit CreationDeletionPermissionsWidget(QWidget *parent = nullptr);
+    ~CreationDeletionPermissionsWidget();
 
-    virtual void init(const QStringList &target_classes,
-                      security_descriptor *sd_arg) override;
+    virtual void init(const QStringList &target_classes, security_descriptor *sd_arg) override;
 
 private:
     virtual QList<QStandardItem*> create_item_row(const SecurityRight &right) override;
-    virtual bool there_are_rights_for_class(const QString &obj_class) override;
     virtual bool right_applies_to_class(const SecurityRight &right, const QString &obj_class) override;
+    virtual bool there_are_rights_for_class(const QString &obj_class) override;
 };
 
-#endif // EXTENDED_PERMISSIONS_WIDGET_H
+#endif // CREATIONDELETIONPERMISSIONSWIDGET_H

@@ -19,34 +19,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COMMON_PERMISSIONS_WIDGET_H
-#define COMMON_PERMISSIONS_WIDGET_H
+#ifndef EXTENDED_PERMISSIONS_WIDGET_H
+#define EXTENDED_PERMISSIONS_WIDGET_H
 
-#include "permissions_widget.h"
+#include "permissions.h"
 
-class CommonPermissionsWidget final : public PermissionsWidget {
+
+struct SecurityRight;
+
+class ExtendedPermissionsWidget final : public PermissionsWidget {
     Q_OBJECT
 
 public:
-    explicit CommonPermissionsWidget(QWidget *parent = nullptr);
-    ~CommonPermissionsWidget();
+    ExtendedPermissionsWidget(QWidget *parent = nullptr);
+    ~ExtendedPermissionsWidget();
 
     virtual void init(const QStringList &target_classes,
                       security_descriptor *sd_arg) override;
-    virtual void update_permissions() override;
 
 private:
     virtual QList<QStandardItem*> create_item_row(const SecurityRight &right) override;
     virtual bool there_are_rights_for_class(const QString &obj_class) override;
     virtual bool right_applies_to_class(const SecurityRight &right, const QString &obj_class) override;
-    void update_object_typed_permission(const QModelIndex &main_index);
-
-    // Contains access masks and their indexes for rights that can contain object type in their
-    // ACEs. It's used to set superior rights when all its subordinates are set.
-    // For example, "Read all properties" right is subordinate for all "Write property"
-    // permission. This way is used because ACE matching isn't appliable in this case.
-    QHash<uint32_t, QPersistentModelIndex> object_typed_superior_indexes;
-
 };
 
-#endif // COMMON_PERMISSIONS_WIDGET_H
+#endif // EXTENDED_PERMISSIONS_WIDGET_H
