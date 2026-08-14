@@ -24,7 +24,7 @@
 
 #include "adldap.h"
 #include "ui/dialog/select/object.h"
-#include "select_well_known_trustee_dialog.h"
+#include "ui/dialog/select/well_known_trustee.h"
 #include "utils.h"
 #include "permission_control_widgets/permissions_widget.h"
 #include "core/globals.h"

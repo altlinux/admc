@@ -115,6 +115,7 @@ set(ADMC_SOURCES
     ui/dialog/select/object_advanced.cpp
     ui/dialog/select/container.cpp
     ui/dialog/select/policy.cpp
+    ui/dialog/select/well_known_trustee.cpp
     ui/status.cpp
     ui/widget/console/console_widget.cpp
     ui/widget/console/scope_proxy_model.cpp
@@ -182,7 +183,6 @@ set(ADMC_SOURCES
     tabs/security_tab.cpp
     tabs/os_tab.cpp
     tabs/delegation_tab.cpp
-    tabs/select_well_known_trustee_dialog.cpp
     tabs/laps_tab.cpp
     tabs/error_tab.cpp
     tabs/group_policy_tab.cpp

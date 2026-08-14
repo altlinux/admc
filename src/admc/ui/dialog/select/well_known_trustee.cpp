@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "select_well_known_trustee_dialog.h"
-#include "ui_select_well_known_trustee_dialog.h"
+#include "ui/dialog/select/well_known_trustee.h"
+#include "ui/dialog/select/ui_well_known_trustee.h"
 
 #include "ad_security.h"
 #include "ad_utils.h"
