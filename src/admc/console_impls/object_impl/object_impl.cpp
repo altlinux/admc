@@ -43,7 +43,7 @@
 #include "ui/widget/tab/general_user.h"
 #include "ui/widget/tab/general_group.h"
 #include "core/managers/icon_manager.h"
-#include "results_widgets/pso_results_widget/pso_results_widget.h"
+#include "ui/widget/result/pso/pso.h"
 #include "results_widgets/subnet_results_widget/subnet_results_widget.h"
 
 #include <QDebug>

@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "pso_results_widget.h"
+#include "ui/widget/result/pso/pso.h"
 #include "ad_interface.h"
 #include "utils.h"
 #include "console_impls/object_impl/object_impl.h"
-#include "pso_edit_widget.h"
-#include "../../ui/widget/result/ui_base.h"
+#include "ui/widget/result/pso/pso_edit.h"
+#include "../ui_base.h"
 
 #include <QModelIndex>
 // #include <QDebug>

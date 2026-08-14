@@ -1,7 +1,7 @@
 ﻿/*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2024-2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "pso_edit_widget.h"
-#include "ui_pso_edit_widget.h"
+#include "ui/widget/result/pso/pso_edit.h"
+#include "ui/widget/result/pso/ui_pso_edit.h"
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_utils.h"

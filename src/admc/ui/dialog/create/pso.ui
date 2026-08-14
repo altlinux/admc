@@ -43,7 +43,7 @@
   <customwidget>
    <class>PSOEditWidget</class>
    <extends>QWidget</extends>
-   <header>results_widgets/pso_results_widget/pso_edit_widget.h</header>
+   <header>ui/widget/result/pso/pso_edit.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
