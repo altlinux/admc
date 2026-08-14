@@ -19,19 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "create_object_helper.h"
-
-#include "adldap.h"
-#include "attribute_edits/attribute_edit.h"
-#include "core/globals.h"
-#include "ui/status.h"
-#include "utils.h"
-
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QRegularExpression>
+
+#include "adldap.h"
+#include "attribute_edits/attribute_edit.h"
+#include "core/globals.h"
+#include "create_object_helper.h"
+#include "ui/status.h"
+#include "utils.h"
 
 // TODO: the logic of "enable/disable ok button
 // depending on whether all required edits contain
@@ -39,7 +38,14 @@
 // other places. Can create an abstraction for it to
 // reduce duplication.
 
-CreateObjectHelper::CreateObjectHelper(QLineEdit *name_edit_arg, QDialogButtonBox *button_box, const QList<AttributeEdit *> &edits_list, const QList<QLineEdit *> &required_list, const QString &object_class, const QString &parent_dn_arg, QDialog *parent_dialog_arg)
+CreateObjectHelper::CreateObjectHelper(
+    QLineEdit *name_edit_arg,
+    QDialogButtonBox *button_box,
+    const QList<AttributeEdit *> &edits_list,
+    const QList<QLineEdit *> &required_list,
+    const QString &object_class,
+    const QString &parent_dn_arg,
+    QDialog *parent_dialog_arg)
 : QObject(parent_dialog_arg) {
     parent_dialog = parent_dialog_arg;
     name_edit = name_edit_arg;
@@ -53,9 +59,8 @@ CreateObjectHelper::CreateObjectHelper(QLineEdit *name_edit_arg, QDialogButtonBo
     limit_edit(name_edit, ATTRIBUTE_CN);
 
     for (QLineEdit *edit : m_required_list) {
-        connect(
-            edit, &QLineEdit::textChanged,
-            this, &CreateObjectHelper::on_edited);
+        connect(edit, &QLineEdit::textChanged, this,
+            &CreateObjectHelper::on_edited);
     }
     on_edited();
 }
@@ -70,7 +75,8 @@ bool CreateObjectHelper::accept() const {
     const QString dn = get_created_dn();
 
     auto fail_msg = [name]() {
-        const QString message = QString(tr("Failed to create object %1")).arg(name);
+        const QString message =
+            QString(tr("Failed to create object %1")).arg(name);
         g_status->add_message(message, StatusType_Error);
     };
 
@@ -96,13 +102,13 @@ bool CreateObjectHelper::accept() const {
         // be defined on creation because it's a
         // mandatory attribute
         attr_map = QHash<QString, QList<QString>>({
-                {ATTRIBUTE_OBJECT_CLASS, {m_object_class}},
-                {ATTRIBUTE_UNC_NAME, {"placeholder"}},
-            });
+            {ATTRIBUTE_OBJECT_CLASS, {m_object_class}},
+            {ATTRIBUTE_UNC_NAME, {"placeholder"}},
+        });
     } else {
         attr_map = QHash<QString, QList<QString>>({
-                {ATTRIBUTE_OBJECT_CLASS, {m_object_class}},
-            });
+            {ATTRIBUTE_OBJECT_CLASS, {m_object_class}},
+        });
     }
 
     const bool add_success = ad.object_add(dn, attr_map);
@@ -110,7 +116,9 @@ bool CreateObjectHelper::accept() const {
     final_success = (final_success && add_success);
 
     if (add_success) {
-        const bool is_user_or_person = (m_object_class == CLASS_USER || m_object_class == CLASS_INET_ORG_PERSON);
+        const bool is_user_or_person =
+            ((m_object_class == CLASS_USER) ||
+                (m_object_class == CLASS_INET_ORG_PERSON));
         const bool is_computer = (m_object_class == CLASS_COMPUTER);
 
         if (is_user_or_person) {
@@ -121,14 +129,20 @@ bool CreateObjectHelper::accept() const {
             const int bit = UAC_PASSWD_NOTREQD;
             const int updated_uac = bitmask_set(uac, bit, false);
 
-            final_success = (final_success && ad.attribute_replace_int(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, updated_uac, DoStatusMsg_No));
+            final_success =
+                (final_success &&
+                    ad.attribute_replace_int(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL,
+                        updated_uac, DoStatusMsg_No));
         } else if (is_computer) {
             // NOTE: other attributes like primary
             // group and sam account type are
             // automatically changed by the server when
             // we set UAC to the correct value
-            const int uac = (UAC_PASSWD_NOTREQD | UAC_WORKSTATION_TRUST_ACCOUNT);
-            final_success = (final_success && ad.attribute_replace_int(dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, uac));
+            const int uac =
+                (UAC_PASSWD_NOTREQD | UAC_WORKSTATION_TRUST_ACCOUNT);
+            final_success =
+                (final_success && ad.attribute_replace_int(
+                                      dn, ATTRIBUTE_USER_ACCOUNT_CONTROL, uac));
         }
 
         const bool apply_success = AttributeEdit::apply(m_edit_list, ad, dn);
