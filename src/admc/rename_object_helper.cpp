@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -19,17 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rename_object_helper.h"
+#include <QDialog>
+#include <QLineEdit>
+#include <QRegularExpression>
 
 #include "adldap.h"
 #include "attribute_edits/attribute_edit.h"
 #include "core/globals.h"
+#include "rename_object_helper.h"
 #include "ui/status.h"
 #include "utils.h"
-
-#include <QDialog>
-#include <QLineEdit>
-#include <QRegularExpression>
 
 void RenameObjectHelper::success_msg(const QString &old_name) {
     const QString message = QString(tr("Object %1 was renamed.")).arg(old_name);
@@ -37,11 +36,19 @@ void RenameObjectHelper::success_msg(const QString &old_name) {
 }
 
 void RenameObjectHelper::fail_msg(const QString &old_name) {
-    const QString message = QString(tr("Failed to rename object %1")).arg(old_name);
+    const QString message =
+        QString(tr("Failed to rename object %1")).arg(old_name);
     g_status->add_message(message, StatusType_Error);
 }
 
-RenameObjectHelper::RenameObjectHelper(AdInterface &ad, const QString &target_arg, QLineEdit *name_edit_arg, const QList<AttributeEdit *> &edits_arg, QDialog *parent_dialog_arg, QList<QLineEdit *> required, QDialogButtonBox *button_box)
+RenameObjectHelper::RenameObjectHelper(
+    AdInterface &ad,
+    const QString &target_arg,
+    QLineEdit *name_edit_arg,
+    const QList<AttributeEdit *> &edits_arg,
+    QDialog *parent_dialog_arg,
+    QList<QLineEdit *> required,
+    QDialogButtonBox *button_box)
 : QObject(parent_dialog_arg) {
     name_edit = name_edit_arg;
     edits = edits_arg;
@@ -63,7 +70,8 @@ RenameObjectHelper::RenameObjectHelper(AdInterface &ad, const QString &target_ar
 
     if (!required_list.isEmpty() && ok_button != nullptr) {
         for (QLineEdit *edit : required_list) {
-            connect(edit, &QLineEdit::textChanged, this, &RenameObjectHelper::on_edited);
+            connect(edit, &QLineEdit::textChanged, this,
+                &RenameObjectHelper::on_edited);
         }
         on_edited();
     }
@@ -80,7 +88,8 @@ bool RenameObjectHelper::accept() const {
 
     const QString new_name = get_new_name();
 
-    const bool verify_name_success = verify_object_name(new_name, parent_dialog);
+    const bool verify_name_success =
+        verify_object_name(new_name, parent_dialog);
     if (!verify_name_success) {
         return false;
     }
