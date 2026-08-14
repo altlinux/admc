@@ -1,7 +1,7 @@
 #ifndef SUBNET_RESULTS_WIDGET_H
 #define SUBNET_RESULTS_WIDGET_H
 
-#include "results_widgets/results_widget_base.h"
+#include "../../ui/widget/result/base.h"
 
 class SubnetEditWidget;
 

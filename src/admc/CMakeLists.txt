@@ -142,6 +142,7 @@ set(ADMC_SOURCES
     ui/widget/multi_tab/address.cpp
     ui/widget/multi_tab/profile.cpp
     ui/widget/multi_tab/organization.cpp
+    ui/widget/result/base.cpp
     ui/widget/tab.cpp
     ui/widget/tab/general_user.cpp
     ui/widget/tab/general_group.cpp
@@ -187,7 +188,6 @@ set(ADMC_SOURCES
     results_widgets/domain_info_results_widget/fsmo_table_widget.cpp
     results_widgets/pso_results_widget/pso_edit_widget.cpp
     results_widgets/pso_results_widget/pso_results_widget.cpp
-    results_widgets/results_widget_base.cpp
     results_widgets/subnet_results_widget/subnet_results_widget.cpp
     results_widgets/subnet_results_widget/subnet_edit_widget.cpp
 

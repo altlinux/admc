@@ -1,5 +1,5 @@
-#include "results_widget_base.h"
-#include "ui_results_widget_base.h"
+#include "ui/widget/result/base.h"
+#include "ui/widget/result/ui_base.h"
 
 ResultsWidgetBase::ResultsWidgetBase(QWidget *parent) :
     QWidget(parent),

@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,7 @@
 #ifndef PSO_RESULTS_WIDGET_H
 #define PSO_RESULTS_WIDGET_H
 
-#include "results_widgets/results_widget_base.h"
-
+#include "ui/widget/result/base.h"
 
 class PSOEditWidget;
 
