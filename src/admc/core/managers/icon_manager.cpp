@@ -84,6 +84,9 @@ public:
     //       for example, query folder and query items are not AD objects
     void append_actions(const QMap<QString, QAction*> &categorized_actions);
     bool main_icons_are_valid();
+    QPixmap render_icon_at_size(const QIcon &icon, const QSize &target_size,
+        const QList<int> &standard_sides) const;
+    QIcon disabled_item_icon(const QIcon &icon) const;
 };
 
 IconManager::IconManagerImpl::IconManagerImpl(IconManager *parent) : q(parent) {
@@ -184,15 +187,52 @@ QIcon IconManager::IconManagerImpl::overlay_scope_item_icon(const QIcon &clean_i
 
 QIcon IconManager::IconManagerImpl::overlay_scope_item_icon(const QIcon &clean_icon, const QIcon &overlay_icon, const QSize &clean_icon_size,
                                                             const QSize &overlay_icon_size, const QPoint &pos) const {
+    // Icon sizes baked into the resulting icon, so QIcon can pick a match
+    // instead of upscaling a single fixed pixmap. Non-standard sizes make
+    // the theme engine walk the inheritance chain and return an unrelated icon.
+    const QList<int> standard_icon_sides = {16, 22, 24, 32, 48, 64};
+
     QIcon overlapped_icon;
 
-    QPixmap original_pixmap = clean_icon.pixmap(clean_icon_size.height(), clean_icon_size.width());
-    QPixmap overlay_pixmap = overlay_icon.pixmap(overlay_icon_size);
+    const int base_side = clean_icon_size.width();
+    if (base_side <= 0) {
+        return overlapped_icon;
+    }
 
-    QPainter painter(&original_pixmap);
-    painter.drawPixmap(pos.x(), pos.y(), overlay_pixmap);
+    for (int side : standard_icon_sides) {
+        const qreal size_multiplier = qreal(side) / qreal(base_side);
 
-    overlapped_icon.addPixmap(original_pixmap);
+        const QPixmap base_pixmap = clean_icon.pixmap(side, side);
+        if (base_pixmap.isNull()) {
+            continue;
+        }
+
+        // Draw onto a canvas of an exact size: the theme may return a pixmap
+        // slightly smaller than requested, which would make this icon render
+        // differently from its neighbours in the tree.
+        QPixmap canvas(side, side);
+        canvas.fill(Qt::transparent);
+
+        QPainter painter(&canvas);
+        painter.drawPixmap((side - base_pixmap.width()) / 2,
+            (side - base_pixmap.height()) / 2,
+            base_pixmap);
+
+        const QSize overlay_size(qRound(overlay_icon_size.width() * size_multiplier),
+            qRound(overlay_icon_size.height() * size_multiplier));
+
+        const QPixmap overlay_pixmap = render_icon_at_size(overlay_icon, overlay_size, standard_icon_sides);
+        if (!overlay_pixmap.isNull()) {
+            painter.drawPixmap(qRound(pos.x() * size_multiplier),
+                qRound(pos.y() * size_multiplier),
+                overlay_pixmap);
+        }
+
+        painter.end();
+
+        overlapped_icon.addPixmap(canvas);
+    }
+
     return overlapped_icon;
 }
 
@@ -203,6 +243,8 @@ void IconManager::IconManagerImpl::update_action_icons() {
 }
 
 void IconManager::IconManagerImpl::update_icons_array() {
+    const bool theme_is_system = theme == system_theme;
+
     item_icons_array[ItemIcon_Block_Indicator] = q->category_icon(block_indicator);
     item_icons_array[ItemIcon_Warning_Indicator] = q->category_icon(warning_indicator);
     item_icons_array[ItemIcon_Inheritance_Block_Indicator] = q->category_icon(inheritance_indicator);
@@ -210,22 +252,47 @@ void IconManager::IconManagerImpl::update_icons_array() {
     item_icons_array[ItemIcon_Policy_Link_Indicator] = q->category_icon(link_indicator);
 
     item_icons_array[ItemIcon_Policy] = q->category_icon(OBJECT_CATEGORY_GP_CONTAINER);
-    item_icons_array[ItemIcon_Policy_Link] = q->category_icon(ADMC_CATEGORY_GP_LINK);
-    item_icons_array[ItemIcon_Policy_Link_Disabled] = q->category_icon(ADMC_CATEGORY_GP_DISABLED);
-    item_icons_array[ItemIcon_Policy_Enforced] = q->category_icon(ADMC_CATEGORY_GP_ENFORCED);
-    item_icons_array[ItemIcon_Policy_Enforced_Disabled] = q->category_icon(ADMC_CATEGORY_GP_ENFORCED_DISABLED);
+    item_icons_array[ItemIcon_Policy_Link] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_Policy], q->item_icon(ItemIcon_Policy_Link_Indicator),
+        QSize(16, 16), QSize(12, 12), QPoint(-2, 7)) :
+        q->category_icon(ADMC_CATEGORY_GP_LINK);
+    item_icons_array[ItemIcon_Policy_Link_Disabled] = theme_is_system ?
+        disabled_item_icon(item_icons_array[ItemIcon_Policy_Link]) :
+        q->category_icon(ADMC_CATEGORY_GP_DISABLED);
+    item_icons_array[ItemIcon_Policy_Enforced] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_Policy_Link], q->item_icon(ItemIcon_Policy_Enforce_Indicator),
+        QSize(16, 16), QSize(8, 8), QPoint(8, 8)) :
+        q->category_icon(ADMC_CATEGORY_GP_ENFORCED);
+    item_icons_array[ItemIcon_Policy_Enforced_Disabled] = theme_is_system ?
+        disabled_item_icon(item_icons_array[ItemIcon_Policy_Enforced]) :
+        q->category_icon(ADMC_CATEGORY_GP_ENFORCED_DISABLED);
     item_icons_array[ItemIcon_OU] = q->category_icon(OBJECT_CATEGORY_OU);
-    item_icons_array[ItemIcon_OU_InheritanceBlocked] = q->category_icon(ADMC_CATEGORY_OU_INHERITANCE_BLOCKED);
+    item_icons_array[ItemIcon_OU_InheritanceBlocked] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_OU], q->item_icon(ItemIcon_Inheritance_Block_Indicator),
+        QSize(16, 16), QSize(10, 10), QPoint(6, 6)) :
+        q->category_icon(ADMC_CATEGORY_OU_INHERITANCE_BLOCKED);
     item_icons_array[ItemIcon_Domain] = q->category_icon(OBJECT_CATEGORY_DOMAIN_DNS);
-    item_icons_array[ItemIcon_Domain_InheritanceBlocked] = q->category_icon(ADMC_CATEGORY_DOMAIN_INHERITANCE_BLOCKED);
+    item_icons_array[ItemIcon_Domain_InheritanceBlocked] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_Domain],
+        q->item_icon(ItemIcon_Inheritance_Block_Indicator),
+        QSize(16, 16), QSize(10, 10), QPoint(6, 6)) :
+        q->category_icon(ADMC_CATEGORY_DOMAIN_INHERITANCE_BLOCKED);
     item_icons_array[ItemIcon_Person] = q->category_icon(OBJECT_CATEGORY_PERSON);
-    item_icons_array[ItemIcon_Person_Blocked] = q->category_icon(ADMC_CATEGORY_PERSON_BLOCKED);
+    item_icons_array[ItemIcon_Person_Blocked] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_Person],
+        q->item_icon(ItemIcon_Block_Indicator), QSize(16, 16),
+        QSize(6, 6), QPoint(10, 10)) :
+        q->category_icon(ADMC_CATEGORY_PERSON_BLOCKED);
     item_icons_array[ItemIcon_Site] = q->category_icon(OBJECT_CATEGORY_SITE);
     item_icons_array[ItemIcon_Computer] = q->category_icon(OBJECT_CATEGORY_COMPUTER);
-    item_icons_array[ItemIcon_Computer_Blocked] = q->category_icon(ADMC_CATEGORY_COMPUTER_BLOCKED);
+    item_icons_array[ItemIcon_Computer_Blocked] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_Computer],
+        q->item_icon(ItemIcon_Block_Indicator), QSize(16, 16),
+        QSize(6, 6), QPoint(10, 10)) :
+        q->category_icon(ADMC_CATEGORY_COMPUTER_BLOCKED);
     item_icons_array[ItemIcon_Group] = q->category_icon(OBJECT_CATEGORY_GROUP);
     item_icons_array[ItemIcon_Password_Settings_Object] = q->category_icon(OBJECT_CATEGORY_PSO);
-    item_icons_array[ItemIcon_Password_Settings_Object] = q->category_icon(OBJECT_CATEGORY_PSO_CONTAINER);
+    item_icons_array[ItemIcon_PSO_Container] = q->category_icon(OBJECT_CATEGORY_PSO_CONTAINER);
     item_icons_array[ItemIcon_InterSite_Transport] = q->category_icon(OBJECT_CATEGORY_INTER_SITE_TRANSPORT);
     item_icons_array[ItemIcon_InterSite_Transport_Container] = q->category_icon(OBJECT_CATEGORY_INTER_SITE_TRANSPORT_CONTAINER);
     item_icons_array[ItemIcon_Subnet] = q->category_icon(OBJECT_CATEGORY_SUBNET);
@@ -323,6 +390,39 @@ bool IconManager::IconManagerImpl::main_icons_are_valid() {
     }
 
     return true;
+}
+
+QPixmap IconManager::IconManagerImpl::render_icon_at_size(const QIcon &icon, const QSize &target_size,
+    const QList<int> &standard_sides) const {
+    const int needed_side = qMax(target_size.width(), target_size.height());
+
+    int source_side = standard_sides.last();
+    for (int side : standard_sides) {
+        if (side >= needed_side) {
+            source_side = side;
+            break;
+        }
+    }
+
+    const QPixmap source = icon.pixmap(source_side, source_side);
+    if (source.isNull()) {
+        return QPixmap();
+    }
+    if (source.size() == target_size) {
+        return source;
+    }
+
+    return source.scaled(target_size, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+}
+
+QIcon IconManager::IconManagerImpl::disabled_item_icon(const QIcon &icon) const {
+    QIcon disabled_icon;
+
+    for (const QSize &size : icon.availableSizes()) {
+        disabled_icon.addPixmap(icon.pixmap(size, QIcon::Disabled));
+    }
+
+    return disabled_icon;
 }
 
 QStringList IconManager::available_themes() {
