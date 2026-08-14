@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,24 +19,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "multi_tabs/general_other_multi_tab.h"
-#include "multi_tabs/ui_general_other_multi_tab.h"
+#include "ui/widget/multi_tab/profile.h"
+#include "ui/widget/multi_tab/ui_profile.h"
 
 #include "ad_defines.h"
 #include "attribute_edits/string_edit.h"
 
 #include <QHash>
 
-GeneralOtherMultiTab::GeneralOtherMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent)
+ProfileMultiTab::ProfileMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent)
 : QWidget(parent) {
-    ui = new Ui::GeneralOtherMultiTab();
+    ui = new Ui::ProfileMultiTab();
     ui->setupUi(this);
 
-    auto description_edit = new StringEdit(ui->description_edit, ATTRIBUTE_DESCRIPTION, this);
+    auto profile_edit = new StringEdit(ui->profile_edit, ATTRIBUTE_PROFILE_PATH, this);
+    auto script_edit = new StringEdit(ui->script_edit, ATTRIBUTE_SCRIPT_PATH, this);
+    auto home_edit = new StringEdit(ui->home_edit, ATTRIBUTE_HOME_DIRECTORY, this);
 
     edit_list->append({
-        description_edit,
+        profile_edit,
+        script_edit,
+        home_edit,
     });
 
-    check_map->insert(description_edit, ui->description_check);
+    check_map->insert(profile_edit, ui->profile_check);
+    check_map->insert(script_edit, ui->script_check);
+    check_map->insert(home_edit, ui->home_check);
+}
+
+ProfileMultiTab::~ProfileMultiTab() {
+    delete ui;
 }

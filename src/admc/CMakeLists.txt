@@ -124,6 +124,12 @@ set(ADMC_SOURCES
     ui/widget/console/console_drag_model.cpp
     ui/widget/console/console_impl.cpp
     ui/widget/edit_query_item.cpp
+    ui/widget/multi_tab/general_user.cpp
+    ui/widget/multi_tab/general_other.cpp
+    ui/widget/multi_tab/account.cpp
+    ui/widget/multi_tab/address.cpp
+    ui/widget/multi_tab/profile.cpp
+    ui/widget/multi_tab/organization.cpp
     ui/widget/tab.cpp
     ui/widget/tab/general_user.cpp
     ui/widget/tab/general_group.cpp
@@ -190,13 +196,6 @@ set(ADMC_SOURCES
     filter_widget/class_filter_widget.cpp
     filter_widget/class_filter_dialog.cpp
     filter_widget/select_base_widget.cpp
-
-    multi_tabs/general_user_multi_tab.cpp
-    multi_tabs/general_other_multi_tab.cpp
-    multi_tabs/account_multi_tab.cpp
-    multi_tabs/address_multi_tab.cpp
-    multi_tabs/profile_multi_tab.cpp
-    multi_tabs/organization_multi_tab.cpp
 
     attribute_edits/attribute_edit.cpp
     attribute_edits/string_edit.cpp

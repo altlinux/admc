@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "multi_tabs/organization_multi_tab.h"
-#include "multi_tabs/ui_organization_multi_tab.h"
+#include "ui/widget/multi_tab/organization.h"
+#include "ui/widget/multi_tab/ui_organization.h"
 
 #include "ad_defines.h"
 #include "attribute_edits/manager_edit.h"
