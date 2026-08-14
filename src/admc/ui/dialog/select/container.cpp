@@ -31,6 +31,7 @@
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "ui/dialog/select/container.h"
 #include "ui/dialog/select/ui_container.h"
 #include "ui/status.h"

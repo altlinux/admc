@@ -121,26 +121,6 @@ bool ad_failed(const AdInterface &ad, QWidget *parent) {
     return !ad_connected_base(ad, parent);
 }
 
-QString get_classes_filter(const QList<QString> &class_list) {
-    QList<QString> class_filters;
-    for (const QString &object_class : class_list) {
-        const QString class_filter = filter_CONDITION(Condition_Equals,
-                                                      ATTRIBUTE_OBJECT_CLASS,
-                                                      object_class);
-        class_filters.append(class_filter);
-    }
-
-    const QString out = filter_OR(class_filters);
-
-    return out;
-}
-
-QString is_container_filter() {
-    const QList<QString> accepted_classes = g_adconfig->get_filter_containers();
-    const QString out = get_classes_filter(accepted_classes);
-    return out;
-}
-
 void limit_edit(QLineEdit *edit, const QString &attribute) {
     const int range_upper = ad_get_range_upper(attribute);
 

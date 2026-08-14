@@ -27,6 +27,8 @@
 #include <QString>
 #include <QVariant>
 
+#include "adldap.h"
+#include "core/globals.h"
 #include "utils.h"
 
 /**
@@ -184,4 +186,24 @@ QList<QModelIndex> normal_index_list(
 QRegularExpressionValidator* make_decimal_numbers_validator(QObject *parent) {
     return new QRegularExpressionValidator(QRegularExpression("[0-9]*"),
                                            parent);
+}
+
+QString get_classes_filter(const QList<QString> &class_list) {
+    QList<QString> class_filters;
+    for (const QString &object_class : class_list) {
+        const QString class_filter = filter_CONDITION(Condition_Equals,
+                                                      ATTRIBUTE_OBJECT_CLASS,
+                                                      object_class);
+        class_filters.append(class_filter);
+    }
+
+    const QString out = filter_OR(class_filters);
+
+    return out;
+}
+
+QString is_container_filter() {
+    const QList<QString> accepted_classes = g_adconfig->get_filter_containers();
+    const QString out = get_classes_filter(accepted_classes);
+    return out;
 }

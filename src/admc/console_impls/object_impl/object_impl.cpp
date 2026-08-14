@@ -39,6 +39,7 @@
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "drag_n_drop.h"
 #include "ui/dialog/attribute/list.h"
 #include "ui/dialog/console_filter.h"

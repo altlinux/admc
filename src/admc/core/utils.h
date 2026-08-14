@@ -25,6 +25,7 @@
 #include <QList>
 #include <QRegularExpressionValidator>
 #include <QStandardItem>
+#include <QString>
 
 QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list);
 QList<QString> variant_list_to_string_list(const QList<QVariant> &variant_list);
@@ -42,5 +43,11 @@ QList<QPersistentModelIndex> persistent_index_list(
 QList<QModelIndex> normal_index_list(
     const QList<QPersistentModelIndex> &indexes);
 QRegularExpressionValidator* make_decimal_numbers_validator(QObject *parent);
+
+// Filter that accepts only given classes
+QString get_classes_filter(const QList<QString> &class_list);
+
+// Filter that accepts only container classes
+QString is_container_filter();
 
 #endif

@@ -79,12 +79,6 @@ void set_data_for_row(const QList<QStandardItem *> &row,
 bool ad_connected(const AdInterface &ad, QWidget *parent);
 bool ad_failed(const AdInterface &ad, QWidget *parent);
 
-// Filter that accepts only given classes
-QString get_classes_filter(const QList<QString> &class_list);
-
-// Filter that accepts only container classes
-QString is_container_filter();
-
 void limit_edit(QLineEdit *edit, const QString &attribute);
 void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute);
 
