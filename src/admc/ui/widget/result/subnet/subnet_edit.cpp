@@ -1,5 +1,5 @@
-#include "subnet_edit_widget.h"
-#include "ui_subnet_edit_widget.h"
+#include "ui/widget/result/subnet/subnet_edit.h"
+#include "ui/widget/result/subnet/ui_subnet_edit.h"
 #include "ad_object.h"
 #include "ad_defines.h"
 #include "ad_utils.h"
