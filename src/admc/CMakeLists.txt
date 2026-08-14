@@ -143,6 +143,7 @@ set(ADMC_SOURCES
     ui/widget/multi_tab/profile.cpp
     ui/widget/multi_tab/organization.cpp
     ui/widget/result/base.cpp
+    ui/widget/result/policy.cpp
     ui/widget/tab.cpp
     ui/widget/tab/general_user.cpp
     ui/widget/tab/general_group.cpp
@@ -183,7 +184,6 @@ set(ADMC_SOURCES
     results_widgets/policy_ou_results_widget/inherited_policies_widget.cpp
     results_widgets/policy_ou_results_widget/linked_policies_widget.cpp
     results_widgets/policy_ou_results_widget/drag_drop_links_model.cpp
-    results_widgets/policy_results_widget.cpp
     results_widgets/domain_info_results_widget/domain_info_results_widget.cpp
     results_widgets/domain_info_results_widget/fsmo_table_widget.cpp
     results_widgets/pso_results_widget/pso_edit_widget.cpp

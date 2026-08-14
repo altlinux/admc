@@ -40,7 +40,7 @@
 #include "fsmo/fsmo_utils.h"
 #include "ui/dialog/properties.h"
 #include "ui/dialog/rename/policy.h"
-#include "results_widgets/policy_results_widget.h"
+#include "ui/widget/result/policy.h"
 #include "ui/dialog/select/object.h"
 #include "ui/status.h"
 #include "utils.h"

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "policy_results_widget.h"
-#include "ui_policy_results_widget.h"
+#include "ui/widget/result/policy.h"
+#include "ui/widget/result/ui_policy.h"
 
 #include "adldap.h"
 #include "console_impls/item_type.h"
