@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_widget/class_filter_dialog.h"
-#include "filter_widget/ui_class_filter_dialog.h"
+#include "ui/dialog/class_filter.h"
+#include "ui/dialog/ui_class_filter.h"
 
 #include "core/settings.h"
 

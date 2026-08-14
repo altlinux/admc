@@ -82,6 +82,7 @@ set(ADMC_SOURCES
     ui/dialog/attribute/time_span.cpp
     ui/dialog/auth/krb_auth.cpp
     ui/dialog/changelog.cpp
+    ui/dialog/class_filter.cpp
     ui/dialog/connection_options.cpp
     ui/dialog/console_filter.cpp
     ui/dialog/create/computer.cpp
@@ -193,7 +194,6 @@ set(ADMC_SOURCES
     filter_widget/filter_widget_advanced_tab.cpp
     filter_widget/select_classes_widget.cpp
     filter_widget/class_filter_widget.cpp
-    filter_widget/class_filter_dialog.cpp
     filter_widget/select_base_widget.cpp
 
     attribute_edits/attribute_edit.cpp

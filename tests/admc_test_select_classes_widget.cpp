@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +21,9 @@
 
 #include "admc_test_select_classes_widget.h"
 
-#include "filter_widget/class_filter_dialog.h"
+#include "ui/dialog/class_filter.h"
+#include "ui/dialog/ui_class_filter.h"
 #include "filter_widget/select_classes_widget.h"
-#include "filter_widget/ui_class_filter_dialog.h"
 #include "filter_widget/ui_select_classes_widget.h"
 
 void ADMCTestSelectClassesWidget::init() {

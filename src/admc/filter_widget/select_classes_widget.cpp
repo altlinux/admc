@@ -23,7 +23,7 @@
 #include "filter_widget/ui_select_classes_widget.h"
 
 #include "adldap.h"
-#include "filter_widget/class_filter_dialog.h"
+#include "ui/dialog/class_filter.h"
 #include "core/globals.h"
 #include "utils.h"
 
