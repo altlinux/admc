@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_dialog.h"
-#include "ui_filter_dialog.h"
+#include "ui/dialog/filter.h"
+#include "ui/dialog/ui_filter.h"
 
 #include "adldap.h"
 #include "filter_widget/filter_widget.h"

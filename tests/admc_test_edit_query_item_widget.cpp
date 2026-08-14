@@ -23,7 +23,8 @@
 
 #include "console_impls/query_item_impl.h"
 #include "edit_query_widgets/edit_query_item_widget.h"
-#include "filter_widget/filter_dialog.h"
+#include "ui/dialog/filter.h"
+#include "ui/dialog/ui_filter.h"
 #include "filter_widget/filter_widget.h"
 #include "filter_widget/filter_widget_simple_tab.h"
 #include "filter_widget/select_base_widget.h"
@@ -32,7 +33,6 @@
 #include "filter_widget/ui_select_base_widget.h"
 #include "ui/widget/tab.h"
 #include "ui_edit_query_item_widget.h"
-#include "ui_filter_dialog.h"
 
 #include <QCheckBox>
 #include <QComboBox>

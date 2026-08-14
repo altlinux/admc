@@ -23,7 +23,7 @@
 #include "ui/widget/ui_edit_query_item.h"
 
 #include "ad_filter.h"
-#include "filter_widget/filter_dialog.h"
+#include "ui/dialog/filter.h"
 
 EditQueryItemWidget::EditQueryItemWidget(QWidget *parent)
 : QWidget(parent) {

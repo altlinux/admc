@@ -100,6 +100,7 @@ set(ADMC_SOURCES
     ui/dialog/edit_query_item.cpp
     ui/dialog/edit_query_folder.cpp
     ui/dialog/error_log.cpp
+    ui/dialog/filter.cpp
     ui/dialog/find/policy.cpp
     ui/dialog/find/object.cpp
     ui/dialog/main_window_connection_error.cpp
@@ -187,7 +188,6 @@ set(ADMC_SOURCES
     fsmo/fsmo_utils.cpp
 
     filter_widget/filter_widget.cpp
-    filter_widget/filter_dialog.cpp
     filter_widget/filter_widget_simple_tab.cpp
     filter_widget/filter_widget_normal_tab.cpp
     filter_widget/filter_widget_advanced_tab.cpp
