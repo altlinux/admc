@@ -2,7 +2,7 @@
 #define SITESLINKEDIT_H
 
 #include "attribute_edit.h"
-#include "tabs/sites_link_tab/sites_link_type.h"
+#include "ui/widget/tab/sites_link/type.h"
 
 class SitesLinkWidget;
 class SitesLinkCommonWidget;

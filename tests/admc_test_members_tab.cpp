@@ -22,8 +22,8 @@
 #include "admc_test_members_tab.h"
 
 #include "ui/dialog/select/object.h"
-#include "tabs/membership_tab.h"
-#include "tabs/ui_membership_tab.h"
+#include "ui/widget/tab/membership.h"
+#include "ui/widget/tab/ui_membership.h"
 
 #include <QPushButton>
 #include <QStandardItemModel>

@@ -49,7 +49,7 @@ if (LIBCNG_DPAPI_LIBRARY)
     message("Found libcng-dpapi library in ${LIBCNG_DPAPI_LIBRARY} .")
     link_libraries(${LIBCNG_DPAPI_LIBRARY})
     set(LAPS_SOURCES
-        tabs/laps_v2_tab.cpp
+        ui/widget/tab/laps_v2.cpp
         attribute_edits/laps_encrypted_attribute_edit.cpp
     )
 else()
@@ -125,6 +125,35 @@ set(ADMC_SOURCES
     ui/widget/console/console_impl.cpp
     ui/widget/edit_query_item.cpp
     ui/widget/tab.cpp
+    ui/widget/tab/general_user.cpp
+    ui/widget/tab/general_group.cpp
+    ui/widget/tab/general_ou.cpp
+    ui/widget/tab/general_computer.cpp
+    ui/widget/tab/general_policy.cpp
+    ui/widget/tab/general_shared_folder.cpp
+    ui/widget/tab/general_other.cpp
+    ui/widget/tab/object.cpp
+    ui/widget/tab/attributes.cpp
+    ui/widget/tab/attributes_proxy.cpp
+    ui/widget/tab/attributes_filter_menu.cpp
+    ui/widget/tab/account.cpp
+    ui/widget/tab/membership.cpp
+    ui/widget/tab/address.cpp
+    ui/widget/tab/organization.cpp
+    ui/widget/tab/telephones.cpp
+    ui/widget/tab/profile.cpp
+    ui/widget/tab/managed_by.cpp
+    ui/widget/tab/security.cpp
+    ui/widget/tab/os.cpp
+    ui/widget/tab/delegation.cpp
+    ui/widget/tab/laps.cpp
+    ui/widget/tab/error.cpp
+    ui/widget/tab/group_policy.cpp
+    ui/widget/tab/sites_link/common_widget.cpp
+    ui/widget/tab/sites_link/part_widget.cpp
+    ui/widget/tab/sites_link/widget.cpp
+    ui/widget/tab/sites_link/general_tab.cpp
+    ui/widget/tab/general_site.cpp
     utils.cpp
 
     main_window.cpp
@@ -161,36 +190,6 @@ set(ADMC_SOURCES
     filter_widget/class_filter_widget.cpp
     filter_widget/class_filter_dialog.cpp
     filter_widget/select_base_widget.cpp
-
-    tabs/general_user_tab.cpp
-    tabs/general_group_tab.cpp
-    tabs/general_ou_tab.cpp
-    tabs/general_computer_tab.cpp
-    tabs/general_policy_tab.cpp
-    tabs/general_shared_folder_tab.cpp
-    tabs/general_other_tab.cpp
-    tabs/object_tab.cpp
-    tabs/attributes_tab.cpp
-    tabs/attributes_tab_proxy.cpp
-    tabs/attributes_tab_filter_menu.cpp
-    tabs/account_tab.cpp
-    tabs/membership_tab.cpp
-    tabs/address_tab.cpp
-    tabs/organization_tab.cpp
-    tabs/telephones_tab.cpp
-    tabs/profile_tab.cpp
-    tabs/managed_by_tab.cpp
-    tabs/security_tab.cpp
-    tabs/os_tab.cpp
-    tabs/delegation_tab.cpp
-    tabs/laps_tab.cpp
-    tabs/error_tab.cpp
-    tabs/group_policy_tab.cpp
-    tabs/sites_link_tab/sites_link_common_widget.cpp
-    tabs/sites_link_tab/sites_link_part_widget.cpp
-    tabs/sites_link_tab/sites_link_widget.cpp
-    tabs/sites_link_tab/sites_link_general_tab.cpp
-    tabs/general_site_tab.cpp
 
     multi_tabs/general_user_multi_tab.cpp
     multi_tabs/general_other_multi_tab.cpp

@@ -35,9 +35,9 @@
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
 #include "sites_link_edit.h"
-#include "tabs/sites_link_tab/sites_link_common_widget.h"
-#include "tabs/sites_link_tab/sites_link_part_widget.h"
-#include "tabs/sites_link_tab/sites_link_widget.h"
+#include "ui/widget/tab/sites_link/common_widget.h"
+#include "ui/widget/tab/sites_link/part_widget.h"
+#include "ui/widget/tab/sites_link/widget.h"
 #include "utils.h"
 
 SitesLinkEdit::SitesLinkEdit(SitesLinkWidget *link_wget_arg, QObject *parent) :

@@ -67,7 +67,7 @@
   <customwidget>
    <class>SitesLinkCommonWidget</class>
    <extends>QWidget</extends>
-   <header>tabs/sites_link_tab/sites_link_common_widget.h</header>
+   <header>ui/widget/tab/sites_link/common_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

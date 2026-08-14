@@ -25,7 +25,7 @@
 #include "ui/dialog/attribute/ui_list.h"
 #include "ui/dialog/attribute/string.h"
 #include "ui/dialog/attribute/ui_string.h"
-#include "tabs/ui_attributes_tab.h"
+#include "ui/widget/tab/ui_attributes.h"
 
 #include <QDialog>
 #include <QPlainTextEdit>

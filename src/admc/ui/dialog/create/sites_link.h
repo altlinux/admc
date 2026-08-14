@@ -23,7 +23,7 @@
 #define SITES_LINK_CREATION_DIALOG_H
 
 #include "ui/dialog/create/object.h"
-#include "tabs/sites_link_tab/sites_link_type.h"
+#include "ui/widget/tab/sites_link/type.h"
 
 namespace Ui {
 class CreateSitesLinkDialog;
