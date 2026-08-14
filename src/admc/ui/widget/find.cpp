@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "find_widget.h"
-#include "ui_find_widget.h"
+#include "ui/widget/find.h"
+#include "ui/widget/ui_find.h"
 
 #include "adldap.h"
 #include "console_impls/find_object_impl.h"

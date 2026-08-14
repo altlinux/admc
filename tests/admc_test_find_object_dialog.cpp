@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +27,9 @@
 #include "filter_widget/ui_filter_widget.h"
 #include "filter_widget/ui_filter_widget_advanced_tab.h"
 #include "filter_widget/ui_filter_widget_simple_tab.h"
-#include "find_widgets/find_object_dialog.h"
+#include "ui/dialog/find/object.h"
+#include "ui/dialog/find/ui_object.h"
 #include "find_widgets/find_widget.h"
-#include "ui_find_object_dialog.h"
 #include "ui_find_widget.h"
 
 #include <QTreeView>

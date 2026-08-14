@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "find_object_dialog.h"
-#include "ui_find_object_dialog.h"
+#include "ui/dialog/find/object.h"
+#include "ui/dialog/find/ui_object.h"
 
 #include "ad_config.h"
 #include "ad_filter.h"
-#include "find_widget.h"
+#include "ui/widget/find.h"
 #include "core/globals.h"
 #include "core/settings.h"
 

@@ -49,7 +49,7 @@
 #include "ui/dialog/create/sites_link.h"
 #include "ui/dialog/create/subnet.h"
 #include "ui/dialog/create/user.h"
-#include "find_widgets/find_object_dialog.h"
+#include "ui/dialog/find/object.h"
 #include "ui/dialog/properties.h"
 #include "ui/dialog/properties_multi.h"
 #include "ui/dialog/rename/group.h"

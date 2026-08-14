@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "find_policy_dialog.h"
-#include "find_policy_dialog_p.h"
-#include "ui_find_policy_dialog.h"
+#include "ui/dialog/find/policy.h"
+#include "ui/dialog/find/policy_p.h"
+#include "ui/dialog/find/ui_policy.h"
 
 #include "adldap.h"
 #include "console_impls/find_policy_impl.h"

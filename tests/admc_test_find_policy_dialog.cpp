@@ -20,9 +20,9 @@
 
 #include "admc_test_find_policy_dialog.h"
 
-#include "find_widgets/find_policy_dialog.h"
-#include "find_widgets/find_policy_dialog_p.h"
-#include "ui_find_policy_dialog.h"
+#include "ui/dialog/find/policy.h"
+#include "ui/dialog/find/policy_p.h"
+#include "ui/dialog/find/ui_policy.h"
 
 #include <QComboBox>
 #include <QLineEdit>

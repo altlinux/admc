@@ -100,6 +100,8 @@ set(ADMC_SOURCES
     ui/dialog/edit_query_item.cpp
     ui/dialog/edit_query_folder.cpp
     ui/dialog/error_log.cpp
+    ui/dialog/find/policy.cpp
+    ui/dialog/find/object.cpp
     ui/dialog/main_window_connection_error.cpp
     ui/dialog/password.cpp
     ui/dialog/properties.cpp
@@ -124,6 +126,7 @@ set(ADMC_SOURCES
     ui/widget/console/console_drag_model.cpp
     ui/widget/console/console_impl.cpp
     ui/widget/edit_query_item.cpp
+    ui/widget/find.cpp
     ui/widget/multi_tab/general_user.cpp
     ui/widget/multi_tab/general_other.cpp
     ui/widget/multi_tab/account.cpp
@@ -178,10 +181,6 @@ set(ADMC_SOURCES
     results_widgets/results_widget_base.cpp
     results_widgets/subnet_results_widget/subnet_results_widget.cpp
     results_widgets/subnet_results_widget/subnet_edit_widget.cpp
-
-    find_widgets/find_policy_dialog.cpp
-    find_widgets/find_object_dialog.cpp
-    find_widgets/find_widget.cpp
 
     fsmo/fsmo_dialog.cpp
     fsmo/fsmo_tab.cpp
