@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_widget/filter_widget_normal_tab.h"
-#include "filter_widget/ui_filter_widget_normal_tab.h"
+#include "ui/widget/filter/normal_tab.h"
+#include "ui/widget/filter/ui_normal_tab.h"
 
 #include "adldap.h"
 #include "core/globals.h"

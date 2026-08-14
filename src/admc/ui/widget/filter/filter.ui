@@ -42,19 +42,19 @@
   <customwidget>
    <class>FilterWidgetSimpleTab</class>
    <extends>QWidget</extends>
-   <header>filter_widget/filter_widget_simple_tab.h</header>
+   <header>ui/widget/filter/simple_tab.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>FilterWidgetNormalTab</class>
    <extends>QWidget</extends>
-   <header>filter_widget/filter_widget_normal_tab.h</header>
+   <header>ui/widget/filter/normal_tab.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>FilterWidgetAdvancedTab</class>
    <extends>QWidget</extends>
-   <header>filter_widget/filter_widget_advanced_tab.h</header>
+   <header>ui/widget/filter/advanced_tab.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

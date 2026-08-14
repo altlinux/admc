@@ -22,7 +22,7 @@
 #include "adldap.h"
 #include "core/globals.h"
 #include "core/settings.h"
-#include "filter_widget/class_filter_widget.h"
+#include "ui/widget/filter/class_filter.h"
 #include "ui/dialog/filter.h"
 #include "ui/dialog/console_filter.h"
 #include "ui/dialog/ui_console_filter.h"

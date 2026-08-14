@@ -92,7 +92,7 @@
   <customwidget>
    <class>SelectBaseWidget</class>
    <extends>QWidget</extends>
-   <header>filter_widget/select_base_widget.h</header>
+   <header>ui/widget/filter/select_base.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

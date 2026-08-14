@@ -128,6 +128,13 @@ set(ADMC_SOURCES
     ui/widget/console/console_drag_model.cpp
     ui/widget/console/console_impl.cpp
     ui/widget/edit_query_item.cpp
+    ui/widget/filter/advanced_tab.cpp
+    ui/widget/filter/class_filter.cpp
+    ui/widget/filter/filter.cpp
+    ui/widget/filter/normal_tab.cpp
+    ui/widget/filter/select_base.cpp
+    ui/widget/filter/select_classes.cpp
+    ui/widget/filter/simple_tab.cpp
     ui/widget/find.cpp
     ui/widget/multi_tab/general_user.cpp
     ui/widget/multi_tab/general_other.cpp
@@ -187,14 +194,6 @@ set(ADMC_SOURCES
     fsmo/fsmo_dialog.cpp
     fsmo/fsmo_tab.cpp
     fsmo/fsmo_utils.cpp
-
-    filter_widget/filter_widget.cpp
-    filter_widget/filter_widget_simple_tab.cpp
-    filter_widget/filter_widget_normal_tab.cpp
-    filter_widget/filter_widget_advanced_tab.cpp
-    filter_widget/select_classes_widget.cpp
-    filter_widget/class_filter_widget.cpp
-    filter_widget/select_base_widget.cpp
 
     attribute_edits/attribute_edit.cpp
     attribute_edits/string_edit.cpp

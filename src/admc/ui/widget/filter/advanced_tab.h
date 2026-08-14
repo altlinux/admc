@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2025 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,30 +19,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FILTER_WIDGET_SIMPLE_TAB_H
-#define FILTER_WIDGET_SIMPLE_TAB_H
+#ifndef FILTER_WIDGET_ADVANCED_TAB_H
+#define FILTER_WIDGET_ADVANCED_TAB_H
 
 /**
- * Simple filter with just a class selection and name input.
+ * Allows input of a plain LDAP filter string.
  */
 
-#include "filter_widget/filter_widget.h"
+#include "ui/widget/filter/filter.h"
 
 namespace Ui {
-class FilterWidgetSimpleTab;
+class FilterWidgetAdvancedTab;
 }
 
-class FilterWidgetSimpleTab final : public FilterWidgetTab {
+class FilterWidgetAdvancedTab final : public FilterWidgetTab {
     Q_OBJECT
 
 public:
-    Ui::FilterWidgetSimpleTab *ui;
+    Ui::FilterWidgetAdvancedTab *ui;
 
-    FilterWidgetSimpleTab();
-    ~FilterWidgetSimpleTab();
-
-    void set_classes(const QList<QString> &class_list, const QList<QString> &selected_list);
-    void enable_filtering_all_classes();
+    FilterWidgetAdvancedTab();
+    ~FilterWidgetAdvancedTab();
 
     QString get_filter() const;
     void clear();
@@ -50,4 +48,4 @@ public:
     void restore_state(const QVariant &state);
 };
 
-#endif /* FILTER_WIDGET_SIMPLE_TAB_H */
+#endif /* FILTER_WIDGET_ADVANCED_TAB_H */

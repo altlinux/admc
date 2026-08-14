@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_widget/select_classes_widget.h"
-#include "filter_widget/ui_select_classes_widget.h"
+#include "ui/widget/filter/select_classes.h"
+#include "ui/widget/filter/ui_select_classes.h"
 
 #include "adldap.h"
 #include "ui/dialog/class_filter.h"

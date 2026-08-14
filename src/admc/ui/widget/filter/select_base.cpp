@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_widget/select_base_widget.h"
-#include "filter_widget/ui_select_base_widget.h"
+#include "ui/widget/filter/select_base.h"
+#include "ui/widget/filter/ui_select_base.h"
 
 #include "adldap.h"
 #include "core/globals.h"

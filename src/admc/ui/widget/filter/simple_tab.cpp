@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_widget/filter_widget_simple_tab.h"
-#include "filter_widget/ui_filter_widget_simple_tab.h"
+#include "ui/widget/filter/simple_tab.h"
+#include "ui/widget/filter/ui_simple_tab.h"
 
 #include "adldap.h"
 

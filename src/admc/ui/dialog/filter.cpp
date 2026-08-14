@@ -23,7 +23,7 @@
 #include "ui/dialog/ui_filter.h"
 
 #include "adldap.h"
-#include "filter_widget/filter_widget.h"
+#include "ui/widget/filter/filter.h"
 #include "core/settings.h"
 
 #include <QVariant>

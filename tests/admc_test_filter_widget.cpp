@@ -20,17 +20,17 @@
 
 #include "admc_test_filter_widget.h"
 
-#include "filter_widget/class_filter_widget.h"
-#include "filter_widget/filter_widget.h"
-#include "filter_widget/filter_widget_advanced_tab.h"
-#include "filter_widget/filter_widget_normal_tab.h"
-#include "filter_widget/filter_widget_simple_tab.h"
-#include "filter_widget/select_classes_widget.h"
-#include "filter_widget/ui_filter_widget.h"
-#include "filter_widget/ui_filter_widget_advanced_tab.h"
-#include "filter_widget/ui_filter_widget_normal_tab.h"
-#include "filter_widget/ui_filter_widget_simple_tab.h"
-#include "filter_widget/ui_select_classes_widget.h"
+#include "ui/widget/filter/class_filter.h"
+#include "ui/widget/filter/filter.h"
+#include "ui/widget/filter/advanced_tab.h"
+#include "ui/widget/filter/normal_tab.h"
+#include "ui/widget/filter/simple_tab.h"
+#include "ui/widget/filter/select_classes.h"
+#include "ui/widget/filter/ui_filter.h"
+#include "ui/widget/filter/ui_advanced_tab.h"
+#include "ui/widget/filter/ui_normal_tab.h"
+#include "ui/widget/filter/ui_simple_tab.h"
+#include "ui/widget/filter/ui_select_classes.h"
 
 #include <QCheckBox>
 #include <QDialog>

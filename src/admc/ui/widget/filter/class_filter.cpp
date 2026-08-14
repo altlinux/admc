@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "filter_widget/class_filter_widget.h"
-#include "filter_widget/ui_class_filter_widget.h"
+#include "ui/widget/filter/class_filter.h"
+#include "ui/widget/filter/ui_class_filter.h"
 
 #include "adldap.h"
 #include "core/globals.h"
