@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "core/globals.h"
+#include "ui/message_box.h"
 #include "utils.h"
 
 #include <QCheckBox>

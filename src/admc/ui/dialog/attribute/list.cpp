@@ -26,6 +26,7 @@
 #include "ui/dialog/attribute/list.h"
 #include "ui/dialog/attribute/octet.h"
 #include "ui/dialog/attribute/ui_list.h"
+#include "ui/message_box.h"
 #include "utils.h"
 
 ListAttributeDialog::ListAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)

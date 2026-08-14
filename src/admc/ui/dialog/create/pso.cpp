@@ -26,6 +26,7 @@
 #include "core/globals.h"
 #include "ui/dialog/create/pso.h"
 #include "ui/dialog/create/ui_pso.h"
+#include "ui/message_box.h"
 #include "ui/status.h"
 #include "utils.h"
 

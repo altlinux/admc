@@ -30,6 +30,7 @@
 #include "ui/dialog/select/object_advanced.h"
 #include "ui/dialog/select/object_match.h"
 #include "ui/dialog/select/ui_object.h"
+#include "ui/message_box.h"
 #include "utils.h"
 
 enum SelectColumn {

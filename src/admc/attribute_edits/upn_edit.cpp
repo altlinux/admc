@@ -24,6 +24,7 @@
 #include "adldap.h"
 #include "attribute_edits/upn_suffix_combo.h"
 #include "core/globals.h"
+#include "ui/message_box.h"
 #include "utils.h"
 
 #include <QComboBox>

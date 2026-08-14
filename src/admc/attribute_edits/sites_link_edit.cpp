@@ -35,6 +35,7 @@
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
 #include "sites_link_edit.h"
+#include "ui/message_box.h"
 #include "ui/widget/tab/sites_link/common_widget.h"
 #include "ui/widget/tab/sites_link/part_widget.h"
 #include "ui/widget/tab/sites_link/widget.h"

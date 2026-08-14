@@ -121,6 +121,7 @@ set(ADMC_SOURCES
     ui/dialog/select/container.cpp
     ui/dialog/select/policy.cpp
     ui/dialog/select/well_known_trustee.cpp
+    ui/message_box.cpp
     ui/status.cpp
     ui/widget/console/console_widget.cpp
     ui/widget/console/scope_proxy_model.cpp

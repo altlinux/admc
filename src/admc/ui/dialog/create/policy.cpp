@@ -28,6 +28,7 @@
 #include "core/settings.h"
 #include "ui/dialog/create/policy.h"
 #include "ui/dialog/create/ui_policy.h"
+#include "ui/message_box.h"
 #include "ui/status.h"
 #include "ui/widget/console/console_widget.h"
 #include "utils.h"

@@ -33,6 +33,7 @@
 #include "krb5client.h"
 #include "ui/dialog/connection_options.h"
 #include "ui/dialog/ui_connection_options.h"
+#include "ui/message_box.h"
 #include "ui/status.h"
 #include "utils.h"
 

@@ -20,6 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ui/message_box.h"
 #include "ui/widget/tab/membership.h"
 #include "ui/widget/tab/ui_membership.h"
 

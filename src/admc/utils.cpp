@@ -28,6 +28,7 @@
 #include "core/globals.h"
 #include "core/search_thread.h"
 #include "core/settings.h"
+#include "ui/message_box.h"
 #include "ui/status.h"
 
 #include <QAbstractItemView>
@@ -143,46 +144,6 @@ void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
                 }
             });
     }
-}
-
-QMessageBox *message_box_generic(const QMessageBox::Icon icon,
-                                 const QString &title,
-                                 const QString &text,
-                                 QWidget *parent) {
-    auto message_box = new QMessageBox(parent);
-    message_box->setAttribute(Qt::WA_DeleteOnClose);
-    message_box->setStandardButtons(QMessageBox::Ok);
-    message_box->setWindowTitle(title);
-    message_box->setText(text);
-    message_box->setIcon(icon);
-
-    message_box->open();
-
-    return message_box;
-}
-
-QMessageBox *message_box_critical(QWidget *parent,
-                                  const QString &title,
-                                  const QString &text) {
-    return message_box_generic(QMessageBox::Critical, title, text, parent);
-}
-
-QMessageBox *message_box_information(QWidget *parent,
-                                     const QString &title,
-                                     const QString &text) {
-    return message_box_generic(QMessageBox::Information, title, text, parent);
-}
-
-QMessageBox *message_box_question(QWidget *parent,
-                                  const QString &title,
-                                  const QString &text) {
-    return message_box_generic(QMessageBox::Question, title, text, parent);
-}
-
-QMessageBox *message_box_warning(QWidget *parent,
-                                 const QString &title,
-                                 const QString &text) {
-    return message_box_generic(QMessageBox::Warning, title, text, parent);
 }
 
 QList<QString> get_selected_dn_list(ConsoleWidget *console,

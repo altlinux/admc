@@ -31,6 +31,7 @@
 #include "core/managers/icon_manager.h"
 #include "ui/dialog/create/sites_link.h"
 #include "ui/dialog/create/ui_sites_link.h"
+#include "ui/message_box.h"
 #include "ui/status.h"
 #include "utils.h"
 

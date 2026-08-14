@@ -29,6 +29,7 @@
 #include "ui/dialog/create/query_folder.h"
 #include "ui/dialog/create/query_item.h"
 #include "ui/dialog/edit_query_folder.h"
+#include "ui/message_box.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "core/utils.h"

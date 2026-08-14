@@ -19,6 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ui/message_box.h"
 #include "ui/widget/tab/security.h"
 #include "ui/widget/tab/ui_security.h"
 
