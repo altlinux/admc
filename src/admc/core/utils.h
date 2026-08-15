@@ -29,6 +29,8 @@
 #include <QStandardItem>
 #include <QString>
 
+class QPlainTextEdit;
+
 QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list);
 QList<QString> variant_list_to_string_list(const QList<QVariant> &variant_list);
 
@@ -66,5 +68,7 @@ void dev_mode_search_results(QHash<QString, AdObject> &results,
 void set_horizontal_header_labels_from_map(
     QStandardItemModel *model,
     const QMap<int, QString> &labels_map);
+
+void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute);
 
 #endif

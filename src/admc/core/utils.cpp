@@ -22,6 +22,7 @@
  */
 
 #include <QList>
+#include <QPlainTextEdit>
 #include <QRegularExpression>
 #include <QStandardItem>
 #include <QString>
@@ -29,6 +30,7 @@
 
 #include "adldap.h"
 #include "ad_object.h"
+#include "core/ad.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "utils.h"
@@ -299,5 +301,21 @@ void set_horizontal_header_labels_from_map(
         }
 
         model->setHorizontalHeaderItem(col, new QStandardItem(label));
+    }
+}
+
+void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
+    const int range_upper = ad_get_range_upper(attribute);
+
+    if (range_upper > 0) {
+        QObject::connect(
+            edit, &QPlainTextEdit::textChanged,
+            edit, [edit, range_upper]() {
+                const QString text = edit->toPlainText();
+
+                if (text.length() > range_upper) {
+                    edit->setPlainText(text.left(range_upper));
+                }
+            });
     }
 }

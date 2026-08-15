@@ -87,22 +87,6 @@ bool ad_failed(const AdInterface &ad, QWidget *parent) {
     return !ad_connected_base(ad, parent);
 }
 
-void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
-    const int range_upper = ad_get_range_upper(attribute);
-
-    if (range_upper > 0) {
-        QObject::connect(
-            edit, &QPlainTextEdit::textChanged,
-            edit, [edit, range_upper]() {
-                const QString text = edit->toPlainText();
-
-                if (text.length() > range_upper) {
-                    edit->setPlainText(text.left(range_upper));
-                }
-            });
-    }
-}
-
 QList<QString> get_selected_dn_list(ConsoleWidget *console,
                                     const int type,
                                     const int dn_role) {

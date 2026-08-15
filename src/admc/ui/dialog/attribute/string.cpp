@@ -22,6 +22,7 @@
 #include "adldap.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "ui/dialog/attribute/string.h"
 #include "ui/dialog/attribute/ui_string.h"
 #include "utils.h"

@@ -62,8 +62,6 @@ void set_data_for_row(const QList<QStandardItem *> &row,
 bool ad_connected(const AdInterface &ad, QWidget *parent);
 bool ad_failed(const AdInterface &ad, QWidget *parent);
 
-void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute);
-
 QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type,
                                     const int dn_role);
 QString get_selected_target_dn(ConsoleWidget *console,
