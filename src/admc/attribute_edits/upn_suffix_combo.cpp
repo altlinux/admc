@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -19,12 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/upn_suffix_combo.h"
+#include <QComboBox>
 
 #include "adldap.h"
+#include "attribute_edits/upn_suffix_combo.h"
 #include "core/globals.h"
-
-#include <QComboBox>
 
 void upn_suffix_combo_init(QComboBox *combo, AdInterface &ad) {
     const QString partitions_dn = g_adconfig->partitions_dn();

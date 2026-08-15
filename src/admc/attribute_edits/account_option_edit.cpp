@@ -19,17 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/account_option_edit.h"
+#include <QCheckBox>
 
 #include "adldap.h"
+#include "attribute_edits/account_option_edit.h"
 #include "core/globals.h"
 #include "ui/message_box.h"
-#include "ui/utils.h"
-
-#include <QCheckBox>
-#include <QFormLayout>
-#include <QGroupBox>
-#include <QMap>
 
 AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption option_arg, QObject *parent)
 : AttributeEdit(parent) {

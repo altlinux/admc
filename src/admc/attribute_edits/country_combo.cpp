@@ -19,21 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/country_combo.h"
-
-#include "core/managers/country_manager.h"
-
-#include "adldap.h"
-#include "core/globals.h"
-#include "core/settings.h"
-#include "ui/status.h"
-#include "ui/utils.h"
-
 #include <QComboBox>
 #include <QDebug>
 #include <QFile>
 #include <QHash>
 #include <algorithm>
+
+#include "adldap.h"
+#include "attribute_edits/country_combo.h"
+#include "core/globals.h"
+#include "core/managers/country_manager.h"
+#include "core/settings.h"
+#include "ui/status.h"
 
 #define COUNTRY_CODE_NONE 0
 

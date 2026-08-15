@@ -19,12 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/gpoptions_edit.h"
+#include <QCheckBox>
 
 #include "adldap.h"
-#include "ui/utils.h"
-
-#include <QCheckBox>
+#include "attribute_edits/gpoptions_edit.h"
 
 GpoptionsEdit::GpoptionsEdit(QCheckBox *check_arg, QObject *parent)
 : AttributeEdit(parent) {

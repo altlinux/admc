@@ -25,13 +25,13 @@
 #include <QPushButton>
 #include <QSpinBox>
 
-#include <attribute_edits/string_edit.h>
 #include "ad_config.h"
 #include "ad_defines.h"
 #include "ad_filter.h"
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_utils.h"
+#include "attribute_edits/string_edit.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
 #include "sites_link_edit.h"
@@ -39,7 +39,6 @@
 #include "ui/widget/tab/sites_link/common_widget.h"
 #include "ui/widget/tab/sites_link/part_widget.h"
 #include "ui/widget/tab/sites_link/widget.h"
-#include "ui/utils.h"
 
 SitesLinkEdit::SitesLinkEdit(SitesLinkWidget *link_wget_arg, QObject *parent) :
     AttributeEdit(parent),

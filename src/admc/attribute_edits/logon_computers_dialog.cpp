@@ -19,14 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/logon_computers_dialog.h"
-#include "attribute_edits/ui_logon_computers_dialog.h"
+#include <QPushButton>
 
 #include "adldap.h"
+#include "attribute_edits/logon_computers_dialog.h"
+#include "attribute_edits/ui_logon_computers_dialog.h"
 #include "core/settings.h"
-#include "ui/utils.h"
-
-#include <QPushButton>
+#include "ui/utils.h"           // enable_widget_on_selection
 
 LogonComputersDialog::LogonComputersDialog(const QString &value, QWidget *parent)
 : QDialog(parent) {

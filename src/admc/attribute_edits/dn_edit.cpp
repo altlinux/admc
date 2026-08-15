@@ -19,12 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/dn_edit.h"
+#include <QLineEdit>
 
 #include "adldap.h"
+#include "attribute_edits/dn_edit.h"
 #include "core/line_edit_utils.h"
-
-#include <QLineEdit>
 
 DNEdit::DNEdit(QLineEdit *edit_arg, QObject *parent)
 : AttributeEdit(parent) {

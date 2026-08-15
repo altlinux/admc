@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -19,13 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/delegation_edit.h"
+#include <QRadioButton>
 
 #include "adldap.h"
+#include "attribute_edits/delegation_edit.h"
 #include "core/globals.h"
-#include "ui/utils.h"
-
-#include <QRadioButton>
 
 DelegationEdit::DelegationEdit(QRadioButton *off_button_arg, QRadioButton *on_button_arg, QObject *parent)
 : AttributeEdit(parent) {

@@ -20,15 +20,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "site_links_table_edit.h"
-#include "ad_interface.h"
-#include "core/globals.h"
-#include "ad_config.h"
-#include "ad_filter.h"
-#include "ad_object.h"
-#include "core/managers/icon_manager.h"
 #include <QTableWidget>
 
+#include "ad_config.h"
+#include "ad_filter.h"
+#include "ad_interface.h"
+#include "ad_object.h"
+#include "core/globals.h"
+#include "core/managers/icon_manager.h"
+#include "site_links_table_edit.h"
 
 SiteLinksTableEdit::SiteLinksTableEdit(QTableWidget *site_links_table_arg, QObject *parent) :
     AttributeEdit(parent),

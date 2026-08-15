@@ -19,14 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/logon_computers_edit.h"
-
-#include "attribute_edits/logon_computers_dialog.h"
+#include <QPushButton>
 
 #include "adldap.h"
-#include "ui/utils.h"
-
-#include <QPushButton>
+#include "attribute_edits/logon_computers_dialog.h"
+#include "attribute_edits/logon_computers_edit.h"
 
 LogonComputersEdit::LogonComputersEdit(QPushButton *button_arg, QObject *parent)
 : AttributeEdit(parent) {

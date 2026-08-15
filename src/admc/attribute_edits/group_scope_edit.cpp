@@ -19,13 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/group_scope_edit.h"
+#include <QComboBox>
 
 #include "adldap.h"
-#include "ui/utils.h"
-
-#include <QComboBox>
-#include <QFormLayout>
+#include "attribute_edits/group_scope_edit.h"
 
 GroupScopeEdit::GroupScopeEdit(QComboBox *combo_arg, QObject *parent)
 : AttributeEdit(parent) {

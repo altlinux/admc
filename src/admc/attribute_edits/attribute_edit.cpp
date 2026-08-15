@@ -21,8 +21,6 @@
 
 #include "attribute_edits/attribute_edit.h"
 
-#include "ui/utils.h"
-
 bool AttributeEdit::verify(AdInterface &ad, const QString &dn) const {
     Q_UNUSED(ad);
     Q_UNUSED(dn);

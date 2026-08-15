@@ -19,10 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "adldap.h"
 #include "attribute_edits/manager_widget.h"
 #include "attribute_edits/ui_manager_widget.h"
-
-#include "adldap.h"
 #include "core/globals.h"
 #include "ui/dialog/properties.h"
 #include "ui/dialog/select/object.h"

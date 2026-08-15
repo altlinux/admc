@@ -19,13 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/string_large_edit.h"
+#include <QPlainTextEdit>
 
 #include "adldap.h"
+#include "attribute_edits/string_large_edit.h"
 #include "core/globals.h"
-#include "ui/utils.h"
-
-#include <QPlainTextEdit>
 
 StringLargeEdit::StringLargeEdit(QPlainTextEdit *edit_arg, const QString &attribute_arg, QObject *parent)
 : AttributeEdit(parent) {

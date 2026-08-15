@@ -19,13 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/account_option_multi_edit.h"
+#include <QCheckBox>
 
 #include "adldap.h"
 #include "attribute_edits/account_option_edit.h"
+#include "attribute_edits/account_option_multi_edit.h"
 #include "core/globals.h"
-
-#include <QCheckBox>
 
 AccountOptionMultiEdit::AccountOptionMultiEdit(const QHash<AccountOption, QCheckBox *> &check_map_arg, QObject *parent)
 : AttributeEdit(parent) {

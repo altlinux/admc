@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -19,15 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/schedule_hours_dialog.h"
-#include "attribute_edits/ui_schedule_hours_dialog.h"
-
-#include "ad_utils.h"
-#include "core/settings.h"
-
 #include <QDateTime>
 #include <QStandardItemModel>
 #include <QTimeZone>
+
+#include "ad_utils.h"
+#include "attribute_edits/schedule_hours_dialog.h"
+#include "attribute_edits/ui_schedule_hours_dialog.h"
+#include "core/settings.h"
 
 QList<bool> shift_list(const QList<bool> &list, const int shift_amount);
 

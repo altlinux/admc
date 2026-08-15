@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/expiry_edit.h"
-
 #include "adldap.h"
+#include "attribute_edits/expiry_edit.h"
 #include "attribute_edits/expiry_widget.h"
-#include "core/globals.h"
-#include "ui/utils.h"
 
 ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QObject *parent)
 : AttributeEdit(parent) {

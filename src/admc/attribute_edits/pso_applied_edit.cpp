@@ -1,8 +1,8 @@
-#include "pso_applied_edit.h"
-
 #include <QLabel>
+
 #include "ad_interface.h"
 #include "ad_object.h"
+#include "pso_applied_edit.h"
 
 PSOAppliedEdit::PSOAppliedEdit(QLabel *label, QObject *parent)
 : AttributeEdit(parent), applied_pso_label(label) {

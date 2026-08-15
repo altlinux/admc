@@ -19,16 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/password_edit.h"
-
-#include "adldap.h"
-#include "core/globals.h"
-#include "core/settings.h"
-#include "ui/message_box.h"
-#include "core/line_edit_utils.h"
-
 #include <QCheckBox>
 #include <QLineEdit>
+
+#include "adldap.h"
+#include "attribute_edits/password_edit.h"
+#include "core/globals.h"
+#include "core/line_edit_utils.h"
+#include "core/settings.h"
+#include "ui/message_box.h"
 
 PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QCheckBox *show_password_check, QObject *parent)
 : AttributeEdit(parent) {

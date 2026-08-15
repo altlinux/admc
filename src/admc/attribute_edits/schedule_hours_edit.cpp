@@ -19,13 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/schedule_hours_edit.h"
+#include <QPushButton>
 
 #include "adldap.h"
 #include "attribute_edits/schedule_hours_dialog.h"
-#include "ui/utils.h"
-
-#include <QPushButton>
+#include "attribute_edits/schedule_hours_edit.h"
 
 ScheduleHoursEdit::ScheduleHoursEdit(QPushButton *button_arg, QObject *parent)
 : AttributeEdit(parent) {

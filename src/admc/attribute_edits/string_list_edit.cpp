@@ -19,13 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/string_list_edit.h"
+#include <QPushButton>
 
 #include "adldap.h"
+#include "attribute_edits/string_list_edit.h"
 #include "ui/dialog/attribute/list.h"
-#include "ui/utils.h"
-
-#include <QPushButton>
 
 StringListEdit::StringListEdit(QPushButton *button_arg, const QString &attribute_arg, QObject *parent)
 : AttributeEdit(parent) {

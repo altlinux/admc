@@ -19,12 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/manager_edit.h"
-
 #include "adldap.h"
+#include "attribute_edits/manager_edit.h"
 #include "attribute_edits/manager_widget.h"
 #include "core/globals.h"
-#include "ui/utils.h"
 
 ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QObject *parent)
 : AttributeEdit(parent) {

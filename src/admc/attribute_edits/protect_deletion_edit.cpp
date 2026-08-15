@@ -19,13 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/protect_deletion_edit.h"
+#include <QCheckBox>
 
 #include "adldap.h"
+#include "attribute_edits/protect_deletion_edit.h"
 #include "core/globals.h"
-#include "ui/utils.h"
-
-#include <QCheckBox>
 
 // Object is protected from deletion if it denies
 // permissions for "delete" and "delete subtree" for

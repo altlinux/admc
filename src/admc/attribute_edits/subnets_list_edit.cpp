@@ -1,12 +1,12 @@
-#include "subnets_list_edit.h"
-
 #include <QListWidget>
+
+#include "ad_config.h"
+#include "ad_filter.h"
+#include "ad_interface.h"
+#include "ad_object.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
-#include "ad_filter.h"
-#include "ad_object.h"
-#include "ad_interface.h"
-#include "ad_config.h"
+#include "subnets_list_edit.h"
 
 SubnetsListEdit::SubnetsListEdit(QListWidget *subnets_list, QObject *parent) :
 AttributeEdit(parent), subnets_list_wget(subnets_list) {

@@ -17,20 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/laps_encrypted_attribute_edit.h"
-
-#include "adldap.h"
-#include "core/globals.h"
-#include "core/line_edit_utils.h"
-
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QLineEdit>
-
 #include <cng-dpapi/cng-dpapi_client.h>
-
 #include <krb5.h>
+
+#include "adldap.h"
+#include "attribute_edits/laps_encrypted_attribute_edit.h"
+#include "core/globals.h"
+#include "core/line_edit_utils.h"
 
 const uint32_t DATA_OFFSET = 16;
 

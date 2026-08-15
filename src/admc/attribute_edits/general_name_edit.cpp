@@ -19,12 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/general_name_edit.h"
+#include <QLabel>
 
 #include "adldap.h"
-#include "ui/utils.h"
-
-#include <QLabel>
+#include "attribute_edits/general_name_edit.h"
 
 GeneralNameEdit::GeneralNameEdit(QLabel *label_arg, QObject *parent)
 : AttributeEdit(parent) {

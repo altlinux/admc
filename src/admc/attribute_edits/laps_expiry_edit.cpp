@@ -19,14 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/laps_expiry_edit.h"
-
-#include "adldap.h"
-#include "core/globals.h"
-#include "ui/utils.h"
-
 #include <QDateTimeEdit>
 #include <QPushButton>
+
+#include "adldap.h"
+#include "attribute_edits/laps_expiry_edit.h"
+#include "core/globals.h"
 
 LAPSExpiryEdit::LAPSExpiryEdit(QDateTimeEdit *edit_arg, QPushButton *reset_expiry_button, const QString &attribute_name_arg, QObject *parent)
 : AttributeEdit(parent) {

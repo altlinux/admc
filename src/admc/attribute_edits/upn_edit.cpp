@@ -19,16 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/upn_edit.h"
+#include <QComboBox>
+#include <QLineEdit>
 
 #include "adldap.h"
+#include "attribute_edits/upn_edit.h"
 #include "attribute_edits/upn_suffix_combo.h"
 #include "core/globals.h"
 #include "ui/message_box.h"
-#include "ui/utils.h"
-
-#include <QComboBox>
-#include <QLineEdit>
+#include "ui/utils.h"           // string_contains_bad_chars
 
 UpnEdit::UpnEdit(QLineEdit *prefix_edit_arg, QComboBox *upn_suffix_combo_arg, QObject *parent)
 : AttributeEdit(parent) {

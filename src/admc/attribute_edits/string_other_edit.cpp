@@ -19,15 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/string_other_edit.h"
-
-#include "adldap.h"
-#include "ui/dialog/attribute/list.h"
-#include "attribute_edits/string_edit.h"
-#include "core/globals.h"
-
 #include <QLineEdit>
 #include <QPushButton>
+
+#include "adldap.h"
+#include "attribute_edits/string_edit.h"
+#include "attribute_edits/string_other_edit.h"
+#include "core/globals.h"
+#include "ui/dialog/attribute/list.h"
 
 StringOtherEdit::StringOtherEdit(QLineEdit *line_edit_arg, QPushButton *other_button_arg, const QString &main_attribute, const QString &other_attribute_arg, QObject *parent)
 : AttributeEdit(parent)

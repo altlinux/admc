@@ -19,14 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/country_edit.h"
+#include <QComboBox>
 
 #include "adldap.h"
 #include "attribute_edits/country_combo.h"
+#include "attribute_edits/country_edit.h"
 #include "core/globals.h"
-#include "ui/utils.h"
-
-#include <QComboBox>
 
 CountryEdit::CountryEdit(QComboBox *combo_arg, QObject *parent)
 : AttributeEdit(parent) {

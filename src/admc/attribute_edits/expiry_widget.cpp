@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -19,13 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "attribute_edits/expiry_widget.h"
-#include "attribute_edits/ui_expiry_widget.h"
+#include <QButtonGroup>
 
 #include "adldap.h"
+#include "attribute_edits/expiry_widget.h"
+#include "attribute_edits/ui_expiry_widget.h"
 #include "core/globals.h"
-
-#include <QButtonGroup>
 
 const QTime END_OF_DAY(23, 59);
 
