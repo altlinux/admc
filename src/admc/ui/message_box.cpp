@@ -23,6 +23,8 @@
 #include <QString>
 #include <QWidget>
 
+#include "core/settings.h"
+
 QMessageBox *message_box_generic(const QMessageBox::Icon icon,
                                  const QString &title,
                                  const QString &text,
@@ -61,4 +63,18 @@ QMessageBox *message_box_warning(QWidget *parent,
                                  const QString &title,
                                  const QString &text) {
     return message_box_generic(QMessageBox::Warning, title, text, parent);
+}
+
+bool confirmation_dialog(const QString &text, QWidget *parent) {
+    const bool confirm_actions = settings_get_bool(SETTING_confirm_actions);
+    if (! confirm_actions) {
+        return true;
+    }
+
+    const QString title = QObject::tr("Confirm action");
+    const QMessageBox::StandardButton reply =
+        QMessageBox::question(parent, title, text,
+                              QMessageBox::Yes | QMessageBox::No);
+
+    return reply == QMessageBox::Yes;
 }

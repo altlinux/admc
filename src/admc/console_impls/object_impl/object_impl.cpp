@@ -47,6 +47,7 @@
 #include "ui/dialog/password.h"
 #include "ui/dialog/select/container.h"
 #include "ui/dialog/select/object.h"
+#include "ui/message_box.h"
 #include "ui/status.h"
 #include "ui/widget/console/results_view.h"
 #include "ui/widget/result/pso/pso.h"

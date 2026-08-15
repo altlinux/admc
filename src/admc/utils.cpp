@@ -71,20 +71,6 @@ void hide_busy_indicator() {
     QGuiApplication::restoreOverrideCursor();
 }
 
-bool confirmation_dialog(const QString &text, QWidget *parent) {
-    const bool confirm_actions = settings_get_bool(SETTING_confirm_actions);
-    if (! confirm_actions) {
-        return true;
-    }
-
-    const QString title = QObject::tr("Confirm action");
-    const QMessageBox::StandardButton reply =
-        QMessageBox::question(parent, title, text,
-                              QMessageBox::Yes | QMessageBox::No);
-
-    return reply == QMessageBox::Yes;
-}
-
 bool ad_connected_base(const AdInterface &ad, QWidget *parent) {
     if (!ad.is_connected()) {
         ad_error_log(ad, parent);

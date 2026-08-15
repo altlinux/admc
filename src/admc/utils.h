@@ -52,8 +52,6 @@ void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view);
 void show_busy_indicator();
 void hide_busy_indicator();
 
-bool confirmation_dialog(const QString &text, QWidget *parent);
-
 void set_data_for_row(const QList<QStandardItem *> &row,
                       const QVariant &data,
                       const int role);

@@ -42,6 +42,7 @@
 #include "ui/dialog/rename/policy.h"
 #include "ui/widget/result/policy.h"
 #include "ui/dialog/select/object.h"
+#include "ui/message_box.h"
 #include "ui/status.h"
 #include "utils.h"
 
