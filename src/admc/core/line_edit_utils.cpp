@@ -30,6 +30,9 @@
 #include "core/settings.h"
 #include "core/utils.h"
 
+/**
+ * Prohibits leading zeroes.
+ */
 void set_line_edit_to_decimal_numbers_only(QLineEdit *edit) {
     edit->setValidator(make_decimal_numbers_validator(edit));
 }
@@ -45,6 +48,10 @@ void set_line_edit_to_time_span_format(QLineEdit *edit) {
     edit->setValidator(new QRegularExpressionValidator(time_span_reg_exp));
 }
 
+/**
+ * Setup an auto-fill from one line edit into another, so that when source line
+ * edit is edited, input is copied into destination line edit.
+ */
 void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest) {
     QObject::connect(
         src, &QLineEdit::textChanged,
@@ -54,6 +61,9 @@ void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest) {
         });
 }
 
+/**
+ * (first name + last name) -> full name
+ */
 void setup_full_name_autofill(
     QLineEdit *first_name_edit,
     QLineEdit *last_name_edit,
