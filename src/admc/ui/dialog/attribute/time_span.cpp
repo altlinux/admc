@@ -24,7 +24,7 @@
 #include "core/settings.h"
 #include "ui/dialog/attribute/time_span.h"
 #include "ui/dialog/attribute/ui_time_span.h"
-#include "utils.h"
+#include "core/line_edit_utils.h"
 
 TimeSpanAttributeDialog::TimeSpanAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent) :
     AttributeDialog(attribute, read_only, parent),

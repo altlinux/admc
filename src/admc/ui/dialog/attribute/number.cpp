@@ -24,7 +24,7 @@
 #include "core/settings.h"
 #include "ui/dialog/attribute/number.h"
 #include "ui/dialog/attribute/ui_number.h"
-#include "utils.h"
+#include "core/line_edit_utils.h"
 
 NumberAttributeDialog::NumberAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
 : AttributeDialog(attribute, read_only, parent) {

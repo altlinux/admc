@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2023 BaseALT Ltd.
+ * Copyright (C) 2023-2026 BaseALT Ltd.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include "core/settings.h"
 #include "ui/dialog/attribute/hex_number.h"
 #include "ui/dialog/attribute/ui_hex_number.h"
-#include "utils.h"
+#include "core/line_edit_utils.h"
 
 HexNumberAttributeDialog::HexNumberAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
 : AttributeDialog(attribute, read_only, parent), ui(new Ui::HexNumberAttributeDialog) {

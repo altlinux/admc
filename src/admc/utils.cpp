@@ -66,10 +66,6 @@ void set_horizontal_header_labels_from_map(
     }
 }
 
-void set_line_edit_to_decimal_numbers_only(QLineEdit *edit) {
-    edit->setValidator(make_decimal_numbers_validator(edit));
-}
-
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
     auto selection_model = view->selectionModel();
 
@@ -120,14 +116,6 @@ bool ad_connected(const AdInterface &ad, QWidget *parent) {
 
 bool ad_failed(const AdInterface &ad, QWidget *parent) {
     return !ad_connected_base(ad, parent);
-}
-
-void limit_edit(QLineEdit *edit, const QString &attribute) {
-    const int range_upper = ad_get_range_upper(attribute);
-
-    if (range_upper > 0) {
-        edit->setMaxLength(range_upper);
-    }
 }
 
 void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
@@ -194,63 +182,6 @@ bool verify_object_name(const QString &name, QWidget *parent) {
     }
 
     return true;
-}
-
-void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest) {
-    QObject::connect(
-        src, &QLineEdit::textChanged,
-        [src, dest]() {
-            const QString src_input = src->text();
-            dest->setText(src_input);
-        });
-}
-
-void setup_full_name_autofill(
-    QLineEdit *first_name_edit,
-    QLineEdit *last_name_edit,
-    QLineEdit *middle_name_edit,
-    QLineEdit *full_name_edit)
-{
-    auto autofill_full_name = [=]() {
-        const QString first_name = first_name_edit->text().trimmed();
-        const QString last_name = last_name_edit->text().trimmed();
-        const QString middle_name = middle_name_edit->text().trimmed();
-        const bool last_name_first =
-            settings_get_bool(SETTING_last_name_before_first_name);
-
-        QStringList names{first_name, middle_name};
-        if (last_name_first) {
-            names.push_front(last_name);
-        } else {
-            names.push_back(last_name);
-        }
-        names.removeAll(QString(""));
-        const QString full_name_value =
-            QStringList(names.begin(), names.end()).join(" ");
-
-        full_name_edit->setText(full_name_value);
-    };
-
-    QObject::connect(
-        first_name_edit, &QLineEdit::textChanged,
-        first_name_edit, autofill_full_name);
-    QObject::connect(
-        last_name_edit, &QLineEdit::textChanged,
-        last_name_edit, autofill_full_name);
-    QObject::connect(
-        middle_name_edit, &QLineEdit::textChanged,
-        middle_name_edit, autofill_full_name);
-}
-
-void set_line_edit_to_hex_numbers_only(QLineEdit *edit) {
-    edit->setValidator(
-        new QRegularExpressionValidator(QRegularExpression("[0-9a-f]*"), edit));
-}
-
-void set_line_edit_to_time_span_format(QLineEdit *edit) {
-    QRegularExpression time_span_reg_exp(
-        "([0-9]{1,4}:[0-2][0-3]:[0-5][0-9]:[0-5][0-9])|^\\(never\\)&|^\\(none\\)&");
-    edit->setValidator(new QRegularExpressionValidator(time_span_reg_exp));
 }
 
 void search_thread_display_errors(SearchThread *thread, QWidget *parent) {

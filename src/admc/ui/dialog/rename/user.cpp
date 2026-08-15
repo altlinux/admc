@@ -27,7 +27,7 @@
 #include "rename_object_helper.h"
 #include "ui/dialog/rename/ui_user.h"
 #include "ui/dialog/rename/user.h"
-#include "utils.h"
+#include "core/line_edit_utils.h"
 
 RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {

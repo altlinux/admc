@@ -25,7 +25,7 @@
 #include "create_object_helper.h"
 #include "ui/dialog/create/contact.h"
 #include "ui/dialog/create/ui_contact.h"
-#include "utils.h"
+#include "core/line_edit_utils.h"
 
 CreateContactDialog::CreateContactDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {

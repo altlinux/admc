@@ -28,6 +28,7 @@
 #include "core/globals.h"
 #include "rename_object_helper.h"
 #include "ui/status.h"
+#include "core/line_edit_utils.h"
 #include "utils.h"
 
 void RenameObjectHelper::success_msg(const QString &old_name) {

@@ -64,6 +64,7 @@ set(ADMC_SOURCES
     core/changelog.cpp
     core/fsmo.cpp
     core/globals.cpp
+    core/line_edit_utils.cpp
     core/managers/country_manager.cpp
     core/managers/gplink_manager.cpp
     core/managers/icon_manager.cpp
