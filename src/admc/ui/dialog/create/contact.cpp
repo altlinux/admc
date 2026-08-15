@@ -22,8 +22,8 @@
 #include "adldap.h"
 #include "core/line_edit_utils.h"
 #include "core/settings.h"
-#include "create_object_helper.h"
 #include "ui/attribute_edit/string_edit.h"
+#include "ui/create_object_helper.h"
 #include "ui/dialog/create/contact.h"
 #include "ui/dialog/create/ui_contact.h"
 

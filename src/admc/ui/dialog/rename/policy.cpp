@@ -23,12 +23,12 @@
 
 #include "adldap.h"
 #include "core/globals.h"
+#include "core/line_edit_utils.h"
 #include "core/settings.h"
-#include "rename_object_helper.h"
 #include "ui/dialog/rename/policy.h"
 #include "ui/dialog/rename/ui_policy.h"
+#include "ui/rename_object_helper.h"
 #include "ui/status.h"
-#include "core/line_edit_utils.h"
 #include "ui/utils.h"
 
 RenamePolicyDialog::RenamePolicyDialog(AdInterface &ad, const QString &target_dn_arg, QWidget *parent)

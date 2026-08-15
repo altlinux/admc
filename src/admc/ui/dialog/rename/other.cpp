@@ -20,9 +20,9 @@
  */
 
 #include "core/settings.h"
-#include "rename_object_helper.h"
 #include "ui/dialog/rename/other.h"
 #include "ui/dialog/rename/ui_other.h"
+#include "ui/rename_object_helper.h"
 
 RenameOtherDialog::RenameOtherDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {

@@ -21,12 +21,12 @@
 
 #include "adldap.h"
 #include "core/settings.h"
-#include "create_object_helper.h"
 #include "ui/attribute_edit/group_scope_edit.h"
 #include "ui/attribute_edit/group_type_edit.h"
 #include "ui/attribute_edit/sam_name_edit.h"
 #include "ui/attribute_edit/string_edit.h"
 #include "ui/attribute_edit/upn_edit.h"
+#include "ui/create_object_helper.h"
 #include "ui/dialog/create/group.h"
 #include "ui/dialog/create/ui_group.h"
 #include "ui/utils.h"
