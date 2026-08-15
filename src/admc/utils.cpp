@@ -49,22 +49,6 @@
 #include <QStandardItemModel>
 #include <QWidget>
 
-void set_horizontal_header_labels_from_map(
-    QStandardItemModel *model,
-    const QMap<int, QString> &labels_map)
-{
-    for (int col = 0; col < model->columnCount(); col++) {
-        QString label;
-        if (labels_map.contains(col)) {
-            label = labels_map[col];
-        } else {
-            label = QString();
-        }
-
-        model->setHorizontalHeaderItem(col, new QStandardItem(label));
-    }
-}
-
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
     auto selection_model = view->selectionModel();
 

@@ -278,3 +278,26 @@ void dev_mode_search_results(QHash<QString, AdObject> &results,
     }
 }
 
+/**
+ * Helper procedure that helps to configure table columns.
+ *
+ * Name mapping should be passed as the seconds parameter:
+ *   column-number => label
+ *
+ * Columns that are not in the mapping get empty labels.
+ */
+void set_horizontal_header_labels_from_map(
+    QStandardItemModel *model,
+    const QMap<int, QString> &labels_map)
+{
+    for (int col = 0; col < model->columnCount(); col++) {
+        QString label;
+        if (labels_map.contains(col)) {
+            label = labels_map[col];
+        } else {
+            label = QString();
+        }
+
+        model->setHorizontalHeaderItem(col, new QStandardItem(label));
+    }
+}

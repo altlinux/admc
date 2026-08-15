@@ -47,13 +47,6 @@ template <typename T> class QList;
     printf("%s(%s:%d) " a, __func__, __FILE__, __LINE__, ##args)
 #define trace(a, args...) debug_print(a "\n", ##args)
 
-// Convenience f-n so that you can pass a mapping of
-// column => label
-// Columns not in the map get empty labels
-void set_horizontal_header_labels_from_map(
-    QStandardItemModel *model,
-    const QMap<int, QString> &labels_map);
-
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view);
 
 void show_busy_indicator();

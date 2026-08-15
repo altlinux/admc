@@ -63,4 +63,8 @@ void dev_mode_search_results(QHash<QString, AdObject> &results,
                              AdInterface &ad,
                              const QString &base);
 
+void set_horizontal_header_labels_from_map(
+    QStandardItemModel *model,
+    const QMap<int, QString> &labels_map);
+
 #endif
