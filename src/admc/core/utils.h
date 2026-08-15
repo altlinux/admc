@@ -29,6 +29,7 @@
 #include <QStandardItem>
 #include <QString>
 
+class AdInterface;
 class QPlainTextEdit;
 
 QList<QVariant> string_list_to_variant_list(const QList<QString> &string_list);
