@@ -25,7 +25,7 @@
 #include "core/globals.h"
 #include "core/settings.h"
 #include "ui/message_box.h"
-#include "utils.h"
+#include "core/line_edit_utils.h"
 
 #include <QCheckBox>
 #include <QLineEdit>

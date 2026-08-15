@@ -25,11 +25,11 @@
 #include "attribute_edits/sam_name_edit.h"
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/upn_edit.h"
+#include "core/line_edit_utils.h"
 #include "core/settings.h"
 #include "create_object_helper.h"
 #include "ui/dialog/create/ui_user.h"
 #include "ui/dialog/create/user.h"
-#include "utils.h"
 
 CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, const QString &user_class, QWidget *parent)
 : CreateObjectDialog(parent) {

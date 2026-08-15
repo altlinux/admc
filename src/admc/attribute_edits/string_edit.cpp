@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "core/globals.h"
-#include "utils.h"
+#include "core/line_edit_utils.h"
 
 #include <QLineEdit>
 

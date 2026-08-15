@@ -36,7 +36,6 @@
 #include <QGuiApplication>
 #include <QHash>
 #include <QHeaderView>
-#include <QLineEdit>
 #include <QList>
 #include <QMap>
 #include <QMenu>

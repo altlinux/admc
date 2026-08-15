@@ -29,7 +29,6 @@ class AdObject;
 class ConsoleWidget;
 class QAbstractItemView;
 class QAbstractProxyModel;
-class QLineEdit;
 class QMessageBox;
 class QModelIndex;
 class QPersistentModelIndex;
@@ -55,13 +54,6 @@ void set_horizontal_header_labels_from_map(
     QStandardItemModel *model,
     const QMap<int, QString> &labels_map);
 
-// Prohibits leading zeroes
-void set_line_edit_to_decimal_numbers_only(QLineEdit *edit);
-
-void set_line_edit_to_hex_numbers_only(QLineEdit *edit);
-
-void set_line_edit_to_time_span_format(QLineEdit *edit);
-
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view);
 
 void show_busy_indicator();
@@ -79,7 +71,6 @@ void set_data_for_row(const QList<QStandardItem *> &row,
 bool ad_connected(const AdInterface &ad, QWidget *parent);
 bool ad_failed(const AdInterface &ad, QWidget *parent);
 
-void limit_edit(QLineEdit *edit, const QString &attribute);
 void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute);
 
 QList<QString> get_selected_dn_list(ConsoleWidget *console, const int type,
@@ -106,18 +97,6 @@ bool string_contains_bad_chars(const QString &string,
 
 bool verify_object_name(const QString &name,
                         QWidget *parent);
-
-// Setup an autofill of from one line edit into
-// another, so that when src is edited, input is copied
-// into dest.
-void setup_lineedit_autofill(QLineEdit *src,
-                             QLineEdit *dest);
-
-// (first name + last name) -> full name
-void setup_full_name_autofill(QLineEdit *first_name_edit,
-                              QLineEdit *last_name_edit,
-                              QLineEdit *middle_name_edit,
-                              QLineEdit *full_name_edit);
 
 void search_thread_display_errors(SearchThread *thread, QWidget *parent);
 

@@ -28,6 +28,7 @@
 #include "adldap.h"
 #include "attribute_edits/attribute_edit.h"
 #include "core/globals.h"
+#include "core/line_edit_utils.h"
 #include "create_object_helper.h"
 #include "ui/status.h"
 #include "utils.h"
