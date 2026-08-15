@@ -24,7 +24,7 @@
 #ifndef GROUP_POLICY_TAB_H
 #define GROUP_POLICY_TAB_H
 
-#include "attribute_edits/attribute_edit.h"
+#include "ui/attribute_edit/attribute_edit.h"
 #include <QWidget>
 #include <QModelIndex>
 

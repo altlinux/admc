@@ -20,14 +20,14 @@
  */
 
 #include "adldap.h"
-#include "attribute_edits/sam_name_edit.h"
-#include "attribute_edits/string_edit.h"
-#include "attribute_edits/upn_edit.h"
+#include "core/line_edit_utils.h"
 #include "core/settings.h"
 #include "rename_object_helper.h"
+#include "ui/attribute_edit/sam_name_edit.h"
+#include "ui/attribute_edit/string_edit.h"
+#include "ui/attribute_edit/upn_edit.h"
 #include "ui/dialog/rename/ui_user.h"
 #include "ui/dialog/rename/user.h"
-#include "core/line_edit_utils.h"
 
 RenameUserDialog::RenameUserDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {

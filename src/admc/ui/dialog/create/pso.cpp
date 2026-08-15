@@ -22,8 +22,8 @@
 
 #include "ad_interface.h"
 #include "ad_utils.h"
-#include "attribute_edits/protect_deletion_edit.h"
 #include "core/globals.h"
+#include "ui/attribute_edit/protect_deletion_edit.h"
 #include "ui/dialog/create/pso.h"
 #include "ui/dialog/create/ui_pso.h"
 #include "ui/message_box.h"

@@ -22,14 +22,14 @@
 #include "ui/widget/tab/account.h"
 #include "ui/widget/tab/ui_account.h"
 
-#include "attribute_edits/account_option_edit.h"
-#include "attribute_edits/expiry_edit.h"
-#include "attribute_edits/logon_computers_edit.h"
-#include "attribute_edits/schedule_hours_edit.h"
-#include "attribute_edits/string_edit.h"
-#include "attribute_edits/unlock_edit.h"
-#include "attribute_edits/upn_edit.h"
-#include "attribute_edits/pso_applied_edit.h"
+#include "ui/attribute_edit/account_option_edit.h"
+#include "ui/attribute_edit/expiry_edit.h"
+#include "ui/attribute_edit/logon_computers_edit.h"
+#include "ui/attribute_edit/schedule_hours_edit.h"
+#include "ui/attribute_edit/string_edit.h"
+#include "ui/attribute_edit/unlock_edit.h"
+#include "ui/attribute_edit/upn_edit.h"
+#include "ui/attribute_edit/pso_applied_edit.h"
 #include "core/settings.h"
 
 // NOTE: the "can't change password" checkbox does not

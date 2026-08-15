@@ -150,7 +150,7 @@
   <customwidget>
    <class>ManagerWidget</class>
    <extends>QWidget</extends>
-   <header>attribute_edits/manager_widget.h</header>
+   <header>ui/attribute_edit/manager_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

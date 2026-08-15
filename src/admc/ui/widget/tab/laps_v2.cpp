@@ -22,9 +22,9 @@
 #include "ui/widget/tab/ui_laps_v2.h"
 
 #include "adldap.h"
-#include "attribute_edits/laps_expiry_edit.h"
-#include "attribute_edits/laps_encrypted_attribute_edit.h"
-#include "attribute_edits/string_edit.h"
+#include "ui/attribute_edit/laps_expiry_edit.h"
+#include "ui/attribute_edit/laps_encrypted_attribute_edit.h"
+#include "ui/attribute_edit/string_edit.h"
 
 #include "ui/utils.h"
 

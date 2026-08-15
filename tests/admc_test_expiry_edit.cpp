@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +21,9 @@
 
 #include "admc_test_expiry_edit.h"
 
-#include "attribute_edits/expiry_edit.h"
-#include "attribute_edits/expiry_widget.h"
-#include "attribute_edits/ui_expiry_widget.h"
+#include "ui/attribute_edit/expiry_edit.h"
+#include "ui/attribute_edit/expiry_widget.h"
+#include "ui/attribute_edit/ui_expiry_widget.h"
 #include "core/globals.h"
 
 #include <QDateEdit>

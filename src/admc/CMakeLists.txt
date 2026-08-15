@@ -50,7 +50,7 @@ if (LIBCNG_DPAPI_LIBRARY)
     link_libraries(${LIBCNG_DPAPI_LIBRARY})
     set(LAPS_SOURCES
         ui/widget/tab/laps_v2.cpp
-        attribute_edits/laps_encrypted_attribute_edit.cpp
+        ui/attribute_edit/laps_encrypted_attribute_edit.cpp
     )
 else()
     message("Skipping libcng-dpapi library.")
@@ -203,44 +203,44 @@ set(ADMC_SOURCES
     fsmo/fsmo_tab.cpp
     fsmo/fsmo_utils.cpp
 
-    attribute_edits/attribute_edit.cpp
-    attribute_edits/string_edit.cpp
-    attribute_edits/string_other_edit.cpp
-    attribute_edits/string_list_edit.cpp
-    attribute_edits/string_large_edit.cpp
-    attribute_edits/sam_name_edit.cpp
-    attribute_edits/computer_sam_name_edit.cpp
-    attribute_edits/country_edit.cpp
-    attribute_edits/expiry_edit.cpp
-    attribute_edits/expiry_widget.cpp
-    attribute_edits/unlock_edit.cpp
-    attribute_edits/group_scope_edit.cpp
-    attribute_edits/group_type_edit.cpp
-    attribute_edits/account_option_edit.cpp
-    attribute_edits/password_edit.cpp
-    attribute_edits/datetime_edit.cpp
-    attribute_edits/gpoptions_edit.cpp
-    attribute_edits/manager_edit.cpp
-    attribute_edits/upn_edit.cpp
-    attribute_edits/upn_suffix_combo.cpp
-    attribute_edits/country_combo.cpp
-    attribute_edits/manager_widget.cpp
-    attribute_edits/delegation_edit.cpp
-    attribute_edits/schedule_hours_edit.cpp
-    attribute_edits/schedule_hours_dialog.cpp
-    attribute_edits/logon_computers_edit.cpp
-    attribute_edits/logon_computers_dialog.cpp
-    attribute_edits/protect_deletion_edit.cpp
-    attribute_edits/laps_expiry_edit.cpp
-    attribute_edits/general_name_edit.cpp
-    attribute_edits/dn_edit.cpp
-    attribute_edits/pso_applied_edit.cpp
-    attribute_edits/sites_link_edit.cpp
-    attribute_edits/site_links_table_edit.cpp
-    attribute_edits/subnets_list_edit.cpp
+    ui/attribute_edit/attribute_edit.cpp
+    ui/attribute_edit/string_edit.cpp
+    ui/attribute_edit/string_other_edit.cpp
+    ui/attribute_edit/string_list_edit.cpp
+    ui/attribute_edit/string_large_edit.cpp
+    ui/attribute_edit/sam_name_edit.cpp
+    ui/attribute_edit/computer_sam_name_edit.cpp
+    ui/attribute_edit/country_edit.cpp
+    ui/attribute_edit/expiry_edit.cpp
+    ui/attribute_edit/expiry_widget.cpp
+    ui/attribute_edit/unlock_edit.cpp
+    ui/attribute_edit/group_scope_edit.cpp
+    ui/attribute_edit/group_type_edit.cpp
+    ui/attribute_edit/account_option_edit.cpp
+    ui/attribute_edit/password_edit.cpp
+    ui/attribute_edit/datetime_edit.cpp
+    ui/attribute_edit/gpoptions_edit.cpp
+    ui/attribute_edit/manager_edit.cpp
+    ui/attribute_edit/upn_edit.cpp
+    ui/attribute_edit/upn_suffix_combo.cpp
+    ui/attribute_edit/country_combo.cpp
+    ui/attribute_edit/manager_widget.cpp
+    ui/attribute_edit/delegation_edit.cpp
+    ui/attribute_edit/schedule_hours_edit.cpp
+    ui/attribute_edit/schedule_hours_dialog.cpp
+    ui/attribute_edit/logon_computers_edit.cpp
+    ui/attribute_edit/logon_computers_dialog.cpp
+    ui/attribute_edit/protect_deletion_edit.cpp
+    ui/attribute_edit/laps_expiry_edit.cpp
+    ui/attribute_edit/general_name_edit.cpp
+    ui/attribute_edit/dn_edit.cpp
+    ui/attribute_edit/pso_applied_edit.cpp
+    ui/attribute_edit/sites_link_edit.cpp
+    ui/attribute_edit/site_links_table_edit.cpp
+    ui/attribute_edit/subnets_list_edit.cpp
 
-    attribute_edits/upn_multi_edit.cpp
-    attribute_edits/account_option_multi_edit.cpp
+    ui/attribute_edit/upn_multi_edit.cpp
+    ui/attribute_edit/account_option_multi_edit.cpp
 
     console_impls/object_impl/object_impl.cpp
     console_impls/object_impl/drag_n_drop.cpp

@@ -26,10 +26,6 @@
 
 #include "ui/dialog/about.h"
 #include "adldap.h"
-#include "attribute_edits/country_combo.h"
-#include "ui/dialog/auth/krb_auth.h"
-#include "ui/dialog/changelog.h"
-#include "ui/dialog/connection_options.h"
 #include "console_impls/all_policies_folder_impl.h"
 #include "console_impls/domain_info_impl.h"
 #include "console_impls/item_type.h"
@@ -39,7 +35,6 @@
 #include "console_impls/policy_root_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "console_impls/query_item_impl.h"
-#include "ui/widget/console/console_widget.h"
 #include "core/admc_translator.h"
 #include "core/config.h"
 #include "core/fsmo.h"
@@ -51,9 +46,14 @@
 #include "fsmo/fsmo_dialog.h"
 #include "fsmo/fsmo_utils.h"
 #include "main_window.h"
+#include "ui/attribute_edit/country_combo.h"
+#include "ui/dialog/auth/krb_auth.h"
+#include "ui/dialog/changelog.h"
+#include "ui/dialog/connection_options.h"
 #include "ui/status.h"
-#include "ui_main_window.h"
 #include "ui/utils.h"
+#include "ui/widget/console/console_widget.h"
+#include "ui_main_window.h"
 
 MainWindow::MainWindow(AdInterface &ad,
                        Krb5Client &krb5_client_arg,

@@ -23,7 +23,7 @@
 #include "ui/widget/tab/ui_os.h"
 
 #include "adldap.h"
-#include "attribute_edits/string_edit.h"
+#include "ui/attribute_edit/string_edit.h"
 
 OSTab::OSTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {

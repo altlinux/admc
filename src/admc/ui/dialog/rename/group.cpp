@@ -20,12 +20,12 @@
  */
 
 #include "ad_defines.h"
-#include "attribute_edits/sam_name_edit.h"
+#include "core/line_edit_utils.h"
 #include "core/settings.h"
 #include "rename_object_helper.h"
+#include "ui/attribute_edit/sam_name_edit.h"
 #include "ui/dialog/rename/group.h"
 #include "ui/dialog/rename/ui_group.h"
-#include "core/line_edit_utils.h"
 
 RenameGroupDialog::RenameGroupDialog(AdInterface &ad, const QString &target_arg, QWidget *parent)
 : RenameObjectDialog(parent) {

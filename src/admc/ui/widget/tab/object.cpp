@@ -23,11 +23,11 @@
 #include "ui/widget/tab/ui_object.h"
 
 #include "adldap.h"
-#include "attribute_edits/datetime_edit.h"
-#include "attribute_edits/dn_edit.h"
-#include "attribute_edits/gpoptions_edit.h"
-#include "attribute_edits/protect_deletion_edit.h"
-#include "attribute_edits/string_edit.h"
+#include "ui/attribute_edit/datetime_edit.h"
+#include "ui/attribute_edit/dn_edit.h"
+#include "ui/attribute_edit/gpoptions_edit.h"
+#include "ui/attribute_edit/protect_deletion_edit.h"
+#include "ui/attribute_edit/string_edit.h"
 
 #include <QFormLayout>
 

@@ -24,7 +24,7 @@
 #include "ui/widget/tab/ui_group_policy.h"
 
 #include "adldap.h"
-#include "attribute_edits/gpoptions_edit.h"
+#include "ui/attribute_edit/gpoptions_edit.h"
 #include "core/globals.h"
 #include "ui/dialog/select/policy.h"
 #include "core/settings.h"

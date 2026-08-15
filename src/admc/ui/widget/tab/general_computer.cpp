@@ -23,9 +23,9 @@
 #include "ui/widget/tab/ui_general_computer.h"
 
 #include "adldap.h"
-#include "attribute_edits/computer_sam_name_edit.h"
-#include "attribute_edits/general_name_edit.h"
-#include "attribute_edits/string_edit.h"
+#include "ui/attribute_edit/computer_sam_name_edit.h"
+#include "ui/attribute_edit/general_name_edit.h"
+#include "ui/attribute_edit/string_edit.h"
 
 GeneralComputerTab::GeneralComputerTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {

@@ -23,8 +23,8 @@
 #include "ui/widget/multi_tab/ui_organization.h"
 
 #include "ad_defines.h"
-#include "attribute_edits/manager_edit.h"
-#include "attribute_edits/string_edit.h"
+#include "ui/attribute_edit/manager_edit.h"
+#include "ui/attribute_edit/string_edit.h"
 
 OrganizationMultiTab::OrganizationMultiTab(QList<AttributeEdit *> *edit_list, QHash<AttributeEdit *, QCheckBox *> *check_map, QWidget *parent)
 : QWidget(parent) {

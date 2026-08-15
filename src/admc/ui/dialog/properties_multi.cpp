@@ -25,20 +25,20 @@
 #include <QPushButton>
 
 #include "adldap.h"
-#include "attribute_edits/attribute_edit.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "ui/attribute_edit/attribute_edit.h"
+#include "ui/dialog/properties_multi.h"
+#include "ui/dialog/ui_properties_multi.h"
+#include "ui/status.h"
+#include "ui/utils.h"
 #include "ui/widget/multi_tab/account.h"
 #include "ui/widget/multi_tab/address.h"
 #include "ui/widget/multi_tab/general_other.h"
 #include "ui/widget/multi_tab/general_user.h"
 #include "ui/widget/multi_tab/organization.h"
 #include "ui/widget/multi_tab/profile.h"
-#include "ui/dialog/properties_multi.h"
-#include "ui/dialog/ui_properties_multi.h"
-#include "ui/status.h"
 #include "ui/widget/tab.h"
-#include "ui/utils.h"
 
 PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QString> &target_list_arg, const QList<QString> &class_list)
 : QDialog() {

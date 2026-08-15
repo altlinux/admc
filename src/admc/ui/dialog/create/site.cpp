@@ -22,9 +22,9 @@
 #include "ad_config.h"
 #include "ad_interface.h"
 #include "ad_object.h"
-#include "attribute_edits/site_links_table_edit.h"
 #include "core/globals.h"
 #include "create_object_helper.h"
+#include "ui/attribute_edit/site_links_table_edit.h"
 #include "ui/dialog/create/site.h"
 #include "ui/dialog/create/ui_site.h"
 

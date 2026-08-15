@@ -23,7 +23,7 @@
 #include "ui/widget/tab/ui_delegation.h"
 
 #include "adldap.h"
-#include "attribute_edits/delegation_edit.h"
+#include "ui/attribute_edit/delegation_edit.h"
 
 DelegationTab::DelegationTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {

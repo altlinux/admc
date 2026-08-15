@@ -23,8 +23,8 @@
 #include "ui/widget/tab/ui_laps.h"
 
 #include "adldap.h"
-#include "attribute_edits/laps_expiry_edit.h"
-#include "attribute_edits/string_edit.h"
+#include "ui/attribute_edit/laps_expiry_edit.h"
+#include "ui/attribute_edit/string_edit.h"
 
 LAPSTab::LAPSTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {

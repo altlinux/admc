@@ -20,14 +20,14 @@
  */
 
 #include "adldap.h"
-#include "attribute_edits/account_option_edit.h"
-#include "attribute_edits/password_edit.h"
-#include "attribute_edits/sam_name_edit.h"
-#include "attribute_edits/string_edit.h"
-#include "attribute_edits/upn_edit.h"
 #include "core/line_edit_utils.h"
 #include "core/settings.h"
 #include "create_object_helper.h"
+#include "ui/attribute_edit/account_option_edit.h"
+#include "ui/attribute_edit/password_edit.h"
+#include "ui/attribute_edit/sam_name_edit.h"
+#include "ui/attribute_edit/string_edit.h"
+#include "ui/attribute_edit/upn_edit.h"
 #include "ui/dialog/create/ui_user.h"
 #include "ui/dialog/create/user.h"
 

@@ -23,8 +23,8 @@
 #include "ui/widget/tab/ui_organization.h"
 
 #include "adldap.h"
-#include "attribute_edits/manager_edit.h"
-#include "attribute_edits/string_edit.h"
+#include "ui/attribute_edit/manager_edit.h"
+#include "ui/attribute_edit/string_edit.h"
 #include "core/globals.h"
 #include "ui/dialog/properties.h"
 #include "core/settings.h"

@@ -22,14 +22,14 @@
 #include <QPushButton>
 
 #include "adldap.h"
-#include "attribute_edits/account_option_edit.h"
-#include "attribute_edits/password_edit.h"
-#include "attribute_edits/unlock_edit.h"
 #include "core/globals.h"
 #include "core/settings.h"
-#include "ui/status.h"
+#include "ui/attribute_edit/account_option_edit.h"
+#include "ui/attribute_edit/password_edit.h"
+#include "ui/attribute_edit/unlock_edit.h"
 #include "ui/dialog/password.h"
 #include "ui/dialog/ui_password.h"
+#include "ui/status.h"
 #include "ui/utils.h"
 
 PasswordDialog::PasswordDialog(AdInterface &ad, const

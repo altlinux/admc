@@ -21,9 +21,9 @@
 
 #include "admc_test_manager_edit.h"
 
-#include "attribute_edits/manager_edit.h"
-#include "attribute_edits/manager_widget.h"
-#include "attribute_edits/ui_manager_widget.h"
+#include "ui/attribute_edit/manager_edit.h"
+#include "ui/attribute_edit/manager_widget.h"
+#include "ui/attribute_edit/ui_manager_widget.h"
 #include "core/globals.h"
 #include "ui/dialog/properties.h"
 

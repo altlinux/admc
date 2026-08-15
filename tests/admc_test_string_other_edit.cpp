@@ -24,7 +24,7 @@
 #include "ui/dialog/attribute/list.h"
 #include "ui/dialog/attribute/ui_list.h"
 #include "ui/dialog/attribute/string.h"
-#include "attribute_edits/string_other_edit.h"
+#include "ui/attribute_edit/string_other_edit.h"
 
 #include <QFormLayout>
 #include <QLineEdit>

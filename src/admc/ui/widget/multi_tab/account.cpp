@@ -23,10 +23,10 @@
 #include "ui/widget/multi_tab/ui_account.h"
 
 #include "adldap.h"
-#include "attribute_edits/account_option_multi_edit.h"
-#include "attribute_edits/expiry_edit.h"
-#include "attribute_edits/string_edit.h"
-#include "attribute_edits/upn_multi_edit.h"
+#include "ui/attribute_edit/account_option_multi_edit.h"
+#include "ui/attribute_edit/expiry_edit.h"
+#include "ui/attribute_edit/string_edit.h"
+#include "ui/attribute_edit/upn_multi_edit.h"
 
 #include <QHash>
 

@@ -1,9 +1,9 @@
 #include "ui/widget/tab/sites_link/general_tab.h"
 #include "ui/widget/tab/sites_link/ui_general_tab.h"
 #include "ui/widget/tab/sites_link/widget.h"
-#include "attribute_edits/sites_link_edit.h"
-#include "attribute_edits/general_name_edit.h"
-#include "attribute_edits/schedule_hours_edit.h"
+#include "ui/attribute_edit/sites_link_edit.h"
+#include "ui/attribute_edit/general_name_edit.h"
+#include "ui/attribute_edit/schedule_hours_edit.h"
 #include "ui/widget/tab/sites_link/part_widget.h"
 
 SitesLinkGeneralTab::SitesLinkGeneralTab(QList<AttributeEdit *> *edit_list, SitesLinkType type, QWidget *parent) :

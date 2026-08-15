@@ -23,12 +23,12 @@
 #include "ui/widget/tab/ui_managed_by.h"
 
 #include "adldap.h"
-#include "attribute_edits/country_edit.h"
-#include "attribute_edits/group_scope_edit.h"
-#include "attribute_edits/group_type_edit.h"
-#include "attribute_edits/manager_edit.h"
-#include "attribute_edits/string_edit.h"
-#include "attribute_edits/string_other_edit.h"
+#include "ui/attribute_edit/country_edit.h"
+#include "ui/attribute_edit/group_scope_edit.h"
+#include "ui/attribute_edit/group_type_edit.h"
+#include "ui/attribute_edit/manager_edit.h"
+#include "ui/attribute_edit/string_edit.h"
+#include "ui/attribute_edit/string_other_edit.h"
 #include "ui/utils.h"
 
 // NOTE: store manager's edits in separate list because they

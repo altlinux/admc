@@ -20,11 +20,11 @@
  */
 
 #include "adldap.h"
-#include "attribute_edits/protect_deletion_edit.h"
-#include "attribute_edits/string_edit.h"
-#include "attribute_edits/upn_edit.h"
 #include "core/settings.h"
 #include "create_object_helper.h"
+#include "ui/attribute_edit/protect_deletion_edit.h"
+#include "ui/attribute_edit/string_edit.h"
+#include "ui/attribute_edit/upn_edit.h"
 #include "ui/dialog/create/shared_folder.h"
 #include "ui/dialog/create/ui_shared_folder.h"
 #include "ui/utils.h"

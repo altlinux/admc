@@ -26,7 +26,7 @@
 #include <QRegularExpression>
 
 #include "adldap.h"
-#include "attribute_edits/attribute_edit.h"
+#include "ui/attribute_edit/attribute_edit.h"
 #include "core/globals.h"
 #include "core/line_edit_utils.h"
 #include "create_object_helper.h"

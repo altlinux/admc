@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +21,8 @@
 
 #include "admc_test_logon_hours_dialog.h"
 
-#include "attribute_edits/schedule_hours_dialog.h"
-#include "attribute_edits/ui_schedule_hours_dialog.h"
+#include "ui/attribute_edit/schedule_hours_dialog.h"
+#include "ui/attribute_edit/ui_schedule_hours_dialog.h"
 
 #include <QRadioButton>
 #include <QStandardItemModel>

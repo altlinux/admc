@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -27,7 +27,7 @@
  * viewing/editing if possible via attribute dialogs.
  */
 
-#include "attribute_edits/attribute_edit.h"
+#include "ui/attribute_edit/attribute_edit.h"
 #include <QWidget>
 
 enum AttributesColumn {

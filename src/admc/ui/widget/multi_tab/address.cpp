@@ -23,8 +23,8 @@
 #include "ui/widget/multi_tab/ui_address.h"
 
 #include "ad_defines.h"
-#include "attribute_edits/country_edit.h"
-#include "attribute_edits/string_edit.h"
+#include "ui/attribute_edit/country_edit.h"
+#include "ui/attribute_edit/string_edit.h"
 
 #include <QHash>
 

@@ -23,8 +23,8 @@
 #include "ui/widget/tab/ui_telephones.h"
 
 #include "adldap.h"
-#include "attribute_edits/string_large_edit.h"
-#include "attribute_edits/string_other_edit.h"
+#include "ui/attribute_edit/string_large_edit.h"
+#include "ui/attribute_edit/string_other_edit.h"
 
 TelephonesTab::TelephonesTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {

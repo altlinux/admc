@@ -23,11 +23,11 @@
 #include "ui/widget/tab/ui_general_group.h"
 
 #include "adldap.h"
-#include "attribute_edits/general_name_edit.h"
-#include "attribute_edits/group_scope_edit.h"
-#include "attribute_edits/group_type_edit.h"
-#include "attribute_edits/sam_name_edit.h"
-#include "attribute_edits/string_edit.h"
+#include "ui/attribute_edit/general_name_edit.h"
+#include "ui/attribute_edit/group_scope_edit.h"
+#include "ui/attribute_edit/group_type_edit.h"
+#include "ui/attribute_edit/sam_name_edit.h"
+#include "ui/attribute_edit/string_edit.h"
 
 
 GeneralGroupTab::GeneralGroupTab(QList<AttributeEdit *> *edit_list, QWidget *parent)

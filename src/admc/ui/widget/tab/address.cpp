@@ -23,9 +23,9 @@
 #include "ui/widget/tab/ui_address.h"
 
 #include "adldap.h"
-#include "attribute_edits/country_edit.h"
-#include "attribute_edits/string_edit.h"
-#include "attribute_edits/string_large_edit.h"
+#include "ui/attribute_edit/country_edit.h"
+#include "ui/attribute_edit/string_edit.h"
+#include "ui/attribute_edit/string_large_edit.h"
 
 AddressTab::AddressTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {
