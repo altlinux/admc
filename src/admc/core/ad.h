@@ -28,6 +28,8 @@
 #include "ad_defines.h"
 #include "ad_object.h"
 
+class AdInterface;
+
 QHash<QString, AdObject> ad_search_objects(AdInterface &ad,
                                            const QList<QString> list);
 void ad_add_members_to_groups(AdInterface &ad,
