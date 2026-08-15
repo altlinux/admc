@@ -31,7 +31,7 @@
 #include "ui/dialog/create/subnet.h"
 #include "ui/dialog/create/ui_subnet.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 CreateSubnetDialog::CreateSubnetDialog(AdInterface &ad, const QString &parent_dn_arg, QWidget *parent) :
     CreateObjectDialog(parent),

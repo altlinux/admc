@@ -24,7 +24,7 @@
 #include "adldap.h"
 #include "attribute_edits/country_combo.h"
 #include "core/globals.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QComboBox>
 

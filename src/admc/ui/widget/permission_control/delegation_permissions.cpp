@@ -25,7 +25,7 @@
 #include "core/globals.h"
 #include "core/settings.h"
 #include "core/utils.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "common_task_manager.h"
 
 #include "samba/ndr_security.h"

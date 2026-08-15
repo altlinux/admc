@@ -22,6 +22,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "adldap.h"
+#include "core/ad.h"
 #include "core/search_thread.h"
 
 class AdInterface;

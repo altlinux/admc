@@ -32,7 +32,7 @@
 #include "ui/status.h"
 #include "ui/widget/console/console_widget.h"
 #include "core/line_edit_utils.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 CreatePolicyDialog::CreatePolicyDialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {

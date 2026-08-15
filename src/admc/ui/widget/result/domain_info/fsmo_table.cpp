@@ -8,7 +8,7 @@
 #include "core/managers/icon_manager.h"
 #include "ui/status.h"
 #include "core/globals.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "adldap.h"
 #include <QPushButton>
 

@@ -21,7 +21,7 @@
 
 #include "icon_manager.h"
 #include "ad_defines.h"
-#include "utils.h"
+#include "core/utils.h"
 #include "ad_utils.h"
 #include "ad_object.h"
 #include "core/settings.h"

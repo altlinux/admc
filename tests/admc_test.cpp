@@ -38,7 +38,7 @@
 #include "ui/dialog/select/ui_container.h"
 #include "ui/dialog/select/ui_object_advanced.h"
 #include "ui/dialog/select/ui_object.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "fsmo/fsmo_utils.h"
 
 #include <QFormLayout>

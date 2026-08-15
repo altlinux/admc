@@ -59,7 +59,7 @@
 #include "ui/dialog/select/container.h"
 #include "ui/dialog/select/object.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 void ConsoleObjectTreeOperations::console_object_move_and_rename(const QList<ConsoleWidget *> &console_list,
                                                       AdInterface &ad,

@@ -35,7 +35,7 @@
 #include "ui/dialog/ui_connection_options.h"
 #include "ui/message_box.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 const QString CERT_STRATEGY_NEVER = QCoreApplication::translate("ConnectionOptionsDialog", "never");
 const QString CERT_STRATEGY_HARD = QCoreApplication::translate("ConnectionOptionsDialog", "hard");

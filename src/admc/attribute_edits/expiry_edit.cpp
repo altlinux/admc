@@ -23,7 +23,7 @@
 #include "adldap.h"
 #include "attribute_edits/expiry_widget.h"
 #include "core/globals.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 ExpiryEdit::ExpiryEdit(ExpiryWidget *edit_widget_arg, QObject *parent)
 : AttributeEdit(parent) {

@@ -20,7 +20,7 @@
  */
 
 #include "ui/widget/result/policy_ou/drag_drop_links_model.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
 #include "core/utils.h"

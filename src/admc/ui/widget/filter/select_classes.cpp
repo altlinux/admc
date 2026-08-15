@@ -26,7 +26,7 @@
 #include "ui/dialog/class_filter.h"
 #include "core/globals.h"
 #include "core/utils.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 SelectClassesWidget::SelectClassesWidget(QWidget *parent)
 : QWidget(parent) {

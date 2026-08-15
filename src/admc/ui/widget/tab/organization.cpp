@@ -29,7 +29,7 @@
 #include "ui/dialog/properties.h"
 #include "core/settings.h"
 #include "core/utils.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QStandardItemModel>
 

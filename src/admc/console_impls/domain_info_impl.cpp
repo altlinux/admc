@@ -27,7 +27,7 @@
 #include "item_type.h"
 #include "ui/dialog/connection_options.h"
 #include "fsmo/fsmo_dialog.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "ui/status.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"

@@ -28,7 +28,7 @@
 #include "ui/dialog/create/ui_pso.h"
 #include "ui/message_box.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 CreatePSODialog::CreatePSODialog(const QString &parent_dn_arg, QWidget *parent) :
     CreateObjectDialog(parent),

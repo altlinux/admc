@@ -33,7 +33,7 @@
 #include "core/ad.h"
 #include "core/globals.h"
 #include "core/settings.h"
-#include "utils.h"
+#include "core/utils.h"
 
 /**
  * Convert a string list to a variant list, return the newly created list.

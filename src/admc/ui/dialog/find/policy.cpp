@@ -31,7 +31,7 @@
 #include "core/search_thread.h"
 #include "core/settings.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QAction>
 #include <QMenuBar>

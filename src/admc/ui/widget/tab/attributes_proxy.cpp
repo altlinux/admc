@@ -31,7 +31,7 @@
 #include "core/settings.h"
 #include "ui/widget/tab/attributes.h"
 #include "ui/widget/tab/attributes_filter_menu.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QAction>
 #include <QDebug>

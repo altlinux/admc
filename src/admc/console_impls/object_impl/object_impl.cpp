@@ -54,7 +54,7 @@
 #include "ui/widget/result/subnet/subnet.h"
 #include "ui/widget/tab/general_group.h"
 #include "ui/widget/tab/general_user.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {

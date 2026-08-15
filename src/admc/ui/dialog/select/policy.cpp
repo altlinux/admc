@@ -29,7 +29,7 @@
 #include "ui/dialog/select/policy.h"
 #include "ui/dialog/select/ui_policy.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 SelectPolicyDialog::SelectPolicyDialog(AdInterface &ad, QWidget *parent)
 : QDialog(parent) {

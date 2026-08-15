@@ -66,7 +66,7 @@
 #include "ui/dialog/ui_properties.h"
 #include "ui/status.h"
 #include "ui/widget/tab.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 QHash<QString, PropertiesDialog *> PropertiesDialog::instances;
 

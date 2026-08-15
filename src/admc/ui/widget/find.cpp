@@ -31,7 +31,7 @@
 #include "core/settings.h"
 #include "core/utils.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QMenu>
 #include <QStandardItem>

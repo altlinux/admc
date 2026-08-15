@@ -44,7 +44,7 @@
 #include "ui/dialog/select/object.h"
 #include "ui/message_box.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 void policy_add_links(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const QList<QString> &policy_list, const QList<QString> &ou_list);
 void console_policy_update_policy_results(ConsoleWidget *console, PolicyResultsWidget *policy_results);

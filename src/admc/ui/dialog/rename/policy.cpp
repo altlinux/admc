@@ -29,7 +29,7 @@
 #include "ui/dialog/rename/ui_policy.h"
 #include "ui/status.h"
 #include "core/line_edit_utils.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 RenamePolicyDialog::RenamePolicyDialog(AdInterface &ad, const QString &target_dn_arg, QWidget *parent)
 : QDialog(parent) {

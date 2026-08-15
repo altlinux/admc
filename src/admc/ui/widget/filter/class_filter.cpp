@@ -25,7 +25,7 @@
 #include "adldap.h"
 #include "core/globals.h"
 #include "core/utils.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QCheckBox>
 

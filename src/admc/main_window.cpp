@@ -53,7 +53,7 @@
 #include "main_window.h"
 #include "ui/status.h"
 #include "ui_main_window.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 MainWindow::MainWindow(AdInterface &ad,
                        Krb5Client &krb5_client_arg,

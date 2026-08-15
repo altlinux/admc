@@ -31,7 +31,7 @@
 #include "core/line_edit_utils.h"
 #include "create_object_helper.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 // TODO: the logic of "enable/disable ok button
 // depending on whether all required edits contain

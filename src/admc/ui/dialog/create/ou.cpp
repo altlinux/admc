@@ -27,7 +27,7 @@
 #include "create_object_helper.h"
 #include "ui/dialog/create/ou.h"
 #include "ui/dialog/create/ui_ou.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 CreateOUDialog::CreateOUDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {

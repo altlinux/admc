@@ -25,7 +25,7 @@
 #include "adldap.h"
 #include "attribute_edits/datetime_edit.h"
 #include "attribute_edits/general_name_edit.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QDebug>
 

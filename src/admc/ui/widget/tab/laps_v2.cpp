@@ -26,7 +26,7 @@
 #include "attribute_edits/laps_encrypted_attribute_edit.h"
 #include "attribute_edits/string_edit.h"
 
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QClipboard>
 #include <QMessageBox>

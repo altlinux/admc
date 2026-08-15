@@ -29,7 +29,7 @@
 #include "attribute_edits/manager_edit.h"
 #include "attribute_edits/string_edit.h"
 #include "attribute_edits/string_other_edit.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 // NOTE: store manager's edits in separate list because they
 // don't apply to the target of properties.

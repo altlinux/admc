@@ -29,7 +29,7 @@
 #include "core/utils.h"
 #include "ui/widget/tab/attributes_filter_menu.h"
 #include "ui/widget/tab/attributes_proxy.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QAction>
 #include <QDebug>

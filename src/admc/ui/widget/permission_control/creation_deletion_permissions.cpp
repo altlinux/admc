@@ -24,7 +24,7 @@
 #include "adldap.h"
 #include "core/settings.h"
 #include "samba/ndr_security.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "core/globals.h"
 
 #include <QStandardItemModel>

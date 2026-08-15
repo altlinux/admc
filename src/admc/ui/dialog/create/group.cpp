@@ -29,7 +29,7 @@
 #include "create_object_helper.h"
 #include "ui/dialog/create/group.h"
 #include "ui/dialog/create/ui_group.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 CreateGroupDialog::CreateGroupDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {

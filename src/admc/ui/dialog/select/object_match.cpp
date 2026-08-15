@@ -27,7 +27,7 @@
 #include "ui/dialog/select/object.h"
 #include "ui/dialog/select/object_match.h"
 #include "ui/dialog/select/ui_object_match.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 SelectObjectMatchDialog::SelectObjectMatchDialog(const QHash<QString, AdObject> &search_results, QWidget *parent)
 : QDialog(parent) {

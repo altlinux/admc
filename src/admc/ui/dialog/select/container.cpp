@@ -35,7 +35,7 @@
 #include "ui/dialog/select/container.h"
 #include "ui/dialog/select/ui_container.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 QStandardItem *make_container_node(const AdObject &object);
 

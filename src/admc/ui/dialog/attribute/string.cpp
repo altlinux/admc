@@ -25,7 +25,7 @@
 #include "core/utils.h"
 #include "ui/dialog/attribute/string.h"
 #include "ui/dialog/attribute/ui_string.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 StringAttributeDialog::StringAttributeDialog(const QList<QByteArray> &value_list, const QString &attribute, const bool read_only, QWidget *parent)
 : AttributeDialog(attribute, read_only, parent) {

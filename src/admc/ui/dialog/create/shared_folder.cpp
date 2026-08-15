@@ -27,7 +27,7 @@
 #include "create_object_helper.h"
 #include "ui/dialog/create/shared_folder.h"
 #include "ui/dialog/create/ui_shared_folder.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 CreateSharedFolderDialog::CreateSharedFolderDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {

@@ -26,7 +26,7 @@
 #include "core/globals.h"
 #include "gplink.h"
 #include "results_widgets/policy_results_widget.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "core/managers/gplink_manager.h"
 
 #include <QStandardItemModel>

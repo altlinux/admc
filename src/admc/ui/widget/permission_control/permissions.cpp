@@ -21,7 +21,7 @@
 
 #include "permissions.h"
 
-#include "utils.h"
+#include "ui/utils.h"
 #include "core/settings.h"
 #include "samba/ndr_security.h"
 #include "adldap.h"

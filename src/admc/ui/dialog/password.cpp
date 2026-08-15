@@ -30,7 +30,7 @@
 #include "ui/status.h"
 #include "ui/dialog/password.h"
 #include "ui/dialog/ui_password.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 PasswordDialog::PasswordDialog(AdInterface &ad, const
                                QString &target_arg,

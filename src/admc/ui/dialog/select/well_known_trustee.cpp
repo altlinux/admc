@@ -25,7 +25,7 @@
 #include "ad_security.h"
 #include "ad_utils.h"
 #include "core/settings.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QPushButton>
 

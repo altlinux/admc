@@ -124,6 +124,7 @@ set(ADMC_SOURCES
     ui/dialog/select/well_known_trustee.cpp
     ui/message_box.cpp
     ui/status.cpp
+    ui/utils.cpp
     ui/widget/console/console_widget.cpp
     ui/widget/console/scope_proxy_model.cpp
     ui/widget/console/customize_columns_dialog.cpp
@@ -193,7 +194,6 @@ set(ADMC_SOURCES
     ui/widget/tab/sites_link/widget.cpp
     ui/widget/tab/sites_link/general_tab.cpp
     ui/widget/tab/general_site.cpp
-    utils.cpp
 
     main_window.cpp
     create_object_helper.cpp

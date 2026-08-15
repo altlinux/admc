@@ -24,7 +24,7 @@
 #include "adldap.h"
 #include "attribute_edits/manager_widget.h"
 #include "core/globals.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 ManagerEdit::ManagerEdit(ManagerWidget *widget_arg, const QString &manager_attribute_arg, QObject *parent)
 : AttributeEdit(parent) {

@@ -30,7 +30,7 @@
 #include "ui/status.h"
 #include "fsmo/fsmo_utils.h"
 #include "core/managers/icon_manager.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QStandardItemModel>
 #include <QPushButton>

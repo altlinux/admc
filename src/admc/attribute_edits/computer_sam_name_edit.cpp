@@ -24,7 +24,7 @@
 #include "adldap.h"
 #include "attribute_edits/sam_name_edit.h"
 #include "core/globals.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QLineEdit>
 #include <QRegularExpression>

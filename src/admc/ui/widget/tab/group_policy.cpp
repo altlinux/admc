@@ -28,7 +28,7 @@
 #include "core/globals.h"
 #include "ui/dialog/select/policy.h"
 #include "core/settings.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "ui/widget/console/console_widget.h"
 #include "ui/widget/result/policy_ou/policy_ou.h"
 #include "ui/widget/result/policy_ou/inherited_policies.h"

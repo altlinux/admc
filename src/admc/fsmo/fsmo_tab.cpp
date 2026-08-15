@@ -27,7 +27,7 @@
 #include "core/globals.h"
 #include "ui/message_box.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "fsmo/fsmo_utils.h"
 
 

@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "ui/dialog/attribute/list.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QPushButton>
 

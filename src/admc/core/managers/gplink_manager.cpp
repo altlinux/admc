@@ -30,7 +30,7 @@
 #include "ad_filter.h"
 #include "core/globals.h"
 #include "gplink.h"
-#include "utils.h"
+#include "core/utils.h"
 
 GPLinkManager::GPLinkManager(QObject *parent) : QObject(parent), is_updated(true) {
 }

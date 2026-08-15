@@ -29,7 +29,7 @@
 #include "rename_object_helper.h"
 #include "ui/status.h"
 #include "core/line_edit_utils.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 void RenameObjectHelper::success_msg(const QString &old_name) {
     const QString message = QString(tr("Object %1 was renamed.")).arg(old_name);

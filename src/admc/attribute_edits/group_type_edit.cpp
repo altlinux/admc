@@ -21,7 +21,7 @@
 #include "attribute_edits/group_type_edit.h"
 
 #include "adldap.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QComboBox>
 

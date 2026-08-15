@@ -26,7 +26,7 @@
 #include "create_object_helper.h"
 #include "ui/dialog/create/computer.h"
 #include "ui/dialog/create/ui_computer.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 CreateComputerDialog::CreateComputerDialog(const QString &parent_dn, QWidget *parent)
 : CreateObjectDialog(parent) {

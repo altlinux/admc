@@ -27,7 +27,7 @@
 #include "core/globals.h"
 #include "core/settings.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QComboBox>
 #include <QDebug>

@@ -34,7 +34,7 @@
 #include "ui/widget/result/policy_ou/policy_ou.h"
 #include "ui/dialog/select/policy.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "core/managers/icon_manager.h"
 #include "core/managers/gplink_manager.h"
 #include "fsmo/fsmo_utils.h"

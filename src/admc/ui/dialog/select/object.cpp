@@ -31,7 +31,7 @@
 #include "ui/dialog/select/object_match.h"
 #include "ui/dialog/select/ui_object.h"
 #include "ui/message_box.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 enum SelectColumn {
     SelectColumn_Name,

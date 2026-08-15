@@ -39,7 +39,7 @@
 #include "ui/widget/tab/sites_link/common_widget.h"
 #include "ui/widget/tab/sites_link/part_widget.h"
 #include "ui/widget/tab/sites_link/widget.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 SitesLinkEdit::SitesLinkEdit(SitesLinkWidget *link_wget_arg, QObject *parent) :
     AttributeEdit(parent),

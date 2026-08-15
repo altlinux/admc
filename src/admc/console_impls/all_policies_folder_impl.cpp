@@ -31,7 +31,7 @@
 #include "core/globals.h"
 #include "gplink.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "fsmo/fsmo_utils.h"
 #include "core/managers/gplink_manager.h"
 

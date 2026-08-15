@@ -22,7 +22,7 @@
 
 #include "adldap.h"
 #include "core/globals.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QDateTimeEdit>
 

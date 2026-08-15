@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2024-2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
@@ -24,7 +24,7 @@
 #include "adldap.h"
 #include "core/globals.h"
 #include "core/settings.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include "samba/ndr_security.h"
 

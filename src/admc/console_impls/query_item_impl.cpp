@@ -30,7 +30,7 @@
 #include "ui/dialog/edit_query_item.h"
 #include "core/globals.h"
 #include "core/settings.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "core/managers/icon_manager.h"
 
 #include <QCoreApplication>

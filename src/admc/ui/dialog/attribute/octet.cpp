@@ -33,7 +33,7 @@
 #include "ui/dialog/attribute/octet.h"
 #include "ui/dialog/attribute/ui_octet.h"
 #include "ui/message_box.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 OctetDisplayFormat current_format(QComboBox *format_combo);
 

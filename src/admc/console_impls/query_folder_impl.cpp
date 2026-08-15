@@ -33,7 +33,7 @@
 #include "core/globals.h"
 #include "core/settings.h"
 #include "core/utils.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "core/managers/icon_manager.h"
 
 #include <QFileDialog>

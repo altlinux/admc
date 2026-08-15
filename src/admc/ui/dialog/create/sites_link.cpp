@@ -33,7 +33,7 @@
 #include "ui/dialog/create/ui_sites_link.h"
 #include "ui/message_box.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 CreateSitesLinkDialog::CreateSitesLinkDialog(AdInterface &ad,
                                              SitesLinkType type_arg,

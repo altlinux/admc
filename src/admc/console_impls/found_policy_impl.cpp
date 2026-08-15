@@ -25,7 +25,7 @@
 #include "console_impls/find_policy_impl.h"
 #include "console_impls/item_type.h"
 #include "console_impls/policy_impl.h"
-#include "utils.h"
+#include "ui/utils.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
 

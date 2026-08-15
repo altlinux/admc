@@ -36,7 +36,7 @@
 #include "main_window.h"
 #include "ui/dialog/main_window_connection_error.h"
 #include "ui/status.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 int main(int argc, char **argv) {
     Q_INIT_RESOURCE(adldap);

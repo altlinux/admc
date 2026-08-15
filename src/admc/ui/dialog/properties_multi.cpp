@@ -38,7 +38,7 @@
 #include "ui/dialog/ui_properties_multi.h"
 #include "ui/status.h"
 #include "ui/widget/tab.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 PropertiesMultiDialog::PropertiesMultiDialog(AdInterface &ad, const QList<QString> &target_list_arg, const QList<QString> &class_list)
 : QDialog() {

@@ -26,7 +26,7 @@
 #include "ui/dialog/connection_options.h"
 #include "ui/dialog/main_window_connection_error.h"
 #include "ui/dialog/ui_main_window_connection_error.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 MainWindowConnectionError::MainWindowConnectionError(MainWindow *main_window_arg)
 : QDialog(main_window_arg), main_window(main_window_arg) {

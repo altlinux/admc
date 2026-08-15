@@ -25,7 +25,7 @@
 #include "krb5client.h"
 #include "ui/dialog/auth/krb_auth.h"
 #include "ui/dialog/auth/ui_krb_auth.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 KrbAuthDialog::KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg) : AuthDialogBase(parent),
     ui(new Ui::KrbAuthDialog), client(krb_client_arg) {

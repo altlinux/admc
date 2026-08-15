@@ -29,7 +29,7 @@
 #include "ui/dialog/attribute/string.h"
 #include "core/globals.h"
 #include "core/settings.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QAction>
 #include <QDebug>

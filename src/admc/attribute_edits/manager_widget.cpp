@@ -26,7 +26,7 @@
 #include "core/globals.h"
 #include "ui/dialog/properties.h"
 #include "ui/dialog/select/object.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 ManagerWidget::ManagerWidget(QWidget *parent)
 : QWidget(parent) {

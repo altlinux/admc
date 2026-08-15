@@ -30,7 +30,7 @@
 #include "ui/dialog/properties.h"
 #include "ui/dialog/select/object.h"
 #include "core/settings.h"
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <QDebug>
 #include <QStandardItemModel>
