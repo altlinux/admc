@@ -35,7 +35,7 @@ HexNumberAttributeDialog::HexNumberAttributeDialog(const QList<QByteArray> &valu
 
     const QByteArray value = value_list.value(0, QByteArray());
 
-    set_line_edit_to_hex_numbers_only(ui->edit);
+    line_edit_set_to_hex_numbers_only(ui->edit);
 
     ui->edit->setMaxLength(2 * sizeof(int));
     ui->edit->setReadOnly(read_only);

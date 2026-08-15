@@ -74,9 +74,9 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, co
 
     account_option_setup_conflicts(check_map);
 
-    setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->middle_name_edit, ui->name_edit);
+    line_edit_setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->middle_name_edit, ui->name_edit);
 
-    setup_lineedit_autofill(ui->upn_prefix_edit, ui->sam_name_edit);
+    line_edit_setup_autofill(ui->upn_prefix_edit, ui->sam_name_edit);
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,

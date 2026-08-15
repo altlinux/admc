@@ -63,7 +63,7 @@ CreateContactDialog::CreateContactDialog(const QString &parent_dn, QWidget *pare
         ui->display_name_edit,
     };
 
-    setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->middle_name_edit, ui->full_name_edit);
+    line_edit_setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->middle_name_edit, ui->full_name_edit);
 
     helper = new CreateObjectHelper(ui->full_name_edit, ui->button_box, edit_list, required_list, CLASS_CONTACT, parent_dn, this);
 

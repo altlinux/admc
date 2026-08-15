@@ -35,9 +35,9 @@ NumberAttributeDialog::NumberAttributeDialog(const QList<QByteArray> &value_list
 
     AttributeDialog::load_attribute_label(ui->attribute_label);
 
-    set_line_edit_to_decimal_numbers_only(ui->edit);
+    line_edit_set_to_decimal_numbers_only(ui->edit);
 
-    limit_edit(ui->edit, attribute);
+    line_edit_limit_edit(ui->edit, attribute);
 
     ui->edit->setReadOnly(read_only);
 

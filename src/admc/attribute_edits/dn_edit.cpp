@@ -30,7 +30,7 @@ DNEdit::DNEdit(QLineEdit *edit_arg, QObject *parent)
 : AttributeEdit(parent) {
     edit = edit_arg;
 
-    limit_edit(edit, ATTRIBUTE_DN);
+    line_edit_limit_edit(edit, ATTRIBUTE_DN);
 
     connect(
         edit, &QLineEdit::textChanged,

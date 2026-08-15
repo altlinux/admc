@@ -25,15 +25,15 @@
 #include <QLineEdit>
 #include <QString>
 
-void set_line_edit_to_decimal_numbers_only(QLineEdit *edit);
-void set_line_edit_to_hex_numbers_only(QLineEdit *edit);
-void set_line_edit_to_time_span_format(QLineEdit *edit);
-void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest);
-void setup_full_name_autofill(
+void line_edit_set_to_decimal_numbers_only(QLineEdit *edit);
+void line_edit_set_to_hex_numbers_only(QLineEdit *edit);
+void line_edit_set_to_time_span_format(QLineEdit *edit);
+void line_edit_setup_autofill(QLineEdit *src, QLineEdit *dest);
+void line_edit_setup_full_name_autofill(
     QLineEdit *first_name_edit,
     QLineEdit *last_name_edit,
     QLineEdit *middle_name_edit,
     QLineEdit *full_name_edit);
-void limit_edit(QLineEdit *edit, const QString &attribute);
+void line_edit_limit_edit(QLineEdit *edit, const QString &attribute);
 
 #endif  /* ifndef LINE_EDIT_UTILS */

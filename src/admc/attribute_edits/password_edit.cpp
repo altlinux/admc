@@ -35,8 +35,8 @@ PasswordEdit::PasswordEdit(QLineEdit *edit_arg, QLineEdit *confirm_edit_arg, QCh
     edit = edit_arg;
     confirm_edit = confirm_edit_arg;
 
-    limit_edit(edit, ATTRIBUTE_PASSWORD);
-    limit_edit(confirm_edit, ATTRIBUTE_PASSWORD);
+    line_edit_limit_edit(edit, ATTRIBUTE_PASSWORD);
+    line_edit_limit_edit(confirm_edit, ATTRIBUTE_PASSWORD);
 
     connect(
         edit, &QLineEdit::textChanged,

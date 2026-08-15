@@ -33,10 +33,10 @@ StringEdit::StringEdit(QLineEdit *edit_arg, const QString &attribute_arg, QObjec
     edit = edit_arg;
 
     if (g_adconfig->get_attribute_is_number(attribute)) {
-        set_line_edit_to_decimal_numbers_only(edit);
+        line_edit_set_to_decimal_numbers_only(edit);
     }
 
-    limit_edit(edit, attribute);
+    line_edit_limit_edit(edit, attribute);
 
     connect(
         edit, &QLineEdit::textChanged,

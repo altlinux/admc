@@ -77,7 +77,7 @@ QString CreateComputerDialog::get_created_dn() const {
     return helper->get_created_dn();
 }
 
-// NOTE: can't use setup_lineedit_autofill() because
+// NOTE: can't use line_edit_setup_autofill() because
 // need to make input uppercase
 void CreateComputerDialog::autofill_sam_name() {
     const QString name_input = ui->name_edit->text();

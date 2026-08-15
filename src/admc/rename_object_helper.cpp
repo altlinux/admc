@@ -64,7 +64,7 @@ RenameObjectHelper::RenameObjectHelper(
     const QString name = dn_get_name(target);
     name_edit->setText(name);
 
-    limit_edit(name_edit, ATTRIBUTE_CN);
+    line_edit_limit_edit(name_edit, ATTRIBUTE_CN);
 
     const AdObject object = ad.search_object(target);
     AttributeEdit::load(edits, ad, object);

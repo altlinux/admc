@@ -44,7 +44,7 @@ RenamePolicyDialog::RenamePolicyDialog(AdInterface &ad, const QString &target_dn
     target_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
 
     ui->name_edit->setText(target_name);
-    limit_edit(ui->name_edit, ATTRIBUTE_DISPLAY_NAME);
+    line_edit_limit_edit(ui->name_edit, ATTRIBUTE_DISPLAY_NAME);
 
     connect(ui->name_edit, &QLineEdit::textChanged, this, &RenamePolicyDialog::on_edited);
     on_edited();

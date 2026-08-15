@@ -37,7 +37,7 @@ TimeSpanAttributeDialog::TimeSpanAttributeDialog(const QList<QByteArray> &value_
 
     const QByteArray value = value_list.value(0, QByteArray());
 
-    set_line_edit_to_time_span_format(ui->time_span_edit);
+    line_edit_set_to_time_span_format(ui->time_span_edit);
 
     ui->time_span_edit->setReadOnly(read_only);
     ui->time_span_edit->setText(timespan_display_value(value));

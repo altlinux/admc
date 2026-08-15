@@ -57,7 +57,7 @@ CreateObjectHelper::CreateObjectHelper(
 
     ok_button = button_box->button(QDialogButtonBox::Ok);
 
-    limit_edit(name_edit, ATTRIBUTE_CN);
+    line_edit_limit_edit(name_edit, ATTRIBUTE_CN);
 
     for (QLineEdit *edit : m_required_list) {
         connect(edit, &QLineEdit::textChanged, this,

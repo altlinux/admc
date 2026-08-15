@@ -33,16 +33,16 @@
 /**
  * Prohibits leading zeroes.
  */
-void set_line_edit_to_decimal_numbers_only(QLineEdit *edit) {
+void line_edit_set_to_decimal_numbers_only(QLineEdit *edit) {
     edit->setValidator(make_decimal_numbers_validator(edit));
 }
 
-void set_line_edit_to_hex_numbers_only(QLineEdit *edit) {
+void line_edit_set_to_hex_numbers_only(QLineEdit *edit) {
     edit->setValidator(
         new QRegularExpressionValidator(QRegularExpression("[0-9a-f]*"), edit));
 }
 
-void set_line_edit_to_time_span_format(QLineEdit *edit) {
+void line_edit_set_to_time_span_format(QLineEdit *edit) {
     QRegularExpression time_span_reg_exp(
         "([0-9]{1,4}:[0-2][0-3]:[0-5][0-9]:[0-5][0-9])|^\\(never\\)&|^\\(none\\)&");
     edit->setValidator(new QRegularExpressionValidator(time_span_reg_exp));
@@ -52,7 +52,7 @@ void set_line_edit_to_time_span_format(QLineEdit *edit) {
  * Setup an auto-fill from one line edit into another, so that when source line
  * edit is edited, input is copied into destination line edit.
  */
-void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest) {
+void line_edit_setup_autofill(QLineEdit *src, QLineEdit *dest) {
     QObject::connect(
         src, &QLineEdit::textChanged,
         [src, dest]() {
@@ -64,7 +64,7 @@ void setup_lineedit_autofill(QLineEdit *src, QLineEdit *dest) {
 /**
  * (first name + last name) -> full name
  */
-void setup_full_name_autofill(
+void line_edit_setup_full_name_autofill(
     QLineEdit *first_name_edit,
     QLineEdit *last_name_edit,
     QLineEdit *middle_name_edit,
@@ -101,7 +101,7 @@ void setup_full_name_autofill(
         middle_name_edit, autofill_full_name);
 }
 
-void limit_edit(QLineEdit *edit, const QString &attribute) {
+void line_edit_limit_edit(QLineEdit *edit, const QString &attribute) {
     const int range_upper = ad_get_range_upper(attribute);
 
     if (range_upper > 0) {
