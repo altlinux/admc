@@ -105,6 +105,7 @@ set(ADMC_SOURCES
     ui/dialog/filter.cpp
     ui/dialog/find/policy.cpp
     ui/dialog/find/object.cpp
+    ui/dialog/fsmo.cpp
     ui/dialog/main_window_connection_error.cpp
     ui/dialog/password.cpp
     ui/dialog/properties.cpp
@@ -199,7 +200,6 @@ set(ADMC_SOURCES
     ui/create_object_helper.cpp
     ui/rename_object_helper.cpp
 
-    fsmo/fsmo_dialog.cpp
     fsmo/fsmo_tab.cpp
     fsmo/fsmo_utils.cpp
 

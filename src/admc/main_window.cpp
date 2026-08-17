@@ -43,7 +43,7 @@
 #include "core/managers/gplink_manager.h"
 #include "core/managers/icon_manager.h"
 #include "core/settings.h"
-#include "fsmo/fsmo_dialog.h"
+#include "ui/dialog//fsmo.h"
 #include "fsmo/fsmo_utils.h"
 #include "main_window.h"
 #include "ui/attribute_edit/country_combo.h"

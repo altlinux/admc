@@ -26,7 +26,7 @@
 #include "ad_interface.h"
 #include "item_type.h"
 #include "ui/dialog/connection_options.h"
-#include "fsmo/fsmo_dialog.h"
+#include "ui/dialog/fsmo.h"
 #include "ui/utils.h"
 #include "ui/status.h"
 #include "core/globals.h"

@@ -21,10 +21,10 @@
 
 #include "adldap.h"
 #include "core/fsmo.h"
-#include "fsmo/fsmo_dialog.h"
 #include "fsmo/fsmo_tab.h"
 #include "fsmo/fsmo_utils.h"
-#include "ui_fsmo_dialog.h"
+#include "ui/dialog/fsmo.h"
+#include "ui/dialog/ui_fsmo.h"
 
 FSMODialog::FSMODialog(AdInterface &ad, QWidget *parent) : QDialog(parent) {
     ui = new Ui::FSMODialog();
