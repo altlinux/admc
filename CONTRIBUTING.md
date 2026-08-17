@@ -404,7 +404,7 @@ Example:
 
 int handle_object(SomeObject* object) {
     assert((obj != NULL) && "Object is NULL!");
-    // Do somthing with the object.
+    // Do something with the object.
 }
 
 ```
