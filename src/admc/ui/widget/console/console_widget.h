@@ -39,50 +39,13 @@
 
 #include <QWidget>
 
+#include "core/console.h"
+
 class ConsoleWidgetPrivate;
 class QStandardItem;
 class QMenu;
 class ConsoleImpl;
 class ConsoleDragModel;
-
-enum ConsoleRolePublic {
-    ConsoleRole_Type = Qt::UserRole + 19,
-
-    // NOTE: when implementing custom roles, make sure they do
-    // not conflict with console roles, like this:
-    //
-    // enum YourRole {
-    //     YourRole_First = ConsoleRole_LAST + 1,
-    //     YourRole_Second = ConsoleRole_LAST + 2,
-    //     ...
-    // };
-    ConsoleRole_LAST = Qt::UserRole + 20,
-};
-
-enum StandardAction {
-    StandardAction_Copy,
-    StandardAction_Cut,
-    StandardAction_Rename,
-    StandardAction_Delete,
-    StandardAction_Paste,
-    StandardAction_Print,
-    StandardAction_Refresh,
-    StandardAction_Properties,
-};
-
-class ConsoleWidgetActions final {
-public:
-    QAction *navigate_up;
-    QAction *navigate_back;
-    QAction *navigate_forward;
-    QAction *refresh;
-    QAction *customize_columns;
-    QAction *view_icons;
-    QAction *view_list;
-    QAction *view_detail;
-    QAction *toggle_console_tree;
-    QAction *toggle_description_bar;
-};
 
 class ConsoleWidget final : public QWidget {
     Q_OBJECT
