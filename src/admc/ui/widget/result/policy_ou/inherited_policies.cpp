@@ -27,7 +27,7 @@
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_impl.h"
 #include "ui/widget/console/console_widget.h"
-#include "console_impls/item_type.h"
+#include "core/console_item_type.h"
 #include "gplink.h"
 #include "core/managers/icon_manager.h"
 #include "core/managers/gplink_manager.h"

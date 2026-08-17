@@ -25,7 +25,6 @@
 
 #include "ad_object.h"
 #include "console_impls/find_object_impl.h"
-#include "console_impls/item_type.h"
 #include "console_impls/object_impl/console_object_operations.h"
 #include "console_impls/object_impl/object_impl.h"
 #include "console_impls/object_impl/server_dn_attrs_updater.h"
@@ -34,6 +33,7 @@
 #include "console_impls/policy_root_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "core/ad.h"
+#include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
 #include "core/search_thread.h"

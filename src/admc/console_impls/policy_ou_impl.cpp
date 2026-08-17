@@ -23,9 +23,9 @@
 
 #include "adldap.h"
 #include "console_impls/all_policies_folder_impl.h"
-#include "console_impls/item_type.h"
 #include "console_impls/object_impl/console_object_operations.h"
 #include "console_impls/policy_impl.h"
+#include "core/console_item_type.h"
 #include "ui/dialog/create/policy.h"
 #include "ui/dialog/find/policy.h"
 #include "core/fsmo.h"

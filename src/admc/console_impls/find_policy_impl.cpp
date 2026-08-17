@@ -23,8 +23,8 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl/console_object_operations.h"
+#include "core/console_item_type.h"
 #include "ui/widget/console/results_view.h"
-#include "item_type.h"
 #include "ui/utils.h"
 
 #include <QModelIndex>

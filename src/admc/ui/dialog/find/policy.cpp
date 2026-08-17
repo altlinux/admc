@@ -26,7 +26,7 @@
 #include "adldap.h"
 #include "console_impls/find_policy_impl.h"
 #include "console_impls/found_policy_impl.h"
-#include "console_impls/item_type.h"
+#include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/search_thread.h"
 #include "core/settings.h"

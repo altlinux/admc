@@ -27,7 +27,7 @@
 #include "ui/widget/console/customize_columns_dialog.h"
 #include "ui/widget/console/results_view.h"
 #include "ui/widget/console/scope_proxy_model.h"
-#include "console_impls/item_type.h"
+#include "core/console_item_type.h"
 #include "core/globals.h"
 #include "ui/status.h"
 
