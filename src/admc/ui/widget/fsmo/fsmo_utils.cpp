@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "fsmo_utils.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 
 #include "ad_config.h"
 #include "core/ad.h"

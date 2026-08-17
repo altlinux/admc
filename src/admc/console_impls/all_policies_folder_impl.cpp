@@ -32,7 +32,7 @@
 #include "gplink.h"
 #include "ui/status.h"
 #include "ui/utils.h"
-#include "fsmo/fsmo_utils.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 #include "core/managers/gplink_manager.h"
 
 #include <QAction>

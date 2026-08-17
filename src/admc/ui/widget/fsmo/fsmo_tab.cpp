@@ -28,7 +28,7 @@
 #include "ui/message_box.h"
 #include "ui/status.h"
 #include "ui/utils.h"
-#include "fsmo/fsmo_utils.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 
 
 FSMOTab::FSMOTab(const QString &title, const QString &role_dn_arg) {

@@ -29,13 +29,13 @@
 #include "core/fsmo.h"
 #include "core/globals.h"
 #include "core/settings.h"
-#include "fsmo/fsmo_utils.h"
 #include "krb5client.h"
 #include "ui/dialog/connection_options.h"
 #include "ui/dialog/ui_connection_options.h"
 #include "ui/message_box.h"
 #include "ui/status.h"
 #include "ui/utils.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 
 const QString CERT_STRATEGY_NEVER = QCoreApplication::translate("ConnectionOptionsDialog", "never");
 const QString CERT_STRATEGY_HARD = QCoreApplication::translate("ConnectionOptionsDialog", "hard");

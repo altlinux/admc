@@ -40,7 +40,7 @@
 #include "ui/dialog/select/ui_object_advanced.h"
 #include "ui/dialog/select/ui_object.h"
 #include "ui/utils.h"
-#include "fsmo/fsmo_utils.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 
 #include <QFormLayout>
 #include <QLineEdit>

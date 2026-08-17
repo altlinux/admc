@@ -141,6 +141,8 @@ set(ADMC_SOURCES
     ui/widget/filter/select_classes.cpp
     ui/widget/filter/simple_tab.cpp
     ui/widget/find.cpp
+    ui/widget/fsmo/fsmo_tab.cpp
+    ui/widget/fsmo/fsmo_utils.cpp
     ui/widget/multi_tab/general_user.cpp
     ui/widget/multi_tab/general_other.cpp
     ui/widget/multi_tab/account.cpp
@@ -199,9 +201,6 @@ set(ADMC_SOURCES
     main_window.cpp
     ui/create_object_helper.cpp
     ui/rename_object_helper.cpp
-
-    fsmo/fsmo_tab.cpp
-    fsmo/fsmo_utils.cpp
 
     ui/attribute_edit/attribute_edit.cpp
     ui/attribute_edit/string_edit.cpp

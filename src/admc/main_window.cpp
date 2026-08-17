@@ -44,7 +44,6 @@
 #include "core/managers/icon_manager.h"
 #include "core/settings.h"
 #include "ui/dialog//fsmo.h"
-#include "fsmo/fsmo_utils.h"
 #include "main_window.h"
 #include "ui/attribute_edit/country_combo.h"
 #include "ui/dialog/auth/krb_auth.h"
@@ -53,6 +52,7 @@
 #include "ui/status.h"
 #include "ui/utils.h"
 #include "ui/widget/console/console_widget.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 #include "ui_main_window.h"
 
 MainWindow::MainWindow(AdInterface &ad,

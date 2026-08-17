@@ -1,7 +1,7 @@
 #include "ui/widget/result/domain_info/fsmo_table.h"
 #include "ui/widget/result/domain_info/ui_fsmo_table.h"
 
-#include "fsmo/fsmo_utils.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 #include <QMessageBox>
 #include "core/ad.h"
 #include "core/fsmo.h"

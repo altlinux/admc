@@ -28,9 +28,9 @@
 #include "console_impls/item_type.h"
 #include "core/globals.h"
 #include "ui/status.h"
-#include "fsmo/fsmo_utils.h"
 #include "core/managers/icon_manager.h"
 #include "ui/utils.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 
 #include <QStandardItemModel>
 #include <QPushButton>

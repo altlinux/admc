@@ -27,7 +27,7 @@
 #include "ad_filter.h"
 #include "ad_interface.h"
 #include "ad_object.h"
-#include "fsmo/fsmo_utils.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 #include "ad_utils.h"
 
 ServerDnAttrsUpdater::ServerDnAttrsUpdater(const QString &server_dn) : dn(server_dn) {

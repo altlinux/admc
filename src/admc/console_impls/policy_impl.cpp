@@ -37,7 +37,6 @@
 #include "core/managers/gplink_manager.h"
 #include "core/managers/icon_manager.h"
 #include "core/utils.h"
-#include "fsmo/fsmo_utils.h"
 #include "ui/dialog/properties.h"
 #include "ui/dialog/rename/policy.h"
 #include "ui/widget/result/policy.h"
@@ -45,6 +44,7 @@
 #include "ui/message_box.h"
 #include "ui/status.h"
 #include "ui/utils.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 
 void policy_add_links(const QList<ConsoleWidget *> &console_list, PolicyResultsWidget *policy_results, const QList<QString> &policy_list, const QList<QString> &ou_list);
 void console_policy_update_policy_results(ConsoleWidget *console, PolicyResultsWidget *policy_results);
