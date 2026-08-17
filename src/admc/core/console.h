@@ -24,6 +24,8 @@
 
 #include <Qt>
 
+class QAction;
+
 enum ConsoleRolePublic {
     ConsoleRole_Type = Qt::UserRole + 19,
 
