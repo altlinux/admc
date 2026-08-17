@@ -447,7 +447,7 @@ parsed automatically by scripts/bots (e.g. for preparing release notes.)
 
 A commit message example:
 ```
-feat(core): Add "foo-procedure"
+feat(core): add "foo-procedure"
 
 A long description of the changes that has been made.  If it is too long
 we must add line breaks.  This optionally follows by the list of files
