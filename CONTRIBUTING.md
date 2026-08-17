@@ -373,7 +373,7 @@ the error we fixed will not surface again.
 
 #### Check preconditions and assumptions with `assert`
 Use `assert` macro to to check preconditions and assumptions, where it is
-appropriate. [[source](https://llvm.org/docs/CodingStandards.html#assert-liberally)**
+appropriate. [[source](https://llvm.org/docs/CodingStandards.html#assert-liberally)]
 
 **Note** that `assert` macro must be reserved only for checks assumptions about
 the internal state of the application, and it does not replace other validation
