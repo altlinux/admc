@@ -22,6 +22,8 @@
 #ifndef CORE_CONSOLE_H
 #define CORE_CONSOLE_H
 
+#include <Qt>
+
 enum ConsoleRolePublic {
     ConsoleRole_Type = Qt::UserRole + 19,
 
