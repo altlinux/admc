@@ -24,6 +24,7 @@
 
 #include "adldap.h"
 #include "ui/attribute_edit/general_name_edit.h"
+#include "ui/attribute_edit/photo_edit.h"
 #include "ui/attribute_edit/string_edit.h"
 #include "ui/attribute_edit/string_other_edit.h"
 
@@ -75,6 +76,7 @@ QList<AttributeEdit *> GeneralUserTab::create_edits() {
     auto mail_edit = new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, this);
     auto office_edit = new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, this);
     auto middle_name_edit = new StringEdit(ui->middle_name_edit, ATTRIBUTE_MIDDLE_NAME, this);
+    auto jpeg_photo_edit = new PhotoEdit(ui->photo_edit, this);
 
     auto telephone_edit = new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, this);
     auto web_page_edit = new StringOtherEdit(ui->web_page_edit, ui->web_page_button, ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, this);
@@ -91,6 +93,7 @@ QList<AttributeEdit *> GeneralUserTab::create_edits() {
         telephone_edit,
         web_page_edit,
         middle_name_edit,
+        jpeg_photo_edit
     };
 
     return edits_out;

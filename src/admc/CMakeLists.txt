@@ -247,6 +247,7 @@ set(ADMC_SOURCES
     ui/attribute_edit/laps_expiry_edit.cpp
     ui/attribute_edit/general_name_edit.cpp
     ui/attribute_edit/dn_edit.cpp
+    ui/attribute_edit/photo_edit.cpp
     ui/attribute_edit/pso_applied_edit.cpp
     ui/attribute_edit/sites_link_edit.cpp
     ui/attribute_edit/site_links_table_edit.cpp

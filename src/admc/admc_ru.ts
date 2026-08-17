@@ -4231,6 +4231,13 @@
     </message>
 </context>
 <context>
+    <name>PhotoEdit</name>
+    <message>
+        <source>Could not load user photo</source>
+        <translation>Не удалось загрузить фото пользователя</translation>
+    </message>
+</context>
+<context>
     <name>RenameObjectHelper</name>
     <message>
         <location filename="rename_object_helper.cpp" line="33"/>
