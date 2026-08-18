@@ -120,6 +120,7 @@ set(ADMC_SOURCES
     ui/dialog/find/policy.cpp
     ui/dialog/find/object.cpp
     ui/dialog/fsmo.cpp
+    ui/dialog/image_view.cpp
     ui/dialog/main_window_connection_error.cpp
     ui/dialog/password.cpp
     ui/dialog/properties.cpp

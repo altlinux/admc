@@ -37,7 +37,12 @@ PhotoEdit::PhotoEdit(QLabel *label, QObject *parent)
     // Do nothing.
 }
 
+QPixmap PhotoEdit::get_photo() const {
+    return photo;
+}
+
 void PhotoEdit::clear_photo() {
+    photo = QPixmap();
     photo_label->clear();
 }
 
@@ -58,7 +63,6 @@ QPixmap PhotoEdit::scale_photo(QPixmap &photo) {
 }
 
 void PhotoEdit::load_photo(QByteArray &data) {
-    QPixmap photo;
     bool result = photo.loadFromData(data, "JPEG");
     if (result) {
         QPixmap scaled_photo = scale_photo(photo);

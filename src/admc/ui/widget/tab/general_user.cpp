@@ -27,6 +27,7 @@
 #include "ui/attribute_edit/photo_edit.h"
 #include "ui/attribute_edit/string_edit.h"
 #include "ui/attribute_edit/string_other_edit.h"
+#include "ui/dialog/image_view.h"
 
 GeneralUserTab::GeneralUserTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {
@@ -34,6 +35,7 @@ GeneralUserTab::GeneralUserTab(QList<AttributeEdit *> *edit_list, QWidget *paren
     ui->setupUi(this);
 
     edit_list->append(create_edits());
+    ui->photo_edit->installEventFilter(this);
 }
 
 GeneralUserTab::GeneralUserTab(QWidget *parent)
@@ -56,6 +58,28 @@ GeneralUserTab::GeneralUserTab(QWidget *parent)
     ui->web_page_button->setVisible(false);
     ui->telephone_button->setVisible(false);
     ui->middle_name_edit->setReadOnly(true);
+
+    ui->photo_edit->installEventFilter(this);
+}
+
+bool GeneralUserTab::eventFilter(QObject *object, QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress) {
+        if (object == ui->photo_edit) {
+            view_photo();
+        }
+        return true;
+    }
+
+    return QObject::eventFilter(object, event);
+}
+
+void GeneralUserTab::view_photo() {
+    QPixmap photo = jpeg_photo_edit->get_photo();
+    if (! photo.isNull()) {
+        ImageViewDialog *dialog = new ImageViewDialog(photo, this);
+        dialog->open();
+    }
 }
 
 void GeneralUserTab::update(AdInterface &ad, const AdObject &object) {
@@ -76,7 +100,7 @@ QList<AttributeEdit *> GeneralUserTab::create_edits() {
     auto mail_edit = new StringEdit(ui->email_edit, ATTRIBUTE_MAIL, this);
     auto office_edit = new StringEdit(ui->office_edit, ATTRIBUTE_OFFICE, this);
     auto middle_name_edit = new StringEdit(ui->middle_name_edit, ATTRIBUTE_MIDDLE_NAME, this);
-    auto jpeg_photo_edit = new PhotoEdit(ui->photo_edit, this);
+    jpeg_photo_edit = new PhotoEdit(ui->photo_edit, this);
 
     auto telephone_edit = new StringOtherEdit(ui->telephone_edit, ui->telephone_button, ATTRIBUTE_TELEPHONE_NUMBER, ATTRIBUTE_TELEPHONE_NUMBER_OTHER, this);
     auto web_page_edit = new StringOtherEdit(ui->web_page_edit, ui->web_page_button, ATTRIBUTE_WWW_HOMEPAGE, ATTRIBUTE_WWW_HOMEPAGE_OTHER, this);

@@ -2,7 +2,6 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2026 BaseALT Ltd.
- * Copyright (C) 2026 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,30 +18,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHOTO_EDIT_H
-#define PHOTO_EDIT_H
+#include <QCoreApplication>
+#include <QPixmap>
 
-#include "attribute_edit.h"
+#include "ui/dialog/image_view.h"
+#include "ui/dialog/ui_image_view.h"
 
-class QLabel;
+ImageViewDialog::ImageViewDialog(QPixmap &photo, QWidget *parent)
+    : QDialog(parent)
+{
+    ui = new Ui::ImageViewDialog();
+    ui->setupUi(this);
+    setAttribute(Qt::WA_DeleteOnClose);
+    ui->image_view->setPixmap(photo);
+}
 
-class PhotoEdit final : public AttributeEdit {
-    Q_OBJECT
-
-public:
-    PhotoEdit(QLabel *label, QObject *parent);
-
-    void load(AdInterface &ad, const AdObject &object) override;
-    bool apply(AdInterface &ad, const QString &dn) const override;
-    QPixmap get_photo() const;
-
-private:
-    QLabel *photo_label;
-    QPixmap photo;
-
-    void load_photo(QByteArray &data);
-    QPixmap scale_photo(QPixmap &photo);
-    void clear_photo();
-};
-
-#endif // ifndef PHOTO_EDIT_H
+ImageViewDialog::~ImageViewDialog() {
+    delete ui;
+}

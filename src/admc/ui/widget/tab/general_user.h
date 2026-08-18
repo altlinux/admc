@@ -23,6 +23,7 @@
 #define GENERAL_USER_TAB_H
 
 #include <QWidget>
+#include "ui/attribute_edit/photo_edit.h"
 
 class AdObject;
 class AdInterface;
@@ -48,11 +49,14 @@ public:
 
     void retranslate_ui();
     bool event(QEvent *event) override;
+    bool eventFilter(QObject *object, QEvent *event);
 
 private:
     QList<AttributeEdit *> m_edit_list;
+    PhotoEdit *jpeg_photo_edit = nullptr;
 
     QList<AttributeEdit *> create_edits();
+    void view_photo();
 
 };
 
