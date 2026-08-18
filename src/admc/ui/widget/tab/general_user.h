@@ -58,6 +58,8 @@ private:
     QList<AttributeEdit *> create_edits();
     void view_photo();
 
+    void on_change_photo_button_clicked();
+
 };
 
 #endif /* GENERAL_USER_TAB_H */

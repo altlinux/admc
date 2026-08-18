@@ -19,6 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QFileDialog>
+
 #include "ui/widget/tab/general_user.h"
 #include "ui/widget/tab/ui_general_user.h"
 
@@ -36,6 +38,10 @@ GeneralUserTab::GeneralUserTab(QList<AttributeEdit *> *edit_list, QWidget *paren
 
     edit_list->append(create_edits());
     ui->photo_edit->installEventFilter(this);
+
+    ui->change_photo_button->show();
+    connect(ui->change_photo_button, &QPushButton::clicked,
+            this, &GeneralUserTab::on_change_photo_button_clicked);
 }
 
 GeneralUserTab::GeneralUserTab(QWidget *parent)
@@ -58,8 +64,19 @@ GeneralUserTab::GeneralUserTab(QWidget *parent)
     ui->web_page_button->setVisible(false);
     ui->telephone_button->setVisible(false);
     ui->middle_name_edit->setReadOnly(true);
+    ui->change_photo_button->hide();
 
     ui->photo_edit->installEventFilter(this);
+}
+
+void GeneralUserTab::on_change_photo_button_clicked() {
+    QString file_name = QFileDialog::getOpenFileName(
+        this,
+        tr("Select an image"),
+        "/home",
+        tr("Images (*.png *.jpg)"));
+    QPixmap photo(file_name);
+    jpeg_photo_edit->set_photo(photo);
 }
 
 bool GeneralUserTab::eventFilter(QObject *object, QEvent *event)

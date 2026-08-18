@@ -19,10 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QBuffer>
 #include <QLabel>
 #include <QPixmap>
 
 #include "ad_defines.h"
+#include "ad_interface.h"
 #include "ad_object.h"
 #include "core/globals.h"
 #include "photo_edit.h"
@@ -62,6 +64,11 @@ QPixmap PhotoEdit::scale_photo(QPixmap &photo) {
     }
 }
 
+void PhotoEdit::set_photo(QPixmap &photo) {
+    this->photo = photo;
+    emit AttributeEdit::edited();
+}
+
 void PhotoEdit::load_photo(QByteArray &data) {
     bool result = photo.loadFromData(data, "JPEG");
     if (result) {
@@ -85,8 +92,12 @@ void PhotoEdit::load(AdInterface &ad, const AdObject &object) {
 }
 
 bool PhotoEdit::apply(AdInterface &ad, const QString &dn) const {
-    Q_UNUSED(ad);
-    Q_UNUSED(dn);
-    // TODO: Implement photo editing.
-    return true;
+    if (! ad.is_connected()) {
+        return false;
+    }
+    QByteArray data;
+    QBuffer buffer(&data);
+    buffer.open(QIODevice::WriteOnly);
+    photo.save(&buffer, "JPEG");
+    return ad.attribute_replace_value(dn, ATTRIBUTE_JPEG_PHOTO, data);
 }

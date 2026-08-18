@@ -2053,6 +2053,14 @@
 <context>
     <name>GeneralUserTab</name>
     <message>
+        <source>Upload a photo...</source>
+        <translation>Загрузить фотографию...</translation>
+    </message>
+    <message>
+        <source>Select an image</source>
+        <translation>Выбрать изображение</translation>
+    </message>
+    <message>
         <location filename="tabs/general_user_tab.ui" line="36"/>
         <source>Description:</source>
         <translation>Описание:</translation>
