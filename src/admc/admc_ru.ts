@@ -2061,6 +2061,10 @@
         <translation>Выбрать изображение</translation>
     </message>
     <message>
+        <source>User photo</source>
+        <translation>Фотография пользователя</translation>
+    </message>
+    <message>
         <location filename="tabs/general_user_tab.ui" line="36"/>
         <source>Description:</source>
         <translation>Описание:</translation>

@@ -95,6 +95,16 @@ void GeneralUserTab::view_photo() {
     QPixmap photo = jpeg_photo_edit->get_photo();
     if (! photo.isNull()) {
         ImageViewDialog *dialog = new ImageViewDialog(photo, this);
+        QString first_name = ui->first_name_edit->text();
+        QString middle_name = ui->middle_name_edit->text();
+        QString last_name = ui->last_name_edit->text();
+        QString name = first_name + " " + middle_name + " " + last_name;
+        name = name.trimmed();
+        if (! name.isEmpty()) {
+            dialog->setWindowTitle(tr("User photo") + ": " + name);
+        } else {
+            dialog->setWindowTitle(tr("User photo"));
+        }
         dialog->open();
     }
 }
