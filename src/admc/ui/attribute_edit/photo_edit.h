@@ -39,6 +39,7 @@ private:
     QLabel *photo_label;
 
     void load_photo(QByteArray &data);
+    QPixmap scale_photo(QPixmap &photo);
     void clear_photo();
 };
 

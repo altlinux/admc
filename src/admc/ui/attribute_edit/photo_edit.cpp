@@ -28,6 +28,9 @@
 #include "photo_edit.h"
 #include "ui/status.h"
 
+static const int PHOTO_HEIGHT = 640;
+static const int PHOTO_WIDTH  = 480;
+
 PhotoEdit::PhotoEdit(QLabel *label, QObject *parent)
     : AttributeEdit(parent), photo_label(label)
 {
@@ -38,11 +41,28 @@ void PhotoEdit::clear_photo() {
     photo_label->clear();
 }
 
+/**
+ * Scale user photo to fit it to the photo frame.
+ *
+ * @param photo A user photo to scale.
+ * @return A scaled photo.
+ */
+QPixmap PhotoEdit::scale_photo(QPixmap &photo) {
+    int width = photo.width();
+    int height = photo.height();
+    if (width > height) {
+        return photo.scaledToWidth(PHOTO_WIDTH);
+    } else {
+        return photo.scaledToHeight(PHOTO_HEIGHT);
+    }
+}
+
 void PhotoEdit::load_photo(QByteArray &data) {
     QPixmap photo;
     bool result = photo.loadFromData(data, "JPEG");
     if (result) {
-        photo_label->setPixmap(photo);
+        QPixmap scaled_photo = scale_photo(photo);
+        photo_label->setPixmap(scaled_photo);
     } else {
         g_status->add_message(tr("Could not load user photo"),
                               StatusType_Error);
