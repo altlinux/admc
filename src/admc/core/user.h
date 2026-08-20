@@ -2,7 +2,6 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2026 BaseALT Ltd.
- * Copyright (C) 2026 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,30 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PHOTO_EDIT_H
-#define PHOTO_EDIT_H
+#ifndef CORE_USER_H
+#define CORE_USER_H
 
-#include "attribute_edit.h"
+class QPixmap;
 
-class QLabel;
+QPixmap user_crop_photo(const QPixmap &photo, int width, int height);
+QPixmap user_scale_photo(const QPixmap &photo, int width, int height);
 
-class PhotoEdit final : public AttributeEdit {
-    Q_OBJECT
-
-public:
-    PhotoEdit(QLabel *label, QObject *parent);
-
-    void load(AdInterface &ad, const AdObject &object) override;
-    bool apply(AdInterface &ad, const QString &dn) const override;
-    QPixmap get_thumbnail_photo() const;
-    void set_thumbnail_photo(QPixmap &photo);
-
-private:
-    QLabel *photo_label;
-    QPixmap thumbnail_photo;
-
-    void load_thumbnail_photo(QByteArray &data);
-    void clear_photo();
-};
-
-#endif // ifndef PHOTO_EDIT_H
+#endif  /* ifndef CORE_USER_H */

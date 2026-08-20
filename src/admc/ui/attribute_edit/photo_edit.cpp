@@ -27,6 +27,7 @@
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "core/globals.h"
+#include "core/user.h"
 #include "photo_edit.h"
 #include "ui/status.h"
 
@@ -48,49 +49,6 @@ void PhotoEdit::clear_photo() {
     photo_label->clear();
 }
 
-/**
- * Crop a photo to the specified size.  The crop are is centered.
- *
- * @param photo A photo to crop.
- * @param width A target width.
- * @param height A target height.
- * @return A cropped photo.
- */
-QPixmap PhotoEdit::crop_photo(const QPixmap &photo,
-                              int width,
-                              int height) const {
-    int w = photo.width();
-    int h = photo.height();
-    int dw = w - width;
-    int dh = h - height;
-    int x = (dw > 0) ? dw / 2 : 0;
-    int y = (dh > 0) ? dh / 2 : 0;
-    QRect rect(x, y, width, height);
-    return photo.copy(rect);
-}
-
-/**
- * Scale user photo to fit it into specified dimensions.
- *
- * @param photo A user photo to scale.
- * @param width A target photo width.
- * @param height A Target photo height.
- * @return A scaled photo.
- */
-QPixmap PhotoEdit::scale_photo(const QPixmap &photo,
-                               int width,
-                               int height) const {
-    int w = photo.width();
-    int h = photo.height();
-    QPixmap scaled;
-    if (w < h) {
-        scaled = photo.scaledToWidth(width);
-    } else {
-        scaled = photo.scaledToHeight(height);
-    }
-    return crop_photo(scaled, width, height);
-}
-
 void PhotoEdit::set_thumbnail_photo(QPixmap &photo) {
     thumbnail_photo = photo;
     emit AttributeEdit::edited();
@@ -102,9 +60,9 @@ void PhotoEdit::load_thumbnail_photo(QByteArray &data) {
         int w = thumbnail_photo.width();
         int h = thumbnail_photo.height();
         if ((w > THUMBNAIL_WIDTH) || (h > THUMBNAIL_HEIGHT)) {
-            QPixmap scaled_photo = scale_photo(thumbnail_photo,
-                                               THUMBNAIL_WIDTH,
-                                               THUMBNAIL_HEIGHT);
+            QPixmap scaled_photo = user_scale_photo(thumbnail_photo,
+                                                    THUMBNAIL_WIDTH,
+                                                    THUMBNAIL_HEIGHT);
             photo_label->setPixmap(scaled_photo);
         } else {
             photo_label->setPixmap(thumbnail_photo);
