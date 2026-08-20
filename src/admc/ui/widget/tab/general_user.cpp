@@ -21,6 +21,7 @@
 
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QStandardPaths>
 
 #include "ui/widget/tab/general_user.h"
 #include "ui/widget/tab/ui_general_user.h"
@@ -81,7 +82,7 @@ void GeneralUserTab::on_change_photo_button_clicked() {
     QString file_name = QFileDialog::getOpenFileName(
         this,
         tr("Select an image"),
-        "/home",
+        QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
         tr("Images (*.jpg)"));
     QFileInfo file_info(file_name);
     if (file_info.size() > MAX_THUMBNAIL_PHOTO_SIZE) {
