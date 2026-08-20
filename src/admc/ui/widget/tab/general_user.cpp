@@ -32,13 +32,14 @@
 #include "ui/attribute_edit/string_edit.h"
 #include "ui/attribute_edit/string_other_edit.h"
 #include "core/globals.h"
+#include "core/user.h"
 #include "ui/dialog/image_view.h"
 #include "ui/message_box.h"
 #include "ui/status.h"
 
-// According to:
-// <https://learn.microsoft.com/en-us/windows/win32/adschema/a-thumbnailphoto>
-static const qint64 MAX_THUMBNAIL_PHOTO_SIZE = 102400; // bytes
+// // According to:
+// // <https://learn.microsoft.com/en-us/windows/win32/adschema/a-thumbnailphoto>
+// static const qint64 MAX_THUMBNAIL_PHOTO_SIZE = 102400; // bytes
 
 GeneralUserTab::GeneralUserTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {

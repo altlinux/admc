@@ -23,6 +23,10 @@
 
 class QPixmap;
 
+// According to:
+// <https://learn.microsoft.com/en-us/windows/win32/adschema/a-thumbnailphoto>
+const qint64 MAX_THUMBNAIL_PHOTO_SIZE = 102400; // bytes
+
 QPixmap user_crop_photo(const QPixmap &photo, int width, int height);
 QPixmap user_scale_photo(const QPixmap &photo, int width, int height);
 
