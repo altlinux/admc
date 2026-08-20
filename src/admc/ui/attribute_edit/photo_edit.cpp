@@ -30,8 +30,8 @@
 #include "photo_edit.h"
 #include "ui/status.h"
 
-static const int PHOTO_HEIGHT = 640;
-static const int PHOTO_WIDTH  = 480;
+static const int THUMBNAIL_HEIGHT = 96;
+static const int THUMBNAIL_WIDTH  = 96;
 
 PhotoEdit::PhotoEdit(QLabel *label, QObject *parent)
     : AttributeEdit(parent), photo_label(label)
@@ -39,41 +39,76 @@ PhotoEdit::PhotoEdit(QLabel *label, QObject *parent)
     // Do nothing.
 }
 
-QPixmap PhotoEdit::get_photo() const {
-    return photo;
+QPixmap PhotoEdit::get_thumbnail_photo() const {
+    return thumbnail_photo;
 }
 
 void PhotoEdit::clear_photo() {
-    photo = QPixmap();
+    thumbnail_photo = QPixmap();
     photo_label->clear();
 }
 
 /**
- * Scale user photo to fit it to the photo frame.
+ * Crop a photo to the specified size.  The crop are is centered.
  *
- * @param photo A user photo to scale.
- * @return A scaled photo.
+ * @param photo A photo to crop.
+ * @param width A target width.
+ * @param height A target height.
+ * @return A cropped photo.
  */
-QPixmap PhotoEdit::scale_photo(QPixmap &photo) {
-    int width = photo.width();
-    int height = photo.height();
-    if (width > height) {
-        return photo.scaledToWidth(PHOTO_WIDTH);
-    } else {
-        return photo.scaledToHeight(PHOTO_HEIGHT);
-    }
+QPixmap PhotoEdit::crop_photo(const QPixmap &photo,
+                              int width,
+                              int height) const {
+    int w = photo.width();
+    int h = photo.height();
+    int dw = w - width;
+    int dh = h - height;
+    int x = (dw > 0) ? dw / 2 : 0;
+    int y = (dh > 0) ? dh / 2 : 0;
+    QRect rect(x, y, width, height);
+    return photo.copy(rect);
 }
 
-void PhotoEdit::set_photo(QPixmap &photo) {
-    this->photo = photo;
+/**
+ * Scale user photo to fit it into specified dimensions.
+ *
+ * @param photo A user photo to scale.
+ * @param width A target photo width.
+ * @param height A Target photo height.
+ * @return A scaled photo.
+ */
+QPixmap PhotoEdit::scale_photo(const QPixmap &photo,
+                               int width,
+                               int height) const {
+    int w = photo.width();
+    int h = photo.height();
+    QPixmap scaled;
+    if (w < h) {
+        scaled = photo.scaledToWidth(width);
+    } else {
+        scaled = photo.scaledToHeight(height);
+    }
+    return crop_photo(scaled, width, height);
+}
+
+void PhotoEdit::set_thumbnail_photo(QPixmap &photo) {
+    thumbnail_photo = photo;
     emit AttributeEdit::edited();
 }
 
-void PhotoEdit::load_photo(QByteArray &data) {
-    bool result = photo.loadFromData(data, "JPEG");
+void PhotoEdit::load_thumbnail_photo(QByteArray &data) {
+    bool result = thumbnail_photo.loadFromData(data, "JPEG");
     if (result) {
-        QPixmap scaled_photo = scale_photo(photo);
-        photo_label->setPixmap(scaled_photo);
+        int w = thumbnail_photo.width();
+        int h = thumbnail_photo.height();
+        if ((w > THUMBNAIL_WIDTH) || (h > THUMBNAIL_HEIGHT)) {
+            QPixmap scaled_photo = scale_photo(thumbnail_photo,
+                                               THUMBNAIL_WIDTH,
+                                               THUMBNAIL_HEIGHT);
+            photo_label->setPixmap(scaled_photo);
+        } else {
+            photo_label->setPixmap(thumbnail_photo);
+        }
     } else {
         g_status->add_message(tr("Could not load user photo"),
                               StatusType_Error);
@@ -83,9 +118,9 @@ void PhotoEdit::load_photo(QByteArray &data) {
 
 void PhotoEdit::load(AdInterface &ad, const AdObject &object) {
     Q_UNUSED(ad);
-    QByteArray data = object.get_value(ATTRIBUTE_JPEG_PHOTO);
-    if (! data.isEmpty()) {
-        load_photo(data);
+    QByteArray thumbnail_data = object.get_value(ATTRIBUTE_THUMBNAIL_PHOTO);
+    if (! thumbnail_data.isEmpty()) {
+        load_thumbnail_photo(thumbnail_data);
     } else {
         clear_photo();
     }
@@ -95,9 +130,22 @@ bool PhotoEdit::apply(AdInterface &ad, const QString &dn) const {
     if (! ad.is_connected()) {
         return false;
     }
-    QByteArray data;
-    QBuffer buffer(&data);
-    buffer.open(QIODevice::WriteOnly);
-    photo.save(&buffer, "JPEG");
-    return ad.attribute_replace_value(dn, ATTRIBUTE_JPEG_PHOTO, data);
+
+    bool thumbnail_result = false;
+    if (! thumbnail_photo.isNull()) {
+        QByteArray data;
+        QBuffer buffer(&data);
+        buffer.open(QIODevice::WriteOnly);
+        thumbnail_photo.save(&buffer, "JPEG");
+        thumbnail_result = ad.attribute_replace_value(dn,
+                                                      ATTRIBUTE_THUMBNAIL_PHOTO,
+                                                      data);
+    } else {
+        QByteArray data;
+        thumbnail_result = ad.attribute_replace_value(dn,
+                                                      ATTRIBUTE_THUMBNAIL_PHOTO,
+                                                      data);
+    }
+
+    return thumbnail_result;
 }

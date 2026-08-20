@@ -74,9 +74,9 @@ void GeneralUserTab::on_change_photo_button_clicked() {
         this,
         tr("Select an image"),
         "/home",
-        tr("Images (*.png *.jpg)"));
+        tr("Images (*.jpg)"));
     QPixmap photo(file_name);
-    jpeg_photo_edit->set_photo(photo);
+    jpeg_photo_edit->set_thumbnail_photo(photo);
 }
 
 bool GeneralUserTab::eventFilter(QObject *object, QEvent *event)
@@ -92,7 +92,7 @@ bool GeneralUserTab::eventFilter(QObject *object, QEvent *event)
 }
 
 void GeneralUserTab::view_photo() {
-    QPixmap photo = jpeg_photo_edit->get_photo();
+    QPixmap photo = jpeg_photo_edit->get_thumbnail_photo();
     if (! photo.isNull()) {
         ImageViewDialog *dialog = new ImageViewDialog(photo, this);
         QString first_name = ui->first_name_edit->text();

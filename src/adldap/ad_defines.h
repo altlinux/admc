@@ -235,6 +235,7 @@ enum SystemFlagsBit {
 #define ATTRIBUTE_REPLICA_LOCATIONS "msDS-NC-Replica-Locations"
 #define ATTRIBUTE_NC_NAME "nCName"
 #define ATTRIBUTE_INTER_SITE_TOPOLOGY_GENERATOR "interSiteTopologyGenerator"
+#define ATTRIBUTE_THUMBNAIL_PHOTO "thumbnailPhoto"
 #define ATTRIBUTE_JPEG_PHOTO "jpegPhoto"
 
 #define CLASS_GROUP "group"

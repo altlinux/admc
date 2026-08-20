@@ -34,15 +34,16 @@ public:
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
-    QPixmap get_photo() const;
-    void set_photo(QPixmap &photo);
+    QPixmap get_thumbnail_photo() const;
+    void set_thumbnail_photo(QPixmap &photo);
 
 private:
     QLabel *photo_label;
-    QPixmap photo;
+    QPixmap thumbnail_photo;
 
-    void load_photo(QByteArray &data);
-    QPixmap scale_photo(QPixmap &photo);
+    void load_thumbnail_photo(QByteArray &data);
+    QPixmap scale_photo(const QPixmap &photo, int width, int height) const;
+    QPixmap crop_photo(const QPixmap &photo, int width, int height) const;
     void clear_photo();
 };
 
