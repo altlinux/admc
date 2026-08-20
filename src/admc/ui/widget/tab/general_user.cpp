@@ -20,6 +20,7 @@
  */
 
 #include <QFileDialog>
+#include <QFileInfo>
 
 #include "ui/widget/tab/general_user.h"
 #include "ui/widget/tab/ui_general_user.h"
@@ -29,7 +30,14 @@
 #include "ui/attribute_edit/photo_edit.h"
 #include "ui/attribute_edit/string_edit.h"
 #include "ui/attribute_edit/string_other_edit.h"
+#include "core/globals.h"
 #include "ui/dialog/image_view.h"
+#include "ui/message_box.h"
+#include "ui/status.h"
+
+// According to:
+// <https://learn.microsoft.com/en-us/windows/win32/adschema/a-thumbnailphoto>
+static const qint64 MAX_THUMBNAIL_PHOTO_SIZE = 102400; // bytes
 
 GeneralUserTab::GeneralUserTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
 : QWidget(parent) {
@@ -75,8 +83,19 @@ void GeneralUserTab::on_change_photo_button_clicked() {
         tr("Select an image"),
         "/home",
         tr("Images (*.jpg)"));
-    QPixmap photo(file_name);
-    jpeg_photo_edit->set_thumbnail_photo(photo);
+    QFileInfo file_info(file_name);
+    if (file_info.size() > MAX_THUMBNAIL_PHOTO_SIZE) {
+        QString error = tr("File \"%1\" is too large (%2 > 102400 bytes)")
+            .arg(file_name)
+            .arg(file_info.size());
+        g_status->add_message(error, StatusType_Error);
+        message_box_warning(this,
+                            tr("User photo uploading error"),
+                            error);
+    } else {
+        QPixmap photo(file_name);
+        jpeg_photo_edit->set_thumbnail_photo(photo);
+    }
 }
 
 bool GeneralUserTab::eventFilter(QObject *object, QEvent *event)
