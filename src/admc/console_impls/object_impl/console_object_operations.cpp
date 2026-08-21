@@ -759,12 +759,7 @@ void ConsoleObjectTreeOperations::console_object_delete(const QList<ConsoleWidge
 
         const bool success = ad.object_delete(target_dn);
         if (success) {
-            if (obj_class == CLASS_SITE) {
-                SiteDnAttrsUpdater(target_dn).update_for_delete(ad);
-            } else if (obj_class == CLASS_SERVER) {
-                ServerDnAttrsUpdater(target_dn).update_for_delete(ad);
-            }
-
+            object_update_delete(ad, obj_class, target_dn);
             deleted_list.append(target_dn);
         }
     }

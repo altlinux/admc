@@ -28,3 +28,13 @@ void object_update_move(AdInterface &ad,
         }
     }
 }
+
+void object_update_delete(AdInterface &ad,
+                          const QString &object_class,
+                          const QString &target_dn) {
+    if (object_class == CLASS_SITE) {
+        SiteDnAttrsUpdater(target_dn).update_for_delete(ad);
+    } else if (object_class == CLASS_SERVER) {
+        ServerDnAttrsUpdater(target_dn).update_for_delete(ad);
+    }
+}
