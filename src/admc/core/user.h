@@ -35,5 +35,6 @@ QPixmap user_scale_photo(const QPixmap &photo, int width, int height);
 bool user_set_thumbnail_photo(AdInterface &ad,
                               const QString &dn,
                               const QPixmap &photo);
+bool user_thumbnail_photo_file_check(const QString &file_name, QString &error);
 
 #endif  /* ifndef CORE_USER_H */

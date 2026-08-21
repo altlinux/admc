@@ -80,11 +80,8 @@ void GeneralUserTab::on_change_photo_button_clicked() {
         tr("Select an image"),
         QStandardPaths::writableLocation(QStandardPaths::HomeLocation),
         tr("Images (*.jpg)"));
-    QFileInfo file_info(file_name);
-    if (file_info.size() > MAX_THUMBNAIL_PHOTO_SIZE) {
-        QString error = tr("File \"%1\" is too large (%2 > 102400 bytes)")
-            .arg(file_name)
-            .arg(file_info.size());
+    QString error;
+    if (! user_thumbnail_photo_file_check(file_name, error)) {
         g_status->add_message(error, StatusType_Error);
         message_box_warning(this,
                             tr("User photo uploading error"),

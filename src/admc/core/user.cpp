@@ -19,10 +19,13 @@
  */
 
 #include <QBuffer>
+#include <QCoreApplication>
+#include <QFileInfo>
 #include <QPixmap>
 
 #include "ad_defines.h"
 #include "ad_interface.h"
+#include "user.h"
 
 /**
  * Crop a photo to the specified size.  The crop are is centered.
@@ -89,4 +92,26 @@ bool user_set_thumbnail_photo(AdInterface &ad,
     }
 
     return thumbnail_result;
+}
+
+/**
+ * Check if thumbnail file size is in AD scheme requirements.
+ *
+ * @param[in] file_name A file name to check.
+ * @param[out] error Error description.
+ * @return True if the size is in line with the requirements, false otherwise.
+ */
+bool user_thumbnail_photo_file_check(const QString &file_name,
+                                     QString &error) {
+    QFileInfo file_info(file_name);
+    if (file_info.size() <= MAX_THUMBNAIL_PHOTO_SIZE) {
+        return true;
+    } else {
+        error = QCoreApplication::translate(
+            "GeneralUserTab",
+            "File \"%1\" is too large (%2 > 102400 bytes)")
+            .arg(file_name)
+            .arg(file_info.size());
+        return false;
+    }
 }
