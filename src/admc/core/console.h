@@ -56,6 +56,13 @@ enum ConsoleRolePublic {
     ConsoleRole_LAST = Qt::UserRole + 20,
 };
 
+// TODO: Why is it called "My Console Role"?  That's weird, we have to rename it
+// to something more meaningful.
+enum MyConsoleRole {
+    MyConsoleRole_SearchThreadId = ConsoleRole_LAST + 1,
+    MyConsoleRole_LAST,
+};
+
 enum StandardAction {
     StandardAction_Copy,
     StandardAction_Cut,

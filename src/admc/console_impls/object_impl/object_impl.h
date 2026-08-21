@@ -28,7 +28,7 @@
  */
 
 #include "adldap.h"
-#include "console_impls/my_console_role.h"
+#include "core/console.h"
 #include "ui/widget/console/console_impl.h"
 #include "ui/widget/console/console_widget.h"
 #include "console_object_operations.h"
