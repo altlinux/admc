@@ -19,10 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "adldap.h"
+#include "core/console.h"
 #include "console_impls/object_impl/drag_n_drop.h"
 #include <QModelIndex>
 #include <core/globals.h>
-#include "console_impls/object_impl/object_impl.h"
 
 ObjectDragDrop::DropType ObjectDragDrop::console_object_get_drop_type(const QModelIndex &dropped, const QModelIndex &target) {
     const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
