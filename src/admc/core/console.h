@@ -63,6 +63,20 @@ enum MyConsoleRole {
     MyConsoleRole_LAST,
 };
 
+enum ObjectRole {
+    ObjectRole_DN = MyConsoleRole_LAST + 1,
+    ObjectRole_ObjectClasses,
+    ObjectRole_ObjectCategory,
+    ObjectRole_CannotMove,
+    ObjectRole_CannotRename,
+    ObjectRole_CannotDelete,
+    ObjectRole_AccountDisabled,
+    ObjectRole_Fetching,
+    ObjectRole_SearchId,
+
+    ObjectRole_LAST,
+};
+
 enum StandardAction {
     StandardAction_Copy,
     StandardAction_Cut,

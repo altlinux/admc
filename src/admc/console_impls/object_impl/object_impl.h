@@ -48,20 +48,6 @@ class QStackedWidget;
 class PSOResultsWidget;
 class SubnetResultsWidget;
 
-enum ObjectRole {
-    ObjectRole_DN = MyConsoleRole_LAST + 1,
-    ObjectRole_ObjectClasses,
-    ObjectRole_ObjectCategory,
-    ObjectRole_CannotMove,
-    ObjectRole_CannotRename,
-    ObjectRole_CannotDelete,
-    ObjectRole_AccountDisabled,
-    ObjectRole_Fetching,
-    ObjectRole_SearchId,
-
-    ObjectRole_LAST,
-};
-
 class ObjectImpl final : public ConsoleImpl {
     Q_OBJECT
 
