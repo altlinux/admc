@@ -62,6 +62,7 @@ set(ADMC_SOURCES
     core/admc_translator.cpp
     core/attribute.cpp
     core/changelog.cpp
+    core/console/object/drag_n_drop.cpp
     core/console/object/site_dn_attrs_updater.cpp
     core/fsmo.cpp
     core/globals.cpp
@@ -243,7 +244,6 @@ set(ADMC_SOURCES
     ui/attribute_edit/account_option_multi_edit.cpp
 
     console_impls/object_impl/object_impl.cpp
-    console_impls/object_impl/drag_n_drop.cpp
     console_impls/object_impl/console_object_operations.cpp
     console_impls/object_impl/server_dn_attrs_updater.cpp
     console_impls/policy_impl.cpp

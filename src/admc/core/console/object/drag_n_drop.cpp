@@ -21,7 +21,7 @@
 
 #include "adldap.h"
 #include "core/console.h"
-#include "console_impls/object_impl/drag_n_drop.h"
+#include "core/console/object/drag_n_drop.h"
 #include <QModelIndex>
 #include <core/globals.h>
 
