@@ -64,6 +64,7 @@ set(ADMC_SOURCES
     core/changelog.cpp
     core/console/object/drag_n_drop.cpp
     core/console/object/site_dn_attrs_updater.cpp
+    core/console/object/server_dn_attrs_updater.cpp
     core/fsmo.cpp
     core/globals.cpp
     core/line_edit_utils.cpp
@@ -245,7 +246,6 @@ set(ADMC_SOURCES
 
     console_impls/object_impl/object_impl.cpp
     console_impls/object_impl/console_object_operations.cpp
-    console_impls/object_impl/server_dn_attrs_updater.cpp
     console_impls/policy_impl.cpp
     console_impls/query_item_impl.cpp
     console_impls/query_folder_impl.cpp
