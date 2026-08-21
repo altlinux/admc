@@ -26,6 +26,22 @@
 
 class QAction;
 
+enum ConsoleRole {
+    // Determines whether scope item was fetched
+    ConsoleRole_WasFetched = Qt::UserRole + 1,
+    ConsoleRole_SortIndex = Qt::UserRole + 2,
+
+    ConsoleRole_IsScope = Qt::UserRole + 3,
+    ConsoleRole_IsHidden
+
+    // NOTE: don't go above ConsoleRole_Type and
+    // ConsoleRole_LAST (defined in public header)
+
+    // NOTE: these roles are "public" defined below:
+    // ConsoleRole_Type = Qt::UserRole + 19,
+    // ConsoleRole_LAST = Qt::UserRole + 20
+};
+
 enum ConsoleRolePublic {
     ConsoleRole_Type = Qt::UserRole + 19,
 

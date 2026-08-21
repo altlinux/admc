@@ -26,6 +26,7 @@
  * Private header for ConsoleWidget.
  */
 
+#include "core/console.h"
 #include "ui/widget/console/console_widget.h"
 #include "ui/widget/console/results_view.h"
 
@@ -41,22 +42,6 @@ class QStandardItemModel;
 class ConsoleWidget;
 class QSplitter;
 class ConsoleImpl;
-
-enum ConsoleRole {
-    // Determines whether scope item was fetched
-    ConsoleRole_WasFetched = Qt::UserRole + 1,
-    ConsoleRole_SortIndex = Qt::UserRole + 2,
-
-    ConsoleRole_IsScope = Qt::UserRole + 3,
-    ConsoleRole_IsHidden
-
-    // NOTE: don't go above ConsoleRole_Type and
-    // ConsoleRole_LAST (defined in public header)
-
-    // NOTE: these roles are "public" defined in public header
-    // ConsoleRole_Type = Qt::UserRole + 19,
-    // ConsoleRole_LAST = Qt::UserRole + 20
-};
 
 class ConsoleWidgetPrivate : public QObject {
     Q_OBJECT
