@@ -21,7 +21,10 @@
 #ifndef CORE_USER_H
 #define CORE_USER_H
 
+#include "ad_interface.h"
+
 class QPixmap;
+class QString;
 
 // According to:
 // <https://learn.microsoft.com/en-us/windows/win32/adschema/a-thumbnailphoto>
@@ -29,5 +32,8 @@ const qint64 MAX_THUMBNAIL_PHOTO_SIZE = 102400; // bytes
 
 QPixmap user_crop_photo(const QPixmap &photo, int width, int height);
 QPixmap user_scale_photo(const QPixmap &photo, int width, int height);
+bool user_set_thumbnail_photo(AdInterface &ad,
+                              const QString &dn,
+                              const QPixmap &photo);
 
 #endif  /* ifndef CORE_USER_H */

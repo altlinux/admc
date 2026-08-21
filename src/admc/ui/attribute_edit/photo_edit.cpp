@@ -88,22 +88,5 @@ bool PhotoEdit::apply(AdInterface &ad, const QString &dn) const {
     if (! ad.is_connected()) {
         return false;
     }
-
-    bool thumbnail_result = false;
-    if (! thumbnail_photo.isNull()) {
-        QByteArray data;
-        QBuffer buffer(&data);
-        buffer.open(QIODevice::WriteOnly);
-        thumbnail_photo.save(&buffer, "JPEG");
-        thumbnail_result = ad.attribute_replace_value(dn,
-                                                      ATTRIBUTE_THUMBNAIL_PHOTO,
-                                                      data);
-    } else {
-        QByteArray data;
-        thumbnail_result = ad.attribute_replace_value(dn,
-                                                      ATTRIBUTE_THUMBNAIL_PHOTO,
-                                                      data);
-    }
-
-    return thumbnail_result;
+    return user_set_thumbnail_photo(ad, dn, thumbnail_photo);
 }

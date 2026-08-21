@@ -18,7 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QBuffer>
 #include <QPixmap>
+
+#include "ad_defines.h"
+#include "ad_interface.h"
 
 /**
  * Crop a photo to the specified size.  The crop are is centered.
@@ -57,4 +61,32 @@ QPixmap user_scale_photo(const QPixmap &photo, int width, int height) {
         scaled = photo.scaledToHeight(height);
     }
     return user_crop_photo(scaled, width, height);
+}
+
+/**
+ * Set user thumbnail photo.
+ *
+ * @param photo A photo to set (can be empty.)
+ * @return True if the photo is successfully set, false otherwise.
+ */
+bool user_set_thumbnail_photo(AdInterface &ad,
+                              const QString &dn,
+                              const QPixmap &photo) {
+    bool thumbnail_result = false;
+    if (! photo.isNull()) {
+        QByteArray data;
+        QBuffer buffer(&data);
+        buffer.open(QIODevice::WriteOnly);
+        photo.save(&buffer, "JPEG");
+        thumbnail_result = ad.attribute_replace_value(dn,
+                                                      ATTRIBUTE_THUMBNAIL_PHOTO,
+                                                      data);
+    } else {
+        QByteArray data;
+        thumbnail_result = ad.attribute_replace_value(dn,
+                                                      ATTRIBUTE_THUMBNAIL_PHOTO,
+                                                      data);
+    }
+
+    return thumbnail_result;
 }
