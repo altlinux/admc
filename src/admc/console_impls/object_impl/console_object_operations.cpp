@@ -31,6 +31,7 @@
 #include "console_impls/policy_root_impl.h"
 #include "console_impls/query_folder_impl.h"
 #include "core/ad.h"
+#include "core/console/object/operations.h"
 #include "core/console/object/server_dn_attrs_updater.h"
 #include "core/console/object/site_dn_attrs_updater.h"
 #include "core/console_item_type.h"
@@ -205,21 +206,7 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(const QList<Con
         apply_changes(console);
     }
 
-    // Fix dn attrs which contain site/server not actual DNs
-    // after move/rename
-    for (auto obj : object_map.values()) {
-        if (obj.get_string(ATTRIBUTE_OBJECT_CLASS) == CLASS_SITE) {
-            const QString new_dn = obj.get_dn();
-            const QString old_dn = old_to_new_dn_map.key(new_dn, QString());
-            SiteDnAttrsUpdater(old_dn).update_for_rename(ad, new_dn);
-        } else if (obj.get_string(ATTRIBUTE_OBJECT_CLASS) == CLASS_SERVER) {
-            const QString new_dn = obj.get_dn();
-            const QString old_dn = old_to_new_dn_map.key(new_dn, QString());
-            ServerDnAttrsUpdater(old_dn).update_for_move(ad, new_dn);
-        } else {
-            continue;
-        }
-    }
+    object_update_move(ad, object_map, old_to_new_dn_map);
 }
 
 void ConsoleObjectTreeOperations::console_object_delete_dn_list(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const int type, const int dn_role) {
