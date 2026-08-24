@@ -25,7 +25,6 @@
 #include <QStandardItem>
 
 #include "adldap.h"
-#include "console_impls/find_policy_impl.h"
 #include "console_impls/found_policy_impl.h"
 #include "console_impls/policy_impl.h"
 #include "console_impls/policy_impl.h"
@@ -37,6 +36,7 @@
 #include "core/managers/gplink_manager.h"
 #include "core/managers/icon_manager.h"
 #include "core/utils.h"
+#include "ui/console/find_policy_impl.h"
 #include "ui/dialog/properties.h"
 #include "ui/dialog/rename/policy.h"
 #include "ui/widget/result/policy.h"

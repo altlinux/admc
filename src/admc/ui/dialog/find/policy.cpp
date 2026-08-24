@@ -24,12 +24,12 @@
 #include "ui/dialog/find/ui_policy.h"
 
 #include "adldap.h"
-#include "console_impls/find_policy_impl.h"
 #include "console_impls/found_policy_impl.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/search_thread.h"
 #include "core/settings.h"
+#include "ui/console/find_policy_impl.h"
 #include "ui/status.h"
 #include "ui/utils.h"
 

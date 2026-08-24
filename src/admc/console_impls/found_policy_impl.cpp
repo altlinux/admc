@@ -22,9 +22,9 @@
 #include "console_impls/found_policy_impl.h"
 
 #include "adldap.h"
-#include "console_impls/find_policy_impl.h"
 #include "console_impls/policy_impl.h"
 #include "core/console_item_type.h"
+#include "ui/console/find_policy_impl.h"
 #include "ui/utils.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
