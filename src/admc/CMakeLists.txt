@@ -76,6 +76,7 @@ set(ADMC_SOURCES
     core/settings.cpp
     core/utils.cpp
     ui/console/all_policies_folder_impl.cpp
+    ui/console/domain_info_impl.cpp
     ui/dialog/about.cpp
     ui/dialog/attribute/attribute.cpp
     ui/dialog/attribute/bool.cpp
@@ -256,7 +257,6 @@ set(ADMC_SOURCES
     console_impls/find_policy_impl.cpp
     console_impls/policy_ou_impl.cpp
     console_impls/found_policy_impl.cpp
-    console_impls/domain_info_impl.cpp
 
     admc.qrc
 )
