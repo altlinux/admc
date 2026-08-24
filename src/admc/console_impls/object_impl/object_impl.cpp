@@ -28,7 +28,6 @@
 #include <algorithm>
 
 #include "adldap.h"
-#include "console_impls/find_object_impl.h"
 #include "console_impls/object_impl/object_impl.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
@@ -41,6 +40,7 @@
 #include "core/managers/icon_manager.h"
 #include "core/settings.h"
 #include "core/utils.h"
+#include "ui/console/find_object_impl.h"
 #include "ui/dialog/attribute/list.h"
 #include "ui/dialog/console_filter.h"
 #include "ui/dialog/find/object.h"

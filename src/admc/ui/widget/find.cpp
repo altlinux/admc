@@ -23,13 +23,13 @@
 #include "ui/widget/ui_find.h"
 
 #include "adldap.h"
-#include "console_impls/find_object_impl.h"
 #include "console_impls/object_impl/object_impl.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/search_thread.h"
 #include "core/settings.h"
 #include "core/utils.h"
+#include "ui/console/find_object_impl.h"
 #include "ui/status.h"
 #include "ui/utils.h"
 

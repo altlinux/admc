@@ -24,7 +24,6 @@
 #include <QStandardItem>
 
 #include "ad_object.h"
-#include "console_impls/find_object_impl.h"
 #include "console_impls/object_impl/console_object_operations.h"
 #include "console_impls/object_impl/object_impl.h"
 #include "console_impls/policy_ou_impl.h"
@@ -40,6 +39,7 @@
 #include "core/search_thread.h"
 #include "core/settings.h"
 #include "core/utils.h"
+#include "ui/console/find_object_impl.h"
 #include "ui/dialog/create/computer.h"
 #include "ui/dialog/create/contact.h"
 #include "ui/dialog/create/group.h"
