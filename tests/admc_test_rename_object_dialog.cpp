@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "ui/dialog/rename/user.h"
-#include "ui_rename_user_dialog.h"
+#include "ui/dialog/rename/ui_user.h"
 
 void ADMCTestRenameObjectDialog::rename() {
     const QString old_name = TEST_USER;

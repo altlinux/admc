@@ -30,6 +30,7 @@
 #include <QWidget>
 
 class FilterWidgetTab;
+class FilterWidgetSimpleTab;
 
 namespace Ui {
 class FilterWidget;
@@ -54,6 +55,7 @@ public:
     void clear();
 
     void enable_filtering_all_classes();
+    FilterWidgetSimpleTab *simple_tab() const;
 };
 
 class FilterWidgetTab : public QWidget {

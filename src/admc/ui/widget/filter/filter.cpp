@@ -84,3 +84,7 @@ void FilterWidget::clear() {
     ui->normal_tab->clear();
     ui->advanced_tab->clear();
 }
+
+FilterWidgetSimpleTab *FilterWidget::simple_tab() const {
+    return ui->simple_tab;
+}

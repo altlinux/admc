@@ -22,17 +22,17 @@
 #include "admc_test_edit_query_item_widget.h"
 
 #include "console_impls/query_item_impl.h"
-#include "edit_query_widgets/edit_query_item_widget.h"
+#include "ui/widget/edit_query_item.h"
+#include "ui/widget/ui_edit_query_item.h"
 #include "ui/dialog/filter.h"
 #include "ui/dialog/ui_filter.h"
-#include "filter_widget/filter_widget.h"
-#include "filter_widget/filter_widget_simple_tab.h"
-#include "filter_widget/select_base_widget.h"
-#include "filter_widget/ui_filter_widget.h"
-#include "filter_widget/ui_filter_widget_simple_tab.h"
-#include "filter_widget/ui_select_base_widget.h"
+#include "ui/widget/filter/filter.h"
+#include "ui/widget/filter/simple_tab.h"
+#include "ui/widget/filter/select_base.h"
+#include "ui/widget/filter/ui_filter.h"
+#include "ui/widget/filter/ui_simple_tab.h"
+#include "ui/widget/filter/ui_select_base.h"
 #include "ui/widget/tab.h"
-#include "ui_edit_query_item_widget.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -84,7 +84,7 @@ void ADMCTestEditQueryItemWidget::save_and_load() {
 
     QVERIFY(QTest::qWaitForWindowExposed(dialog, 1000));
 
-    FilterWidgetSimpleTab *simple_tab = dialog->ui->filter_widget->ui->simple_tab;
+    FilterWidgetSimpleTab *simple_tab = dialog->ui->filter_widget->simple_tab();
     QLineEdit *filter_name_edit = simple_tab->ui->name_edit;
     filter_name_edit->setText("test");
 

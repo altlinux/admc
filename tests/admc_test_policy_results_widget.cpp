@@ -25,7 +25,7 @@
 #include "ui/widget/console/results_view.h"
 #include "core/globals.h"
 #include "gplink.h"
-#include "results_widgets/policy_results_widget.h"
+#include "ui/widget/result/policy.h"
 #include "ui/utils.h"
 #include "core/managers/gplink_manager.h"
 

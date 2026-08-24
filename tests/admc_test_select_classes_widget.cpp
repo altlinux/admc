@@ -23,8 +23,8 @@
 
 #include "ui/dialog/class_filter.h"
 #include "ui/dialog/ui_class_filter.h"
-#include "filter_widget/select_classes_widget.h"
-#include "filter_widget/ui_select_classes_widget.h"
+#include "ui/widget/filter/select_classes.h"
+#include "ui/widget/filter/ui_select_classes.h"
 
 void ADMCTestSelectClassesWidget::init() {
     ADMCTest::init();

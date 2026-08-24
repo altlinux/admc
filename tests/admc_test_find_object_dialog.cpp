@@ -22,15 +22,15 @@
 #include "admc_test_find_object_dialog.h"
 
 #include "adldap.h"
-#include "filter_widget/filter_widget_advanced_tab.h"
-#include "filter_widget/filter_widget_simple_tab.h"
-#include "filter_widget/ui_filter_widget.h"
-#include "filter_widget/ui_filter_widget_advanced_tab.h"
-#include "filter_widget/ui_filter_widget_simple_tab.h"
+#include "ui/widget/filter/advanced_tab.h"
+#include "ui/widget/filter/simple_tab.h"
+#include "ui/widget/filter/ui_filter.h"
+#include "ui/widget/filter/ui_advanced_tab.h"
+#include "ui/widget/filter/ui_simple_tab.h"
 #include "ui/dialog/find/object.h"
 #include "ui/dialog/find/ui_object.h"
-#include "find_widgets/find_widget.h"
-#include "ui_find_widget.h"
+#include "ui/widget/find.h"
+#include "ui/widget/ui_find.h"
 
 #include <QTreeView>
 

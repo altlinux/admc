@@ -23,7 +23,7 @@
 
 #include "admc_test_select_base_widget.h"
 #include "console_impls/object_impl/object_impl.h"
-#include "filter_widget/select_base_widget.h"
+#include "ui/widget/filter/select_base.h"
 #include "ui/dialog/select/object.h"
 #include "ui/dialog/select/object_match.h"
 #include "ui/dialog/select/ui_object.h"
