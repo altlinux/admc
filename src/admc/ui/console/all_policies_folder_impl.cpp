@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_impls/all_policies_folder_impl.h"
+#include "ui/console/all_policies_folder_impl.h"
 
 #include "adldap.h"
 #include "console_impls/policy_impl.h"
