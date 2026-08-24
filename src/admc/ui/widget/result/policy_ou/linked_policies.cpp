@@ -22,7 +22,7 @@
 #include "adldap.h"
 #include "ui/widget/result/policy_ou/linked_policies.h"
 #include "ui/widget/result/policy_ou/ui_linked_policies.h"
-#include "console_impls/policy_impl.h"
+#include "ui/console/policy_impl.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "core/console_item_type.h"

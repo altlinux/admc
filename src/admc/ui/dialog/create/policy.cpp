@@ -23,9 +23,9 @@
 #include <QRegularExpression>
 
 #include "adldap.h"
-#include "console_impls/policy_impl.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "ui/console/policy_impl.h"
 #include "ui/dialog/create/policy.h"
 #include "ui/dialog/create/ui_policy.h"
 #include "ui/message_box.h"

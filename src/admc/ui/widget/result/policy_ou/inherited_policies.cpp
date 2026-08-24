@@ -25,7 +25,7 @@
 #include "core/settings.h"
 #include "core/utils.h"
 #include "console_impls/policy_ou_impl.h"
-#include "console_impls/policy_impl.h"
+#include "ui/console/policy_impl.h"
 #include "ui/widget/console/console_widget.h"
 #include "core/console_item_type.h"
 #include "gplink.h"

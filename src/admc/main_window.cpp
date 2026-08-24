@@ -29,7 +29,7 @@
 #include "ui/console/all_policies_folder_impl.h"
 #include "ui/console/domain_info_impl.h"
 #include "console_impls/object_impl/object_impl.h"
-#include "console_impls/policy_impl.h"
+#include "ui/console/policy_impl.h"
 #include "console_impls/policy_ou_impl.h"
 #include "console_impls/policy_root_impl.h"
 #include "console_impls/query_folder_impl.h"

@@ -25,7 +25,7 @@
 #include "core/managers/icon_manager.h"
 #include "core/utils.h"
 #include "ad_interface.h"
-#include "console_impls/policy_impl.h"
+#include "ui/console/policy_impl.h"
 
 #include <QMimeData>
 #include <QDataStream>

@@ -24,7 +24,7 @@
 #include "adldap.h"
 #include "ui/console/all_policies_folder_impl.h"
 #include "console_impls/object_impl/console_object_operations.h"
-#include "console_impls/policy_impl.h"
+#include "ui/console/policy_impl.h"
 #include "core/console_item_type.h"
 #include "ui/dialog/create/policy.h"
 #include "ui/dialog/find/policy.h"

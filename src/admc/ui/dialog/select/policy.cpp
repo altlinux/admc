@@ -23,9 +23,9 @@
 #include <QStandardItemModel>
 
 #include "adldap.h"
-#include "console_impls/policy_impl.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "ui/console/policy_impl.h"
 #include "ui/dialog/select/policy.h"
 #include "ui/dialog/select/ui_policy.h"
 #include "ui/status.h"
