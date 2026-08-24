@@ -81,6 +81,10 @@ set(ADMC_SOURCES
     ui/console/find_policy_impl.cpp
     ui/console/found_policy_impl.cpp
     ui/console/policy_impl.cpp
+    ui/console/policy_ou_impl.cpp
+    ui/console/policy_root_impl.cpp
+    ui/console/query_item_impl.cpp
+    ui/console/query_folder_impl.cpp
     ui/dialog/about.cpp
     ui/dialog/attribute/attribute.cpp
     ui/dialog/attribute/bool.cpp
@@ -253,10 +257,6 @@ set(ADMC_SOURCES
 
     console_impls/object_impl/object_impl.cpp
     console_impls/object_impl/console_object_operations.cpp
-    console_impls/query_item_impl.cpp
-    console_impls/query_folder_impl.cpp
-    console_impls/policy_root_impl.cpp
-    console_impls/policy_ou_impl.cpp
 
     admc.qrc
 )

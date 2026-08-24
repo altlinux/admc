@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_impls/query_folder_impl.h"
 #include "core/settings.h"
 #include "ui/dialog/edit_query_item.h"
 #include "ui/dialog/ui_edit_query_item.h"
+#include "ui/console/query_folder_impl.h"
 
 EditQueryItemDialog::EditQueryItemDialog(const QList<QString> &sibling_name_list_arg, QWidget *parent)
 : QDialog(parent) {

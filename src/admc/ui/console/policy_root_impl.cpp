@@ -19,12 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_impls/policy_root_impl.h"
-
 #include "adldap.h"
 #include "ui/console/all_policies_folder_impl.h"
+#include "ui/console/policy_root_impl.h"
 #include "core/console_item_type.h"
-#include "console_impls/policy_ou_impl.h"
+#include "ui/console/policy_ou_impl.h"
 #include "ui/widget/console/results_view.h"
 #include "core/globals.h"
 #include "gplink.h"

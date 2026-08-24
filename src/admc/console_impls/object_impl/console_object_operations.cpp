@@ -24,12 +24,9 @@
 #include <QStandardItem>
 
 #include "ad_object.h"
+#include "core/ad.h"
 #include "console_impls/object_impl/console_object_operations.h"
 #include "console_impls/object_impl/object_impl.h"
-#include "console_impls/policy_ou_impl.h"
-#include "console_impls/policy_root_impl.h"
-#include "console_impls/query_folder_impl.h"
-#include "core/ad.h"
 #include "core/console/object/operations.h"
 #include "core/console/object/server_dn_attrs_updater.h"
 #include "core/console/object/site_dn_attrs_updater.h"
@@ -40,6 +37,9 @@
 #include "core/settings.h"
 #include "core/utils.h"
 #include "ui/console/find_object_impl.h"
+#include "ui/console/policy_ou_impl.h"
+#include "ui/console/policy_root_impl.h"
+#include "ui/console/query_folder_impl.h"
 #include "ui/dialog/create/computer.h"
 #include "ui/dialog/create/contact.h"
 #include "ui/dialog/create/group.h"

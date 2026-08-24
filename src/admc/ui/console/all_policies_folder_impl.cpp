@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "ui/console/policy_impl.h"
-#include "console_impls/policy_root_impl.h"
+#include "ui/console/policy_root_impl.h"
 #include "core/console_item_type.h"
 #include "ui/widget/console/results_view.h"
 #include "ui/dialog/create/policy.h"

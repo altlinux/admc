@@ -33,7 +33,7 @@
 #include "ui/widget/result/policy_ou/policy_ou.h"
 #include "ui/widget/result/policy_ou/inherited_policies.h"
 #include "core/console_item_type.h"
-#include "console_impls/policy_ou_impl.h"
+#include "ui/console/policy_ou_impl.h"
 
 #include <QFormLayout>
 #include <QMenu>

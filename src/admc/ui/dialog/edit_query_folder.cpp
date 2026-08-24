@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "console_impls/query_folder_impl.h"
 #include "core/settings.h"
+#include "ui/console/query_folder_impl.h"
 #include "ui/dialog/edit_query_folder.h"
 #include "ui/dialog/ui_edit_query_folder.h"
 
