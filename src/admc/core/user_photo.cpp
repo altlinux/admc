@@ -109,9 +109,10 @@ bool user_thumbnail_photo_file_check(const QString &file_name,
     } else {
         error = QCoreApplication::translate(
             "GeneralUserTab",
-            "File \"%1\" is too large (%2 > 102400 bytes)")
+            "File \"%1\" is too large (%2 > %3 bytes)")
             .arg(file_name)
-            .arg(file_info.size());
+            .arg(file_info.size())
+            .arg(MAX_THUMBNAIL_PHOTO_SIZE);
         return false;
     }
 }
