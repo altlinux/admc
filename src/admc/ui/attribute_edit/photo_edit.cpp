@@ -51,22 +51,32 @@ void PhotoEdit::clear_photo() {
 
 void PhotoEdit::set_thumbnail_photo(QPixmap &photo) {
     thumbnail_photo = photo;
+    load_thumbnail_photo(thumbnail_photo);
     emit AttributeEdit::edited();
+}
+
+/**
+ * Load a thumbnail photo into the photo label.
+ *
+ * @param photo A photo to load.
+ */
+void PhotoEdit::load_thumbnail_photo(const QPixmap &photo) {
+    int w = thumbnail_photo.width();
+    int h = thumbnail_photo.height();
+    if ((w > THUMBNAIL_WIDTH) || (h > THUMBNAIL_HEIGHT)) {
+        QPixmap scaled_photo = user_scale_photo(thumbnail_photo,
+                                                THUMBNAIL_WIDTH,
+                                                THUMBNAIL_HEIGHT);
+        photo_label->setPixmap(scaled_photo);
+    } else {
+        photo_label->setPixmap(thumbnail_photo);
+    }
 }
 
 void PhotoEdit::load_thumbnail_photo(QByteArray &data) {
     bool result = thumbnail_photo.loadFromData(data, "JPEG");
     if (result) {
-        int w = thumbnail_photo.width();
-        int h = thumbnail_photo.height();
-        if ((w > THUMBNAIL_WIDTH) || (h > THUMBNAIL_HEIGHT)) {
-            QPixmap scaled_photo = user_scale_photo(thumbnail_photo,
-                                                    THUMBNAIL_WIDTH,
-                                                    THUMBNAIL_HEIGHT);
-            photo_label->setPixmap(scaled_photo);
-        } else {
-            photo_label->setPixmap(thumbnail_photo);
-        }
+        load_thumbnail_photo(thumbnail_photo);
     } else {
         g_status->add_message(tr("Could not load user photo"),
                               StatusType_Error);

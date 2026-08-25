@@ -42,6 +42,7 @@ private:
     QPixmap thumbnail_photo;
 
     void load_thumbnail_photo(QByteArray &data);
+    void load_thumbnail_photo(const QPixmap &photo);
     void clear_photo();
 };
 
