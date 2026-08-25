@@ -2065,8 +2065,8 @@
         <translation>Фотография пользователя</translation>
     </message>
     <message>
-        <source>File \"%1\" is too large (%2 > 102400 bytes)</source>
-        <translation>Файл \"%1\" слишком большой (%2 > 102400 байт)</translation>
+        <source>File "%1" is too large (%2 > 102400 bytes)</source>
+        <translation>Файл "%1" слишком большой (%2 > 102400 байт)</translation>
     </message>
     <message>
         <location filename="tabs/general_user_tab.ui" line="36"/>
