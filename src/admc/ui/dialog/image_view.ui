@@ -16,6 +16,9 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="image_view">
+     <property name="alignment">
+      <enum>Qt::AlignCenter</enum>
+     </property>
      <property name="text">
       <string>IMAGE_PLACEHOLDER</string>
      </property>
