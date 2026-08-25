@@ -25,7 +25,7 @@
 
 #include "adldap.h"
 #include "core/globals.h"
-#include "core/user.h"
+#include "core/user_photo.h"
 #include "ui/attribute_edit/general_name_edit.h"
 #include "ui/attribute_edit/photo_edit.h"
 #include "ui/attribute_edit/string_edit.h"

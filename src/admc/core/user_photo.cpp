@@ -25,7 +25,7 @@
 
 #include "ad_defines.h"
 #include "ad_interface.h"
-#include "user.h"
+#include "user_photo.h"
 
 /**
  * Crop a photo to the specified size.  The crop are is centered.

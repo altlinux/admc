@@ -27,7 +27,7 @@
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "core/globals.h"
-#include "core/user.h"
+#include "core/user_photo.h"
 #include "photo_edit.h"
 #include "ui/status.h"
 

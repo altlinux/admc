@@ -74,7 +74,7 @@ set(ADMC_SOURCES
     core/managers/icon_manager.cpp
     core/search_thread.cpp
     core/settings.cpp
-    core/user.cpp
+    core/user_photo.cpp
     core/utils.cpp
     ui/console/all_policies_folder_impl.cpp
     ui/console/domain_info_impl.cpp

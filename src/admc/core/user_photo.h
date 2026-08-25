@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CORE_USER_H
-#define CORE_USER_H
+#ifndef CORE_USER_PHOTO_H
+#define CORE_USER_PHOTO_H
 
 #include "ad_interface.h"
 
@@ -37,4 +37,4 @@ bool user_set_thumbnail_photo(AdInterface &ad,
                               const QPixmap &photo);
 bool user_thumbnail_photo_file_check(const QString &file_name, QString &error);
 
-#endif  /* ifndef CORE_USER_H */
+#endif  /* ifndef CORE_USER_PHOTO_H */
