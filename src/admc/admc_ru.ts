@@ -4252,6 +4252,14 @@
         <source>Could not load user photo</source>
         <translation>Не удалось загрузить фото пользователя</translation>
     </message>
+    <message>
+        <source>Attribute "%1" of object "%2" was changed</source>
+        <translation>Атрибут "%1" объекта "%2" был изменён</translation>
+    </message>
+    <message>
+        <source>Could not change "%1" attribute of object "%2"</source>
+        <translation>Не удалось изменить атрибут "%1" объекта "%2"</translation>
+    </message>
 </context>
 <context>
     <name>RenameObjectHelper</name>

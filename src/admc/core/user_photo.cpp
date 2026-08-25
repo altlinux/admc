@@ -83,12 +83,16 @@ bool user_set_thumbnail_photo(AdInterface &ad,
         photo.save(&buffer, "JPEG");
         thumbnail_result = ad.attribute_replace_value(dn,
                                                       ATTRIBUTE_THUMBNAIL_PHOTO,
-                                                      data);
+                                                      data,
+                                                      DoStatusMsg_No,
+                                                      false);
     } else {
         QByteArray data;
         thumbnail_result = ad.attribute_replace_value(dn,
                                                       ATTRIBUTE_THUMBNAIL_PHOTO,
-                                                      data);
+                                                      data,
+                                                      DoStatusMsg_No,
+                                                      false);
     }
 
     return thumbnail_result;

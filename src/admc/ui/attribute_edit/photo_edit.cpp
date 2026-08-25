@@ -98,5 +98,19 @@ bool PhotoEdit::apply(AdInterface &ad, const QString &dn) const {
     if (! ad.is_connected()) {
         return false;
     }
-    return user_set_thumbnail_photo(ad, dn, thumbnail_photo);
+    bool result = user_set_thumbnail_photo(ad, dn, thumbnail_photo);
+    if (result) {
+        g_status->add_message(
+            tr("Attribute \"%1\" of object \"%2\" was changed")
+            .arg(ATTRIBUTE_THUMBNAIL_PHOTO)
+            .arg(dn),
+            StatusType_Info);
+    } else {
+        g_status->add_message(
+            tr("Could not change the attribute \"%1\" of object \"%2\"")
+            .arg(ATTRIBUTE_THUMBNAIL_PHOTO)
+            .arg(dn),
+            StatusType_Error);
+    }
+    return result;
 }
