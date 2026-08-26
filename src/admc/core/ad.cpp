@@ -153,3 +153,8 @@ QHash<QString, AdObject> ad_search_pso_container(AdInterface &ad) {
                      filter,
                      {});
 }
+
+AdObject ad_search_top_dn_object(AdInterface &ad) {
+    const QString top_dn = g_adconfig->domain_dn();
+    return ad.search_object(top_dn);
+}

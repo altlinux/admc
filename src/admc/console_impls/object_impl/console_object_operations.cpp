@@ -577,8 +577,7 @@ void ConsoleObjectTreeOperations::console_object_tree_init(
         console->add_scope_item(ItemType_Object, console->domain_info_index());
     auto root = row[0];
 
-    const QString top_dn = g_adconfig->domain_dn();
-    const AdObject top_object = ad.search_object(top_dn);
+    const AdObject top_object = ad_search_top_dn_object(ad);
     console_object_item_data_load(root, top_object);
 
     const QString domain = g_adconfig->domain().toLower();
