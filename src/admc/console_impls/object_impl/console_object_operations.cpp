@@ -320,12 +320,7 @@ void ConsoleObjectTreeOperations::add_objects_to_console_from_dn_list(
     const QList<QString> &dn_list,
     const QModelIndex &parent)
 {
-    QList<AdObject> object_list;
-    for (const QString &dn : dn_list) {
-        const AdObject object = ad.search_object(dn);
-        object_list.append(object);
-    }
-
+    QList<AdObject> object_list = object_search_all(ad, dn_list);
     ConsoleObjectTreeOperations::add_objects_to_console(console,
                                                         object_list,
                                                         parent);

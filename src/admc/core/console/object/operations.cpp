@@ -38,3 +38,20 @@ void object_update_delete(AdInterface &ad,
         ServerDnAttrsUpdater(target_dn).update_for_delete(ad);
     }
 }
+
+/**
+ * Search all objects from the provided DN list.
+ *
+ * @param ad An AD instance.
+ * @param dn_list A list of object DNs to search.
+ * @return A list of found AdObject instances.
+ */
+QList<AdObject> object_search_all(AdInterface &ad,
+                                  const QList<QString> &dn_list) {
+    QList<AdObject> object_list;
+    for (const QString &dn : dn_list) {
+        const AdObject object = ad.search_object(dn);
+        object_list.append(object);
+    }
+    return object_list;
+}
