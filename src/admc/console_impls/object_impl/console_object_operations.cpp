@@ -1099,16 +1099,16 @@ void ConsoleObjectTreeOperations::console_tree_add_sites_container(
     AdInterface &ad)
 {
     auto search_results = ad_search_sites_container(ad);
-    const QString err = QObject::tr("Sites container is not available");
     if (search_results.isEmpty() || search_results.values()[0].is_empty()) {
-        g_status->add_message(err, StatusType_Info);
+        const QString error = QObject::tr("Sites container is not available");
+        g_status->add_message(error, StatusType_Info);
         return;
     }
 
-    const int sites_container_sort_idx = 4;
+    const int SITES_CONTAINER_SORT_INDEX = 4;
     console_tree_add_root_child(console,
                                 search_results.values()[0],
-                                sites_container_sort_idx,
+                                SITES_CONTAINER_SORT_INDEX,
                                 QObject::tr("Sites"));
 }
 
