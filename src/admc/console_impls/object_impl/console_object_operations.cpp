@@ -1118,40 +1118,51 @@ CreateObjectDialog *ConsoleObjectTreeOperations::create_dialog(
     const QString &parent_dn,
     ConsoleWidget *parent)
 {
-    if (object_class == CLASS_USER)
-            return new CreateUserDialog(ad, parent_dn, CLASS_USER, parent);
-    if (object_class == CLASS_GROUP)
+    if (object_class == CLASS_USER) {
+        return new CreateUserDialog(ad, parent_dn, CLASS_USER, parent);
+    }
+    if (object_class == CLASS_GROUP) {
         return new CreateGroupDialog(parent_dn, parent);
-    if (object_class == CLASS_COMPUTER)
+    }
+    if (object_class == CLASS_COMPUTER) {
         return new CreateComputerDialog(parent_dn, parent);
-    if (object_class == CLASS_OU)
+    }
+    if (object_class == CLASS_OU) {
         return new CreateOUDialog(parent_dn, parent);
-    if (object_class == CLASS_SHARED_FOLDER)
+    }
+    if (object_class == CLASS_SHARED_FOLDER) {
         return new CreateSharedFolderDialog(parent_dn, parent);
-    if (object_class == CLASS_INET_ORG_PERSON)
+    }
+    if (object_class == CLASS_INET_ORG_PERSON) {
         return new CreateUserDialog(ad,
                                     parent_dn,
                                     CLASS_INET_ORG_PERSON,
                                     parent);
-    if (object_class == CLASS_CONTACT)
+    }
+    if (object_class == CLASS_CONTACT) {
         return new CreateContactDialog(parent_dn, parent);
-    if (object_class == CLASS_PSO)
+    }
+    if (object_class == CLASS_PSO) {
         return new CreatePSODialog(parent_dn, parent);
-    if (object_class == CLASS_SITE)
+    }
+    if (object_class == CLASS_SITE) {
         return new CreateSiteDialog(ad, parent);
-    if (object_class == CLASS_SUBNET)
+    }
+    if (object_class == CLASS_SUBNET) {
         return new CreateSubnetDialog(ad, parent_dn, parent);
-    if (object_class == CLASS_SITE_LINK)
+    }
+    if (object_class == CLASS_SITE_LINK) {
         return new CreateSitesLinkDialog(ad,
                                          SitesLinkType::Link,
                                          parent_dn,
                                          parent);
-    if (object_class == CLASS_SITE_LINK_BRIDGE)
+    }
+    if (object_class == CLASS_SITE_LINK_BRIDGE) {
         return new CreateSitesLinkDialog(ad,
                                          SitesLinkType::Bridge,
                                          parent_dn,
                                          parent);
-
+    }
     return nullptr;
 }
 
