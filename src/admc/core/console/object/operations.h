@@ -16,5 +16,7 @@ void object_update_delete(AdInterface &ad,
                           const QString &target_dn);
 QList<AdObject> object_search_all(AdInterface &ad,
                                   const QList<QString> &dn_list);
+QString object_make_display_value(const AdObject &object,
+                                  const QString &attribute);
 
 #endif  /* ifndef CORE_CONSOLE_OBJECT_OPERATIONS_H */

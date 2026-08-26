@@ -1,3 +1,7 @@
+#include "ad_config.h"
+#include "ad_display.h"
+#include "ad_utils.h"
+#include "core/ad.h"
 #include "core/console/object/server_dn_attrs_updater.h"
 #include "core/console/object/site_dn_attrs_updater.h"
 #include "core/globals.h"
@@ -54,4 +58,29 @@ QList<AdObject> object_search_all(AdInterface &ad,
         object_list.append(object);
     }
     return object_list;
+}
+
+/**
+ * Make a display value for an AD object.
+ */
+QString object_make_display_value(const AdObject &object,
+                                  const QString &attribute) {
+    if (attribute == ATTRIBUTE_OBJECT_CLASS) {
+        const QString object_class = object.get_string(attribute);
+
+        if (object_class == CLASS_GROUP) {
+            const GroupScope scope = object.get_group_scope();
+            const QString scope_string = group_scope_string(scope);
+
+            const GroupType type = object.get_group_type();
+            const QString type_string = group_type_string_adjective(type);
+
+            return QString("%1 - %2").arg(type_string, scope_string);
+        } else {
+            return g_adconfig->get_class_display_name(object_class);
+        }
+    } else {
+        const QByteArray value = object.get_value(attribute);
+        return attribute_display_value(attribute, value, g_adconfig);
+    }
 }

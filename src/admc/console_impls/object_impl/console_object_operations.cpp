@@ -342,28 +342,7 @@ void ConsoleObjectTreeOperations::console_object_load(
             continue;
         }
 
-        QString display_value;
-        if (attribute == ATTRIBUTE_OBJECT_CLASS) {
-            const QString object_class = object.get_string(attribute);
-
-            if (object_class == CLASS_GROUP) {
-                const GroupScope scope = object.get_group_scope();
-                const QString scope_string = group_scope_string(scope);
-
-                const GroupType type = object.get_group_type();
-                const QString type_string = group_type_string_adjective(type);
-
-                display_value =
-                    QString("%1 - %2").arg(type_string, scope_string);
-            } else {
-                display_value =
-                    g_adconfig->get_class_display_name(object_class);
-            }
-        } else {
-            const QByteArray value = object.get_value(attribute);
-            display_value =
-                attribute_display_value(attribute, value, g_adconfig);
-        }
+        QString display_value = object_make_display_value(object, attribute);
         row[i]->setText(display_value);
     }
 
