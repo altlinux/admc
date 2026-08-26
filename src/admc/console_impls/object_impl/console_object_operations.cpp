@@ -1098,13 +1098,7 @@ void ConsoleObjectTreeOperations::console_tree_add_sites_container(
     ConsoleWidget *console,
     AdInterface &ad)
 {
-    const QString filter = filter_CONDITION(Condition_Equals,
-                                            ATTRIBUTE_OBJECT_CLASS,
-                                            CLASS_SITES_CONTAINER);
-    auto search_results = ad.search(g_adconfig->configuration_dn(),
-                                    SearchScope_All,
-                                    filter,
-                                    {});
+    auto search_results = ad_search_sites_container(ad);
     const QString err = QObject::tr("Sites container is not available");
     if (search_results.isEmpty() || search_results.values()[0].is_empty()) {
         g_status->add_message(err, StatusType_Info);

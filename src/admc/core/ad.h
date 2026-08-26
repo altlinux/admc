@@ -32,6 +32,7 @@ class AdInterface;
 
 QHash<QString, AdObject> ad_search_objects(AdInterface &ad,
                                            const QList<QString> list);
+QHash<QString, AdObject> ad_search_sites_container(AdInterface &ad);
 void ad_add_members_to_groups(AdInterface &ad,
                               const QList<QString> &targets,
                               const QList<QString> &groups);

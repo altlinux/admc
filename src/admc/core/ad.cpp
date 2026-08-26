@@ -127,3 +127,19 @@ QString ad_current_master_for_role_dn(AdInterface &ad, QString role_dn) {
         master_object.get_string(ATTRIBUTE_DNS_HOST_NAME);
     return current_master;
 }
+
+/**
+ * Search for the "Sites" container.
+ *
+ * @param ad An AD instance.
+ * @return A hash table of found objects.
+ */
+QHash<QString, AdObject> ad_search_sites_container(AdInterface &ad) {
+    const QString filter = filter_CONDITION(Condition_Equals,
+                                            ATTRIBUTE_OBJECT_CLASS,
+                                            CLASS_SITES_CONTAINER);
+    return ad.search(g_adconfig->configuration_dn(),
+                     SearchScope_All,
+                     filter,
+                     {});
+}
