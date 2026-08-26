@@ -143,3 +143,13 @@ QHash<QString, AdObject> ad_search_sites_container(AdInterface &ad) {
                      filter,
                      {});
 }
+
+QHash<QString, AdObject> ad_search_pso_container(AdInterface &ad) {
+    const QString filter = filter_CONDITION(Condition_Equals,
+                                            ATTRIBUTE_OBJECT_CLASS,
+                                            CLASS_PSO_CONTAINER);
+    return ad.search(g_adconfig->domain_dn(),
+                     SearchScope_All,
+                     filter,
+                     {});
+}

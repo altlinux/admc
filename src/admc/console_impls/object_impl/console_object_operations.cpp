@@ -641,13 +641,7 @@ void ConsoleObjectTreeOperations::console_tree_add_password_settings(
     ConsoleWidget *console,
     AdInterface &ad)
 {
-    const QString filter = filter_CONDITION(Condition_Equals,
-                                            ATTRIBUTE_OBJECT_CLASS,
-                                            CLASS_PSO_CONTAINER);
-    auto search_results = ad.search(g_adconfig->domain_dn(),
-                                    SearchScope_All,
-                                    filter,
-                                    {});
+    auto search_results = ad_search_pso_container(ad);
     const QString err =
         QObject::tr("Password settings container is not available");
     if (search_results.isEmpty() || search_results.values()[0].is_empty()) {
