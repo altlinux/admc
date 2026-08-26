@@ -21,6 +21,7 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl/object_impl.h"
+#include "core/console/object/operations.h"
 #include "core/console_item_type.h"
 #include "ui/console/query_item_impl.h"
 #include "ui/console/query_folder_impl.h"
@@ -157,7 +158,7 @@ void QueryItemImpl::copy(const QList<QModelIndex> &index_list) {
 }
 
 QList<QString> QueryItemImpl::column_labels() const {
-    return ConsoleObjectTreeOperations::object_impl_column_labels();
+    return object_column_labels();
 }
 
 QList<int> QueryItemImpl::default_columns() const {

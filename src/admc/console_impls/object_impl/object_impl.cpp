@@ -33,6 +33,7 @@
 #include "ui/console/query_item_impl.h"
 #include "core/ad.h"
 #include "core/console/object/drag_n_drop.h"
+#include "core/console/object/operations.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
@@ -540,7 +541,7 @@ void ObjectImpl::set_toolbar_actions(QAction *toolbar_create_user_arg, QAction *
 }
 
 QList<QString> ObjectImpl::column_labels() const {
-    return ConsoleObjectTreeOperations::object_impl_column_labels();
+    return object_column_labels();
 }
 
 QList<int> ObjectImpl::default_columns() const {

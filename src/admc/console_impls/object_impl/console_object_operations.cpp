@@ -535,19 +535,6 @@ void ConsoleObjectTreeOperations::console_object_search(
     search_thread->start();
 }
 
-QList<QString> ConsoleObjectTreeOperations::object_impl_column_labels() {
-    QList<QString> out;
-
-    for (const QString &attribute : g_adconfig->get_columns()) {
-        const QString attribute_display_name =
-            g_adconfig->get_column_display_name(attribute);
-
-        out.append(attribute_display_name);
-    }
-
-    return out;
-}
-
 QList<int> ConsoleObjectTreeOperations::object_impl_default_columns() {
     // By default show first 3 columns: name, class and
     // description

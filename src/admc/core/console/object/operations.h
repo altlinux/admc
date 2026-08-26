@@ -18,5 +18,6 @@ QList<AdObject> object_search_all(AdInterface &ad,
                                   const QList<QString> &dn_list);
 QString object_make_display_value(const AdObject &object,
                                   const QString &attribute);
+QList<QString> object_column_labels();
 
 #endif  /* ifndef CORE_CONSOLE_OBJECT_OPERATIONS_H */

@@ -84,3 +84,13 @@ QString object_make_display_value(const AdObject &object,
         return attribute_display_value(attribute, value, g_adconfig);
     }
 }
+
+QList<QString> object_column_labels() {
+    QList<QString> out;
+    for (const QString &attribute : g_adconfig->get_columns()) {
+        const QString name = g_adconfig->get_column_display_name(attribute);
+        out.append(name);
+    }
+
+    return out;
+}

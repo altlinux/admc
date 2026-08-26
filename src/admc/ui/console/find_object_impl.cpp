@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl/console_object_operations.h"
+#include "core/console/object/operations.h"
 #include "core/console_item_type.h"
 #include "ui/widget/console/results_view.h"
 
@@ -43,7 +44,7 @@ QString FindObjectImpl::get_description(const QModelIndex &index) const {
 }
 
 QList<QString> FindObjectImpl::column_labels() const {
-    return ConsoleObjectTreeOperations::object_impl_column_labels();
+    return object_column_labels();
 }
 
 QList<int> FindObjectImpl::default_columns() const {
