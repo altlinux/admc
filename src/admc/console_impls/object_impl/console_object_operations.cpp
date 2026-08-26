@@ -680,12 +680,10 @@ QString ConsoleObjectTreeOperations::console_object_count_string(
     const QModelIndex &index)
 {
     const int count = console->get_child_count(index);
-    const QString out = QCoreApplication::translate("object_impl",
-                                                    "%n object(s)",
-                                                    "",
-                                                    count);
-
-    return out;
+    return QCoreApplication::translate("object_impl",
+                                       "%n object(s)",
+                                       "",
+                                       count);
 }
 
 void ConsoleObjectTreeOperations::console_object_create(
