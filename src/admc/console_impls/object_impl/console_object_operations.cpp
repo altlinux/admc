@@ -626,7 +626,7 @@ void ConsoleObjectTreeOperations::console_tree_add_password_settings(
     AdInterface &ad)
 {
     auto search_results = ad_search_pso_container(ad);
-    if (search_results.isEmpty() || search_results.values()[0].is_empty()) {
+    if (ad_is_pso_container_not_found(search_results)) {
         const QString error =
             QObject::tr("Password settings container is not available");
         g_status->add_message(error, StatusType_Info);

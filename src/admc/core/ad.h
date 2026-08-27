@@ -34,6 +34,7 @@ QHash<QString, AdObject> ad_search_objects(AdInterface &ad,
                                            const QList<QString> list);
 QHash<QString, AdObject> ad_search_sites_container(AdInterface &ad);
 QHash<QString, AdObject> ad_search_pso_container(AdInterface &ad);
+bool ad_is_pso_container_not_found(const QHash<QString, AdObject> &results);
 AdObject ad_search_top_dn_object(AdInterface &ad);
 void ad_add_members_to_groups(AdInterface &ad,
                               const QList<QString> &targets,

@@ -154,6 +154,10 @@ QHash<QString, AdObject> ad_search_pso_container(AdInterface &ad) {
                      {});
 }
 
+bool ad_is_pso_container_not_found(const QHash<QString, AdObject> &results) {
+    return results.isEmpty() || results.values()[0].is_empty();
+}
+
 AdObject ad_search_top_dn_object(AdInterface &ad) {
     const QString top_dn = g_adconfig->domain_dn();
     return ad.search_object(top_dn);
