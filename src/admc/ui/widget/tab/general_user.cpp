@@ -45,8 +45,11 @@ GeneralUserTab::GeneralUserTab(QList<AttributeEdit *> *edit_list, QWidget *paren
     ui->photo_edit->installEventFilter(this);
 
     ui->change_photo_button->show();
+    ui->remove_photo_button->show();
     connect(ui->change_photo_button, &QPushButton::clicked,
             this, &GeneralUserTab::on_change_photo_button_clicked);
+    connect(ui->remove_photo_button, &QPushButton::clicked,
+            this, &GeneralUserTab::on_remove_photo_button_clicked);
 }
 
 GeneralUserTab::GeneralUserTab(QWidget *parent)
@@ -70,6 +73,7 @@ GeneralUserTab::GeneralUserTab(QWidget *parent)
     ui->telephone_button->setVisible(false);
     ui->middle_name_edit->setReadOnly(true);
     ui->change_photo_button->hide();
+    ui->remove_photo_button->hide();
 
     ui->photo_edit->installEventFilter(this);
 }
@@ -90,6 +94,10 @@ void GeneralUserTab::on_change_photo_button_clicked() {
         QPixmap photo(file_name);
         jpeg_photo_edit->set_thumbnail_photo(photo);
     }
+}
+
+void GeneralUserTab::on_remove_photo_button_clicked() {
+    jpeg_photo_edit->clear_thumbnail_photo();
 }
 
 bool GeneralUserTab::eventFilter(QObject *object, QEvent *event)

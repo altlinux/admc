@@ -2057,6 +2057,10 @@
         <translation>Загрузить фотографию...</translation>
     </message>
     <message>
+        <source>Remove photo</source>
+        <translation>Удалить фотографию</translation>
+    </message>
+    <message>
         <source>Select an image</source>
         <translation>Выбрать изображение</translation>
     </message>

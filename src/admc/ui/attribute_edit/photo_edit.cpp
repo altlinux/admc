@@ -55,6 +55,11 @@ void PhotoEdit::set_thumbnail_photo(QPixmap &photo) {
     emit AttributeEdit::edited();
 }
 
+void PhotoEdit::clear_thumbnail_photo() {
+    clear_photo();
+    emit AttributeEdit::edited();
+}
+
 /**
  * Load a thumbnail photo into the photo label.
  *

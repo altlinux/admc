@@ -36,6 +36,7 @@ public:
     bool apply(AdInterface &ad, const QString &dn) const override;
     QPixmap get_thumbnail_photo() const;
     void set_thumbnail_photo(QPixmap &photo);
+    void clear_thumbnail_photo();
 
 private:
     QLabel *photo_label;

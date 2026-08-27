@@ -59,6 +59,7 @@ private:
     void view_photo();
 
     void on_change_photo_button_clicked();
+    void on_remove_photo_button_clicked();
 
 };
 
