@@ -31,8 +31,6 @@
 
 #include "adldap.h"
 #include "console_impls/object_impl/object_impl.h"
-#include "ui/console/query_folder_impl.h"
-#include "ui/console/query_item_impl.h"
 #include "core/ad.h"
 #include "core/console/object/drag_n_drop.h"
 #include "core/console/object/operations.h"
@@ -44,6 +42,8 @@
 #include "ui/console/find_object_impl.h"
 #include "ui/console/policy_ou_impl.h"
 #include "ui/console/policy_root_impl.h"
+#include "ui/console/query_folder_impl.h"
+#include "ui/console/query_item_impl.h"
 #include "ui/dialog/attribute/list.h"
 #include "ui/dialog/console_filter.h"
 #include "ui/dialog/find/object.h"
@@ -52,12 +52,12 @@
 #include "ui/dialog/select/object.h"
 #include "ui/message_box.h"
 #include "ui/status.h"
+#include "ui/utils.h"
 #include "ui/widget/console/results_view.h"
 #include "ui/widget/result/pso/pso.h"
 #include "ui/widget/result/subnet/subnet.h"
 #include "ui/widget/tab/general_group.h"
 #include "ui/widget/tab/general_user.h"
-#include "ui/utils.h"
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -66,9 +66,7 @@ ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
     };
 
     setup_widgets();
-
     setup_filters();
-
     setup_actions();
 }
 
@@ -106,7 +104,8 @@ void ObjectImpl::fetch(const QModelIndex &index) {
         filter = advanced_features_filter(filter);
     }
 
-    const QList<QString> attributes = ConsoleObjectTreeOperations::console_object_search_attributes();
+    const QList<QString> attributes =
+        ConsoleObjectTreeOperations::console_object_search_attributes();
 
     // NOTE: do an extra search before real search for
     // objects that should be visible in dev mode
@@ -117,23 +116,37 @@ void ObjectImpl::fetch(const QModelIndex &index) {
             QHash<QString, AdObject> results;
             dev_mode_search_results(results, ad, base);
 
-            ConsoleObjectTreeOperations::add_objects_to_console(console, results.values(), index);
+            ConsoleObjectTreeOperations::add_objects_to_console(console,
+                                                                results.values(),
+                                                                index);
         }
     }
 
-    ConsoleObjectTreeOperations::console_object_search(console, index, base, scope, filter, attributes);
+    ConsoleObjectTreeOperations::console_object_search(console,
+                                                       index,
+                                                       base,
+                                                       scope,
+                                                       filter,
+                                                       attributes);
 }
 
-bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+bool ObjectImpl::can_drop(
+    const QList<QPersistentModelIndex> &dropped_list,
+    const QSet<int> &dropped_type_list,
+    const QPersistentModelIndex &target,
+    const int target_type)
+{
     Q_UNUSED(target_type);
 
-    const bool dropped_are_all_objects = (dropped_type_list == QSet<int>({ItemType_Object}));
+    const bool dropped_are_all_objects =
+        (dropped_type_list == QSet<int>({ItemType_Object}));
 
     if (dropped_are_all_objects) {
         if (dropped_list.size() == 1) {
             const QPersistentModelIndex dropped = dropped_list[0];
 
-            const ObjectDragDrop::DropType drop_type = ObjectDragDrop::console_object_get_drop_type(dropped, target);
+            const ObjectDragDrop::DropType drop_type =
+                ObjectDragDrop::console_object_get_drop_type(dropped, target);
             const bool can_drop = (drop_type != ObjectDragDrop::DropType_None);
 
             return can_drop;
@@ -149,7 +162,10 @@ bool ObjectImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, cons
     }
 }
 
-void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list,
+                      const QSet<int> &dropped_type_list,
+                      const QPersistentModelIndex &target,
+                      const int target_type) {
     Q_UNUSED(target_type);
     Q_UNUSED(dropped_type_list);
 
@@ -164,7 +180,8 @@ void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QS
 
     for (const QPersistentModelIndex &dropped : dropped_list) {
         const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
-        const ObjectDragDrop::DropType drop_type = ObjectDragDrop::console_object_get_drop_type(dropped, target);
+        const ObjectDragDrop::DropType drop_type =
+            ObjectDragDrop::console_object_get_drop_type(dropped, target);
 
         switch (drop_type) {
             case ObjectDragDrop::DropType_Move: {
@@ -196,7 +213,8 @@ void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QS
 QString ObjectImpl::get_description(const QModelIndex &index) const {
     QString out;
 
-    const QString object_count_text = ConsoleObjectTreeOperations::console_object_count_string(console, index);
+    const QString object_count_text =
+        ConsoleObjectTreeOperations::console_object_count_string(console, index);
 
     out += object_count_text;
 
@@ -232,10 +250,14 @@ QList<QAction *> ObjectImpl::get_all_custom_actions() const {
     return out;
 }
 
-QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> ObjectImpl::get_custom_actions(
+    const QModelIndex &index,
+    const bool single_selection) const
+{
     QSet<QAction *> out;
 
-    const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
+    const QString object_class =
+        index.data(ObjectRole_ObjectClasses).toStringList().last();
     const QList<QString> container_classes = g_adconfig->get_filter_containers();
     const bool is_container = container_classes.contains(object_class);
 
@@ -243,13 +265,16 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
     const bool is_group = (object_class == CLASS_GROUP);
     const bool is_domain = (object_class == CLASS_DOMAIN);
     const bool is_computer = (object_class == CLASS_COMPUTER);
-    const bool is_pso_container = (object_class == CLASS_PSO_CONTAINER);
+    const bool is_pso_container =
+        (object_class == CLASS_PSO_CONTAINER);
     const bool is_sites_container = (object_class == CLASS_SITES_CONTAINER);
     const bool is_subnet_container = (object_class == CLASS_SUBNET_CONTAINER);
-    const bool is_site_links_container = (object_class == CLASS_INTER_SITE_TRANSPORT);
+    const bool is_site_links_container =
+        (object_class == CLASS_INTER_SITE_TRANSPORT);
 
 
-    const bool account_disabled = index.data(ObjectRole_AccountDisabled).toBool();
+    const bool account_disabled =
+        index.data(ObjectRole_AccountDisabled).toBool();
 
     if (single_selection) {
         // Single selection only
@@ -330,12 +355,16 @@ QSet<QAction *> ObjectImpl::get_custom_actions(const QModelIndex &index, const b
     return out;
 }
 
-QSet<QAction *> ObjectImpl::get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> ObjectImpl::get_disabled_custom_actions(
+    const QModelIndex &index,
+    const bool single_selection) const
+{
     Q_UNUSED(single_selection);
 
     QSet<QAction *> out;
 
-    const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
+    const QString object_class =
+        index.data(ObjectRole_ObjectClasses).toStringList().last();
     const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
     const QList<QString> not_movable_obj_classes = {
         CLASS_PSO,
@@ -356,7 +385,10 @@ QSet<QAction *> ObjectImpl::get_disabled_custom_actions(const QModelIndex &index
     return out;
 }
 
-QSet<StandardAction> ObjectImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> ObjectImpl::get_standard_actions(
+    const QModelIndex &index,
+    const bool single_selection) const
+{
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Properties);
@@ -388,7 +420,10 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(const QModelIndex &index, 
     return out;
 }
 
-QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(
+    const QModelIndex &index,
+    const bool single_selection) const
+{
     Q_UNUSED(single_selection);
 
     QSet<StandardAction> out;
@@ -411,7 +446,10 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
     const QModelIndex index = index_list[0];
     const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
 
-    ConsoleObjectTreeOperations::console_object_rename(console_list, index_list, ObjectRole_DN, object_class);
+    ConsoleObjectTreeOperations::console_object_rename(console_list,
+                                                       index_list,
+                                                       ObjectRole_DN,
+                                                       object_class);
 }
 
 void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
@@ -425,7 +463,10 @@ void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
     QList<QString> class_list =
         QList<QString>(class_set.begin(), class_set.end());
 
-    ConsoleObjectTreeOperations::console_object_properties(console_list, index_list, ObjectRole_DN, class_list);
+    ConsoleObjectTreeOperations::console_object_properties(console_list,
+                                                           index_list,
+                                                           ObjectRole_DN,
+                                                           class_list);
 }
 
 void ObjectImpl::refresh(const QList<QModelIndex> &index_list) {
@@ -442,7 +483,9 @@ void ObjectImpl::refresh(const QList<QModelIndex> &index_list) {
 }
 
 void ObjectImpl::delete_action(const QList<QModelIndex> &index_list) {
-    ConsoleObjectTreeOperations::console_object_delete(console_list, index_list, ObjectRole_DN);
+    ConsoleObjectTreeOperations::console_object_delete(console_list,
+                                                       index_list,
+                                                       ObjectRole_DN);
 }
 
 void ObjectImpl::selected_as_scope(const QModelIndex &index)
@@ -479,11 +522,15 @@ void ObjectImpl::selected_as_scope(const QModelIndex &index)
 }
 
 void ObjectImpl::update_results_widget(const QModelIndex &index) const {
-    const QStringList index_data_classes = index.data(ObjectRole_ObjectClasses).toStringList();
+    const QStringList index_data_classes =
+        index.data(ObjectRole_ObjectClasses).toStringList();
 
-    if (!(index_data_classes.contains(CLASS_GROUP) || index_data_classes.contains(CLASS_CONTACT) ||
-          index_data_classes.contains(CLASS_USER) || index_data_classes.contains(CLASS_INET_ORG_PERSON) ||
-          index_data_classes.contains(CLASS_PSO) || index_data_classes.contains(CLASS_SUBNET))) {
+    if (!(index_data_classes.contains(CLASS_GROUP) ||
+          index_data_classes.contains(CLASS_CONTACT) ||
+          index_data_classes.contains(CLASS_USER) ||
+          index_data_classes.contains(CLASS_INET_ORG_PERSON) ||
+          index_data_classes.contains(CLASS_PSO) ||
+          index_data_classes.contains(CLASS_SUBNET))) {
             return;
     }
 
@@ -526,7 +573,9 @@ void ObjectImpl::set_refresh_action_enabled(const bool enabled) {
     refresh_action_enabled = enabled;
 }
 
-void ObjectImpl::set_toolbar_actions(QAction *toolbar_create_user_arg, QAction *toolbar_create_group_arg, QAction *toolbar_create_ou_arg) {
+void ObjectImpl::set_toolbar_actions(QAction *toolbar_create_user_arg,
+                                     QAction *toolbar_create_group_arg,
+                                     QAction *toolbar_create_ou_arg) {
     toolbar_create_user = toolbar_create_user_arg;
     toolbar_create_group = toolbar_create_group_arg;
     toolbar_create_ou = toolbar_create_ou_arg;
@@ -551,7 +600,8 @@ QList<int> ObjectImpl::default_columns() const {
 }
 
 void ObjectImpl::refresh_tree() {
-    const QModelIndex object_tree_root = ConsoleObjectTreeOperations::get_domain_object_tree_root(console);
+    const QModelIndex object_tree_root =
+        ConsoleObjectTreeOperations::get_domain_object_tree_root(console);
     if (!object_tree_root.isValid()) {
         return;
     }
@@ -566,7 +616,8 @@ void ObjectImpl::refresh_tree() {
 void ObjectImpl::open_console_filter_dialog() {
     auto dialog = new ConsoleFilterDialog(console);
 
-    const QVariant dialog_state = settings_get_variant(SETTING_console_filter_dialog_state);
+    const QVariant dialog_state =
+        settings_get_variant(SETTING_console_filter_dialog_state);
     dialog->restore_state(dialog_state);
 
     dialog->open();
@@ -579,9 +630,11 @@ void ObjectImpl::open_console_filter_dialog() {
             object_filter_enabled = dialog->get_filter_enabled();
 
             settings_set_variant(SETTING_object_filter, object_filter);
-            settings_set_variant(SETTING_object_filter_enabled, object_filter_enabled);
+            settings_set_variant(SETTING_object_filter_enabled,
+                                 object_filter_enabled);
 
-            settings_set_variant(SETTING_console_filter_dialog_state, dialog->save_state());
+            settings_set_variant(SETTING_console_filter_dialog_state,
+                                 dialog->save_state());
 
             refresh_tree();
         });
@@ -659,7 +712,9 @@ void ObjectImpl::on_disable() {
 }
 
 void ObjectImpl::on_add_to_group() {
-    auto dialog = new SelectObjectDialog({CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, console);
+    auto dialog = new SelectObjectDialog({CLASS_GROUP},
+                                         SelectObjectDialogMultiSelection_Yes,
+                                         console);
     dialog->setWindowTitle(tr("Add to Group"));
     dialog->open();
 
@@ -716,13 +771,17 @@ void ObjectImpl::on_edit_upn_suffixes() {
     // partitions object
     const QString partitions_dn = g_adconfig->partitions_dn();
     const AdObject partitions_object = ad.search_object(partitions_dn);
-    const QList<QByteArray> current_values = partitions_object.get_values(ATTRIBUTE_UPN_SUFFIXES);
+    const QList<QByteArray> current_values =
+        partitions_object.get_values(ATTRIBUTE_UPN_SUFFIXES);
 
     g_status->display_ad_messages(ad, console);
 
     const QString attribute = ATTRIBUTE_UPN_SUFFIXES;
     const bool read_only = false;
-    auto dialog = new ListAttributeDialog(current_values, attribute, read_only, console);
+    auto dialog = new ListAttributeDialog(current_values,
+                                          attribute,
+                                          read_only,
+                                          console);
     dialog->setWindowTitle(tr("Edit UPN Suffixes"));
     dialog->open();
 
@@ -737,13 +796,17 @@ void ObjectImpl::on_edit_upn_suffixes() {
 
             const QList<QByteArray> new_values = dialog->get_value_list();
 
-            ad_inner.attribute_replace_values(partitions_dn, ATTRIBUTE_UPN_SUFFIXES, new_values);
+            ad_inner.attribute_replace_values(partitions_dn,
+                                              ATTRIBUTE_UPN_SUFFIXES,
+                                              new_values);
             g_status->display_ad_messages(ad_inner, console);
         });
 }
 
 void ObjectImpl::on_reset_account() {
-    const bool confirmed = confirmation_dialog(tr("Are you sure you want to reset this account?"), console);
+    const bool confirmed = confirmation_dialog(
+        tr("Are you sure you want to reset this account?"),
+        console);
     if (!confirmed) {
         return;
     }
@@ -769,10 +832,10 @@ void ObjectImpl::on_reset_account() {
 void ObjectImpl::new_object(const QString &object_class) {
     const QString parent_dn = get_selected_target_dn_object();
 
-    ConsoleObjectTreeOperations::console_object_create({console}, object_class, parent_dn);
+    ConsoleObjectTreeOperations::console_object_create({ console },
+                                                       object_class,
+                                                       parent_dn);
 }
-
-
 
 void ObjectImpl::set_disabled(const bool disabled) {
     AdInterface ad;
@@ -785,7 +848,9 @@ void ObjectImpl::set_disabled(const bool disabled) {
     QList<QString> changed_objects;
     const QList<QString> dn_list = get_selected_dn_list_object();
     for (const QString &dn : dn_list) {
-        const bool success = ad.user_set_account_option(dn, AccountOption_Disabled, disabled);
+        const bool success = ad.user_set_account_option(dn,
+                                                        AccountOption_Disabled,
+                                                        disabled);
         if (success) {
             changed_objects.append(dn);
         }
@@ -798,28 +863,39 @@ void ObjectImpl::set_disabled(const bool disabled) {
             }
 
             for (const QString &dn : changed_objects) {
-                const QList<QModelIndex> index_list = target_console->search_items(root_index, ObjectRole_DN, dn, {ItemType_Object});
+                const QList<QModelIndex> index_list =
+                    target_console->search_items(root_index,
+                                                 ObjectRole_DN,
+                                                 dn,
+                                                 { ItemType_Object });
 
                 for (const QModelIndex &index : index_list) {
                     QStandardItem *item = target_console->get_item(index);
                     item->setData(disabled, ObjectRole_AccountDisabled);
-                    const QString category= dn_get_name(item->data(ObjectRole_ObjectCategory).toString());
+                    const QString category=
+                        dn_get_name(
+                            item->data(ObjectRole_ObjectCategory).toString());
                     QIcon icon;
                     if (category == OBJECT_CATEGORY_PERSON) {
-                        icon = disabled ? g_icon_manager->item_icon(ItemIcon_Person_Blocked) :
-                                            g_icon_manager->item_icon(ItemIcon_Person);
+                        icon = disabled ?
+                            g_icon_manager->item_icon(ItemIcon_Person_Blocked) :
+                            g_icon_manager->item_icon(ItemIcon_Person);
                     }
                     else if (category == OBJECT_CATEGORY_COMPUTER) {
-                        icon = disabled ? g_icon_manager->item_icon(ItemIcon_Computer_Blocked) :
-                                            g_icon_manager->item_icon(ItemIcon_Computer);
+                        icon = disabled ?
+                            g_icon_manager->item_icon(ItemIcon_Computer_Blocked) :
+                            g_icon_manager->item_icon(ItemIcon_Computer);
                     }
                     item->setIcon(icon);
                 }
             }
         };
 
-        const QModelIndex object_root = ConsoleObjectTreeOperations::get_domain_object_tree_root(target_console);
-        const QModelIndex find_object_root = get_find_object_root(target_console);
+        const QModelIndex object_root =
+            ConsoleObjectTreeOperations::get_domain_object_tree_root(
+                target_console);
+        const QModelIndex find_object_root =
+            get_find_object_root(target_console);
         const QModelIndex query_root = get_query_tree_root(target_console);
 
         apply_changes_to_branch(object_root);
@@ -839,14 +915,19 @@ void ObjectImpl::set_disabled(const bool disabled) {
 // NOTE: this is a helper f-n for move_and_rename() that
 // generates the new_dn_list for you, assuming that you just
 // want to move objects to new parent without renaming
-void ObjectImpl::move(AdInterface &ad, const QList<QString> &old_dn_list, const QString &new_parent_dn) {
+void ObjectImpl::move(AdInterface &ad,
+                      const QList<QString> &old_dn_list,
+                      const QString &new_parent_dn) {
     QHash<QString, QString> old_to_new_dn_map;
     for (const QString &old_dn : old_dn_list) {
         const QString new_dn = dn_move(old_dn, new_parent_dn);
         old_to_new_dn_map[old_dn] = new_dn;
     }
 
-    ConsoleObjectTreeOperations::console_object_move_and_rename(console_list, ad, old_to_new_dn_map, new_parent_dn);
+    ConsoleObjectTreeOperations::console_object_move_and_rename(console_list,
+                                                                ad,
+                                                                old_to_new_dn_map,
+                                                                new_parent_dn);
 }
 
 void ObjectImpl::update_toolbar_actions() {
@@ -868,7 +949,8 @@ void ObjectImpl::update_toolbar_actions() {
     }
 
     // Then enable them depending on current selection
-    const QList<QModelIndex> target_list = console->get_selected_items(ItemType_Object);
+    const QList<QModelIndex> target_list =
+        console->get_selected_items(ItemType_Object);
 
     const bool single_selection = (target_list.size() == 1);
     if (!single_selection) {
@@ -877,7 +959,8 @@ void ObjectImpl::update_toolbar_actions() {
 
     const QModelIndex target = target_list[0];
     const QVariant target_data = target.data(ObjectRole_ObjectClasses);
-    if (!target_data.canConvert<QStringList>() || target_data.toStringList().isEmpty()) {
+    if (!target_data.canConvert<QStringList>() ||
+        target_data.toStringList().isEmpty()) {
         return;
     }
     const QString object_class = target_data.toStringList().last();
@@ -889,7 +972,8 @@ void ObjectImpl::update_toolbar_actions() {
             continue;
         }
 
-        const bool is_enabled = can_create_class_at_parent(action_object_class, object_class);
+        const bool is_enabled = can_create_class_at_parent(action_object_class,
+                                                           object_class);
         action->setEnabled(is_enabled);
     }
 }
@@ -902,12 +986,16 @@ QString ObjectImpl::get_selected_target_dn_object() {
     return get_selected_target_dn(console, ItemType_Object, ObjectRole_DN);
 }
 
-bool ObjectImpl::can_create_class_at_parent(const QString &create_class, const QString &parent_class) const {
+bool ObjectImpl::can_create_class_at_parent(const QString &create_class,
+                                            const QString &parent_class) const {
     // NOTE: to get full list of possible
     // superiors, need to use the all of the parent
     // classes too, not just the leaf class
-    const QList<QString> action_object_class_list = g_adconfig->get_inherit_chain(create_class);
-    const QList<QString> possible_superiors = g_adconfig->get_possible_superiors(QList<QString>(action_object_class_list));
+    const QList<QString> action_object_class_list =
+        g_adconfig->get_inherit_chain(create_class);
+    const QList<QString> possible_superiors =
+        g_adconfig->get_possible_superiors(
+            QList<QString>(action_object_class_list));
     const bool out = possible_superiors.contains(parent_class);
 
     return out;
@@ -942,12 +1030,16 @@ void ObjectImpl::setup_actions() {
     toolbar_create_ou = nullptr;
 
     standard_create_action_map[CLASS_USER] = new QAction(tr("User"), this);
-    standard_create_action_map[CLASS_COMPUTER] = new QAction(tr("Computer"), this);
+    standard_create_action_map[CLASS_COMPUTER] =
+        new QAction(tr("Computer"), this);
     standard_create_action_map[CLASS_OU] = new QAction(tr("OU"), this);
     standard_create_action_map[CLASS_GROUP] = new QAction(tr("Group"), this);
-    standard_create_action_map[CLASS_SHARED_FOLDER] = new QAction(tr("Shared Folder"), this);
-    standard_create_action_map[CLASS_INET_ORG_PERSON] = new QAction(tr("inetOrgPerson"), this);
-    standard_create_action_map[CLASS_CONTACT] = new QAction(tr("Contact"), this);
+    standard_create_action_map[CLASS_SHARED_FOLDER] =
+        new QAction(tr("Shared Folder"), this);
+    standard_create_action_map[CLASS_INET_ORG_PERSON] =
+        new QAction(tr("inetOrgPerson"), this);
+    standard_create_action_map[CLASS_CONTACT] =
+        new QAction(tr("Contact"), this);
     find_action = new QAction(tr("Find..."), this);
     move_action = new QAction(tr("Move..."), this);
     add_to_group_action = new QAction(tr("Add to group..."), this);
@@ -972,14 +1064,16 @@ void ObjectImpl::setup_actions() {
     create_subnet_action = new QAction(tr("Create subnet"), this);
     create_site_action = new QAction(tr("Create site"), this);
     create_site_link_action = new QAction(tr("Create site link"), this);
-    create_site_link_bridge_action = new QAction(tr("Create site link bridge"), this);
+    create_site_link_bridge_action =
+        new QAction(tr("Create site link bridge"), this);
 
     QHash<QString, QAction *> all_create_action_map {standard_create_action_map};
     all_create_action_map[CLASS_PSO] = create_pso_action;
     all_create_action_map[CLASS_SUBNET] = create_subnet_action;
     all_create_action_map[CLASS_SITE] = create_site_action;
     all_create_action_map[CLASS_SITE_LINK] = create_site_link_action;
-    all_create_action_map[CLASS_SITE_LINK_BRIDGE] = create_site_link_bridge_action;
+    all_create_action_map[CLASS_SITE_LINK_BRIDGE] =
+        create_site_link_bridge_action;
 
     for (const QString &obj_class : all_create_action_map.keys()) {
         connect(
@@ -1022,8 +1116,10 @@ void ObjectImpl::retranslate_ui() {
     standard_create_action_map[CLASS_COMPUTER]->setText(tr("Computer"));
     standard_create_action_map[CLASS_OU]->setText(tr("OU"));
     standard_create_action_map[CLASS_GROUP]->setText(tr("Group"));
-    standard_create_action_map[CLASS_SHARED_FOLDER]->setText(tr("Shared Folder"));
-    standard_create_action_map[CLASS_INET_ORG_PERSON]->setText(tr("inetOrgPerson"));
+    standard_create_action_map[CLASS_SHARED_FOLDER]->setText(
+        tr("Shared Folder"));
+    standard_create_action_map[CLASS_INET_ORG_PERSON]->setText(
+        tr("inetOrgPerson"));
     standard_create_action_map[CLASS_CONTACT]->setText(tr("Contact"));
 
     find_action->setText(tr("Find..."));
