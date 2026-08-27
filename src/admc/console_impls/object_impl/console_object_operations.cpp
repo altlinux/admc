@@ -291,7 +291,7 @@ void ConsoleObjectTreeOperations::add_objects_to_console(
             row = console->add_results_item(ItemType_Object, parent);
         }
 
-        if (object.get_string(ATTRIBUTE_OBJECT_CLASS) == CLASS_SITE) {
+        if (object_is_site(object)) {
             console->set_item_sort_index(row[0]->index(), 1);
         }
 

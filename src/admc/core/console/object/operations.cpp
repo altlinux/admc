@@ -139,3 +139,13 @@ bool object_should_be_in_scope(const AdObject &object) {
             is_site_related ||
             (object_class == CLASS_PSO));
 }
+
+/**
+ * Check if an object has "SITE" class.
+ *
+ * @param object An AD object to check.
+ * @return true if the object has "SITE" class, false otherwise.
+ */
+bool object_is_site(const AdObject &object) {
+    return object.get_string(ATTRIBUTE_OBJECT_CLASS) == CLASS_SITE;
+}

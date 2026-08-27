@@ -40,5 +40,6 @@ QString object_make_display_value(const AdObject &object,
                                   const QString &attribute);
 QList<QString> object_column_labels();
 bool object_should_be_in_scope(const AdObject &object);
+bool object_is_site(const AdObject &object);
 
 #endif  /* ifndef CORE_CONSOLE_OBJECT_OPERATIONS_H */
