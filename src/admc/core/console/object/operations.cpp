@@ -28,6 +28,7 @@
 #include "core/console/object/server_dn_attrs_updater.h"
 #include "core/console/object/site_dn_attrs_updater.h"
 #include "core/globals.h"
+#include "core/settings.h"
 #include "operations.h"
 
 /**
@@ -116,4 +117,25 @@ QList<QString> object_column_labels() {
     }
 
     return out;
+}
+
+/**
+ * NOTE: "containers" referenced here don't mean objects with "container" object
+ * class. Instead it means all the objects that can have children(some of which
+ * are not "container" class).
+ */
+bool object_should_be_in_scope(const AdObject &object) {
+    const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
+    const QList<QString> filter_containers =
+        g_adconfig->get_filter_containers();
+    const bool is_container = filter_containers.contains(object_class);
+    const bool show_non_containers_on =
+        settings_get_bool(SETTING_show_non_containers_in_console_tree);
+    const bool is_site_related =
+        g_adconfig->get_site_related_classes().contains(object_class);
+
+    return (is_container ||
+            show_non_containers_on ||
+            is_site_related ||
+            (object_class == CLASS_PSO));
 }

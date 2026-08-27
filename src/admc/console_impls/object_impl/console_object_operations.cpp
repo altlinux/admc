@@ -283,22 +283,7 @@ void ConsoleObjectTreeOperations::add_objects_to_console(
         // Instead it means all the objects that can
         // have children(some of which are not
         // "container" class).
-        const QString object_class = object.get_string(ATTRIBUTE_OBJECT_CLASS);
-        const QList<QString> filter_containers =
-            g_adconfig->get_filter_containers();
-        const bool is_container =
-            filter_containers.contains(object_class);
-        const bool show_non_containers_ON =
-            settings_get_bool(SETTING_show_non_containers_in_console_tree);
-        const bool is_site_related =
-            g_adconfig->get_site_related_classes().contains(object_class);
-
-        const bool should_be_in_scope =
-            (is_container ||
-             show_non_containers_ON ||
-             is_site_related ||
-             (object_class == CLASS_PSO));
-
+        const bool should_be_in_scope = object_should_be_in_scope(object);
         QList<QStandardItem *> row;
         if (should_be_in_scope) {
             row = console->add_scope_item(ItemType_Object, parent);
