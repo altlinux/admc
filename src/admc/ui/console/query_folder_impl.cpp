@@ -21,7 +21,7 @@
 
 
 #include "adldap.h"
-#include "console_impls/object_impl/object_impl.h"
+#include "ui/console/object/object_impl.h"
 #include "ui/console/query_item_impl.h"
 #include "ui/console/query_folder_impl.h"
 #include "core/console_item_type.h"

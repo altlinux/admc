@@ -26,11 +26,11 @@
 #include <QPushButton>
 
 #include "adldap.h"
-#include "console_impls/object_impl/object_impl.h"
 #include "core/ad.h"
 #include "core/config.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "ui/console/object/object_impl.h"
 #include "ui/widget/tab/account.h"
 #include "ui/widget/tab/address.h"
 #include "ui/widget/tab/attributes.h"

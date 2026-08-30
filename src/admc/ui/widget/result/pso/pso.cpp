@@ -20,7 +20,7 @@
 #include "ui/widget/result/pso/pso.h"
 #include "ad_interface.h"
 #include "ui/utils.h"
-#include "console_impls/object_impl/object_impl.h"
+#include "ui/console/object/object_impl.h"
 #include "ui/widget/result/pso/pso_edit.h"
 #include "../ui_base.h"
 

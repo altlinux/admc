@@ -79,6 +79,8 @@ set(ADMC_SOURCES
     ui/console/all_policies_folder_impl.cpp
     ui/console/domain_info_impl.cpp
     ui/console/find_object_impl.cpp
+    ui/console/object/console_object_operations.cpp
+    ui/console/object/object_impl.cpp
     ui/console/find_policy_impl.cpp
     ui/console/found_policy_impl.cpp
     ui/console/policy_impl.cpp
@@ -257,9 +259,6 @@ set(ADMC_SOURCES
 
     ui/attribute_edit/upn_multi_edit.cpp
     ui/attribute_edit/account_option_multi_edit.cpp
-
-    console_impls/object_impl/object_impl.cpp
-    console_impls/object_impl/console_object_operations.cpp
 
     admc.qrc
 )

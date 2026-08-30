@@ -23,7 +23,7 @@
 #include "ui/widget/ui_find.h"
 
 #include "adldap.h"
-#include "console_impls/object_impl/object_impl.h"
+#include "ui/console/object/object_impl.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/search_thread.h"

@@ -37,6 +37,7 @@
 #include <QThread>
 
 #include "ad_defines.h"
+#include "ad_object.h"
 
 class AdObject;
 class AdMessage;

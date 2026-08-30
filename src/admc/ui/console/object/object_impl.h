@@ -31,7 +31,7 @@
 #include "core/console.h"
 #include "ui/widget/console/console_impl.h"
 #include "ui/widget/console/console_widget.h"
-#include "console_object_operations.h"
+#include "ui/console/object/console_object_operations.h"
 
 class QStandardItem;
 class AdObject;

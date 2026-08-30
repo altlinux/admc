@@ -20,7 +20,7 @@
 #include "domain_info_impl.h"
 #include "ui/widget/console/console_widget.h"
 #include "ui/widget/result/domain_info/domain_info.h"
-#include "console_impls/object_impl/object_impl.h"
+#include "ui/console/object/object_impl.h"
 #include "ui/console/policy_root_impl.h"
 #include "ui/console/query_folder_impl.h"
 #include "ad_interface.h"

@@ -24,7 +24,7 @@
 #include "ui/widget/console/console_widget.h"
 #include "adldap.h"
 #include "core/settings.h"
-#include "console_impls/object_impl/console_object_operations.h"
+#include "ui/console/object/console_object_operations.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "ui/status.h"

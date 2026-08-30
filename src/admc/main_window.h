@@ -27,7 +27,7 @@
 #include "krb5client.h"
 
 #include "ui/console/all_policies_folder_impl.h"
-#include "console_impls/object_impl/object_impl.h"
+#include "ui/console/object/object_impl.h"
 #include "ui/console/policy_impl.h"
 #include "ui/console/policy_ou_impl.h"
 #include "ui/console/policy_root_impl.h"

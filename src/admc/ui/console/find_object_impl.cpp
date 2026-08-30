@@ -22,9 +22,9 @@
 #include "ui/console/find_object_impl.h"
 
 #include "adldap.h"
-#include "console_impls/object_impl/console_object_operations.h"
 #include "core/console/object/operations.h"
 #include "core/console_item_type.h"
+#include "ui/console/object/console_object_operations.h"
 #include "ui/widget/console/results_view.h"
 
 #include <QModelIndex>

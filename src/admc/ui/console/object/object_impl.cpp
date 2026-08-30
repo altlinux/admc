@@ -30,7 +30,6 @@
 #include <algorithm>
 
 #include "adldap.h"
-#include "console_impls/object_impl/object_impl.h"
 #include "core/ad.h"
 #include "core/console/object/drag_n_drop.h"
 #include "core/console/object/operations.h"
@@ -40,6 +39,7 @@
 #include "core/settings.h"
 #include "core/utils.h"
 #include "ui/console/find_object_impl.h"
+#include "ui/console/object/object_impl.h"
 #include "ui/console/policy_ou_impl.h"
 #include "ui/console/policy_root_impl.h"
 #include "ui/console/query_folder_impl.h"

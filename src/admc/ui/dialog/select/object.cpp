@@ -22,10 +22,10 @@
 #include <QStandardItemModel>
 
 #include "adldap.h"
-#include "console_impls/object_impl/object_impl.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "core/utils.h"
+#include "ui/console/object/object_impl.h"
 #include "ui/dialog/select/object.h"
 #include "ui/dialog/select/object_advanced.h"
 #include "ui/dialog/select/object_match.h"
