@@ -306,17 +306,6 @@ void MainWindow::setup_simple_settings() {
           ui->action_show_login_window_on_startup },
     };
 
-    const QList<QString> simple_setting_list = {
-        SETTING_confirm_actions,
-        SETTING_last_name_before_first_name,
-        SETTING_log_searches,
-        SETTING_timestamp_log,
-        SETTING_show_login,
-        SETTING_load_optional_attribute_values,
-        SETTING_show_middle_name_when_creating,
-        SETTING_show_login_window_on_startup
-    };
-
     for (const QString &setting : bool_action_map.keys()) {
         QAction *action = bool_action_map[setting];
 
@@ -326,7 +315,7 @@ void MainWindow::setup_simple_settings() {
 
     // Connect setting actions so that they update setting
     // values
-    for (const QString &setting : simple_setting_list) {
+    for (const QString &setting : SIMPLE_SETTINGS_LIST) {
         QAction *action = bool_action_map[setting];
 
         connect(

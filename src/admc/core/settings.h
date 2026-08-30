@@ -159,6 +159,17 @@ DEFINE_SETTING(SETTING_feature_profile_tab);
 DEFINE_SETTING(SETTING_feature_dev_mode);
 DEFINE_SETTING(SETTING_feature_current_locale_first);
 
+const QList<QString> SIMPLE_SETTINGS_LIST = {
+    SETTING_confirm_actions,
+    SETTING_last_name_before_first_name,
+    SETTING_log_searches,
+    SETTING_timestamp_log,
+    SETTING_show_login,
+    SETTING_load_optional_attribute_values,
+    SETTING_show_middle_name_when_creating,
+    SETTING_show_login_window_on_startup
+};
+
 QVariant settings_get_variant(const QString setting);
 void settings_set_variant(const QString setting, const QVariant &value);
 void settings_save_main_window_geometry(const QByteArray &geometry);
