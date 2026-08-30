@@ -45,18 +45,6 @@
 #include "ui/widget/fsmo/fsmo_utils.h"
 #include "ui/widget/result/policy.h"
 
-void policy_add_links(const QList<ConsoleWidget *> &console_list,
-                      PolicyResultsWidget *policy_results,
-                      const QList<QString> &policy_list,
-                      const QList<QString> &ou_list);
-void console_policy_update_policy_results(ConsoleWidget *console,
-                                          PolicyResultsWidget *policy_results);
-void console_policy_remove_link(const QList<ConsoleWidget *> &console_list,
-                                PolicyResultsWidget *policy_results,
-                                const int item_type,
-                                const int dn_role,
-                                const QString &ou_dn);
-
 PolicyImpl::PolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     policy_results = new PolicyResultsWidget(console_arg);

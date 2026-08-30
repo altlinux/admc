@@ -139,4 +139,16 @@ void set_enforced_policy_icon(QStandardItem *policy_item,
 void set_disabled_policy_icon(QStandardItem *policy_item,
                               bool is_disabled);
 
+void policy_add_links(const QList<ConsoleWidget *> &console_list,
+                      PolicyResultsWidget *policy_results,
+                      const QList<QString> &policy_list,
+                      const QList<QString> &ou_list);
+void console_policy_update_policy_results(ConsoleWidget *console,
+                                          PolicyResultsWidget *policy_results);
+void console_policy_remove_link(const QList<ConsoleWidget *> &console_list,
+                                PolicyResultsWidget *policy_results,
+                                const int item_type,
+                                const int dn_role,
+                                const QString &ou_dn);
+
 #endif /* POLICY_IMPL_H */
