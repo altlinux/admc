@@ -216,7 +216,7 @@ set(ADMC_SOURCES
     ui/widget/tab/sites_link/general_tab.cpp
     ui/widget/tab/general_site.cpp
 
-    main_window.cpp
+    ui/main_window.cpp
     ui/create_object_helper.cpp
     ui/rename_object_helper.cpp
 

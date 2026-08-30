@@ -22,7 +22,7 @@
 #include "adldap.h"
 #include "core/globals.h"
 #include "core/settings.h"
-#include "main_window.h"
+#include "ui/main_window.h"
 #include "ui/dialog/connection_options.h"
 #include "ui/dialog/main_window_connection_error.h"
 #include "ui/dialog/ui_main_window_connection_error.h"
