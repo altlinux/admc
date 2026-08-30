@@ -19,21 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QActionGroup>
 #include <QDesktopServices>
 #include <QLabel>
 #include <QModelIndex>
-#include <QActionGroup>
 
-#include "ui/dialog/about.h"
 #include "adldap.h"
-#include "ui/console/all_policies_folder_impl.h"
-#include "ui/console/domain_info_impl.h"
-#include "ui/console/object/object_impl.h"
-#include "ui/console/policy_impl.h"
-#include "ui/console/policy_ou_impl.h"
-#include "ui/console/policy_root_impl.h"
-#include "ui/console/query_folder_impl.h"
-#include "ui/console/query_item_impl.h"
 #include "core/admc_translator.h"
 #include "core/config.h"
 #include "core/console_item_type.h"
@@ -43,17 +34,26 @@
 #include "core/managers/gplink_manager.h"
 #include "core/managers/icon_manager.h"
 #include "core/settings.h"
-#include "ui/dialog//fsmo.h"
-#include "main_window.h"
 #include "ui/attribute_edit/country_combo.h"
+#include "ui/console/all_policies_folder_impl.h"
+#include "ui/console/domain_info_impl.h"
+#include "ui/console/object/object_impl.h"
+#include "ui/console/policy_impl.h"
+#include "ui/console/policy_ou_impl.h"
+#include "ui/console/policy_root_impl.h"
+#include "ui/console/query_folder_impl.h"
+#include "ui/console/query_item_impl.h"
+#include "ui/dialog//fsmo.h"
+#include "ui/dialog/about.h"
 #include "ui/dialog/auth/krb_auth.h"
 #include "ui/dialog/changelog.h"
 #include "ui/dialog/connection_options.h"
+#include "ui/main_window.h"
 #include "ui/status.h"
+#include "ui/ui_main_window.h"
 #include "ui/utils.h"
 #include "ui/widget/console/console_widget.h"
 #include "ui/widget/fsmo/fsmo_utils.h"
-#include "ui_main_window.h"
 
 MainWindow::MainWindow(AdInterface &ad,
                        Krb5Client &krb5_client_arg,

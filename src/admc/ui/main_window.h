@@ -24,8 +24,9 @@
 
 #include <QMainWindow>
 #include <memory>
-#include "krb5client.h"
 
+#include "core/console_item_type.h"
+#include "krb5client.h"
 #include "ui/console/all_policies_folder_impl.h"
 #include "ui/console/object/object_impl.h"
 #include "ui/console/policy_impl.h"
@@ -33,7 +34,6 @@
 #include "ui/console/policy_root_impl.h"
 #include "ui/console/query_folder_impl.h"
 #include "ui/console/query_item_impl.h"
-#include "core/console_item_type.h"
 
 class AdInterface;
 class QLabel;
