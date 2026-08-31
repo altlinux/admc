@@ -23,6 +23,7 @@
 
 #include <QHash>
 #include <QList>
+#include <QStandardItem>
 #include <QString>
 
 #include "ad_interface.h"
@@ -41,5 +42,7 @@ QString object_make_display_value(const AdObject &object,
 QList<QString> object_column_labels();
 bool object_should_be_in_scope(const AdObject &object);
 bool object_is_site(const AdObject &object);
+void object_load_attribute_columns(const AdObject &object,
+                                   const QList<QStandardItem *> row);
 
 #endif  /* ifndef CORE_CONSOLE_OBJECT_OPERATIONS_H */

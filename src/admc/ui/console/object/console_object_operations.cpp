@@ -315,22 +315,7 @@ void ConsoleObjectTreeOperations::console_object_load(
     const QList<QStandardItem *> row,
     const AdObject &object)
 {
-    // Load attribute columns
-    for (int i = 0; i < g_adconfig->get_columns().count(); i++) {
-        if (g_adconfig->get_columns().count() > row.size()) {
-            break;
-        }
-
-        const QString attribute = g_adconfig->get_columns()[i];
-
-        if (!object.contains(attribute)) {
-            continue;
-        }
-
-        QString display_value = object_make_display_value(object, attribute);
-        row[i]->setText(display_value);
-    }
-
+    object_load_attribute_columns(object, row);
     console_object_item_data_load(row[0], object);
 
     const bool cannot_move =

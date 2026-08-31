@@ -21,6 +21,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QList>
+#include <QStandardItem>
+
 #include "ad_config.h"
 #include "ad_display.h"
 #include "ad_utils.h"
@@ -148,4 +151,23 @@ bool object_should_be_in_scope(const AdObject &object) {
  */
 bool object_is_site(const AdObject &object) {
     return object.get_string(ATTRIBUTE_OBJECT_CLASS) == CLASS_SITE;
+}
+
+void object_load_attribute_columns(const AdObject &object,
+                                   const QList<QStandardItem *> row) {
+    int count = g_adconfig->get_columns().count();
+    for (int i = 0; i < count; i++) {
+        if (g_adconfig->get_columns().count() > row.size()) {
+            break;
+        }
+
+        const QString attribute = g_adconfig->get_columns()[i];
+
+        if (! object.contains(attribute)) {
+            continue;
+        }
+
+        QString display_value = object_make_display_value(object, attribute);
+        row[i]->setText(display_value);
+    }
 }
