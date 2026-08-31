@@ -21,7 +21,7 @@
 
 #include "admc_test_select_base_widget.h"
 
-#include "console_impls/object_impl/object_impl.h"
+#include "ui/console/object/object_impl.h"
 #include "ui/widget/filter/select_base.h"
 #include "ui/widget/filter/ui_select_base.h"
 #include "core/globals.h"

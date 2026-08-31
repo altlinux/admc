@@ -23,7 +23,7 @@
 
 #include "adldap.h"
 #include "ui/attribute_edit/attribute_edit.h"
-#include "console_impls/object_impl/object_impl.h"
+#include "ui/console/object/object_impl.h"
 #include "ui/widget/filter/filter.h"
 #include "ui/widget/filter/simple_tab.h"
 #include "ui/widget/filter/select_base.h"
