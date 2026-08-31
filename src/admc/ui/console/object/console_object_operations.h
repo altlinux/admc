@@ -77,6 +77,7 @@ namespace ConsoleObjectTreeOperations {
     void console_tree_add_sites_container(ConsoleWidget *console, AdInterface &ad);
 
     CreateObjectDialog *create_dialog(const QString &object_class, AdInterface &ad, const QString &parent_dn, ConsoleWidget *parent);
+    const QList<QModelIndex> get_root_list(ConsoleWidget *console);
 }
 
 #endif // OPERATIONS_H

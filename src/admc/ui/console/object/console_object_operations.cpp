@@ -714,6 +714,18 @@ void ConsoleObjectTreeOperations::console_object_rename(
         });
     }
 
+const QList<QModelIndex> ConsoleObjectTreeOperations::get_root_list(
+    ConsoleWidget *console)
+{
+    return {
+        get_domain_object_tree_root(console),
+        get_pso_container_tree_root(console),
+        get_sites_container_tree_root(console),
+        get_query_tree_root(console),
+        get_find_object_root(console),
+    };
+}
+
 void ConsoleObjectTreeOperations::console_object_delete(
     const QList<ConsoleWidget *> &console_list,
     const QList<QModelIndex> &index_list,
@@ -750,14 +762,7 @@ void ConsoleObjectTreeOperations::console_object_delete(
 
 
     auto apply_changes = [&deleted_list](ConsoleWidget *target_console) {
-        const QList<QModelIndex> root_list = {
-            get_domain_object_tree_root(target_console),
-            get_pso_container_tree_root(target_console),
-            get_sites_container_tree_root(target_console),
-            get_query_tree_root(target_console),
-            get_find_object_root(target_console),
-        };
-
+        const QList<QModelIndex> root_list = get_root_list(target_console);
         for (const QModelIndex &root : root_list) {
             if (root.isValid()) {
                 ConsoleObjectTreeOperations::console_object_delete_dn_list(
