@@ -28,9 +28,12 @@
 #include "ad_display.h"
 #include "ad_utils.h"
 #include "core/ad.h"
+#include "core/console.h"
 #include "core/console/object/server_dn_attrs_updater.h"
 #include "core/console/object/site_dn_attrs_updater.h"
+#include "core/console_item_type.h"
 #include "core/globals.h"
+#include "core/managers/icon_manager.h"
 #include "core/settings.h"
 #include "operations.h"
 
@@ -170,4 +173,63 @@ void object_load_attribute_columns(const AdObject &object,
         QString display_value = object_make_display_value(object, attribute);
         row[i]->setText(display_value);
     }
+}
+
+void object_item_load_icon(QStandardItem *item, bool disabled) {
+    auto set_item_icon = [item, disabled](const ItemIcon &disabled_icon,
+                                          const ItemIcon &enabled_icon) {
+        ItemIcon item_icon = disabled ? disabled_icon : enabled_icon;
+        item->setIcon(g_icon_manager->item_icon(item_icon));
+    };
+    auto set_category_icon = [item](auto &icon) {
+        item->setIcon(g_icon_manager->category_icon(icon));
+    };
+    const QString category =
+        dn_get_name(item->data(ObjectRole_ObjectCategory).toString());
+
+    if (item->data(ConsoleRole_Type).toInt() == ItemType_QueryItem) {
+        set_category_icon(ADMC_CATEGORY_QUERY_ITEM);
+    }
+    else if (category == OBJECT_CATEGORY_PERSON) {
+        set_item_icon(ItemIcon_Person_Blocked, ItemIcon_Person);
+    }
+    else if (category == OBJECT_CATEGORY_COMPUTER) {
+        set_item_icon(ItemIcon_Computer_Blocked, ItemIcon_Computer);
+    }
+    else if (category == OBJECT_CATEGORY_GROUP) {
+        item->setIcon(g_icon_manager->item_icon(ItemIcon_Group));
+    }
+    else {
+        set_category_icon(category);
+    }
+}
+
+void object_item_data_load(const AdObject &object, QStandardItem *item) {
+    item->setData(object.get_dn(), ObjectRole_DN);
+
+    const QList<QString> object_classes =
+        object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+    item->setData(QVariant(object_classes), ObjectRole_ObjectClasses);
+
+    const QString object_category =
+        object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
+    item->setData(object_category, ObjectRole_ObjectCategory);
+
+    const bool cannot_move =
+        object.get_system_flag(SystemFlagsBit_DomainCannotMove);
+    item->setData(cannot_move, ObjectRole_CannotMove);
+
+    const bool cannot_rename =
+        object.get_system_flag(SystemFlagsBit_DomainCannotRename);
+    item->setData(cannot_rename, ObjectRole_CannotRename);
+
+    const bool cannot_delete =
+        object.get_system_flag(SystemFlagsBit_CannotDelete);
+    item->setData(cannot_delete, ObjectRole_CannotDelete);
+
+    const bool account_disabled =
+        object.get_account_option(AccountOption_Disabled, g_adconfig);
+    item->setData(account_disabled, ObjectRole_AccountDisabled);
+
+    object_item_load_icon(item, account_disabled);
 }

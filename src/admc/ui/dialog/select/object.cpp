@@ -22,6 +22,7 @@
 #include <QStandardItemModel>
 
 #include "adldap.h"
+#include "core/console/object/operations.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "core/utils.h"
@@ -272,7 +273,7 @@ bool SelectObjectDialog::event(QEvent *event) {
 void add_select_object_to_model(QStandardItemModel *model, const AdObject &object) {
     const QList<QStandardItem *> row = make_item_row(SelectColumn_COUNT);
 
-    ConsoleObjectTreeOperations::console_object_item_data_load(row[0], object);
+    object_item_data_load(object, row[0]);
 
     const QString dn = object.get_dn();
     const QString name = dn_get_name(dn);

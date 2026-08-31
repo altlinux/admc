@@ -44,5 +44,7 @@ bool object_should_be_in_scope(const AdObject &object);
 bool object_is_site(const AdObject &object);
 void object_load_attribute_columns(const AdObject &object,
                                    const QList<QStandardItem *> row);
+void object_item_load_icon(QStandardItem *item, bool disabled);
+void object_item_data_load(const AdObject &object, QStandardItem *item);
 
 #endif  /* ifndef CORE_CONSOLE_OBJECT_OPERATIONS_H */

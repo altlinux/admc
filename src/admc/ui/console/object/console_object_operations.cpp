@@ -316,78 +316,13 @@ void ConsoleObjectTreeOperations::console_object_load(
     const AdObject &object)
 {
     object_load_attribute_columns(object, row);
-    console_object_item_data_load(row[0], object);
+    object_item_data_load(object, row[0]);
 
     const bool cannot_move =
         object.get_system_flag(SystemFlagsBit_DomainCannotMove);
 
     for (auto item : row) {
         item->setDragEnabled(!cannot_move);
-    }
-}
-
-void ConsoleObjectTreeOperations::console_object_item_data_load(
-    QStandardItem *item,
-    const AdObject &object)
-{
-    item->setData(object.get_dn(), ObjectRole_DN);
-
-    const QList<QString> object_classes =
-        object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    item->setData(QVariant(object_classes), ObjectRole_ObjectClasses);
-
-    const QString object_category =
-        object.get_string(ATTRIBUTE_OBJECT_CATEGORY);
-    item->setData(object_category, ObjectRole_ObjectCategory);
-
-    const bool cannot_move =
-        object.get_system_flag(SystemFlagsBit_DomainCannotMove);
-    item->setData(cannot_move, ObjectRole_CannotMove);
-
-    const bool cannot_rename =
-        object.get_system_flag(SystemFlagsBit_DomainCannotRename);
-    item->setData(cannot_rename, ObjectRole_CannotRename);
-
-    const bool cannot_delete =
-        object.get_system_flag(SystemFlagsBit_CannotDelete);
-    item->setData(cannot_delete, ObjectRole_CannotDelete);
-
-    const bool account_disabled =
-        object.get_account_option(AccountOption_Disabled, g_adconfig);
-    item->setData(account_disabled, ObjectRole_AccountDisabled);
-
-    console_object_item_load_icon(item, account_disabled);
-}
-
-void ConsoleObjectTreeOperations::console_object_item_load_icon(
-    QStandardItem *item,
-    bool disabled)
-{
-    auto set_item_icon = [item, disabled](const ItemIcon &disabled_icon,
-                                          const ItemIcon &enabled_icon) {
-        ItemIcon item_icon = disabled ? disabled_icon : enabled_icon;
-        item->setIcon(g_icon_manager->item_icon(item_icon));
-    };
-    auto set_category_icon = [item](auto &icon) {
-        item->setIcon(g_icon_manager->category_icon(icon));
-    };
-    const QString category =
-        dn_get_name(item->data(ObjectRole_ObjectCategory).toString());
-
-    if (item->data(ConsoleRole_Type).toInt() == ItemType_QueryItem) {
-        set_category_icon(ADMC_CATEGORY_QUERY_ITEM);
-    }
-    else if (category == OBJECT_CATEGORY_PERSON) {
-        set_item_icon(ItemIcon_Person_Blocked, ItemIcon_Person);
-    }
-    else if (category == OBJECT_CATEGORY_COMPUTER) {
-        set_item_icon(ItemIcon_Computer_Blocked, ItemIcon_Computer);
-    }
-    else if (category == OBJECT_CATEGORY_GROUP) {
-        item->setIcon(g_icon_manager->item_icon(ItemIcon_Group));
-    }
-    else {
-        set_category_icon(category);
     }
 }
 
@@ -493,7 +428,7 @@ void ConsoleObjectTreeOperations::console_object_search(
 
             const bool is_disabled =
                 item_now->data(ObjectRole_AccountDisabled).toBool();
-            console_object_item_load_icon(item_now, is_disabled);
+            object_item_load_icon(item_now, is_disabled);
 
             item_now->setData(false, ObjectRole_Fetching);
             item_now->setDragEnabled(true);
@@ -548,7 +483,7 @@ void ConsoleObjectTreeOperations::console_object_tree_init(
     auto root = row[0];
 
     const AdObject top_object = ad_search_top_dn_object(ad);
-    console_object_item_data_load(root, top_object);
+    object_item_data_load(top_object, root);
 
     const QString domain = g_adconfig->domain().toLower();
     root->setText(domain);
@@ -1048,7 +983,7 @@ void ConsoleObjectTreeOperations::console_tree_add_root_child(
     const QList<QStandardItem *> row = console->add_scope_item(
         ItemType_Object,
         console->domain_info_index());
-    console_object_item_data_load(row[0], obj);
+    object_item_data_load(obj, row[0]);
     if (custom_object_name.isEmpty()) {
         row[0]->setText(obj.get_string(ATTRIBUTE_NAME));
     } else {

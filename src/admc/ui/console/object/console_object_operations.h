@@ -47,8 +47,6 @@ namespace ConsoleObjectTreeOperations {
     void add_objects_to_console_from_dn_list(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 
     void console_object_load(const QList<QStandardItem *> row, const AdObject &object);
-    void console_object_item_data_load(QStandardItem *item, const AdObject &object);
-    void console_object_item_load_icon(QStandardItem *item, bool disabled);
 
     // NOTE: it is possible for a search to start while a
     // previous one hasn't finished. For that reason, this f-n
