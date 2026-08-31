@@ -173,7 +173,7 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(
                     target_console->get_row(index);
                 const QString new_dn = old_to_new_dn_map[old_dn];
                 const AdObject object = object_map[new_dn];
-                console_object_load(row, object);
+                object_load(object, row);
             }
         }
 
@@ -205,7 +205,7 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(
                     target_console->get_row(index);
                 const QString new_dn = old_to_new_dn_map[old_dn];
                 const AdObject object = object_map[new_dn];
-                console_object_load(row, object);
+                object_load(object, row);
             }
         }
 
@@ -295,7 +295,7 @@ void ConsoleObjectTreeOperations::add_objects_to_console(
             console->set_item_sort_index(row[0]->index(), 1);
         }
 
-        console_object_load(row, object);
+        object_load(object, row);
     }
 }
 
@@ -309,21 +309,6 @@ void ConsoleObjectTreeOperations::add_objects_to_console_from_dn_list(
     ConsoleObjectTreeOperations::add_objects_to_console(console,
                                                         object_list,
                                                         parent);
-}
-
-void ConsoleObjectTreeOperations::console_object_load(
-    const QList<QStandardItem *> row,
-    const AdObject &object)
-{
-    object_load_attribute_columns(object, row);
-    object_item_data_load(object, row[0]);
-
-    const bool cannot_move =
-        object.get_system_flag(SystemFlagsBit_DomainCannotMove);
-
-    for (auto item : row) {
-        item->setDragEnabled(!cannot_move);
-    }
 }
 
 void ConsoleObjectTreeOperations::console_object_search(
@@ -894,7 +879,7 @@ void ConsoleObjectTreeOperations::console_object_properties(
                     if (object_index.isValid()) {
                         const QList<QStandardItem *> object_row =
                             target_console->get_row(object_index);
-                        console_object_load(object_row, object);
+                        object_load(object, object_row);
                     }
                 }
             };

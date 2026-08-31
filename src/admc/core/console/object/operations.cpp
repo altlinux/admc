@@ -233,3 +233,15 @@ void object_item_data_load(const AdObject &object, QStandardItem *item) {
 
     object_item_load_icon(item, account_disabled);
 }
+
+void object_load(const AdObject &object, const QList<QStandardItem *> row) {
+    object_load_attribute_columns(object, row);
+    object_item_data_load(object, row[0]);
+
+    const bool cannot_move =
+        object.get_system_flag(SystemFlagsBit_DomainCannotMove);
+
+    for (auto item : row) {
+        item->setDragEnabled(!cannot_move);
+    }
+}

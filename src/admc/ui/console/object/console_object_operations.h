@@ -46,8 +46,6 @@ namespace ConsoleObjectTreeOperations {
     // Helper f-n that searches for objects and then adds them
     void add_objects_to_console_from_dn_list(ConsoleWidget *console, AdInterface &ad, const QList<QString> &dn_list, const QModelIndex &parent);
 
-    void console_object_load(const QList<QStandardItem *> row, const AdObject &object);
-
     // NOTE: it is possible for a search to start while a
     // previous one hasn't finished. For that reason, this f-n
     // contains multiple workarounds for issues caused by that

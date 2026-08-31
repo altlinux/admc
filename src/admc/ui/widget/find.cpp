@@ -24,6 +24,7 @@
 
 #include "adldap.h"
 #include "ui/console/object/object_impl.h"
+#include "core/console/object/operations.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/search_thread.h"
@@ -202,7 +203,7 @@ void FindWidget::handle_find_thread_results(const QHash<QString, AdObject> &resu
     for (const AdObject &object : results) {
         const QList<QStandardItem *> row = ui->console->add_results_item(ItemType_Object, head_index);
 
-        ConsoleObjectTreeOperations::console_object_load(row, object);
+        object_load(object, row);
     }
 }
 

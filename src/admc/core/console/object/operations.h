@@ -46,5 +46,6 @@ void object_load_attribute_columns(const AdObject &object,
                                    const QList<QStandardItem *> row);
 void object_item_load_icon(QStandardItem *item, bool disabled);
 void object_item_data_load(const AdObject &object, QStandardItem *item);
+void object_load(const AdObject &object, const QList<QStandardItem *> row);
 
 #endif  /* ifndef CORE_CONSOLE_OBJECT_OPERATIONS_H */
