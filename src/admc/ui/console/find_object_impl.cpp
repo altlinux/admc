@@ -48,7 +48,7 @@ QList<QString> FindObjectImpl::column_labels() const {
 }
 
 QList<int> FindObjectImpl::default_columns() const {
-    return ConsoleObjectTreeOperations::object_impl_default_columns();
+    return object_default_columns();
 }
 
 QModelIndex get_find_object_root(ConsoleWidget *console) {

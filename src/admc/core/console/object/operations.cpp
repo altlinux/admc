@@ -273,3 +273,8 @@ QList<QString> object_search_attributes() {
 
     return attributes;
 }
+
+QList<int> object_default_columns() {
+    // By default show first 3 columns: name, class and description
+    return {0, 1, 2};
+}

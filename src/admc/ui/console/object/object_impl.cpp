@@ -595,7 +595,7 @@ QList<QString> ObjectImpl::column_labels() const {
 }
 
 QList<int> ObjectImpl::default_columns() const {
-    return ConsoleObjectTreeOperations::object_impl_default_columns();
+    return object_default_columns();
 }
 
 void ObjectImpl::refresh_tree() {

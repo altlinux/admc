@@ -48,5 +48,6 @@ void object_item_load_icon(QStandardItem *item, bool disabled);
 void object_item_data_load(const AdObject &object, QStandardItem *item);
 void object_load(const AdObject &object, const QList<QStandardItem *> row);
 QList<QString> object_search_attributes();
+QList<int> object_default_columns();
 
 #endif  /* ifndef CORE_CONSOLE_OBJECT_OPERATIONS_H */

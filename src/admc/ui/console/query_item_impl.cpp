@@ -162,7 +162,7 @@ QList<QString> QueryItemImpl::column_labels() const {
 }
 
 QList<int> QueryItemImpl::default_columns() const {
-    return ConsoleObjectTreeOperations::object_impl_default_columns();
+    return object_default_columns();
 }
 
 void QueryItemImpl::on_export() {

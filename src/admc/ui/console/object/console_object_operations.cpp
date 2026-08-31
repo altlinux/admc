@@ -425,12 +425,6 @@ void ConsoleObjectTreeOperations::console_object_search(
     search_thread->start();
 }
 
-QList<int> ConsoleObjectTreeOperations::object_impl_default_columns() {
-    // By default show first 3 columns: name, class and
-    // description
-    return {0, 1, 2};
-}
-
 void ConsoleObjectTreeOperations::console_object_tree_init(
     ConsoleWidget *console,
     AdInterface &ad)
