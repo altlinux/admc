@@ -54,7 +54,6 @@ namespace ConsoleObjectTreeOperations {
 
     QList<QString> object_impl_column_labels();
     QList<int> object_impl_default_columns();
-    QList<QString> console_object_search_attributes();
     void console_object_tree_init(ConsoleWidget *console, AdInterface &ad);
 
     // NOTE: this may return an invalid index if there's no tree

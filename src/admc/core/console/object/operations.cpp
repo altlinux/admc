@@ -245,3 +245,31 @@ void object_load(const AdObject &object, const QList<QStandardItem *> row) {
         item->setDragEnabled(!cannot_move);
     }
 }
+
+QList<QString> object_search_attributes() {
+    QList<QString> attributes;
+
+    attributes += g_adconfig->get_columns();
+
+    // NOTE: needed for loading group type/scope into "type"
+    // column
+    attributes += ATTRIBUTE_GROUP_TYPE;
+
+    // NOTE: system flags are needed to disable
+    // delete/move/rename for objects that can't do those
+    // actions
+    attributes += ATTRIBUTE_SYSTEM_FLAGS;
+
+    attributes += ATTRIBUTE_USER_ACCOUNT_CONTROL;
+
+    // NOTE: needed to know which icon to use for object
+    attributes += ATTRIBUTE_OBJECT_CATEGORY;
+
+    // NOTE: for context menu block inheritance checkbox
+    attributes += ATTRIBUTE_GPOPTIONS;
+
+    // NOTE: needed to know gpo status
+    attributes += ATTRIBUTE_FLAGS;
+
+    return attributes;
+}

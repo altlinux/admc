@@ -431,34 +431,6 @@ QList<int> ConsoleObjectTreeOperations::object_impl_default_columns() {
     return {0, 1, 2};
 }
 
-QList<QString> ConsoleObjectTreeOperations::console_object_search_attributes() {
-    QList<QString> attributes;
-
-    attributes += g_adconfig->get_columns();
-
-    // NOTE: needed for loading group type/scope into "type"
-    // column
-    attributes += ATTRIBUTE_GROUP_TYPE;
-
-    // NOTE: system flags are needed to disable
-    // delete/move/rename for objects that can't do those
-    // actions
-    attributes += ATTRIBUTE_SYSTEM_FLAGS;
-
-    attributes += ATTRIBUTE_USER_ACCOUNT_CONTROL;
-
-    // NOTE: needed to know which icon to use for object
-    attributes += ATTRIBUTE_OBJECT_CATEGORY;
-
-    // NOTE: for context menu block inheritance checkbox
-    attributes += ATTRIBUTE_GPOPTIONS;
-
-    // NOTE: needed to know gpo status
-    attributes += ATTRIBUTE_FLAGS;
-
-    return attributes;
-}
-
 void ConsoleObjectTreeOperations::console_object_tree_init(
     ConsoleWidget *console,
     AdInterface &ad)

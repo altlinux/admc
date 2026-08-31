@@ -104,8 +104,7 @@ void ObjectImpl::fetch(const QModelIndex &index) {
         filter = advanced_features_filter(filter);
     }
 
-    const QList<QString> attributes =
-        ConsoleObjectTreeOperations::console_object_search_attributes();
+    const QList<QString> attributes = object_search_attributes();
 
     // NOTE: do an extra search before real search for
     // objects that should be visible in dev mode

@@ -75,7 +75,7 @@ void QueryItemImpl::fetch(const QModelIndex &index) {
 
     const QString filter = index.data(QueryItemRole_Filter).toString();
     const QString base = index.data(QueryItemRole_Base).toString();
-    const QList<QString> search_attributes = ConsoleObjectTreeOperations::console_object_search_attributes();
+    const QList<QString> search_attributes = object_search_attributes();
     const bool scope_is_children =
         index.data(QueryItemRole_ScopeIsChildren).toBool();
     SearchScope scope;

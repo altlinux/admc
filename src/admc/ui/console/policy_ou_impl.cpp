@@ -25,6 +25,7 @@
 #include "ui/console/policy_ou_impl.h"
 #include "ui/console/policy_impl.h"
 #include "core/console_item_type.h"
+#include "core/console/object/operations.h"
 #include "ui/dialog/create/policy.h"
 #include "ui/dialog/find/policy.h"
 #include "core/fsmo.h"
@@ -99,7 +100,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
         const QString base = dn;
         const SearchScope scope = SearchScope_Children;
         const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_OU);
-        QList<QString> attributes = ConsoleObjectTreeOperations::console_object_search_attributes();
+        QList<QString> attributes = object_search_attributes();
 
         const QHash<QString, AdObject> results = ad.search(base, scope, filter, attributes);
 

@@ -169,7 +169,7 @@ void SelectObjectDialog::on_add_button() {
             name_filter,
             classes_filter,
         });
-    const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, ConsoleObjectTreeOperations::console_object_search_attributes());
+    const QHash<QString, AdObject> search_results = ad.search(base, SearchScope_All, filter, object_search_attributes());
 
     if (search_results.size() == 1) {
         const QString dn = search_results.keys()[0];
