@@ -798,6 +798,32 @@ void ConsoleObjectTreeOperations::console_object_delete(
     g_status->display_ad_messages(ad, console_list[0]);
 }
 
+void ConsoleObjectTreeOperations::apply_changes_to_branch(
+    ConsoleWidget *target_console,
+    const QList<AdObject> &object_list,
+    const QModelIndex &root_index,
+    const int &item_type,
+    const int &update_dn_role)
+{
+    if (! root_index.isValid()) {
+        return;
+    }
+
+    for (const AdObject &object : object_list) {
+        const QString dn = object.get_dn();
+        const QModelIndex object_index =
+            target_console->search_item(root_index,
+                                        update_dn_role, dn,
+                                        { item_type });
+
+        if (object_index.isValid()) {
+            const QList<QStandardItem *> object_row =
+                target_console->get_row(object_index);
+            object_load(object, object_row);
+        }
+    }
+}
+
 void ConsoleObjectTreeOperations::console_object_properties(
     const QList<ConsoleWidget *> &console_list,
     const QList<QModelIndex> &index_list,
@@ -837,28 +863,6 @@ void ConsoleObjectTreeOperations::console_object_properties(
         }
 
         auto apply_changes = [&object_list](ConsoleWidget *target_console) {
-            auto apply_changes_to_branch = [&](const QModelIndex &root_index,
-                                               const int item_type,
-                                               const int update_dn_role) {
-                if (!root_index.isValid()) {
-                    return;
-                }
-
-                for (const AdObject &object : object_list) {
-                    const QString dn = object.get_dn();
-                    const QModelIndex object_index =
-                        target_console->search_item(root_index,
-                                                    update_dn_role, dn,
-                                                    { item_type });
-
-                    if (object_index.isValid()) {
-                        const QList<QStandardItem *> object_row =
-                            target_console->get_row(object_index);
-                        object_load(object, object_row);
-                    }
-                }
-            };
-
             const QModelIndex object_root =
                 get_domain_object_tree_root(target_console);
             const QModelIndex query_root = get_query_tree_root(target_console);
@@ -867,13 +871,19 @@ void ConsoleObjectTreeOperations::console_object_properties(
             const QModelIndex find_object_root =
                 get_find_object_root(target_console);
 
-            apply_changes_to_branch(object_root,
+            apply_changes_to_branch(target_console,
+                                    object_list,
+                                    object_root,
                                     ItemType_Object,
                                     ObjectRole_DN);
-            apply_changes_to_branch(query_root,
+            apply_changes_to_branch(target_console,
+                                    object_list,
+                                    query_root,
                                     ItemType_Object,
                                     ObjectRole_DN);
-            apply_changes_to_branch(find_object_root,
+            apply_changes_to_branch(target_console,
+                                    object_list,
+                                    find_object_root,
                                     ItemType_Object,
                                     ObjectRole_DN);
 

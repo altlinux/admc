@@ -88,6 +88,12 @@ namespace ConsoleObjectTreeOperations {
 
     CreateObjectDialog *create_dialog(const QString &object_class, AdInterface &ad, const QString &parent_dn, ConsoleWidget *parent);
     const QList<QModelIndex> get_root_list(ConsoleWidget *console);
+    void apply_changes_to_branch(
+        ConsoleWidget *target_console,
+        const QList<AdObject> &object_list,
+        const QModelIndex &root_index,
+        const int &item_type,
+        const int &update_dn_role);
 }
 
 #endif // OPERATIONS_H
