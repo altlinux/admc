@@ -22,6 +22,7 @@
 #ifndef OPERATIONS_H
 #define OPERATIONS_H
 
+#include <QModelIndex>
 #include <QString>
 
 #include "ad_defines.h"
@@ -38,6 +39,15 @@ class CreateObjectDialog;
 
 
 namespace ConsoleObjectTreeOperations {
+    const QList<QPersistentModelIndex> console_get_persistent(
+        const ConsoleWidget *console,
+        const QModelIndex &tree_root,
+        const int &dn_role,
+        const QString &dn,
+        const int &type);
+    void console_delete_persistent(
+        ConsoleWidget *console,
+        const QList<QPersistentModelIndex> &persistent_list);
     void console_object_delete_dn_list(ConsoleWidget *console, const QList<QString> &dn_list, const QModelIndex &tree_root, const int type, const int dn_role);
     void console_object_move_and_rename(const QList<ConsoleWidget *> &console_list, AdInterface &ad, const QHash<QString, QString> &old_to_new_dn_map_arg, const QString &new_parent_dn);
 

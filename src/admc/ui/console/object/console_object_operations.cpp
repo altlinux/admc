@@ -239,6 +239,37 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(
     object_update_move(ad, object_map, old_to_new_dn_map);
 }
 
+/**
+ * Delete persistent items from the console.
+ *
+ * @param console A console to delete items from.
+ * @param persistent_list A list of item indices to delete.
+ */
+void ConsoleObjectTreeOperations::console_delete_persistent(
+    ConsoleWidget *console,
+    const QList<QPersistentModelIndex> &persistent_list)
+{
+    for (const QPersistentModelIndex &index : persistent_list) {
+        console->delete_item(index);
+    }
+}
+
+/**
+ * Get a list of persistent indices for the given console and parameters.
+ */
+const QList<QPersistentModelIndex>
+ConsoleObjectTreeOperations::console_get_persistent(
+    const ConsoleWidget *console,
+    const QModelIndex &tree_root,
+    const int &dn_role,
+    const QString &dn,
+    const int &type)
+{
+    const QList<QModelIndex> index_list =
+        console->search_items(tree_root, dn_role, dn, { type });
+    return persistent_index_list(index_list);
+}
+
 void ConsoleObjectTreeOperations::console_object_delete_dn_list(
     ConsoleWidget *console,
     const QList<QString> &dn_list,
@@ -247,14 +278,9 @@ void ConsoleObjectTreeOperations::console_object_delete_dn_list(
     const int dn_role)
 {
     for (const QString &dn : dn_list) {
-        const QList<QModelIndex> index_list =
-            console->search_items(tree_root, dn_role, dn, { type });
         const QList<QPersistentModelIndex> persistent_list =
-            persistent_index_list(index_list);
-
-        for (const QPersistentModelIndex &index : persistent_list) {
-            console->delete_item(index);
-        }
+            console_get_persistent(console, tree_root, dn_role, dn, type);
+        console_delete_persistent(console, persistent_list);
     }
 }
 
