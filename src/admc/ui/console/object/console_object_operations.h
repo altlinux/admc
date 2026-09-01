@@ -94,6 +94,10 @@ namespace ConsoleObjectTreeOperations {
         const QModelIndex &root_index,
         const int &item_type,
         const int &update_dn_role);
+    void apply_changes_to_branches(
+        ConsoleWidget *target_console,
+        const QList<AdObject> &object_list,
+        const QList<QModelIndex> &indices);
 }
 
 #endif // OPERATIONS_H

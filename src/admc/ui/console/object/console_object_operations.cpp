@@ -824,6 +824,20 @@ void ConsoleObjectTreeOperations::apply_changes_to_branch(
     }
 }
 
+void ConsoleObjectTreeOperations::apply_changes_to_branches(
+    ConsoleWidget *target_console,
+    const QList<AdObject> &object_list,
+    const QList<QModelIndex> &indices)
+{
+    for (auto &index : indices) {
+        apply_changes_to_branch(target_console,
+                                object_list,
+                                index,
+                                ItemType_Object,
+                                ObjectRole_DN);
+    }
+}
+
 void ConsoleObjectTreeOperations::console_object_properties(
     const QList<ConsoleWidget *> &console_list,
     const QList<QModelIndex> &index_list,
@@ -871,21 +885,10 @@ void ConsoleObjectTreeOperations::console_object_properties(
             const QModelIndex find_object_root =
                 get_find_object_root(target_console);
 
-            apply_changes_to_branch(target_console,
-                                    object_list,
-                                    object_root,
-                                    ItemType_Object,
-                                    ObjectRole_DN);
-            apply_changes_to_branch(target_console,
-                                    object_list,
-                                    query_root,
-                                    ItemType_Object,
-                                    ObjectRole_DN);
-            apply_changes_to_branch(target_console,
-                                    object_list,
-                                    find_object_root,
-                                    ItemType_Object,
-                                    ObjectRole_DN);
+            apply_changes_to_branches(
+                target_console,
+                object_list,
+                { object_root, query_root, find_object_root });
 
             // Apply to policy branch
             if (policy_root.isValid()) {
