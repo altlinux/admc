@@ -490,12 +490,8 @@ bool ConsoleObjectTreeOperations::console_object_deletion_dialog(
     }
 
     QString contains_objects_message;
-    int not_empty_containers_count = 0;
-    for (QModelIndex index : index_deleted_list) {
-        if (index.model()->hasChildren(index)) {
-            ++not_empty_containers_count;
-        }
-    }
+    int not_empty_containers_count =
+        count_non_empty_containers(index_deleted_list);
     if ((not_empty_containers_count == 1) && (index_deleted_list.size() == 1)) {
         contains_objects_message = QCoreApplication::translate(
             "ObjectImpl",

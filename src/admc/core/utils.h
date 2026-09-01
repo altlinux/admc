@@ -71,5 +71,6 @@ void set_horizontal_header_labels_from_map(
     const QMap<int, QString> &labels_map);
 
 void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute);
+int count_non_empty_containers(const QList<QModelIndex> &list);
 
 #endif

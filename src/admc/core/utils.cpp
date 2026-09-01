@@ -319,3 +319,19 @@ void limit_plain_text_edit(QPlainTextEdit *edit, const QString &attribute) {
             });
     }
 }
+
+/**
+ * Count non-empty containers for a model index list.
+ *
+ * @param list A list of model indices to check.
+ * @return The number of non-empty containers.
+ */
+int count_non_empty_containers(const QList<QModelIndex> &list) {
+    int non_empty_containers_count = 0;
+    for (const QModelIndex &index : list) {
+        if (index.model()->hasChildren(index)) {
+            non_empty_containers_count++;
+        }
+    }
+    return non_empty_containers_count;
+}
