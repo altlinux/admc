@@ -278,3 +278,36 @@ QList<int> object_default_columns() {
     // By default show first 3 columns: name, class and description
     return {0, 1, 2};
 }
+
+QString object_delete_confirmation_message(
+    const QList<QModelIndex> &index_deleted_list)
+{
+    if (index_deleted_list.size() == 1) {
+        return QCoreApplication::translate(
+            "ObjectImpl",
+            "Are you sure you want to delete this object?");
+    }
+    else {
+        return QCoreApplication::translate(
+            "ObjectImpl",
+            "Are you sure you want to delete these objects?");
+    }
+}
+
+QString object_delete_confirmation_submessage(
+    const QList<QModelIndex> &index_deleted_list,
+    int not_empty_containers_count)
+{
+    if ((not_empty_containers_count == 1) && (index_deleted_list.size() == 1)) {
+        return QCoreApplication::translate(
+            "ObjectImpl",
+            " It contains other objects.");
+    }
+    else if (not_empty_containers_count >= 1) {
+        return QCoreApplication::translate(
+            "ObjectImpl",
+            " Containers to be deleted contain other objects.");
+    } else {
+        return QString();
+    }
+}

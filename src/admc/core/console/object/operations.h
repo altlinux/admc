@@ -49,5 +49,10 @@ void object_item_data_load(const AdObject &object, QStandardItem *item);
 void object_load(const AdObject &object, const QList<QStandardItem *> row);
 QList<QString> object_search_attributes();
 QList<int> object_default_columns();
+QString object_delete_confirmation_message(
+    const QList<QModelIndex> &index_deleted_list);
+QString object_delete_confirmation_submessage(
+    const QList<QModelIndex> &index_deleted_list,
+    int not_empty_containers_count);
 
 #endif  /* ifndef CORE_CONSOLE_OBJECT_OPERATIONS_H */

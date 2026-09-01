@@ -477,32 +477,14 @@ bool ConsoleObjectTreeOperations::console_object_deletion_dialog(
     ConsoleWidget *console,
     const QList<QModelIndex> &index_deleted_list)
 {
-    QString main_message;
-    if (index_deleted_list.size() == 1) {
-        main_message = QCoreApplication::translate(
-            "ObjectImpl",
-            "Are you sure you want to delete this object?");
-    }
-    else {
-        main_message = QCoreApplication::translate(
-            "ObjectImpl",
-            "Are you sure you want to delete these objects?");
-    }
+    QString main_message =
+        object_delete_confirmation_message(index_deleted_list);
 
-    QString contains_objects_message;
     int not_empty_containers_count =
         count_non_empty_containers(index_deleted_list);
-    if ((not_empty_containers_count == 1) && (index_deleted_list.size() == 1)) {
-        contains_objects_message = QCoreApplication::translate(
-            "ObjectImpl",
-            " It contains other objects.");
-    }
-    else if (not_empty_containers_count >= 1) {
-        contains_objects_message = QCoreApplication::translate(
-            "ObjectImpl",
-            " Containers to be deleted contain other objects.");
-    }
-
+    QString contains_objects_message =
+        object_delete_confirmation_submessage(index_deleted_list,
+                                              not_empty_containers_count);
     const bool confirm_actions = settings_get_bool(SETTING_confirm_actions);
     if ((not_empty_containers_count > 0) || confirm_actions) {
         QMessageBox::StandardButton answer =
