@@ -19,20 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "adldap.h"
-#include "core/console/object/operations.h"
-#include "core/console_item_type.h"
-#include "ui/console/object/object_impl.h"
-#include "ui/console/query_item_impl.h"
-#include "ui/console/query_folder_impl.h"
-#include "ui/widget/console/results_view.h"
-#include "ui/dialog/create/query_item.h"
-#include "ui/dialog/edit_query_item.h"
-#include "core/globals.h"
-#include "core/settings.h"
-#include "ui/utils.h"
-#include "core/managers/icon_manager.h"
-
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QJsonDocument>
@@ -40,6 +26,20 @@
 #include <QStack>
 #include <QStandardItem>
 #include <QStandardPaths>
+
+#include "adldap.h"
+#include "core/console/object/operations.h"
+#include "core/console_item_type.h"
+#include "core/globals.h"
+#include "core/managers/icon_manager.h"
+#include "core/settings.h"
+#include "ui/console/object/object_impl.h"
+#include "ui/console/query_folder_impl.h"
+#include "ui/console/query_item_impl.h"
+#include "ui/dialog/create/query_item.h"
+#include "ui/dialog/edit_query_item.h"
+#include "ui/utils.h"
+#include "ui/widget/console/results_view.h"
 
 #define QUERY_ROOT "QUERY_ROOT"
 
@@ -85,12 +85,15 @@ void QueryItemImpl::fetch(const QModelIndex &index) {
         scope = SearchScope_All;
     }
 
-    ConsoleObjectTreeOperations::console_object_search(console, index, base, scope, filter, search_attributes);
+    ConsoleObjectTreeOperations::console_object_search(console, index, base,
+                                                       scope, filter,
+                                                       search_attributes);
 }
 
 QString QueryItemImpl::get_description(const QModelIndex &index) const {
-    const QString object_count_text = ConsoleObjectTreeOperations::console_object_count_string(console, index);
-
+    const QString object_count_text =
+        ConsoleObjectTreeOperations::console_object_count_string(console,
+                                                                 index);
     return object_count_text;
 }
 
@@ -103,7 +106,10 @@ QList<QAction *> QueryItemImpl::get_all_custom_actions() const {
     return out;
 }
 
-QSet<QAction *> QueryItemImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> QueryItemImpl::get_custom_actions(
+    const QModelIndex &index,
+    const bool single_selection) const
+{
     Q_UNUSED(index);
 
     QSet<QAction *> out;
@@ -116,9 +122,11 @@ QSet<QAction *> QueryItemImpl::get_custom_actions(const QModelIndex &index, cons
     return out;
 }
 
-QSet<StandardAction> QueryItemImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> QueryItemImpl::get_standard_actions(
+    const QModelIndex &index,
+    const bool single_selection) const
+{
     QSet<StandardAction> out;
-
     out.insert(StandardAction_Delete);
 
     if (single_selection) {
@@ -193,7 +201,13 @@ void QueryItemImpl::on_export() {
     file.write(json_bytes);
 }
 
-void console_query_item_load(const QList<QStandardItem *> row, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children) {
+void console_query_item_load(const QList<QStandardItem *> row,
+                             const QString &name,
+                             const QString &description,
+                             const QString &filter,
+                             const QByteArray &filter_state,
+                             const QString &base,
+                             const bool scope_is_children) {
     QStandardItem *main_item = row[0];
     main_item->setData(description, QueryItemRole_Description);
     main_item->setData(filter, QueryItemRole_Filter);
@@ -206,21 +220,35 @@ void console_query_item_load(const QList<QStandardItem *> row, const QString &na
     row[QueryColumn_Description]->setText(description);
 }
 
-QModelIndex console_query_item_create(ConsoleWidget *console, const QString &name, const QString &description, const QString &filter, const QByteArray &filter_state, const QString &base, const bool scope_is_children, const QModelIndex &parent) {
-    const QList<QStandardItem *> row = console->add_scope_item(ItemType_QueryItem, parent);
+QModelIndex console_query_item_create(ConsoleWidget *console,
+                                      const QString &name,
+                                      const QString &description,
+                                      const QString &filter,
+                                      const QByteArray &filter_state,
+                                      const QString &base,
+                                      const bool scope_is_children,
+                                      const QModelIndex &parent) {
+    const QList<QStandardItem *> row =
+        console->add_scope_item(ItemType_QueryItem, parent);
 
-    console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+    console_query_item_load(row, name, description, filter, filter_state, base,
+                            scope_is_children);
 
     return row[0]->index();
 }
 
-QHash<QString, QVariant> console_query_item_save_hash(const QModelIndex &index) {
+QHash<QString, QVariant> console_query_item_save_hash(
+    const QModelIndex &index)
+{
     const QString name = index.data(Qt::DisplayRole).toString();
-    const QString description = index.data(QueryItemRole_Description).toString();
+    const QString description =
+        index.data(QueryItemRole_Description).toString();
     const QString base = index.data(QueryItemRole_Base).toString();
     const QString filter = index.data(QueryItemRole_Filter).toString();
-    const QByteArray filter_state = index.data(QueryItemRole_FilterState).toByteArray();
-    const bool scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
+    const QByteArray filter_state =
+        index.data(QueryItemRole_FilterState).toByteArray();
+    const bool scope_is_children =
+        index.data(QueryItemRole_ScopeIsChildren).toBool();
 
     QHash<QString, QVariant> data;
     data["name"] = name;
@@ -233,7 +261,9 @@ QHash<QString, QVariant> console_query_item_save_hash(const QModelIndex &index) 
     return data;
 }
 
-void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, QVariant> &data, const QModelIndex &parent_index) {
+void console_query_item_load_hash(ConsoleWidget *console,
+                                  const QHash<QString, QVariant> &data,
+                                  const QModelIndex &parent_index) {
     if (data.isEmpty()) {
         return;
     }
@@ -243,20 +273,24 @@ void console_query_item_load_hash(ConsoleWidget *console, const QHash<QString, Q
     const QString base = data["base"].toString();
     const bool scope_is_children = data["scope_is_children"].toBool();
     const QString filter = data["filter"].toString();
-    const QByteArray filter_state = QByteArray::fromHex(data["filter_state"].toString().toLocal8Bit());
+    const QByteArray filter_state =
+        QByteArray::fromHex(data["filter_state"].toString().toLocal8Bit());
 
-    if (!console_query_or_folder_name_is_good(name, parent_index, console, QModelIndex())) {
+    if (!console_query_or_folder_name_is_good(name, parent_index, console,
+                                              QModelIndex())) {
         return;
     }
 
-    console_query_item_create(console, name, description, filter, filter_state, base, scope_is_children, parent_index);
+    console_query_item_create(console, name, description, filter, filter_state,
+                              base, scope_is_children, parent_index);
 }
 
 void QueryItemImpl::on_edit_query_item() {
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
     const QModelIndex parent_index = index.parent();
-    const QList<QString> sibling_name_list = get_sibling_name_list(parent_index, index);
+    const QList<QString> sibling_name_list =
+        get_sibling_name_list(parent_index, index);
 
     auto dialog = new EditQueryItemDialog(sibling_name_list, console);
 
@@ -266,8 +300,10 @@ void QueryItemImpl::on_edit_query_item() {
         bool scope_is_children;
         QByteArray filter_state;
         QString filter;
-        get_query_item_data(index, &name, &description, &scope_is_children, &filter_state, &filter);
-        dialog->set_data(name, description, scope_is_children, filter_state, filter);
+        get_query_item_data(index, &name, &description, &scope_is_children,
+                            &filter_state, &filter);
+        dialog->set_data(name, description, scope_is_children, filter_state,
+                         filter);
     }
 
     dialog->open();
@@ -284,7 +320,8 @@ void QueryItemImpl::on_edit_query_item() {
             const bool scope_is_children = dialog->scope_is_children();
 
             const QList<QStandardItem *> row = console->get_row(index);
-            console_query_item_load(row, name, description, filter, filter_state, base, scope_is_children);
+            console_query_item_load(row, name, description, filter, filter_state,
+                                    base, scope_is_children);
 
             console_query_tree_save(console);
 
@@ -304,7 +341,13 @@ bool QueryItemImpl::event(QEvent *event) {
     return QObject::event(event);
 }
 
-void get_query_item_data(const QModelIndex &index, QString *name, QString *description, bool *scope_is_children, QByteArray *filter_state, QString *filter) {
+void get_query_item_data(const QModelIndex &index,
+                         QString *name,
+                         QString *description,
+                         bool *scope_is_children,
+                         QByteArray *filter_state,
+                         QString *filter)
+{
     *name = index.data(Qt::DisplayRole).toString();
     *description = index.data(QueryItemRole_Description).toString();
     *scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
