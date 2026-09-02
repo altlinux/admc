@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +78,11 @@ const QList<QString> well_known_sid_list = {
     SID_NT_RESTRICTED,
     SID_NT_TERMINAL_SERVER_USERS,
     SID_NT_REMOTE_INTERACTIVE,
+#ifdef HAVE_SAMBA_4_23_API
+    SID_NT_THIS_ORGANIZATION,
+#else
     SID_NT_THIS_ORGANISATION,
+#endif  // ifdef HAVE_SAMBA_4_23_API
     SID_NT_IUSR,
     SID_NT_SYSTEM,
     SID_NT_LOCAL_SERVICE,
@@ -85,7 +90,11 @@ const QList<QString> well_known_sid_list = {
     SID_NT_DIGEST_AUTHENTICATION,
     SID_NT_NTLM_AUTHENTICATION,
     SID_NT_SCHANNEL_AUTHENTICATION,
+#ifdef HAVE_SAMBA_4_23_API
+    SID_NT_OTHER_ORGANIZATION,
+#else
     SID_NT_OTHER_ORGANISATION,
+#endif  // ifdef HAVE_SAMBA_4_23_API
 };
 
 const QHash<QString, QString> trustee_name_map = {
@@ -109,7 +118,11 @@ const QHash<QString, QString> trustee_name_map = {
     {SID_NT_RESTRICTED, "RESTRICTED"},
     {SID_NT_TERMINAL_SERVER_USERS, "TERMINAL SERVER USERS"},
     {SID_NT_REMOTE_INTERACTIVE, "REMOTE INTERACTIVE LOGON"},
+#ifdef HAVE_SAMBA_4_23_API
+    {SID_NT_THIS_ORGANIZATION, "This Organization"},
+#else
     {SID_NT_THIS_ORGANISATION, "This Organization"},
+#endif  // ifdef HAVE_SAMBA_4_23_API
     {SID_NT_IUSR, "IUSR"},
     {SID_NT_SYSTEM, "SYSTEM"},
     {SID_NT_LOCAL_SERVICE, "LOCAL SERVICE"},
@@ -117,7 +130,11 @@ const QHash<QString, QString> trustee_name_map = {
     {SID_NT_DIGEST_AUTHENTICATION, "Digest Authentication"},
     {SID_NT_NTLM_AUTHENTICATION, "NTLM Authentication"},
     {SID_NT_SCHANNEL_AUTHENTICATION, "SChannel Authentication"},
+#ifdef HAVE_SAMBA_4_23_API
+    {SID_NT_OTHER_ORGANIZATION, "Other Organization"},
+#else
     {SID_NT_OTHER_ORGANISATION, "Other Organization"},
+#endif  // ifdef HAVE_SAMBA_4_23_API
 };
 
 const QList<QString> cant_change_pass_trustee_cn_list = {

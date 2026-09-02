@@ -82,6 +82,7 @@ if (EXISTS ${VERSION_H})
         file(COPY ${SMB_SRC_PATH}/src_older/ndr_sec_helper.c
              DESTINATION ${SMB_SRC_PATH})
     endif(VERSION_SMB_MINOR GREATER_EQUAL 22)
+
 else()
     message(WARNING "Failed to find Samba version. If its version is 20 or greater, use sources from src_4_20.")
 endif(EXISTS ${VERSION_H})
@@ -109,6 +110,10 @@ add_library(adldap SHARED
     ${ADLDAP_SAMBA_SOURCES}
     adldap.qrc
 )
+
+if (VERSION_SMB_MINOR GREATER_EQUAL 23)
+  target_compile_definitions(adldap PRIVATE HAVE_SAMBA_4_23_API=1)
+endif(VERSION_SMB_MINOR GREATER_EQUAL 23)
 
 target_include_directories(adldap PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
