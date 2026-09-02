@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,6 +79,14 @@ AdConfig::~AdConfig() {
     delete d;
 }
 
+QString locale_to_code(const QLocale &locale) {
+    if (locale.language() == QLocale::Russian) {
+        return "419";
+    } else {
+        return "409"; // English
+    }
+}
+
 void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->domain = ad.get_domain();
 
@@ -101,15 +110,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->domain_sid = object_sid_display_value(domain_object.get_value(ATTRIBUTE_OBJECT_SID));
 
     const QString locale_dir = [this, locale]() {
-        const QString locale_code = [locale]() {
-            if (locale.language() == QLocale::Russian) {
-                return "419";
-            } else {
-                // English
-                return "409";
-            }
-        }();
-
+        const QString locale_code = locale_to_code(locale);
         return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn());
     }();
 
