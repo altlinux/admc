@@ -787,6 +787,20 @@ const QString dn_to_object_class(const QString &dn) {
     return out;
 }
 
+QList<QString> display_names_to_attributes(
+    const QList<QString> &display_names)
+{
+    QList<QString> out;
+
+    for (const auto &display_name_pair : display_names) {
+        const QList<QString> split = display_name_pair.split(",");
+        const QString attribute = split[0];
+        out.append(attribute);
+    }
+
+    return out;
+}
+
 void AdConfig::load_display_names(AdInterface &ad, const QString &locale_dir) {
     const QString filter = QString();
 
@@ -816,18 +830,8 @@ void AdConfig::load_display_names(AdInterface &ad, const QString &locale_dir) {
                 d->attribute_display_names[object_class][attribute_name] = display_name;
             }
 
-            d->find_attributes[object_class] = [object_class, display_names]() {
-                QList<QString> out;
-
-                for (const auto &display_name_pair : display_names) {
-                    const QList<QString> split = display_name_pair.split(",");
-                    const QString attribute = split[0];
-
-                    out.append(attribute);
-                }
-
-                return out;
-            }();
+            d->find_attributes[object_class] =
+                display_names_to_attributes(display_names);
         }
     }
 }
