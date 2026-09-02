@@ -775,6 +775,18 @@ void AdConfig::load_class_schemas(AdInterface &ad) {
     }
 }
 
+/**
+ * Display specifier DN is "CN=object-class-Display,CN=..."
+ * Get "object-class" from that.
+ */
+const QString dn_to_object_class(const QString &dn) {
+    const QString rdn = dn.split(",")[0];
+    QString out = rdn;
+    out.remove("CN=", Qt::CaseInsensitive);
+    out.remove("-Display");
+    return out;
+}
+
 void AdConfig::load_display_names(AdInterface &ad, const QString &locale_dir) {
     const QString filter = QString();
 
@@ -787,17 +799,7 @@ void AdConfig::load_display_names(AdInterface &ad, const QString &locale_dir) {
 
     for (const AdObject &object : results) {
         const QString dn = object.get_dn();
-
-        // Display specifier DN is "CN=object-class-Display,CN=..."
-        // Get "object-class" from that
-        const QString object_class = [dn]() {
-            const QString rdn = dn.split(",")[0];
-            QString out = rdn;
-            out.remove("CN=", Qt::CaseInsensitive);
-            out.remove("-Display");
-
-            return out;
-        }();
+        const QString object_class = dn_to_object_class(dn);
 
         if (object.contains(ATTRIBUTE_CLASS_DISPLAY_NAME)) {
             d->class_display_names[object_class] = object.get_string(ATTRIBUTE_CLASS_DISPLAY_NAME);
