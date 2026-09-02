@@ -277,6 +277,16 @@ add_executable(admc
 )
 target_clangformat_setup(admc)
 
+target_precompile_headers(admc PRIVATE
+    <QAction>
+    <QDialog>
+    <QHash>
+    <QList>
+    <QObject>
+    <QString>
+    <QWidget>
+)
+
 # NOTE: build admc as library to streamline building tests.
 # Tests just link to this lib and use all of admc's code.
 add_library(admctest SHARED
