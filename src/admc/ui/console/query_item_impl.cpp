@@ -29,6 +29,7 @@
 
 #include "adldap.h"
 #include "core/console/object/operations.h"
+#include "core/console/query_item.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
@@ -73,11 +74,10 @@ void QueryItemImpl::fetch(const QModelIndex &index) {
     item->setIcon(g_icon_manager->category_icon(ADMC_CATEGORY_QUERY_ITEM));
     item->setToolTip("");
 
-    const QString filter = index.data(QueryItemRole_Filter).toString();
-    const QString base = index.data(QueryItemRole_Base).toString();
+    const QString filter = index_data_filter(index);
+    const QString base = index_data_base(index);
     const QList<QString> search_attributes = object_search_attributes();
-    const bool scope_is_children =
-        index.data(QueryItemRole_ScopeIsChildren).toBool();
+    const bool scope_is_children = index_data_scope_is_children(index);
     SearchScope scope;
     if (scope_is_children) {
         scope = SearchScope_Children;
@@ -176,7 +176,7 @@ QList<int> QueryItemImpl::default_columns() const {
 void QueryItemImpl::on_export() {
     const QModelIndex index = console->get_selected_item(ItemType_QueryItem);
 
-    const QString query_name = index.data(Qt::DisplayRole).toString();
+    const QString query_name = index_data_query_name(index);
     const QString caption =
         QCoreApplication::translate("query_item_impl.cpp", "Export Query");
     const QString suggested_file =
@@ -240,15 +240,12 @@ QModelIndex console_query_item_create(ConsoleWidget *console,
 QHash<QString, QVariant> console_query_item_save_hash(
     const QModelIndex &index)
 {
-    const QString name = index.data(Qt::DisplayRole).toString();
-    const QString description =
-        index.data(QueryItemRole_Description).toString();
-    const QString base = index.data(QueryItemRole_Base).toString();
-    const QString filter = index.data(QueryItemRole_Filter).toString();
-    const QByteArray filter_state =
-        index.data(QueryItemRole_FilterState).toByteArray();
-    const bool scope_is_children =
-        index.data(QueryItemRole_ScopeIsChildren).toBool();
+    const QString name = index_data_query_name(index);
+    const QString description = index_data_description(index);
+    const QString base = index_data_base(index);
+    const QString filter = index_data_filter(index);
+    const QByteArray filter_state = index_data_filter_state(index);
+    const bool scope_is_children = index_data_scope_is_children(index);
 
     QHash<QString, QVariant> data;
     data["name"] = name;
@@ -348,9 +345,9 @@ void get_query_item_data(const QModelIndex &index,
                          QByteArray *filter_state,
                          QString *filter)
 {
-    *name = index.data(Qt::DisplayRole).toString();
-    *description = index.data(QueryItemRole_Description).toString();
-    *scope_is_children = index.data(QueryItemRole_ScopeIsChildren).toBool();
-    *filter_state = index.data(QueryItemRole_FilterState).toByteArray();
-    *filter = index.data(QueryItemRole_Filter).toString();
+    *name = index_data_query_name(index);
+    *description = index_data_description(index);
+    *scope_is_children = index_data_scope_is_children(index);
+    *filter_state = index_data_filter_state(index);
+    *filter = index_data_filter(index);
 }

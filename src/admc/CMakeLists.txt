@@ -66,6 +66,7 @@ set(ADMC_SOURCES
     core/console/object/operations.cpp
     core/console/object/site_dn_attrs_updater.cpp
     core/console/object/server_dn_attrs_updater.cpp
+    core/console/query_item.cpp
     core/fsmo.cpp
     core/globals.cpp
     core/line_edit_utils.cpp
