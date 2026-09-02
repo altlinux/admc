@@ -26,7 +26,7 @@
  * Private header for ConsoleWidget.
  */
 
-#include "core/console.h"
+#include "core/console/console.h"
 #include "ui/widget/console/console_widget.h"
 #include "ui/widget/console/results_view.h"
 

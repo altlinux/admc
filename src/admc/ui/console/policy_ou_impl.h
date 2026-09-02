@@ -32,7 +32,7 @@
  */
 
 #include "ad_interface.h"
-#include "core/console.h"
+#include "core/console/console.h"
 #include "ui/widget/console/console_impl.h"
 
 enum PolicyOURole {

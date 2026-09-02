@@ -29,7 +29,7 @@
  * or query tree root.
  */
 
-#include "core/console.h"
+#include "core/console/console.h"
 #include "ui/widget/console/console_impl.h"
 
 enum QueryItemRole {

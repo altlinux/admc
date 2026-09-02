@@ -28,7 +28,7 @@
 #include "ad_display.h"
 #include "ad_utils.h"
 #include "core/ad.h"
-#include "core/console.h"
+#include "core/console/console.h"
 #include "core/console/object/server_dn_attrs_updater.h"
 #include "core/console/object/site_dn_attrs_updater.h"
 #include "core/console_item_type.h"
