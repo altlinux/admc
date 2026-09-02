@@ -30,25 +30,8 @@
  */
 
 #include "core/console/console.h"
+#include "core/console/query_item.h"
 #include "ui/widget/console/console_impl.h"
-
-enum QueryItemRole {
-    QueryItemRole_Description = MyConsoleRole_LAST + 1,
-    QueryItemRole_Filter,
-    QueryItemRole_FilterState,
-    QueryItemRole_Base,
-    QueryItemRole_ScopeIsChildren,
-    QueryItemRole_IsRoot,
-
-    QueryItemRole_LAST,
-};
-
-enum QueryColumn {
-    QueryColumn_Name,
-    QueryColumn_Description,
-
-    QueryColumn_COUNT,
-};
 
 class QueryFolderImpl;
 
