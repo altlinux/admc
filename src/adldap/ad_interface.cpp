@@ -445,6 +445,16 @@ const int scope_to_int(const SearchScope &scope) {
     }
 }
 
+const char *filter_to_cstr(const QString &filter) {
+    if (filter.isEmpty()) {
+        // NOTE: need to pass NULL instead of empty
+        // string to denote "no filter"
+        return (const char *) NULL;
+    } else {
+        return cstr(filter);
+    }
+}
+
 bool AdInterface::search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl) {
     // NOTE: only log once per cycle of search pages,
     // to avoid duplicate messages
@@ -460,15 +470,7 @@ bool AdInterface::search_paged(const QString &base, const SearchScope scope, con
 
     const char *base_cstr = cstr(base);
     const int scope_int = scope_to_int(scope);
-    const char *filter_cstr = [&]() {
-        if (filter.isEmpty()) {
-            // NOTE: need to pass NULL instead of empty
-            // string to denote "no filter"
-            return (const char *) NULL;
-        } else {
-            return cstr(filter);
-        }
-    }();
+    const char *filter_cstr = filter_to_cstr(filter);
 
     // Convert attributes list to NULL-terminated array
     char **attributes_array;
