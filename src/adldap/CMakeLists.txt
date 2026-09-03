@@ -116,6 +116,22 @@ add_library(adldap SHARED
     adldap.qrc
 )
 
+target_precompile_headers(admc PRIVATE
+  <algorithm>
+  <ndr.h>
+  <QByteArray>
+  <QCoreApplication>
+  <QDateTime>
+  <QDebug>
+  <QHash>
+  <QList>
+  <QLocale>
+  <QString>
+  <string.h>
+  <talloc.h>
+  <time.h>
+)
+
 if ((VERSION_SMB_MAJOR GREATER_EQUAL 5)
     OR ((VERSION_SMB_MAJOR EQUAL 4) AND (VERSION_SMB_MINOR GREATER_EQUAL 23)))
   # There were changes in the API in Samba 4.23.  See
