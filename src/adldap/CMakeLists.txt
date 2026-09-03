@@ -45,6 +45,11 @@ find_file(VERSION_H version.h
 if (EXISTS ${VERSION_H})
     file(READ ${VERSION_H} VERSION_HEADER_CONTENT)
 
+    string(
+      REGEX MATCH "#define SAMBA_VERSION_MAJOR [0-9]+"
+      M_MAJOR_VERSION_LINE "${VERSION_HEADER_CONTENT}")
+    string(REGEX MATCH "[0-9]+" VERSION_SMB_MAJOR "${M_MAJOR_VERSION_LINE}")
+
     string(REGEX MATCH "#define SAMBA_VERSION_MINOR [0-9]+" M_VERSION_LINE "${VERSION_HEADER_CONTENT}")
     string(REGEX MATCH "[0-9]+" VERSION_SMB_MINOR "${M_VERSION_LINE}")
     set(SMB_SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/samba)
@@ -111,9 +116,12 @@ add_library(adldap SHARED
     adldap.qrc
 )
 
-if (VERSION_SMB_MINOR GREATER_EQUAL 23)
+if ((VERSION_SMB_MAJOR GREATER_EQUAL 5)
+    OR ((VERSION_SMB_MAJOR EQUAL 4) AND (VERSION_SMB_MINOR GREATER_EQUAL 23)))
+  # There were changes in the API in Samba 4.23.  See
+  # <https://github.com/samba-team/samba/commit/dba0cdad5bcdfa09c2cf13b6413213cdf96635b5>
   target_compile_definitions(adldap PRIVATE HAVE_SAMBA_4_23_API=1)
-endif(VERSION_SMB_MINOR GREATER_EQUAL 23)
+endif()
 
 target_include_directories(adldap PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
