@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,13 +190,7 @@ void AdInterface::set_dc(const QString &dc) {
 }
 
 void AdInterface::set_sasl_nocanon(const bool is_on) {
-    AdInterfacePrivate::s_sasl_nocanon = [&]() {
-        if (is_on) {
-            return LDAP_OPT_ON;
-        } else {
-            return LDAP_OPT_OFF;
-        }
-    }();
+    AdInterfacePrivate::s_sasl_nocanon = is_on ? LDAP_OPT_ON : LDAP_OPT_OFF;
 }
 
 void AdInterface::set_port(const int port) {
