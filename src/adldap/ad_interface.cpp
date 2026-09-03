@@ -430,6 +430,21 @@ QString scope_to_string(const SearchScope &scope) {
     }
 }
 
+const int scope_to_int(const SearchScope &scope) {
+    switch (scope) {
+    case SearchScope_Object:
+        return LDAP_SCOPE_BASE;
+    case SearchScope_Children:
+        return LDAP_SCOPE_ONELEVEL;
+    case SearchScope_All:
+        return LDAP_SCOPE_SUBTREE;
+    case SearchScope_Descendants:
+        return LDAP_SCOPE_CHILDREN;
+    default:
+        return 0;
+    }
+}
+
 bool AdInterface::search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl) {
     // NOTE: only log once per cycle of search pages,
     // to avoid duplicate messages
@@ -444,17 +459,7 @@ bool AdInterface::search_paged(const QString &base, const SearchScope scope, con
     }
 
     const char *base_cstr = cstr(base);
-
-    const int scope_int = [&]() {
-        switch (scope) {
-            case SearchScope_Object: return LDAP_SCOPE_BASE;
-            case SearchScope_Children: return LDAP_SCOPE_ONELEVEL;
-            case SearchScope_All: return LDAP_SCOPE_SUBTREE;
-            case SearchScope_Descendants: return LDAP_SCOPE_CHILDREN;
-        }
-        return 0;
-    }();
-
+    const int scope_int = scope_to_int(scope);
     const char *filter_cstr = [&]() {
         if (filter.isEmpty()) {
             // NOTE: need to pass NULL instead of empty
