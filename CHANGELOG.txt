@@ -2,6 +2,13 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.25.0
+-----------------------------------------------------------------------
+- Add user photo to the user's properties.
+- Update icon themes.
+- Fixed incompatibility with Samba 4.23.
+
+-----------------------------------------------------------------------
  VERSION 0.24.0
 -----------------------------------------------------------------------
 - "Delete subtree" permission is no longer required to delete an object

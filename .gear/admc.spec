@@ -10,7 +10,7 @@
 %endif
 
 Name: admc
-Version: 0.24.0
+Version: 0.25.0
 Release: alt1
 
 Summary: Active Directory Management Center
@@ -126,6 +126,11 @@ Tests for ADMC
 %_bindir/admc_test_find_policy_dialog
 
 %changelog
+* Thu Sep 03 2026 Semyon Knyazev <samael@altlinux.org> 0.25.0-alt1
+- Add user photo to the user's properties.
+- Update icon themes.
+- Fixed incompatibility with Samba 4.23.
+
 * Wed Jul 01 2026 Semyon Knyazev <samael@altlinux.org> 0.24.0-alt1
 - "Delete subtree" permission is no longer required to delete an object
   subtree (if the required permissions are granted).
