@@ -415,6 +415,21 @@ QHash<QString, AdObject> AdInterface::search(const QString &base, const SearchSc
     return results;
 }
 
+QString scope_to_string(const SearchScope &scope) {
+    switch (scope) {
+    case SearchScope_Object:
+        return "object";
+    case SearchScope_Children:
+        return "children";
+    case SearchScope_Descendants:
+        return "descendants";
+    case SearchScope_All:
+        return "all";
+    default:
+        return QString();
+    }
+}
+
 bool AdInterface::search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl) {
     // NOTE: only log once per cycle of search pages,
     // to avoid duplicate messages
@@ -423,16 +438,7 @@ bool AdInterface::search_paged(const QString &base, const SearchScope scope, con
     if (need_to_log) {
         const QString attributes_string = "{" + attributes.join(",") + "}";
 
-        const QString scope_string = [&scope]() -> QString {
-            switch (scope) {
-                case SearchScope_Object: return "object";
-                case SearchScope_Children: return "children";
-                case SearchScope_Descendants: return "descendants";
-                case SearchScope_All: return "all";
-                default: break;
-            }
-            return QString();
-        }();
+        const QString scope_string = scope_to_string(scope);
 
         d->success_message(QString(tr("Search:\n\tfilter = \"%1\"\n\tattributes = %2\n\tscope = \"%3\"\n\tbase = \"%4\"")).arg(filter, attributes_string, scope_string, base));
     }
