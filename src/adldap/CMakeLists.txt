@@ -116,20 +116,22 @@ add_library(adldap SHARED
     adldap.qrc
 )
 
-target_precompile_headers(admc PRIVATE
-  <algorithm>
-  <ndr.h>
-  <QByteArray>
-  <QCoreApplication>
-  <QDateTime>
-  <QDebug>
-  <QHash>
-  <QList>
-  <QLocale>
-  <QString>
-  <string.h>
-  <talloc.h>
-  <time.h>
+target_precompile_headers(adldap PRIVATE
+  # C++
+  "$<$<COMPILE_LANGUAGE:CXX>:<atomic$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:CXX>:<QByteArray$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:CXX>:<QCoreApplication$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:CXX>:<QDateTime$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:CXX>:<QDebug$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:CXX>:<QHash$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:CXX>:<QList$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:CXX>:<QLocale$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:CXX>:<QString$<ANGLE-R>>"
+  # C
+  "$<$<COMPILE_LANGUAGE:C>:<ndr.h$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:C>:<string.h$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:C>:<talloc.h$<ANGLE-R>>"
+  "$<$<COMPILE_LANGUAGE:C>:<time.h$<ANGLE-R>>"
 )
 
 if ((VERSION_SMB_MAJOR GREATER_EQUAL 5)
