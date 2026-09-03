@@ -109,6 +109,26 @@ void get_auth_data_fn(const char *pServer, const char *pShare, char *pWorkgroup,
     Q_UNUSED(maxLenPassword);
 }
 
+QString AdInterface::find_domain_controller() const {
+    const QList<QString> dc_list = get_domain_hosts(d->domain, QString());
+    if (dc_list.isEmpty()) {
+        d->error_message_plain(
+            tr("Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational."));
+
+        return QString();
+    }
+
+    if (!AdInterfacePrivate::s_dc.isEmpty()) {
+        if (dc_list.contains(AdInterfacePrivate::s_dc)) {
+            return AdInterfacePrivate::s_dc;
+        } else {
+            return dc_list[0];
+        }
+    } else {
+        return dc_list[0];
+    }
+}
+
 AdInterface::AdInterface() {
     d = new AdInterfacePrivate(this);
 
@@ -132,24 +152,7 @@ AdInterface::AdInterface() {
     // Connect via LDAP
     //
 
-    d->dc = [&]() {
-        const QList<QString> dc_list = get_domain_hosts(d->domain, QString());
-        if (dc_list.isEmpty()) {
-            d->error_message_plain(tr("Failed to find domain controllers. Make sure your computer is in the domain and that domain controllers are operational."));
-
-            return QString();
-        }
-
-        if (!AdInterfacePrivate::s_dc.isEmpty()) {
-            if (dc_list.contains(AdInterfacePrivate::s_dc)) {
-                return AdInterfacePrivate::s_dc;
-            } else {
-                return dc_list[0];
-            }
-        } else {
-            return dc_list[0];
-        }
-    }();
+    d->dc = find_domain_controller();
 
     if (AdInterfacePrivate::s_dc.isEmpty()) {
         AdInterfacePrivate::s_dc = d->dc;
