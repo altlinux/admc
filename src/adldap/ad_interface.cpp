@@ -430,7 +430,7 @@ QString scope_to_string(const SearchScope &scope) {
     }
 }
 
-const int scope_to_int(const SearchScope &scope) {
+int scope_to_int(const SearchScope &scope) {
     switch (scope) {
     case SearchScope_Object:
         return LDAP_SCOPE_BASE;
