@@ -584,15 +584,16 @@ bool AdInterface::attribute_replace_values(const QString &dn, const QString &att
     return true;
 }
 
-bool AdInterface::attribute_replace_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg, const bool set_dacl) {
-    const QList<QByteArray> values = [=]() -> QList<QByteArray> {
-        if (value.isEmpty()) {
-            return QList<QByteArray>();
-        } else {
-            return {value};
-        }
-    }();
+const QList<QByteArray> value_to_list(const QByteArray &value) {
+    if (value.isEmpty()) {
+        return QList<QByteArray>();
+    } else {
+        return { value };
+    }
+}
 
+bool AdInterface::attribute_replace_value(const QString &dn, const QString &attribute, const QByteArray &value, const DoStatusMsg do_msg, const bool set_dacl) {
+    const QList<QByteArray> values = value_to_list(value);
     return attribute_replace_values(dn, attribute, values, do_msg, set_dacl);
 }
 
