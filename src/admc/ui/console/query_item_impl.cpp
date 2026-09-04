@@ -39,6 +39,7 @@
 #include "ui/console/query_item_impl.h"
 #include "ui/dialog/create/query_item.h"
 #include "ui/dialog/edit_query_item.h"
+#include "ui/status.h"
 #include "ui/utils.h"
 #include "ui/widget/console/results_view.h"
 
@@ -197,8 +198,16 @@ void QueryItemImpl::on_export() {
     const QByteArray json_bytes = QJsonDocument::fromVariant(data).toJson();
 
     QFile file(file_path);
-    file.open(QIODevice::WriteOnly);
-    file.write(json_bytes);
+    const bool result = file.open(QIODevice::WriteOnly);
+    if (result) {
+        file.write(json_bytes);
+    } else {
+        g_status->add_message(
+            QCoreApplication::translate(
+                "query_item_impl.cpp",
+                "Could not open a file") + ": " + file_path,
+            StatusType_Error);
+    }
 }
 
 void console_query_item_load(const QList<QStandardItem *> row,

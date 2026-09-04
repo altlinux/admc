@@ -5178,6 +5178,10 @@
         <source>Export Query</source>
         <translation>Экспортировать запрос</translation>
     </message>
+    <message>
+        <source>Could not open a file</source>
+        <translation>Не удалось открыть файл</translation>
+    </message>
 </context>
 <context>
     <name>utils.cpp</name>
