@@ -34,6 +34,7 @@
 #include "ui/widget/result/pso/pso.h"
 #include "ui/status.h"
 #include "ui/utils.h"
+#include "core/utils.h"
 #include "core/console/object/operations.h"
 
 #include <QAction>
@@ -125,4 +126,8 @@ QList<int> PasswordSettingsImpl::default_columns() const {
 void PasswordSettingsImpl::properties(const QList<QModelIndex> &index_list) {
     ConsoleObjectTreeOperations::console_object_properties(
         {console}, index_list, ObjectRole_DN, {CLASS_PSO_CONTAINER});
+}
+
+void PasswordSettingsImpl::retranslate_ui() {
+    create_pso_action->setText(tr("Create password settings object"));
 }
