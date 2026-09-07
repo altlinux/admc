@@ -673,6 +673,19 @@ QStringList AdConfig::get_site_related_classes() const {
     return site_related_classes;
 }
 
+const QList<QString> AdConfig::get_applies_to_classes(const AdObject &object) const {
+    QList<QString> out;
+
+    const QList<QString> class_guid_list = object.get_strings(ATTRIBUTE_APPLIES_TO);
+    for (const QString &class_guid_string : class_guid_list) {
+        const QByteArray class_guid = guid_string_to_bytes(class_guid_string);
+        const QString object_class = guid_to_class(class_guid);
+        out.append(object_class);
+    }
+
+    return out;
+}
+
 void AdConfig::load_extended_rights(AdInterface &ad)
 {
     const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_CLASS, CLASS_CONTROL_ACCESS_RIGHT);
@@ -694,19 +707,7 @@ void AdConfig::load_extended_rights(AdInterface &ad)
         const QString guid_string = object.get_string(ATTRIBUTE_RIGHTS_GUID);
         const QByteArray guid = guid_string_to_bytes(guid_string);
         const QByteArray display_name = object.get_value(ATTRIBUTE_DISPLAY_NAME);
-        const QList<QString> applies_to = [this, object]() {
-            QList<QString> out;
-
-            const QList<QString> class_guid_string_list = object.get_strings(ATTRIBUTE_APPLIES_TO);
-            for (const QString &class_guid_string : class_guid_string_list) {
-                const QByteArray class_guid = guid_string_to_bytes(class_guid_string);
-                const QString object_class = guid_to_class(class_guid);
-
-                out.append(object_class);
-            }
-
-            return out;
-        }();
+        const QList<QString> applies_to = get_applies_to_classes(object);
         const int valid_accesses = object.get_int(ATTRIBUTE_VALID_ACCESSES);
 
         d->right_to_guid_map[cn] = guid;

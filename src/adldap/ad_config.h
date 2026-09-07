@@ -34,6 +34,7 @@
 
 class AdConfigPrivate;
 class AdInterface;
+class AdObject;
 class QLocale;
 class QString;
 class QLineEdit;
@@ -145,6 +146,7 @@ private:
 
     void load_permissionable_attributes(const QString &obj_class, AdInterface &ad);
     const QHash<Attribute, QString> get_fallback_display_names() const;
+    const QList<QString> get_applies_to_classes(const AdObject &object) const;
 
     AdConfigPrivate *d;
 };
