@@ -184,15 +184,13 @@ QString AdConfig::pso_container_dn() const {
     return QString("CN=Password Settings Container,CN=System,%1").arg(domain_dn());
 }
 
-QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {
-    if (d->attribute_display_names.contains(objectClass) && d->attribute_display_names[objectClass].contains(attribute)) {
-        const QString display_name = d->attribute_display_names[objectClass][attribute];
 
-        return display_name;
-    }
-
-    // NOTE: display specifier doesn't cover all attributes for all classes, so need to hardcode some of them here
-    static const QHash<Attribute, QString> fallback_display_names = {
+/**
+ * NOTE: display specifier doesn't cover all attributes for all classes, so need
+ * to hardcode some of them here
+ */
+const QHash<Attribute, QString> AdConfig::get_fallback_display_names() const {
+    return {
         {ATTRIBUTE_NAME, QCoreApplication::translate("AdConfig", "Name")},
         {ATTRIBUTE_DN, QCoreApplication::translate("AdConfig", "Distinguished name")},
         {ATTRIBUTE_OBJECT_CLASS, QCoreApplication::translate("AdConfig", "Object class")},
@@ -209,7 +207,15 @@ QString AdConfig::get_attribute_display_name(const Attribute &attribute, const O
         {ATTRIBUTE_LOCATION, QCoreApplication::translate("AdConfig", "Location")},
         {ATTRIBUTE_MANAGED_BY, QCoreApplication::translate("managedBy", "Managed by")},
     };
+}
 
+QString AdConfig::get_attribute_display_name(const Attribute &attribute, const ObjectClass &objectClass) const {
+    if (d->attribute_display_names.contains(objectClass) && d->attribute_display_names[objectClass].contains(attribute)) {
+        const QString display_name = d->attribute_display_names[objectClass][attribute];
+        return display_name;
+    }
+
+    const QHash<Attribute, QString> fallback_display_names = get_fallback_display_names();
     return fallback_display_names.value(attribute, attribute);
 }
 

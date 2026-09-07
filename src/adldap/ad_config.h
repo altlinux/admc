@@ -144,6 +144,7 @@ private:
     void load_filter_containers(AdInterface &ad, const QString &locale_dir);
 
     void load_permissionable_attributes(const QString &obj_class, AdInterface &ad);
+    const QHash<Attribute, QString> get_fallback_display_names() const;
 
     AdConfigPrivate *d;
 };
