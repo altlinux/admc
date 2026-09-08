@@ -484,7 +484,9 @@ QString msds_supported_etypes_to_display_value(const QByteArray &bytes) {
             masks_strings.append(mask_name_map[mask]);
     }
 
-    QString display_value = QString("0x%1 = ( %2 )").arg(QString::number((quint32)value_int, 16), masks_strings.join(" | "));
+    QString display_value =
+        QString("0x%1 = ( %2 )").arg(QString::number((quint32)value_int, 16),
+                                     mask_list_to_string(masks_strings));
     return display_value;
 }
 
@@ -506,7 +508,8 @@ QString attribute_hex_displayed_value(const QString &attribute, const QByteArray
 
     QString display_value = masks_strings.isEmpty() ?
                 QString("0x%1").arg(QString::number((quint32)value_int, 16)) :
-                QString("0x%1 = ( %2 )").arg(QString::number((quint32)value_int, 16), masks_strings.join(" | "));
+                QString("0x%1 = ( %2 )").arg(QString::number((quint32)value_int, 16),
+                                             mask_list_to_string(masks_strings));
 
     return display_value;
 }
