@@ -4,6 +4,7 @@
  * Copyright (C) 2021-2026 BaseALT Ltd.
  * Copyright (C) 2021-2022 Dmitry Degtyarev
  * Copyright (C) 2023-2026 Semyon Knyazev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,6 +148,7 @@ private:
     void load_permissionable_attributes(const QString &obj_class, AdInterface &ad);
     const QHash<Attribute, QString> get_fallback_display_names() const;
     const QList<QString> get_applies_to_classes(const AdObject &object) const;
+    const QString get_locale_dir(const QLocale &locale) const;
 
     AdConfigPrivate *d;
 };

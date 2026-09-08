@@ -91,6 +91,12 @@ QString locale_to_code(const QLocale &locale) {
     }
 }
 
+const QString AdConfig::get_locale_dir(const QLocale &locale) const {
+    const QString locale_code = locale_to_code(locale);
+    return QString("CN=%1,CN=DisplaySpecifiers,%2")
+        .arg(locale_code, configuration_dn());
+}
+
 void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->domain = ad.get_domain();
 
@@ -113,10 +119,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     const AdObject domain_object = ad.search_object(domain_dn());
     d->domain_sid = object_sid_display_value(domain_object.get_value(ATTRIBUTE_OBJECT_SID));
 
-    const QString locale_dir = [this, locale]() {
-        const QString locale_code = locale_to_code(locale);
-        return QString("CN=%1,CN=DisplaySpecifiers,%2").arg(locale_code, configuration_dn());
-    }();
+    const QString locale_dir = get_locale_dir(locale);
 
     load_attribute_schemas(ad);
 
