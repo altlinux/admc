@@ -40,5 +40,9 @@ bool attribute_value_is_hex_displayed(const QString &attribute);
 qint64 get_seconds_total(const qint64 &hundred_nanos_negative);
 const QString make_guid_string(const QByteArray *segments,
                                const int &segments_count);
+const QList<QString> get_mask_name_list(
+    const int &uac,
+    const QList<int> &mask_list,
+    const QHash<int, QString> &mask_name_map);
 
 #endif /* ATTRIBUTE_DISPLAY_H */

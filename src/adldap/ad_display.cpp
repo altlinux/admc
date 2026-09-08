@@ -277,6 +277,24 @@ QString octet_display_value(const QByteArray &bytes) {
     return QString(out);
 }
 
+const QList<QString> get_mask_name_list(
+    const int &uac,
+    const QList<int> &mask_list,
+    const QHash<int, QString> &mask_name_map)
+{
+    QList<QString> out_list;
+
+    for (const int mask : mask_list) {
+        const bool mask_is_set = bitmask_is_set(uac, mask);
+        if (mask_is_set) {
+            const QString mask_name = mask_name_map[mask];
+            out_list.append(mask_name);
+        }
+    }
+
+    return out_list;
+}
+
 QString uac_to_display_value(const QByteArray &bytes) {
     bool uac_toInt_ok;
     const int uac = bytes.toInt(&uac_toInt_ok);
@@ -343,20 +361,8 @@ QString uac_to_display_value(const QByteArray &bytes) {
             {UAC_USER_USE_AES_KEYS, "USER_USE_AES_KEYS"},
         };
 
-        const QList<QString> set_mask_name_list = [&]() {
-            QList<QString> out_list;
-
-            for (const int mask : mask_list) {
-                const bool mask_is_set = bitmask_is_set(uac, mask);
-
-                if (mask_is_set) {
-                    const QString mask_name = mask_name_map[mask];
-                    out_list.append(mask_name);
-                }
-            }
-
-            return out_list;
-        }();
+        const QList<QString> set_mask_name_list =
+            get_mask_name_list(uac, mask_list, mask_name_map);
 
         const QString out_string = set_mask_name_list.join(" | ");
 
