@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,5 +37,6 @@ QString attribute_display_value(const QString &attribute, const QByteArray &valu
 QString attribute_display_values(const QString &attribute, const QList<QByteArray> &values, const AdConfig *adconfig);
 QString object_sid_display_value(const QByteArray &sid_bytes);
 bool attribute_value_is_hex_displayed(const QString &attribute);
+qint64 get_seconds_total(const qint64 &hundred_nanos_negative);
 
 #endif /* ATTRIBUTE_DISPLAY_H */

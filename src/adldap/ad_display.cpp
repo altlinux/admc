@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -158,6 +159,13 @@ QString datetime_display_value(const QString &attribute, const QByteArray &bytes
     return display;
 }
 
+qint64 get_seconds_total(const qint64 &hundred_nanos_negative) {
+    const qint64 hundred_nanos = -hundred_nanos_negative;
+    const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
+    const qint64 seconds = millis / SECONDS_TO_MILLIS;
+    return seconds;
+}
+
 QString timespan_display_value(const QByteArray &bytes) {
     // Timespan = integer value of hundred nanosecond quantities
     // (also negated)
@@ -173,13 +181,7 @@ QString timespan_display_value(const QByteArray &bytes) {
         return "(none)";
     }
 
-    qint64 seconds_total = [hundred_nanos_negative]() {
-        const qint64 hundred_nanos = -hundred_nanos_negative;
-        const qint64 millis = hundred_nanos / MILLIS_TO_100_NANOS;
-        const qint64 seconds = millis / SECONDS_TO_MILLIS;
-
-        return seconds;
-    }();
+    qint64 seconds_total = get_seconds_total(hundred_nanos_negative);
 
     const qint64 days = seconds_total / DAYS_TO_SECONDS;
     seconds_total -= days * DAYS_TO_SECONDS;
