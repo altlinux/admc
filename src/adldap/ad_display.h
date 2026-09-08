@@ -38,5 +38,7 @@ QString attribute_display_values(const QString &attribute, const QList<QByteArra
 QString object_sid_display_value(const QByteArray &sid_bytes);
 bool attribute_value_is_hex_displayed(const QString &attribute);
 qint64 get_seconds_total(const qint64 &hundred_nanos_negative);
+const QString make_guid_string(const QByteArray *segments,
+                               const int &segments_count);
 
 #endif /* ATTRIBUTE_DISPLAY_H */

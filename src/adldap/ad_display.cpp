@@ -222,6 +222,23 @@ QString timespan_display_value(const QByteArray &bytes) {
     return display;
 }
 
+const QString make_guid_string(const QByteArray *segments,
+                               const int &segments_count) {
+    QString out;
+
+    for (int i = 0; i < segments_count; i++) {
+        const QByteArray segment = segments[i];
+
+        if (i > 0) {
+            out += '-';
+        }
+
+        out += segment.toHex();
+    }
+
+    return out;
+}
+
 QString guid_to_display_value(const QByteArray &bytes) {
     // NOTE: have to do some weird pre-processing to match
     // how Windows displays GUID's. The GUID is broken down
@@ -240,23 +257,7 @@ QString guid_to_display_value(const QByteArray &bytes) {
     std::reverse(segments[1].begin(), segments[1].end());
     std::reverse(segments[2].begin(), segments[2].end());
 
-    const QString guid_display_string = [&]() {
-        QString out;
-
-        for (int i = 0; i < segments_count; i++) {
-            const QByteArray segment = segments[i];
-
-            if (i > 0) {
-                out += '-';
-            }
-
-            out += segment.toHex();
-        }
-
-        return out;
-    }();
-
-    return guid_display_string;
+    return make_guid_string(segments, segments_count);
 }
 
 QString octet_display_value(const QByteArray &bytes) {
