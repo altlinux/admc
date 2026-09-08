@@ -843,17 +843,21 @@ void AdConfig::load_display_names(AdInterface &ad, const QString &locale_dir) {
     }
 }
 
+const QList<QString> get_column_values(AdInterface &ad,
+                                       const QString &locale_dir) {
+    const QString dn = QString("CN=default-Display,%1").arg(locale_dir);
+    const AdObject object = ad.search_object(dn, {ATTRIBUTE_EXTRA_COLUMNS});
+
+    // NOTE: order as stored in attribute is reversed. Order is not sorted
+    // alphabetically so can't just sort.
+    QList<QString> extra_columns = object.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
+    std::reverse(extra_columns.begin(), extra_columns.end());
+
+    return extra_columns;
+}
+
 void AdConfig::load_columns(AdInterface &ad, const QString &locale_dir) {
-    const QList<QString> columns_values = [&] {
-        const QString dn = QString("CN=default-Display,%1").arg(locale_dir);
-        const AdObject object = ad.search_object(dn, {ATTRIBUTE_EXTRA_COLUMNS});
-
-        // NOTE: order as stored in attribute is reversed. Order is not sorted alphabetically so can't just sort.
-        QList<QString> extra_columns = object.get_strings(ATTRIBUTE_EXTRA_COLUMNS);
-        std::reverse(extra_columns.begin(), extra_columns.end());
-
-        return extra_columns;
-    }();
+    const QList<QString> columns_values = get_column_values(ad, locale_dir);
 
     // ATTRIBUTE_EXTRA_COLUMNS value is
     // "$attribute,$display_name,..."
