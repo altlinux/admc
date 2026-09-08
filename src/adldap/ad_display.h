@@ -44,5 +44,7 @@ const QList<QString> get_mask_name_list(
     const int &uac,
     const QList<int> &mask_list,
     const QHash<int, QString> &mask_name_map);
+const QString mask_list_to_string(const QList<QString> &list);
+const QString make_masks_string(const int &uac);
 
 #endif /* ATTRIBUTE_DISPLAY_H */

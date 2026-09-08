@@ -349,6 +349,23 @@ static const QHash<int, QString> UAC_MASK_NAME_MAP = {
     {UAC_USER_USE_AES_KEYS, "USER_USE_AES_KEYS"},
 };
 
+/**
+ * Join a list of masks to form a single string of masks separated by " | ".
+ */
+const QString mask_list_to_string(const QList<QString> &list) {
+    return list.join(" | ");
+}
+
+/**
+ * Create string of the form "X | Y | Z", where X, Y, Z are names of masks that
+ * are set in given UAC.
+ */
+const QString make_masks_string(const int &uac) {
+    const QList<QString> list =
+        get_mask_name_list(uac, UAC_MASK_LIST, UAC_MASK_NAME_MAP);
+    return mask_list_to_string(list);
+}
+
 QString uac_to_display_value(const QByteArray &bytes) {
     bool uac_toInt_ok;
     const int uac = bytes.toInt(&uac_toInt_ok);
@@ -357,17 +374,7 @@ QString uac_to_display_value(const QByteArray &bytes) {
         return QCoreApplication::translate("attribute_display", "<invalid UAC value>");
     }
 
-    // Create string of the form "X | Y | Z", where X,
-    // Y, Z are names of masks that are set in given UAC
-    const QString masks_string = [&]() {
-
-        const QList<QString> set_mask_name_list =
-            get_mask_name_list(uac, UAC_MASK_LIST, UAC_MASK_NAME_MAP);
-
-        const QString out_string = set_mask_name_list.join(" | ");
-
-        return out_string;
-    }();
+    const QString masks_string = make_masks_string(uac);
 
     const QString out = QString("0x%1 = ( %2 )").arg(QString::number((quint32)uac, 16), masks_string);
 
