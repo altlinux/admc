@@ -888,19 +888,19 @@ void AdConfig::load_columns(AdInterface &ad, const QString &locale_dir) {
     add_custom(ATTRIBUTE_NAME, QCoreApplication::translate("AdConfig", "Name"));
 }
 
+const QList<QString> get_categories(const AdObject &object) {
+    QList<QString> categories_out = object.get_strings(ATTRIBUTE_FILTER_CONTAINERS);
+    // NOTE: dns-Zone category is mispelled in ATTRIBUTE_FILTER_CONTAINERS, no
+    // idea why, might just be on this domain version
+    categories_out.replaceInStrings("dns-Zone", "Dns-Zone");
+    return categories_out;
+}
+
 void AdConfig::load_filter_containers(AdInterface &ad, const QString &locale_dir) {
     const QString ui_settings_dn = QString("CN=DS-UI-Default-Settings,%1").arg(locale_dir);
     const AdObject object = ad.search_object(ui_settings_dn, {ATTRIBUTE_FILTER_CONTAINERS});
 
-    // NOTE: dns-Zone category is mispelled in
-    // ATTRIBUTE_FILTER_CONTAINERS, no idea why, might
-    // just be on this domain version
-    const QList<QString> categories = [object]() {
-        QList<QString> categories_out = object.get_strings(ATTRIBUTE_FILTER_CONTAINERS);
-        categories_out.replaceInStrings("dns-Zone", "Dns-Zone");
-
-        return categories_out;
-    }();
+    const QList<QString> categories = get_categories(object);
 
     // NOTE: ATTRIBUTE_FILTER_CONTAINERS contains object
     // *categories* not classes, so need to get object
