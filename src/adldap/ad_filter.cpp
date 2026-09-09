@@ -61,12 +61,19 @@ QString filter_CONDITION(const Condition condition, const QString &attribute, co
     return QString();
 }
 
-// {x, y, z ...} => (&(x)(y)(z)...)
-QString filter_AND(const QList<QString> &subfilters_raw) {
+/**
+ * @brief Create a filter from the sub-filters list by applying the specified
+ * operation.
+ * @param operation A filtering operation ("AND"", "OR".)
+ * @param subfilters_raw A list of raw sub-filters.
+ * @return A filter string.
+ */
+QString filter_operation(const QString &operation,
+                         const QList<QString> &subfilters_raw) {
     const QList<QString> subfilters = process_subfilters(subfilters_raw);
 
     if (subfilters.size() > 1) {
-        QString filter = "(&";
+        QString filter = "(" + operation;
         for (const QString &subfilter : subfilters) {
             filter += subfilter;
         }
@@ -80,23 +87,14 @@ QString filter_AND(const QList<QString> &subfilters_raw) {
     }
 }
 
+// {x, y, z ...} => (&(x)(y)(z)...)
+QString filter_AND(const QList<QString> &subfilters_raw) {
+    return filter_operation(FILTER_OPERATION_AND, subfilters_raw);
+}
+
 // {x, y, z ...} => (|(x)(y)(z)...)
 QString filter_OR(const QList<QString> &subfilters_raw) {
-    const QList<QString> subfilters = process_subfilters(subfilters_raw);
-
-    if (subfilters.size() > 1) {
-        QString filter = "(|";
-        for (const QString &subfilter : subfilters) {
-            filter += subfilter;
-        }
-        filter += ")";
-
-        return filter;
-    } else if (subfilters.size() == 1) {
-        return subfilters[0];
-    } else {
-        return QString();
-    }
+    return filter_operation(FILTER_OPERATION_OR, subfilters_raw);
 }
 
 QString condition_to_display_string(const Condition condition) {

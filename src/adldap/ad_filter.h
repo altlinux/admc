@@ -28,6 +28,9 @@
 
 #include <QString>
 
+const QString FILTER_OPERATION_AND = "&";
+const QString FILTER_OPERATION_OR  = "|";
+
 enum Condition {
     Condition_Contains,
     Condition_Equals,
@@ -59,6 +62,9 @@ QString condition_to_display_string(const Condition condition);
 // ancestry until it finds a match. This method works only with DN-type
 // attributes
 QString filter_matching_rule_in_chain(const QString &attribute, const QString &dn_value);
+
+QString filter_operation(const QString &operation,
+                         const QList<QString> &subfilters_raw);
 
 const QList<QString> make_filter_list(const Condition &condition,
                                       const QString &attribute,
