@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +39,8 @@ enum Condition {
     Condition_COUNT,
 };
 
+typedef QString (*filter_t)(const QList<QString> &subfilters_raw);
+
 extern const QList<QString> filter_classes;
 
 QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value = QString());
@@ -56,6 +59,14 @@ QString condition_to_display_string(const Condition condition);
 // ancestry until it finds a match. This method works only with DN-type
 // attributes
 QString filter_matching_rule_in_chain(const QString &attribute, const QString &dn_value);
+
+const QList<QString> make_filter_list(const Condition &condition,
+                                      const QString &attribute,
+                                      const QList<QString> &attribute_list);
+QString filter_attributes(filter_t filter,
+                          const Condition &condition,
+                          const QString &attribute,
+                          const QList<QString> &attribute_list);
 
 // Filter that accepts any DN from given list
 QString filter_dn_list(const QList<QString> &dn_list);

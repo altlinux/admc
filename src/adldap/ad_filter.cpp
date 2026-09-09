@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,21 +120,48 @@ QList<QString> process_subfilters(const QList<QString> &in) {
     return out;
 }
 
+/**
+ * @brief Make a filter with the specified condition and an attribute type to
+ * the given attribute list.
+ * @param condition A filtering condition.
+ * @param attribute A filtering attribute.
+ * @param attribute_list A list of attributes to filter.
+ * @return A list of filters that can be further used with procedures
+ * like "filter_OR".
+ */
+const QList<QString> make_filter_list(const Condition &condition,
+                                      const QString &attribute,
+                                      const QList<QString> &attribute_list) {
+    QList<QString> subfilter_list;
+    for (const QString &attr : attribute_list) {
+        const QString subfilter = filter_CONDITION(condition, attribute, attr);
+        subfilter_list.append(subfilter);
+    }
+    return subfilter_list;
+}
+
+/**
+ * @brief Apply a filter with the specified condition and attribute type to the
+ * given attribute list.
+ * @param filter A filter procedure to be applied.
+ * @param condition A filtering condition.
+ * @param attribute A filtering attribute.
+ * @param attribute_list A list of attributes to filter.
+ * @return The newly created filter.
+ */
+QString filter_attributes(filter_t filter,
+                          const Condition &condition,
+                          const QString &attribute,
+                          const QList<QString> &attribute_list) {
+    const QList<QString> subfilter_list = make_filter_list(condition,
+                                                           attribute,
+                                                           attribute_list);
+    return filter(subfilter_list);
+}
+
 QString filter_dn_list(const QList<QString> &dn_list) {
-    const QList<QString> subfilter_list = [&]() {
-        QList<QString> subfilter_list_out;
-
-        for (const QString &dn : dn_list) {
-            const QString subfilter = filter_CONDITION(Condition_Equals, ATTRIBUTE_DN, dn);
-            subfilter_list_out.append(subfilter);
-        }
-
-        return subfilter_list_out;
-    }();
-
-    const QString out = filter_OR(subfilter_list);
-
-    return out;
+    return filter_attributes(filter_OR, Condition_Equals, ATTRIBUTE_DN,
+                             dn_list);
 }
 
 QString filter_matching_rule_in_chain(const QString &attribute, const QString &dn_value) {
