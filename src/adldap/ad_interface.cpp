@@ -246,6 +246,28 @@ QString AdInterface::client_user() const {
     return d->client_user;
 }
 
+/**
+ * @brief Convert LDAP values to a list of bytes.
+ * @param values_ldap LDAP values.
+ * @return A list of byte arrays.
+ */
+const QList<QByteArray> values_to_bytes(struct berval **values_ldap) {
+    QList<QByteArray> out;
+
+    if (values_ldap != NULL) {
+        const int values_count = ldap_count_values_len(values_ldap);
+        for (int i = 0; i < values_count; i++) {
+            struct berval value_berval = *values_ldap[i];
+            const QByteArray value_bytes(value_berval.bv_val,
+                                         value_berval.bv_len);
+
+            out.append(value_bytes);
+        }
+    }
+
+    return out;
+}
+
 // Helper f-n for search()
 // NOTE: cookie is starts as NULL. Then after each while
 // loop, it is set to the value returned by
@@ -319,21 +341,7 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
             struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
 
-            const QList<QByteArray> values_bytes = [=]() {
-                QList<QByteArray> out;
-
-                if (values_ldap != NULL) {
-                    const int values_count = ldap_count_values_len(values_ldap);
-                    for (int i = 0; i < values_count; i++) {
-                        struct berval value_berval = *values_ldap[i];
-                        const QByteArray value_bytes(value_berval.bv_val, value_berval.bv_len);
-
-                        out.append(value_bytes);
-                    }
-                }
-
-                return out;
-            }();
+            const QList<QByteArray> values_bytes = values_to_bytes(values_ldap);
 
             const QString attribute(attr);
 
