@@ -771,6 +771,14 @@ LDAPMod **attribute_map_to_ldap_mods(
     return out;
 }
 
+bool AdInterface::is_wrong_ou_parent(const QString &dn) const {
+    const int ldap_result = d->get_ldap_result();
+    const bool is_ou = dn.startsWith("OU=");
+    const QString parent = dn_get_parent(dn);
+    const bool bad_parent = parent.startsWith("CN=");
+    return (ldap_result == LDAP_NAMING_VIOLATION && is_ou && bad_parent);
+}
+
 bool AdInterface::object_add(const QString &dn, const QHash<QString, QList<QString>> &attrs_map) {
     QString error;
     LDAPMod **attrs = attribute_map_to_ldap_mods(attrs_map, error);
@@ -790,28 +798,12 @@ bool AdInterface::object_add(const QString &dn, const QHash<QString, QList<QStri
         return true;
     } else {
         const QString context = QString(tr("Failed to create object %1.")).arg(dn);
-
-        const QString error = [this, dn]() {
-            const bool wrong_ou_parent = [&]() {
-                const int ldap_result = d->get_ldap_result();
-
-                const bool is_ou = dn.startsWith("OU=");
-                const QString parent = dn_get_parent(dn);
-                const bool bad_parent = parent.startsWith("CN=");
-
-                const bool out = (ldap_result == LDAP_NAMING_VIOLATION && is_ou && bad_parent);
-
-                return out;
-            }();
-
-            if (wrong_ou_parent) {
-                return tr("Can't create OU under this object type.");
-            } else {
-                return d->default_error();
-            }
-        }();
-
-        d->error_message(context, error);
+        if (is_wrong_ou_parent(dn)) {
+            d->error_message(context,
+                             tr("Can't create OU under this object type."));
+        } else {
+            d->error_message(context, d->default_error());
+        }
 
         return false;
     }

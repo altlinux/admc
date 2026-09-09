@@ -192,6 +192,7 @@ private:
     void ldap_free();
 
     QString find_domain_controller() const;
+    bool is_wrong_ou_parent(const QString &dn) const;
 };
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
