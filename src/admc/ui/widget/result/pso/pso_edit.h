@@ -77,16 +77,18 @@ private:
         {ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH, ATTRIBUTE_PWD_HISTORY_LENGTH},
         {ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD, ATTRIBUTE_LOCKOUT_THRESHOLD},
         {ATTRIBUTE_MS_DS_LOCKOUT_DURATION, ATTRIBUTE_LOCKOUT_DURATION},
-        {ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW, ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW},
+        {ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW,
+            ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW},
         {ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE, ATTRIBUTE_MIN_PWD_AGE},
         {ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE, ATTRIBUTE_MAX_PWD_AGE}};
 
     void on_add();
     void on_remove();
 
-    void update_fields(const AdObject &passwd_settings_obj);
+    void update_fields(
+        const AdObject &passwd_settings_obj, const bool is_global);
 
-    QString replace_attribute(QString attribute_name);
+    QString replace_attribute(const QString &attribute_name, bool is_global);
 
     /*!
      * Returns appropriate timespan unit value depending on given attribute.
