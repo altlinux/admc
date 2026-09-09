@@ -715,21 +715,44 @@ bool AdInterface::attribute_replace_datetime(const QString &dn, const QString &a
     return result;
 }
 
+/**
+ * Convert attribute map to an array of LDAPMod pointers.
+ * @param attrs_map[in] An attribute map to convert.
+ * @param error[out] A reference to a QString to store an error message
+ * in case of error.
+ * @return An array of LDAPMod pointers or NULL on errors.
+ */
 LDAPMod **attribute_map_to_ldap_mods(
-    const QHash<QString, QList<QString>> &attrs_map)
+    const QHash<QString, QList<QString>> &attrs_map,
+    QString &error)
 {
     LDAPMod **out =
         (LDAPMod **) malloc((attrs_map.size() + 1) * sizeof(LDAPMod *));
+    if (out == NULL) {
+        error = "Failed to allocate memory";
+        return NULL;
+    }
 
     const QList<QString> attrs_map_keys = attrs_map.keys();
     for (int i = 0; i < attrs_map_keys.size(); i++) {
         LDAPMod *attr = (LDAPMod *) malloc(sizeof(LDAPMod));
+        if (attr == NULL) {
+            error = "Failed to allocate memory";
+            free(out);
+            return NULL;
+        }
 
         const QString attr_name = attrs_map_keys[i];
         const QList<QString> value_list = attrs_map[attr_name];
 
         char **value_array =
             (char **) malloc((value_list.size() + 1) * sizeof(char *));
+        if (value_array == NULL) {
+            error = "Failed to allocate memory";
+            free(attr);
+            free(out);
+            return NULL;
+        }
         for (int j = 0; j < value_list.size(); j++) {
             const QString value = value_list[j];
             value_array[j] = (char *) strdup(cstr(value));
@@ -749,7 +772,14 @@ LDAPMod **attribute_map_to_ldap_mods(
 }
 
 bool AdInterface::object_add(const QString &dn, const QHash<QString, QList<QString>> &attrs_map) {
-    LDAPMod **attrs = attribute_map_to_ldap_mods(attrs_map);
+    QString error;
+    LDAPMod **attrs = attribute_map_to_ldap_mods(attrs_map, error);
+    if (attrs == NULL) {
+        const QString context = QString(tr("Failed to create object %1.")).arg(dn);
+        d->error_message(context, error);
+        return false;
+    }
+
     const int result = ldap_add_ext_s(d->ld, cstr(dn), attrs, NULL, NULL);
 
     ldap_mods_free(attrs, 1);
