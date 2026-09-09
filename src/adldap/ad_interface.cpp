@@ -715,36 +715,41 @@ bool AdInterface::attribute_replace_datetime(const QString &dn, const QString &a
     return result;
 }
 
-bool AdInterface::object_add(const QString &dn, const QHash<QString, QList<QString>> &attrs_map) {
-    LDAPMod **attrs = [&attrs_map]() {
-        LDAPMod **out = (LDAPMod **) malloc((attrs_map.size() + 1) * sizeof(LDAPMod *));
+LDAPMod **attribute_map_to_ldap_mods(
+    const QHash<QString, QList<QString>> &attrs_map)
+{
+    LDAPMod **out =
+        (LDAPMod **) malloc((attrs_map.size() + 1) * sizeof(LDAPMod *));
 
-        const QList<QString> attrs_map_keys = attrs_map.keys();
-        for (int i = 0; i < attrs_map_keys.size(); i++) {
-            LDAPMod *attr = (LDAPMod *) malloc(sizeof(LDAPMod));
+    const QList<QString> attrs_map_keys = attrs_map.keys();
+    for (int i = 0; i < attrs_map_keys.size(); i++) {
+        LDAPMod *attr = (LDAPMod *) malloc(sizeof(LDAPMod));
 
-            const QString attr_name = attrs_map_keys[i];
-            const QList<QString> value_list = attrs_map[attr_name];
+        const QString attr_name = attrs_map_keys[i];
+        const QList<QString> value_list = attrs_map[attr_name];
 
-            char **value_array = (char **) malloc((value_list.size() + 1) * sizeof(char *));
-            for (int j = 0; j < value_list.size(); j++) {
-                const QString value = value_list[j];
-                value_array[j] = (char *) strdup(cstr(value));
-            }
-            value_array[value_list.size()] = NULL;
-
-            attr->mod_type = (char *) strdup(cstr(attr_name));
-            attr->mod_op = LDAP_MOD_ADD;
-            attr->mod_values = value_array;
-
-            out[i] = attr;
+        char **value_array =
+            (char **) malloc((value_list.size() + 1) * sizeof(char *));
+        for (int j = 0; j < value_list.size(); j++) {
+            const QString value = value_list[j];
+            value_array[j] = (char *) strdup(cstr(value));
         }
+        value_array[value_list.size()] = NULL;
 
-        out[attrs_map.size()] = NULL;
+        attr->mod_type = (char *) strdup(cstr(attr_name));
+        attr->mod_op = LDAP_MOD_ADD;
+        attr->mod_values = value_array;
 
-        return out;
-    }();
+        out[i] = attr;
+    }
 
+    out[attrs_map.size()] = NULL;
+
+    return out;
+}
+
+bool AdInterface::object_add(const QString &dn, const QHash<QString, QList<QString>> &attrs_map) {
+    LDAPMod **attrs = attribute_map_to_ldap_mods(attrs_map);
     const int result = ldap_add_ext_s(d->ld, cstr(dn), attrs, NULL, NULL);
 
     ldap_mods_free(attrs, 1);
