@@ -45,7 +45,16 @@ const QList<QString> filter_classes = {
     CLASS_REMOTE_STORAGE_SERVICE,
 };
 
-QList<QString> process_subfilters(const QList<QString> &in);
+// Helper procedures.
+
+QList<QString> process_subfilters(const QList<QString> &in) {
+    QList<QString> out = in;
+    out.removeAll("");
+
+    return out;
+}
+
+// Public API.
 
 QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value) {
     switch (condition) {
@@ -109,13 +118,6 @@ QString condition_to_display_string(const Condition condition) {
         case Condition_COUNT: return QString();
     }
     return QString();
-}
-
-QList<QString> process_subfilters(const QList<QString> &in) {
-    QList<QString> out = in;
-    out.removeAll("");
-
-    return out;
 }
 
 /**
