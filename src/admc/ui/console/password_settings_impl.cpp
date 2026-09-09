@@ -131,3 +131,7 @@ void PasswordSettingsImpl::properties(const QList<QModelIndex> &index_list) {
 void PasswordSettingsImpl::retranslate_ui() {
     create_pso_action->setText(tr("Create password settings object"));
 }
+
+QModelIndex get_password_settings_tree_root(ConsoleWidget *console) {
+    return console->search_item(console->domain_info_index(), {ItemType_PasswordSettings});
+}

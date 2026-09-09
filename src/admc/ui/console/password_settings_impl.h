@@ -60,4 +60,6 @@ private:
     bool is_PSO_container_available = false;
 };
 
+QModelIndex get_password_settings_tree_root(ConsoleWidget *console);
+
 #endif /* PASSWORD_SETTINGS_IMPL_H */

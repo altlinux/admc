@@ -37,6 +37,7 @@
 #include "ui/console/find_object_impl.h"
 #include "ui/console/object/console_object_operations.h"
 #include "ui/console/object/object_impl.h"
+#include "ui/console/password_settings_impl.h"
 #include "ui/console/policy_ou_impl.h"
 #include "ui/console/policy_root_impl.h"
 #include "ui/console/query_folder_impl.h"
@@ -606,7 +607,7 @@ void ConsoleObjectTreeOperations::console_object_create(
 
                 if (object_class == CLASS_PSO) {
                     const QModelIndex pso_root =
-                        get_pso_container_tree_root(target_console);
+                        get_password_settings_tree_root(target_console);
                     add_objects_to_console_from_dn_list(target_console,
                                                         ad_inner,
                                                         { created_dn },
@@ -727,7 +728,7 @@ const QList<QModelIndex> ConsoleObjectTreeOperations::get_root_list(
 {
     return {
         get_domain_object_tree_root(console),
-        get_pso_container_tree_root(console),
+        get_password_settings_tree_root(console),
         get_sites_container_tree_root(console),
         get_query_tree_root(console),
         get_find_object_root(console),
@@ -1072,10 +1073,4 @@ QModelIndex ConsoleObjectTreeOperations::get_sites_container_tree_root(
     ConsoleWidget *console)
 {
     return get_object_tree_root(console, g_adconfig->sites_container_dn());
-}
-
-QModelIndex ConsoleObjectTreeOperations::get_pso_container_tree_root(
-    ConsoleWidget *console)
-{
-    return get_object_tree_root(console, g_adconfig->pso_container_dn());
 }

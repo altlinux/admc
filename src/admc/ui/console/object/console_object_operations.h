@@ -69,7 +69,6 @@ namespace ConsoleObjectTreeOperations {
     QModelIndex get_object_tree_root(ConsoleWidget *console, const QString &root_obj_dn);
     QModelIndex get_domain_object_tree_root(ConsoleWidget *console);
     QModelIndex get_sites_container_tree_root(ConsoleWidget *console);
-    QModelIndex get_pso_container_tree_root(ConsoleWidget *console);
 
     QString console_object_count_string(ConsoleWidget *console, const QModelIndex &index);
     void console_object_create(const QList<ConsoleWidget *> &console_list, const QString &object_class, const QString &parent_dn);
