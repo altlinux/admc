@@ -268,6 +268,29 @@ const QList<QByteArray> values_to_bytes(struct berval **values_ldap) {
     return out;
 }
 
+QHash<QString, QList<QByteArray>> object_attributes_to_bytes(
+    LDAP *ld,
+    LDAPMessage *entry)
+{
+    QHash<QString, QList<QByteArray>> object_attributes;
+    BerElement *berptr;
+    for (char *attr = ldap_first_attribute(ld, entry, &berptr);
+         attr != NULL;
+         attr = ldap_next_attribute(ld, entry, berptr)) {
+        struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
+        const QList<QByteArray> values_bytes = values_to_bytes(values_ldap);
+
+        const QString attribute(attr);
+
+        object_attributes[attribute] = values_bytes;
+
+        ldap_value_free_len(values_ldap);
+        ldap_memfree(attr);
+    }
+    ber_free(berptr, 0);
+    return object_attributes;
+}
+
 // Helper f-n for search()
 // NOTE: cookie is starts as NULL. Then after each while
 // loop, it is set to the value returned by
@@ -335,22 +358,8 @@ bool AdInterfacePrivate::search_paged_internal(const char *base, const int scope
         const QString dn(dn_cstr);
         ldap_memfree(dn_cstr);
 
-        QHash<QString, QList<QByteArray>> object_attributes;
-
-        BerElement *berptr;
-        for (char *attr = ldap_first_attribute(ld, entry, &berptr); attr != NULL; attr = ldap_next_attribute(ld, entry, berptr)) {
-            struct berval **values_ldap = ldap_get_values_len(ld, entry, attr);
-
-            const QList<QByteArray> values_bytes = values_to_bytes(values_ldap);
-
-            const QString attribute(attr);
-
-            object_attributes[attribute] = values_bytes;
-
-            ldap_value_free_len(values_ldap);
-            ldap_memfree(attr);
-        }
-        ber_free(berptr, 0);
+        QHash<QString, QList<QByteArray>> object_attributes =
+            object_attributes_to_bytes(ld, entry);
 
         AdObject object;
         object.load(dn, object_attributes);
