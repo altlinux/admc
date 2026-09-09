@@ -19,11 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ad_filter.h"
+#include <QCoreApplication>
 
 #include "ad_defines.h"
-
-#include <QCoreApplication>
+#include "ad_filter.h"
 
 const QList<QString> filter_classes = {
     CLASS_USER,
@@ -56,16 +55,26 @@ QList<QString> process_subfilters(const QList<QString> &in) {
 
 // Public API.
 
-QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value) {
+QString filter_CONDITION(const Condition condition,
+                         const QString &attribute,
+                         const QString &value) {
     switch (condition) {
-        case Condition_Equals: return QString("(%1=%2)").arg(attribute, value);
-        case Condition_NotEquals: return QString("(!(%1=%2))").arg(attribute, value);
-        case Condition_StartsWith: return QString("(%1=%2*)").arg(attribute, value);
-        case Condition_EndsWith: return QString("(%1=*%2)").arg(attribute, value);
-        case Condition_Contains: return QString("(%1=*%2*)").arg(attribute, value);
-        case Condition_Set: return QString("(%1=*)").arg(attribute);
-        case Condition_Unset: return QString("(!(%1=*))").arg(attribute);
-        case Condition_COUNT: return QString();
+        case Condition_Equals:
+            return QString("(%1=%2)").arg(attribute, value);
+        case Condition_NotEquals:
+            return QString("(!(%1=%2))").arg(attribute, value);
+        case Condition_StartsWith:
+            return QString("(%1=%2*)").arg(attribute, value);
+        case Condition_EndsWith:
+            return QString("(%1=*%2)").arg(attribute, value);
+        case Condition_Contains:
+            return QString("(%1=*%2*)").arg(attribute, value);
+        case Condition_Set:
+            return QString("(%1=*)").arg(attribute);
+        case Condition_Unset:
+            return QString("(!(%1=*))").arg(attribute);
+        case Condition_COUNT:
+            return QString();
     }
     return QString();
 }
@@ -108,14 +117,22 @@ QString filter_OR(const QList<QString> &subfilters_raw) {
 
 QString condition_to_display_string(const Condition condition) {
     switch (condition) {
-        case Condition_Equals: return QCoreApplication::translate("filter", "Is (exactly)");
-        case Condition_NotEquals: return QCoreApplication::translate("filter", "Is not");
-        case Condition_StartsWith: return QCoreApplication::translate("filter", "Starts with");
-        case Condition_EndsWith: return QCoreApplication::translate("filter", "Ends with");
-        case Condition_Contains: return QCoreApplication::translate("filter", "Contains");
-        case Condition_Set: return QCoreApplication::translate("filter", "Present");
-        case Condition_Unset: return QCoreApplication::translate("filter", "Not present");
-        case Condition_COUNT: return QString();
+        case Condition_Equals:
+            return QCoreApplication::translate("filter", "Is (exactly)");
+        case Condition_NotEquals:
+            return QCoreApplication::translate("filter", "Is not");
+        case Condition_StartsWith:
+            return QCoreApplication::translate("filter", "Starts with");
+        case Condition_EndsWith:
+            return QCoreApplication::translate("filter", "Ends with");
+        case Condition_Contains:
+            return QCoreApplication::translate("filter", "Contains");
+        case Condition_Set:
+            return QCoreApplication::translate("filter", "Present");
+        case Condition_Unset:
+            return QCoreApplication::translate("filter", "Not present");
+        case Condition_COUNT:
+            return QString();
     }
     return QString();
 }
@@ -164,7 +181,9 @@ QString filter_dn_list(const QList<QString> &dn_list) {
                              dn_list);
 }
 
-QString filter_matching_rule_in_chain(const QString &attribute, const QString &dn_value) {
-    const QString filter = attribute + ":" + QString(MATCHING_RULE_IN_CHAIN_OID) + ":=" + dn_value;
+QString filter_matching_rule_in_chain(const QString &attribute,
+                                      const QString &dn_value) {
+    const QString filter = attribute + ":"
+        + QString(MATCHING_RULE_IN_CHAIN_OID) + ":=" + dn_value;
     return QString("(" + filter + ")");
 }
