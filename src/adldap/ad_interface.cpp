@@ -903,7 +903,7 @@ bool AdInterface::object_move(const QString &dn, const QString &new_container) {
     const int result = ldap_rename_s(d->ld, cstr(dn), cstr(rdn), cstr(new_container), 1, NULL, NULL);
 
     if (result == LDAP_SUCCESS) {
-        d->success_message(QString(tr("Object %1 was moved to %2.")).arg(object_name, container_name));
+        d->success_message(QString(tr("Object %1 was moved to %2.")).arg(object_name, new_container));
 
         return true;
     } else {
