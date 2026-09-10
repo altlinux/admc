@@ -1,7 +1,8 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -215,7 +216,10 @@ void Krb5Client::Krb5ClientImpl::load_caches() {
     for (const QString &ccache_name : dir.entryList({ccache_name_prefix + "*"})) {
         const QByteArray typed_ccname_bytes = QByteArray("FILE:") + ccaches_path.toUtf8() +
                             ccache_name.toUtf8();
-        krb5_cc_resolve(context, typed_ccname_bytes.constData(), &ccache);
+        krb5_error_code err = krb5_cc_resolve(context, typed_ccname_bytes.constData(), &ccache);
+        if (err) {
+            continue;
+        }
         QString principal = principal_from_ccache(ccache);
 
         if (principal.isEmpty() || principal_cache_map.contains(principal)) {
