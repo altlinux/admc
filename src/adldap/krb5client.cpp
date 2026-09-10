@@ -149,7 +149,7 @@ void Krb5Client::Krb5ClientImpl::kinit(const QString &principal, const QString &
 
     // krb5_get_init_creds_opt_free(context, opts);
 
-    krb5_ccache ccache;
+    krb5_ccache ccache = nullptr;
     const QString cache_name = QString("FILE:") + ccaches_path + ccache_name_prefix +
             principal.section('@', 0, 0);
     const QByteArray cache_name_bytes = cache_name.toUtf8();
