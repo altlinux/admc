@@ -20,19 +20,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "krb5client.h"
+#include <QCoreApplication>
+#include <QDebug>
+#include <QDir>
+#include <QHash>
+#include <csignal>
+#include <ctime>
 #include <krb5.h>
 #include <stdexcept>
-#include <QCoreApplication>
-#include <ctime>
-#include <QDebug>
-#include <unistd.h>
-#include <csignal>
 #include <sys/types.h>
-#include <QHash>
-#include <QDir>
+#include <unistd.h>
 
-// Contains temporal kerberos credential cache names
+#include "krb5client.h"
+
+/**
+ * Contains temporal Kerberos credential cache names
+ */
 static std::vector<std::string> krb_temp_caches;
 
 static void crash_handler(int sig) {
@@ -65,10 +68,13 @@ public:
     void load_caches();
     void load_cache_data(krb5_ccache ccache, bool is_system);
     Krb5TgtState tgt_state_from_creds(const krb5_creds &creds);
-    void update_tgt_state_from_creds(Krb5TGTData &data, const krb5_creds &creds);
+    void update_tgt_state_from_creds(Krb5TGTData &data,
+                                     const krb5_creds &creds);
     void throw_error(const QString &error, krb5_error_code err_code);
-    void cleanup(krb5_ccache ccache, krb5_creds *creds, krb5_principal principal, char *principal_unparsed);
-    void cleanup_and_throw(const QString &error, krb5_error_code err_code, krb5_ccache ccache, krb5_creds *creds,
+    void cleanup(krb5_ccache ccache, krb5_creds *creds,
+                 krb5_principal principal, char *principal_unparsed);
+    void cleanup_and_throw(const QString &error, krb5_error_code err_code,
+                           krb5_ccache ccache, krb5_creds *creds,
                            krb5_principal principal, char *principal_unparsed);
     QString principal_from_ccache(krb5_ccache ccache);
     bool cache_is_system(krb5_ccache ccache);
@@ -77,7 +83,8 @@ private:
     void setup_crash_handlers();
 };
 
-const QString Krb5Client::Krb5ClientImpl::ccaches_path = QString("/tmp/admc_uid") + QString::number(getuid()) + "/ccaches/";
+const QString Krb5Client::Krb5ClientImpl::ccaches_path =
+    QString("/tmp/admc_uid") + QString::number(getuid()) + "/ccaches/";
 const QString Krb5Client::Krb5ClientImpl::ccache_name_prefix = "krb5cc_";
 QString Krb5Client::Krb5ClientImpl::sys_ccache = QString();
 
@@ -85,20 +92,25 @@ Krb5Client::Krb5ClientImpl::Krb5ClientImpl() : context(NULL) {
     krb5_error_code res = krb5_init_context(&context);
     QString error;
     if (res) {
-        error = QCoreApplication::translate("Krb5Client", "Kerberos initialization failed");
+        error = QCoreApplication::translate("Krb5Client",
+                                            "Kerberos initialization failed");
         throw(std::runtime_error(error.toUtf8().data()));
     }
 
     QDir dir(ccaches_path);
     if (!dir.mkpath(".")) {
-        error = QCoreApplication::translate("Krb5Client", "Failed to create caches path");
+        error = QCoreApplication::translate("Krb5Client",
+                                            "Failed to create caches path");
         throw(std::runtime_error(error.toUtf8().data()));
     }
 
     dir.cdUp();
     QFile file(dir.absolutePath());
-    if (!file.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner)) {
-        error = QCoreApplication::translate("Krb5Client", "Failed to set caches path permissions");
+    if (!file.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner |
+                             QFileDevice::ExeOwner)) {
+        error = QCoreApplication::translate(
+            "Krb5Client",
+            "Failed to set caches path permissions");
         throw(std::runtime_error(error.toUtf8().data()));
     }
 
@@ -115,7 +127,8 @@ Krb5Client::Krb5ClientImpl::~Krb5ClientImpl() {
     }
 }
 
-void Krb5Client::Krb5ClientImpl::kinit(const QString &principal, const QString &password) {
+void Krb5Client::Krb5ClientImpl::kinit(const QString &principal,
+                                       const QString &password) {
     krb5_ccache old_ccache = principal_cache_map.value(principal, nullptr);
     if (old_ccache) {
         krb5_cc_destroy(context, old_ccache);
@@ -125,7 +138,8 @@ void Krb5Client::Krb5ClientImpl::kinit(const QString &principal, const QString &
 
     krb5_creds creds;
     krb5_error_code res;
-    QString error = QCoreApplication::translate("Krb5Client", "Authentication failed");
+    QString error = QCoreApplication::translate("Krb5Client",
+                                                "Authentication failed");
 
     const QByteArray principal_bytes = principal.toUtf8();
     const char *principal_name = principal_bytes.constData();
@@ -145,7 +159,8 @@ void Krb5Client::Krb5ClientImpl::kinit(const QString &principal, const QString &
     // krb5_get_init_creds_opt_set_tkt_life(opts, 666);
     // krb5_get_init_creds_opt_set_renew_life(opts, 86400);
 
-    res = krb5_get_init_creds_password(context, &creds, princ, passwd, NULL, NULL, 0, NULL, NULL /*opts*/);
+    res = krb5_get_init_creds_password(context, &creds, princ, passwd,
+                                       NULL, NULL, 0, NULL, NULL /*opts*/);
     if (res) {
         cleanup_and_throw(error, res, nullptr, &creds, princ, nullptr);
     }
@@ -153,8 +168,8 @@ void Krb5Client::Krb5ClientImpl::kinit(const QString &principal, const QString &
     // krb5_get_init_creds_opt_free(context, opts);
 
     krb5_ccache ccache = nullptr;
-    const QString cache_name = QString("FILE:") + ccaches_path + ccache_name_prefix +
-            principal.section('@', 0, 0);
+    const QString cache_name = QString("FILE:") + ccaches_path +
+        ccache_name_prefix + principal.section('@', 0, 0);
     const QByteArray cache_name_bytes = cache_name.toUtf8();
     res = krb5_cc_resolve(context, cache_name_bytes.constData(), &ccache);
     if (res) {
@@ -173,7 +188,8 @@ void Krb5Client::Krb5ClientImpl::kinit(const QString &principal, const QString &
 
     // Set as the default for subsequent authentication via SASL
     if (setenv("KRB5CCNAME", cache_name_bytes.constData(), 1)) {
-        const QString setenv_fail = QCoreApplication::translate("Krb5Client", "Failed to set KRB5CCNAME");
+        const QString setenv_fail = QCoreApplication::translate(
+            "Krb5Client", "Failed to set KRB5CCNAME");
         cleanup_and_throw(setenv_fail, 0, ccache, &creds, princ, nullptr);
     }
 
@@ -202,7 +218,8 @@ void Krb5Client::Krb5ClientImpl::load_caches() {
     }
     else {
         const QByteArray sys_cache_bytes = sys_ccache.toUtf8();
-        krb5_error_code res = krb5_cc_resolve(context, sys_cache_bytes.constData(), &def_ccache);
+        krb5_error_code res = krb5_cc_resolve(context, sys_cache_bytes.constData(),
+                                              &def_ccache);
         if (res) {
             krb5_cc_close(context, def_ccache);
             return;
@@ -216,9 +233,11 @@ void Krb5Client::Krb5ClientImpl::load_caches() {
     // Load caches from custom custom dir
     QDir dir(ccaches_path);
     for (const QString &ccache_name : dir.entryList({ccache_name_prefix + "*"})) {
-        const QByteArray typed_ccname_bytes = QByteArray("FILE:") + ccaches_path.toUtf8() +
-                            ccache_name.toUtf8();
-        krb5_error_code err = krb5_cc_resolve(context, typed_ccname_bytes.constData(), &ccache);
+        const QByteArray typed_ccname_bytes = QByteArray("FILE:") +
+            ccaches_path.toUtf8() + ccache_name.toUtf8();
+        krb5_error_code err = krb5_cc_resolve(context,
+                                              typed_ccname_bytes.constData(),
+                                              &ccache);
         if (err) {
             continue;
         }
@@ -237,7 +256,8 @@ void Krb5Client::Krb5ClientImpl::load_caches() {
     }
 }
 
-void Krb5Client::Krb5ClientImpl::load_cache_data(krb5_ccache ccache, bool is_system) {
+void Krb5Client::Krb5ClientImpl::load_cache_data(krb5_ccache ccache,
+                                                 bool is_system) {
     krb5_error_code res;
     krb5_principal principal = nullptr;
     krb5_creds creds{};
@@ -303,7 +323,9 @@ void Krb5Client::Krb5ClientImpl::load_cache_data(krb5_ccache ccache, bool is_sys
     krb5_free_cred_contents(context, &creds);
 }
 
-Krb5TgtState Krb5Client::Krb5ClientImpl::tgt_state_from_creds(const krb5_creds &creds) {
+Krb5TgtState Krb5Client::Krb5ClientImpl::tgt_state_from_creds(
+    const krb5_creds &creds)
+{
     std::time_t now = time(nullptr);
     if (now > creds.times.renew_till) {
         return Krb5TgtState_Outdated;
@@ -315,19 +337,27 @@ Krb5TgtState Krb5Client::Krb5ClientImpl::tgt_state_from_creds(const krb5_creds &
     return Krb5TgtState_Active;
 }
 
-void Krb5Client::Krb5ClientImpl::update_tgt_state_from_creds(Krb5TGTData &data, const krb5_creds &creds) {
+void Krb5Client::Krb5ClientImpl::update_tgt_state_from_creds(
+    Krb5TGTData &data,
+    const krb5_creds &creds)
+{
     data.expires.setSecsSinceEpoch(creds.times.endtime);
     data.renew_until.setSecsSinceEpoch(creds.times.renew_till);
     data.state = tgt_state_from_creds(creds);
 }
 
-void Krb5Client::Krb5ClientImpl::throw_error(const QString &error, krb5_error_code err_code) {
-    QString out_err = err_code ? error + QString(": ") + krb5_get_error_message(context, err_code) :
-                                 error;
+void Krb5Client::Krb5ClientImpl::throw_error(const QString &error,
+                                             krb5_error_code err_code) {
+    QString out_err = err_code ?
+        error + QString(": ") + krb5_get_error_message(context, err_code) :
+        error;
     throw std::runtime_error(out_err.toUtf8().data());
 }
 
-void Krb5Client::Krb5ClientImpl::cleanup(krb5_ccache ccache, krb5_creds *creds, krb5_principal principal, char *principal_unparsed) {
+void Krb5Client::Krb5ClientImpl::cleanup(krb5_ccache ccache,
+                                         krb5_creds *creds,
+                                         krb5_principal principal,
+                                         char *principal_unparsed) {
     if (ccache) {
         krb5_cc_close(context, ccache);
         ccache = nullptr;
@@ -349,7 +379,12 @@ void Krb5Client::Krb5ClientImpl::cleanup(krb5_ccache ccache, krb5_creds *creds, 
     }
 }
 
-void Krb5Client::Krb5ClientImpl:: cleanup_and_throw(const QString &error, krb5_error_code err_code, krb5_ccache ccache, krb5_creds *creds, krb5_principal principal, char *principal_unparsed) {
+void Krb5Client::Krb5ClientImpl:: cleanup_and_throw(const QString &error,
+                                                    krb5_error_code err_code,
+                                                    krb5_ccache ccache,
+                                                    krb5_creds *creds,
+                                                    krb5_principal principal,
+                                                    char *principal_unparsed) {
     cleanup(ccache, creds, principal, principal_unparsed);
     throw_error(error, err_code);
 }
@@ -397,26 +432,31 @@ void Krb5Client::Krb5ClientImpl::setup_crash_handlers() {
     sigaction(SIGTERM, &sa, nullptr);
 }
 
-Krb5Client::Krb5Client() : impl(std::unique_ptr<Krb5ClientImpl>(new Krb5ClientImpl)) {
-
+Krb5Client::Krb5Client() : impl(
+    std::unique_ptr<Krb5ClientImpl>(new Krb5ClientImpl))
+{
+    // Do nothing.
 }
 
 Krb5Client::~Krb5Client() {
-
+    // Do nothing.
 }
 
-void Krb5Client::authenticate(const QString &principal, const QString &password) {
+void Krb5Client::authenticate(const QString &principal,
+                              const QString &password) {
     impl->kinit(principal, password);
 }
 
 void Krb5Client::set_current_principal(const QString &principal) {
     QString error;
     if (!impl->principal_cache_map.value(principal, nullptr)) {
-        error = QCoreApplication::translate("Krb5Client", "Principal is not found");
+        error = QCoreApplication::translate("Krb5Client",
+                                            "Principal is not found");
         impl->throw_error(error, 0);
     }
 
-//    std::time_t expire_time = impl->principal_tgt_map[principal].expires.toSecsSinceEpoch();
+//    std::time_t expire_time =
+//        impl->principal_tgt_map[principal].expires.toSecsSinceEpoch();
 //    std::time_t now = time(nullptr);
 //    const bool is_expired = now > expire_time;
 //    if (is_expired) {
@@ -424,11 +464,13 @@ void Krb5Client::set_current_principal(const QString &principal) {
 //    }
 
     krb5_ccache ccache = impl->principal_cache_map[principal];
-    const QByteArray ccache_name = QByteArray(krb5_cc_get_type(impl->context, ccache)) + QByteArray(":") +
-                                    QByteArray(krb5_cc_get_name(impl->context, ccache));
+    const QByteArray ccache_name =
+        QByteArray(krb5_cc_get_type(impl->context, ccache)) + QByteArray(":") +
+        QByteArray(krb5_cc_get_name(impl->context, ccache));
     int res = setenv("KRB5CCNAME", ccache_name.constData(), 1);
     if (res) {
-        error = QCoreApplication::translate("Krb5Client", "Failed to switch principal");
+        error = QCoreApplication::translate("Krb5Client",
+                                            "Failed to switch principal");
         impl->throw_error(error, res);
     }
 
@@ -436,9 +478,10 @@ void Krb5Client::set_current_principal(const QString &principal) {
 }
 
 void Krb5Client::refresh_tgt(const QString &principal) {
-    // TODO: Enable this function once a reliable method for updating tickets is implemented.
-    // This method isn't used yet.
-    QString error = QCoreApplication::translate("Krb5Client", "Failed to refresh TGT");
+    // TODO: Enable this function once a reliable method for updating tickets is
+    // implemented.  This method isn't used yet.
+    QString error = QCoreApplication::translate("Krb5Client",
+                                                "Failed to refresh TGT");
     krb5_ccache ccache = impl->principal_cache_map.value(principal, nullptr);
     if (!ccache) {
         impl->throw_error(error, 0);
@@ -453,10 +496,12 @@ void Krb5Client::refresh_tgt(const QString &principal) {
     krb5_creds new_creds;
     memset(&new_creds, 0, sizeof(new_creds));
 
-//    const QByteArray ccache_name = QByteArray(krb5_cc_get_type(impl->context, ccache)) + QByteArray(":") +
-//                                    QByteArray(krb5_cc_get_name(impl->context, ccache));
+//    const QByteArray ccache_name =
+//        QByteArray(krb5_cc_get_type(impl->context, ccache)) + QByteArray(":") +
+//        QByteArray(krb5_cc_get_name(impl->context, ccache));
 //    setenv("KRB5CCNAME", ccache_name.constData(), 1);
-    res = krb5_get_renewed_creds(impl->context, &new_creds, princ, ccache, NULL);
+    res = krb5_get_renewed_creds(impl->context, &new_creds, princ, ccache,
+                                 NULL);
     if (res) {
         krb5_free_principal(impl->context, princ);
         impl->throw_error(error, res);
@@ -464,10 +509,12 @@ void Krb5Client::refresh_tgt(const QString &principal) {
 
     res = krb5_cc_store_cred(impl->context, ccache, &new_creds);
     if (res) {
-        impl->cleanup_and_throw(error, res, nullptr, &new_creds, princ, nullptr);
+        impl->cleanup_and_throw(error, res, nullptr, &new_creds, princ,
+                                nullptr);
     }
 
-    impl->update_tgt_state_from_creds(impl->principal_tgt_map[principal], new_creds);
+    impl->update_tgt_state_from_creds(impl->principal_tgt_map[principal],
+                                      new_creds);
     impl->cleanup(nullptr, &new_creds, princ, nullptr);
 }
 
@@ -495,7 +542,8 @@ QStringList Krb5Client::active_tgt_principals() const {
     QStringList out;
     for (const QString &principal : available_principals()) {
         Krb5TGTData tgt_data = impl->principal_tgt_map[principal];
-        if (tgt_data.state == Krb5TgtState_Active /* || tgt_data.state == Krb5TgtState_Expired*/) {
+        if (tgt_data.state == Krb5TgtState_Active
+            /* || tgt_data.state == Krb5TgtState_Expired*/) {
             out << principal;
         }
     }
@@ -510,7 +558,8 @@ void Krb5Client::logout(bool delete_creds) {
     bool creds_not_system = impl->curr_principal != impl->sys_principal;
 
     if (delete_creds && creds_not_system) {
-        krb5_ccache ccache = impl->principal_cache_map.value(impl->curr_principal, nullptr);
+        krb5_ccache ccache =
+            impl->principal_cache_map.value(impl->curr_principal, nullptr);
         if (ccache) {
             krb5_cc_destroy(impl->context, ccache);
         }
@@ -525,11 +574,15 @@ void Krb5Client::logout(bool delete_creds) {
 void Krb5Client::update_temp_caches(const QStringList &remembered_principals) {
     krb_temp_caches.clear();
     const QStringList principals_list = impl->principal_cache_map.keys();
-    QSet<QString> principals_set = QSet<QString>(principals_list.begin(), principals_list.end());
-    QSet<QString> unremembered_set = principals_set.subtract(QSet<QString>(remembered_principals.begin(),
-                                                                           remembered_principals.end()));
+    QSet<QString> principals_set = QSet<QString>(principals_list.begin(),
+                                                 principals_list.end());
+    QSet<QString> unremembered_set =
+        principals_set.subtract(QSet<QString>(remembered_principals.begin(),
+                                              remembered_principals.end()));
     for (const QString &principal : unremembered_set) {
-        const QString cache_name = krb5_cc_get_name(impl->context, impl->principal_cache_map[principal]);
+        const QString cache_name =
+            krb5_cc_get_name(impl->context,
+                             impl->principal_cache_map[principal]);
         krb_temp_caches.push_back(cache_name.toStdString());
     }
 }
