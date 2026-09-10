@@ -127,7 +127,7 @@ void Krb5Client::Krb5ClientImpl::kinit(const QString &principal, const QString &
 
     const QByteArray principal_bytes = principal.toUtf8();
     const char *principal_name = principal_bytes.constData();
-    krb5_principal princ;
+    krb5_principal princ = nullptr;
     res = krb5_parse_name(context, principal_name, &princ);
     if (res) {
         cleanup_and_throw(error, res, nullptr, nullptr, princ, nullptr);
