@@ -151,12 +151,7 @@ QList<bool> AdObject::get_bools(const QString &attribute) const {
 
 bool AdObject::get_bool(const QString &attribute) const {
     const QList<bool> bools = get_bools(attribute);
-
-    if (!bools.isEmpty()) {
-        return bools.first();
-    } else {
-        return false;
-    }
+    return (! bools.isEmpty()) ? bools.first() : false;
 }
 
 bool AdObject::get_system_flag(const SystemFlagsBit bit) const {
