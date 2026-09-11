@@ -1108,14 +1108,13 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password, cons
     } else {
         const QString context = QString(tr("Failed to change password for object %1.")).arg(name);
 
-        const QString error = [this]() {
-            const int ldap_result = d->get_ldap_result();
-            if (ldap_result == LDAP_CONSTRAINT_VIOLATION) {
-                return tr("Password doesn't match rules.");
-            } else {
-                return d->default_error();
-            }
-        }();
+        const int ldap_result = d->get_ldap_result();
+        QString error;
+        if (ldap_result == LDAP_CONSTRAINT_VIOLATION) {
+            error = tr("Password doesn't match rules.");
+        } else {
+            error = d->default_error();
+        }
 
         d->error_message(context, error, do_msg);
 
