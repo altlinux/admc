@@ -1081,22 +1081,33 @@ bool AdInterface::user_set_primary_group(const QString &group_dn, const QString 
     }
 }
 
-bool AdInterface::user_set_pass(const QString &dn, const QString &password, const DoStatusMsg do_msg) {
-    // NOTE: AD requires that the password:
-    // 1. is surrounded by quotes
-    // 2. is encoded as UTF16-LE
-    // 3. has no Byte Order Mark
+/**
+ * Encode a given password to be used in AD.
+ *
+ * NOTE: AD requires that the password:
+ * 1. is surrounded by quotes
+ * 2. is encoded as UTF16-LE
+ * 3. has no Byte Order Mark
+ *
+ * @param password A password string to encode.
+ * @return An encoded password.
+ */
+const QByteArray encode_password_for_ad(const QString &password) {
     const QString quoted_password = QString("\"%1\"").arg(password);
     auto encoder = QStringEncoder(QStringEncoder::Utf16LE);
     QByteArray password_bytes = encoder(quoted_password);
     // Remove BOM
-    // NOTE: gotta be a way to tell codec not to add BOM
-    // but couldn't find it, only QTextStream has
-    // setGenerateBOM()
+    //
+    // NOTE: gotta be a way to tell codec not to add BOM but couldn't find it,
+    // only QTextStream has setGenerateBOM()
     if (password_bytes[0] != '\"') {
         password_bytes.remove(0, 2);
     }
+    return password_bytes;
+}
 
+bool AdInterface::user_set_pass(const QString &dn, const QString &password, const DoStatusMsg do_msg) {
+    const QByteArray password_bytes = encode_password_for_ad(password);
     const bool success = attribute_replace_value(dn, ATTRIBUTE_PASSWORD, password_bytes, DoStatusMsg_No);
 
     const QString name = dn_get_name(dn);
