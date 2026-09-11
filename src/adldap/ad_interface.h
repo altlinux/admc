@@ -196,6 +196,12 @@ private:
     bool is_universal_scope_needed(const QString &dn,
                                    const GroupScope &scope);
     int get_uac(const QString &dn);
+    const QString option_success_context(const AccountOption &option,
+                                         bool &set,
+                                         const QString &name) const;
+    const QString option_error_context(const AccountOption &option,
+                                       bool &set,
+                                       const QString &name) const;
 };
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);

@@ -1138,6 +1138,59 @@ int AdInterface::get_uac(const QString &dn) {
     return object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
 }
 
+const QString AdInterface::option_success_context(const AccountOption &option,
+                                                  bool &set,
+                                                  const QString &name) const {
+    switch (option) {
+    case AccountOption_Disabled: {
+        if (set) {
+            return QString(tr("Object %1 has been disabled.")).arg(name);
+        } else {
+            return QString(tr("Object %1 has been enabled.")).arg(name);
+        }
+    }
+    default: {
+        const QString description = account_option_string(option);
+        if (set) {
+            return QString(
+                tr("Account option \"%1\" was turned ON for object %2."))
+                .arg(description, name);
+        } else {
+            return QString(
+                tr("Account option \"%1\" was turned OFF for object %2."))
+                .arg(description, name);
+        }
+    }
+    }
+}
+
+const QString AdInterface::option_error_context(const AccountOption &option,
+                                                bool &set,
+                                                const QString &name) const {
+    switch (option) {
+    case AccountOption_Disabled: {
+        if (set) {
+            return QString(tr("Failed to disable object %1.")).arg(name);
+        } else {
+            return QString(tr("Failed to enable object %1.")).arg(name);
+        }
+    }
+    default: {
+        const QString description = account_option_string(option);
+
+        if (set) {
+            return QString(
+                tr("Failed to turn ON account option \"%1\" for object %2."))
+                .arg(description, name);
+        } else {
+            return QString(
+                tr("Failed to turn OFF account option \"%1\" for object %2."))
+                .arg(description, name);
+        }
+    }
+    }
+}
+
 bool AdInterface::user_set_account_option(const QString &dn, AccountOption option, bool set) {
     if (dn.isEmpty()) {
         return false;
@@ -1175,52 +1228,14 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
     const QString name = dn_get_name(dn);
 
     if (success) {
-        const QString success_context = [option, set, name]() {
-            switch (option) {
-                case AccountOption_Disabled: {
-                    if (set) {
-                        return QString(tr("Object %1 has been disabled.")).arg(name);
-                    } else {
-                        return QString(tr("Object %1 has been enabled.")).arg(name);
-                    }
-                }
-                default: {
-                    const QString description = account_option_string(option);
-
-                    if (set) {
-                        return QString(tr("Account option \"%1\" was turned ON for object %2.")).arg(description, name);
-                    } else {
-                        return QString(tr("Account option \"%1\" was turned OFF for object %2.")).arg(description, name);
-                    }
-                }
-            }
-        }();
-
+        const QString success_context =
+            option_success_context(option, set, name);
         d->success_message(success_context);
 
         return true;
     } else {
-        const QString context = [option, set, name]() {
-            switch (option) {
-                case AccountOption_Disabled: {
-                    if (set) {
-                        return QString(tr("Failed to disable object %1.")).arg(name);
-                    } else {
-                        return QString(tr("Failed to enable object %1.")).arg(name);
-                    }
-                }
-                default: {
-                    const QString description = account_option_string(option);
-
-                    if (set) {
-                        return QString(tr("Failed to turn ON account option \"%1\" for object %2.")).arg(description, name);
-                    } else {
-                        return QString(tr("Failed to turn OFF account option \"%1\" for object %2.")).arg(description, name);
-                    }
-                }
-            }
-        }();
-
+        const QString context =
+            option_error_context(option, set, name);
         d->error_message(context, d->default_error());
 
         return false;
