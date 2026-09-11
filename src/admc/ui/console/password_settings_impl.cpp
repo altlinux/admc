@@ -24,18 +24,17 @@
 #include "adldap.h"
 #include "core/console/object/operations.h"
 #include "core/console_item_type.h"
+#include "core/globals.h"
+#include "core/utils.h"
+#include "ui/console/object/console_object_operations.h"
 #include "ui/console/object/object_impl.h"
 #include "ui/console/policy_impl.h"
-#include "ui/widget/console/results_view.h"
 #include "ui/dialog/create/policy.h"
-#include "ui/widget/fsmo/fsmo_utils.h"
-#include "core/globals.h"
-#include "ui/console/object/console_object_operations.h"
-#include "ui/widget/result/pso/pso.h"
 #include "ui/status.h"
 #include "ui/utils.h"
-#include "core/utils.h"
-#include "core/console/object/operations.h"
+#include "ui/widget/console/results_view.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
+#include "ui/widget/result/pso/pso.h"
 
 #include <QAction>
 #include <QList>
@@ -90,7 +89,8 @@ QList<QAction *> PasswordSettingsImpl::get_all_custom_actions() const {
     return {create_pso_action};
 }
 
-QSet<QAction *> PasswordSettingsImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> PasswordSettingsImpl::get_custom_actions(
+    const QModelIndex &index, const bool single_selection) const {
     Q_UNUSED(index);
     Q_UNUSED(single_selection);
 
@@ -133,5 +133,6 @@ void PasswordSettingsImpl::retranslate_ui() {
 }
 
 QModelIndex get_password_settings_tree_root(ConsoleWidget *console) {
-    return console->search_item(console->domain_info_index(), {ItemType_PasswordSettings});
+    return console->search_item(
+        console->domain_info_index(), {ItemType_PasswordSettings});
 }

@@ -52,7 +52,7 @@ public:
 
     QList<QString> column_labels() const override;
     QList<int> default_columns() const override;
-    
+
     void retranslate_ui() override;
 
 private:
