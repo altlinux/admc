@@ -975,18 +975,21 @@ bool AdInterface::group_remove_member(const QString &group_dn, const QString &us
     }
 }
 
+bool AdInterface::is_universal_scope_needed(const QString &dn,
+                                            const GroupScope &scope) {
+    const AdObject object = search_object(dn, {ATTRIBUTE_GROUP_TYPE});
+    const GroupScope current_scope = object.get_group_scope();
+    return ((current_scope == GroupScope_Global) &&
+            (scope == GroupScope_DomainLocal)) ||
+        ((current_scope == GroupScope_DomainLocal) &&
+         (scope == GroupScope_Global));
+}
+
 bool AdInterface::group_set_scope(const QString &dn, GroupScope scope, const DoStatusMsg do_msg) {
     // NOTE: it is not possible to change scope from
     // global<->domainlocal directly, so have to switch to
     // universal first.
-    const bool need_to_switch_to_universal = [=]() {
-        const AdObject object = search_object(dn, {ATTRIBUTE_GROUP_TYPE});
-        const GroupScope current_scope = object.get_group_scope();
-
-        return (current_scope == GroupScope_Global && scope == GroupScope_DomainLocal) || (current_scope == GroupScope_DomainLocal && scope == GroupScope_Global);
-    }();
-
-    if (need_to_switch_to_universal) {
+    if (is_universal_scope_needed(dn, scope)) {
         group_set_scope(dn, GroupScope_Universal, DoStatusMsg_No);
     }
 

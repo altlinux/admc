@@ -193,6 +193,8 @@ private:
 
     QString find_domain_controller() const;
     bool is_wrong_ou_parent(const QString &dn) const;
+    bool is_universal_scope_needed(const QString &dn,
+                                   const GroupScope &scope);
 };
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
