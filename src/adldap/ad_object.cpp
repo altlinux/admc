@@ -122,12 +122,7 @@ QList<int> AdObject::get_ints(const QString &attribute) const {
 
 int AdObject::get_int(const QString &attribute) const {
     const QList<int> ints = get_ints(attribute);
-
-    if (!ints.isEmpty()) {
-        return ints.first();
-    } else {
-        return 0;
-    }
+    return (! ints.isEmpty()) ? ints.first() : 0;
 }
 
 QDateTime AdObject::get_datetime(const QString &attribute, const AdConfig *adconfig) const {
