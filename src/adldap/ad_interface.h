@@ -195,6 +195,7 @@ private:
     bool is_wrong_ou_parent(const QString &dn) const;
     bool is_universal_scope_needed(const QString &dn,
                                    const GroupScope &scope);
+    int get_uac(const QString &dn);
 };
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);

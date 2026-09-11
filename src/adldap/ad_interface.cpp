@@ -1133,6 +1133,11 @@ bool AdInterface::user_set_pass(const QString &dn, const QString &password, cons
     }
 }
 
+int AdInterface::get_uac(const QString &dn) {
+    const AdObject object = search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
+    return object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
+}
+
 bool AdInterface::user_set_account_option(const QString &dn, AccountOption option, bool set) {
     if (dn.isEmpty()) {
         return false;
@@ -1159,11 +1164,7 @@ bool AdInterface::user_set_account_option(const QString &dn, AccountOption optio
             break;
         }
         default: {
-            const int uac = [this, dn]() {
-                const AdObject object = search_object(dn, {ATTRIBUTE_USER_ACCOUNT_CONTROL});
-                return object.get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
-            }();
-
+            const int uac = get_uac(dn);
             const int bit = account_option_bit(option);
             const int updated_uac = bitmask_set(uac, bit, set);
 
