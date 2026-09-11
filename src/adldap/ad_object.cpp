@@ -203,17 +203,12 @@ bool AdObject::get_account_option(AccountOption option, AdConfig *adconfig) cons
     }
 }
 
-// NOTE: "group type" is really only the last bit of the groupType attribute, yeah it's confusing
+// NOTE: "group type" is really only the last bit of the groupType attribute,
+// yeah it's confusing
 GroupType AdObject::get_group_type() const {
     const int group_type = get_int(ATTRIBUTE_GROUP_TYPE);
-
     const bool security_bit_set = ((group_type & GROUP_TYPE_BIT_SECURITY) != 0);
-
-    if (security_bit_set) {
-        return GroupType_Security;
-    } else {
-        return GroupType_Distribution;
-    }
+    return security_bit_set ? GroupType_Security : GroupType_Distribution;
 }
 
 GroupScope AdObject::get_group_scope() const {
