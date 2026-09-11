@@ -95,6 +95,9 @@ private:
      * It is used to fill password timespan setting checkboxes.
      */
     int spinbox_timespan_units(const AdObject &obj, const QString &attribute);
+    QByteArray minutes_to_ad_time_units(const int &value);
+    QByteArray days_to_ad_time_units(const int &value);
+    QByteArray miliseconds_to_ad_time_units(const long long &value);
 
     enum AppliedItemRole {
         AppliedItemRole_DN = Qt::UserRole

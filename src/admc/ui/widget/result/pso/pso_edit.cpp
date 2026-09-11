@@ -102,25 +102,15 @@ QHash<QString, QList<QByteArray>> PSOEditWidget::pso_settings_values() {
         {QByteArray::number(ui->logon_attempts_spinbox->value())};
 
     settings[replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION, is_global)] = {
-        QByteArray::number(-duration_cast<milliseconds>(
-                               minutes(ui->lockout_duration_spinbox->value()))
-                               .count() *
-                           MILLIS_TO_100_NANOS)};
-    settings[replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW, is_global)] = {
-        QByteArray::number(-duration_cast<milliseconds>(
-        minutes(ui->reset_lockout_spinbox->value())).count() * MILLIS_TO_100_NANOS)
-    };
+        minutes_to_ad_time_units(ui->lockout_duration_spinbox->value())};
+    settings[replace_attribute(
+        ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW, is_global)] = {
+        minutes_to_ad_time_units(ui->reset_lockout_spinbox->value())};
 
     settings[replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE, is_global)] = {
-        QByteArray::number(-duration_cast<milliseconds>(
-                               hours(24 * ui->min_age_spinbox->value()))
-                               .count() *
-                           MILLIS_TO_100_NANOS)};
+        days_to_ad_time_units(ui->min_age_spinbox->value())};
     settings[replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE, is_global)] = {
-        QByteArray::number(-duration_cast<milliseconds>(
-                               hours(24 * ui->max_age_spinbox->value()))
-                               .count() *
-                           MILLIS_TO_100_NANOS)};
+        days_to_ad_time_units(ui->max_age_spinbox->value())};
 
     if (is_global) {
         settings[ATTRIBUTE_PWD_PROPERTIES] = {
@@ -279,6 +269,37 @@ int PSOEditWidget::spinbox_timespan_units(const AdObject &obj, const QString &at
     }
 
     return 0;
+}
+
+/**
+* @brief Converts minutes to time units used by AD
+* @param value Value to be converted
+* @return Converted value
+*/
+QByteArray PSOEditWidget::minutes_to_ad_time_units(const int &value) {
+    using namespace std::chrono;
+    return miliseconds_to_ad_time_units(
+        duration_cast<milliseconds>(minutes(value)).count());
+}
+
+/**
+* @brief Converts hours to time units used by AD
+* @param value Value to be converted
+* @return Converted value
+*/
+QByteArray PSOEditWidget::hours_to_ad_time_units(const int &value) {
+    using namespace std::chrono;
+    return miliseconds_to_ad_time_units(
+        duration_cast<milliseconds>(24 * hours(value)).count());
+}
+
+/**
+* @brief Converts miliseconds to time units used by AD
+* @param value Value to be converted
+* @return Converted value
+*/
+QByteArray PSOEditWidget::miliseconds_to_ad_time_units(const long long &value) {
+    return QByteArray::number(-value * MILLIS_TO_100_NANOS);
 }
 
 void PSOEditWidget::retranslate_ui() {
