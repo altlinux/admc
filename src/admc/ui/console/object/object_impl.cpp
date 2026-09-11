@@ -6,6 +6,7 @@
  * Copyright (C) 2023 Ivan A. Melnikov
  * Copyright (C) 2023-2026 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
+ * Copyright (C) 2026 Yuri Kozyrev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
