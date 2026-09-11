@@ -261,13 +261,12 @@ QString AdObject::get_upn_suffix() const {
 }
 
 security_descriptor *AdObject::get_security_descriptor(TALLOC_CTX *mem_ctx_arg) const {
-    TALLOC_CTX *mem_ctx = [&]() -> void * {
-        if (mem_ctx_arg != nullptr) {
-            return mem_ctx_arg;
-        } else {
-            return NULL;
-        }
-    }();
+    TALLOC_CTX *mem_ctx;
+    if (mem_ctx_arg != nullptr) {
+        mem_ctx = mem_ctx_arg;
+    } else {
+        mem_ctx = NULL;
+    }
 
     const QByteArray sd_bytes = get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
     security_descriptor *out = security_descriptor_make_from_bytes(mem_ctx, sd_bytes);
