@@ -245,21 +245,30 @@ const QString trustee_search_results_get_name(
     }
 }
 
+/**
+ * @brief Search a trustee by the specified trustee object SID.
+ * @param ad An AD interface instance.
+ * @param trustee_string A trustee SID to search for.
+ * @return A hash of found objects.
+ */
+const QHash<QString, AdObject> trustee_search(AdInterface &ad,
+                                              const QString &trustee_string) {
+    const QString filter = filter_CONDITION(Condition_Equals,
+                                            ATTRIBUTE_OBJECT_SID,
+                                            trustee_string);
+    return ad.search(ad.adconfig()->domain_dn(), SearchScope_All, filter,
+                     QList<QString>());
+}
+
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee) {
     const QString trustee_string = object_sid_display_value(trustee);
-
     if (trustee_name_map.contains(trustee_string)) {
         return trustee_name_map[trustee_string];
     } else {
         // Try to get name of trustee by finding it's DN
-        const QString filter = filter_CONDITION(Condition_Equals, ATTRIBUTE_OBJECT_SID, trustee_string);
-        const QList<QString> attributes = {
-            ATTRIBUTE_DISPLAY_NAME,
-            ATTRIBUTE_SAM_ACCOUNT_NAME,
-        };
-        const auto trustee_search = ad.search(ad.adconfig()->domain_dn(), SearchScope_All, filter, QList<QString>());
-        if (!trustee_search.isEmpty()) {
-            return trustee_search_results_get_name(trustee_search);
+        const auto trustee_search_results = trustee_search(ad, trustee_string);
+        if (! trustee_search_results.isEmpty()) {
+            return trustee_search_results_get_name(trustee_search_results);
         } else {
             // Return raw sid as last option
             return trustee_string;
