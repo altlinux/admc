@@ -230,6 +230,21 @@ QString ad_security_get_well_known_trustee_name(const QByteArray &trustee) {
     return trustee_name_map.value(trustee_string, QString());
 }
 
+// NOTE: this is some weird name selection logic but that's how microsoft does
+// it.  Maybe need to use this somewhere else as well?
+const QString trustee_search_results_get_name(
+    const QHash<QString, AdObject> &results)
+{
+    const AdObject object = results.values()[0];
+    if (object.contains(ATTRIBUTE_DISPLAY_NAME)) {
+        return object.get_string(ATTRIBUTE_DISPLAY_NAME);
+    } else if (object.contains(ATTRIBUTE_SAM_ACCOUNT_NAME)) {
+        return object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
+    } else {
+        return dn_get_name(object.get_dn());
+    }
+}
+
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee) {
     const QString trustee_string = object_sid_display_value(trustee);
 
@@ -244,22 +259,7 @@ QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee)
         };
         const auto trustee_search = ad.search(ad.adconfig()->domain_dn(), SearchScope_All, filter, QList<QString>());
         if (!trustee_search.isEmpty()) {
-            // NOTE: this is some weird name selection logic
-            // but that's how microsoft does it. Maybe need
-            // to use this somewhere else as well?
-            const QString name = [&]() {
-                const AdObject object = trustee_search.values()[0];
-
-                if (object.contains(ATTRIBUTE_DISPLAY_NAME)) {
-                    return object.get_string(ATTRIBUTE_DISPLAY_NAME);
-                } else if (object.contains(ATTRIBUTE_SAM_ACCOUNT_NAME)) {
-                    return object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
-                } else {
-                    return dn_get_name(object.get_dn());
-                }
-            }();
-
-            return name;
+            return trustee_search_results_get_name(trustee_search);
         } else {
             // Return raw sid as last option
             return trustee_string;
