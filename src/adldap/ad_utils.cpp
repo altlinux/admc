@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -385,39 +386,36 @@ bool load_adldap_translation(QTranslator &translator, const QLocale &locale) {
     return translator.load(locale, "adldap", "_", ":/adldap");
 }
 
+const QList<QByteArray> guid_string_to_segment_list(const QString &guid_string) {
+    QList<QByteArray> out;
+    const QList<QString> string_segment_list = guid_string.split('-');
+
+    for (const QString &string_segment : string_segment_list) {
+        const QByteArray segment = QByteArray::fromHex(string_segment.toLatin1());
+        out.append(segment);
+    }
+
+    std::reverse(out[0].begin(), out[0].end());
+    std::reverse(out[1].begin(), out[1].end());
+    std::reverse(out[2].begin(), out[2].end());
+
+    return out;
+}
+
+const QByteArray segment_list_to_guid_bytes(const QList<QByteArray> &segment_list) {
+    QByteArray out;
+    for (const QByteArray &segment : segment_list) {
+        out.append(segment);
+    }
+    return out;
+}
+
 QByteArray guid_string_to_bytes(const QString &guid_string) {
     if (guid_string.isEmpty()) {
         return QByteArray();
     }
-
-    const QList<QByteArray> segment_list = [&]() {
-        QList<QByteArray> out;
-
-        const QList<QString> string_segment_list = guid_string.split('-');
-
-        for (const QString &string_segment : string_segment_list) {
-            const QByteArray segment = QByteArray::fromHex(string_segment.toLatin1());
-            out.append(segment);
-        }
-
-        std::reverse(out[0].begin(), out[0].end());
-        std::reverse(out[1].begin(), out[1].end());
-        std::reverse(out[2].begin(), out[2].end());
-
-        return out;
-    }();
-
-    const QByteArray guid_bytes = [&]() {
-        QByteArray out;
-
-        for (const QByteArray &segment : segment_list) {
-            out.append(segment);
-        }
-
-        return out;
-    }();
-
-    return guid_bytes;
+    const QList<QByteArray> list = guid_string_to_segment_list(guid_string);
+    return segment_list_to_guid_bytes(list);
 }
 
 QByteArray sid_string_to_bytes(const QString &sid_string) {
