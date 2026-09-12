@@ -266,16 +266,11 @@ QString dn_get_parent_canonical(const QString &dn) {
 
 QString dn_rename(const QString &dn, const QString &new_name) {
     const QStringList exploded_dn = dn.split(',');
-
-    const QString new_rdn = [=]() {
-        const QString old_rdn = exploded_dn[0];
-        const int prefix_index = old_rdn.indexOf('=') + 1;
-        const QString prefix = old_rdn.left(prefix_index);
-
-        const QString new_name_escaped = escape_name_for_dn(new_name);
-
-        return (prefix + new_name_escaped);
-    }();
+    const QString old_rdn = exploded_dn[0];
+    const int prefix_index = old_rdn.indexOf('=') + 1;
+    const QString prefix = old_rdn.left(prefix_index);
+    const QString new_name_escaped = escape_name_for_dn(new_name);
+    const QString new_rdn = (prefix + new_name_escaped);
 
     QStringList new_exploded_dn(exploded_dn);
     new_exploded_dn.replace(0, new_rdn);
