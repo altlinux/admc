@@ -302,19 +302,14 @@ QString dn_canonical(const QString &dn) {
     return canonical;
 }
 
+const QString object_class_to_suffix(const QString &object_class) {
+    return (object_class == CLASS_OU) ? "OU" : "CN";
+}
+
 QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class) {
-    const QString suffix = [object_class]() {
-        if (object_class == CLASS_OU) {
-            return "OU";
-        } else {
-            return "CN";
-        }
-    }();
-
+    const QString suffix = object_class_to_suffix(object_class);
     const QString name_escaped = escape_name_for_dn(name);
-
     const QString dn = QString("%1=%2,%3").arg(suffix, name_escaped, parent);
-
     return dn;
 }
 
