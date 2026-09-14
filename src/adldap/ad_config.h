@@ -151,6 +151,8 @@ private:
     const QString get_locale_dir(const QLocale &locale) const;
 
     QString domain_sid(AdInterface &ad) const;
+    QStringList get_class_possible_inferiors(const QString &obj_class) const;
+    bool is_permissionable(const QString &inferior) const;
 
     AdConfigPrivate *d;
 };

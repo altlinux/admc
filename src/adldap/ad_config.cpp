@@ -1007,6 +1007,14 @@ void AdConfig::load_filter_containers(AdInterface &ad,
     d->filter_containers.append({CLASS_CONFIGURATION, CLASS_dMD});
 }
 
+QStringList AdConfig::get_class_possible_inferiors(const QString &klass) const {
+    return d->class_possible_inferiors_map.value(klass, QStringList());
+}
+
+bool AdConfig::is_permissionable(const QString &inferior) const {
+    return d->class_permissionable_attributes_map.contains(inferior);
+}
+
 void AdConfig::load_permissionable_attributes(const QString &obj_class,
                                               AdInterface &ad) {
     const QString filter = filter_CONDITION(Condition_Equals,
@@ -1051,10 +1059,9 @@ void AdConfig::load_permissionable_attributes(const QString &obj_class,
     permissionable_attrs.sort();
     d->class_permissionable_attributes_map[obj_class] = permissionable_attrs;
 
-    for (const QString &inferior :
-             d->class_possible_inferiors_map.value(obj_class, QStringList())) {
-        if ((inferior == obj_class) ||
-            (d->class_permissionable_attributes_map.contains(inferior))) {
+    const QStringList inferiors = get_class_possible_inferiors(obj_class);
+    for (const QString &inferior : inferiors) {
+        if ((inferior == obj_class) || is_permissionable(inferior)) {
             continue;
         }
         load_permissionable_attributes(inferior, ad);
