@@ -139,9 +139,7 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->configuration_dn = root_dse_configuration_naming_context(rootDSE_object);
     d->supported_control_list = root_dse_supported_controls(rootDSE_object);
     d->root_domain_dn = root_dse_root_domain_naming_context(rootDSE_object);
-
-    const AdObject domain_object = ad.search_object(domain_dn());
-    d->domain_sid = object_sid_display_value(domain_object.get_value(ATTRIBUTE_OBJECT_SID));
+    d->domain_sid = domain_sid(ad);
 
     const QString locale_dir = get_locale_dir(locale);
 
@@ -166,6 +164,16 @@ QString AdConfig::domain() const {
 
 QString AdConfig::domain_dn() const {
     return d->domain_dn;
+}
+
+/**
+ * Get the domain object Security Identifier (SID.)
+ * @return The domain object SID.
+ */
+QString AdConfig::domain_sid(AdInterface &ad) const {
+    const AdObject domain_object = ad.search_object(domain_dn());
+    return object_sid_display_value(
+        domain_object.get_value(ATTRIBUTE_OBJECT_SID));
 }
 
 QString AdConfig::configuration_dn() const {

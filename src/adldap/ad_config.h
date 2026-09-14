@@ -150,6 +150,8 @@ private:
     const QList<QString> get_applies_to_classes(const AdObject &object) const;
     const QString get_locale_dir(const QLocale &locale) const;
 
+    QString domain_sid(AdInterface &ad) const;
+
     AdConfigPrivate *d;
 };
 
