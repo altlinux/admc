@@ -72,6 +72,30 @@
 
 #define FLAG_ATTR_IS_CONSTRUCTED 0x00000004
 
+//// Helper procedures.
+
+const QString root_dse_default_naming_context(const AdObject &object) {
+    return object.get_string(ATTRIBUTE_DEFAULT_NAMING_CONTEXT);
+}
+
+const QString root_dse_schema_naming_context(const AdObject &object) {
+    return object.get_string(ATTRIBUTE_SCHEMA_NAMING_CONTEXT);
+}
+
+const QString root_dse_configuration_naming_context(const AdObject &object) {
+    return object.get_string(ATTRIBUTE_CONFIGURATION_NAMING_CONTEXT);
+}
+
+const QList<QString> root_dse_supported_controls(const AdObject &object) {
+    return object.get_strings(ATTRIBUTE_SUPPORTED_CONTROL);
+}
+
+const QString root_dse_root_domain_naming_context(const AdObject &object) {
+    return object.get_string(ATTRIBUTE_ROOT_DOMAIN_NAMING_CONTEXT);
+}
+
+////
+
 AdConfigPrivate::AdConfigPrivate() {
 }
 
@@ -110,11 +134,11 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->class_schemas.clear();
 
     const AdObject rootDSE_object = ad.search_object(ROOT_DSE);
-    d->domain_dn = rootDSE_object.get_string(ATTRIBUTE_DEFAULT_NAMING_CONTEXT);
-    d->schema_dn = rootDSE_object.get_string(ATTRIBUTE_SCHEMA_NAMING_CONTEXT);
-    d->configuration_dn = rootDSE_object.get_string(ATTRIBUTE_CONFIGURATION_NAMING_CONTEXT);
-    d->supported_control_list = rootDSE_object.get_strings(ATTRIBUTE_SUPPORTED_CONTROL);
-    d->root_domain_dn = rootDSE_object.get_string(ATTRIBUTE_ROOT_DOMAIN_NAMING_CONTEXT);
+    d->domain_dn = root_dse_default_naming_context(rootDSE_object);
+    d->schema_dn = root_dse_schema_naming_context(rootDSE_object);
+    d->configuration_dn = root_dse_configuration_naming_context(rootDSE_object);
+    d->supported_control_list = root_dse_supported_controls(rootDSE_object);
+    d->root_domain_dn = root_dse_root_domain_naming_context(rootDSE_object);
 
     const AdObject domain_object = ad.search_object(domain_dn());
     d->domain_sid = object_sid_display_value(domain_object.get_value(ATTRIBUTE_OBJECT_SID));
