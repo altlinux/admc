@@ -240,36 +240,37 @@ void PSOEditWidget::set_read_only(bool read_only) {
 }
 
 /**
-* @brief Reads specified timespan attribute from given PSO object and converts 
-* it to apropriate units
-* @param obj PSO object to read attribute from
-* @param attribute The attribute to retrieve
-* @return Attribute value in specified units
+* @brief Converts time units used by AD to minutes
+* @param value Value to be converted
+* @return Converted value
 */
-int PSOEditWidget::spinbox_timespan_units(const AdObject &obj, const QString &attribute) {
+int PSOEditWidget::ad_time_units_to_mintes(const QByteArray &value) {
     using namespace std::chrono;
+    return duration_cast<minutes>(
+        milliseconds(ad_time_units_to_miliseconds(value)))
+        .count();
+}
 
-    qint64 hundred_nanos = -obj.get_value(attribute).toLongLong();
-    milliseconds msecs(hundred_nanos / MILLIS_TO_100_NANOS);
+/**
+* @brief Converts time units used by AD to days
+* @param value Value to be converted
+* @return Converted value
+*/
+int PSOEditWidget::ad_time_units_to_days(const QByteArray &value) {
+    using namespace std::chrono;
+    return duration_cast<hours>(
+               milliseconds(ad_time_units_to_miliseconds(value)))
+               .count() /
+           24;
+}
 
-    if (attribute ==
-            replace_attribute(
-                ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW, is_global) ||
-        attribute ==
-            replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION, is_global)) {
-        int mins = duration_cast<minutes>(msecs).count();
-        return mins;
-    }
-
-    if (attribute ==
-            replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE, is_global) ||
-        attribute ==
-            replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE, is_global)) {
-        int days = duration_cast<hours>(msecs).count() / 24;
-        return days;
-    }
-
-    return 0;
+/**
+* @brief Converts time units used by AD to miliseconds
+* @param value Value to be converted
+* @return Converted value
+*/
+long long PSOEditWidget::ad_time_units_to_miliseconds(const QByteArray &value) {
+    return -(value.toLongLong()) / MILLIS_TO_100_NANOS;
 }
 
 /**
@@ -284,11 +285,11 @@ QByteArray PSOEditWidget::minutes_to_ad_time_units(const int &value) {
 }
 
 /**
-* @brief Converts hours to time units used by AD
+* @brief Converts days to time units used by AD
 * @param value Value to be converted
 * @return Converted value
 */
-QByteArray PSOEditWidget::hours_to_ad_time_units(const int &value) {
+QByteArray PSOEditWidget::days_to_ad_time_units(const int &value) {
     using namespace std::chrono;
     return miliseconds_to_ad_time_units(
         duration_cast<milliseconds>(24 * hours(value)).count());
@@ -353,16 +354,17 @@ void PSOEditWidget::update_fields(
         replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD, is_global)));
 
     ui->lockout_duration_spinbox->setValue(
-        spinbox_timespan_units(passwd_settings_obj,
-            replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION, is_global)));
+        ad_time_units_to_mintes(passwd_settings_obj.get_value(
+            replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION, is_global))));
     ui->reset_lockout_spinbox->setValue(
-        spinbox_timespan_units(passwd_settings_obj,
-            replace_attribute(
-                ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW, is_global)));
-    ui->min_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj,
-        replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE, is_global)));
-    ui->max_age_spinbox->setValue(spinbox_timespan_units(passwd_settings_obj,
-        replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE, is_global)));
+        ad_time_units_to_mintes(passwd_settings_obj.get_value(replace_attribute(
+            ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW, is_global))));
+    ui->min_age_spinbox->setValue(
+        ad_time_units_to_days(passwd_settings_obj.get_value(
+            replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE, is_global))));
+    ui->max_age_spinbox->setValue(
+        ad_time_units_to_days(passwd_settings_obj.get_value(
+            replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE, is_global))));
 
     if (is_global) {
         int pwd_properties =

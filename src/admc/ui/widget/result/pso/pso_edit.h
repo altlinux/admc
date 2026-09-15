@@ -95,7 +95,10 @@ private:
      * Returns appropriate timespan unit value depending on given attribute.
      * It is used to fill password timespan setting checkboxes.
      */
-    int spinbox_timespan_units(const AdObject &obj, const QString &attribute);
+    int ad_time_units_to_mintes(const QByteArray &value);
+    int ad_time_units_to_days(const QByteArray &value);
+    long long ad_time_units_to_miliseconds(const QByteArray &value);
+
     QByteArray minutes_to_ad_time_units(const int &value);
     QByteArray days_to_ad_time_units(const int &value);
     QByteArray miliseconds_to_ad_time_units(const long long &value);
