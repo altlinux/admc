@@ -180,19 +180,31 @@ QLineEdit *PSOEditWidget::name_line_edit() {
 */
 bool PSOEditWidget::settings_are_default() {
     auto current_values = pso_settings_values();
-    const QStringList excluded_attrs = {
-        ATTRIBUTE_CN,
-        ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE,
-        ATTRIBUTE_APPLIES_TO};
+    const QSet<QString> excluded_attrs = {ATTRIBUTE_CN,
+        ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE, ATTRIBUTE_PSO_APPLIES_TO,
+        ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED,
+        ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED};
     auto defaults = global_password_settings().get_attributes_data();
     for (const QString &attr : current_values.keys()) {
         if (excluded_attrs.contains(attr)) {
             continue;
         }
 
-        if (defaults[pso_attributes_to_global_attributes[attr]] != current_values[attr]) {
+        if (defaults[pso_attributes_to_global_attributes[attr]] !=
+            current_values[attr]) {
             return false;
         }
+    }
+    int pwd_properties = defaults[ATTRIBUTE_PWD_PROPERTIES].toList()[0].toInt();
+    if (bool(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_COMPLEX) !=
+        (current_values[ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED][0] ==
+            LDAP_BOOL_TRUE)) {
+        return false;
+    }
+    if (bool(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT) !=
+        (current_values[ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED]
+                       [0] == LDAP_BOOL_TRUE)) {
+        return false;
     }
 
     return true;
