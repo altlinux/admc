@@ -403,13 +403,21 @@ bool ad_security_get_user_cant_change_pass(const AdObject *object, AdConfig *adc
     return enabled;
 }
 
-bool ad_security_set_user_cant_change_pass(AdInterface *ad, const QString &dn, const bool enabled) {
-    security_descriptor *sd = [&]() {
-        const AdObject object = ad->search_object(dn, {ATTRIBUTE_SECURITY_DESCRIPTOR});
-        security_descriptor *out = object.get_security_descriptor();
+/**
+ * Get distinguished name (DN) security descriptor (SID.)
+ * @param ad An AD interface instance.
+ * @param dn A distinguished name of an object.
+ * @return A security descriptor.
+ */
+static security_descriptor *get_dn_security_descriptor(AdInterface *ad,
+                                                       const QString &dn) {
+    const AdObject object =
+        ad->search_object(dn, { ATTRIBUTE_SECURITY_DESCRIPTOR });
+    return object.get_security_descriptor();
+}
 
-        return out;
-    }();
+bool ad_security_set_user_cant_change_pass(AdInterface *ad, const QString &dn, const bool enabled) {
+    security_descriptor *sd = get_dn_security_descriptor(ad, dn);
 
     for (const QString &trustee_cn : cant_change_pass_trustee_cn_list) {
         const QByteArray trustee = sid_string_to_bytes(trustee_cn);
