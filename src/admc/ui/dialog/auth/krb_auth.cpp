@@ -27,11 +27,10 @@
 #include "ui/dialog/auth/ui_krb_auth.h"
 #include "ui/utils.h"
 
-KrbAuthDialog::KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg) : AuthDialogBase(parent),
-    ui(new Ui::KrbAuthDialog), client(krb_client_arg) {
-
+KrbAuthDialog::KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg)
+    : AuthDialogBase(parent), ui(new Ui::KrbAuthDialog), client(krb_client_arg)
+{
     ui->setupUi(this);
-
     setupWidgets();
 }
 
@@ -40,11 +39,12 @@ KrbAuthDialog::~KrbAuthDialog() {
 }
 
 void KrbAuthDialog::logout(bool delete_creds) {
-    if (!delete_creds) {
+    if (! delete_creds) {
         return;
     }
 
-    const int index = ui->principal_cmb_box->findText(client->current_principal());
+    const int index =
+        ui->principal_cmb_box->findText(client->current_principal());
     ui->principal_cmb_box->removeItem(index);
     ui->principal_cmb_box->clearEditText();
 }
@@ -59,22 +59,30 @@ void KrbAuthDialog::setupWidgets() {
 
     ui->principal_cmb_box->addItems(client->available_principals());
 
-    connect(ui->principal_cmb_box, &QComboBox::currentTextChanged, this, &KrbAuthDialog::on_principal_selected);
-    connect(ui->show_passwd_checkbox, &QCheckBox::toggled, this, &KrbAuthDialog::on_show_passwd);
-    connect(ui->sign_in_button, &QPushButton::clicked, this, &KrbAuthDialog::on_sign_in);
-    connect(ui->system_cache_chkbox, &QCheckBox::toggled, this, &KrbAuthDialog::on_use_system_credentials);
-    connect(ui->remember_checkbox, &QCheckBox::toggled, this, &KrbAuthDialog::remember_principal);
+    connect(ui->principal_cmb_box, &QComboBox::currentTextChanged,
+            this, &KrbAuthDialog::on_principal_selected);
+    connect(ui->show_passwd_checkbox, &QCheckBox::toggled,
+            this, &KrbAuthDialog::on_show_passwd);
+    connect(ui->sign_in_button, &QPushButton::clicked,
+            this, &KrbAuthDialog::on_sign_in);
+    connect(ui->system_cache_chkbox, &QCheckBox::toggled,
+            this, &KrbAuthDialog::on_use_system_credentials);
+    connect(ui->remember_checkbox, &QCheckBox::toggled,
+            this, &KrbAuthDialog::remember_principal);
 
-    bool use_system_creds = !settings_get_variant(SETTING_use_system_credentials).isNull() &&
-                             settings_get_bool(SETTING_use_system_credentials);
+    bool use_system_creds =
+        (! settings_get_variant(SETTING_use_system_credentials).isNull())
+        && settings_get_bool(SETTING_use_system_credentials);
     ui->system_cache_chkbox->setChecked(use_system_creds);
     on_use_system_credentials(use_system_creds);
 
     const QString curr_principal = client->current_principal();
-    bool remember_checked = (!client->system_principal().isEmpty() && curr_principal == client->system_principal())
-            || settings_are_creds_saved(curr_principal);
+    bool remember_checked = ((! client->system_principal().isEmpty())
+                             && (curr_principal == client->system_principal()))
+        || settings_are_creds_saved(curr_principal);
     ui->remember_checkbox->setChecked(remember_checked);
-    ui->remember_checkbox->setDisabled(curr_principal == client->system_principal());
+    ui->remember_checkbox->setDisabled(
+        curr_principal == client->system_principal());
 
     ui->principal_cmb_box->setFocus();
 
@@ -98,13 +106,15 @@ void KrbAuthDialog::on_sign_in() {
         return;
     }
 
-    if (!client->current_principal().isEmpty()) {
-        bool delete_creds = !settings_are_creds_saved(client->current_principal());
+    if (! client->current_principal().isEmpty()) {
+        bool delete_creds =
+            (! settings_are_creds_saved(client->current_principal()));
         logout(delete_creds);
         client->logout(delete_creds);
     }
 
-    bool ticket_active = client->tgt_data(principal).state == Krb5TgtState_Active;
+    bool ticket_active =
+        (client->tgt_data(principal).state == Krb5TgtState_Active);
     try {
         if (client->principal_has_cache(principal) && ticket_active) {
             client->set_current_principal(principal);
@@ -142,7 +152,8 @@ void KrbAuthDialog:: show_error_message(const QString &error) {
 void KrbAuthDialog::on_principal_selected(const QString &principal) {
     Krb5TgtState tgt_state = client->tgt_data(principal).state;
 
-    // TODO: Check ways to renew expired tickets (with still valid renewal lifetime)
+    // TODO: Check ways to renew expired tickets (with still valid renewal
+    // lifetime)
     switch (tgt_state) {
     case Krb5TgtState_Active:
 //    case Krb5TgtState_Expired:
@@ -155,8 +166,9 @@ void KrbAuthDialog::on_principal_selected(const QString &principal) {
 
     ui->error_label->hide();
 
-    bool checked = (!principal.isEmpty() && principal == client->system_principal()) ||
-        settings_are_creds_saved(principal);
+    bool checked = ((! principal.isEmpty())
+                    && (principal == client->system_principal()))
+        || settings_are_creds_saved(principal);
     ui->remember_checkbox->setChecked(checked);
     ui->remember_checkbox->setDisabled(principal == client->system_principal());
 
@@ -176,10 +188,10 @@ void KrbAuthDialog::remember_principal(bool remember) {
     QStringList remembered_principals = settings_get_remembered_principals();
     const QString principal = ui->principal_cmb_box->currentText();
 
-    if (remember && !remembered_principals.contains(principal)) {
+    if (remember && (! remembered_principals.contains(principal))) {
         remembered_principals.append(principal);
     }
-    else if (!remember && remembered_principals.contains(principal)) {
+    else if ((! remember) && remembered_principals.contains(principal)) {
         remembered_principals.removeAll(principal);
     }
 
@@ -190,7 +202,7 @@ void KrbAuthDialog::remember_principal(bool remember) {
 void KrbAuthDialog::on_use_system_credentials(bool use_system) {
     const QString principal = use_system ? client->system_principal() :
                                            client->current_principal();
-    hide_passwd_widgets(!principal.isEmpty());
+    hide_passwd_widgets(! principal.isEmpty());
     if (principal.isEmpty() && use_system) {
         show_error_message(tr("Failed to find system credentials"));
     }
