@@ -362,38 +362,44 @@ bool ad_security_get_protected_against_deletion(const AdObject &object) {
     return is_enabled_for_everyone;
 }
 
+static bool is_password_change_denied_for_trustee(const security_descriptor *sd,
+                                                  const QString &trustee_cn,
+                                                  AdConfig *adconfig) {
+    const QByteArray trustee = sid_string_to_bytes(trustee_cn);
+    const QByteArray change_pass_right =
+        adconfig->get_right_guid("User-Change-Password");
+    SecurityRight right{
+        SEC_ADS_CONTROL_ACCESS, change_pass_right, QByteArray(), 0 };
+    const SecurityRightState state =
+        security_descriptor_get_right_state(sd, trustee, right);
+    const bool is_denied = state.get(SecurityRightStateInherited_No,
+                                     SecurityRightStateType_Deny);
+    return is_denied;
+}
+
+static bool is_password_change_denied(const security_descriptor *sd,
+                                      AdConfig *adconfig) {
+    bool out = false;
+
+    for (const QString &trustee_cn : cant_change_pass_trustee_cn_list) {
+        const bool is_denied =
+            is_password_change_denied_for_trustee(sd, trustee_cn, adconfig);
+
+        // Enabled if enabled for either of the trustee's. Both don't have to be
+        // enabled
+        if (is_denied) {
+            out = true;
+            break;
+        }
+    }
+
+    return out;
+}
+
 bool ad_security_get_user_cant_change_pass(const AdObject *object, AdConfig *adconfig) {
     security_descriptor *sd = object->get_security_descriptor();
-
-    const bool enabled = [&]() {
-        bool out = false;
-
-        for (const QString &trustee_cn : cant_change_pass_trustee_cn_list) {
-            const bool is_denied = [&]() {
-                const QByteArray trustee = sid_string_to_bytes(trustee_cn);
-                const QByteArray change_pass_right = adconfig->get_right_guid("User-Change-Password");
-                SecurityRight right{SEC_ADS_CONTROL_ACCESS, change_pass_right, QByteArray(), 0};
-                const SecurityRightState state = security_descriptor_get_right_state(sd, trustee, right);
-                const bool out_denied = state.get(SecurityRightStateInherited_No, SecurityRightStateType_Deny);
-
-                return out_denied;
-            }();
-
-            // Enabled if enabled for either of the
-            // trustee's. Both don't have to be
-            // enabled
-            if (is_denied) {
-                out = true;
-
-                break;
-            }
-        }
-
-        return out;
-    }();
-
+    const bool enabled = is_password_change_denied(sd, adconfig);
     security_descriptor_free(sd);
-
     return enabled;
 }
 
