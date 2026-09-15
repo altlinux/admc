@@ -573,42 +573,50 @@ void security_descriptor_print(security_descriptor *sd, AdInterface &ad) {
     }
 }
 
+static int match_dacl_index(const QByteArray &trustee,
+                            const QList<security_ace> &dacl,
+                            const SecurityRight &right,
+                            const bool allow) {
+    for (int i = 0; i < dacl.size(); i++) {
+        const security_ace ace = dacl[i];
+
+        // NOTE: access mask match doesn't matter because we also want to add
+        // right to existing ace, if it exists. In that case such ace would not
+        // match by mask and that's fine.
+
+        ace_match_flags match_flags = {
+            // Dont take in account inherited ACEs, because those cannot be
+            // added/removed:
+            false,
+            // Include object type matching to find correct ACE:
+            true
+        };
+        const bool match = ace_match_without_access_mask(ace, trustee, right,
+                                                         allow, match_flags);
+        if (match) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+static bool are_rights_already_set(const QList<security_ace> &dacl,
+                                   const int &matching_index,
+                                   const uint32_t &access_mask) {
+    const security_ace matching_ace = dacl[matching_index];
+    return bitmask_is_set(matching_ace.access_mask, access_mask);
+}
+
 void security_descriptor_add_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
     const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
 
     const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
 
-    const int matching_index = [&]() {
-        for (int i = 0; i < dacl.size(); i++) {
-            const security_ace ace = dacl[i];
-
-            // NOTE: access mask match doesn't matter
-            // because we also want to add right to
-            // existing ace, if it exists. In that case
-            // such ace would not match by mask and
-            // that's fine.
-
-            ace_match_flags match_flags = {
-                false, // Dont take in account inherited ACEs, because those cant be added/removed
-                true // Include object type matching to find correct ACE
-            };
-            const bool match = ace_match_without_access_mask(ace, trustee, right, allow, match_flags);
-
-            if (match) {
-                return i;
-            }
-        }
-
-        return -1;
-    }();
-
+    const int matching_index = match_dacl_index(trustee, dacl, right, allow);
     if (matching_index != -1) {
-        const bool right_already_set = [&]() {
-            const security_ace matching_ace = dacl[matching_index];
-            const bool out = bitmask_is_set(matching_ace.access_mask, access_mask);
-
-            return out;
-        }();
+        const bool right_already_set =
+            are_rights_already_set(dacl, matching_index, access_mask);
 
         // Matching ace exists, so reuse it by adding
         // given mask to this ace, but only if it's not set already
