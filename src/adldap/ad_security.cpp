@@ -484,24 +484,24 @@ bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString d
     return apply_success;
 }
 
+/**
+ * Get a set of trustees for the given security descriptor.
+ */
+static const QSet<QByteArray> get_trustee_set(const security_descriptor *sd) {
+    QSet<QByteArray> out;
+
+    const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
+    for (const security_ace &ace : dacl) {
+        const QByteArray trustee = dom_sid_to_bytes(ace.trustee);
+        out.insert(trustee);
+    }
+
+    return out;
+}
+
 QList<QByteArray> security_descriptor_get_trustee_list(security_descriptor *sd) {
-    const QSet<QByteArray> trustee_set = [&]() {
-        QSet<QByteArray> out;
-
-        const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
-
-        for (const security_ace &ace : dacl) {
-            const QByteArray trustee = dom_sid_to_bytes(ace.trustee);
-
-            out.insert(trustee);
-        }
-
-        return out;
-    }();
-
-    const QList<QByteArray> trustee_list = QList<QByteArray>(trustee_set.begin(), trustee_set.end());
-
-    return trustee_list;
+    const QSet<QByteArray> trustee_set = get_trustee_set(sd);
+    return QList<QByteArray>(trustee_set.begin(), trustee_set.end());
 }
 
 QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd) {
