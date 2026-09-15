@@ -324,29 +324,42 @@ void security_descriptor_sort_dacl(security_descriptor *sd) {
     qsort(sd->dacl->aces, sd->dacl->num_aces, sizeof(security_ace), ace_compare);
 }
 
+/**
+ * Check if a security descriptor is protected from deletion by a trustee.
+ *
+ * @param sd An object security descriptor.
+ * @param trustee A trustee to check.
+ * @return True if the security descriptor is protected from deletion by the
+ * trustee, false otherwise.
+ */
+static bool is_delete_protected_for_trustee(const security_descriptor *sd,
+                                            const QByteArray &trustee) {
+    for (const uint32_t &mask : protect_deletion_mask_list) {
+        SecurityRight right{mask, QByteArray(), QByteArray(), 0};
+        const SecurityRightState state =
+            security_descriptor_get_right_state(sd, trustee, right);
+
+        const bool deny = state.get(SecurityRightStateInherited_No,
+                                    SecurityRightStateType_Deny);
+
+        if (! deny) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool ad_security_get_protected_against_deletion(const AdObject &object) {
     security_descriptor *sd = object.get_security_descriptor();
-
     const QByteArray trustee_everyone = sid_string_to_bytes(SID_WORLD);
 
-    const bool is_enabled_for_trustee = [&]() {
-        for (const uint32_t &mask : protect_deletion_mask_list) {
-            SecurityRight right{mask, QByteArray(), QByteArray(), 0};
-            const SecurityRightState state = security_descriptor_get_right_state(sd, trustee_everyone, right);
-
-            const bool deny = state.get(SecurityRightStateInherited_No, SecurityRightStateType_Deny);
-
-            if (!deny) {
-                return false;
-            }
-        }
-
-        return true;
-    }();
+    const bool is_enabled_for_everyone =
+        is_delete_protected_for_trustee(sd, trustee_everyone);
 
     security_descriptor_free(sd);
 
-    return is_enabled_for_trustee;
+    return is_enabled_for_everyone;
 }
 
 bool ad_security_get_user_cant_change_pass(const AdObject *object, AdConfig *adconfig) {
