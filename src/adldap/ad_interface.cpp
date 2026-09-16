@@ -1750,6 +1750,63 @@ QString AdInterface::get_gpc_sd(const AdObject &gpc_object,
     return out;
 }
 
+QString AdInterface::get_gpt_sd(const AdObject &gpc_object,
+                                const QString &error_context) const {
+    const QString filesys_path =
+        gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
+    const QString smb_path = filesys_path_to_smb_path(filesys_path);
+    QByteArray smb_path_array = smb_path.toUtf8();
+    const char *smb_path_cstr = smb_path_array;
+
+    // NOTE: the length of gpt sd string doesn't have a
+    // well defined bound, so we have to use an
+    // expanding buffer
+    size_t buffer_size = 1024 * sizeof(char);
+    char *buffer = (char *) malloc(buffer_size);
+
+    while (true) {
+        const int getxattr_result =
+            d->s_smb_context.smbcGetxattr(smb_path_cstr,
+                                          "system.nt_sec_desc.*",
+                                          buffer,
+                                          buffer_size);
+
+        // NOTE: for some reason getxattr() returns positive
+        // non-zero return code on success, even though f-n
+        // description says it "returns 0 on success"
+        const bool success = (getxattr_result >= 0);
+
+        if (success) {
+            break;
+        } else {
+            const bool buffer_is_too_small = (errno == ERANGE);
+
+            if (buffer_is_too_small) {
+                // Error occured, but it is due to
+                // insufficient buffer size, so try
+                // again with bigger buffer
+                buffer_size = 2 * buffer_size;
+                buffer = (char *) realloc(buffer, buffer_size);
+            } else {
+                const QString text =
+                    QString(tr("Failed to get GPT security descriptor, %1."))
+                    .arg(strerror(errno));
+                d->error_message(error_context, text);
+
+                free(buffer);
+
+                return QString();
+            }
+        }
+    }
+
+    const QString out = QString(buffer);
+
+    free(buffer);
+
+    return out;
+}
+
 bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     // NOTE: skip perms check for non-admins, because don't
     // have enough rights to get full sd
@@ -1766,55 +1823,7 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     const QString error_context = QString(tr("Failed to check permissions for GPO \"%1\".")).arg(name);
 
     const QString gpc_sd = get_gpc_sd(gpc_object, error_context);
-
-    const QString gpt_sd = [&]() {
-        const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);
-        const QString smb_path = filesys_path_to_smb_path(filesys_path);
-        QByteArray smb_path_array = smb_path.toUtf8();
-        const char *smb_path_cstr = smb_path_array;
-
-        // NOTE: the length of gpt sd string doesn't have a
-        // well defined bound, so we have to use an
-        // expanding buffer
-        size_t buffer_size = 1024 * sizeof(char);
-        char *buffer = (char *) malloc(buffer_size);
-
-        while (true) {
-            const int getxattr_result = d->s_smb_context.smbcGetxattr(smb_path_cstr, "system.nt_sec_desc.*", buffer, buffer_size);
-
-            // NOTE: for some reason getxattr() returns positive
-            // non-zero return code on success, even though f-n
-            // description says it "returns 0 on success"
-            const bool success = (getxattr_result >= 0);
-
-            if (success) {
-                break;
-            } else {
-                const bool buffer_is_too_small = (errno == ERANGE);
-
-                if (buffer_is_too_small) {
-                    // Error occured, but it is due to
-                    // insufficient buffer size, so try
-                    // again with bigger buffer
-                    buffer_size = 2 * buffer_size;
-                    buffer = (char *) realloc(buffer, buffer_size);
-                } else {
-                    const QString text = QString(tr("Failed to get GPT security descriptor, %1.")).arg(strerror(errno));
-                    d->error_message(error_context, text);
-
-                    free(buffer);
-
-                    return QString();
-                }
-            }
-        }
-
-        const QString out = QString(buffer);
-
-        free(buffer);
-
-        return out;
-    }();
+    const QString gpt_sd = get_gpt_sd(gpc_object, error_context);
 
     //    qDebug() << "--------";
     //    qDebug() << "gpc_sd:";
