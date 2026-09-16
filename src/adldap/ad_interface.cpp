@@ -1289,20 +1289,8 @@ bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
         d->error_message(tr("Failed to create GPO."), error);
     };
 
-    //
     // Generate UUID used for directory and object names
-    //
-    const QString uuid = []() {
-        uuid_t uuid_struct;
-        uuid_generate_random(uuid_struct);
-
-        char uuid_cstr[UUID_STR_LEN];
-        uuid_unparse_upper(uuid_struct, uuid_cstr);
-
-        const QString out = "{" + QString(uuid_cstr) + "}";
-
-        return out;
-    }();
+    const QString uuid = generate_uuid();
 
     // Ex: "\\domain.alt\sysvol\domain.alt\Policies\{FF7E0880-F3AD-4540-8F1D-4472CB4A7044}"
     const QString filesys_path = QString("\\\\%1\\sysvol\\%2\\Policies\\%3").arg(d->domain.toLower(), d->domain.toLower(), uuid);

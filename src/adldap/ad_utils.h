@@ -90,4 +90,6 @@ QHash<int, QString> attribute_value_bit_string_map(const QString &attribute);
 
 QList<QString> bytearray_list_to_string_list(const QList<QByteArray> &bytearray_list);
 
+QString generate_uuid();
+
 #endif /* AD_UTILS_H */

@@ -35,6 +35,7 @@
 #include <QLocale>
 #include <QString>
 #include <QTranslator>
+#include <uuid/uuid.h>
 
 #define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
@@ -491,4 +492,18 @@ QList<QString> bytearray_list_to_string_list(const QList<QByteArray> &bytearray_
     }
 
     return out;
+}
+
+/**
+ * Generate UUID used for directory and object names.
+ * @return A new UUID string.
+ */
+QString generate_uuid() {
+    uuid_t uuid_struct;
+    uuid_generate_random(uuid_struct);
+
+    char uuid_cstr[UUID_STR_LEN];
+    uuid_unparse_upper(uuid_struct, uuid_cstr);
+
+    return "{" + QString(uuid_cstr) + "}";
 }
