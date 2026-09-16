@@ -2361,6 +2361,19 @@ int sasl_interact_gssapi(LDAP *ld, unsigned flags, void *indefaults, void *in) {
     return LDAP_SUCCESS;
 }
 
+static const char *mask_format_to_string(const AceMaskFormat &format_enum) {
+    static const char *HEX_FORMAT = "0x%08x";
+    static const char *DEC_FORMAT = "%d";
+
+    switch (format_enum) {
+    case AceMaskFormat_Decimal:
+        return DEC_FORMAT;
+    case AceMaskFormat_Hexadecimal:
+    default:
+        return HEX_FORMAT;
+    }
+}
+
 // NOTE: decimal format option is provided to deal with this
 // bug in libsmbclient:
 // https://bugzilla.samba.org/show_bug.cgi?id=14303. You
@@ -2400,16 +2413,8 @@ QString get_gpt_sd_string(const AdObject &gpc_object, const AceMaskFormat format
         struct security_ace ace = gpt_sd->dacl->aces[i];
 
         char access_mask_string[100];
-        static const char *hex_format = "0x%08x";
-        static const char *dec_format = "%d";
-        const char *format = [&]() {
-            switch (format_enum) {
-                case AceMaskFormat_Hexadecimal: return hex_format;
-                case AceMaskFormat_Decimal: return dec_format;
-            }
 
-            return hex_format;
-        }();
+        const char *format = mask_format_to_string(format_enum);
         snprintf(access_mask_string, sizeof(access_mask_string), format, ace.access_mask);
 
         const char *trustee_string = dom_sid_string(mem_ctx, &ace.trustee);
