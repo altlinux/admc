@@ -1739,6 +1739,17 @@ void AdInterface::ldap_free() {
     }
 }
 
+QString AdInterface::get_gpc_sd(const AdObject &gpc_object,
+                                const QString &error_context) const {
+    const QString out = get_gpt_sd_string(gpc_object, AceMaskFormat_Hexadecimal);
+    if (out.isEmpty()) {
+        d->error_message(error_context, tr("Failed to get GPT security descriptor."));
+        return QString();
+    }
+
+    return out;
+}
+
 bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     // NOTE: skip perms check for non-admins, because don't
     // have enough rights to get full sd
@@ -1754,17 +1765,7 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
 
     const QString error_context = QString(tr("Failed to check permissions for GPO \"%1\".")).arg(name);
 
-    const QString gpc_sd = [&]() {
-        const QString out = get_gpt_sd_string(gpc_object, AceMaskFormat_Hexadecimal);
-
-        if (out.isEmpty()) {
-            d->error_message(error_context, tr("Failed to get GPT security descriptor."));
-
-            return QString();
-        }
-
-        return out;
-    }();
+    const QString gpc_sd = get_gpc_sd(gpc_object, error_context);
 
     const QString gpt_sd = [&]() {
         const QString filesys_path = gpc_object.get_string(ATTRIBUTE_GPC_FILE_SYS_PATH);

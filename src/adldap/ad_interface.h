@@ -204,6 +204,8 @@ private:
                                        const QString &name) const;
     const QString make_ldap_uri() const;
     QString get_ldap_sasl_username() const;
+    QString get_gpc_sd(const AdObject &gpc_object,
+                       const QString &error_context) const;
 };
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
