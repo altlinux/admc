@@ -120,7 +120,12 @@ void KrbAuthDialog::on_sign_in() {
             client->set_current_principal(principal);
         }
         else {
-            client->authenticate(principal, ui->password_edit->text());
+            try {
+                client->authenticate(principal, ui->password_edit->text());
+            } catch (std::runtime_error &error) {
+                client->authenticate(principal, ui->password_edit->text(),
+                                     true);
+            }
             ui->principal_cmb_box->addItem(principal);
         }
     }

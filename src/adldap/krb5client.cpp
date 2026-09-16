@@ -64,7 +64,8 @@ public:
     explicit Krb5ClientImpl();
     ~Krb5ClientImpl();
 
-    void kinit(const QString &principal, const QString &password);
+    void kinit(const QString &principal, const QString &password,
+               const bool &enterprise);
     void load_caches();
     void load_cache_data(krb5_ccache ccache, bool is_system);
     Krb5TgtState tgt_state_from_creds(const krb5_creds &creds);
@@ -127,8 +128,17 @@ Krb5Client::Krb5ClientImpl::~Krb5ClientImpl() {
     }
 }
 
+/**
+ * Authenticate with a Kerberos server to get a ticket granting ticket (TGT.)
+ *
+ * @param principal A principal name to authenticate with.
+ * @param password A password to use.
+ * @param enterprise Whether the principal name is an enterprise name
+ * or a regular name (false by default.)
+ */
 void Krb5Client::Krb5ClientImpl::kinit(const QString &principal,
-                                       const QString &password) {
+                                       const QString &password,
+                                       const bool &enterprise) {
     krb5_ccache old_ccache = principal_cache_map.value(principal, nullptr);
     if (old_ccache) {
         krb5_cc_destroy(context, old_ccache);
@@ -144,7 +154,15 @@ void Krb5Client::Krb5ClientImpl::kinit(const QString &principal,
     const QByteArray principal_bytes = principal.toUtf8();
     const char *principal_name = principal_bytes.constData();
     krb5_principal princ = nullptr;
-    res = krb5_parse_name(context, principal_name, &princ);
+    if (enterprise) {
+        res = krb5_parse_name_flags(context,
+                                    principal_name,
+                                    KRB5_PRINCIPAL_PARSE_ENTERPRISE,
+                                    &princ);
+    } else {
+        res = krb5_parse_name(context, principal_name, &princ);
+    }
+
     if (res) {
         cleanup_and_throw(error, res, nullptr, nullptr, princ, nullptr);
     }
@@ -443,8 +461,9 @@ Krb5Client::~Krb5Client() {
 }
 
 void Krb5Client::authenticate(const QString &principal,
-                              const QString &password) {
-    impl->kinit(principal, password);
+                              const QString &password,
+                              const bool &enterprise) {
+    impl->kinit(principal, password, enterprise);
 }
 
 void Krb5Client::set_current_principal(const QString &principal) {

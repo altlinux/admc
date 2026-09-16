@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2025 BaseALT Ltd.
+ * Copyright (C) 2025-2026 BaseALT Ltd.
  * Copyright (C) 2025 Semyon Knyazev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +46,8 @@ public:
     explicit Krb5Client();
     ~Krb5Client();
 
-    void authenticate(const QString &principal, const QString &password);
+    void authenticate(const QString &principal, const QString &password,
+                      const bool &enterprise = false);
     void set_current_principal(const QString &principal);
     void refresh_tgt(const QString &principal);
     Krb5TGTData tgt_data(const QString &principal) const;
