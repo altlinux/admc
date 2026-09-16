@@ -1807,6 +1807,35 @@ QString AdInterface::get_gpt_sd(const AdObject &gpc_object,
     return out;
 }
 
+/**
+ * SD's match if they both contain all lines of the other one. Order doesn't
+ * matter.  Note that simple equality doesn't work because entry order may not
+ * match.
+ *
+ * NOTE: there's also a weird thing where RSAT creates GPO's with duplicate
+ * ace's for Domain Admins.  Not sure why that happens but this matching method
+ * ignores that quirk. -- Dmitry Degtyarev
+ */
+bool AdInterface::are_sd_lists_match(const QString &gpt_sd,
+                                     const QString &gpc_sd) const {
+    const QList<QString> gpt_list = QString(gpt_sd).split(",");
+    const QList<QString> gpc_list = QString(gpc_sd).split(",");
+
+    for (const QString &line : gpt_list) {
+        if (! gpc_list.contains(line)) {
+            return false;
+        }
+    }
+
+    for (const QString &line : gpc_list) {
+        if (! gpt_list.contains(line)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
     // NOTE: skip perms check for non-admins, because don't
     // have enough rights to get full sd
@@ -1843,34 +1872,7 @@ bool AdInterface::gpo_check_perms(const QString &gpo, bool *ok) {
         return false;
     }
 
-    // SD's match if they both contain all lines of the
-    // other one. Order doesn't matter. Note that
-    // simple equality doesn't work because entry order
-    // may not match.
-    //
-    // NOTE: there's also a weird thing where RSAT
-    // creates GPO's with duplicate ace's for Domain
-    // Admins. Not sure why that happens but this
-    // matching method ignores that quirk.
-    const bool sd_match = [&]() {
-        const QList<QString> gpt_list = QString(gpt_sd).split(",");
-        const QList<QString> gpc_list = QString(gpc_sd).split(",");
-
-        for (const QString &line : gpt_list) {
-            if (!gpc_list.contains(line)) {
-                return false;
-            }
-        }
-
-        for (const QString &line : gpc_list) {
-            if (!gpt_list.contains(line)) {
-                return false;
-            }
-        }
-
-        return true;
-    }();
-
+    const bool sd_match = are_sd_lists_match(gpt_sd, gpc_sd);
     return sd_match;
 }
 
