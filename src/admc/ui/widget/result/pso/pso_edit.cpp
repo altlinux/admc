@@ -117,7 +117,7 @@ QHash<QString, QList<QByteArray>> PSOEditWidget::pso_settings_values() {
         settings[ATTRIBUTE_PWD_PROPERTIES] = {
             QByteArray::number(ui->complexity_req_checkbox->isChecked() *
                                    SAM_MASK_DOMAIN_PASSWORD_COMPLEX +
-                               ui->store_passwd_checkbox->isChecked() *
+                               !ui->store_passwd_checkbox->isChecked() *
                                    SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT)};
     } else {
         settings[ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED] = {
@@ -201,7 +201,7 @@ bool PSOEditWidget::settings_are_default() {
             LDAP_BOOL_TRUE)) {
         return false;
     }
-    if (bool(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT) !=
+    if (!bool(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT) !=
         (current_values[ATTRIBUTE_MS_DS_PASSWORD_REVERSIBLE_ENCRYPTION_ENABLED]
                        [0] == LDAP_BOOL_TRUE)) {
         return false;
@@ -384,7 +384,7 @@ void PSOEditWidget::update_fields(
         ui->complexity_req_checkbox->setChecked(
             pwd_properties & SAM_MASK_DOMAIN_PASSWORD_COMPLEX);
         ui->store_passwd_checkbox->setChecked(
-            pwd_properties & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT);
+            !(pwd_properties & SAM_MASK_DOMAIN_PASSWORD_STORE_CLEARTEXT));
     } else {
         ui->complexity_req_checkbox->setChecked(passwd_settings_obj.get_bool(
             ATTRIBUTE_MS_DS_PASSWORD_COMPLEXITY_ENABLED));
