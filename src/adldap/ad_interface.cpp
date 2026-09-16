@@ -1616,6 +1616,28 @@ const QString AdInterface::make_ldap_uri() const {
     return out;
 }
 
+/**
+ * Convert ADMC certificate strategy value to an LDAP option constant.
+ * @param strategy A value to convert.
+ * @return LDAP constant.
+ */
+static int cert_strategy_to_ldap_opt(const CertStrategy &strategy) {
+    switch (strategy) {
+    case CertStrategy_Never:
+        return LDAP_OPT_X_TLS_NEVER;
+    case CertStrategy_Hard:
+        return LDAP_OPT_X_TLS_HARD;
+    case CertStrategy_Demand:
+        return LDAP_OPT_X_TLS_DEMAND;
+    case CertStrategy_Allow:
+        return LDAP_OPT_X_TLS_ALLOW;
+    case CertStrategy_Try:
+        return LDAP_OPT_X_TLS_TRY;
+    }
+
+    return LDAP_OPT_X_TLS_NEVER;
+}
+
 bool AdInterface::ldap_init() {
     const QString connect_error_context = tr("Failed to connect.");
     const QString uri = make_ldap_uri();
@@ -1670,17 +1692,8 @@ bool AdInterface::ldap_init() {
         return false;
     }
 
-    const int cert_strategy = [&]() {
-        switch (AdInterfacePrivate::s_cert_strat) {
-            case CertStrategy_Never: return LDAP_OPT_X_TLS_NEVER;
-            case CertStrategy_Hard: return LDAP_OPT_X_TLS_HARD;
-            case CertStrategy_Demand: return LDAP_OPT_X_TLS_DEMAND;
-            case CertStrategy_Allow: return LDAP_OPT_X_TLS_ALLOW;
-            case CertStrategy_Try: return LDAP_OPT_X_TLS_TRY;
-        }
-
-        return LDAP_OPT_X_TLS_NEVER;
-    }();
+    const int cert_strategy =
+        cert_strategy_to_ldap_opt(AdInterfacePrivate::s_cert_strat);
 
     ldap_set_option(d->ld, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_strategy);
     if (result != LDAP_SUCCESS) {
