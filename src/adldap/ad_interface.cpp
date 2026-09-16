@@ -1638,6 +1638,22 @@ static int cert_strategy_to_ldap_opt(const CertStrategy &strategy) {
     return LDAP_OPT_X_TLS_NEVER;
 }
 
+QString AdInterface::get_ldap_sasl_username() const {
+    char *out_cstr = NULL;
+    ldap_get_option(d->ld, LDAP_OPT_X_SASL_USERNAME, &out_cstr);
+
+    if (out_cstr == NULL) {
+        return QString();
+    }
+
+    QString out = QString(out_cstr);
+    out = out.toLower();
+
+    ldap_memfree(out_cstr);
+
+    return out;
+}
+
 bool AdInterface::ldap_init() {
     const QString connect_error_context = tr("Failed to connect.");
     const QString uri = make_ldap_uri();
@@ -1722,21 +1738,7 @@ bool AdInterface::ldap_init() {
         return false;
     }
 
-    d->client_user = [&]() {
-        char *out_cstr = NULL;
-        ldap_get_option(d->ld, LDAP_OPT_X_SASL_USERNAME, &out_cstr);
-
-        if (out_cstr == NULL) {
-            return QString();
-        }
-
-        QString out = QString(out_cstr);
-        out = out.toLower();
-
-        ldap_memfree(out_cstr);
-
-        return out;
-    }();
+    d->client_user = get_ldap_sasl_username();
 
     return true;
 }

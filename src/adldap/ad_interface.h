@@ -203,6 +203,7 @@ private:
                                        bool &set,
                                        const QString &name) const;
     const QString make_ldap_uri() const;
+    QString get_ldap_sasl_username() const;
 };
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
