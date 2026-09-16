@@ -1602,22 +1602,23 @@ QString AdInterface::filesys_path_to_smb_path(const QString &filesys_path) const
     return out;
 }
 
+const QString AdInterface::make_ldap_uri() const {
+    QString out;
+
+    if (!d->dc.isEmpty()) {
+        out = "ldap://" + d->dc;
+
+        if (AdInterfacePrivate::s_port > 0) {
+            out = out + ":" + QString::number(AdInterfacePrivate::s_port);
+        }
+    }
+
+    return out;
+}
+
 bool AdInterface::ldap_init() {
     const QString connect_error_context = tr("Failed to connect.");
-
-    const QString uri = [&]() {
-        QString out;
-
-        if (!d->dc.isEmpty()) {
-            out = "ldap://" + d->dc;
-
-            if (AdInterfacePrivate::s_port > 0) {
-                out = out + ":" + QString::number(AdInterfacePrivate::s_port);
-            }
-        }
-
-        return out;
-    }();
+    const QString uri = make_ldap_uri();
 
     if (uri.isEmpty()) {
         return false;

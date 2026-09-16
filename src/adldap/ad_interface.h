@@ -202,6 +202,7 @@ private:
     const QString option_error_context(const AccountOption &option,
                                        bool &set,
                                        const QString &name) const;
+    const QString make_ldap_uri() const;
 };
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
