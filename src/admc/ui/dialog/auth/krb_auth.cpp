@@ -52,8 +52,7 @@ void KrbAuthDialog::logout(bool delete_creds) {
 void KrbAuthDialog::setupWidgets() {
     ui->error_label->setHidden(true);
     ui->error_label->setStyleSheet("color: red");
-    ui->error_label->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    ui->error_label->setWordWrap(true);
+    ui->error_label->setReadOnly(true);
 
     ui->ticket_available_label->setVisible(false);
 
@@ -120,11 +119,18 @@ void KrbAuthDialog::on_sign_in() {
             client->set_current_principal(principal);
         }
         else {
+            QString error_message;
             try {
                 client->authenticate(principal, ui->password_edit->text());
-            } catch (std::runtime_error &error) {
-                client->authenticate(principal, ui->password_edit->text(),
-                                     true);
+            } catch (std::runtime_error &first_error) {
+                error_message += first_error.what() + QString("\n");
+                try {
+                    client->authenticate(principal, ui->password_edit->text(),
+                                         true);
+                } catch (std::runtime_error &second_error) {
+                    error_message += second_error.what() + QString("\n");
+                    throw std::runtime_error(error_message.toStdString());
+                }
             }
             ui->principal_cmb_box->addItem(principal);
         }
