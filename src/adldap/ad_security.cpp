@@ -654,6 +654,39 @@ static int get_security_ace_object_flags(const bool &object_present,
     }
 }
 
+static security_ace make_security_ace(const QByteArray &trustee,
+                                      const SecurityRight &right,
+                                      const uint32_t &access_mask,
+                                      const bool &allow) {
+    security_ace out;
+    const bool object_present = !right.object_type.isEmpty();
+    const bool inherited_object_present =
+        (! right.inherited_object_type.isEmpty());
+
+    out.type = get_security_ace_type(object_present,
+                                     inherited_object_present,
+                                     allow);
+
+    out.flags = right.flags;
+    out.access_mask = access_mask;
+    out.object.object.flags =
+        get_security_ace_object_flags(object_present,
+                                      inherited_object_present);
+
+    if (object_present) {
+        out.object.object.type.type = bytes_to_guid(right.object_type);
+    }
+
+    if (inherited_object_present) {
+        out.object.object.inherited_type.inherited_type =
+            bytes_to_guid(right.inherited_object_type);
+    }
+
+    out.trustee = dom_sid_from_bytes(trustee);
+
+    return out;
+}
+
 void security_descriptor_add_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
     const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
 
@@ -672,37 +705,8 @@ void security_descriptor_add_right_base(security_descriptor *sd, const QByteArra
             sd->dacl->aces[matching_index] = new_ace;
         }
     } else {
-        // No matching ace, so make a new ace for this
-        // right
-        const security_ace ace = [&]() {
-            security_ace out;
-
-            const bool object_present = !right.object_type.isEmpty();
-            const bool inherited_object_present =  !right.inherited_object_type.isEmpty();
-
-            out.type = get_security_ace_type(object_present,
-                                             inherited_object_present,
-                                             allow);
-
-            out.flags = right.flags;
-            out.access_mask = access_mask;
-            out.object.object.flags =
-                get_security_ace_object_flags(object_present,
-                                              inherited_object_present);
-
-            if (object_present) {
-                out.object.object.type.type = bytes_to_guid(right.object_type);
-            }
-
-            if (inherited_object_present) {
-                out.object.object.inherited_type.inherited_type = bytes_to_guid(right.inherited_object_type);
-            }
-
-            out.trustee = dom_sid_from_bytes(trustee);
-
-            return out;
-        }();
-
+        // No matching ace, so make a new ace for this right
+        const security_ace ace = make_security_ace(trustee, right, access_mask, allow);
         security_descriptor_dacl_add(sd, &ace);
     }
 }
