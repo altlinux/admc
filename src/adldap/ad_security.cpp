@@ -276,20 +276,20 @@ QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee)
     }
 }
 
+static QByteArray descriptor_to_bytes(const security_descriptor *new_sd) {
+    TALLOC_CTX *tmp_ctx = talloc_new(NULL);
+    DATA_BLOB blob;
+    ndr_push_struct_blob(&blob, tmp_ctx, new_sd, (ndr_push_flags_fn_t) ndr_push_security_descriptor);
+
+    const QByteArray out = QByteArray((char *) blob.data, blob.length);
+
+    talloc_free(tmp_ctx);
+
+    return out;
+}
+
 bool ad_security_replace_security_descriptor(AdInterface &ad, const QString &dn, security_descriptor *new_sd) {
-    const QByteArray new_descriptor_bytes = [&]() {
-        TALLOC_CTX *tmp_ctx = talloc_new(NULL);
-
-        DATA_BLOB blob;
-        ndr_push_struct_blob(&blob, tmp_ctx, new_sd, (ndr_push_flags_fn_t) ndr_push_security_descriptor);
-
-        const QByteArray out = QByteArray((char *) blob.data, blob.length);
-
-        talloc_free(tmp_ctx);
-
-        return out;
-    }();
-
+    const QByteArray new_descriptor_bytes = descriptor_to_bytes(new_sd);
     const bool set_dacl = true;
     const bool apply_success = ad.attribute_replace_value(dn, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes, DoStatusMsg_Yes, set_dacl);
 
