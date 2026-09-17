@@ -209,6 +209,10 @@ private:
     QString get_gpt_sd(const AdObject &gpc_object,
                        const QString &error_context) const;
     bool are_sd_lists_match(const QString &gpt_sd, const QString &gpc_sd) const;
+    int get_version(const QString &ini_contents,
+                    const QString &error_context) const;
+    QString read_gpt_ini(const AdObject &gpc_object,
+                         const QString &error_context) const;
 };
 
 QList<QString> get_domain_hosts(const QString &domain, const QString &site);
