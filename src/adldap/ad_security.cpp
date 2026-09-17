@@ -631,6 +631,12 @@ static security_ace_type get_security_ace_type(const bool &object_present,
     return SEC_ACE_TYPE_ACCESS_ALLOWED;
 }
 
+static struct GUID bytes_to_guid(const QByteArray &guid_bytes) {
+    struct GUID guid;
+    memcpy(&guid, guid_bytes.data(), sizeof(GUID));
+    return guid;
+}
+
 static int get_security_ace_object_flags(const bool &object_present,
                                          const bool &inherited_object_present) {
     if (object_present && inherited_object_present) {
@@ -684,19 +690,12 @@ void security_descriptor_add_right_base(security_descriptor *sd, const QByteArra
                 get_security_ace_object_flags(object_present,
                                               inherited_object_present);
 
-            auto bytes_to_GUID = [](const QByteArray &guid_bytes) {
-                struct GUID guid;
-                memcpy(&guid, guid_bytes.data(), sizeof(GUID));
-
-                return guid;
-            };
-
             if (object_present) {
-                out.object.object.type.type = bytes_to_GUID(right.object_type);
+                out.object.object.type.type = bytes_to_guid(right.object_type);
             }
 
             if (inherited_object_present) {
-                out.object.object.inherited_type.inherited_type = bytes_to_GUID(right.inherited_object_type);
+                out.object.object.inherited_type.inherited_type = bytes_to_guid(right.inherited_object_type);
             }
 
             out.trustee = dom_sid_from_bytes(trustee);
