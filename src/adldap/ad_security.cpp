@@ -445,6 +445,27 @@ bool ad_security_set_user_cant_change_pass(AdInterface *ad, const QString &dn, c
     return success;
 }
 
+static security_descriptor *protect_against_deletion(const AdObject &object,
+                                                     const bool &enabled) {
+    security_descriptor *out = object.get_security_descriptor();
+    const QByteArray trustee_everyone = sid_string_to_bytes(SID_WORLD);
+
+    // NOTE: we only add/remove deny entries. If there are any allow entries,
+    // they are untouched.
+    for (const uint32_t &mask : protect_deletion_mask_list) {
+        SecurityRight right{mask, QByteArray(), QByteArray(), 0};
+        if (enabled) {
+            security_descriptor_add_right_base(out, trustee_everyone, right,
+                                               false);
+        } else {
+            security_descriptor_remove_right_base(out, trustee_everyone, right,
+                                                  false);
+        }
+    }
+
+    return out;
+}
+
 bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString dn, const bool enabled) {
     const AdObject object = ad.search_object(dn);
 
@@ -455,25 +476,7 @@ bool ad_security_set_protected_against_deletion(AdInterface &ad, const QString d
         return true;
     }
 
-    security_descriptor *new_sd = [&]() {
-        security_descriptor *out = object.get_security_descriptor();
-
-        const QByteArray trustee_everyone = sid_string_to_bytes(SID_WORLD);
-
-        // NOTE: we only add/remove deny entries. If
-        // there are any allow entries, they are
-        // untouched.
-        for (const uint32_t &mask : protect_deletion_mask_list) {
-            SecurityRight right{mask, QByteArray(), QByteArray(), 0};
-            if (enabled) {
-                security_descriptor_add_right_base(out, trustee_everyone, right, false);
-            } else {
-                security_descriptor_remove_right_base(out, trustee_everyone, right, false);
-            }
-        }
-
-        return out;
-    }();
+    security_descriptor *new_sd = protect_against_deletion(object, enabled);
 
     security_descriptor_sort_dacl(new_sd);
 
