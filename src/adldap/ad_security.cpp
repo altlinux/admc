@@ -611,6 +611,26 @@ static bool are_rights_already_set(const QList<security_ace> &dacl,
     return bitmask_is_set(matching_ace.access_mask, access_mask);
 }
 
+static security_ace_type get_security_ace_type(const bool &object_present,
+                                               const bool &inherited_object_present,
+                                               const bool &allow) {
+    if (allow) {
+        if (object_present || inherited_object_present) {
+            return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
+        } else {
+            return SEC_ACE_TYPE_ACCESS_ALLOWED;
+        }
+    } else {
+        if (object_present || inherited_object_present) {
+            return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
+        } else {
+            return SEC_ACE_TYPE_ACCESS_DENIED;
+        }
+    }
+
+    return SEC_ACE_TYPE_ACCESS_ALLOWED;
+}
+
 void security_descriptor_add_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
     const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
 
@@ -637,23 +657,9 @@ void security_descriptor_add_right_base(security_descriptor *sd, const QByteArra
             const bool object_present = !right.object_type.isEmpty();
             const bool inherited_object_present =  !right.inherited_object_type.isEmpty();
 
-            out.type = [&]() {
-                if (allow) {
-                    if (object_present || inherited_object_present) {
-                        return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
-                    } else {
-                        return SEC_ACE_TYPE_ACCESS_ALLOWED;
-                    }
-                } else {
-                    if (object_present || inherited_object_present) {
-                        return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
-                    } else {
-                        return SEC_ACE_TYPE_ACCESS_DENIED;
-                    }
-                }
-
-                return SEC_ACE_TYPE_ACCESS_ALLOWED;
-            }();
+            out.type = get_security_ace_type(object_present,
+                                             inherited_object_present,
+                                             allow);
 
             out.flags = right.flags;
             out.access_mask = access_mask;
