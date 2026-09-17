@@ -631,6 +631,23 @@ static security_ace_type get_security_ace_type(const bool &object_present,
     return SEC_ACE_TYPE_ACCESS_ALLOWED;
 }
 
+static int get_security_ace_object_flags(const bool &object_present,
+                                         const bool &inherited_object_present) {
+    if (object_present && inherited_object_present) {
+        return SEC_ACE_OBJECT_TYPE_PRESENT |
+            SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT;
+    }
+    else if (object_present) {
+        return SEC_ACE_OBJECT_TYPE_PRESENT;
+    }
+    else if (inherited_object_present) {
+        return SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT;
+    }
+    else {
+        return 0;
+    }
+}
+
 void security_descriptor_add_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
     const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
 
@@ -663,20 +680,9 @@ void security_descriptor_add_right_base(security_descriptor *sd, const QByteArra
 
             out.flags = right.flags;
             out.access_mask = access_mask;
-            out.object.object.flags = [&]() {
-                if (object_present && inherited_object_present) {
-                    return SEC_ACE_OBJECT_TYPE_PRESENT | SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT;
-                }
-                else if (object_present) {
-                    return SEC_ACE_OBJECT_TYPE_PRESENT;
-                }
-                else if (inherited_object_present) {
-                    return SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT;
-                }
-                else {
-                    return 0;
-                }
-            }();
+            out.object.object.flags =
+                get_security_ace_object_flags(object_present,
+                                              inherited_object_present);
 
             auto bytes_to_GUID = [](const QByteArray &guid_bytes) {
                 struct GUID guid;
