@@ -882,36 +882,31 @@ void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QBy
     ad_security_replace_dacl(sd, new_dacl);
 }
 
+static bool is_order_correct(const security_descriptor *copy) {
+    QList<security_ace> dacl = security_descriptor_get_dacl(copy);
+    security_ace curr = dacl.takeFirst();
+    bool out = true;
+    while (! dacl.isEmpty()) {
+        security_ace next = dacl.takeFirst();
+        const int comparison = ace_compare_simplified(curr, next);
+        const bool order_is_good = (comparison <= 0);
+        if (! order_is_good) {
+            out = false;
+        }
+
+        curr = next;
+    }
+
+    return out;
+}
+
 // TODO: Need to verify SACL order as well, because
 // advanced security dialog(to be implemented) edits
 // SACL.
 bool security_descriptor_verify_acl_order(security_descriptor *sd) {
     security_descriptor *copy = security_descriptor_copy(sd);
-
-    const bool order_is_correct = [&]() {
-        bool out = true;
-
-        QList<security_ace> dacl = security_descriptor_get_dacl(copy);
-
-        security_ace curr = dacl.takeFirst();
-
-        while (!dacl.isEmpty()) {
-            security_ace next = dacl.takeFirst();
-            const int comparison = ace_compare_simplified(curr, next);
-            const bool order_is_good = (comparison <= 0);
-
-            if (!order_is_good) {
-                out = false;
-            }
-
-            curr = next;
-        }
-
-        return out;
-    }();
-
+    const bool order_is_correct = is_order_correct(copy);
     security_descriptor_free(copy);
-
     return order_is_correct;
 }
 
