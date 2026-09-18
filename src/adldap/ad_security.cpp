@@ -861,22 +861,24 @@ static bool are_trustees_match(const security_ace &ace,
     return trustee_match && (! inherited);
 }
 
-void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QByteArray> &trustee_list) {
-    const QList<security_ace> new_dacl = [&]() {
-        QList<security_ace> out;
-
-        const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
-
-        for (const security_ace &ace : old_dacl) {
-            const bool match = are_trustees_match(ace, trustee_list);
-            if (! match) {
-                out.append(ace);
-            }
+static QList<security_ace> remove_trustee(
+    const security_descriptor *sd,
+    const QList<QByteArray> &trustee_list)
+{
+    QList<security_ace> new_dacl;
+    const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
+    for (const security_ace &ace : old_dacl) {
+        const bool match = are_trustees_match(ace, trustee_list);
+        if (! match) {
+            new_dacl.append(ace);
         }
+    }
 
-        return out;
-    }();
+    return new_dacl;
+}
 
+void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QByteArray> &trustee_list) {
+    const QList<security_ace> new_dacl = remove_trustee(sd, trustee_list);
     ad_security_replace_dacl(sd, new_dacl);
 }
 
