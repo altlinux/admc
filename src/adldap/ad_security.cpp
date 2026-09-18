@@ -797,6 +797,14 @@ static uint32_t get_mask_to_unset(const security_ace &ace,
     }
 }
 
+static security_ace ace_unset_mask(const security_ace &ace,
+                                   const uint32_t &access_mask) {
+    security_ace out_ace = ace;
+    const uint32_t mask_to_unset = get_mask_to_unset(ace, access_mask);
+    out_ace.access_mask = bitmask_set(ace.access_mask, mask_to_unset, false);
+    return out_ace;
+}
+
 void security_descriptor_remove_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
     const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
 
@@ -814,16 +822,7 @@ void security_descriptor_remove_right_base(security_descriptor *sd, const QByteA
             const bool ace_mask_contains_mask = bitmask_is_set(ace.access_mask, access_mask);
 
             if (match && ace_mask_contains_mask) {
-                const security_ace edited_ace = [&]() {
-                    security_ace out_ace = ace;
-
-                    const uint32_t mask_to_unset =
-                        get_mask_to_unset(ace, access_mask);
-                    out_ace.access_mask = bitmask_set(ace.access_mask, mask_to_unset, false);
-
-                    return out_ace;
-                }();
-
+                const security_ace edited_ace = ace_unset_mask(ace, access_mask);
                 const bool edited_ace_became_empty = (edited_ace.access_mask == 0);
 
                 if (!edited_ace_became_empty) {
