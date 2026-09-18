@@ -845,6 +845,22 @@ void security_descriptor_remove_right_base(security_descriptor *sd, const QByteA
     ad_security_replace_dacl(sd, new_dacl);
 }
 
+static bool are_trustees_match(const security_ace &ace,
+                               const QList<QByteArray> &trustee_list) {
+    bool trustee_match = false;
+    for (const QByteArray &trustee : trustee_list) {
+        const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
+        const bool trustees_are_equal = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
+
+        if (trustees_are_equal) {
+            trustee_match = true;
+            break;
+        }
+    }
+    const bool inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
+    return trustee_match && (! inherited);
+}
+
 void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QByteArray> &trustee_list) {
     const QList<security_ace> new_dacl = [&]() {
         QList<security_ace> out;
@@ -852,28 +868,8 @@ void security_descriptor_remove_trustee(security_descriptor *sd, const QList<QBy
         const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
 
         for (const security_ace &ace : old_dacl) {
-            const bool match = [&]() {
-                const bool trustee_match = [&]() {
-                    for (const QByteArray &trustee : trustee_list) {
-                        const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
-                        const bool trustees_are_equal = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
-
-                        if (trustees_are_equal) {
-                            return true;
-                        }
-                    }
-
-                    return false;
-                }();
-
-                const bool inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE);
-
-                const bool out_match = trustee_match && !inherited;
-
-                return out_match;
-            }();
-
-            if (!match) {
+            const bool match = are_trustees_match(ace, trustee_list);
+            if (! match) {
                 out.append(ace);
             }
         }
