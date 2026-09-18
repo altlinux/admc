@@ -772,6 +772,31 @@ bool  ace_match_without_access_mask(const security_ace &ace, const QByteArray &t
     return out_match;
 }
 
+// NOTE: need to handle a special case due to read and write rights sharing the
+// "read control" bit. When setting either read/write, don't change that shared
+// bit if the other of these rights is set. -- Dmitry Degtyarev
+static uint32_t get_mask_to_unset(const security_ace &ace,
+                                  const uint32_t &access_mask) {
+    static const QHash<uint32_t, uint32_t> OPPOSITE_MAP = {
+        {GENERIC_READ_FIXED, SEC_ADS_GENERIC_WRITE},
+        {SEC_ADS_GENERIC_WRITE, GENERIC_READ_FIXED},
+    };
+
+    if (OPPOSITE_MAP.contains(access_mask)) {
+        const uint32_t opposite = OPPOSITE_MAP[access_mask];
+        const bool opposite_is_set = bitmask_is_set(ace.access_mask, opposite);
+
+        if (opposite_is_set) {
+            const uint32_t out_mask = (access_mask & ~SEC_STD_READ_CONTROL);
+            return out_mask;
+        } else {
+            return access_mask;
+        }
+    } else {
+        return access_mask;
+    }
+}
+
 void security_descriptor_remove_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
     const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
 
@@ -792,35 +817,8 @@ void security_descriptor_remove_right_base(security_descriptor *sd, const QByteA
                 const security_ace edited_ace = [&]() {
                     security_ace out_ace = ace;
 
-                    // NOTE: need to handle a special
-                    // case due to read and write
-                    // rights sharing the "read
-                    // control" bit. When setting
-                    // either read/write, don't change
-                    // that shared bit if the other of
-                    // these rights is set
-                    const uint32_t mask_to_unset = [&]() {
-                        const QHash<uint32_t, uint32_t> opposite_map = {
-                            {GENERIC_READ_FIXED, SEC_ADS_GENERIC_WRITE},
-                            {SEC_ADS_GENERIC_WRITE, GENERIC_READ_FIXED},
-                        };
-
-                        if (opposite_map.contains(access_mask)) {
-                            const uint32_t opposite = opposite_map[access_mask];
-                            const bool opposite_is_set = bitmask_is_set(ace.access_mask, opposite);
-
-                            if (opposite_is_set) {
-                                const uint32_t out_mask = (access_mask & ~SEC_STD_READ_CONTROL);
-
-                                return out_mask;
-                            } else {
-                                return access_mask;
-                            }
-                        } else {
-                            return access_mask;
-                        }
-                    }();
-
+                    const uint32_t mask_to_unset =
+                        get_mask_to_unset(ace, access_mask);
                     out_ace.access_mask = bitmask_set(ace.access_mask, mask_to_unset, false);
 
                     return out_ace;
