@@ -805,37 +805,43 @@ static security_ace ace_unset_mask(const security_ace &ace,
     return out_ace;
 }
 
-void security_descriptor_remove_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
+static QList<security_ace> remove_access_rights(const security_descriptor *sd,
+                                                const QByteArray &trustee,
+                                                const SecurityRight &right,
+                                                const bool allow) {
+    QList<security_ace> out;
     const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
+    const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
+    for (const security_ace &ace : old_dacl) {
+        ace_match_flags match_flags = {
+            // Don't take in account inherited ACEs, because those cannot be
+            // added/removed.
+            false,
+            // Include object type matching to find correct ACE.
+            true
+        };
+        const bool match = ace_match_without_access_mask(ace, trustee, right,
+                                                         allow, match_flags);
+        const bool ace_mask_contains_mask = bitmask_is_set(ace.access_mask,
+                                                           access_mask);
 
-    const QList<security_ace> new_dacl = [&]() {
-        QList<security_ace> out;
-
-        const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
-
-        for (const security_ace &ace : old_dacl) {
-            ace_match_flags match_flags = {
-                false, // Dont take in account inherited ACEs, because those cant be added/removed
-                true // Include object type matching to find correct ACE
-            };
-            const bool match = ace_match_without_access_mask(ace, trustee, right, allow, match_flags);
-            const bool ace_mask_contains_mask = bitmask_is_set(ace.access_mask, access_mask);
-
-            if (match && ace_mask_contains_mask) {
-                const security_ace edited_ace = ace_unset_mask(ace, access_mask);
-                const bool edited_ace_became_empty = (edited_ace.access_mask == 0);
-
-                if (!edited_ace_became_empty) {
-                    out.append(edited_ace);
-                }
-            } else {
-                out.append(ace);
+        if (match && ace_mask_contains_mask) {
+            const security_ace edited_ace = ace_unset_mask(ace, access_mask);
+            const bool edited_ace_became_empty = (edited_ace.access_mask == 0);
+            if (! edited_ace_became_empty) {
+                out.append(edited_ace);
             }
+        } else {
+            out.append(ace);
         }
+    }
 
-        return out;
-    }();
+    return out;
+}
 
+void security_descriptor_remove_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
+    const QList<security_ace> new_dacl = remove_access_rights(sd, trustee,
+                                                              right, allow);
     ad_security_replace_dacl(sd, new_dacl);
 }
 
