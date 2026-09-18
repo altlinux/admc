@@ -68,7 +68,7 @@ PSOEditWidget::~PSOEditWidget() {
 * displayed: name, precedence and list of users policy is applied to
 */
 void PSOEditWidget::update(const AdObject &passwd_settings_obj) {
-    is_global = passwd_settings_obj.contains(ATTRIBUTE_CN);
+    is_global = passwd_settings_obj.contains(ATTRIBUTE_PWD_PROPERTIES);
     ui->name_edit->setVisible(!is_global);
     ui->name_label->setVisible(!is_global);
     ui->precedence_label->setVisible(!is_global);
@@ -76,7 +76,7 @@ void PSOEditWidget::update(const AdObject &passwd_settings_obj) {
     ui->groupBox->setVisible(!is_global);
     ui->line->setVisible(!is_global);
     ui->groupBox_2->setTitle(is_global ? tr("Global password settings") :
-                                             tr("Password settings"));
+                                         tr("Password settings"));
 
     update_fields(passwd_settings_obj, is_global);
 }
