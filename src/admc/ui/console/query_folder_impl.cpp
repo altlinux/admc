@@ -378,7 +378,7 @@ void console_query_tree_init(ConsoleWidget *console) {
     while (!folder_stack.isEmpty()) {
         const QPersistentModelIndex folder_index = folder_stack.pop();
 
-        const QString folder_path = console_query_folder_path(folder_index);
+        const QString folder_path = console_query_folder_path(folder_index, console);
         const QHash<QString, QVariant> folder_data =
             folder_list[folder_path].toHash();
         const QList<QString> child_list =
@@ -431,14 +431,14 @@ void console_query_tree_save(ConsoleWidget *console) {
             stack.append(child);
         }
 
-        const QString path = console_query_folder_path(index);
-        const QString parent_path = console_query_folder_path(index.parent());
+        const QString path = console_query_folder_path(index, console);
+        const QString parent_path = console_query_folder_path(index.parent(), console);
         const ItemType type = (ItemType) console_item_get_type(index);
 
         QList<QString> child_list;
         for (int i = 0; i < model->rowCount(index); i++) {
             const QModelIndex child = model->index(i, 0, index);
-            const QString child_path = console_query_folder_path(child);
+            const QString child_path = console_query_folder_path(child, console);
             child_list.append(child_path);
         }
 
@@ -496,8 +496,8 @@ QList<int> QueryFolderImpl::default_columns() const {
 // end result is that path for root is equal to
 // "QUERY_ROOT", while all other paths start with
 // "QUERY_ROOT/a/b/c..."
-QString console_query_folder_path(const QModelIndex &index) {
-    const bool is_query_root = !index.parent().isValid();
+QString console_query_folder_path(const QModelIndex &index, ConsoleWidget *console) {
+    const bool is_query_root = index.parent() == console->domain_info_index();
     if (is_query_root) {
         return QString(QUERY_ROOT);
     }

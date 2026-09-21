@@ -74,7 +74,7 @@ void console_query_tree_save(ConsoleWidget *console);
 QModelIndex get_query_tree_root(ConsoleWidget *console);
 QList<QString> console_query_folder_header_labels();
 QList<int> console_query_folder_default_columns();
-QString console_query_folder_path(const QModelIndex &index);
+QString console_query_folder_path(const QModelIndex &index, ConsoleWidget *console);
 QModelIndex console_query_folder_create(ConsoleWidget *console, const QString &name, const QString &description, const QModelIndex &parent);
 void console_query_folder_load(const QList<QStandardItem *> &row, const QString &name, const QString &description);
 bool console_query_or_folder_name_is_good(const QString &name, const QModelIndex &parent_index, QWidget *parent_widget, const QModelIndex &current_index);
