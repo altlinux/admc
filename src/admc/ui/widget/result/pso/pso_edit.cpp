@@ -20,23 +20,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/widget/result/pso/pso_edit.h"
-#include "ui/widget/result/pso/ui_pso_edit.h"
+#include <chrono>
+
+#include "ad_config.h"
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_utils.h"
-#include "ui/dialog/select/object.h"
-#include "core/managers/icon_manager.h"
-#include "ui/status.h"
 #include "core/globals.h"
-#include "ad_config.h"
+#include "core/managers/icon_manager.h"
 #include "core/utils.h"
-
-#include <chrono>
+#include "ui/dialog/select/object.h"
+#include "ui/status.h"
+#include "ui/widget/result/pso/pso_edit.h"
+#include "ui/widget/result/pso/ui_pso_edit.h"
 
 /**
-* @brief Creates PSOEditWidget and initializes it with global values  
-*/
+ * @brief Creates PSOEditWidget and initializes it with global values
+ */
 PSOEditWidget::PSOEditWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PSOEditWidget) {
@@ -45,13 +45,16 @@ PSOEditWidget::PSOEditWidget(QWidget *parent) :
 
     is_global = false;
 
-    connect(ui->applied_list_widget, &QListWidget::itemSelectionChanged, this,
-            [this]() {
-            ui->remove_button->setDisabled(ui->applied_list_widget->count() == 0);
-    });
+    connect(ui->applied_list_widget, &QListWidget::itemSelectionChanged,
+            this, [this]() {
+                ui->remove_button->setDisabled(
+                    ui->applied_list_widget->count() == 0);
+            });
 
-    connect(ui->add_button, &QPushButton::clicked, this, &PSOEditWidget::on_add);
-    connect(ui->remove_button, &QPushButton::clicked, this, &PSOEditWidget::on_remove);
+    connect(ui->add_button, &QPushButton::clicked,
+            this, &PSOEditWidget::on_add);
+    connect(ui->remove_button, &QPushButton::clicked,
+            this, &PSOEditWidget::on_remove);
 
     update_fields(global_password_settings(), true);
 }
@@ -60,13 +63,13 @@ PSOEditWidget::~PSOEditWidget() {
     delete ui;
 }
 
-/** 
+/**
 * @brief Sets fields of PSOEditWidget according to a given object
 * @param passwd_settings_obj The object with new values
-* @details Object can be a PSO or object representing global password settings 
-* those types of objects are distiguished based on objects' CN, if CN is present 
-* the object is considered to be a PSO, othervise it's treated as global 
-* settings object. If settings are global the following fields are not 
+* @details Object can be a PSO or object representing global password settings
+* those types of objects are distiguished based on objects' CN, if CN is present
+* the object is considered to be a PSO, othervise it's treated as global
+* settings object. If settings are global the following fields are not
 * displayed: name, precedence and list of users policy is applied to
 */
 void PSOEditWidget::update(const AdObject &passwd_settings_obj) {
@@ -149,7 +152,8 @@ QHash<QString, QList<QString> > PSOEditWidget::pso_settings_string_values() {
 * @return Hashmap of new values
 */
     QHash<QString, QList<QString>> string_value_settings;
-    QHash<QString, QList<QByteArray>> byte_value_settings = pso_settings_values();
+    QHash<QString, QList<QByteArray>> byte_value_settings =
+        pso_settings_values();
 
     for (const QString &attr : byte_value_settings.keys()) {
         QList<QString> string_values;
@@ -177,7 +181,7 @@ QLineEdit *PSOEditWidget::name_line_edit() {
 }
 
 /**
-* @brief Compares current field values to their respective defaults (global 
+* @brief Compares current field values to their respective defaults (global
 * settings)
 */
 bool PSOEditWidget::settings_are_default() {
@@ -213,15 +217,19 @@ bool PSOEditWidget::settings_are_default() {
 }
 
 void PSOEditWidget::on_add() {
-    auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_GROUP}, SelectObjectDialogMultiSelection_Yes, this);
+    auto dialog = new SelectObjectDialog({CLASS_USER, CLASS_GROUP},
+                                         SelectObjectDialogMultiSelection_Yes,
+                                         this);
     dialog->setWindowTitle(tr("Add applied users/group"));
     dialog->open();
 
     connect(dialog, &SelectObjectDialog::accepted, this, [this, dialog]() {
        for (auto selected_data : dialog->get_selected_advanced()) {
-           QListWidgetItem *item = new QListWidgetItem(g_icon_manager->category_icon(dn_get_name(selected_data.category)),
-                                                       dn_get_name(selected_data.dn),
-                                                       ui->applied_list_widget);
+           QListWidgetItem *item = new QListWidgetItem(
+               g_icon_manager->category_icon(
+                   dn_get_name(selected_data.category)),
+               dn_get_name(selected_data.dn),
+               ui->applied_list_widget);
            item->setData(AppliedItemRole_DN, selected_data.dn);
            dn_applied_list.append(selected_data.dn);
        }
@@ -236,13 +244,15 @@ void PSOEditWidget::on_remove() {
 }
 
 void PSOEditWidget::set_read_only(bool read_only) {
-    QList<QSpinBox*> spinbox_children = findChildren<QSpinBox*>(QString(), Qt::FindChildrenRecursively);
+    QList<QSpinBox*> spinbox_children =
+        findChildren<QSpinBox*>(QString(), Qt::FindChildrenRecursively);
     ui->name_edit->setReadOnly(true);
     for (auto spinbox : spinbox_children) {
         spinbox->setReadOnly(read_only);
     }
 
-    QList<QCheckBox*> checkbox_children = findChildren<QCheckBox*>(QString(), Qt::FindChildrenRecursively);
+    QList<QCheckBox*> checkbox_children =
+        findChildren<QCheckBox*>(QString(), Qt::FindChildrenRecursively);
     for (auto checkbox : checkbox_children) {
         checkbox->setDisabled(read_only);
     }
@@ -331,8 +341,8 @@ bool PSOEditWidget::event(QEvent *event) {
 }
 
 /**
-* @brief Deduces apropriate attribute name from PSO atribute name based on 
-* whether or not PSO is global. Basicaly method converts PSO attributes to 
+* @brief Deduces apropriate attribute name from PSO atribute name based on
+* whether or not PSO is global. Basicaly method converts PSO attributes to
 * global password settings attributes if needed
 * @param attribute_name Initial attribute to be converted
 * @return The apropriate attribute considering object type
@@ -348,7 +358,7 @@ QString PSOEditWidget::replace_attribute(
     return QString();
 };
 
-/** 
+/**
 * @brief Sets fields of PSOEditWidget according to a given object
 * @param passwd_settings_obj The object with new values
 */
