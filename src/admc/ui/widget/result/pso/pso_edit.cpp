@@ -257,6 +257,7 @@ void PSOEditWidget::set_read_only(bool read_only) {
         checkbox->setDisabled(read_only);
     }
 
+    ui->name_edit->setReadOnly(read_only);
     ui->add_button->setDisabled(read_only);
     // Only true because no items are selected after list widget enabling
     ui->remove_button->setDisabled(true);

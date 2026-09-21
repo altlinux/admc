@@ -67,11 +67,26 @@ void PSOResultsWidget::on_apply() {
         return;
     }
 
-    const QString &pso_dn = saved_object.get_dn();
+    QString pso_dn = saved_object.get_dn();
     QStringList changed_attr_list = changed_attrs();
     auto settings_values = pso_edit_widget->pso_settings_values();
+
     for (const QString &attribute : changed_attr_list) {
+        if (attribute == ATTRIBUTE_CN) {
+            continue;
+        }
         ad.attribute_replace_values(pso_dn, attribute, settings_values.value(attribute, QList<QByteArray>()));
+    }
+
+    if (changed_attr_list.contains(ATTRIBUTE_CN)) {
+        QByteArray new_dn = settings_values.value(ATTRIBUTE_CN,
+                                                  QList<QByteArray>())[0];
+        QString new_dn_string = QString(new_dn);
+        if (new_dn_string != pso_dn) {
+            ad.object_rename(pso_dn, new_dn_string);
+            emit refresh_pso_subtree();
+        }
+        pso_dn = new_dn_string;
     }
 
     saved_object = ad.search_object(pso_dn);

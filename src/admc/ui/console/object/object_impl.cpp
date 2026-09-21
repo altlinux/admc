@@ -584,6 +584,21 @@ QList<int> ObjectImpl::default_columns() const {
     return object_default_columns();
 }
 
+/**
+ * Refresh the console starting from the current sub-tree.
+ */
+void ObjectImpl::refresh_current_subtree() {
+    const QModelIndex index = console->get_current_scope_item();
+    show_busy_indicator();
+    const QList<QModelIndex> selected_list =
+        console->get_selected_items(ItemType_Object);
+    console->refresh_scope(index.parent());
+    if (! selected_list.isEmpty()) {
+        console->set_current_scope(selected_list[0]);
+    }
+    hide_busy_indicator();
+}
+
 void ObjectImpl::refresh_tree() {
     const QModelIndex object_tree_root =
         ConsoleObjectTreeOperations::get_domain_object_tree_root(console);
@@ -999,6 +1014,9 @@ void ObjectImpl::setup_widgets() {
     stacked_widget->addWidget(subnet_results_widget);
     stacked_widget->addWidget(view());
     set_results_widget(stacked_widget);
+
+    connect(pso_results_widget, &PSOResultsWidget::refresh_pso_subtree,
+            this, &ObjectImpl::refresh_current_subtree);
 }
 
 void ObjectImpl::setup_filters() {

@@ -34,6 +34,9 @@ public:
     virtual void update(const QModelIndex &index) override;
     virtual void update(const AdObject &pso) override;
 
+signals:
+    void refresh_pso_subtree();
+
 private:
     PSOEditWidget *pso_edit_widget;
 
