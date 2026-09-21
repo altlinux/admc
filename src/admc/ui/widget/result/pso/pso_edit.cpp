@@ -43,6 +43,8 @@ PSOEditWidget::PSOEditWidget(QWidget *parent) :
 
     ui->setupUi(this);
 
+    is_global = false;
+
     connect(ui->applied_list_widget, &QListWidget::itemSelectionChanged, this,
             [this]() {
             ui->remove_button->setDisabled(ui->applied_list_widget->count() == 0);
