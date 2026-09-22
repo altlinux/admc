@@ -187,9 +187,7 @@ dom_sid dom_sid_from_bytes(const QByteArray &bytes) {
 QByteArray dom_sid_string_to_bytes(const QString &string) {
     dom_sid sid;
     dom_sid_parse(cstr(string), &sid);
-    const QByteArray bytes = dom_sid_to_bytes(sid);
-
-    return bytes;
+    return dom_sid_to_bytes(sid);
 }
 
 // This f-n is only necessary to band-aid one problem
