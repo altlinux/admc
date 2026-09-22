@@ -531,13 +531,25 @@ static int bitmask_to_inherited_state(const security_ace &ace) {
         SecurityRightStateInherited_Yes : SecurityRightStateInherited_No;
 }
 
-SecurityRightState security_descriptor_get_right_state(const security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right) {
-    bool out_data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT];
+/**
+ * Set the security right data to the specified state.
+ * @param data A two-dimensional array of boolean flags.
+ * @param value A value to fill the array with.
+ */
+static void security_right_state_data_set(
+    bool data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT],
+    bool value)
+{
     for (int x = 0; x < SecurityRightStateInherited_COUNT; x++) {
         for (int y = 0; y < SecurityRightStateType_COUNT; y++) {
-            out_data[x][y] = false;
+            data[x][y] = value;
         }
     }
+}
+
+SecurityRightState security_descriptor_get_right_state(const security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right) {
+    bool out_data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT];
+    security_right_state_data_set(out_data, false);
 
     const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
     for (const security_ace &ace : dacl) {
