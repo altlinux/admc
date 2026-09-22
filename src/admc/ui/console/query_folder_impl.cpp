@@ -432,7 +432,6 @@ void console_query_tree_save(ConsoleWidget *console) {
         }
 
         const QString path = console_query_folder_path(index, console);
-        const QString parent_path = console_query_folder_path(index.parent(), console);
         const ItemType type = (ItemType) console_item_get_type(index);
 
         QList<QString> child_list;
