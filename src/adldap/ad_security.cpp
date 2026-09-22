@@ -1027,24 +1027,30 @@ void security_descriptor_add_right(security_descriptor *sd, AdConfig *adconfig, 
     security_descriptor_sort_dacl(sd);
 }
 
+static bool is_superior_set(const security_descriptor *sd,
+                            const QByteArray &trustee,
+                            const SecurityRight &superior,
+                            const bool &allow) {
+    const SecurityRightState state =
+        security_descriptor_get_right_state(sd, trustee, superior);
+    SecurityRightStateType type;
+
+    if (allow) {
+        type = SecurityRightStateType_Allow;
+    } else {
+        type = SecurityRightStateType_Deny;
+    }
+
+    return state.get(SecurityRightStateInherited_No, type);
+}
+
 void security_descriptor_remove_right(security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
     const QList<SecurityRight> target_superior_list = ad_security_get_superior_right_list(right);
 
     // Remove superiors
     for (const SecurityRight &superior : target_superior_list) {
-        const bool superior_is_set = [&]() {
-            const SecurityRightState state = security_descriptor_get_right_state(sd, trustee, superior);
-            const SecurityRightStateType type = [&]() {
-                if (allow) {
-                    return SecurityRightStateType_Allow;
-                } else {
-                    return SecurityRightStateType_Deny;
-                }
-            }();
-            const bool out = state.get(SecurityRightStateInherited_No, type);
-
-            return out;
-        }();
+        const bool superior_is_set =
+            is_superior_set(sd, trustee, superior, allow);
 
         // NOTE: skip superior if it's not set, so that we don't add opposite subordinate rights when not needed
         if (!superior_is_set) {
