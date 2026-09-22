@@ -1298,19 +1298,19 @@ QList<SecurityRight> ad_security_get_common_rights() {
 }
 
 QList<SecurityRight> ad_security_get_extended_rights_for_class(AdConfig *adconfig, const QList<QString> &class_list) {
+    static const QList<uint32_t> ACCESS_MASK_LIST = {
+        SEC_ADS_CONTROL_ACCESS,
+        SEC_ADS_READ_PROP,
+        SEC_ADS_WRITE_PROP,
+    };
+
     QList<SecurityRight> out;
 
     const QList<QString> extended_rights_list = adconfig->get_extended_rights_list(class_list);
     for (const QString &rights : extended_rights_list) {
         const int valid_accesses = adconfig->get_rights_valid_accesses(rights);
         const QByteArray rights_guid = adconfig->get_right_guid(rights);
-        const QList<uint32_t> access_mask_list = {
-            SEC_ADS_CONTROL_ACCESS,
-            SEC_ADS_READ_PROP,
-            SEC_ADS_WRITE_PROP,
-        };
-
-        for (const uint32_t &access_mask : access_mask_list) {
+        for (const uint32_t &access_mask : ACCESS_MASK_LIST) {
             const bool mask_match = bitmask_is_set(valid_accesses, access_mask);
 
             if (mask_match) {
