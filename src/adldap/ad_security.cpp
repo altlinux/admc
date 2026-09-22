@@ -521,6 +521,16 @@ QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd) 
     return out;
 }
 
+/**
+ * Convert the ACE flags bitmask to a security permission inherited state.
+ * @param ace A security ACE to check.
+ * @return true if "INHERITED" flag is set, false otherwise.
+ */
+static int bitmask_to_inherited_state(const security_ace &ace) {
+    return bitmask_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE) ?
+        SecurityRightStateInherited_Yes : SecurityRightStateInherited_No;
+}
+
 SecurityRightState security_descriptor_get_right_state(const security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right) {
     bool out_data[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT];
     for (int x = 0; x < SecurityRightStateInherited_COUNT; x++) {
@@ -552,8 +562,7 @@ SecurityRightState security_descriptor_get_right_state(const security_descriptor
             continue;
         }
 
-        const int state_inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_INHERITED_ACE) ? SecurityRightStateInherited_Yes :
-                                                                                            SecurityRightStateInherited_No;
+        const int state_inherited = bitmask_to_inherited_state(ace);
         const int state_allowed = match_for_allow ? SecurityRightStateType_Allow : SecurityRightStateType_Deny;
         out_data[state_inherited][state_allowed] = true;
     }
