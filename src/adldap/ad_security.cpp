@@ -33,21 +33,8 @@
 
 #include <QDebug>
 
-QByteArray dom_sid_to_bytes(const dom_sid &sid);
-QByteArray dom_sid_string_to_bytes(const dom_sid &sid);
-bool ace_match_without_access_mask(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow, ace_match_flags match_flags);
-bool ace_match(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow);
-uint32_t ad_security_map_access_mask(const uint32_t access_mask);
-int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2);
-
-// NOTE: these "base" f-ns are used by the full
-// versions of add/remove right f-ns. Base f-ns do only
-// the bare minimum, just adding/removing matching ace,
-// without handling opposites, subordinates, superiors,
-// etc. They also don't sort ACL, callers need to
-// handle sorting themselves.
-void security_descriptor_add_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow);
-void security_descriptor_remove_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow);
+////////////////////////////////////////////////////////////////////////////////
+// Constants.
 
 const QList<int> ace_types_with_object = {
     SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT,
@@ -184,6 +171,370 @@ const QList<uint32_t> common_rights_list = {
 
 CommonTaskManager *common_task_manager = new CommonTaskManager();
 
+////////////////////////////////////////////////////////////////////////////////
+// Helper procedures.
+
+QByteArray dom_sid_to_bytes(const dom_sid &sid) {
+    const QByteArray bytes = QByteArray((char *) &sid, sizeof(struct dom_sid));
+
+    return bytes;
+}
+
+// Copy sid bytes into dom_sid struct and adds padding
+// if necessary
+dom_sid dom_sid_from_bytes(const QByteArray &bytes) {
+    dom_sid out;
+    memset(&out, '\0', sizeof(dom_sid));
+    memcpy(&out, bytes.data(), sizeof(dom_sid));
+
+    return out;
+}
+
+QByteArray dom_sid_string_to_bytes(const QString &string) {
+    dom_sid sid;
+    dom_sid_parse(cstr(string), &sid);
+    const QByteArray bytes = dom_sid_to_bytes(sid);
+
+    return bytes;
+}
+
+// This f-n is only necessary to band-aid one problem
+// with generic read.
+uint32_t ad_security_map_access_mask(const uint32_t access_mask) {
+    const bool is_generic_read = (access_mask == SEC_ADS_GENERIC_READ);
+
+    if (is_generic_read) {
+        return GENERIC_READ_FIXED;
+    } else {
+        return access_mask;
+    }
+}
+
+// This simplified version of ace_compare() for
+// verifying ACL order. Only includes necessary
+// comparisons specified by Microsoft here:
+// https://docs.microsoft.com/en-us/windows/win32/secauthz/order-of-aces-in-a-dacl
+//
+// TODO: currently missing one comparison:
+//
+// "Inherited ACE's are placed in the order in which
+// they are inherited"
+//
+// Not a big problem because inherited ACE's are added
+// to ACL by the server. Clients cannot manually add
+// such ACE's, so theoretically their order should
+// always be correct. But do implement this at some
+// point, just in case. Using order requirements listed
+// here:
+int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2) {
+    bool b1;
+    bool b2;
+
+    /* If the ACEs are equal, we have nothing more to do. */
+    if (security_ace_equal(&ace1, &ace2)) {
+        return 0;
+    }
+
+    /* Inherited follow non-inherited */
+    b1 = ((ace1.flags & SEC_ACE_FLAG_INHERITED_ACE) != 0);
+    b2 = ((ace2.flags & SEC_ACE_FLAG_INHERITED_ACE) != 0);
+    if (b1 != b2) {
+        return (b1 ? 1 : -1);
+    }
+
+    /* Allowed ACEs follow denied ACEs */
+    b1 = (ace1.type == SEC_ACE_TYPE_ACCESS_ALLOWED ||
+          ace1.type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT);
+    b2 = (ace2.type == SEC_ACE_TYPE_ACCESS_ALLOWED ||
+          ace2.type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT);
+    if (b1 != b2) {
+        return (b1 ? 1 : -1);
+    }
+
+    return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool  ace_match_without_access_mask(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow, ace_match_flags match_flags) {
+    const security_ace_type ace_type = ace.type;
+    const bool ace_allow = ace_type_allow_set.contains(ace_type);
+    const bool ace_deny = ace_type_deny_set.contains(ace_type);
+    const bool type_match = (allow && ace_allow) || (!allow && ace_deny);
+
+    // Inherited and at the same time inheritable aces have to match for target object and its child objects
+    const bool ace_is_inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_CONTAINER_INHERIT | SEC_ACE_FLAG_INHERITED_ACE);
+    bool flags_match = match_flags.match_inheritance ? ace_is_inherited || ace.flags == right.flags :
+                                         ace.flags == right.flags;
+
+    const bool object_present = ace_types_with_object.contains(ace.type) &&
+            bitmask_is_set(ace.object.object.flags, SEC_ACE_OBJECT_TYPE_PRESENT);
+    const bool inherited_object_present = ace_types_with_object.contains(ace.type) &&
+            bitmask_is_set(ace.object.object.flags, SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT);
+
+    bool object_match;
+    if (object_present) {
+        const GUID ace_object_type_guid = ace.object.object.type.type;
+        const QByteArray ace_object_type = QByteArray((char *) &ace_object_type_guid, sizeof(GUID));
+        const bool types_are_equal = ace_object_type == right.object_type;
+
+        object_match = types_are_equal;
+    } else {
+        object_match = match_flags.match_object_type ? right.object_type.isEmpty() : true;
+    }
+
+    bool inherited_object_match;
+    if (inherited_object_present) {
+        const GUID ace_inherited_type_guid = ace.object.object.inherited_type.inherited_type;
+        const QByteArray ace_inherited_object_type = QByteArray((char *) &ace_inherited_type_guid, sizeof(GUID));
+        const bool types_are_equal = ace_inherited_object_type == right.inherited_object_type;
+
+        inherited_object_match = types_are_equal || ace_is_inherited;
+    } else {
+        inherited_object_match = right.inherited_object_type.isEmpty() || ace_is_inherited;
+    }
+
+    const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
+    const bool trustee_match = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
+
+    const bool out_match = (inherited_object_match && type_match && flags_match && trustee_match && object_match);
+    return out_match;
+}
+
+bool ace_match(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
+    const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
+    const bool access_mask_match = bitmask_is_set(ace.access_mask, access_mask);
+
+    ace_match_flags match_flags = {
+        true, // Check inherited ACEs to set (child) object's corresponging permissions
+
+        false // Rights with the same access mask and without object type are considered as more superior
+    };
+
+    return access_mask_match && ace_match_without_access_mask(ace, trustee, right, allow, match_flags);
+}
+
+static int match_dacl_index(const QByteArray &trustee,
+                            const QList<security_ace> &dacl,
+                            const SecurityRight &right,
+                            const bool allow) {
+    for (int i = 0; i < dacl.size(); i++) {
+        const security_ace ace = dacl[i];
+
+        // NOTE: access mask match doesn't matter because we also want to add
+        // right to existing ace, if it exists. In that case such ace would not
+        // match by mask and that's fine.
+
+        ace_match_flags match_flags = {
+            // Dont take in account inherited ACEs, because those cannot be
+            // added/removed:
+            false,
+            // Include object type matching to find correct ACE:
+            true
+        };
+        const bool match = ace_match_without_access_mask(ace, trustee, right,
+                                                         allow, match_flags);
+        if (match) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Adding/removing ACEs.
+
+// NOTE: these "base" f-ns are used by the full versions of add/remove right
+// f-ns. Base f-ns do only the bare minimum, just adding/removing matching ace,
+// without handling opposites, subordinates, superiors, etc. They also don't
+// sort ACL, callers need to handle sorting themselves. - Dmitry Degtyarev
+
+// Checks if ace matches given members. Note that access masks are not
+// compared. Compare them yourself if you need to further filter by masks.
+
+static bool are_rights_already_set(const QList<security_ace> &dacl,
+                                   const int &matching_index,
+                                   const uint32_t &access_mask) {
+    const security_ace matching_ace = dacl[matching_index];
+    return bitmask_is_set(matching_ace.access_mask, access_mask);
+}
+
+static security_ace_type get_security_ace_type(const bool &object_present,
+                                               const bool &inherited_object_present,
+                                               const bool &allow) {
+    if (allow) {
+        if (object_present || inherited_object_present) {
+            return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
+        } else {
+            return SEC_ACE_TYPE_ACCESS_ALLOWED;
+        }
+    } else {
+        if (object_present || inherited_object_present) {
+            return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
+        } else {
+            return SEC_ACE_TYPE_ACCESS_DENIED;
+        }
+    }
+
+    return SEC_ACE_TYPE_ACCESS_ALLOWED;
+}
+
+static struct GUID bytes_to_guid(const QByteArray &guid_bytes) {
+    struct GUID guid;
+    memcpy(&guid, guid_bytes.data(), sizeof(GUID));
+    return guid;
+}
+
+static int get_security_ace_object_flags(const bool &object_present,
+                                         const bool &inherited_object_present) {
+    if (object_present && inherited_object_present) {
+        return SEC_ACE_OBJECT_TYPE_PRESENT |
+            SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT;
+    }
+    else if (object_present) {
+        return SEC_ACE_OBJECT_TYPE_PRESENT;
+    }
+    else if (inherited_object_present) {
+        return SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT;
+    }
+    else {
+        return 0;
+    }
+}
+
+static security_ace make_security_ace(const QByteArray &trustee,
+                                      const SecurityRight &right,
+                                      const uint32_t &access_mask,
+                                      const bool &allow) {
+    security_ace out;
+    const bool object_present = !right.object_type.isEmpty();
+    const bool inherited_object_present =
+        (! right.inherited_object_type.isEmpty());
+
+    out.type = get_security_ace_type(object_present,
+                                     inherited_object_present,
+                                     allow);
+
+    out.flags = right.flags;
+    out.access_mask = access_mask;
+    out.object.object.flags =
+        get_security_ace_object_flags(object_present,
+                                      inherited_object_present);
+
+    if (object_present) {
+        out.object.object.type.type = bytes_to_guid(right.object_type);
+    }
+
+    if (inherited_object_present) {
+        out.object.object.inherited_type.inherited_type =
+            bytes_to_guid(right.inherited_object_type);
+    }
+
+    out.trustee = dom_sid_from_bytes(trustee);
+
+    return out;
+}
+
+// NOTE: need to handle a special case due to read and write rights sharing the
+// "read control" bit. When setting either read/write, don't change that shared
+// bit if the other of these rights is set. -- Dmitry Degtyarev
+static uint32_t get_mask_to_unset(const security_ace &ace,
+                                  const uint32_t &access_mask) {
+    static const QHash<uint32_t, uint32_t> OPPOSITE_MAP = {
+        {GENERIC_READ_FIXED, SEC_ADS_GENERIC_WRITE},
+        {SEC_ADS_GENERIC_WRITE, GENERIC_READ_FIXED},
+    };
+
+    if (OPPOSITE_MAP.contains(access_mask)) {
+        const uint32_t opposite = OPPOSITE_MAP[access_mask];
+        const bool opposite_is_set = bitmask_is_set(ace.access_mask, opposite);
+
+        if (opposite_is_set) {
+            const uint32_t out_mask = (access_mask & ~SEC_STD_READ_CONTROL);
+            return out_mask;
+        } else {
+            return access_mask;
+        }
+    } else {
+        return access_mask;
+    }
+}
+
+static security_ace ace_unset_mask(const security_ace &ace,
+                                   const uint32_t &access_mask) {
+    security_ace out_ace = ace;
+    const uint32_t mask_to_unset = get_mask_to_unset(ace, access_mask);
+    out_ace.access_mask = bitmask_set(ace.access_mask, mask_to_unset, false);
+    return out_ace;
+}
+
+static QList<security_ace> remove_access_rights(const security_descriptor *sd,
+                                                const QByteArray &trustee,
+                                                const SecurityRight &right,
+                                                const bool allow) {
+    QList<security_ace> out;
+    const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
+    const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
+    for (const security_ace &ace : old_dacl) {
+        ace_match_flags match_flags = {
+            // Don't take in account inherited ACEs, because those cannot be
+            // added/removed.
+            false,
+            // Include object type matching to find correct ACE.
+            true
+        };
+        const bool match = ace_match_without_access_mask(ace, trustee, right,
+                                                         allow, match_flags);
+        const bool ace_mask_contains_mask = bitmask_is_set(ace.access_mask,
+                                                           access_mask);
+
+        if (match && ace_mask_contains_mask) {
+            const security_ace edited_ace = ace_unset_mask(ace, access_mask);
+            const bool edited_ace_became_empty = (edited_ace.access_mask == 0);
+            if (! edited_ace_became_empty) {
+                out.append(edited_ace);
+            }
+        } else {
+            out.append(ace);
+        }
+    }
+
+    return out;
+}
+
+void security_descriptor_add_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
+    const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
+
+    const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
+
+    const int matching_index = match_dacl_index(trustee, dacl, right, allow);
+    if (matching_index != -1) {
+        const bool right_already_set =
+            are_rights_already_set(dacl, matching_index, access_mask);
+
+        // Matching ace exists, so reuse it by adding
+        // given mask to this ace, but only if it's not set already
+        if (!right_already_set) {
+            security_ace new_ace = dacl[matching_index];
+            new_ace.access_mask = bitmask_set(new_ace.access_mask, access_mask, true);
+            sd->dacl->aces[matching_index] = new_ace;
+        }
+    } else {
+        // No matching ace, so make a new ace for this right
+        const security_ace ace = make_security_ace(trustee, right, access_mask, allow);
+        security_descriptor_dacl_add(sd, &ace);
+    }
+}
+
+void security_descriptor_remove_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
+    const QList<security_ace> new_dacl = remove_access_rights(sd, trustee,
+                                                              right, allow);
+    ad_security_replace_dacl(sd, new_dacl);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 SecurityRightState::SecurityRightState(const bool data_arg[SecurityRightStateInherited_COUNT][SecurityRightStateType_COUNT]) {
     for (int inherited = 0; inherited < SecurityRightStateInherited_COUNT; inherited++) {
         for (int type = 0; type < SecurityRightStateType_COUNT; type++) {
@@ -294,30 +645,6 @@ bool ad_security_replace_security_descriptor(AdInterface &ad, const QString &dn,
     const bool apply_success = ad.attribute_replace_value(dn, ATTRIBUTE_SECURITY_DESCRIPTOR, new_descriptor_bytes, DoStatusMsg_Yes, set_dacl);
 
     return apply_success;
-}
-
-QByteArray dom_sid_to_bytes(const dom_sid &sid) {
-    const QByteArray bytes = QByteArray((char *) &sid, sizeof(struct dom_sid));
-
-    return bytes;
-}
-
-// Copy sid bytes into dom_sid struct and adds padding
-// if necessary
-dom_sid dom_sid_from_bytes(const QByteArray &bytes) {
-    dom_sid out;
-    memset(&out, '\0', sizeof(dom_sid));
-    memcpy(&out, bytes.data(), sizeof(dom_sid));
-
-    return out;
-}
-
-QByteArray dom_sid_string_to_bytes(const QString &string) {
-    dom_sid sid;
-    dom_sid_parse(cstr(string), &sid);
-    const QByteArray bytes = dom_sid_to_bytes(sid);
-
-    return bytes;
 }
 
 void security_descriptor_sort_dacl(security_descriptor *sd) {
@@ -595,275 +922,6 @@ void security_descriptor_print(security_descriptor *sd, AdInterface &ad) {
         qInfo() << "mask:" << int_to_hex_string(ace.access_mask);
         qInfo() << "type:" << ace.type;
     }
-}
-
-static int match_dacl_index(const QByteArray &trustee,
-                            const QList<security_ace> &dacl,
-                            const SecurityRight &right,
-                            const bool allow) {
-    for (int i = 0; i < dacl.size(); i++) {
-        const security_ace ace = dacl[i];
-
-        // NOTE: access mask match doesn't matter because we also want to add
-        // right to existing ace, if it exists. In that case such ace would not
-        // match by mask and that's fine.
-
-        ace_match_flags match_flags = {
-            // Dont take in account inherited ACEs, because those cannot be
-            // added/removed:
-            false,
-            // Include object type matching to find correct ACE:
-            true
-        };
-        const bool match = ace_match_without_access_mask(ace, trustee, right,
-                                                         allow, match_flags);
-        if (match) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
-static bool are_rights_already_set(const QList<security_ace> &dacl,
-                                   const int &matching_index,
-                                   const uint32_t &access_mask) {
-    const security_ace matching_ace = dacl[matching_index];
-    return bitmask_is_set(matching_ace.access_mask, access_mask);
-}
-
-static security_ace_type get_security_ace_type(const bool &object_present,
-                                               const bool &inherited_object_present,
-                                               const bool &allow) {
-    if (allow) {
-        if (object_present || inherited_object_present) {
-            return SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT;
-        } else {
-            return SEC_ACE_TYPE_ACCESS_ALLOWED;
-        }
-    } else {
-        if (object_present || inherited_object_present) {
-            return SEC_ACE_TYPE_ACCESS_DENIED_OBJECT;
-        } else {
-            return SEC_ACE_TYPE_ACCESS_DENIED;
-        }
-    }
-
-    return SEC_ACE_TYPE_ACCESS_ALLOWED;
-}
-
-static struct GUID bytes_to_guid(const QByteArray &guid_bytes) {
-    struct GUID guid;
-    memcpy(&guid, guid_bytes.data(), sizeof(GUID));
-    return guid;
-}
-
-static int get_security_ace_object_flags(const bool &object_present,
-                                         const bool &inherited_object_present) {
-    if (object_present && inherited_object_present) {
-        return SEC_ACE_OBJECT_TYPE_PRESENT |
-            SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT;
-    }
-    else if (object_present) {
-        return SEC_ACE_OBJECT_TYPE_PRESENT;
-    }
-    else if (inherited_object_present) {
-        return SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT;
-    }
-    else {
-        return 0;
-    }
-}
-
-static security_ace make_security_ace(const QByteArray &trustee,
-                                      const SecurityRight &right,
-                                      const uint32_t &access_mask,
-                                      const bool &allow) {
-    security_ace out;
-    const bool object_present = !right.object_type.isEmpty();
-    const bool inherited_object_present =
-        (! right.inherited_object_type.isEmpty());
-
-    out.type = get_security_ace_type(object_present,
-                                     inherited_object_present,
-                                     allow);
-
-    out.flags = right.flags;
-    out.access_mask = access_mask;
-    out.object.object.flags =
-        get_security_ace_object_flags(object_present,
-                                      inherited_object_present);
-
-    if (object_present) {
-        out.object.object.type.type = bytes_to_guid(right.object_type);
-    }
-
-    if (inherited_object_present) {
-        out.object.object.inherited_type.inherited_type =
-            bytes_to_guid(right.inherited_object_type);
-    }
-
-    out.trustee = dom_sid_from_bytes(trustee);
-
-    return out;
-}
-
-void security_descriptor_add_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
-    const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
-
-    const QList<security_ace> dacl = security_descriptor_get_dacl(sd);
-
-    const int matching_index = match_dacl_index(trustee, dacl, right, allow);
-    if (matching_index != -1) {
-        const bool right_already_set =
-            are_rights_already_set(dacl, matching_index, access_mask);
-
-        // Matching ace exists, so reuse it by adding
-        // given mask to this ace, but only if it's not set already
-        if (!right_already_set) {
-            security_ace new_ace = dacl[matching_index];
-            new_ace.access_mask = bitmask_set(new_ace.access_mask, access_mask, true);
-            sd->dacl->aces[matching_index] = new_ace;
-        }
-    } else {
-        // No matching ace, so make a new ace for this right
-        const security_ace ace = make_security_ace(trustee, right, access_mask, allow);
-        security_descriptor_dacl_add(sd, &ace);
-    }
-}
-
-bool ace_match(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
-    const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
-    const bool access_mask_match = bitmask_is_set(ace.access_mask, access_mask);
-
-    ace_match_flags match_flags = {
-        true, // Check inherited ACEs to set (child) object's corresponging permissions
-
-        false // Rights with the same access mask and without object type are considered as more superior
-    };
-
-    return access_mask_match && ace_match_without_access_mask(ace, trustee, right, allow, match_flags);
-}
-
-// Checks if ace matches given members. Note that
-// access masks are not compared. Compare them yourself
-// if you need to further filter by masks.
-bool  ace_match_without_access_mask(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow, ace_match_flags match_flags) {
-    const security_ace_type ace_type = ace.type;
-    const bool ace_allow = ace_type_allow_set.contains(ace_type);
-    const bool ace_deny = ace_type_deny_set.contains(ace_type);
-    const bool type_match = (allow && ace_allow) || (!allow && ace_deny);
-
-    // Inherited and at the same time inheritable aces have to match for target object and its child objects
-    const bool ace_is_inherited = bitmask_is_set(ace.flags, SEC_ACE_FLAG_CONTAINER_INHERIT | SEC_ACE_FLAG_INHERITED_ACE);
-    bool flags_match = match_flags.match_inheritance ? ace_is_inherited || ace.flags == right.flags :
-                                         ace.flags == right.flags;
-
-    const bool object_present = ace_types_with_object.contains(ace.type) &&
-            bitmask_is_set(ace.object.object.flags, SEC_ACE_OBJECT_TYPE_PRESENT);
-    const bool inherited_object_present = ace_types_with_object.contains(ace.type) &&
-            bitmask_is_set(ace.object.object.flags, SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT);
-
-    bool object_match;
-    if (object_present) {
-        const GUID ace_object_type_guid = ace.object.object.type.type;
-        const QByteArray ace_object_type = QByteArray((char *) &ace_object_type_guid, sizeof(GUID));
-        const bool types_are_equal = ace_object_type == right.object_type;
-
-        object_match = types_are_equal;
-    } else {
-        object_match = match_flags.match_object_type ? right.object_type.isEmpty() : true;
-    }
-
-    bool inherited_object_match;
-    if (inherited_object_present) {
-        const GUID ace_inherited_type_guid = ace.object.object.inherited_type.inherited_type;
-        const QByteArray ace_inherited_object_type = QByteArray((char *) &ace_inherited_type_guid, sizeof(GUID));
-        const bool types_are_equal = ace_inherited_object_type == right.inherited_object_type;
-
-        inherited_object_match = types_are_equal || ace_is_inherited;
-    } else {
-        inherited_object_match = right.inherited_object_type.isEmpty() || ace_is_inherited;
-    }
-
-    const dom_sid trustee_sid = dom_sid_from_bytes(trustee);
-    const bool trustee_match = (dom_sid_compare(&ace.trustee, &trustee_sid) == 0);
-
-    const bool out_match = (inherited_object_match && type_match && flags_match && trustee_match && object_match);
-    return out_match;
-}
-
-// NOTE: need to handle a special case due to read and write rights sharing the
-// "read control" bit. When setting either read/write, don't change that shared
-// bit if the other of these rights is set. -- Dmitry Degtyarev
-static uint32_t get_mask_to_unset(const security_ace &ace,
-                                  const uint32_t &access_mask) {
-    static const QHash<uint32_t, uint32_t> OPPOSITE_MAP = {
-        {GENERIC_READ_FIXED, SEC_ADS_GENERIC_WRITE},
-        {SEC_ADS_GENERIC_WRITE, GENERIC_READ_FIXED},
-    };
-
-    if (OPPOSITE_MAP.contains(access_mask)) {
-        const uint32_t opposite = OPPOSITE_MAP[access_mask];
-        const bool opposite_is_set = bitmask_is_set(ace.access_mask, opposite);
-
-        if (opposite_is_set) {
-            const uint32_t out_mask = (access_mask & ~SEC_STD_READ_CONTROL);
-            return out_mask;
-        } else {
-            return access_mask;
-        }
-    } else {
-        return access_mask;
-    }
-}
-
-static security_ace ace_unset_mask(const security_ace &ace,
-                                   const uint32_t &access_mask) {
-    security_ace out_ace = ace;
-    const uint32_t mask_to_unset = get_mask_to_unset(ace, access_mask);
-    out_ace.access_mask = bitmask_set(ace.access_mask, mask_to_unset, false);
-    return out_ace;
-}
-
-static QList<security_ace> remove_access_rights(const security_descriptor *sd,
-                                                const QByteArray &trustee,
-                                                const SecurityRight &right,
-                                                const bool allow) {
-    QList<security_ace> out;
-    const uint32_t access_mask = ad_security_map_access_mask(right.access_mask);
-    const QList<security_ace> old_dacl = security_descriptor_get_dacl(sd);
-    for (const security_ace &ace : old_dacl) {
-        ace_match_flags match_flags = {
-            // Don't take in account inherited ACEs, because those cannot be
-            // added/removed.
-            false,
-            // Include object type matching to find correct ACE.
-            true
-        };
-        const bool match = ace_match_without_access_mask(ace, trustee, right,
-                                                         allow, match_flags);
-        const bool ace_mask_contains_mask = bitmask_is_set(ace.access_mask,
-                                                           access_mask);
-
-        if (match && ace_mask_contains_mask) {
-            const security_ace edited_ace = ace_unset_mask(ace, access_mask);
-            const bool edited_ace_became_empty = (edited_ace.access_mask == 0);
-            if (! edited_ace_became_empty) {
-                out.append(edited_ace);
-            }
-        } else {
-            out.append(ace);
-        }
-    }
-
-    return out;
-}
-
-void security_descriptor_remove_right_base(security_descriptor *sd, const QByteArray &trustee, const SecurityRight &right, const bool allow) {
-    const QList<security_ace> new_dacl = remove_access_rights(sd, trustee,
-                                                              right, allow);
-    ad_security_replace_dacl(sd, new_dacl);
 }
 
 static bool are_trustees_match(const security_ace &ace,
@@ -1225,62 +1283,6 @@ void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace>
     for (const security_ace &ace : new_dacl) {
         security_descriptor_dacl_add(sd, &ace);
     }
-}
-
-// This f-n is only necessary to band-aid one problem
-// with generic read.
-uint32_t ad_security_map_access_mask(const uint32_t access_mask) {
-    const bool is_generic_read = (access_mask == SEC_ADS_GENERIC_READ);
-
-    if (is_generic_read) {
-        return GENERIC_READ_FIXED;
-    } else {
-        return access_mask;
-    }
-}
-
-// This simplified version of ace_compare() for
-// verifying ACL order. Only includes necessary
-// comparisons specified by Microsoft here:
-// https://docs.microsoft.com/en-us/windows/win32/secauthz/order-of-aces-in-a-dacl
-//
-// TODO: currently missing one comparison:
-//
-// "Inherited ACE's are placed in the order in which
-// they are inherited"
-//
-// Not a big problem because inherited ACE's are added
-// to ACL by the server. Clients cannot manually add
-// such ACE's, so theoretically their order should
-// always be correct. But do implement this at some
-// point, just in case. Using order requirements listed
-// here:
-int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2) {
-    bool b1;
-    bool b2;
-
-    /* If the ACEs are equal, we have nothing more to do. */
-    if (security_ace_equal(&ace1, &ace2)) {
-        return 0;
-    }
-
-    /* Inherited follow non-inherited */
-    b1 = ((ace1.flags & SEC_ACE_FLAG_INHERITED_ACE) != 0);
-    b2 = ((ace2.flags & SEC_ACE_FLAG_INHERITED_ACE) != 0);
-    if (b1 != b2) {
-        return (b1 ? 1 : -1);
-    }
-
-    /* Allowed ACEs follow denied ACEs */
-    b1 = (ace1.type == SEC_ACE_TYPE_ACCESS_ALLOWED ||
-          ace1.type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT);
-    b2 = (ace2.type == SEC_ACE_TYPE_ACCESS_ALLOWED ||
-          ace2.type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT);
-    if (b1 != b2) {
-        return (b1 ? 1 : -1);
-    }
-
-    return 0;
 }
 
 QList<SecurityRight> ad_security_get_common_rights() {
