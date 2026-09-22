@@ -176,9 +176,7 @@ CommonTaskManager *common_task_manager = new CommonTaskManager();
 // Helper procedures.
 
 QByteArray dom_sid_to_bytes(const dom_sid &sid) {
-    const QByteArray bytes = QByteArray((char *) &sid, sizeof(struct dom_sid));
-
-    return bytes;
+    return QByteArray((char *) &sid, sizeof(struct dom_sid));
 }
 
 // Copy sid bytes into dom_sid struct and adds padding
