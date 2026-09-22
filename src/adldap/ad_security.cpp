@@ -19,8 +19,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
-
 #include "ad_security.h"
 #include "adldap.h"
 #include "samba/dom_sid.h"
