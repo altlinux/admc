@@ -504,7 +504,7 @@ QString console_query_folder_path(const QModelIndex &index, ConsoleWidget *conso
 
     QList<QString> path_split;
     QModelIndex current = index;
-    while (current.isValid()) {
+    while (current != console->domain_info_index()) {
         const QString name = current.data(Qt::DisplayRole).toString();
         path_split.prepend(name);
         current = current.parent();
