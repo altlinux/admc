@@ -36,14 +36,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Constants.
 
-const QList<int> ace_types_with_object = {
+static const QList<int> ACE_TYPES_WITH_OBJECT = {
     SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT,
     SEC_ACE_TYPE_ACCESS_DENIED_OBJECT,
     SEC_ACE_TYPE_SYSTEM_AUDIT_OBJECT,
     SEC_ACE_TYPE_SYSTEM_ALARM_OBJECT,
 };
 
-const QList<QString> well_known_sid_list = {
+const QList<QString> WELL_KNOWN_SID_LIST = {
     SID_WORLD_DOMAIN,
     SID_WORLD,
     SID_WORLD,
@@ -84,7 +84,7 @@ const QList<QString> well_known_sid_list = {
 #endif  // ifdef HAVE_SAMBA_4_23_API
 };
 
-const QHash<QString, QString> trustee_name_map = {
+static const QHash<QString, QString> TRUSTEE_NAME_MAP = {
     {SID_WORLD_DOMAIN, "Everyone in Domain"},
     {SID_WORLD, "Everyone"},
     {SID_CREATOR_OWNER_DOMAIN, "CREATOR OWNER DOMAIN"},
@@ -124,27 +124,28 @@ const QHash<QString, QString> trustee_name_map = {
 #endif  // ifdef HAVE_SAMBA_4_23_API
 };
 
-const QList<QString> cant_change_pass_trustee_cn_list = {
+static const QList<QString> CANT_CHANGE_PASS_TRUSTEE_CN_LIST = {
     SID_NT_SELF,
     SID_WORLD,
 };
 
-const QList<uint32_t> protect_deletion_mask_list = {
+static const QList<uint32_t> PROTECT_DELETION_MASK_LIST = {
     SEC_STD_DELETE,
     SEC_ADS_DELETE_TREE,
 };
 
-const QSet<security_ace_type> ace_type_allow_set = {
+static const QSet<security_ace_type> ACE_TYPE_ALLOW_SET = {
     SEC_ACE_TYPE_ACCESS_ALLOWED,
     SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT,
 };
-const QSet<security_ace_type> ace_type_deny_set = {
+
+static const QSet<security_ace_type> ACE_TYPE_DENY_SET = {
     SEC_ACE_TYPE_ACCESS_DENIED,
     SEC_ACE_TYPE_ACCESS_DENIED_OBJECT,
 };
 
 // NOTE: this is also used for display order
-const QList<uint32_t> common_rights_list = {
+const QList<uint32_t> COMMON_RIGHTS_LIST = {
     SEC_ADS_GENERIC_ALL,
     SEC_ADS_GENERIC_READ,
     SEC_ADS_GENERIC_WRITE,
@@ -258,8 +259,8 @@ int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2) {
 
 bool  ace_match_without_access_mask(const security_ace &ace, const QByteArray &trustee, const SecurityRight &right, const bool allow, ace_match_flags match_flags) {
     const security_ace_type ace_type = ace.type;
-    const bool ace_allow = ace_type_allow_set.contains(ace_type);
-    const bool ace_deny = ace_type_deny_set.contains(ace_type);
+    const bool ace_allow = ACE_TYPE_ALLOW_SET.contains(ace_type);
+    const bool ace_deny = ACE_TYPE_DENY_SET.contains(ace_type);
     const bool type_match = (allow && ace_allow) || (!allow && ace_deny);
 
     // Inherited and at the same time inheritable aces have to match for target object and its child objects
@@ -267,9 +268,9 @@ bool  ace_match_without_access_mask(const security_ace &ace, const QByteArray &t
     bool flags_match = match_flags.match_inheritance ? ace_is_inherited || ace.flags == right.flags :
                                          ace.flags == right.flags;
 
-    const bool object_present = ace_types_with_object.contains(ace.type) &&
+    const bool object_present = ACE_TYPES_WITH_OBJECT.contains(ace.type) &&
             bitmask_is_set(ace.object.object.flags, SEC_ACE_OBJECT_TYPE_PRESENT);
-    const bool inherited_object_present = ace_types_with_object.contains(ace.type) &&
+    const bool inherited_object_present = ACE_TYPES_WITH_OBJECT.contains(ace.type) &&
             bitmask_is_set(ace.object.object.flags, SEC_ACE_INHERITED_OBJECT_TYPE_PRESENT);
 
     bool object_match;
@@ -578,7 +579,7 @@ security_descriptor *security_descriptor_copy(security_descriptor *sd) {
 
 QString ad_security_get_well_known_trustee_name(const QByteArray &trustee) {
     const QString trustee_string = object_sid_display_value(trustee);
-    return trustee_name_map.value(trustee_string, QString());
+    return TRUSTEE_NAME_MAP.value(trustee_string, QString());
 }
 
 // NOTE: this is some weird name selection logic but that's how microsoft does
@@ -613,8 +614,8 @@ const QHash<QString, AdObject> trustee_search(AdInterface &ad,
 
 QString ad_security_get_trustee_name(AdInterface &ad, const QByteArray &trustee) {
     const QString trustee_string = object_sid_display_value(trustee);
-    if (trustee_name_map.contains(trustee_string)) {
-        return trustee_name_map[trustee_string];
+    if (TRUSTEE_NAME_MAP.contains(trustee_string)) {
+        return TRUSTEE_NAME_MAP[trustee_string];
     } else {
         // Try to get name of trustee by finding it's DN
         const auto trustee_search_results = trustee_search(ad, trustee_string);
@@ -661,7 +662,7 @@ void security_descriptor_sort_dacl(security_descriptor *sd) {
  */
 static bool is_delete_protected_for_trustee(const security_descriptor *sd,
                                             const QByteArray &trustee) {
-    for (const uint32_t &mask : protect_deletion_mask_list) {
+    for (const uint32_t &mask : PROTECT_DELETION_MASK_LIST) {
         SecurityRight right{mask, QByteArray(), QByteArray(), 0};
         const SecurityRightState state =
             security_descriptor_get_right_state(sd, trustee, right);
@@ -708,7 +709,7 @@ static bool is_password_change_denied(const security_descriptor *sd,
                                       AdConfig *adconfig) {
     bool out = false;
 
-    for (const QString &trustee_cn : cant_change_pass_trustee_cn_list) {
+    for (const QString &trustee_cn : CANT_CHANGE_PASS_TRUSTEE_CN_LIST) {
         const bool is_denied =
             is_password_change_denied_for_trustee(sd, trustee_cn, adconfig);
 
@@ -746,7 +747,7 @@ static security_descriptor *get_dn_security_descriptor(AdInterface *ad,
 bool ad_security_set_user_cant_change_pass(AdInterface *ad, const QString &dn, const bool enabled) {
     security_descriptor *sd = get_dn_security_descriptor(ad, dn);
 
-    for (const QString &trustee_cn : cant_change_pass_trustee_cn_list) {
+    for (const QString &trustee_cn : CANT_CHANGE_PASS_TRUSTEE_CN_LIST) {
         const QByteArray trustee = sid_string_to_bytes(trustee_cn);
         const QByteArray change_pass_right = ad->adconfig()->get_right_guid("User-Change-Password");
 
@@ -779,7 +780,7 @@ static security_descriptor *protect_against_deletion(const AdObject &object,
 
     // NOTE: we only add/remove deny entries. If there are any allow entries,
     // they are untouched.
-    for (const uint32_t &mask : protect_deletion_mask_list) {
+    for (const uint32_t &mask : PROTECT_DELETION_MASK_LIST) {
         SecurityRight right{mask, QByteArray(), QByteArray(), 0};
         if (enabled) {
             security_descriptor_add_right_base(out, trustee_everyone, right,
@@ -1288,7 +1289,7 @@ void ad_security_replace_dacl(security_descriptor *sd, const QList<security_ace>
 QList<SecurityRight> ad_security_get_common_rights() {
     QList<SecurityRight> out;
 
-    for (const uint32_t &access_mask : common_rights_list) {
+    for (const uint32_t &access_mask : COMMON_RIGHTS_LIST) {
         SecurityRight right{access_mask, QByteArray(), QByteArray(), 0};
         out.append(right);
     }

@@ -1,8 +1,9 @@
 ﻿/*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +41,8 @@ struct security_ace;
 class CommonTaskManager;
 typedef void TALLOC_CTX;
 
-extern const QList<QString> well_known_sid_list;
-extern const QList<uint32_t> common_rights_list;
+extern const QList<QString> WELL_KNOWN_SID_LIST;
+extern const QList<uint32_t> COMMON_RIGHTS_LIST;
 
 enum SecurityRightStateType {
     SecurityRightStateType_Allow,

@@ -36,7 +36,7 @@ SelectWellKnownTrusteeDialog::SelectWellKnownTrusteeDialog(QWidget *parent)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    for (const QString &sid_string : well_known_sid_list) {
+    for (const QString &sid_string : WELL_KNOWN_SID_LIST) {
         auto item = new QListWidgetItem();
 
         const QByteArray sid_bytes = sid_string_to_bytes(sid_string);

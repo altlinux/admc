@@ -47,8 +47,8 @@ public:
         const uint32_t access_mask_right = right.access_mask;
 
         // Generic among generic are in pre-defined order
-        const int common_index_left = common_rights_list.indexOf(access_mask_left);
-        const int common_index_right = common_rights_list.indexOf(access_mask_right);
+        const int common_index_left = COMMON_RIGHTS_LIST.indexOf(access_mask_left);
+        const int common_index_right = COMMON_RIGHTS_LIST.indexOf(access_mask_right);
 
         return (common_index_left < common_index_right);
     }
