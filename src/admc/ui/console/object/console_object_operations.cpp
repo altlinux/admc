@@ -707,11 +707,15 @@ void ConsoleObjectTreeOperations::console_object_rename(
     QObject::connect(
         dialog, &QDialog::accepted,
         console_list[0],
-        [console_list, dialog, old_dn]() {
+        [object_class, console_list, dialog, old_dn]() {
             AdInterface ad_inner;
             if (ad_failed(ad_inner, console_list[0])) {
                 return;
             }
+
+            ConsoleWidget *target_console = console_list[0];
+            const QList<QModelIndex> selected_list =
+                target_console->get_selected_items(ItemType_Object);
 
             const QString new_dn = dialog->get_new_dn();
             const QString parent_dn = dn_get_parent(old_dn);
@@ -721,6 +725,13 @@ void ConsoleObjectTreeOperations::console_object_rename(
                 ad_inner,
                 {{ old_dn, new_dn }},
                 parent_dn);
+
+            if (object_class == CLASS_PSO) {
+                const QModelIndex pso_root =
+                    get_password_settings_tree_root(target_console);
+                target_console->refresh_scope(pso_root);
+                target_console->set_current_scope(selected_list[0]);
+            }
         });
     }
 

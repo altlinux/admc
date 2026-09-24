@@ -390,7 +390,8 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(
         CLASS_USER,
         CLASS_GROUP,
         CLASS_OU,
-        CLASS_SITE
+        CLASS_SITE,
+        CLASS_PSO
     };
     const QString object_class =
         index.data(ObjectRole_ObjectClasses).toStringList().last();
