@@ -771,7 +771,7 @@ void ConsoleObjectTreeOperations::console_object_delete(
     }
 
 
-    auto apply_changes = [&deleted_list](ConsoleWidget *target_console) {
+    for (ConsoleWidget *target_console : console_list) {
         const QList<QModelIndex> root_list = get_root_list(target_console);
         for (const QModelIndex &root : root_list) {
             if (root.isValid()) {
@@ -793,10 +793,6 @@ void ConsoleObjectTreeOperations::console_object_delete(
                 ItemType_PolicyOU,
                 PolicyOURole_DN);
         }
-    };
-
-    for (ConsoleWidget *console : console_list) {
-        apply_changes(console);
     }
 
     hide_busy_indicator();
