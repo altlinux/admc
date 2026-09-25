@@ -2454,13 +2454,14 @@ void AdInterface::update_dc() {
 
 QList<QString> get_domain_hosts(const QString &domain,
                                 const QString &site) {
+    const uint16_t DNAME_SIZE = 1000;
     QList<QString> hosts;
 
     // Query site hosts
     if (!site.isEmpty()) {
-        char dname[1000];
+        char dname[DNAME_SIZE];
         snprintf(dname,
-                 sizeof(dname),
+                 DNAME_SIZE,
                  "_ldap._tcp.%s._sites.%s",
                  cstr(site),
                  cstr(domain));
@@ -2470,9 +2471,9 @@ QList<QString> get_domain_hosts(const QString &domain,
     }
 
     // Query default hosts
-    char dname_default[1000];
+    char dname_default[DNAME_SIZE];
     snprintf(dname_default,
-             sizeof(dname_default),
+             DNAME_SIZE,
              "_ldap._tcp.%s",
              cstr(domain));
 
