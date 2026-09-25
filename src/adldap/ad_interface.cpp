@@ -776,7 +776,6 @@ bool AdInterface::attribute_replace_string(const QString &dn,
                                            const QString &value,
                                            const DoStatusMsg do_msg) {
     const QByteArray value_bytes = value.toUtf8();
-
     return attribute_replace_value(dn, attribute, value_bytes, do_msg);
 }
 
@@ -785,9 +784,7 @@ bool AdInterface::attribute_replace_int(const QString &dn,
                                         const int value,
                                         const DoStatusMsg do_msg) {
     const QString value_string = QString::number(value);
-    const bool result = attribute_replace_string(dn, attribute, value_string, do_msg);
-
-    return result;
+    return attribute_replace_string(dn, attribute, value_string, do_msg);
 }
 
 bool AdInterface::attribute_replace_datetime(const QString &dn,
@@ -795,10 +792,7 @@ bool AdInterface::attribute_replace_datetime(const QString &dn,
                                              const QDateTime &datetime) {
     const QString datetime_string =
         datetime_qdatetime_to_string(attribute, datetime, d->adconfig);
-    const bool result =
-        attribute_replace_string(dn, attribute, datetime_string);
-
-    return result;
+    return attribute_replace_string(dn, attribute, datetime_string);
 }
 
 /**
@@ -1783,7 +1777,6 @@ QString AdInterface::filesys_path_to_smb_path(
     const QString &filesys_path) const
 {
     QString out = filesys_path;
-
     // NOTE: sysvol paths created by windows have this weird capitalization and
     // smbclient does NOT like it
     out.replace("\\SysVol\\", "\\sysvol\\");
@@ -1791,12 +1784,9 @@ QString AdInterface::filesys_path_to_smb_path(
     out.replace("\\", "/");
 
     const int sysvol_i = out.indexOf("/sysvol/");
-
     out.remove(0, sysvol_i);
 
-    out = QString("smb://%1%2").arg(d->dc, out);
-
-    return out;
+    return QString("smb://%1%2").arg(d->dc, out);
 }
 
 const QString AdInterface::make_ldap_uri() const {
@@ -1859,10 +1849,8 @@ bool AdInterface::ldap_init() {
         return false;
     }
 
-    int result;
-
     // NOTE: this doesn't leak memory. False positive.
-    result = ldap_initialize(&d->ld, cstr(uri));
+    int result = ldap_initialize(&d->ld, cstr(uri));
     if (result != LDAP_SUCCESS) {
         ldap_memfree(d->ld);
         d->error_message(tr("Failed to initialize LDAP library."),
