@@ -79,6 +79,10 @@ public:
                            krb5_principal principal, char *principal_unparsed);
     QString principal_from_ccache(krb5_ccache ccache);
     bool cache_is_system(krb5_ccache ccache);
+    void change_password(const QString &principal,
+                         const QString &old_password,
+                         const QString &new_password,
+                         const bool &enterprise);
 
 private:
     void setup_crash_handlers();
@@ -369,7 +373,7 @@ void Krb5Client::Krb5ClientImpl::throw_error(const QString &error,
     QString out_err = err_code ?
         error + QString(": ") + krb5_get_error_message(context, err_code) :
         error;
-    throw std::runtime_error(out_err.toUtf8().data());
+    throw KerberosError(out_err, err_code);
 }
 
 void Krb5Client::Krb5ClientImpl::cleanup(krb5_ccache ccache,
@@ -458,6 +462,94 @@ Krb5Client::Krb5Client() : impl(
 
 Krb5Client::~Krb5Client() {
     // Do nothing.
+}
+
+void Krb5Client::Krb5ClientImpl::change_password(
+    const QString &principal,
+    const QString &old_password,
+    const QString &new_password,
+    const bool &enterprise)
+{
+    const char* SERVICE = "kadmin/changepw";
+    const QByteArray PRINCIPAL_BYTES = principal.toUtf8();
+    const char *PRINCIPAL_NAME = PRINCIPAL_BYTES.constData();
+    QString error = QCoreApplication::translate("Krb5Client",
+                                                "Password change failed");
+    krb5_creds creds;
+    krb5_error_code result;
+    krb5_principal princ = nullptr;
+    if (enterprise) {
+        result = krb5_parse_name_flags(context,
+                                       PRINCIPAL_NAME,
+                                       KRB5_PRINCIPAL_PARSE_ENTERPRISE,
+                                       &princ);
+    } else {
+        result = krb5_parse_name(context, PRINCIPAL_NAME, &princ);
+    }
+
+    if (result) {
+        cleanup_and_throw(error, result, nullptr, nullptr, princ, nullptr);
+    }
+
+    memset(&creds, 0, sizeof(creds));
+    const QByteArray OLD_PASSWORD_BYTES = old_password.toUtf8();
+    const char *OLD_PASSWORD = OLD_PASSWORD_BYTES.constData();
+
+    result = krb5_get_init_creds_password(
+        context,
+        &creds,
+        princ,
+        OLD_PASSWORD,
+        NULL,               /* prompter */
+        NULL,               /* prompter data */
+        0,                  /* start time */
+        SERVICE,            /* requested service */
+        NULL);              /* options */
+    if (result != 0) {
+        cleanup_and_throw(error, result, nullptr, &creds, princ, nullptr);
+    }
+
+    const QByteArray NEW_PASSWORD_BYTES = new_password.toUtf8();
+    const char *NEW_PASSWORD = NEW_PASSWORD_BYTES.constData();
+    int result_code = 0;
+    krb5_data result_code_string = {0};
+    krb5_data result_string = {0};
+
+    result = krb5_change_password(
+        context,
+        &creds,
+        NEW_PASSWORD,
+        &result_code,
+        &result_code_string,
+        &result_string);
+    if (result) {
+        cleanup_and_throw(error, result, nullptr, nullptr, princ, nullptr);
+    }
+
+    krb5_free_data_contents(context, &result_code_string);
+    krb5_free_data_contents(context, &result_string);
+    krb5_free_cred_contents(context, &creds);
+
+    if (princ != NULL) {
+        krb5_free_principal(context, princ);
+    }
+}
+
+/**
+ * Change the principal password.
+ *
+ * @param principal A principal name string.
+ * @param old_password An old password string.
+ * @param new_password A new password string.
+ * @parma enterprise Whether the principal name is an enterprise name or a
+ * regular name.
+ */
+void Krb5Client::change_password(const QString &principal,
+                                 const QString &old_password,
+                                 const QString &new_password,
+                                 const bool &enterprise) {
+    impl->change_password(principal, old_password, new_password,
+                          enterprise);
 }
 
 void Krb5Client::authenticate(const QString &principal,

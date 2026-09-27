@@ -28,9 +28,12 @@
 #include "ui/utils.h"
 
 KrbAuthDialog::KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg)
-    : AuthDialogBase(parent), ui(new Ui::KrbAuthDialog), client(krb_client_arg)
+    : AuthDialogBase(parent), ui(new Ui::KrbAuthDialog),
+      state(KRB5_DIALOG_STATE_AUTHENTICATION),
+      client(krb_client_arg)
 {
     ui->setupUi(this);
+    switch_ui_to_authentication();
     setupWidgets();
 }
 
@@ -88,8 +91,86 @@ void KrbAuthDialog::setupWidgets() {
     adjustSize();
 }
 
-void KrbAuthDialog::on_sign_in() {
-    const QString principal = ui->principal_cmb_box->currentText();
+/**
+ * Switch the UI to the password change state.
+ */
+void KrbAuthDialog::switch_ui_to_password_change() {
+    ui->formLayout->setRowVisible(4, true);
+    ui->formLayout->setRowVisible(5, true);
+    ui->password_new_edit->setText("");
+    ui->password_confirm_edit->setText("");
+
+    state = KRB5_DIALOG_STATE_PASSWORD_CHANGE;
+}
+
+/**
+ * Switch the UI to the password authentication state.
+ */
+void KrbAuthDialog::switch_ui_to_authentication() {
+    ui->formLayout->setRowVisible(4, false);
+    ui->formLayout->setRowVisible(5, false);
+
+    ui->password_edit->setText("");
+
+    state = KRB5_DIALOG_STATE_AUTHENTICATION;
+}
+
+/**
+ * Verify if a given password is valid.
+ *
+ * @param pass A new password string.
+ * @param pass_confirm A new password confirmation string.
+ * @retrun true if passwords match and are valid, false otherwise.
+ */
+bool KrbAuthDialog::verify_password(const QString &pass,
+                                           const QString &pass_confirm) {
+    if (pass.isEmpty()) {
+        show_error_message(QString(tr("Password cannot be empty.")));
+        return false;
+    }
+
+    if (pass != pass_confirm) {
+        show_error_message(QString(tr("Passwords do not match.")));
+        return false;
+    }
+
+    const bool can_encode = pass.isValidUtf16();
+    if (! can_encode) {
+        show_error_message(
+            QString(tr("Password contains invalid characters.")));
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Change the principal password.
+ *
+ * @param principal A principal name.
+ * @return true if password was successfully changed, false otherwise.
+ */
+bool KrbAuthDialog::change_password(const QString &principal) {
+    const QString PASS = ui->password_new_edit->text();
+    const QString PASS_CONFIRMATION = ui->password_confirm_edit->text();
+
+    if (! verify_password(PASS, PASS_CONFIRMATION)) {
+        return false;
+    }
+
+    try {
+        client->change_password(
+            principal,
+            ui->password_edit->text(),
+            ui->password_confirm_edit->text(),
+            enterprise);
+    } catch (KerberosError &error) {
+        throw std::runtime_error(error.what());
+    }
+    return true;
+}
+
+void KrbAuthDialog::authenticate(const QString &principal) {
     if (principal.isEmpty()) {
         show_error_message(tr("Enter your Kerberos principal"));
         return;
@@ -122,14 +203,29 @@ void KrbAuthDialog::on_sign_in() {
             QString error_message;
             try {
                 client->authenticate(principal, ui->password_edit->text());
-            } catch (std::runtime_error &first_error) {
+            } catch (KerberosError &first_error) {
+                const krb5_error_code rc = first_error.get_error_code();
                 error_message += first_error.what() + QString("\n");
-                try {
-                    client->authenticate(principal, ui->password_edit->text(),
-                                         true);
-                } catch (std::runtime_error &second_error) {
-                    error_message += second_error.what() + QString("\n");
-                    throw std::runtime_error(error_message.toStdString());
+                if (rc == KRB5KDC_ERR_KEY_EXP) {
+                    show_error_message(tr("Password expired."));
+                    switch_ui_to_password_change();
+                    enterprise = false;
+                    return;
+                } else {
+                    try {
+                        client->authenticate(principal, ui->password_edit->text(),
+                                             true);
+                    } catch (KerberosError &second_error) {
+                        const krb5_error_code rc = second_error.get_error_code();
+                        error_message += second_error.what() + QString("\n");
+                        if (rc == KRB5KDC_ERR_KEY_EXP) {
+                            switch_ui_to_password_change();
+                            enterprise = true;
+                            return;
+                        } else {
+                            throw std::runtime_error(error_message.toStdString());
+                        }
+                    }
                 }
             }
             ui->principal_cmb_box->addItem(principal);
@@ -149,9 +245,35 @@ void KrbAuthDialog::on_sign_in() {
     ui->error_label->setHidden(true);
 }
 
+void KrbAuthDialog::on_sign_in() {
+    const QString principal = ui->principal_cmb_box->currentText();
+    bool result;
+    switch (state) {
+    case KRB5_DIALOG_STATE_AUTHENTICATION:
+        authenticate(principal);
+        break;
+    case KRB5_DIALOG_STATE_PASSWORD_CHANGE:
+        result = change_password(principal);
+        if (result) {
+            ui->password_edit->setText(ui->password_new_edit->text());
+            authenticate(principal);
+            switch_ui_to_authentication();
+        } else {
+            show_error_message(tr("Failed to update password."));
+        }
+    }
+}
+
 void KrbAuthDialog::on_show_passwd(bool show) {
-    show ? ui->password_edit->setEchoMode(QLineEdit::Normal) :
-           ui->password_edit->setEchoMode(QLineEdit::Password);
+    if (show) {
+        ui->password_edit->setEchoMode(QLineEdit::Normal);
+        ui->password_new_edit->setEchoMode(QLineEdit::Normal);
+        ui->password_confirm_edit->setEchoMode(QLineEdit::Normal);
+    } else {
+        ui->password_edit->setEchoMode(QLineEdit::Password);
+        ui->password_new_edit->setEchoMode(QLineEdit::Password);
+        ui->password_confirm_edit->setEchoMode(QLineEdit::Password);
+    }
 }
 
 void KrbAuthDialog:: show_error_message(const QString &error) {
@@ -162,7 +284,6 @@ void KrbAuthDialog:: show_error_message(const QString &error) {
 
 void KrbAuthDialog::on_principal_selected(const QString &principal) {
     Krb5TgtState tgt_state = client->tgt_data(principal).state;
-
     // TODO: Check ways to renew expired tickets (with still valid renewal
     // lifetime)
     switch (tgt_state) {

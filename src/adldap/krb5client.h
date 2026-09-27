@@ -22,8 +22,9 @@
 #ifndef KRB5CLIENT_H
 #define KRB5CLIENT_H
 
-#include <memory>
 #include <QDateTime>
+#include <krb5.h>
+#include <memory>
 
 enum Krb5TgtState {
     Krb5TgtState_Active, // Ticket (TGT) is valid and a up-to-date
@@ -39,6 +40,30 @@ struct Krb5TGTData {
     QDateTime starts;
     QDateTime expires;
     QDateTime renew_until;
+};
+
+/**
+ * ADMC Kerberos client error.
+ */
+class KerberosError : public std::exception {
+private:
+    QString message;
+    krb5_error_code error_code;
+
+public:
+    KerberosError(const QString &message,
+                  const krb5_error_code &error_code) :
+        message(message),
+        error_code(error_code)
+        {
+            // Do nothing.
+        };
+    const char *what() const noexcept {
+        return message.toUtf8().data();
+    }
+    krb5_error_code get_error_code() const {
+        return error_code;
+    }
 };
 
 class Krb5Client final {
@@ -58,6 +83,10 @@ public:
     QStringList active_tgt_principals() const;
     void logout(bool delete_creds);
     void update_temp_caches(const QStringList &remembered_principals);
+    void change_password(const QString &principal,
+                         const QString &old_password,
+                         const QString &new_password,
+                         const bool &enterprise);
 
 private:
     class Krb5ClientImpl;

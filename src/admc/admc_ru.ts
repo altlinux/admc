@@ -2240,6 +2240,26 @@
         <source>Failed to find system credentials</source>
         <translation>Не удалость найти системные учётные данные</translation>
     </message>
+    <message>
+        <source>Password expired.</source>
+        <translation>Время действия пароля истекло.</translation>
+    </message>
+    <message>
+        <source>Password cannot be empty.</source>
+        <translation>Пароль не может быть пустым.</translation>
+    </message>
+    <message>
+        <source>Passwords do not match.</source>
+        <translation>Пароли не совпадают.</translation>
+    </message>
+    <message>
+        <source>Password contains invalid characters.</source>
+        <translation>Пароль содержит недопустимые символы.</translation>
+    </message>
+    <message>
+        <source>Failed to update password.</source>
+        <translation>Не удалось изменить пароль.</translation>
+    </message>
 </context>
 <context>
     <name>LAPSTab</name>

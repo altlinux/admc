@@ -1102,6 +1102,10 @@
         <source>Failed to refresh TGT</source>
         <translation>Не удалось обновить TGT</translation>
     </message>
+    <message>
+        <source>Password change failed</source>
+        <translation>Не удалось изменить пароль</translation>
+    </message>
 </context>
 <context>
     <name>ad_security.cpp</name>

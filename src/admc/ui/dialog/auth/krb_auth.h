@@ -22,6 +22,8 @@
 #ifndef KRB_AUTH_DIALOG_H
 #define KRB_AUTH_DIALOG_H
 
+#include <stdint.h>
+
 #include "ui/dialog/auth/base.h"
 
 namespace Ui {
@@ -29,6 +31,11 @@ class KrbAuthDialog;
 }
 
 class Krb5Client;
+
+enum {
+    KRB5_DIALOG_STATE_AUTHENTICATION,
+    KRB5_DIALOG_STATE_PASSWORD_CHANGE
+};
 
 /**
  * Kerberos authentication dialog
@@ -46,6 +53,9 @@ public:
 private:
     Ui::KrbAuthDialog *ui;
 
+    uint8_t state;
+    bool enterprise = false;
+
     virtual void setupWidgets() override;
     virtual void on_sign_in() override;
     virtual void on_show_passwd(bool show) override;
@@ -55,6 +65,12 @@ private:
     void on_principal_selected(const QString &principal);
     void hide_passwd_widgets(bool hide);
     void remember_principal(bool remember);
+    void authenticate(const QString &principal);
+    bool change_password(const QString &principal);
+    void switch_ui_to_password_change();
+    void switch_ui_to_authentication();
+    bool verify_password(const QString &pass,
+                         const QString &confirm_pass);
 
     Krb5Client *client;
 };
