@@ -78,7 +78,7 @@ public:
     void rename(const QList<QModelIndex> &index_list) override;
     void properties(const QList<QModelIndex> &index_list) override;
     void refresh(const QList<QModelIndex> &index_list) override;
-    void refresh_current_subtree();
+    void refresh_current_subtree(const QString &new_dn);
     void delete_action(const QList<QModelIndex> &index_list) override;
 
     void selected_as_scope(const QModelIndex &index) override;

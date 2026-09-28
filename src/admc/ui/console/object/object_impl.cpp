@@ -31,6 +31,7 @@
 #include <algorithm>
 
 #include "adldap.h"
+#include "ad_utils.h"
 #include "core/ad.h"
 #include "core/console/object/drag_n_drop.h"
 #include "core/console/object/operations.h"
@@ -588,15 +589,31 @@ QList<int> ObjectImpl::default_columns() const {
 /**
  * Refresh the console starting from the current sub-tree.
  */
-void ObjectImpl::refresh_current_subtree() {
+void ObjectImpl::refresh_current_subtree(const QString &new_dn) {
     const QModelIndex index = console->get_current_scope_item();
-    show_busy_indicator();
-    const QList<QModelIndex> selected_list =
-        console->get_selected_items(ItemType_Object);
-    console->refresh_scope(index.parent());
-    if (! selected_list.isEmpty()) {
-        console->set_current_scope(selected_list[0]);
+    QPersistentModelIndex parent = index.parent();
+    if (! parent.isValid()) {
+        return;
     }
+
+    show_busy_indicator();
+
+    const QString selected_dn = index.data(ObjectRole_DN).toString();
+    const QString new_full_dn =
+        ad_ldap_dn_string_replace_value(selected_dn, 0, new_dn);
+
+    console->refresh_scope(parent);
+
+    const QModelIndex selected = console->search_item(parent,
+                                                      ObjectRole_DN,
+                                                      new_full_dn,
+                                                      { ItemType_Object });
+    if (selected.isValid()) {
+        console->set_current_scope(selected);
+    } else {
+        console->set_current_scope(parent);
+    }
+
     hide_busy_indicator();
 }
 

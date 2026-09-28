@@ -35,7 +35,7 @@ public:
     virtual void update(const AdObject &pso) override;
 
 signals:
-    void refresh_pso_subtree();
+    void refresh_pso_subtree(const QString& new_dn);
 
 private:
     PSOEditWidget *pso_edit_widget;

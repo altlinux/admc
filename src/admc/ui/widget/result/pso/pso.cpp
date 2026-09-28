@@ -84,7 +84,7 @@ void PSOResultsWidget::on_apply() {
         QString new_dn_string = QString(new_dn);
         if (new_dn_string != pso_dn) {
             ad.object_rename(pso_dn, new_dn_string);
-            emit refresh_pso_subtree();
+            emit refresh_pso_subtree(new_dn_string);
         }
         pso_dn = new_dn_string;
     }

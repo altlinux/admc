@@ -28,6 +28,7 @@
  * server.
  */
 
+#include <ldap.h>
 #include <QHash>
 
 #include "ad_defines.h"
@@ -99,5 +100,14 @@ QList<QString> bytearray_list_to_string_list(
     const QList<QByteArray> &bytearray_list);
 
 QString generate_uuid();
+
+LDAPDN ad_ldap_string_to_dn(const QString &dn_string);
+QString ad_ldap_dn_to_string(LDAPDN dn);
+bool ad_ldap_dn_replace_value(LDAPDN dn,
+                              const uint32_t &rdn_index,
+                              const QString &new_value);
+QString ad_ldap_dn_string_replace_value(const QString &input,
+                                        const uint32_t &rdn_index,
+                                        const QString &new_value);
 
 #endif /* AD_UTILS_H */
