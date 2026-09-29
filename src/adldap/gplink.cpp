@@ -72,6 +72,51 @@ Gplink &Gplink::operator=(const Gplink &other) {
     return *this;
 }
 
+/**
+ * Convert gpo dn from lower case to gplink case format
+ */
+static QString gpo_dn_to_gplink_case(const QList<QString> &rdn_list) {
+    QList<QString> rdn_list_case;
+    for (const QString &rdn : rdn_list) {
+        const QList<QString> attribute_value = rdn.split("=");
+
+        // Do no processing if data is malformed
+        if (attribute_value.size() != 2) {
+            return rdn;
+        }
+
+        const QString attribute = attribute_value[0];
+        const QString value = attribute_value[1];
+
+        QString attribute_case;
+        // "DC" attribute is upper-cased
+        if (attribute == "dc") {
+            attribute_case = attribute.toUpper();
+        } else {
+            attribute_case = attribute;
+        }
+
+        QString value_case;
+        // uuid (the first rdn) is upper-cased
+        if (rdn_list.indexOf(rdn) == 0) {
+            value_case = value.toUpper();
+        } else {
+            value_case = value;
+        }
+
+        const QList<QString> attribute_value_case = {
+            attribute_case,
+            value_case,
+        };
+
+        const QString rdn_case = attribute_value_case.join("=");
+
+        rdn_list_case.append(rdn_case);
+    }
+
+    return rdn_list_case.join(",");
+}
+
 // Transform into gplink format. Have to uppercase some
 // parts of the output.
 QString Gplink::to_string() const {
@@ -79,63 +124,9 @@ QString Gplink::to_string() const {
 
     QList<QString>::const_reverse_iterator i;
     for (i = gpo_list.rbegin(); i != gpo_list.rend(); ++i) {
-        // Convert gpo dn from lower case to gplink case
-        // format
-        const QString gpo_case = [&]() {
-            const QList<QString> rdn_list = i->split(",");
-
-            QList<QString> rdn_list_case;
-
-            for (const QString &rdn : rdn_list) {
-                const QString rdn_case = [&]() {
-                    const QList<QString> attribute_value = rdn.split("=");
-
-                    // Do no processing if data is malformed
-                    if (attribute_value.size() != 2) {
-                        return rdn;
-                    }
-
-                    const QString attribute = attribute_value[0];
-                    const QString value = attribute_value[1];
-
-                    const QString attribute_case = [&]() {
-                        // "DC" attribute is upper-cased
-                        if (attribute == "dc") {
-                            return attribute.toUpper();
-                        } else {
-                            return attribute;
-                        }
-                    }();
-
-                    const QString value_case = [&]() {
-                        // uuid (the first rdn) is upper-cased
-                        if (rdn_list.indexOf(rdn) == 0) {
-                            return value.toUpper();
-                        } else {
-                            return value;
-                        }
-                    }();
-
-                    const QList<QString> attribute_value_case = {
-                        attribute_case,
-                        value_case,
-                    };
-
-                    const QString out = attribute_value_case.join("=");
-
-                    return out;
-                }();
-
-                rdn_list_case.append(rdn_case);
-            }
-
-            const QString out = rdn_list_case.join(",");
-
-            return out;
-        }();
+        const QString gpo_case = gpo_dn_to_gplink_case(i->split(","));
         const int option = options[*i];
         const QString option_string = QString::number(option);
-
         const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo_case, option_string);
 
         part_list.append(part);
