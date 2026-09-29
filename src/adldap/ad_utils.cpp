@@ -50,36 +50,29 @@ bool large_integer_datetime_is_never(const QString &value) {
     return is_never;
 }
 
-QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime, const AdConfig *adconfig) {
+QString datetime_qdatetime_to_string(const QString &attribute,
+                                     const QDateTime &datetime,
+                                     const AdConfig *adconfig) {
     if (adconfig == nullptr) {
         return QString();
     }
 
     const AttributeType type = adconfig->get_attribute_type(attribute);
-
     switch (type) {
         case AttributeType_LargeInteger: {
             const qint64 millis = ntfs_epoch.msecsTo(datetime);
             const qint64 hundred_nanos = millis * MILLIS_TO_100_NANOS;
-
             return QString::number(hundred_nanos);
-
-            break;
         }
         case AttributeType_UTCTime: {
             return datetime.toUTC().toString(UTC_TIME_FORMAT_STRING);
-
-            break;
         }
         case AttributeType_GeneralizedTime: {
             return datetime.toUTC().toString(GENERALIZED_TIME_FORMAT_STRING);
-
-            break;
         }
-        default: return "";
+        default:
+            return "";
     }
-
-    return "";
 }
 
 QDateTime attribute_to_date_time(const AdConfig *adconfig,
