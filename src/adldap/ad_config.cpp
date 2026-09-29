@@ -321,9 +321,7 @@ QList<QString> AdConfig::get_possible_superiors(
 }
 
 ObjectClass AdConfig::get_parent_class(const ObjectClass &object_class) const {
-    const ObjectClass out = d->sub_class_of_map.value(object_class);
-
-    return out;
+    return d->sub_class_of_map.value(object_class);
 }
 
 QList<ObjectClass> AdConfig::get_inherit_chain(
