@@ -153,6 +153,9 @@ private:
     QString domain_sid(AdInterface &ad) const;
     QStringList get_class_possible_inferiors(const QString &obj_class) const;
     bool is_permissionable(const QString &inferior) const;
+    bool does_attribute_display_name_exist(
+        const Attribute &attribute,
+        const ObjectClass &object_class) const;
 
     AdConfigPrivate *d;
 };

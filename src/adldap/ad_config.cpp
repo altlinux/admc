@@ -245,18 +245,39 @@ const QHash<Attribute, QString> AdConfig::get_fallback_display_names() const {
     };
 }
 
+/**
+ * Check if the given attribute display name exists in the local name hash
+ * table.
+ *
+ * @param attribute An attribute name.
+ * @param object_class An object class.
+ * @return true if the attribute exists in the hash table, false otherwise.
+ */
+bool AdConfig::does_attribute_display_name_exist(
+    const Attribute &attribute,
+    const ObjectClass &object_class) const
+{
+    return (d->attribute_display_names.contains(object_class) &&
+            d->attribute_display_names[object_class].contains(attribute));
+}
+
+/**
+ * Get the given attribute display name, or a fallback one if no display name is
+ * available for the given object class and/or the attribute.
+ *
+ * @param attribute An attribute to search the display name for.
+ * @param objectClass An object class.
+ * @return The attribute display name.
+ */
 QString AdConfig::get_attribute_display_name(
     const Attribute &attribute,
     const ObjectClass &objectClass) const
 {
-    if (d->attribute_display_names.contains(objectClass) &&
-        d->attribute_display_names[objectClass].contains(attribute)) {
+    if (does_attribute_display_name_exist(attribute, objectClass)) {
         return d->attribute_display_names[objectClass][attribute];
     }
 
-    const QHash<Attribute, QString> fallback_display_names =
-        get_fallback_display_names();
-    return fallback_display_names.value(attribute, attribute);
+    return get_fallback_display_names().value(attribute, attribute);
 }
 
 QString AdConfig::get_class_display_name(const QString &objectClass) const {
