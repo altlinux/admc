@@ -13,6 +13,20 @@ Gplink::Gplink(const Gplink &other) : gpo_list(other.gpo_list), options(other.op
 
 }
 
+/**
+ * Remove LDAP prefix and make the string lower-case:
+ *
+ *   "LDAP://cn={UUID},cn=something,DC=a,DC=b"
+ *   =>
+ *   "cn={uuid},cn=something,dc=a,dc=b"
+*/
+static QString ldap_to_gpo(const QString &in) {
+    QString out = in;
+    out.remove(LDAP_PREFIX);
+    out = out.toLower();
+    return out;
+}
+
 Gplink::Gplink(const QString &gplink_string) {
     if (gplink_string.isEmpty()) {
         return;
@@ -39,25 +53,9 @@ Gplink::Gplink(const QString &gplink_string) {
             continue;
         }
 
-        // "LDAP://cn={UUID},cn=something,DC=a,DC=b"
-        // =>
-        // "cn={uuid},cn=something,dc=a,dc=b"
-        const QString gpo = [&]() {
-            QString out;
-
-            out = part_split[0];
-            out.remove(LDAP_PREFIX);
-            out = out.toLower();
-
-            return out;
-        }();
-
-        const int option = [&]() {
-            const QString option_string = part_split[1];
-            const int option_int = option_string.toInt();
-
-            return option_int;
-        }();
+        const QString gpo = ldap_to_gpo(part_split[0]);
+        const QString option_string = part_split[1];
+        const int option = option_string.toInt();
 
         gpo_list.prepend(gpo);
         options[gpo] = option;
