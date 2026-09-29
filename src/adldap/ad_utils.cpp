@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2026 BaseALT Ltd.
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2023-2026 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,7 +46,8 @@ const QDateTime ntfs_epoch = QDateTime(QDate(1601, 1, 1), QTime(), Qt::UTC);
 QString escape_name_for_dn(const QString &unescaped);
 
 bool large_integer_datetime_is_never(const QString &value) {
-    const bool is_never = (value == AD_LARGE_INTEGER_DATETIME_NEVER_1 || value == AD_LARGE_INTEGER_DATETIME_NEVER_2);
+    const bool is_never = ((value == AD_LARGE_INTEGER_DATETIME_NEVER_1) ||
+                           (value == AD_LARGE_INTEGER_DATETIME_NEVER_2));
 
     return is_never;
 }
@@ -105,7 +107,9 @@ QDateTime attribute_to_date_time(const AdConfig *adconfig,
     return QDateTime();
 }
 
-QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value, const AdConfig *adconfig) {
+QDateTime datetime_string_to_qdatetime(const QString &attribute,
+                                       const QString &raw_value,
+                                       const AdConfig *adconfig) {
     if (adconfig == nullptr) {
         return QDateTime();
     }
@@ -116,24 +120,56 @@ QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &
     // All datetimes are UTC by default. Calling
     // setTimeSpec() would alter the datetime so we don't
     // use that.
-    const QDateTime utc_datetime = QDateTime(datetime.date(), datetime.time(), Qt::UTC);
+    const QDateTime utc_datetime =
+        QDateTime(datetime.date(), datetime.time(), Qt::UTC);
 
     return utc_datetime;
 }
 
 QString account_option_string(const AccountOption &option) {
     switch (option) {
-        case AccountOption_Disabled: return QCoreApplication::translate("ad_utils", "Account disabled");
-        case AccountOption_CantChangePassword: return QCoreApplication::translate("ad_utils", "User cannot change password");
-        case AccountOption_AllowReversibleEncryption: return QCoreApplication::translate("ad_utils", "Store password using reversible encryption");
-        case AccountOption_PasswordExpired: return QCoreApplication::translate("ad_utils", "User must change password on next logon");
-        case AccountOption_DontExpirePassword: return QCoreApplication::translate("ad_utils", "Don't expire password");
-        case AccountOption_UseDesKey: return QCoreApplication::translate("ad_utils", "Use Kerberos DES encryption types for this account");
-        case AccountOption_SmartcardRequired: return QCoreApplication::translate("ad_utils", "Smartcard is required for interactive logon");
-        case AccountOption_CantDelegate: return QCoreApplication::translate("ad_utils", "Account is sensitive and cannot be delegated");
-        case AccountOption_DontRequirePreauth: return QCoreApplication::translate("ad_utils", "Don't require Kerberos preauthentication");
-        case AccountOption_TrustedForDelegation: return QCoreApplication::translate("ad_utils", "Trusted for delegation");
-        case AccountOption_COUNT: return QString("AccountOption_COUNT");
+    case AccountOption_Disabled:
+        return QCoreApplication::translate(
+            "ad_utils",
+            "Account disabled");
+    case AccountOption_CantChangePassword:
+        return QCoreApplication::translate(
+            "ad_utils",
+            "User cannot change password");
+    case AccountOption_AllowReversibleEncryption:
+        return QCoreApplication::translate(
+            "ad_utils",
+            "Store password using reversible encryption");
+    case AccountOption_PasswordExpired:
+        return QCoreApplication::translate(
+            "ad_utils",
+            "User must change password on next logon");
+    case AccountOption_DontExpirePassword:
+        return QCoreApplication::translate(
+            "ad_utils",
+            "Don't expire password");
+    case AccountOption_UseDesKey:
+        return QCoreApplication::translate(
+            "ad_utils",
+            "Use Kerberos DES encryption types for this account");
+    case AccountOption_SmartcardRequired:
+        return QCoreApplication::translate(
+            "ad_utils",
+            "Smartcard is required for interactive logon");
+    case AccountOption_CantDelegate:
+        return QCoreApplication::translate(
+            "ad_utils",
+            "Account is sensitive and cannot be delegated");
+    case AccountOption_DontRequirePreauth:
+        return QCoreApplication::translate(
+            "ad_utils",
+            "Don't require Kerberos preauthentication");
+    case AccountOption_TrustedForDelegation:
+        return QCoreApplication::translate(
+            "ad_utils",
+            "Trusted for delegation");
+    case AccountOption_COUNT:
+        return QString("AccountOption_COUNT");
     }
 
     return "";
@@ -141,30 +177,31 @@ QString account_option_string(const AccountOption &option) {
 
 int account_option_bit(const AccountOption &option) {
     switch (option) {
-        case AccountOption_Disabled:
-            return UAC_ACCOUNTDISABLE;
-        case AccountOption_AllowReversibleEncryption:
-            return UAC_ENCRYPTED_TEXT_PASSWORD_ALLOWED;
-        case AccountOption_DontExpirePassword:
-            return UAC_DONT_EXPIRE_PASSWORD;
-        case AccountOption_UseDesKey:
-            return UAC_USE_DES_KEY_ONLY;
-        case AccountOption_SmartcardRequired:
-            return UAC_SMARTCARD_REQUIRED;
-        case AccountOption_DontRequirePreauth:
-            return UAC_DONT_REQUIRE_PREAUTH;
-        case AccountOption_CantDelegate: return UAC_NOT_DELEGATED;
-        case AccountOption_TrustedForDelegation:
-            return UAC_TRUSTED_FOR_DELEGATION;
+    case AccountOption_Disabled:
+        return UAC_ACCOUNTDISABLE;
+    case AccountOption_AllowReversibleEncryption:
+        return UAC_ENCRYPTED_TEXT_PASSWORD_ALLOWED;
+    case AccountOption_DontExpirePassword:
+        return UAC_DONT_EXPIRE_PASSWORD;
+    case AccountOption_UseDesKey:
+        return UAC_USE_DES_KEY_ONLY;
+    case AccountOption_SmartcardRequired:
+        return UAC_SMARTCARD_REQUIRED;
+    case AccountOption_DontRequirePreauth:
+        return UAC_DONT_REQUIRE_PREAUTH;
+    case AccountOption_CantDelegate:
+        return UAC_NOT_DELEGATED;
+    case AccountOption_TrustedForDelegation:
+        return UAC_TRUSTED_FOR_DELEGATION;
 
         // NOTE: not all account options can be directly
         // mapped to bits
-        case AccountOption_CantChangePassword: return 0;
-        case AccountOption_PasswordExpired: return 0;
-        case AccountOption_COUNT: return 0;
+    case AccountOption_CantChangePassword:
+    case AccountOption_PasswordExpired:
+    case AccountOption_COUNT:
+    default:
+        return 0;
     }
-
-    return 0;
 }
 
 int group_scope_bit(GroupScope scope) {
@@ -186,36 +223,50 @@ int group_scope_bit(GroupScope scope) {
 
 QString group_scope_string(GroupScope scope) {
     switch (scope) {
-        case GroupScope_Global: return QCoreApplication::translate("ad_utils", "Global");
-        case GroupScope_DomainLocal: return QCoreApplication::translate("ad_utils", "Domain Local");
-        case GroupScope_Universal: return QCoreApplication::translate("ad_utils", "Universal");
-        case GroupScope_COUNT: return "COUNT";
+    case GroupScope_Global:
+        return QCoreApplication::translate("ad_utils", "Global");
+    case GroupScope_DomainLocal:
+        return QCoreApplication::translate("ad_utils", "Domain Local");
+    case GroupScope_Universal:
+        return QCoreApplication::translate("ad_utils", "Universal");
+    case GroupScope_COUNT:
+        return "COUNT";
+    default:
+        return "";
     }
-    return "";
 }
 
 QString group_type_string(GroupType type) {
     switch (type) {
-        case GroupType_Security: return QCoreApplication::translate("ad_utils", "Security");
-        case GroupType_Distribution: return QCoreApplication::translate("ad_utils", "Distribution");
-        case GroupType_COUNT: return "COUNT";
+    case GroupType_Security:
+        return QCoreApplication::translate("ad_utils", "Security");
+    case GroupType_Distribution:
+        return QCoreApplication::translate("ad_utils", "Distribution");
+    case GroupType_COUNT:
+        return "COUNT";
+    default:
+        return "";
     }
-    return "";
 }
 
 // NOTE: need a special translation for Russian where type
 // adjectives get suffixes.
 QString group_type_string_adjective(GroupType type) {
     switch (type) {
-        case GroupType_Security: return QCoreApplication::translate("ad_utils", "Security Group");
-        case GroupType_Distribution: return QCoreApplication::translate("ad_utils", "Distribution Group");
-        case GroupType_COUNT: return "COUNT";
+    case GroupType_Security:
+        return QCoreApplication::translate("ad_utils", "Security Group");
+    case GroupType_Distribution:
+        return QCoreApplication::translate("ad_utils", "Distribution Group");
+    case GroupType_COUNT:
+        return "COUNT";
+    default:
+        return "";
     }
-    return "";
 }
 
 QString extract_rid_from_sid(const QByteArray &sid, AdConfig *adconfig) {
-    const QString sid_string = attribute_display_value(ATTRIBUTE_OBJECT_SID, sid, adconfig);
+    const QString sid_string =
+        attribute_display_value(ATTRIBUTE_OBJECT_SID, sid, adconfig);
     const int cut_index = sid_string.lastIndexOf("-") + 1;
     const QString rid = sid_string.mid(cut_index);
 
@@ -303,7 +354,9 @@ const QString object_class_to_suffix(const QString &object_class) {
     return (object_class == CLASS_OU) ? "OU" : "CN";
 }
 
-QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class) {
+QString dn_from_name_and_parent(const QString &name,
+                                const QString &parent,
+                                const QString &object_class) {
     const QString suffix = object_class_to_suffix(object_class);
     const QString name_escaped = escape_name_for_dn(name);
     const QString dn = QString("%1=%2,%3").arg(suffix, name_escaped, parent);
@@ -342,7 +395,9 @@ QString get_default_domain_from_krb5() {
         return QString();
     }
 
-    const QString out = QString::fromLocal8Bit(default_principal->realm.data, default_principal->realm.length);
+    const QString out =
+        QString::fromLocal8Bit(default_principal->realm.data,
+                               default_principal->realm.length);
 
     krb5_free_principal(context, default_principal);
     krb5_cc_close(context, default_cache);
@@ -351,7 +406,9 @@ QString get_default_domain_from_krb5() {
     return out;
 }
 
-int bitmask_set(const int input_mask, const int mask_to_set, const bool is_set) {
+int bitmask_set(const int input_mask,
+                const int mask_to_set,
+                const bool is_set) {
     if (is_set) {
         return input_mask | mask_to_set;
     } else {
@@ -387,7 +444,8 @@ const QList<QByteArray> guid_string_to_segment_list(const QString &guid_string) 
     const QList<QString> string_segment_list = guid_string.split('-');
 
     for (const QString &string_segment : string_segment_list) {
-        const QByteArray segment = QByteArray::fromHex(string_segment.toLatin1());
+        const QByteArray segment =
+            QByteArray::fromHex(string_segment.toLatin1());
         out.append(segment);
     }
 
@@ -398,7 +456,9 @@ const QList<QByteArray> guid_string_to_segment_list(const QString &guid_string) 
     return out;
 }
 
-const QByteArray segment_list_to_guid_bytes(const QList<QByteArray> &segment_list) {
+const QByteArray segment_list_to_guid_bytes(
+    const QList<QByteArray> &segment_list)
+{
     QByteArray out;
     for (const QByteArray &segment : segment_list) {
         out.append(segment);
@@ -425,28 +485,50 @@ QByteArray sid_string_to_bytes(const QString &sid_string) {
 
 QString attribute_type_display_string(const AttributeType type) {
     switch (type) {
-        case AttributeType_Boolean: return QCoreApplication::translate("ad_utils.cpp", "Boolean");
-        case AttributeType_Enumeration: return QCoreApplication::translate("ad_utils.cpp", "Enumeration");
-        case AttributeType_Integer: return QCoreApplication::translate("ad_utils.cpp", "Integer");
-        case AttributeType_LargeInteger: return QCoreApplication::translate("ad_utils.cpp", "Large Integer");
-        case AttributeType_StringCase: return QCoreApplication::translate("ad_utils.cpp", "String Case");
-        case AttributeType_IA5: return QCoreApplication::translate("ad_utils.cpp", "IA5");
-        case AttributeType_NTSecDesc: return QCoreApplication::translate("ad_utils.cpp", "NT Security Descriptor");
-        case AttributeType_Numeric: return QCoreApplication::translate("ad_utils.cpp", "Numeric");
-        case AttributeType_ObjectIdentifier: return QCoreApplication::translate("ad_utils.cpp", "Object Identifier");
-        case AttributeType_Octet: return QCoreApplication::translate("ad_utils.cpp", "Octet");
-        case AttributeType_ReplicaLink: return QCoreApplication::translate("ad_utils.cpp", "Replica Link");
-        case AttributeType_Printable: return QCoreApplication::translate("ad_utils.cpp", "Printable");
-        case AttributeType_Sid: return QCoreApplication::translate("ad_utils.cpp", "SID");
-        case AttributeType_Teletex: return QCoreApplication::translate("ad_utils.cpp", "Teletex");
-        case AttributeType_Unicode: return QCoreApplication::translate("ad_utils.cpp", "Unicode String");
-        case AttributeType_UTCTime: return QCoreApplication::translate("ad_utils.cpp", "UTC Time");
-        case AttributeType_GeneralizedTime: return QCoreApplication::translate("ad_utils.cpp", "Generalized Time");
-        case AttributeType_DNString: return QCoreApplication::translate("ad_utils.cpp", "DN String");
-        case AttributeType_DNBinary: return QCoreApplication::translate("ad_utils.cpp", "DN Binary");
-        case AttributeType_DSDN: return QCoreApplication::translate("ad_utils.cpp", "Distinguished Name");
+    case AttributeType_Boolean:
+        return QCoreApplication::translate("ad_utils.cpp", "Boolean");
+    case AttributeType_Enumeration:
+        return QCoreApplication::translate("ad_utils.cpp", "Enumeration");
+    case AttributeType_Integer:
+        return QCoreApplication::translate("ad_utils.cpp", "Integer");
+    case AttributeType_LargeInteger:
+        return QCoreApplication::translate("ad_utils.cpp", "Large Integer");
+    case AttributeType_StringCase:
+        return QCoreApplication::translate("ad_utils.cpp", "String Case");
+    case AttributeType_IA5:
+        return QCoreApplication::translate("ad_utils.cpp", "IA5");
+    case AttributeType_NTSecDesc:
+        return QCoreApplication::translate("ad_utils.cpp",
+                                           "NT Security Descriptor");
+    case AttributeType_Numeric:
+        return QCoreApplication::translate("ad_utils.cpp", "Numeric");
+    case AttributeType_ObjectIdentifier:
+        return QCoreApplication::translate("ad_utils.cpp", "Object Identifier");
+    case AttributeType_Octet:
+        return QCoreApplication::translate("ad_utils.cpp", "Octet");
+    case AttributeType_ReplicaLink:
+        return QCoreApplication::translate("ad_utils.cpp", "Replica Link");
+    case AttributeType_Printable:
+        return QCoreApplication::translate("ad_utils.cpp", "Printable");
+    case AttributeType_Sid:
+        return QCoreApplication::translate("ad_utils.cpp", "SID");
+    case AttributeType_Teletex:
+        return QCoreApplication::translate("ad_utils.cpp", "Teletex");
+    case AttributeType_Unicode:
+        return QCoreApplication::translate("ad_utils.cpp", "Unicode String");
+    case AttributeType_UTCTime:
+        return QCoreApplication::translate("ad_utils.cpp", "UTC Time");
+    case AttributeType_GeneralizedTime:
+        return QCoreApplication::translate("ad_utils.cpp", "Generalized Time");
+    case AttributeType_DNString:
+        return QCoreApplication::translate("ad_utils.cpp", "DN String");
+    case AttributeType_DNBinary:
+        return QCoreApplication::translate("ad_utils.cpp", "DN Binary");
+    case AttributeType_DSDN:
+        return QCoreApplication::translate("ad_utils.cpp", "Distinguished Name");
+    default:
+        return QString();
     }
-    return QString();
 }
 
 QString int_to_hex_string(const int n) {
@@ -483,7 +565,9 @@ QHash<int, QString> attribute_value_bit_string_map(const QString &attribute)
     return bit_string_map;
 }
 
-QList<QString> bytearray_list_to_string_list(const QList<QByteArray> &bytearray_list) {
+QList<QString> bytearray_list_to_string_list(
+    const QList<QByteArray> &bytearray_list)
+{
     QList<QString> out;
 
     for (const QByteArray &bytes : bytearray_list) {

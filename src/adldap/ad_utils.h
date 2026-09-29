@@ -1,8 +1,10 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2021-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2023-2025 Semyon Knyazev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,12 +24,13 @@
 #define AD_UTILS_H
 
 /**
- * Various f-ns related to AD attributes which do not
- * interact with the server.
+ * Various functions related to AD attributes which do not interact with the
+ * server.
  */
 
-#include "ad_defines.h"
 #include <QHash>
+
+#include "ad_defines.h"
 
 class QString;
 class QDateTime;
@@ -37,8 +40,12 @@ class QTranslator;
 class QLocale;
 
 bool large_integer_datetime_is_never(const QString &value);
-QString datetime_qdatetime_to_string(const QString &attribute, const QDateTime &datetime, const AdConfig *adconfig);
-QDateTime datetime_string_to_qdatetime(const QString &attribute, const QString &raw_value, const AdConfig *adconfig);
+QString datetime_qdatetime_to_string(const QString &attribute,
+                                     const QDateTime &datetime,
+                                     const AdConfig *adconfig);
+QDateTime datetime_string_to_qdatetime(const QString &attribute,
+                                       const QString &raw_value,
+                                       const AdConfig *adconfig);
 
 QString account_option_string(const AccountOption &option);
 int account_option_bit(const AccountOption &option);
@@ -62,21 +69,21 @@ QString dn_get_parent_canonical(const QString &dn);
 QString dn_rename(const QString &dn, const QString &new_name);
 QString dn_move(const QString &dn, const QString &new_parent_dn);
 QString dn_canonical(const QString &dn);
-QString dn_from_name_and_parent(const QString &name, const QString &parent, const QString &object_class);
+QString dn_from_name_and_parent(const QString &name,
+                                const QString &parent,
+                                const QString &object_class);
 
 QString get_default_domain_from_krb5();
 
 int bitmask_set(const int input_mask, const int mask_to_set, const bool is_set);
 bool bitmask_is_set(const int input_mask, const int mask_to_read);
 
-// NOTE: uses a buffer that is capped at 100 strings, so
-// pointers returned from this become invalid after 99 more
-// calls. Only use this to give cstr args to C routines in
-// the same scope. Keep this far away from any recursion.
+// NOTE: uses a buffer that is capped at 100 strings, so pointers returned from
+// this become invalid after 99 more calls. Only use this to give cstr args to C
+// routines in the same scope. Keep this far away from any recursion.
 const char *cstr(const QString &qstr);
 
-// NOTE: you must call Q_INIT_RESOURCE(adldap) before
-// calling this
+// NOTE: you must call Q_INIT_RESOURCE(adldap) before calling this
 bool load_adldap_translation(QTranslator &translator, const QLocale &locale);
 
 QByteArray guid_string_to_bytes(const QString &guid_string);
@@ -88,7 +95,8 @@ QString int_to_hex_string(const int n);
 
 QHash<int, QString> attribute_value_bit_string_map(const QString &attribute);
 
-QList<QString> bytearray_list_to_string_list(const QList<QByteArray> &bytearray_list);
+QList<QString> bytearray_list_to_string_list(
+    const QList<QByteArray> &bytearray_list);
 
 QString generate_uuid();
 
