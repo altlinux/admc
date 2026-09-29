@@ -1,16 +1,38 @@
+/*
+ * ADMC - AD Management Center
+ *
+ * Copyright (C) 2020-2026 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2023-2024 Semyon Knyazev
+ * Copyright (C) 2026 Artyom V. Poptsov
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <QObject>
 
 #include "gplink.h"
 #include "adldap.h"
-
-#include <QObject>
 
 #define LDAP_PREFIX "LDAP://"
 
 Gplink::Gplink() {
 }
 
-Gplink::Gplink(const Gplink &other) : gpo_list(other.gpo_list), options(other.options) {
-
+Gplink::Gplink(const Gplink &other)
+    : gpo_list(other.gpo_list), options(other.options) {
+    // Do nothing.
 }
 
 /**
@@ -37,7 +59,8 @@ Gplink::Gplink(const QString &gplink_string) {
     // {"gpo_1;option_1", "gpo_2;option_2", "gpo_3;option_3"}
     QString gplink_string_without_brackets = gplink_string;
     gplink_string_without_brackets.replace("[", "");
-    const QList<QString> gplink_string_split = gplink_string_without_brackets.split(']');
+    const QList<QString> gplink_string_split =
+        gplink_string_without_brackets.split(']');
 
     for (auto part : gplink_string_split) {
         if (part.isEmpty()) {
@@ -127,7 +150,8 @@ QString Gplink::to_string() const {
         const QString gpo_case = gpo_dn_to_gplink_case(i->split(","));
         const int option = options[*i];
         const QString option_string = QString::number(option);
-        const QString part = QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo_case, option_string);
+        const QString part =
+            QString("[%1%2;%3]").arg(LDAP_PREFIX, gpo_case, option_string);
 
         part_list.append(part);
     }
@@ -249,7 +273,8 @@ void Gplink::move(int from_order, int to_order) {
     gpo_list.move(from_order - 1, to_order - 1);
 }
 
-bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) const {
+bool Gplink::get_option(const QString &gpo_case,
+                        const GplinkOption option) const {
     const QString gpo = gpo_case.toLower();
 
     if (!contains(gpo)) {
@@ -262,7 +287,9 @@ bool Gplink::get_option(const QString &gpo_case, const GplinkOption option) cons
     return is_set;
 }
 
-void Gplink::set_option(const QString &gpo_case, const GplinkOption option, const bool value) {
+void Gplink::set_option(const QString &gpo_case,
+                        const GplinkOption option,
+                        const bool value) {
     const QString gpo = gpo_case.toLower();
 
     if (!contains(gpo)) {
