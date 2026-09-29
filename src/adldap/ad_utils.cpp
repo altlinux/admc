@@ -169,12 +169,19 @@ int account_option_bit(const AccountOption &option) {
 
 int group_scope_bit(GroupScope scope) {
     switch (scope) {
-        case GroupScope_Global: return 0x00000002;
-        case GroupScope_DomainLocal: return 0x00000004;
-        case GroupScope_Universal: return 0x00000008;
-        case GroupScope_COUNT: return 0;
+    case GroupScope_Global:
+        return 0x00000002;
+
+    case GroupScope_DomainLocal:
+        return 0x00000004;
+
+    case GroupScope_Universal:
+        return 0x00000008;
+
+    case GroupScope_COUNT:
+    default:
+        return 0;
     }
-    return 0;
 }
 
 QString group_scope_string(GroupScope scope) {
