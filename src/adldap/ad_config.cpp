@@ -638,26 +638,19 @@ int AdConfig::get_rights_valid_accesses(const QString &rights_cn) const {
         return SEC_ADS_READ_PROP;
     }
 
-    const int out = d->rights_valid_accesses_map.value(rights_cn, 0);
-
-    return out;
+    return d->rights_valid_accesses_map.value(rights_cn, 0);
 }
 
 QString AdConfig::guid_to_attribute(const QByteArray &guid) const {
-    const QString out = d->guid_to_attribute_map.value(guid,
-                                                       "<unknown attribute>");
-    return out;
+    return d->guid_to_attribute_map.value(guid, "<unknown attribute>");
 }
 
 QByteArray AdConfig::attribute_to_guid(const QString &attr) const {
-    const QByteArray attr_guid = d->guid_to_attribute_map.key(attr,
-                                                              QByteArray());
-    return attr_guid;
+    return d->guid_to_attribute_map.key(attr, QByteArray());
 }
 
 QString AdConfig::guid_to_class(const QByteArray &guid) const {
-    const QString out = d->guid_to_class_map.value(guid, "<unknown class>");
-    return out;
+    return d->guid_to_class_map.value(guid, "<unknown class>");
 }
 
 // (noncontainer classes) = (all classes) - (container classes)
