@@ -133,9 +133,7 @@ int AdObject::get_int(const QString &attribute) const {
 QDateTime AdObject::get_datetime(const QString &attribute,
                                  const AdConfig *adconfig) const {
     const QString datetime_string = get_string(attribute);
-    const QDateTime datetime =
-        datetime_string_to_qdatetime(attribute, datetime_string, adconfig);
-    return datetime;
+    return datetime_string_to_qdatetime(attribute, datetime_string, adconfig);
 }
 
 QList<bool> AdObject::get_bools(const QString &attribute) const {
@@ -170,9 +168,7 @@ bool AdObject::get_account_option(AccountOption option,
                                   AdConfig *adconfig) const {
     switch (option) {
         case AccountOption_CantChangePassword: {
-            const bool out =
-                ad_security_get_user_cant_change_pass(this, adconfig);
-            return out;
+            return ad_security_get_user_cant_change_pass(this, adconfig);
         }
         case AccountOption_PasswordExpired: {
             if (contains(ATTRIBUTE_PWD_LAST_SET)) {
@@ -190,9 +186,7 @@ bool AdObject::get_account_option(AccountOption option,
             if (contains(ATTRIBUTE_USER_ACCOUNT_CONTROL)) {
                 const int control = get_int(ATTRIBUTE_USER_ACCOUNT_CONTROL);
                 const int bit = account_option_bit(option);
-
                 const bool set = ((control & bit) != 0);
-
                 return set;
             } else {
                 return false;
@@ -226,9 +220,7 @@ GroupScope AdObject::get_group_scope() const {
 
 bool AdObject::is_class(const QString &object_class) const {
     const QString this_object_class = get_string(ATTRIBUTE_OBJECT_CLASS);
-    const bool is_class = (this_object_class == object_class);
-
-    return is_class;
+    return (this_object_class == object_class);
 }
 
 QList<QString> AdObject::get_split_upn() const {
@@ -264,7 +256,5 @@ security_descriptor *AdObject::get_security_descriptor(
     }
 
     const QByteArray sd_bytes = get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-    security_descriptor *out =
-        security_descriptor_make_from_bytes(mem_ctx, sd_bytes);
-    return out;
+    return security_descriptor_make_from_bytes(mem_ctx, sd_bytes);
 }
