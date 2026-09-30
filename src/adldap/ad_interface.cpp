@@ -2452,6 +2452,13 @@ void AdInterface::update_dc() {
     d->is_connected = ldap_init() && d->s_smb_context.is_valid();
 }
 
+/**
+ * Get domain hosts for the given site.
+ *
+ * @param domain A domain to query.
+ * @param site A site to query.
+ * @return A list of hosts or an empty list on errors.
+ */
 QList<QString> get_domain_hosts(const QString &domain,
                                 const QString &site) {
     const uint16_t DNAME_SIZE = 1000;
@@ -2460,11 +2467,18 @@ QList<QString> get_domain_hosts(const QString &domain,
     // Query site hosts
     if (!site.isEmpty()) {
         char dname[DNAME_SIZE];
-        snprintf(dname,
-                 DNAME_SIZE,
-                 "_ldap._tcp.%s._sites.%s",
-                 cstr(site),
-                 cstr(domain));
+        int ret = snprintf(dname,
+                           DNAME_SIZE,
+                           "_ldap._tcp.%s._sites.%s",
+                           cstr(site),
+                           cstr(domain));
+        if (ret >= DNAME_SIZE) {
+            qCritical() << "ERROR: get_domain_hosts:"
+                        << "String was truncated ("
+                        << ret << ">=" << DNAME_SIZE << "):"
+                        << dname;
+            return QList<QString>();
+        }
 
         const QList<QString> site_hosts = query_server_for_hosts(dname);
         hosts.append(site_hosts);
@@ -2472,10 +2486,17 @@ QList<QString> get_domain_hosts(const QString &domain,
 
     // Query default hosts
     char dname_default[DNAME_SIZE];
-    snprintf(dname_default,
-             DNAME_SIZE,
-             "_ldap._tcp.%s",
-             cstr(domain));
+    int ret = snprintf(dname_default,
+                       DNAME_SIZE,
+                       "_ldap._tcp.%s",
+                       cstr(domain));
+    if (ret >= DNAME_SIZE) {
+        qCritical() << "ERROR: get_domain_hosts:"
+                    << "String was truncated ("
+                    << ret << ">=" << DNAME_SIZE << "):"
+                    << dname_default;
+        return QList<QString>();
+    }
 
     const QList<QString> default_hosts =
         query_server_for_hosts(dname_default);
@@ -2661,14 +2682,21 @@ static const char *mask_format_to_string(const AceMaskFormat &format_enum) {
     }
 }
 
-// NOTE: decimal format option is provided to deal with this
-// bug in libsmbclient:
-// https://bugzilla.samba.org/show_bug.cgi?id=14303. You
-// only need to use decimal format when making the string to
-// pass to smbc_setxattr(), otherwise you should use hex
-// format.
+/**
+ * Get GPT SD string.
+ *
+ * NOTE: decimal format option is provided to deal with this bug in
+ * libsmbclient:
+ *   https://bugzilla.samba.org/show_bug.cgi?id=14303
+ *
+ * You only need to use decimal format when making the string to pass to
+ * smbc_setxattr(), otherwise you should use hex format.
+ *
+ * @return A proper GPT SD string or an empty string on errors.
+ */
 QString get_gpt_sd_string(const AdObject &gpc_object,
                           const AceMaskFormat format_enum) {
+    const uint32_t ACCESS_MASK_STRING_LENGTH = 100;
     TALLOC_CTX *mem_ctx = talloc_new(NULL);
 
     security_descriptor *gpc_sd =
@@ -2704,13 +2732,21 @@ QString get_gpt_sd_string(const AdObject &gpc_object,
     for (uint32_t i = 0; i < gpt_sd->dacl->num_aces; i++) {
         struct security_ace ace = gpt_sd->dacl->aces[i];
 
-        char access_mask_string[100];
+        char access_mask_string[ACCESS_MASK_STRING_LENGTH];
 
         const char *format = mask_format_to_string(format_enum);
-        snprintf(access_mask_string,
-                 sizeof(access_mask_string),
-                 format,
+        int ret = snprintf(access_mask_string,
+                           ACCESS_MASK_STRING_LENGTH,
+                           format,
                  ace.access_mask);
+        if (ret >= ACCESS_MASK_STRING_LENGTH) {
+            qCritical() << "ERROR: get_gpt_sd_string:"
+                        << "String was truncated ("
+                        << ret << ">=" << ACCESS_MASK_STRING_LENGTH << "):"
+                        << access_mask_string;
+            talloc_free(mem_ctx);
+            return QString();
+        }
 
         const char *trustee_string =
             dom_sid_string(mem_ctx, &ace.trustee);
