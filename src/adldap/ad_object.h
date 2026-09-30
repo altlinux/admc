@@ -1,8 +1,10 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2026 BaseALT Ltd.
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2025 Semyon Knyazev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +50,8 @@ class AdObject {
 public:
     AdObject();
 
-    void load(const QString &dn_arg, const QHash<QString, QList<QByteArray>> &attributes_data_arg);
+    void load(const QString &dn_arg,
+              const QHash<QString, QList<QByteArray>> &attributes_data_arg);
 
     QString get_dn() const;
     QHash<QString, QList<QByteArray>> get_attributes_data() const;
@@ -68,7 +71,8 @@ public:
     QList<bool> get_bools(const QString &attribute) const;
     bool get_bool(const QString &attribute) const;
 
-    QDateTime get_datetime(const QString &attribute, const AdConfig *adconfig) const;
+    QDateTime get_datetime(const QString &attribute,
+                           const AdConfig *adconfig) const;
 
     bool get_system_flag(const SystemFlagsBit bit) const;
 
@@ -77,15 +81,20 @@ public:
     GroupScope get_group_scope() const;
     GroupType get_group_type() const;
 
-    // NOTE: this compares for the most derived class, so each object only maps to one class. For example computers have objectClass values of both "user" and "computer" but "computer" is more derived so they are only computers and not users.
+    // NOTE: this compares for the most derived class, so each object only maps
+    // to one class. For example computers have objectClass values of both
+    // "user" and "computer" but "computer" is more derived so they are only
+    // computers and not users.
     bool is_class(const QString &object_class) const;
 
     QList<QString> get_split_upn() const;
     QString get_upn_prefix() const;
     QString get_upn_suffix() const;
 
-    // NOTE: if no mem_ctx is given, then returned value has to be free'd using security_descriptor_free()
-    security_descriptor *get_security_descriptor(TALLOC_CTX *mem_ctx = nullptr) const;
+    // NOTE: if no mem_ctx is given, then returned value has to be free'd using
+    // security_descriptor_free()
+    security_descriptor *get_security_descriptor(
+        TALLOC_CTX *mem_ctx = nullptr) const;
 
 private:
     QString dn;

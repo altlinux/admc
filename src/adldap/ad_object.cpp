@@ -1,8 +1,10 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2026 BaseALT Ltd.
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2025 Semyon Knyazev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +20,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ad_object.h"
-
-#include "ad_config.h"
-#include "ad_display.h"
-#include "ad_security.h"
-#include "ad_utils.h"
-
-#include "samba/ndr_security.h"
-
 #include <QByteArray>
 #include <QDateTime>
 #include <QHash>
@@ -35,10 +28,21 @@
 #include <QString>
 #include <algorithm>
 
+#include "ad_config.h"
+#include "ad_display.h"
+#include "ad_object.h"
+#include "ad_security.h"
+#include "ad_utils.h"
+#include "samba/ndr_security.h"
+
 AdObject::AdObject() {
+    // Do nothing.
 }
 
-void AdObject::load(const QString &dn_arg, const QHash<QString, QList<QByteArray>> &attributes_data_arg) {
+void AdObject::load(
+    const QString &dn_arg,
+    const QHash<QString, QList<QByteArray>> &attributes_data_arg)
+{
     dn = dn_arg;
     attributes_data = attributes_data_arg;
 }
@@ -96,8 +100,9 @@ QList<QString> AdObject::get_strings(const QString &attribute) const {
 QString AdObject::get_string(const QString &attribute) const {
     const QList<QString> strings = get_strings(attribute);
 
-    // NOTE: return last object class because that is the most derived one and is what's needed most of the time
-    if (!strings.isEmpty()) {
+    // NOTE: return last object class because that is the most derived one and
+    // is what's needed most of the time
+    if (! strings.isEmpty()) {
         if (attribute == ATTRIBUTE_OBJECT_CLASS) {
             return strings.last();
         } else {
@@ -125,10 +130,11 @@ int AdObject::get_int(const QString &attribute) const {
     return (! ints.isEmpty()) ? ints.first() : 0;
 }
 
-QDateTime AdObject::get_datetime(const QString &attribute, const AdConfig *adconfig) const {
+QDateTime AdObject::get_datetime(const QString &attribute,
+                                 const AdConfig *adconfig) const {
     const QString datetime_string = get_string(attribute);
-    const QDateTime datetime = datetime_string_to_qdatetime(attribute, datetime_string, adconfig);
-
+    const QDateTime datetime =
+        datetime_string_to_qdatetime(attribute, datetime_string, adconfig);
     return datetime;
 }
 
@@ -160,18 +166,20 @@ bool AdObject::get_system_flag(const SystemFlagsBit bit) const {
     }
 }
 
-bool AdObject::get_account_option(AccountOption option, AdConfig *adconfig) const {
+bool AdObject::get_account_option(AccountOption option,
+                                  AdConfig *adconfig) const {
     switch (option) {
         case AccountOption_CantChangePassword: {
-            const bool out = ad_security_get_user_cant_change_pass(this, adconfig);
-
+            const bool out =
+                ad_security_get_user_cant_change_pass(this, adconfig);
             return out;
         }
         case AccountOption_PasswordExpired: {
             if (contains(ATTRIBUTE_PWD_LAST_SET)) {
-                const QString pwdLastSet_value = get_string(ATTRIBUTE_PWD_LAST_SET);
-                const bool expired = (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
-
+                const QString pwdLastSet_value =
+                    get_string(ATTRIBUTE_PWD_LAST_SET);
+                const bool expired =
+                    (pwdLastSet_value == AD_PWD_LAST_SET_EXPIRED);
                 return expired;
             } else {
                 return false;
@@ -245,7 +253,9 @@ QString AdObject::get_upn_suffix() const {
     return upn_split[1];
 }
 
-security_descriptor *AdObject::get_security_descriptor(TALLOC_CTX *mem_ctx_arg) const {
+security_descriptor *AdObject::get_security_descriptor(
+    TALLOC_CTX *mem_ctx_arg) const
+{
     TALLOC_CTX *mem_ctx;
     if (mem_ctx_arg != nullptr) {
         mem_ctx = mem_ctx_arg;
@@ -254,7 +264,7 @@ security_descriptor *AdObject::get_security_descriptor(TALLOC_CTX *mem_ctx_arg) 
     }
 
     const QByteArray sd_bytes = get_value(ATTRIBUTE_SECURITY_DESCRIPTOR);
-    security_descriptor *out = security_descriptor_make_from_bytes(mem_ctx, sd_bytes);
-
+    security_descriptor *out =
+        security_descriptor_make_from_bytes(mem_ctx, sd_bytes);
     return out;
 }
