@@ -46,6 +46,8 @@ public:
 };
 
 void console_policy_tree_init(ConsoleWidget *console);
+// TODO: move console_policy_tree_init() and get_policy_tree_root()
+// fn-s to more convenient place
 QModelIndex get_policy_tree_root(ConsoleWidget *console);
 
 #endif /* POLICY_ROOT_IMPL_H */

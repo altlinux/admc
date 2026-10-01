@@ -42,6 +42,9 @@ class PolicyResultsWidget;
 template <typename T>
 class QList;
 
+// TODO: Find a way to unite policy, policy ou and object subtree
+// roles. It'll help to not include all impl headers every time
+// to get mentioned roles.
 enum PolicyRole {
     PolicyRole_DN = ConsoleRole_LAST + 1,
     PolicyRole_GPO_Status,

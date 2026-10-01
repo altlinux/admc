@@ -35,6 +35,10 @@
 #include "core/console/console.h"
 #include "ui/widget/console/console_impl.h"
 
+
+// TODO: Find a way to unite policy, policy ou and object subtree
+// roles. It'll help to not include all impl headers every time
+// to get mentioned roles.
 enum PolicyOURole {
     PolicyOURole_DN = MyConsoleRole_LAST + 1,
     PolicyOURole_Inheritance_Block,

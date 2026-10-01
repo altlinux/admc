@@ -63,6 +63,9 @@ enum MyConsoleRole {
     MyConsoleRole_LAST,
 };
 
+// TODO: Find a way to unite policy, policy ou and object subtree
+// roles. It'll help to not include all impl headers every time
+// to get mentioned roles.
 enum ObjectRole {
     ObjectRole_DN = MyConsoleRole_LAST + 1,
     ObjectRole_ObjectClasses,
