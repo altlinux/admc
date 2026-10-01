@@ -449,27 +449,25 @@ void console_query_tree_save(ConsoleWidget *console) {
         }
 
         if (type == ItemType_QueryFolder) {
-            const bool is_root = !index.parent().isValid();
-            if (is_root) {
-                QHash<QString, QVariant> data;
-                data["child_list"] = QVariant(child_list);
+            const bool is_root =
+                index.parent() == console->domain_info_index();
 
-                folder_list[path] = data;
-            } else {
-                const QString name = index.data(Qt::DisplayRole).toString();
-                const QString description = index.data(QueryItemRole_Description).toString();
+            QHash<QString, QVariant> data;
 
-                QHash<QString, QVariant> data;
-                data["name"] = name;
-                data["description"] = description;
-                data["child_list"] = QVariant(child_list);
+            if (!is_root) {
+                data["name"] =
+                    index.data(Qt::DisplayRole).toString();
 
-                folder_list[path] = data;
+                data["description"] =
+                    index.data(QueryItemRole_Description).toString();
             }
-        } else if (type == ItemType_QueryItem) {
-            const QHash<QString, QVariant> data = console_query_item_save_hash(index);
 
-            item_list[path] = data;
+            data["child_list"] = child_list;
+            folder_list[path] = data;
+        }
+        else if (type == ItemType_QueryItem) {
+            item_list[path] =
+                console_query_item_save_hash(index);
         }
     }
 
