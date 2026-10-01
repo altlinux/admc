@@ -588,6 +588,9 @@ QList<int> ObjectImpl::default_columns() const {
 
 /**
  * Refresh the console starting from the current sub-tree.
+ *
+ * @param new_dn A new distinguished name (DN) to select after refreshing the
+ * current sub-tree.
  */
 void ObjectImpl::refresh_current_subtree(const QString &new_dn) {
     const QModelIndex index = console->get_current_scope_item();
