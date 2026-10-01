@@ -1,8 +1,10 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2026 BaseALT Ltd.
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2023 Ivan A. Melnikov
+ * Copyright (C) 2024-2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,36 +33,48 @@
 #include "ui/dialog/create/ui_user.h"
 #include "ui/dialog/create/user.h"
 
-CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, const QString &user_class, QWidget *parent)
-: CreateObjectDialog(parent) {
+CreateUserDialog::CreateUserDialog(AdInterface &ad,
+                                   const QString &parent_dn,
+                                   const QString &user_class,
+                                   QWidget *parent)
+    : CreateObjectDialog(parent)
+{
     ui = new Ui::CreateUserDialog();
     ui->setupUi(this);
 
     setAttribute(Qt::WA_DeleteOnClose);
 
     bool show_middle_name = false;
-    const QVariant show_middle_name_variant = settings_get_variant(SETTING_show_middle_name_when_creating);
-    if (!show_middle_name_variant.isNull()) {
+    const QVariant show_middle_name_variant =
+        settings_get_variant(SETTING_show_middle_name_when_creating);
+    if (! show_middle_name_variant.isNull()) {
         show_middle_name = show_middle_name_variant.toBool();
     }
     ui->middle_name_edit->setVisible(show_middle_name);
     ui->middle_name_label->setVisible(show_middle_name);
 
-    auto first_name_edit = new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
-    auto last_name_edit = new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
-    auto initials_edit = new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, this);
-    auto sam_name_edit = new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
-    auto password_edit = new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit, ui->show_password_check, this);
-    auto middle_name_edit = new StringEdit(ui->middle_name_edit, ATTRIBUTE_MIDDLE_NAME, this);
+    auto first_name_edit =
+        new StringEdit(ui->first_name_edit, ATTRIBUTE_FIRST_NAME, this);
+    auto last_name_edit =
+        new StringEdit(ui->last_name_edit, ATTRIBUTE_LAST_NAME, this);
+    auto initials_edit =
+        new StringEdit(ui->initials_edit, ATTRIBUTE_INITIALS, this);
+    auto sam_name_edit =
+        new SamNameEdit(ui->sam_name_edit, ui->sam_name_domain_edit, this);
+    auto password_edit =
+        new PasswordEdit(ui->password_main_edit, ui->password_confirm_edit,
+                         ui->show_password_check, this);
+    auto middle_name_edit =
+        new StringEdit(ui->middle_name_edit, ATTRIBUTE_MIDDLE_NAME, this);
 
     auto upn_edit = new UpnEdit(ui->upn_prefix_edit, ui->upn_suffix_edit, this);
     upn_edit->init_suffixes(ad);
 
     const QHash<AccountOption, QCheckBox *> check_map = {
-        {AccountOption_PasswordExpired, ui->must_change_pass_check},
-        {AccountOption_CantChangePassword, ui->cant_change_pass_check},
-        {AccountOption_DontExpirePassword, ui->dont_expire_pass_check},
-        {AccountOption_Disabled, ui->disabled_check},
+        { AccountOption_PasswordExpired, ui->must_change_pass_check },
+        { AccountOption_CantChangePassword, ui->cant_change_pass_check },
+        { AccountOption_DontExpirePassword, ui->dont_expire_pass_check },
+        { AccountOption_Disabled, ui->disabled_check },
     };
 
     QList<AttributeEdit *> option_edit_list;
@@ -68,13 +82,13 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, co
     for (const AccountOption &option : check_map.keys()) {
         QCheckBox *check = check_map[option];
         auto edit = new AccountOptionEdit(check, option, this);
-
         option_edit_list.append(edit);
     }
 
     account_option_setup_conflicts(check_map);
 
-    line_edit_setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit, ui->middle_name_edit, ui->name_edit);
+    line_edit_setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit,
+                                       ui->middle_name_edit, ui->name_edit);
 
     line_edit_setup_autofill(ui->upn_prefix_edit, ui->sam_name_edit);
 
@@ -96,7 +110,8 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad, const QString &parent_dn, co
 
     edit_list.append(option_edit_list);
 
-    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list, required_list, user_class, parent_dn, this);
+    helper = new CreateObjectHelper(ui->name_edit, ui->button_box, edit_list,
+                                    required_list, user_class, parent_dn, this);
 
     if (user_class != CLASS_USER) {
         setWindowTitle(QString(tr("Create %1")).arg(user_class));

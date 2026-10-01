@@ -2,7 +2,8 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2024-2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,10 +38,10 @@ class CreateUserDialog final : public CreateObjectDialog {
 public:
     Ui::CreateUserDialog *ui;
 
-    // NOTE: user_class can be either CLASS_USER or
-    // CLASS_INET_ORG_PERSON. This is so that this
-    // dialog can be reused for both classes.
-    CreateUserDialog(AdInterface &ad, const QString &parent_dn, const QString &user_class, QWidget *parent);
+    // NOTE: user_class can be either CLASS_USER or CLASS_INET_ORG_PERSON. This
+    // is so that this dialog can be reused for both classes.
+    CreateUserDialog(AdInterface &ad, const QString &parent_dn,
+                     const QString &user_class, QWidget *parent);
     ~CreateUserDialog();
 
     void accept() override;
