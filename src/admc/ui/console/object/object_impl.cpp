@@ -602,19 +602,25 @@ void ObjectImpl::refresh_current_subtree(const QString &new_dn) {
     show_busy_indicator();
 
     const QString selected_dn = index.data(ObjectRole_DN).toString();
-    const QString new_full_dn =
-        ad_ldap_dn_string_replace_value(selected_dn, 0, new_dn);
+    QString new_full_dn = nullptr;
+    try {
+        new_full_dn = ad_ldap_dn_string_replace_value(selected_dn, 0, new_dn);
+    } catch (std::runtime_error &error) {
+        qWarning() << "ERROR: refresh_current_subtree" << error.what();
+    }
 
     console->refresh_scope(parent);
 
-    const QModelIndex selected = console->search_item(parent,
-                                                      ObjectRole_DN,
-                                                      new_full_dn,
-                                                      { ItemType_Object });
-    if (selected.isValid()) {
-        console->set_current_scope(selected);
-    } else {
-        console->set_current_scope(parent);
+    if (new_full_dn != nullptr) {
+        const QModelIndex selected = console->search_item(parent,
+                                                          ObjectRole_DN,
+                                                          new_full_dn,
+                                                          { ItemType_Object });
+        if (selected.isValid()) {
+            console->set_current_scope(selected);
+        } else {
+            console->set_current_scope(parent);
+        }
     }
 
     hide_busy_indicator();
