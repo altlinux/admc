@@ -101,6 +101,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     settings_save_main_window_geometry(saveGeometry());
     settings_save_main_window_state(saveState());
     settings_save_console_state(ui->console->save_state());
+    ui->console->save_tree_state();
 
     krb5_client->logout(
         (! settings_are_creds_saved(krb5_client->current_principal())));
@@ -164,7 +165,9 @@ void MainWindow::edit_fsmo_roles() {
 }
 
 void MainWindow::reload_console_tree() {
+    ui->console->save_tree_state();
     ui->console->refresh_scope(ui->console->domain_info_index());
+    ui->console->restore_tree_state();
 }
 
 void MainWindow::setup_themes() {
@@ -446,6 +449,7 @@ void MainWindow::restore_console_widget_state() {
     // NOTE: must restore state after everything is setup
     const QVariant console_widget_state = settings_load_console_state();
     ui->console->restore_state(console_widget_state);
+    ui->console->restore_tree_state();
 }
 
 void MainWindow::restore_main_window_state() {
@@ -575,13 +579,6 @@ void MainWindow::init_on_connect(AdInterface &ad) {
     // console
     ui->menu_action->clear();
     ui->console->setup_menubar_action_menu(ui->menu_action);
-
-    // Set current scope to object head to load it
-    const QModelIndex object_tree_root =
-        ConsoleObjectTreeOperations::get_domain_object_tree_root(ui->console);
-    if (object_tree_root.isValid()) {
-        ui->console->set_current_scope(object_tree_root);
-    }
 
     // Display any errors that happened when loading the
     // console

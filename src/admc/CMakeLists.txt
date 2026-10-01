@@ -73,6 +73,7 @@ set(ADMC_SOURCES
     core/managers/country_manager.cpp
     core/managers/gplink_manager.cpp
     core/managers/icon_manager.cpp
+    core/managers/tree_state_manager/tree_state_manager.cpp
     core/search_thread.cpp
     core/settings.cpp
     core/user_photo.cpp

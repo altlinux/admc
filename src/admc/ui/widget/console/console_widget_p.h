@@ -29,6 +29,7 @@
 #include "core/console/console.h"
 #include "ui/widget/console/console_widget.h"
 #include "ui/widget/console/results_view.h"
+#include "core/managers/tree_state_manager/tree_state_manager.h"
 
 #include <QCoreApplication>
 #include <QSet>
@@ -77,6 +78,7 @@ public:
 
     QPersistentModelIndex domain_info_index;
 
+    TreeStateManager *tree_state_manager;
 
     ConsoleWidgetPrivate(ConsoleWidget *q_arg);
 

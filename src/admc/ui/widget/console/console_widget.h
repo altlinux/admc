@@ -153,6 +153,9 @@ public:
 
     void hide_scope_and_results(bool hide);
 
+    void save_tree_state();
+    void restore_tree_state();
+
 signals:
     // Emitted when selection in the whole console
     // widget changes, both in scope and results panes.
