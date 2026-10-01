@@ -27,6 +27,11 @@
 #include "ui/dialog/auth/ui_krb_auth.h"
 #include "ui/utils.h"
 
+enum {
+    ROW_NEW_PASSWORD = 4,
+    ROW_PASSWORD_CONFIRMATION = 5
+};
+
 KrbAuthDialog::KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg)
     : AuthDialogBase(parent), ui(new Ui::KrbAuthDialog),
       state(KRB5_DIALOG_STATE_AUTHENTICATION),
@@ -95,8 +100,8 @@ void KrbAuthDialog::setupWidgets() {
  * Switch the UI to the password change state.
  */
 void KrbAuthDialog::switch_ui_to_password_change() {
-    ui->formLayout->setRowVisible(4, true);
-    ui->formLayout->setRowVisible(5, true);
+    ui->formLayout->setRowVisible(ROW_NEW_PASSWORD, true);
+    ui->formLayout->setRowVisible(ROW_PASSWORD_CONFIRMATION, true);
     ui->password_new_edit->setText("");
     ui->password_confirm_edit->setText("");
 
@@ -107,8 +112,8 @@ void KrbAuthDialog::switch_ui_to_password_change() {
  * Switch the UI to the password authentication state.
  */
 void KrbAuthDialog::switch_ui_to_authentication() {
-    ui->formLayout->setRowVisible(4, false);
-    ui->formLayout->setRowVisible(5, false);
+    ui->formLayout->setRowVisible(ROW_NEW_PASSWORD, false);
+    ui->formLayout->setRowVisible(ROW_PASSWORD_CONFIRMATION, false);
 
     ui->password_edit->setText("");
 
