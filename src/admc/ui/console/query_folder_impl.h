@@ -33,6 +33,8 @@ class QueryFolderImpl final : public ConsoleImpl {
     Q_OBJECT
 
 public:
+    static const QString QUERY_ROOT;
+
     QueryFolderImpl(ConsoleWidget *console_arg);
 
     bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) override;

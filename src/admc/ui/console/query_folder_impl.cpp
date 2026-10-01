@@ -43,7 +43,7 @@
 #include <QStandardItem>
 #include <QStandardPaths>
 
-#define QUERY_ROOT "QUERY_ROOT"
+const QString QueryFolderImpl::QUERY_ROOT = "QUERY_ROOT";
 
 void console_query_move(ConsoleWidget *console, const QList<QPersistentModelIndex> &index_list, const QModelIndex &new_parent_index, const bool delete_old_branch = true);
 
@@ -496,33 +496,28 @@ QList<int> QueryFolderImpl::default_columns() const {
 // "QUERY_ROOT", while all other paths start with
 // "QUERY_ROOT/a/b/c..."
 QString console_query_folder_path(const QModelIndex &index, ConsoleWidget *console) {
-    const bool is_query_root = index.parent() == console->domain_info_index();
+    const bool is_query_root =
+        index.parent() == console->domain_info_index();
+
     if (is_query_root) {
-        return QString(QUERY_ROOT);
+        return QueryFolderImpl::QUERY_ROOT;
     }
 
-    QList<QString> path_split;
+    QStringList path_split;
     QModelIndex current = index;
-    while (current != console->domain_info_index()) {
-        const QString name = current.data(Qt::DisplayRole).toString();
+
+    while (current.parent() != console->domain_info_index()) {
+        const QString name =
+            current.data(Qt::DisplayRole).toString();
+
         path_split.prepend(name);
         current = current.parent();
     }
 
-    // NOTE: remove root
-    path_split.removeAt(0);
+    QString path = QueryFolderImpl::QUERY_ROOT;
 
-    QString path;
-    for (int i = 0; i < path_split.size(); i++) {
-        const QString part = path_split[i];
-
-        if (i == 0) {
-            path += QString(QUERY_ROOT) + "/";
-        } else {
-            path += "/";
-        }
-
-        path += part;
+    for (const QString &part : path_split) {
+        path += "/" + part;
     }
 
     return path;
