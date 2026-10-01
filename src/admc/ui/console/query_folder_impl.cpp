@@ -378,7 +378,14 @@ void console_query_tree_init(ConsoleWidget *console) {
     while (!folder_stack.isEmpty()) {
         const QPersistentModelIndex folder_index = folder_stack.pop();
 
-        const QString folder_path = console_query_folder_path(folder_index, console);
+        const QString folder_path = console_query_folder_path(
+                folder_index,
+                console);
+
+        if (!folder_list.contains(folder_path)) {
+            continue;
+        }
+
         const QHash<QString, QVariant> folder_data =
             folder_list[folder_path].toHash();
         const QList<QString> child_list =
