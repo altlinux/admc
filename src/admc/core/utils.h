@@ -78,4 +78,6 @@ int count_non_empty_containers(const QList<QModelIndex> &list);
 
 AdObject global_password_settings();
 
+bool is_object_name_valid(const QString &name);
+
 #endif

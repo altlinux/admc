@@ -355,3 +355,15 @@ AdObject global_password_settings() {
                                                          ATTRIBUTE_LOCKOUT_THRESHOLD,
                                                          ATTRIBUTE_LOCKOUT_OBSERVATION_WINDOW});
 }
+
+bool is_object_name_valid(const QString &name) {
+    const bool some_bad_chars = string_contains_bad_chars(name, NAME_BAD_CHARS);
+    const bool starts_with_space = name.startsWith(" ");
+    const bool ends_with_space = name.endsWith(" ");
+    const bool starts_with_question_mark = name.startsWith("?");
+    const bool contains_bad_chars =
+        (some_bad_chars || starts_with_space
+         || ends_with_space || starts_with_question_mark);
+
+    return (! contains_bad_chars);
+}

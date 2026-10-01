@@ -110,17 +110,10 @@ void center_widget(QWidget *widget) {
     }
 }
 
-bool verify_object_name(const QString &name, QWidget *parent) {
-    const bool some_bad_chars = string_contains_bad_chars(name, NAME_BAD_CHARS);
-    const bool starts_with_space = name.startsWith(" ");
-    const bool ends_with_space = name.endsWith(" ");
-    const bool starts_with_question_mark = name.startsWith("?");
-
-    const bool contains_bad_chars =
-        (some_bad_chars || starts_with_space
-         || ends_with_space || starts_with_question_mark);
-
-    if (contains_bad_chars) {
+bool verify_object_name(const QString &name,
+                        QWidget *parent) {
+    bool valid = is_object_name_valid(name);
+    if (! valid) {
         const QString error_text = QCoreApplication::translate(
             "utils.cpp",
             "Input field for Name contains one or more of the following"
@@ -130,11 +123,9 @@ bool verify_object_name(const QString &name, QWidget *parent) {
             parent,
             QCoreApplication::translate("utils.cpp", "Error"),
             error_text);
-
-        return false;
     }
 
-    return true;
+    return valid;
 }
 
 void search_thread_display_errors(SearchThread *thread, QWidget *parent) {
