@@ -62,6 +62,37 @@ void line_edit_setup_autofill(QLineEdit *src, QLineEdit *dest) {
 }
 
 /**
+ * Fill in the given full name field with data from other fields.
+ *
+ * @param first_name_edit A first name line edit.
+ * @param last_name_edit A last name line edit.
+ * @param middle_name_edit A middle name edit.
+ * @param full_name_edit A full name line edit to fill in.
+ */
+void line_edit_full_name_autofill(const QLineEdit *first_name_edit,
+                                  const QLineEdit *last_name_edit,
+                                  const QLineEdit *middle_name_edit,
+                                  QLineEdit *full_name_edit) {
+    const QString first_name = first_name_edit->text().trimmed();
+    const QString last_name = last_name_edit->text().trimmed();
+    const QString middle_name = middle_name_edit->text().trimmed();
+    const bool last_name_first =
+        settings_get_bool(SETTING_last_name_before_first_name);
+
+    QStringList names{first_name, middle_name};
+    if (last_name_first) {
+        names.push_front(last_name);
+    } else {
+        names.push_back(last_name);
+    }
+    names.removeAll(QString(""));
+    const QString full_name_value =
+        QStringList(names.begin(), names.end()).join(" ");
+
+    full_name_edit->setText(full_name_value);
+}
+
+/**
  * (first name + last name) -> full name
  */
 void line_edit_setup_full_name_autofill(
@@ -70,35 +101,21 @@ void line_edit_setup_full_name_autofill(
     QLineEdit *middle_name_edit,
     QLineEdit *full_name_edit)
 {
-    auto autofill_full_name = [=]() {
-        const QString first_name = first_name_edit->text().trimmed();
-        const QString last_name = last_name_edit->text().trimmed();
-        const QString middle_name = middle_name_edit->text().trimmed();
-        const bool last_name_first =
-            settings_get_bool(SETTING_last_name_before_first_name);
-
-        QStringList names{first_name, middle_name};
-        if (last_name_first) {
-            names.push_front(last_name);
-        } else {
-            names.push_back(last_name);
-        }
-        names.removeAll(QString(""));
-        const QString full_name_value =
-            QStringList(names.begin(), names.end()).join(" ");
-
-        full_name_edit->setText(full_name_value);
+    auto autofill = [=](){
+        line_edit_full_name_autofill(first_name_edit,
+                                     last_name_edit,
+                                     middle_name_edit,
+                                     full_name_edit);
     };
-
     QObject::connect(
         first_name_edit, &QLineEdit::textChanged,
-        first_name_edit, autofill_full_name);
+        first_name_edit, autofill);
     QObject::connect(
         last_name_edit, &QLineEdit::textChanged,
-        last_name_edit, autofill_full_name);
+        last_name_edit, autofill);
     QObject::connect(
         middle_name_edit, &QLineEdit::textChanged,
-        middle_name_edit, autofill_full_name);
+        middle_name_edit, autofill);
 }
 
 void line_edit_limit_edit(QLineEdit *edit, const QString &attribute) {

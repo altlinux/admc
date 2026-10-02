@@ -29,6 +29,11 @@ void line_edit_set_to_decimal_numbers_only(QLineEdit *edit);
 void line_edit_set_to_hex_numbers_only(QLineEdit *edit);
 void line_edit_set_to_time_span_format(QLineEdit *edit);
 void line_edit_setup_autofill(QLineEdit *src, QLineEdit *dest);
+void line_edit_full_name_autofill(
+    const QLineEdit *first_name_edit,
+    const QLineEdit *last_name_edit,
+    const QLineEdit *middle_name_edit,
+    QLineEdit *full_name_edit);
 void line_edit_setup_full_name_autofill(
     QLineEdit *first_name_edit,
     QLineEdit *last_name_edit,
