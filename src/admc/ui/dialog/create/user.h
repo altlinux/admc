@@ -23,6 +23,9 @@
 #ifndef CREATE_USER_DIALOG_H
 #define CREATE_USER_DIALOG_H
 
+#include <QLabel>
+#include <QLineEdit>
+
 #include "ui/dialog/create/object.h"
 
 class AdInterface;
@@ -49,8 +52,11 @@ public:
 
 private:
     CreateObjectHelper *helper;
+    QHash<QLineEdit *, QLabel *> field_to_error_label_map;
 
     void autofill_full_name();
+    void validate_fields(QLineEdit *changed_field);
+    void setup_field_validation();
 };
 
 #endif /* CREATE_USER_DIALOG_H */

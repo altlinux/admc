@@ -21,9 +21,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+
 #include "adldap.h"
 #include "core/line_edit_utils.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "ui/attribute_edit/account_option_edit.h"
 #include "ui/attribute_edit/password_edit.h"
 #include "ui/attribute_edit/sam_name_edit.h"
@@ -32,6 +37,28 @@
 #include "ui/create_object_helper.h"
 #include "ui/dialog/create/ui_user.h"
 #include "ui/dialog/create/user.h"
+
+void CreateUserDialog::setup_field_validation() {
+    field_to_error_label_map = {
+        { ui->first_name_edit, ui->first_name_error },
+        { ui->upn_prefix_edit, ui->upn_prefix_error },
+        { ui->sam_name_edit, ui->sam_name_error}
+    };
+    const QList<QLineEdit *> field_list = {
+        ui->first_name_edit,
+        ui->last_name_edit,
+        ui->middle_name_edit,
+        ui->upn_prefix_edit,
+        ui->sam_name_edit,
+    };
+    for (const auto &field : field_list) {
+        connect(field, &QLineEdit::textEdited,
+                [=](const QString &text) {
+                    Q_UNUSED(text);
+                    validate_fields(field);
+                });
+    }
+}
 
 CreateUserDialog::CreateUserDialog(AdInterface &ad,
                                    const QString &parent_dn,
@@ -87,10 +114,7 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad,
 
     account_option_setup_conflicts(check_map);
 
-    line_edit_setup_full_name_autofill(ui->first_name_edit, ui->last_name_edit,
-                                       ui->middle_name_edit, ui->name_edit);
-
-    line_edit_setup_autofill(ui->upn_prefix_edit, ui->sam_name_edit);
+    setup_field_validation();
 
     const QList<QLineEdit *> required_list = {
         ui->name_edit,
@@ -118,6 +142,41 @@ CreateUserDialog::CreateUserDialog(AdInterface &ad,
     }
 
     settings_setup_dialog_geometry(SETTING_create_user_dialog_geometry, this);
+}
+
+void CreateUserDialog::validate_fields(QLineEdit *changed_field) {
+    if ((changed_field == ui->first_name_edit) ||
+        (changed_field == ui->last_name_edit) ||
+        (changed_field == ui->middle_name_edit)) {
+        line_edit_full_name_autofill(ui->first_name_edit, ui->last_name_edit,
+                                     ui->middle_name_edit, ui->name_edit);
+    }
+
+    if (changed_field == ui->upn_prefix_edit) {
+        ui->sam_name_edit->setText(ui->upn_prefix_edit->text());
+    }
+
+    QHash<QLineEdit *, QLabel *> ::iterator it;
+    bool valid = true;
+    QLineEdit *line_edit;
+    QLabel *error_label;
+    for (it = field_to_error_label_map.begin();
+         it != field_to_error_label_map.end(); it++) {
+        line_edit = it.key();
+        error_label = it.value();
+        bool field_valid = is_object_name_valid(line_edit->text());
+        error_label->setVisible(! field_valid);
+        if (field_valid) {
+            error_label->setText("");
+        } else {
+            error_label->setText(
+                tr("Illegal characters found: # , + \" \\ < > ; = "
+                   "leading/trailing space or a leading question mark"));
+        }
+        valid = valid && field_valid;
+    }
+    helper->set_input_valid(valid);
+    ui->button_box->button(QDialogButtonBox::Ok)->setDisabled(! valid);
 }
 
 CreateUserDialog::~CreateUserDialog() {

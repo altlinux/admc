@@ -1073,6 +1073,10 @@
         <source>Create %1</source>
         <translation>Создать объект - %1</translation>
     </message>
+    <message>
+    <source>Illegal characters found: # , + &quot; \ &lt; &gt; ; = leading/trailing space or a leading question mark</source>
+    <translation>Обнаружены некорректные символы: # , + &quot; \ &lt; &gt; ; = пробел в начале/в конце или вопросительный знак в начале</translation>
+    </message>
 </context>
 <context>
     <name>CreationDeletionPermissionsWidget</name>
