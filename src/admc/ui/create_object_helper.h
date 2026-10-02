@@ -43,6 +43,7 @@ public:
     void on_edited();
     QString get_created_name() const;
     QString get_created_dn() const;
+    void set_input_valid(bool &value);
 
 private:
     QDialog *parent_dialog;
@@ -52,6 +53,7 @@ private:
     QList<QLineEdit *> m_required_list;
     QPushButton *ok_button;
     QString m_object_class;
+    bool input_valid = true;
 };
 
 #endif /* CREATE_OBJECT_HELPER_H */

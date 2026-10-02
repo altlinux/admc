@@ -168,18 +168,33 @@ bool CreateObjectHelper::accept() const {
     return final_success;
 }
 
+/**
+ * Set whether the input valid or not.  When the input is invalid (false value)
+ * then the helper will not enable the "OK" button even if all the required
+ * fields are filled in.
+ *
+ * @param value Set to true if the input is valid, false otherwise.
+ */
+void CreateObjectHelper::set_input_valid(bool &value) {
+    input_valid = value;
+}
+
 // Enable/disable create button if all required edits filled
 void CreateObjectHelper::on_edited() {
-    bool all_required_filled = true;
-    QRegularExpression reg_exp_spaces("^\\s*$");
-    for (QLineEdit *edit : m_required_list) {
-        if (edit->text().isEmpty() || edit->text().contains(reg_exp_spaces)) {
-            all_required_filled = false;
-            break;
+    if (input_valid) {
+        bool all_required_filled = true;
+        QRegularExpression reg_exp_spaces("^\\s*$");
+        for (QLineEdit *edit : m_required_list) {
+            if (edit->text().isEmpty() || edit->text().contains(reg_exp_spaces)) {
+                all_required_filled = false;
+                break;
+            }
         }
-    }
 
-    ok_button->setEnabled(all_required_filled);
+        ok_button->setEnabled(all_required_filled);
+    } else {
+        ok_button->setEnabled(false);
+    }
 }
 
 QString CreateObjectHelper::get_created_name() const {
