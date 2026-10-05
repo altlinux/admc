@@ -32,10 +32,10 @@ class KrbAuthDialog;
 
 class Krb5Client;
 
-enum {
+typedef enum {
     KRB5_DIALOG_STATE_AUTHENTICATION,
     KRB5_DIALOG_STATE_PASSWORD_CHANGE
-};
+} KrbDialogState;
 
 /**
  * Kerberos authentication dialog
@@ -53,7 +53,7 @@ public:
 private:
     Ui::KrbAuthDialog *ui;
 
-    uint8_t state;
+    KrbDialogState state;
     bool enterprise = false;
 
     virtual void setupWidgets() override;
