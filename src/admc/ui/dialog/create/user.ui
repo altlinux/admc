@@ -27,15 +27,30 @@
        <widget class="QLineEdit" name="first_name_edit"/>
      </item>
      <item row="1" column="1">
-       <widget class="QLabel" name="first_name_error">
+       <widget class="QPlainTextEdit" name="first_name_error">
          <property name="visible">
            <bool>false</bool>
+         </property>
+         <property name="readOnly">
+           <bool>true</bool>
          </property>
          <property name="styleSheet">
            <string notr="true">color: #ff0000;</string>
          </property>
-         <property name="text">
+         <property name="plainText">
            <string></string>
+         </property>
+         <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+           </sizepolicy>
+         </property>
+         <property name="maximumSize">
+           <size>
+             <width>16777215</width>
+             <height>64</height>
+           </size>
          </property>
        </widget>
      </item>
@@ -97,15 +112,33 @@
       </layout>
      </item>
      <item row="7" column="1">
-       <widget class="QLabel" name="upn_prefix_error">
+       <widget class="QPlainTextEdit" name="upn_prefix_error">
          <property name="visible">
            <bool>false</bool>
+         </property>
+         <property name="readOnly">
+           <bool>true</bool>
+         </property>
+         <property name="backgroundVisible">
+           <bool>true</bool>
          </property>
          <property name="styleSheet">
            <string notr="true">color: #ff0000;</string>
          </property>
-         <property name="text">
+         <property name="plainText">
            <string></string>
+         </property>
+         <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+           </sizepolicy>
+         </property>
+         <property name="maximumSize">
+           <size>
+             <width>16777215</width>
+             <height>64</height>
+           </size>
          </property>
        </widget>
      </item>
@@ -131,15 +164,30 @@
       </layout>
      </item>
      <item row="9" column="1">
-       <widget class="QLabel" name="sam_name_error">
+       <widget class="QPlainTextEdit" name="sam_name_error">
          <property name="visible">
            <bool>false</bool>
+         </property>
+         <property name="readOnly">
+           <bool>true</bool>
          </property>
          <property name="styleSheet">
            <string notr="true">color: #ff0000;</string>
          </property>
-         <property name="text">
+         <property name="plainText">
            <string></string>
+         </property>
+         <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+           </sizepolicy>
+         </property>
+         <property name="maximumSize">
+           <size>
+             <width>16777215</width>
+             <height>64</height>
+           </size>
          </property>
        </widget>
      </item>

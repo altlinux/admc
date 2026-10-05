@@ -23,6 +23,7 @@
 
 #include <QLabel>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include <QPushButton>
 
 #include "adldap.h"
@@ -39,11 +40,23 @@
 #include "ui/dialog/create/user.h"
 
 void CreateUserDialog::setup_field_validation() {
-    field_to_error_label_map = {
+    field_to_error_map = {
         { ui->first_name_edit, ui->first_name_error },
         { ui->upn_prefix_edit, ui->upn_prefix_error },
         { ui->sam_name_edit, ui->sam_name_error}
     };
+
+    QPlainTextEdit *error_label;
+    QPalette palette = this->palette();
+    palette.setColor(QPalette::Base,
+                     this->window()->palette().color(QPalette::Window));
+    for (auto it = field_to_error_map.begin(); it != field_to_error_map.end();
+         it++) {
+        error_label = it.value();
+        error_label->setPalette(palette);
+        error_label->setFrameShape(QFrame::NoFrame);
+    }
+
     const QList<QLineEdit *> field_list = {
         ui->first_name_edit,
         ui->last_name_edit,
@@ -156,20 +169,19 @@ void CreateUserDialog::validate_fields(QLineEdit *changed_field) {
         ui->sam_name_edit->setText(ui->upn_prefix_edit->text());
     }
 
-    QHash<QLineEdit *, QLabel *> ::iterator it;
     bool valid = true;
     QLineEdit *line_edit;
-    QLabel *error_label;
-    for (it = field_to_error_label_map.begin();
-         it != field_to_error_label_map.end(); it++) {
+    QPlainTextEdit *error_label;
+    for (auto it = field_to_error_map.begin(); it != field_to_error_map.end();
+         it++) {
         line_edit = it.key();
         error_label = it.value();
         bool field_valid = is_object_name_valid(line_edit->text());
         error_label->setVisible(! field_valid);
         if (field_valid) {
-            error_label->setText("");
+            error_label->setPlainText("");
         } else {
-            error_label->setText(
+            error_label->setPlainText(
                 tr("Illegal characters found: # , + \" \\ < > ; = "
                    "leading/trailing space or a leading question mark"));
         }

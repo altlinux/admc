@@ -25,6 +25,7 @@
 
 #include <QLabel>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 
 #include "ui/dialog/create/object.h"
 
@@ -52,7 +53,7 @@ public:
 
 private:
     CreateObjectHelper *helper;
-    QHash<QLineEdit *, QLabel *> field_to_error_label_map;
+    QHash<QLineEdit *, QPlainTextEdit *> field_to_error_map;
 
     void autofill_full_name();
     void validate_fields(QLineEdit *changed_field);
