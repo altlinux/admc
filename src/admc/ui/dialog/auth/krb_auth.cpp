@@ -305,6 +305,7 @@ void KrbAuthDialog::on_principal_selected(const QString &principal) {
         ui->principal_cmb_box->setFocus();
     }
 
+    switch_ui_to_authentication();
     ui->error_label->hide();
 
     bool checked = ((! principal.isEmpty())
