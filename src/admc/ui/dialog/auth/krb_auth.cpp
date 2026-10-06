@@ -46,6 +46,11 @@ KrbAuthDialog::~KrbAuthDialog() {
     delete ui;
 }
 
+void KrbAuthDialog::closeEvent(QCloseEvent *event) {
+    Q_UNUSED(event);
+    switch_ui_to_authentication();
+}
+
 void KrbAuthDialog::logout(bool delete_creds) {
     if (! delete_creds) {
         return;
@@ -104,6 +109,7 @@ void KrbAuthDialog::switch_ui_to_password_change() {
     ui->formLayout->setRowVisible(ROW_PASSWORD_CONFIRMATION, true);
     ui->password_new_edit->setText("");
     ui->password_confirm_edit->setText("");
+    ui->error_label->setText("");
 
     state = KRB5_DIALOG_STATE_PASSWORD_CHANGE;
 }
@@ -116,6 +122,9 @@ void KrbAuthDialog::switch_ui_to_authentication() {
     ui->formLayout->setRowVisible(ROW_PASSWORD_CONFIRMATION, false);
 
     ui->password_edit->setText("");
+    ui->password_new_edit->setText("");
+    ui->password_confirm_edit->setText("");
+    ui->error_label->setText("");
 
     state = KRB5_DIALOG_STATE_AUTHENTICATION;
 }

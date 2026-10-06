@@ -49,6 +49,7 @@ public:
     ~KrbAuthDialog();
 
     virtual void logout(bool delete_creds) override;
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::KrbAuthDialog *ui;
