@@ -2257,8 +2257,12 @@
         <translation>Пароль содержит недопустимые символы.</translation>
     </message>
     <message>
-        <source>Failed to update password.</source>
-        <translation>Не удалось изменить пароль.</translation>
+        <source>Failed to update password:</source>
+        <translation>Не удалось изменить пароль:</translation>
+    </message>
+    <message>
+        <source>Password rejected</source>
+        <translation>Пароль отклонён</translation>
     </message>
 </context>
 <context>

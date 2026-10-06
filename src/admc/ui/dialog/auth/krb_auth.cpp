@@ -170,7 +170,13 @@ bool KrbAuthDialog::change_password(const QString &principal) {
             ui->password_confirm_edit->text(),
             enterprise);
     } catch (KerberosError &error) {
-        throw std::runtime_error(error.what());
+        krb5_error_code result = error.get_error_code();
+        show_error_message(tr("Failed to update password:")
+                           + error.what());
+        if (result == KRB5_KPASSWD_SUCCESS) {
+            show_error_message(tr("Password rejected"));
+        }
+        return false;
     }
     return true;
 }
@@ -263,8 +269,6 @@ void KrbAuthDialog::on_sign_in() {
             ui->password_edit->setText(ui->password_new_edit->text());
             authenticate(principal);
             switch_ui_to_authentication();
-        } else {
-            show_error_message(tr("Failed to update password."));
         }
     }
 }
