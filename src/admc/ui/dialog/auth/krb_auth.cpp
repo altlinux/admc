@@ -339,6 +339,7 @@ void KrbAuthDialog::remember_principal(bool remember) {
 void KrbAuthDialog::on_use_system_credentials(bool use_system) {
     const QString principal = use_system ? client->system_principal() :
                                            client->current_principal();
+    switch_ui_to_authentication();
     hide_passwd_widgets(! principal.isEmpty());
     if (principal.isEmpty() && use_system) {
         show_error_message(tr("Failed to find system credentials"));
