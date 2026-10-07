@@ -271,7 +271,9 @@ void KrbAuthDialog::authenticate(const QString &principal) {
                 client->authenticate(principal, ui->password_edit->text());
             } catch (KerberosError &first_error) {
                 const krb5_error_code rc = first_error.get_error_code();
-                error_message += krb5_error_code_to_string(rc) + "\n";
+                QString message = krb5_error_code_to_string(rc);
+                error_message +=
+                    (message.isEmpty() ? first_error.what() : message) + "\n";
                 if (rc == KRB5KDC_ERR_KEY_EXP) {
                     show_error_message(error_message);
                     switch_ui_to_password_change();
@@ -283,7 +285,9 @@ void KrbAuthDialog::authenticate(const QString &principal) {
                                              true);
                     } catch (KerberosError &second_error) {
                         const krb5_error_code rc = second_error.get_error_code();
-                        error_message += krb5_error_code_to_string(rc)
+                        message = krb5_error_code_to_string(rc);
+                        error_message +=
+                            (message.isEmpty() ? second_error.what() : message)
                             + " (" + tr("enterprise name") + QString(")\n");
                         if (rc == KRB5KDC_ERR_KEY_EXP) {
                             switch_ui_to_password_change();
