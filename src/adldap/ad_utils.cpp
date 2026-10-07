@@ -649,8 +649,13 @@ bool ad_ldap_dn_replace_value(LDAPDN dn,
         return false;
     }
 
-    char* new_bv_val = static_cast<char*>(ber_memalloc(new_value.size() + 1));
     if (! ava->la_value.bv_val) {
+        return false;
+    }
+
+    const size_t NEW_SIZE = new_value.toUtf8().size() + 1;
+    char* new_bv_val = static_cast<char*>(ber_memalloc(NEW_SIZE));
+    if (! new_bv_val) {
         return false;
     }
 
