@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 
+#include "krb5client.h"
 #include "ui/dialog/auth/base.h"
 
 namespace Ui {
@@ -72,6 +73,7 @@ private:
     void switch_ui_to_authentication();
     bool verify_password(const QString &pass,
                          const QString &confirm_pass);
+    QString krb5_error_code_to_string(krb5_error_code code);
 
     Krb5Client *client;
 };

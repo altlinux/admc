@@ -109,7 +109,6 @@ void KrbAuthDialog::switch_ui_to_password_change() {
     ui->formLayout->setRowVisible(ROW_PASSWORD_CONFIRMATION, true);
     ui->password_new_edit->setText("");
     ui->password_confirm_edit->setText("");
-    ui->error_label->setText("");
 
     state = KRB5_DIALOG_STATE_PASSWORD_CHANGE;
 }
@@ -159,6 +158,44 @@ bool KrbAuthDialog::verify_password(const QString &pass,
 }
 
 /**
+ * Convert an Kerberos 5 error code to a translated Qt string.
+ *
+ * @param code An error code to convert.
+ * @return A translated string or an empty string.
+ */
+QString KrbAuthDialog::krb5_error_code_to_string(krb5_error_code code) {
+    switch (code) {
+    case KRB5_KDC_UNREACH:
+        return tr("Cannot contact any KDC for requested realm");
+
+    case KRB5KDC_ERR_PREAUTH_FAILED:
+    case KRB5_PREAUTH_FAILED:
+        return tr("Pre-authentication failed");
+
+    case KRB5_REALM_CANT_RESOLVE:
+        return tr("Cannot resolve network address for KDC in requested realm");
+
+    case KRB5_KPASSWD_SUCCESS:
+        return tr("Password rejected");
+
+    case KRB5KDC_ERR_KEY_EXP:
+        return tr("Password has expired");
+
+    case KRB5_LIBOS_BADPWDMATCH:
+        return tr("Password mismatch");
+
+    case KRB5_CHPW_PWDNULL:
+        return tr("New password cannot be zero length");
+
+    case KRB5_CHPW_FAIL:
+        return tr("Password change failed");
+
+    default:
+        return QString();
+    }
+}
+
+/**
  * Change the principal password.
  *
  * @param principal A principal name.
@@ -179,12 +216,13 @@ bool KrbAuthDialog::change_password(const QString &principal) {
             ui->password_confirm_edit->text(),
             enterprise);
     } catch (KerberosError &error) {
+        QString error_message = tr("Failed to update password");
         krb5_error_code result = error.get_error_code();
-        show_error_message(tr("Failed to update password:")
-                           + error.what());
-        if (result == KRB5_KPASSWD_SUCCESS) {
-            show_error_message(tr("Password rejected"));
+        QString translated_message = krb5_error_code_to_string(result);
+        if (! translated_message.isEmpty()) {
+            error_message += QString(": ") + translated_message;
         }
+        show_error_message(error_message);
         return false;
     }
     return true;
@@ -227,7 +265,7 @@ void KrbAuthDialog::authenticate(const QString &principal) {
                 const krb5_error_code rc = first_error.get_error_code();
                 error_message += first_error.what() + QString("\n");
                 if (rc == KRB5KDC_ERR_KEY_EXP) {
-                    show_error_message(tr("Password expired."));
+                    show_error_message(krb5_error_code_to_string(rc));
                     switch_ui_to_password_change();
                     enterprise = false;
                     return;

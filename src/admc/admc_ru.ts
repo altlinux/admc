@@ -2241,8 +2241,32 @@
         <translation>Не удалость найти системные учётные данные</translation>
     </message>
     <message>
-        <source>Password expired.</source>
-        <translation>Время действия пароля истекло.</translation>
+        <source>Pre-authentication failed</source>
+        <translation>Сбой предварительной аутентификации</translation>
+    </message>
+    <message>
+        <source>Cannot contact any KDC for requested realm</source>
+        <translation>Невозможно подключиться к KDC для запрошенной области</translation>
+    </message>
+    <message>
+        <source>Password rejected</source>
+        <translation>Пароль отклонён</translation>
+    </message>
+    <message>
+        <source>Password has expired</source>
+        <translation>Время действия пароля истекло</translation>
+    </message>
+    <message>
+        <source>Password mismatch</source>
+        <translation>Пароли не совпадают</translation>
+    </message>
+    <message>
+        <source>New password cannot be zero length</source>
+        <translation>Новый пароль не может быть нулевой длины</translation>
+    </message>
+    <message>
+        <source>Password change failed</source>
+        <translation>Не удалось выполнить смену пароля</translation>
     </message>
     <message>
         <source>Password cannot be empty.</source>
@@ -2257,8 +2281,8 @@
         <translation>Пароль содержит недопустимые символы.</translation>
     </message>
     <message>
-        <source>Failed to update password:</source>
-        <translation>Не удалось изменить пароль:</translation>
+        <source>Failed to update password</source>
+        <translation>Не удалось обновить пароль</translation>
     </message>
     <message>
         <source>Password rejected</source>
