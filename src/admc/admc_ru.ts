@@ -2288,6 +2288,10 @@
         <source>Password rejected</source>
         <translation>Пароль отклонён</translation>
     </message>
+    <message>
+        <source>New password matches the old one</source>
+        <translation>Новый пароль совпадает со старым</translation>
+    </message>
 </context>
 <context>
     <name>LAPSTab</name>

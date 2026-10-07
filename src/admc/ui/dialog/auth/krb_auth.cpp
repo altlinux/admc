@@ -202,10 +202,18 @@ QString KrbAuthDialog::krb5_error_code_to_string(krb5_error_code code) {
  * @return true if password was successfully changed, false otherwise.
  */
 bool KrbAuthDialog::change_password(const QString &principal) {
+    const QString OLD_PASSWORD = ui->password_edit->text();
     const QString PASS = ui->password_new_edit->text();
     const QString PASS_CONFIRMATION = ui->password_confirm_edit->text();
 
     if (! verify_password(PASS, PASS_CONFIRMATION)) {
+        return false;
+    }
+
+    if (PASS == OLD_PASSWORD) {
+        QString error_message = tr("Failed to update password");
+        error_message += ": " + tr("New password matches the old one");
+        show_error_message(error_message);
         return false;
     }
 
