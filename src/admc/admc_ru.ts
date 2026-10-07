@@ -2292,6 +2292,10 @@
         <source>New password matches the old one</source>
         <translation>Новый пароль совпадает со старым</translation>
     </message>
+    <message>
+        <source>enterprise name</source>
+        <translation>корпоративное имя</translation>
+    </message>
 </context>
 <context>
     <name>LAPSTab</name>
