@@ -661,7 +661,8 @@ bool ad_ldap_dn_replace_value(LDAPDN dn,
 
     ber_memfree(ava->la_value.bv_val);
 
-    const char* new_value_str = new_value.toUtf8().toStdString().c_str();
+    std::string std_string = new_value.toUtf8().toStdString();
+    const char* new_value_str = std_string.c_str();
     int len = strlen(new_value_str);
 
     ava->la_value.bv_len = len;
