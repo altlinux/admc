@@ -24,6 +24,7 @@ set(CMAKE_AUTORCC ON)
 
 set(ADLDAP_SOURCES
     ad_interface.cpp
+    ad_ldap_utils.cpp
     ad_config.cpp
     ad_utils.cpp
     ad_object.cpp

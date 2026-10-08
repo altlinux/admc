@@ -31,7 +31,7 @@
 #include <algorithm>
 
 #include "adldap.h"
-#include "ad_utils.h"
+#include "ad_ldap_utils.h"
 #include "core/ad.h"
 #include "core/console/object/drag_n_drop.h"
 #include "core/console/object/operations.h"
