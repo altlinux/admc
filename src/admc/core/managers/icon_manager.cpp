@@ -99,7 +99,7 @@ IconManager::IconManagerImpl::IconManagerImpl(IconManager *parent) : q(parent) {
         {OBJECT_CATEGORY_COMPUTER, {"computer", "computer-symbolic"}},
         {OBJECT_CATEGORY_GP_CONTAINER, {"preferences-other","preferences-other-symbolic"}},
         {OBJECT_CATEGORY_VOLUME, {"folder-templates", "folder-templates-symbolic"}},
-        {OBJECT_CATEGORY_SERVERS_CONTAINER, {"folder", "folder-symbolic"}},
+        {OBJECT_CATEGORY_SERVERS_CONTAINER, {"Container", "folder", "folder-symbolic"}},
         {OBJECT_CATEGORY_SITE, {"go-home", "go-home-symbolic"}},
 
         // These categories are not AD object categories. They are used within ADMC context
