@@ -203,6 +203,8 @@ void IconManager::IconManagerImpl::update_action_icons() {
 }
 
 void IconManager::IconManagerImpl::update_icons_array() {
+    const bool theme_is_system = theme == system_theme;
+
     item_icons_array[ItemIcon_Block_Indicator] = q->category_icon(block_indicator);
     item_icons_array[ItemIcon_Warning_Indicator] = q->category_icon(warning_indicator);
     item_icons_array[ItemIcon_Inheritance_Block_Indicator] = q->category_icon(inheritance_indicator);
@@ -210,22 +212,60 @@ void IconManager::IconManagerImpl::update_icons_array() {
     item_icons_array[ItemIcon_Policy_Link_Indicator] = q->category_icon(link_indicator);
 
     item_icons_array[ItemIcon_Policy] = q->category_icon(OBJECT_CATEGORY_GP_CONTAINER);
-    item_icons_array[ItemIcon_Policy_Link] = q->category_icon(ADMC_CATEGORY_GP_LINK);
-    item_icons_array[ItemIcon_Policy_Link_Disabled] = q->category_icon(ADMC_CATEGORY_GP_DISABLED);
-    item_icons_array[ItemIcon_Policy_Enforced] = q->category_icon(ADMC_CATEGORY_GP_ENFORCED);
-    item_icons_array[ItemIcon_Policy_Enforced_Disabled] = q->category_icon(ADMC_CATEGORY_GP_ENFORCED_DISABLED);
+
+    item_icons_array[ItemIcon_Policy_Link] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_Policy], q->item_icon(ItemIcon_Policy_Link_Indicator),
+        QSize(16, 16), QSize(12, 12), QPoint(-2, 7)) : q->category_icon(ADMC_CATEGORY_GP_LINK);
+
+    item_icons_array[ItemIcon_Policy_Link_Disabled] = theme_is_system ?
+        item_icons_array[ItemIcon_Policy_Link].pixmap(16, 16, QIcon::Disabled) :
+        q->category_icon(ADMC_CATEGORY_GP_DISABLED);
+
+    item_icons_array[ItemIcon_Policy_Enforced] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_Policy_Link], q->item_icon(ItemIcon_Policy_Enforce_Indicator),
+        QSize(16, 16), QSize(8, 8), QPoint(8, 8)) : q->category_icon(ADMC_CATEGORY_GP_ENFORCED);
+
+    item_icons_array[ItemIcon_Policy_Enforced_Disabled] = theme_is_system ?
+        item_icons_array[ItemIcon_Policy_Enforced].pixmap(16, 16, QIcon::Disabled) :
+        q->category_icon(ADMC_CATEGORY_GP_ENFORCED_DISABLED);
+
     item_icons_array[ItemIcon_OU] = q->category_icon(OBJECT_CATEGORY_OU);
-    item_icons_array[ItemIcon_OU_InheritanceBlocked] = q->category_icon(ADMC_CATEGORY_OU_INHERITANCE_BLOCKED);
+
+    item_icons_array[ItemIcon_OU_InheritanceBlocked] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_OU], q->item_icon(ItemIcon_Inheritance_Block_Indicator),
+            QSize(16, 16), QSize(10, 10), QPoint(6, 6)) :
+        q->category_icon(ADMC_CATEGORY_OU_INHERITANCE_BLOCKED);
+
     item_icons_array[ItemIcon_Domain] = q->category_icon(OBJECT_CATEGORY_DOMAIN_DNS);
-    item_icons_array[ItemIcon_Domain_InheritanceBlocked] = q->category_icon(ADMC_CATEGORY_DOMAIN_INHERITANCE_BLOCKED);
+
+    item_icons_array[ItemIcon_Domain_InheritanceBlocked] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_Domain],
+            q->item_icon(ItemIcon_Inheritance_Block_Indicator),
+            QSize(16, 16), QSize(10, 10), QPoint(6, 6)) :
+        q->category_icon(ADMC_CATEGORY_DOMAIN_INHERITANCE_BLOCKED);
+
     item_icons_array[ItemIcon_Person] = q->category_icon(OBJECT_CATEGORY_PERSON);
-    item_icons_array[ItemIcon_Person_Blocked] = q->category_icon(ADMC_CATEGORY_PERSON_BLOCKED);
+
+    item_icons_array[ItemIcon_Person_Blocked] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_Person],
+            q->item_icon(ItemIcon_Block_Indicator), max_icon_size,
+            QSize(max_icon_size.width()/2, max_icon_size.height()/2),
+            QPoint(max_icon_size.width()/2, max_icon_size.width()/2)) :
+        q->category_icon(ADMC_CATEGORY_PERSON_BLOCKED);
+
     item_icons_array[ItemIcon_Site] = q->category_icon(OBJECT_CATEGORY_SITE);
+
     item_icons_array[ItemIcon_Computer] = q->category_icon(OBJECT_CATEGORY_COMPUTER);
-    item_icons_array[ItemIcon_Computer_Blocked] = q->category_icon(ADMC_CATEGORY_COMPUTER_BLOCKED);
+    item_icons_array[ItemIcon_Computer_Blocked] = theme_is_system ?
+        overlay_scope_item_icon(item_icons_array[ItemIcon_Computer],
+            q->item_icon(ItemIcon_Block_Indicator), max_icon_size,
+            QSize(max_icon_size.width()/2, max_icon_size.height()/2),
+            QPoint(max_icon_size.width()/2, max_icon_size.width()/2)) :
+        q->category_icon(ADMC_CATEGORY_COMPUTER_BLOCKED);
+
     item_icons_array[ItemIcon_Group] = q->category_icon(OBJECT_CATEGORY_GROUP);
     item_icons_array[ItemIcon_Password_Settings_Object] = q->category_icon(OBJECT_CATEGORY_PSO);
-    item_icons_array[ItemIcon_Password_Settings_Object] = q->category_icon(OBJECT_CATEGORY_PSO_CONTAINER);
+    item_icons_array[ItemIcon_PSO_Container] = q->category_icon(OBJECT_CATEGORY_PSO_CONTAINER);
     item_icons_array[ItemIcon_InterSite_Transport] = q->category_icon(OBJECT_CATEGORY_INTER_SITE_TRANSPORT);
     item_icons_array[ItemIcon_InterSite_Transport_Container] = q->category_icon(OBJECT_CATEGORY_INTER_SITE_TRANSPORT_CONTAINER);
     item_icons_array[ItemIcon_Subnet] = q->category_icon(OBJECT_CATEGORY_SUBNET);
