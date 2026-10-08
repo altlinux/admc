@@ -126,10 +126,10 @@ Krb5Client::Krb5ClientImpl::Krb5ClientImpl() : context(NULL) {
 
 
 Krb5Client::Krb5ClientImpl::~Krb5ClientImpl() {
-    krb5_free_context(context);
     for (krb5_ccache ccache : principal_cache_map.values()) {
         krb5_cc_close(context, ccache);
     }
+    krb5_free_context(context);
 }
 
 /**
