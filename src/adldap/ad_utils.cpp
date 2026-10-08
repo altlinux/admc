@@ -628,8 +628,32 @@ QString ad_ldap_dn_to_string(LDAPDN dn) {
     return result;
 }
 
+
+/**
+ * Get the number of relative distinguished names (RDNs) in the provided
+ * distinguished name (DN.)
+ *
+ * @param dn A distinguished name (DN) to process.
+ * @return The number of RDNs in the given DN.
+ */
+size_t ad_ldap_dn_rdn_count(const LDAPDN dn) {
+    size_t count = 0;
+
+    if (dn == nullptr) {
+        return 0;
+    }
+
+    while (dn[count] != nullptr) {
+        count++;
+    }
+
+    return count;
+}
+
 /**
  * Replace an LDAP RDN value with a new value.
+ *
+ * Asserts that @a dn is not nullptr.
  *
  * @param dn A DN object to modify.
  * @param rdn_index The RDN value index.
@@ -639,6 +663,13 @@ QString ad_ldap_dn_to_string(LDAPDN dn) {
 bool ad_ldap_dn_replace_value(LDAPDN dn,
                               const uint32_t &rdn_index,
                               const QString &new_value) {
+    assert(dn != nullptr);
+
+    size_t rdn_count = ad_ldap_dn_rdn_count(dn);
+    if (rdn_index >= rdn_count) {
+        return false;
+    }
+
     LDAPRDN rdn = dn[rdn_index];
     if (! rdn) {
         return false;

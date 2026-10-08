@@ -109,5 +109,6 @@ bool ad_ldap_dn_replace_value(LDAPDN dn,
 QString ad_ldap_dn_string_replace_value(const QString &input,
                                         const uint32_t &rdn_index,
                                         const QString &new_value);
+size_t ad_ldap_dn_rdn_count(const LDAPDN dn);
 
 #endif /* AD_UTILS_H */
