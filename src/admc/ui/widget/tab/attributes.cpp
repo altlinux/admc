@@ -19,25 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/widget/tab/attributes.h"
-#include "ui/widget/tab/ui_attributes.h"
-
-#include "adldap.h"
-#include "ui/dialog/attribute/attribute.h"
-#include "core/globals.h"
-#include "core/settings.h"
-#include "core/utils.h"
-#include "ui/widget/tab/attributes_filter_menu.h"
-#include "ui/widget/tab/attributes_proxy.h"
-#include "ui/utils.h"
-
 #include <QAction>
+#include <QClipboard>
 #include <QDebug>
 #include <QHeaderView>
 #include <QMenu>
-#include <QStandardItemModel>
 #include <QMouseEvent>
-#include <QClipboard>
+#include <QStandardItemModel>
+
+#include "adldap.h"
+#include "core/globals.h"
+#include "core/settings.h"
+#include "core/utils.h"
+#include "ui/dialog/attribute/attribute.h"
+#include "ui/utils.h"
+#include "ui/widget/tab/attributes.h"
+#include "ui/widget/tab/attributes_filter_menu.h"
+#include "ui/widget/tab/attributes_proxy.h"
+#include "ui/widget/tab/ui_attributes.h"
 
 QString attribute_type_display_string(const AttributeType type);
 
@@ -46,8 +45,9 @@ AttributesTab::AttributesTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::AttributesTab();
     ui->setupUi(this);
 
-    auto tab_edit = new AttributesTabEdit(ui->view, ui->filter_button, ui->edit_button,
-                                          ui->view_button, ui->load_optional_attrs_button, this);
+    auto tab_edit = new AttributesTabEdit(ui->view, ui->filter_button,
+                                          ui->edit_button, ui->view_button,
+                                          ui->load_optional_attrs_button, this);
     ui->view->setUniformRowHeights(true);
 
     edit_list->append({
@@ -70,8 +70,14 @@ bool AttributesTab::event(QEvent *event) {
     return QObject::event(event);
 }
 
-AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_button_arg, QPushButton *edit_button_arg,
-                                     QPushButton *view_button_arg, QPushButton *load_optional_attrs_button_arg, QObject *parent) : AttributeEdit(parent) {
+AttributesTabEdit::AttributesTabEdit(
+    QTreeView *view_arg,
+    QPushButton *filter_button_arg,
+    QPushButton *edit_button_arg,
+    QPushButton *view_button_arg,
+    QPushButton *load_optional_attrs_button_arg,
+    QObject *parent) : AttributeEdit(parent)
+{
     view = view_arg;
     filter_button = filter_button_arg;
     edit_button = edit_button_arg;
@@ -97,7 +103,8 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
 
     enable_widget_on_selection(edit_button, view);
 
-    settings_restore_header_state(SETTING_attributes_tab_header_state, view->header());
+    settings_restore_header_state(SETTING_attributes_tab_header_state,
+                                  view->header());
 
     const QHash<QString, QVariant> state =
         settings_get_hash(SETTING_attributes_tab_header_state);
@@ -110,7 +117,8 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
 
     QItemSelectionModel *selection_model = view->selectionModel();
 
-    optional_attrs_values_is_loaded = settings_get_bool(SETTING_load_optional_attribute_values);
+    optional_attrs_values_is_loaded =
+        settings_get_bool(SETTING_load_optional_attribute_values);
     load_optional_attrs_button->setVisible(!optional_attrs_values_is_loaded);
 
     connect(
@@ -138,7 +146,8 @@ AttributesTabEdit::AttributesTabEdit(QTreeView *view_arg, QPushButton *filter_bu
 }
 
 AttributesTab::~AttributesTab() {
-    settings_set_variant(SETTING_attributes_tab_header_state, ui->view->header()->saveState());
+    settings_set_variant(SETTING_attributes_tab_header_state,
+                         ui->view->header()->saveState());
 
     delete ui;
 }
@@ -175,7 +184,8 @@ void AttributesTabEdit::update_edit_and_view_buttons() {
         view_button->setEnabled(false);
     } else {
         const QString attribute = selected_row[AttributesColumn_Name]->text();
-        const bool read_only = g_adconfig->get_attribute_is_system_only(attribute);
+        const bool read_only =
+            g_adconfig->get_attribute_is_system_only(attribute);
 
         if (read_only) {
             edit_button->setVisible(false);
@@ -193,12 +203,13 @@ void AttributesTabEdit::update_edit_and_view_buttons() {
     }
 }
 
-void AttributesTabEdit::copy_action(){
+void AttributesTabEdit::copy_action() {
     const QList<QStandardItem *> selected_row = get_selected_row();
-    QApplication::clipboard()->setText(selected_row[AttributesColumn_Value]->text());
+    QApplication::clipboard()->setText(
+        selected_row[AttributesColumn_Value]->text());
 }
 
-bool AttributesTabEdit::eventFilter(QObject *watched, QEvent *event){
+bool AttributesTabEdit::eventFilter(QObject *watched, QEvent *event) {
     if (watched == view && event->type() == QEvent::ContextMenu){
         QMenu menu;
         QAction* saveAction = menu.addAction(tr("Copy"));
@@ -253,18 +264,24 @@ void AttributesTabEdit::load_optional_attribute_values(AdInterface &ad) {
     // Chunks number is minimal query number (manually tested) to load objects
     // without errors. This value can be corrected after.
     const int attr_list_chunks_number = 5;
-    int chunk_length = not_specified_optional_attributes.size()/attr_list_chunks_number;
+    int chunk_length =
+        not_specified_optional_attributes.size() / attr_list_chunks_number;
 
     QSet<QString> optional_set_attrs;
 
-    for (int from = 0; from < not_specified_optional_attributes.size(); from += chunk_length) {
+    for (int from = 0;
+         from < not_specified_optional_attributes.size();
+         from += chunk_length) {
         if (not_specified_optional_attributes.size() - from < chunk_length) {
             chunk_length = not_specified_optional_attributes.size() - from;
         }
-        const QList<QString> attr_list_chunk = not_specified_optional_attributes.mid(from, chunk_length);
-        const AdObject optional_attrs_object = ad.search_object(object_dn, attr_list_chunk);
+        const QList<QString> attr_list_chunk =
+            not_specified_optional_attributes.mid(from, chunk_length);
+        const AdObject optional_attrs_object =
+            ad.search_object(object_dn, attr_list_chunk);
         for (const QString &attribute : attr_list_chunk) {
-            QList<QByteArray> values = optional_attrs_object.get_values(attribute);
+            QList<QByteArray> values =
+                optional_attrs_object.get_values(attribute);
             original[attribute] = values;
             if (!values.isEmpty()) {
                 optional_set_attrs << attribute;
@@ -315,8 +332,10 @@ void AttributesTabEdit::load(AdInterface &ad, const AdObject &object) {
         original[attribute] = object.get_values(attribute);
     }
 
-    const QList<QString> object_classes = object.get_strings(ATTRIBUTE_OBJECT_CLASS);
-    const QList<QString> optional_attributes = g_adconfig->get_optional_attributes(object_classes);
+    const QList<QString> object_classes =
+        object.get_strings(ATTRIBUTE_OBJECT_CLASS);
+    const QList<QString> optional_attributes =
+        g_adconfig->get_optional_attributes(object_classes);
 
     for (const QString &attribute : optional_attributes) {
         if (!original.contains(attribute)) {
@@ -349,7 +368,8 @@ bool AttributesTabEdit::apply(AdInterface &ad, const QString &target) const {
         const QList<QByteArray> original_values = original[attribute];
 
         if (current_values != original_values) {
-            const bool success = ad.attribute_replace_values(target, attribute, current_values);
+            const bool success =
+                ad.attribute_replace_values(target, attribute, current_values);
             if (!success) {
                 total_success = false;
             }
@@ -359,8 +379,11 @@ bool AttributesTabEdit::apply(AdInterface &ad, const QString &target) const {
     return total_success;
 }
 
-void AttributesTabEdit::load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values) {
-    const QString display_values = attribute_display_values(attribute, values, g_adconfig);
+void AttributesTabEdit::load_row(const QList<QStandardItem *> &row,
+                                 const QString &attribute,
+                                 const QList<QByteArray> &values) {
+    const QString display_values =
+        attribute_display_values(attribute, values, g_adconfig);
     const AttributeType type = g_adconfig->get_attribute_type(attribute);
     const QString type_display = attribute_type_display_string(type);
 
@@ -380,9 +403,12 @@ AttributeDialog *AttributesTabEdit::get_attribute_dialog(const bool read_only) {
 
     const QString attribute = row[AttributesColumn_Name]->text();
     const QList<QByteArray> value_list = current[attribute];
-    const bool single_valued = g_adconfig->get_attribute_is_single_valued(attribute);
+    const bool single_valued =
+        g_adconfig->get_attribute_is_single_valued(attribute);
 
-    AttributeDialog *dialog = AttributeDialog::make(attribute, value_list, read_only, single_valued, view);
+    AttributeDialog *dialog = AttributeDialog::make(attribute, value_list,
+                                                    read_only, single_valued,
+                                                    view);
 
     return dialog;
 }
@@ -391,7 +417,8 @@ void AttributesTabEdit::reload_model() {
     model->removeRows(0, model->rowCount());
 
     for (auto attribute : original.keys()) {
-        const QList<QStandardItem *> row = make_item_row(AttributesColumn_COUNT);
+        const QList<QStandardItem *> row =
+            make_item_row(AttributesColumn_COUNT);
         const QList<QByteArray> values = original[attribute];
 
         model->appendRow(row);

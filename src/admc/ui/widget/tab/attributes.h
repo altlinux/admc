@@ -27,8 +27,9 @@
  * viewing/editing if possible via attribute dialogs.
  */
 
-#include "ui/attribute_edit/attribute_edit.h"
 #include <QWidget>
+
+#include "ui/attribute_edit/attribute_edit.h"
 
 enum AttributesColumn {
     AttributesColumn_Name,
@@ -67,8 +68,12 @@ class AttributesTabEdit final : public AttributeEdit {
     Q_OBJECT
 
 public:
-    AttributesTabEdit(QTreeView *view, QPushButton *filter_button, QPushButton *edit_button, QPushButton *view_button,
-                      QPushButton *load_optional_attrs_button_arg, QObject *parent);
+    AttributesTabEdit(QTreeView *view,
+                      QPushButton *filter_button,
+                      QPushButton *edit_button,
+                      QPushButton *view_button,
+                      QPushButton *load_optional_attrs_button_arg,
+                      QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
@@ -97,7 +102,9 @@ private:
     bool eventFilter(QObject *watched, QEvent *event) override;
     void copy_action();
     void load_optional_attribute_values(AdInterface &ad);
-    void load_row(const QList<QStandardItem *> &row, const QString &attribute, const QList<QByteArray> &values);
+    void load_row(const QList<QStandardItem *> &row,
+                  const QString &attribute,
+                  const QList<QByteArray> &values);
     QList<QStandardItem *> get_selected_row() const;
     AttributeDialog *get_attribute_dialog(const bool read_only);
     void reload_model();
