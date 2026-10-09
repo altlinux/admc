@@ -286,6 +286,10 @@
         <translation>Загрузить необязательные атрибуты</translation>
     </message>
     <message>
+        <source>Search:</source>
+        <translation>Поиск:</translation>
+    </message>
+    <message>
         <location filename="ui/widget/tab/attributes.ui" line="75"/>
         <source>Filter</source>
         <translation>Фильтр</translation>

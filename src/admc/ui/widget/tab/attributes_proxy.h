@@ -34,12 +34,14 @@ public:
 
     void load(const AdObject &object);
     void update_set_attributes(QSet<QString> attributes);
+    void set_quick_filter(const QString &text);
 
 private:
     AttributesTabFilterMenu *filter_menu;
     QSet<QString> set_attributes;
     QSet<QString> mandatory_attributes;
     QSet<QString> optional_attributes;
+    QString quick_filter;
 
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };

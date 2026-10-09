@@ -59,6 +59,16 @@ void AttributesTabProxy::load(const AdObject &object) {
     set_attributes = QSet<QString>(attributes_list.begin(), attributes_list.end());
 }
 
+/**
+ * Set a quick filter string for the attributes tab.
+ *
+ * @param text A string to filter the content with.
+ */
+void AttributesTabProxy::set_quick_filter(const QString &text) {
+    quick_filter = text;
+    setFilterFixedString(text);
+}
+
 void AttributesTabProxy::update_set_attributes(QSet<QString> attributes) {
     set_attributes += attributes;
 }
@@ -102,6 +112,10 @@ bool AttributesTabProxy::filterAcceptsRow(int source_row, const QModelIndex &sou
     }
 
     if (!filter_menu->filter_is_enabled(AttributeFilter_ReadOnly) && system_only) {
+        return false;
+    }
+
+    if (! attribute.contains(quick_filter, Qt::CaseInsensitive)) {
         return false;
     }
 

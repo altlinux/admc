@@ -45,14 +45,22 @@ AttributesTab::AttributesTab(QList<AttributeEdit *> *edit_list, QWidget *parent)
     ui = new Ui::AttributesTab();
     ui->setupUi(this);
 
-    auto tab_edit = new AttributesTabEdit(ui->view, ui->filter_button,
-                                          ui->edit_button, ui->view_button,
-                                          ui->load_optional_attrs_button, this);
+    tab_edit = new AttributesTabEdit(ui->view, ui->filter_button,
+                                     ui->edit_button, ui->view_button,
+                                     ui->load_optional_attrs_button, this);
     ui->view->setUniformRowHeights(true);
 
     edit_list->append({
         tab_edit,
     });
+    connect(ui->quick_filter, &QLineEdit::textEdited,
+            [=](const QString& text) {
+                quick_filter(text);
+            });
+}
+
+void AttributesTab::quick_filter(const QString& text) {
+    tab_edit->set_quick_filter(text);
 }
 
 void AttributesTab::retranslate_ui() {
@@ -143,6 +151,10 @@ AttributesTabEdit::AttributesTabEdit(
     connect(
         load_optional_attrs_button, &QAbstractButton::clicked,
         this, &AttributesTabEdit::on_load_optional);
+}
+
+void AttributesTabEdit::set_quick_filter(const QString &text) {
+    proxy->set_quick_filter(text);
 }
 
 AttributesTab::~AttributesTab() {

@@ -62,6 +62,10 @@ public:
 
     void retranslate_ui();
     bool event(QEvent *event) override;
+
+private:
+    AttributesTabEdit *tab_edit;
+    void quick_filter(const QString& text);
 };
 
 class AttributesTabEdit final : public AttributeEdit {
@@ -77,6 +81,7 @@ public:
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
+    void set_quick_filter(const QString &text);
 
 private:
     QTreeView *view;
