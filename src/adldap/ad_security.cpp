@@ -212,6 +212,17 @@ bool ace_is_inherited(const security_ace &ace) {
     return ((ace.flags & SEC_ACE_FLAG_INHERITED_ACE) != 0);
 }
 
+/**
+ * Check if an access control entry (ACE) allows access.
+ *
+ * @param ace An ACE to check.
+ * @return True if the given ACE allows access, false otherwise.
+ */
+bool ace_is_access_allowed(const security_ace &ace) {
+    return ((ace.type == SEC_ACE_TYPE_ACCESS_ALLOWED) ||
+            (ace.type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT));
+}
+
 // This simplified version of ace_compare() for
 // verifying ACL order. Only includes necessary
 // comparisons specified by Microsoft here:
@@ -245,10 +256,8 @@ int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2) {
     }
 
     /* Allowed ACEs follow denied ACEs */
-    b1 = (ace1.type == SEC_ACE_TYPE_ACCESS_ALLOWED ||
-          ace1.type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT);
-    b2 = (ace2.type == SEC_ACE_TYPE_ACCESS_ALLOWED ||
-          ace2.type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT);
+    b1 = ace_is_access_allowed(ace1);
+    b2 = ace_is_access_allowed(ace2);
     if (b1 != b2) {
         return (b1 ? 1 : -1);
     }
