@@ -202,6 +202,16 @@ uint32_t ad_security_map_access_mask(const uint32_t access_mask) {
     }
 }
 
+/**
+ * Check if an access control entry (ACE) is inherited.
+ *
+ * @param ace An ACE to check.
+ * @return True if the given ACE is inherited, false otherwise.
+ */
+bool ace_is_inherited(const security_ace &ace) {
+    return ((ace.flags & SEC_ACE_FLAG_INHERITED_ACE) != 0);
+}
+
 // This simplified version of ace_compare() for
 // verifying ACL order. Only includes necessary
 // comparisons specified by Microsoft here:
@@ -228,8 +238,8 @@ int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2) {
     }
 
     /* Inherited follow non-inherited */
-    b1 = ((ace1.flags & SEC_ACE_FLAG_INHERITED_ACE) != 0);
-    b2 = ((ace2.flags & SEC_ACE_FLAG_INHERITED_ACE) != 0);
+    b1 = ace_is_inherited(ace1);
+    b2 = ace_is_inherited(ace2);
     if (b1 != b2) {
         return (b1 ? 1 : -1);
     }
