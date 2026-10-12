@@ -23,6 +23,7 @@
 
 #include "ui/attribute_edit/country_combo.h"
 #include "ui/attribute_edit/country_edit.h"
+#include "core/managers/country_manager.h"
 
 #include <QComboBox>
 #include <QFormLayout>
@@ -31,6 +32,8 @@
 
 void ADMCTestCountryEdit::init() {
     ADMCTest::init();
+
+    CountryManager::get_instance().load();
 
     combo = new QComboBox(parent_widget);
 
