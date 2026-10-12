@@ -2524,8 +2524,12 @@ QList<QString> query_server_for_hosts(const char *dname) {
         unsigned char buf[NS_MAXMSG];
     } msg;
 
-    const long unsigned msg_len =
+    const long msg_len =
         res_search(dname, ns_c_in, ns_t_srv, msg.buf, sizeof(msg.buf));
+    if (msg_len < 0) {
+        qCritical() << "query_server_for_hosts: 'res_search' failed: " << dname;
+        return QList<QString>();
+    }
 
     const bool message_error = (msg_len < sizeof(HEADER));
     if (message_error) {
