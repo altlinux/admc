@@ -2531,8 +2531,12 @@ QList<QString> query_server_for_hosts(const char *dname) {
         return QList<QString>();
     }
 
-    const bool message_error = (msg_len < sizeof(HEADER));
-    if (message_error) {
+    const long HEADER_SIZE = (long) sizeof(HEADER);
+    if (msg_len < HEADER_SIZE) {
+        qCritical()
+            << "query_server_for_hosts: 'res_search' returned a value less than"
+            << "the message header size"
+            << "(" << msg_len << "<" << HEADER_SIZE << "): " << dname;
         return QList<QString>();
     }
 
