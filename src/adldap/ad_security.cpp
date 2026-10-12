@@ -240,17 +240,14 @@ bool ace_is_access_allowed(const security_ace &ace) {
 // point, just in case. Using order requirements listed
 // here:
 int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2) {
-    bool b1;
-    bool b2;
-
     /* If the ACEs are equal, we have nothing more to do. */
     if (security_ace_equal(&ace1, &ace2)) {
         return 0;
     }
 
     /* Inherited follow non-inherited */
-    b1 = ace_is_inherited(ace1);
-    b2 = ace_is_inherited(ace2);
+    bool b1 = ace_is_inherited(ace1);
+    bool b2 = ace_is_inherited(ace2);
     if (b1 != b2) {
         return (b1 ? 1 : -1);
     }
