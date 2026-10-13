@@ -255,8 +255,6 @@ QSet<QAction *> ObjectImpl::get_custom_actions(
     const bool is_group = (object_class == CLASS_GROUP);
     const bool is_domain = (object_class == CLASS_DOMAIN);
     const bool is_computer = (object_class == CLASS_COMPUTER);
-    const bool is_pso_container =
-        (object_class == CLASS_PSO_CONTAINER);
     const bool is_sites_container = (object_class == CLASS_SITES_CONTAINER);
     const bool is_subnet_container = (object_class == CLASS_SUBNET_CONTAINER);
     const bool is_site_links_container =
