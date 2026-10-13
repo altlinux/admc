@@ -38,6 +38,7 @@
 #include "ui/create_object_helper.h"
 #include "ui/dialog/create/ui_user.h"
 #include "ui/dialog/create/user.h"
+#include <QDebug>
 
 void CreateUserDialog::setup_field_validation() {
     field_to_error_map = {
@@ -65,7 +66,7 @@ void CreateUserDialog::setup_field_validation() {
         ui->sam_name_edit,
     };
     for (const auto &field : field_list) {
-        connect(field, &QLineEdit::textEdited,
+        connect(field, &QLineEdit::textChanged,
                 [=](const QString &text) {
                     Q_UNUSED(text);
                     validate_fields(field);
