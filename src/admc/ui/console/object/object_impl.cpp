@@ -61,6 +61,15 @@
 #include "ui/widget/tab/general_group.h"
 #include "ui/widget/tab/general_user.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// Helper procedures.
+
+QString index_data_object_class(const QModelIndex &index) {
+    return index.data(ObjectRole_ObjectClasses).toStringList().last();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     console_list = {
@@ -246,8 +255,7 @@ QSet<QAction *> ObjectImpl::get_custom_actions(
 {
     QSet<QAction *> out;
 
-    const QString object_class =
-        index.data(ObjectRole_ObjectClasses).toStringList().last();
+    const QString object_class = index_data_object_class(index);
     const QList<QString> container_classes = g_adconfig->get_filter_containers();
     const bool is_container = container_classes.contains(object_class);
 
@@ -347,8 +355,7 @@ QSet<QAction *> ObjectImpl::get_disabled_custom_actions(
 
     QSet<QAction *> out;
 
-    const QString object_class =
-        index.data(ObjectRole_ObjectClasses).toStringList().last();
+    const QString object_class = index_data_object_class(index);
     const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
     const QList<QString> not_movable_obj_classes = {
         CLASS_PSO,
@@ -392,8 +399,7 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(
         CLASS_SITE,
         CLASS_PSO
     };
-    const QString object_class =
-        index.data(ObjectRole_ObjectClasses).toStringList().last();
+    const QString object_class = index_data_object_class(index);
     const bool can_rename =
         (single_selection && renamable_class_list.contains(object_class));
     if (can_rename) {
@@ -429,8 +435,7 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(
 
 void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
     const QModelIndex index = index_list[0];
-    const QString object_class = index.data(ObjectRole_ObjectClasses).toStringList().last();
-
+    const QString object_class = index_data_object_class(index);
     ConsoleObjectTreeOperations::console_object_rename(console_list,
                                                        index_list,
                                                        ObjectRole_DN,
