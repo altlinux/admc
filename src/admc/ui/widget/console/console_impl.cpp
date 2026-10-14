@@ -26,7 +26,6 @@
 
 #include <QSet>
 #include <QVariant>
-#include <qtpreprocessorsupport.h>
 
 ConsoleImpl::ConsoleImpl(ConsoleWidget *console_arg)
 : QObject(console_arg) {
