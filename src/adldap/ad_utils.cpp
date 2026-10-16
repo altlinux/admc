@@ -36,6 +36,7 @@
 #include <QLocale>
 #include <QString>
 #include <QTranslator>
+#include <mutex>
 #include <uuid/uuid.h>
 
 #define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
@@ -421,7 +422,9 @@ bool bitmask_is_set(const int input_mask, const int mask_to_read) {
 }
 
 const char *cstr(const QString &qstr) {
+    static std::mutex buffer_mutex;
     static QList<QByteArray> buffer;
+    std::lock_guard<std::mutex>lock(buffer_mutex);
 
     const QByteArray bytes = qstr.toUtf8();
     buffer.append(bytes);
