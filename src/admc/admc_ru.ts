@@ -2724,6 +2724,11 @@
         <translation>Alt+9</translation>
     </message>
     <message>
+        <location filename="ui/main_window.ui" line="354"/>
+        <source>Clear the log</source>
+        <translation>Очистить журнал</translation>
+    </message>
+    <message>
         <location filename="ui/main_window.ui" line="357"/>
         <source>Show Login</source>
         <translation>Показывать логин</translation>

@@ -408,6 +408,10 @@ void MainWindow::setup_console_actions() {
     ui->console->set_actions(console_actions);
 }
 
+void MainWindow::clear_log() {
+    ui->message_log_edit->clear();
+}
+
 void MainWindow::setup_main_window_actions() {
     // NOTE: toolbar and message log(dock widget) have built
     // in toggle actions, but there's no way to add them
@@ -419,9 +423,23 @@ void MainWindow::setup_main_window_actions() {
     ui->menu_view->removeAction(ui->action_toggle_message_log);
     ui->menu_view->removeAction(ui->action_toggle_toolbar);
 
+    ui->message_log_edit->setContextMenuPolicy(Qt::CustomContextMenu);
+
     //
     // Connect
     //
+    connect(ui->message_log_edit, &QWidget::customContextMenuRequested,
+            ui->message_log_edit, [&](const QPoint &pos) {
+                QMenu *menu = ui->message_log_edit->createStandardContextMenu();
+                menu->addSeparator();
+                menu->addAction(ui->action_clear_log);
+                menu->exec(ui->message_log_edit->mapToGlobal(pos));
+                delete menu;
+            });
+    connect(
+        ui->action_clear_log, &QAction::triggered,
+        this, &MainWindow::clear_log);
+
     connect(
         ui->action_connection_options, &QAction::triggered,
         this, &MainWindow::open_connection_options);

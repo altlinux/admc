@@ -349,6 +349,11 @@
     <string>Alt+9</string>
    </property>
   </action>
+  <action name="action_clear_log">
+   <property name="text">
+    <string>Clear the log</string>
+   </property>
+  </action>
   <action name="action_show_login">
    <property name="checkable">
     <bool>true</bool>
