@@ -349,8 +349,8 @@ bool PSOEditWidget::event(QEvent *event) {
 * @return The apropriate attribute considering object type
 */
 QString PSOEditWidget::replace_attribute(
-    const QString &attribute_name, bool is_global) {
-    if (!is_global) {
+    const QString &attribute_name, bool global) {
+    if (! global) {
         return attribute_name;
     }
     if (pso_attributes_to_global_attributes.contains(attribute_name)) {
@@ -364,34 +364,34 @@ QString PSOEditWidget::replace_attribute(
 * @param passwd_settings_obj The object with new values
 */
 void PSOEditWidget::update_fields(
-    const AdObject &passwd_settings_obj, const bool is_global) {
+    const AdObject &passwd_settings_obj, const bool global) {
     ui->name_edit->setText(passwd_settings_obj.get_string(
-        replace_attribute(ATTRIBUTE_CN, is_global)));
+        replace_attribute(ATTRIBUTE_CN, global)));
 
     ui->precedence_spinbox->setValue(
         passwd_settings_obj.get_int(replace_attribute(
-            ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE, is_global)));
+            ATTRIBUTE_MS_DS_PASSWORD_SETTINGS_PRECEDENCE, global)));
     ui->min_passwd_len_spinbox->setValue(passwd_settings_obj.get_int(
-        replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH, is_global)));
+        replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_LENGTH, global)));
     ui->history_length_spinbox->setValue(passwd_settings_obj.get_int(
-        replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH, is_global)));
+        replace_attribute(ATTRIBUTE_MS_DS_PASSWORD_HISTORY_LENGTH, global)));
     ui->logon_attempts_spinbox->setValue(passwd_settings_obj.get_int(
-        replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD, is_global)));
+        replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_THRESHOLD, global)));
 
     ui->lockout_duration_spinbox->setValue(
         ad_time_units_to_mintes(passwd_settings_obj.get_value(
-            replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION, is_global))));
+            replace_attribute(ATTRIBUTE_MS_DS_LOCKOUT_DURATION, global))));
     ui->reset_lockout_spinbox->setValue(
         ad_time_units_to_mintes(passwd_settings_obj.get_value(replace_attribute(
-            ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW, is_global))));
+            ATTRIBUTE_MS_DS_LOCKOUT_OBSERVATION_WINDOW, global))));
     ui->min_age_spinbox->setValue(
         ad_time_units_to_days(passwd_settings_obj.get_value(
-            replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE, is_global))));
+            replace_attribute(ATTRIBUTE_MS_DS_MIN_PASSWORD_AGE, global))));
     ui->max_age_spinbox->setValue(
         ad_time_units_to_days(passwd_settings_obj.get_value(
-            replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE, is_global))));
+            replace_attribute(ATTRIBUTE_MS_DS_MAX_PASSWORD_AGE, global))));
 
-    if (is_global) {
+    if (global) {
         int pwd_properties =
             passwd_settings_obj.get_int(ATTRIBUTE_PWD_PROPERTIES);
         ui->complexity_req_checkbox->setChecked(

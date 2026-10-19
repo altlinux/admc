@@ -87,9 +87,9 @@ private:
     void on_remove();
 
     void update_fields(
-        const AdObject &passwd_settings_obj, const bool is_global);
+        const AdObject &passwd_settings_obj, const bool global);
 
-    QString replace_attribute(const QString &attribute_name, bool is_global);
+    QString replace_attribute(const QString &attribute_name, bool global);
 
     /*!
      * Returns appropriate timespan unit value depending on given attribute.
