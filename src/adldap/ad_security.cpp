@@ -1256,15 +1256,16 @@ QList<SecurityRight> ad_security_get_right_list_for_class(
 
     QList<SecurityRight> common_task_rights;
     QList<SecurityRight> child_objects_rights;
-    for (const QString &obj_class : adconfig->all_inferiors_list(obj_class)) {
+    auto inferiors = adconfig->all_inferiors_list(obj_class);
+    for (const QString &inferior_class : inferiors) {
         child_objects_rights.append(
-            creation_deletion_rights_for_class(adconfig, obj_class));
+            creation_deletion_rights_for_class(adconfig, inferior_class));
 
         if (common_task_manager->class_common_task_rights_map.keys()
-            .contains(obj_class)) {
-            QList<SecurityRight> obj_class_rights =
-                common_task_manager->rights_for_class(obj_class);
-            for (const SecurityRight &right : obj_class_rights) {
+            .contains(inferior_class)) {
+            QList<SecurityRight> inferior_class_rights =
+                common_task_manager->rights_for_class(inferior_class);
+            for (const SecurityRight &right : inferior_class_rights) {
                 if (!child_objects_rights.contains(right)) {
                     common_task_rights.append(right);
                 }
