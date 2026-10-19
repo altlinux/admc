@@ -51,10 +51,10 @@ private:
     krb5_error_code error_code;
 
 public:
-    KerberosError(const QString &message,
-                  const krb5_error_code &error_code) :
-        message(message),
-        error_code(error_code)
+    KerberosError(const QString &msg,
+                  const krb5_error_code &code) :
+        message(msg),
+        error_code(code)
         {
             // Do nothing.
         };
