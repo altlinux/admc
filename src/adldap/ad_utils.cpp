@@ -424,13 +424,13 @@ bool bitmask_is_set(const int input_mask, const int mask_to_read) {
 const char *cstr(const QString &qstr) {
     static std::mutex buffer_mutex;
     static QList<QByteArray> buffer;
+    static const uint8_t MAXIMUM_BUFFER_SIZE = 100;
     std::lock_guard<std::mutex>lock(buffer_mutex);
 
     const QByteArray bytes = qstr.toUtf8();
     buffer.append(bytes);
 
-    // Limit buffer to 100 strings
-    if (buffer.size() > 100) {
+    if (buffer.size() > MAXIMUM_BUFFER_SIZE) {
         buffer.removeAt(0);
     }
 
