@@ -78,7 +78,7 @@ private:
     void add_trustees(const QList<QByteArray> &sid_list, AdInterface &ad);
     void load_sd(AdInterface &ad, security_descriptor *sd_arg);
     QByteArray get_current_trustee() const;
-    void load_applied_objects_cmbbox(const QStringList &target_class_list);
+    void load_applied_objects_cmbbox(const QStringList &class_list);
     void on_applied_objs_cmbbox();
     void on_clear_all();
     void on_show_sddl_sd();

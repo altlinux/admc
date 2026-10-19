@@ -253,12 +253,14 @@ void SecurityTab::load_sd(AdInterface &ad, security_descriptor *sd_arg) {
     ui->trustee_view->selectionModel()->setCurrentIndex(selected_trustee, QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
-void SecurityTab::load_applied_objects_cmbbox(const QStringList &target_class_list) {
+void SecurityTab::load_applied_objects_cmbbox(
+    const QStringList &class_list)
+{
     ui->applied_objects_cmbBox->addItem(tr("This object"), (int)AppliedObjects_ThisObject);
     ui->applied_objects_cmbBox->addItem(tr("This object and all child objects"), (int)AppliedObjects_ThisAndChildObjects);
     ui->applied_objects_cmbBox->addItem(tr("All child objects"), (int)AppliedObjects_AllChildObjects);
 
-    const QString target_class = target_class_list.last();
+    const QString target_class = class_list.last();
     QStringList inferior_class_list = g_adconfig->all_inferiors_list(target_class);
 
     QHash<QString, QString> text_class_map;
