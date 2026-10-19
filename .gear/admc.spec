@@ -10,7 +10,7 @@
 %endif
 
 Name: admc
-Version: 0.26.0
+Version: 0.26.1
 Release: alt1
 
 Summary: Active Directory Management Center
@@ -126,6 +126,9 @@ Tests for ADMC
 %_bindir/admc_test_find_policy_dialog
 
 %changelog
+* Mon Oct 19 2026 Semyon Knyazev <samael@altlinux.org> 0.26.1-alt1
+- Fix p10 build fail.
+
 * Tue Oct 13 2026 Semyon Knyazev <samael@altlinux.org> 0.26.0-alt1
 - Add inline validation for invalid characters in the user creation
   dialog, with validation errors displayed directly below the corresponding
