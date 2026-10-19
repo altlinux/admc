@@ -270,7 +270,7 @@ void KrbAuthDialog::authenticate(const QString &principal) {
             try {
                 client->authenticate(principal, ui->password_edit->text());
             } catch (KerberosError &first_error) {
-                const krb5_error_code rc = first_error.get_error_code();
+                krb5_error_code rc = first_error.get_error_code();
                 QString message = krb5_error_code_to_string(rc);
                 error_message +=
                     (message.isEmpty() ? first_error.what() : message) + "\n";
@@ -284,7 +284,7 @@ void KrbAuthDialog::authenticate(const QString &principal) {
                         client->authenticate(principal, ui->password_edit->text(),
                                              true);
                     } catch (KerberosError &second_error) {
-                        const krb5_error_code rc = second_error.get_error_code();
+                        rc = second_error.get_error_code();
                         message = krb5_error_code_to_string(rc);
                         error_message +=
                             (message.isEmpty() ? second_error.what() : message)
