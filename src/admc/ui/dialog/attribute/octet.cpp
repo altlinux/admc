@@ -122,23 +122,23 @@ bool OctetAttributeDialog::check_input(const OctetDisplayFormat format) {
 
     if (! ok) {
         const QString title = tr("Error");
-        QString text;
+        QString warning_text;
         switch (format) {
         case OctetDisplayFormat_Hexadecimal:
-            text = tr("Input must be strings of 2 hexadecimal digits separated by spaces. Example: \"0a 00 b5 ff\"");
+            warning_text = tr("Input must be strings of 2 hexadecimal digits separated by spaces. Example: \"0a 00 b5 ff\"");
             break;
         case OctetDisplayFormat_Binary:
-            text = tr("Input must be strings of 8 binary digits separated by spaces. Example: \"01010010 01000010 01000010\"");
+            warning_text = tr("Input must be strings of 8 binary digits separated by spaces. Example: \"01010010 01000010 01000010\"");
             break;
         case OctetDisplayFormat_Decimal:
-            text = tr("Input must be strings of 3 decimal digits (0-255) separated by spaces. Example: \"010 000 191\"");
+            warning_text = tr("Input must be strings of 3 decimal digits (0-255) separated by spaces. Example: \"010 000 191\"");
             break;
         case OctetDisplayFormat_Octal:
-            text = tr("Input must be strings of 3 octal digits (0-377) separated by spaces.. Example: \"070 343 301\"");
+            warning_text = tr("Input must be strings of 3 octal digits (0-377) separated by spaces.. Example: \"070 343 301\"");
             break;
         }
 
-        message_box_warning(this, title, text);
+        message_box_warning(this, title, warning_text);
     }
 
     return ok;
