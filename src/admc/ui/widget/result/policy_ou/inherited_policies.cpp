@@ -101,8 +101,8 @@ void InheritedPoliciesWidget::hide_not_enforced_inherited_links(bool hide) {
     }
 }
 
-void InheritedPoliciesWidget::add_enabled_policy_items(AdInterface &ad, const QString ou_dn, bool inheritance_blocked) {
-    const AdObject ou_obj = ad.search_object(ou_dn, {ATTRIBUTE_NAME,
+void InheritedPoliciesWidget::add_enabled_policy_items(AdInterface &ad, const QString ou_dn_str, bool inheritance_blocked) {
+    const AdObject ou_obj = ad.search_object(ou_dn_str, {ATTRIBUTE_NAME,
                                                      ATTRIBUTE_GPOPTIONS,
                                                      ATTRIBUTE_GPLINK});
     if (ou_obj.is_empty()) {
@@ -136,7 +136,7 @@ void InheritedPoliciesWidget::add_enabled_policy_items(AdInterface &ad, const QS
 
 
     bool inheritance_is_blocked = ou_obj.get_string(ATTRIBUTE_GPOPTIONS) == GPOPTIONS_BLOCK_INHERITANCE || inheritance_blocked;
-    add_enabled_policy_items(ad, dn_get_parent(ou_dn), inheritance_is_blocked);
+    add_enabled_policy_items(ad, dn_get_parent(ou_dn_str), inheritance_is_blocked);
 }
 
 void InheritedPoliciesWidget::remove_link_duplicates() {
