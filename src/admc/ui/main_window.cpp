@@ -241,12 +241,11 @@ void MainWindow::setup_languages() {
         connect(
             action, &QAction::triggered,
             this,
-            [this, language](bool checked) {
+            [this, locale](bool checked) {
                 if (checked) {
-                    QLocale current_locale =
+                    QLocale current =
                         AdmcTranslator::get_instance().get_current_locale();
-                    QLocale locale(language);
-                    if (current_locale != locale) {
+                    if (current != locale) {
                         AdmcTranslator::get_instance().load_locale(locale);
                         is_language_changed = true;
                     }
