@@ -107,6 +107,12 @@ set(ADLDAP_SAMBA_SOURCES
     samba/sddl.c
 )
 
+set_source_files_properties(
+  ${ADLDAP_SAMBA_SOURCES}
+  PROPERTIES
+  COMPILE_OPTIONS "-Wno-unused-variable;-Wno-unused-parameter"
+)
+
 if (VERSION_SMB_MINOR LESS 20)
   list(APPEND ADLDAP_SAMBA_SOURCES samba/ndr_sec_helper.c)
 endif()
