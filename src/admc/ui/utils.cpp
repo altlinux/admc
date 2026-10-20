@@ -2,7 +2,10 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2023 Ivan A. Melnikov
+ * Copyright (C) 2023-2026 Semyon Knyazev
+ * Copyright (C) 2026 Kozyrev Yuri
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,18 +21,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#include "ui/utils.h"
-#include "core/utils.h"
-
-#include "adldap.h"
-#include "ui/widget/console/console_widget.h"
-#include "core/ad.h"
-#include "core/globals.h"
-#include "core/search_thread.h"
-#include "core/settings.h"
-#include "ui/message_box.h"
-#include "ui/status.h"
 
 #include <QAbstractItemView>
 #include <QCursor>
@@ -48,6 +39,17 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QWidget>
+
+#include "adldap.h"
+#include "core/ad.h"
+#include "core/globals.h"
+#include "core/search_thread.h"
+#include "core/settings.h"
+#include "core/utils.h"
+#include "ui/message_box.h"
+#include "ui/status.h"
+#include "ui/utils.h"
+#include "ui/widget/console/console_widget.h"
 
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
     auto selection_model = view->selectionModel();
