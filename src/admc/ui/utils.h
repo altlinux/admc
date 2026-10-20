@@ -27,22 +27,13 @@
 #include "core/search_thread.h"
 
 class AdInterface;
-class AdObject;
 class ConsoleWidget;
 class QAbstractItemView;
-class QAbstractProxyModel;
-class QMessageBox;
-class QModelIndex;
 class QPersistentModelIndex;
-class QPlainTextEdit;
 class QStandardItem;
-class QStandardItemModel;
 class QString;
-class QTreeView;
 class QVariant;
 class QWidget;
-template <typename K, typename T> class QHash;
-template <typename K, typename T> class QMap;
 template <typename T> class QList;
 
 #define debug_print(a, args...) \
