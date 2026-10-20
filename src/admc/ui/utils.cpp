@@ -43,6 +43,33 @@
 #include "ui/utils.h"
 #include "ui/widget/console/console_widget.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// Wrappers around AD "is_connected" procedure.
+
+/**
+ * A wrapper over AD "is_connected" procedure that also opens an error message
+ * box if it is failed to connect.  You should generally use these in GUI code
+ * instead of "is_connected".
+ * @see is_connected()
+ */
+bool ad_connected_base(const AdInterface &ad, QWidget *parent) {
+    if (!ad.is_connected()) {
+        ad_error_log(ad, parent);
+    }
+
+    return ad.is_connected();
+}
+
+bool ad_connected(const AdInterface &ad, QWidget *parent) {
+    return ad_connected_base(ad, parent);
+}
+
+bool ad_failed(const AdInterface &ad, QWidget *parent) {
+    return !ad_connected_base(ad, parent);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view) {
     auto selection_model = view->selectionModel();
 
@@ -63,22 +90,6 @@ void show_busy_indicator() {
 
 void hide_busy_indicator() {
     QGuiApplication::restoreOverrideCursor();
-}
-
-bool ad_connected_base(const AdInterface &ad, QWidget *parent) {
-    if (!ad.is_connected()) {
-        ad_error_log(ad, parent);
-    }
-
-    return ad.is_connected();
-}
-
-bool ad_connected(const AdInterface &ad, QWidget *parent) {
-    return ad_connected_base(ad, parent);
-}
-
-bool ad_failed(const AdInterface &ad, QWidget *parent) {
-    return !ad_connected_base(ad, parent);
 }
 
 QList<QString> get_selected_dn_list(ConsoleWidget *console,
