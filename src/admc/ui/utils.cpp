@@ -28,16 +28,8 @@
 #include <QHash>
 #include <QHeaderView>
 #include <QList>
-#include <QMap>
-#include <QMenu>
-#include <QMessageBox>
 #include <QModelIndex>
-#include <QPersistentModelIndex>
-#include <QPlainTextEdit>
 #include <QScreen>
-#include <QSortFilterProxyModel>
-#include <QStandardItem>
-#include <QStandardItemModel>
 #include <QWidget>
 
 #include "adldap.h"
