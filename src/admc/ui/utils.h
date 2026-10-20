@@ -45,10 +45,6 @@ void enable_widget_on_selection(QWidget *widget, QAbstractItemView *view);
 void show_busy_indicator();
 void hide_busy_indicator();
 
-void set_data_for_row(const QList<QStandardItem *> &row,
-                      const QVariant &data,
-                      const int role);
-
 bool ad_connected(const AdInterface &ad, QWidget *parent);
 bool ad_failed(const AdInterface &ad, QWidget *parent);
 
@@ -59,11 +55,6 @@ QString get_selected_target_dn(ConsoleWidget *console,
                                const int dn_role);
 
 void center_widget(QWidget *widget);
-
-QList<QString> variant_list_to_string_list(
-    const QList<QVariant> &variant_list);
-QList<QVariant> string_list_to_variant_list(
-    const QList<QString> &string_list);
 
 bool string_contains_bad_chars(const QString &string,
                                const QString &bad_chars);
