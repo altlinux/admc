@@ -21,6 +21,7 @@
 
 #include "ui/console/query_folder_impl.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "ui/dialog/create/query_folder.h"
 #include "ui/dialog/create/ui_query_folder.h"
 #include "ui/utils.h"

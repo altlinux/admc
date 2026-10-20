@@ -25,6 +25,7 @@
 #include "adldap.h"
 #include "core/globals.h"
 #include "core/settings.h"
+#include "core/utils.h"
 #include "ui/console/policy_impl.h"
 #include "ui/dialog/create/policy.h"
 #include "ui/dialog/create/ui_policy.h"

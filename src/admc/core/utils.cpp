@@ -61,6 +61,11 @@ QList<QString> variant_list_to_string_list(const QList<QVariant> &variant_list) 
     return out;
 }
 
+/**
+ * If base name is "New X", then this will generate a name "New X (n)" where
+ * this name won't conflict with any existing names.  For example:
+ *   "New Folder (7)"
+ */
 QString generate_new_name(const QList<QString> &existing_name_list, const QString &name_base) {
     const QString first = name_base;
     if (!existing_name_list.contains(first)) {
