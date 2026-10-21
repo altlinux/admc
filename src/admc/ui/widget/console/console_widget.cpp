@@ -45,9 +45,9 @@
 #include "ui/widget/console/results_view.h"
 #include "ui/widget/console/scope_proxy_model.h"
 
-#define SPLITTER_STATE "SPLITTER_STATE"
-const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
-const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
+static const QString SPLITTER_STATE = "SPLITTER_STATE";
+static const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
+static const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
 
 const QList<StandardAction> standard_action_list = {
     StandardAction_Copy,
