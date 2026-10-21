@@ -29,7 +29,8 @@
 #include "ui/dialog/error_log.h"
 #include "ui/status.h"
 
-#define MAX_MESSAGES_IN_LOG 200
+// TODO: Make it configurable.
+static const uint8_t MAX_MESSAGES_IN_LOG = 200;
 
 void Status::init(QStatusBar *statusbar, QTextEdit *message_log) {
     m_status_bar = statusbar;
