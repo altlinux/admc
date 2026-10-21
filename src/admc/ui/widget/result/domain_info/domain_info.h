@@ -34,7 +34,6 @@ class AdInterface;
 class QStandardItemModel;
 class AdObject;
 class QStandardItem;
-class QSpinBox;
 class QLabel;
 
 struct DomainInfo_SearchResults {

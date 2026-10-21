@@ -19,23 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/widget/result/domain_info/domain_info.h"
-#include "ui/widget/result/domain_info/ui_domain_info.h"
-#include "ui/widget/console/console_widget.h"
+#include <QStandardItemModel>
+
 #include "adldap.h"
-#include "core/settings.h"
-#include "ui/console/object/console_object_operations.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
-#include "ui/status.h"
 #include "core/managers/icon_manager.h"
+#include "core/settings.h"
+#include "ui/console/object/console_object_operations.h"
+#include "ui/status.h"
 #include "ui/utils.h"
+#include "ui/widget/console/console_widget.h"
 #include "ui/widget/fsmo/fsmo_utils.h"
-
-#include <QStandardItemModel>
-#include <QPushButton>
-#include <QComboBox>
-#include <QMessageBox>
+#include "ui/widget/result/domain_info/domain_info.h"
+#include "ui/widget/result/domain_info/ui_domain_info.h"
 
 DomainInfoResultsWidget::DomainInfoResultsWidget(ConsoleWidget *console_arg) :
     QWidget(console_arg), ui(new Ui::DomainInfoResultsWidget), console(console_arg) {
