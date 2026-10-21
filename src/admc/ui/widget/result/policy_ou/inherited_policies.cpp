@@ -19,25 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/widget/result/policy_ou/inherited_policies.h"
-#include "ui/widget/result/policy_ou/ui_inherited_policies.h"
-#include "ui/utils.h"
-#include "core/settings.h"
-#include "core/utils.h"
-#include "ui/console/policy_ou_impl.h"
-#include "ui/console/policy_impl.h"
-#include "ui/widget/console/console_widget.h"
-#include "core/console_item_type.h"
-#include "gplink.h"
-#include "core/managers/icon_manager.h"
-#include "core/managers/gplink_manager.h"
-#include "core/globals.h"
-#include "ad_object.h"
-#include "ad_utils.h"
-
 #include <QStandardItemModel>
 #include <QStringList>
 
+#include "ad_object.h"
+#include "ad_utils.h"
+#include "core/console_item_type.h"
+#include "core/globals.h"
+#include "core/managers/gplink_manager.h"
+#include "core/managers/icon_manager.h"
+#include "core/settings.h"
+#include "core/utils.h"
+#include "gplink.h"
+#include "ui/console/policy_impl.h"
+#include "ui/console/policy_ou_impl.h"
+#include "ui/utils.h"
+#include "ui/widget/console/console_widget.h"
+#include "ui/widget/result/policy_ou/inherited_policies.h"
+#include "ui/widget/result/policy_ou/ui_inherited_policies.h"
 
 InheritedPoliciesWidget::InheritedPoliciesWidget(ConsoleWidget *console_arg, QWidget *parent) :
     QWidget(parent),

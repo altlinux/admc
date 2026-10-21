@@ -22,18 +22,18 @@
 #ifndef INHERITED_POLICIES_WIDGET_H
 #define INHERITED_POLICIES_WIDGET_H
 
-#include <QWidget>
 #include <QModelIndex>
 #include <QStringList>
+#include <QWidget>
+
+class AdInterface;
+class ConsoleWidget;
+class QStandardItem;
+class QStandardItemModel;
 
 namespace Ui {
 class InheritedPoliciesWidget;
 }
-
-class QStandardItemModel;
-class ConsoleWidget;
-class QStandardItem;
-class AdInterface;
 
 class InheritedPoliciesWidget final : public QWidget
 {
