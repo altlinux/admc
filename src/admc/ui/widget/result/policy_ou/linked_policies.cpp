@@ -19,30 +19,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "adldap.h"
-#include "ui/widget/result/policy_ou/linked_policies.h"
-#include "ui/widget/result/policy_ou/ui_linked_policies.h"
-#include "ui/console/policy_impl.h"
-#include "ui/console/policy_ou_impl.h"
-#include "ui/console/policy_root_impl.h"
-#include "core/console_item_type.h"
-#include "ui/widget/console/console_widget.h"
-#include "ui/widget/console/results_view.h"
-#include "core/globals.h"
-#include "core/settings.h"
-#include "core/utils.h"
-#include "ui/status.h"
-#include "ui/utils.h"
-#include "core/managers/icon_manager.h"
-#include "drag_drop_links_model.h"
-
 #include <QAction>
 #include <QHeaderView>
 #include <QMenu>
-#include <QMessageBox>
 #include <QModelIndex>
 #include <QStandardItemModel>
 #include <QTreeView>
+
+#include "adldap.h"
+#include "core/console_item_type.h"
+#include "core/globals.h"
+#include "core/managers/icon_manager.h"
+#include "core/settings.h"
+#include "core/utils.h"
+#include "drag_drop_links_model.h"
+#include "ui/console/policy_impl.h"
+#include "ui/console/policy_ou_impl.h"
+#include "ui/console/policy_root_impl.h"
+#include "ui/status.h"
+#include "ui/utils.h"
+#include "ui/widget/console/console_widget.h"
+#include "ui/widget/console/results_view.h"
+#include "ui/widget/result/policy_ou/linked_policies.h"
+#include "ui/widget/result/policy_ou/ui_linked_policies.h"
 
 LinkedPoliciesWidget::LinkedPoliciesWidget(ConsoleWidget *console_arg, QWidget *parent) :
     QWidget(parent),

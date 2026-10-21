@@ -5,16 +5,13 @@
 
 #include <QWidget>
 
-class QStandardItemModel;
-class QStandardItem;
-class QMenu;
-class ResultsView;
-class ConsoleWidget;
-class ADMCTestPolicyOUResultsWidget;
-class AdObject;
 class AdInterface;
+class AdObject;
+class ConsoleWidget;
 class DragDropLinksModel;
 class QAction;
+class QMenu;
+class QStandardItem;
 
 namespace Ui {
 class LinkedPoliciesWidget;
