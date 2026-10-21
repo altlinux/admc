@@ -19,35 +19,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/widget/console/console_widget.h"
-#include "ui/widget/console/console_widget_p.h"
-
-#include "ui/widget/console/console_drag_model.h"
-#include "ui/widget/console/console_impl.h"
-#include "ui/widget/console/customize_columns_dialog.h"
-#include "ui/widget/console/results_view.h"
-#include "ui/widget/console/scope_proxy_model.h"
-#include "core/console_item_type.h"
-#include "core/globals.h"
-#include "ui/status.h"
-#include "ad_config.h"
-#include "ui/utils.h"
-
 #include <QAction>
+#include <QActionGroup>
 #include <QApplication>
-#include <QDebug>
 #include <QHeaderView>
 #include <QLabel>
 #include <QMenu>
 #include <QSplitter>
 #include <QStack>
 #include <QStackedWidget>
-#include <QToolBar>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include <QActionGroup>
-
 #include <algorithm>
+
+#include "ad_config.h"
+#include "core/console_item_type.h"
+#include "core/globals.h"
+#include "ui/status.h"
+#include "ui/utils.h"
+#include "ui/widget/console/console_drag_model.h"
+#include "ui/widget/console/console_impl.h"
+#include "ui/widget/console/console_widget.h"
+#include "ui/widget/console/console_widget_p.h"
+#include "ui/widget/console/customize_columns_dialog.h"
+#include "ui/widget/console/results_view.h"
+#include "ui/widget/console/scope_proxy_model.h"
 
 #define SPLITTER_STATE "SPLITTER_STATE"
 const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
