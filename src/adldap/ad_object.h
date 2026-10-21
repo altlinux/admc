@@ -23,16 +23,6 @@
 #ifndef AD_OBJECT_H
 #define AD_OBJECT_H
 
-/**
- * This object is returned as a result of some AdInterface
- * functions. It stores AD object's attributes and provides
- * read-only access to them. Modifying attributes can be
- * done through AdInterface. Note that this object is loaded
- * with data once and not updated afterwards so it WILL
- * become out of date after any AD modification. Therefore,
- * do not keep it around for too long.
- */
-
 #include "ad_defines.h"
 
 #include <QByteArray>
@@ -45,6 +35,15 @@ class AdConfig;
 typedef void TALLOC_CTX;
 struct security_descriptor;
 
+/**
+ * This object is returned as a result of some AdInterface
+ * functions. It stores AD object's attributes and provides
+ * read-only access to them. Modifying attributes can be
+ * done through AdInterface. Note that this object is loaded
+ * with data once and not updated afterwards so it WILL
+ * become out of date after any AD modification. Therefore,
+ * do not keep it around for too long.
+ */
 class AdObject {
 
 public:
@@ -97,7 +96,14 @@ public:
         TALLOC_CTX *mem_ctx = nullptr) const;
 
 private:
+    /**
+     * The object distinguish name.
+     */
     QString dn;
+
+    /**
+     * The object attributes hash table.
+     */
     QHash<QString, QList<QByteArray>> attributes_data;
 };
 
