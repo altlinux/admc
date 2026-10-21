@@ -19,18 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/widget/result/policy_ou/drag_drop_links_model.h"
-#include "ui/utils.h"
+#include <QDataStream>
+#include <QMimeData>
+
+#include "ad_interface.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
 #include "core/utils.h"
-#include "ad_interface.h"
 #include "ui/console/policy_impl.h"
-
-#include <QMimeData>
-#include <QDataStream>
-#include <QMessageBox>
-#include <QDebug>
+#include "ui/utils.h"
+#include "ui/widget/result/policy_ou/drag_drop_links_model.h"
 
 DragDropLinksModel::DragDropLinksModel(const Gplink &gplink, int rows, int columns, QObject *parent)
     : QStandardItemModel{rows, columns, parent}, gplink_ref{gplink} {
