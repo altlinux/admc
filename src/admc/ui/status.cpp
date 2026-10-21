@@ -19,22 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/status.h"
-
-#include "adldap.h"
-#include "ui/dialog/error_log.h"
-#include "core/globals.h"
-#include "core/settings.h"
-
-#include <QCoreApplication>
 #include <QDateTime>
-#include <QDebug>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QPlainTextEdit>
 #include <QStatusBar>
 #include <QTextEdit>
-#include <QVBoxLayout>
+
+#include "adldap.h"
+#include "core/globals.h"
+#include "core/settings.h"
+#include "ui/dialog/error_log.h"
+#include "ui/status.h"
 
 #define MAX_MESSAGES_IN_LOG 200
 
