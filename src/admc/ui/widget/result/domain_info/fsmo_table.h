@@ -8,7 +8,6 @@ class FsmoTableWidget;
 }
 
 class AdInterface;
-class QTableWidgetItem;
 class AdObject;
 
 class FsmoTableWidget : public QWidget {

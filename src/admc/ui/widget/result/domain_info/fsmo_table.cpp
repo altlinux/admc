@@ -19,20 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/widget/result/domain_info/fsmo_table.h"
-#include "ui/widget/result/domain_info/ui_fsmo_table.h"
-
-#include "ui/widget/fsmo/fsmo_utils.h"
 #include <QMessageBox>
-#include "core/ad.h"
-#include "core/fsmo.h"
-#include "core/managers/icon_manager.h"
-#include "ui/status.h"
-#include "core/globals.h"
-#include "ui/utils.h"
-#include "adldap.h"
 #include <QPushButton>
 
+#include "adldap.h"
+#include "core/ad.h"
+#include "core/fsmo.h"
+#include "core/globals.h"
+#include "core/managers/icon_manager.h"
+#include "ui/status.h"
+#include "ui/utils.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
+#include "ui/widget/result/domain_info/fsmo_table.h"
+#include "ui/widget/result/domain_info/ui_fsmo_table.h"
 
 FsmoTableWidget::FsmoTableWidget(QWidget *parent) :
     QWidget(parent),
