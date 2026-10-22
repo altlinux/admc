@@ -2,6 +2,13 @@ admc
 CHANGELOG
 
 -----------------------------------------------------------------------
+ VERSION 0.26.1
+-----------------------------------------------------------------------
+
+- Fix build issues on platforms that use Qt versions prior to 6.5.0 (e.g. ALT
+  Linux P10.)
+
+-----------------------------------------------------------------------
  VERSION 0.26.0
 -----------------------------------------------------------------------
 - Add inline validation for invalid characters in the user creation
