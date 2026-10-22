@@ -112,6 +112,14 @@ AdConfig::~AdConfig() {
     delete d;
 }
 
+/**
+ * Convert a Qt locale to a Windows language code identifier (MS-LCID.)
+ *
+ * See https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid
+ *
+ * @param locale A locale to convert.
+ * @return A language code identifier as a string.
+ */
 QString locale_to_code(const QLocale &locale) {
     if (locale.language() == QLocale::Russian) {
         return "419";
@@ -126,6 +134,12 @@ const QString AdConfig::get_locale_dir(const QLocale &locale) const {
         .arg(locale_code, configuration_dn());
 }
 
+/**
+ * Load active directory (AD) configuration.
+ *
+ * @param ad An AD interface instance.
+ * @param locale A locale to use.
+ */
 void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     d->domain = ad.get_domain();
     d->user = ad.client_user();
@@ -158,10 +172,21 @@ void AdConfig::load(AdInterface &ad, const QLocale &locale) {
     load_permissionable_attributes(CLASS_DOMAIN, ad);
 }
 
+/**
+ * Get the active directory (AD) configuration domain.
+ *
+ * @return The domain name as a string.
+ */
 QString AdConfig::domain() const {
     return d->domain;
 }
 
+/**
+ * Get the distinguished name (DN) for the active directory (AD) configuration
+ * domain.
+ *
+ * @return The domain distinguished name as a string.
+ */
 QString AdConfig::domain_dn() const {
     return d->domain_dn;
 }
@@ -176,22 +201,48 @@ QString AdConfig::domain_sid(AdInterface &ad) const {
         domain_object.get_value(ATTRIBUTE_OBJECT_SID));
 }
 
+/**
+ * Get the distinguished name (DN) for the configuration.
+ *
+ * @return The distinguished name for the configuration as a string.
+ */
 QString AdConfig::configuration_dn() const {
     return d->configuration_dn;
 }
 
+/**
+ * Get the distinguished name (DN) for the configuration schema.
+ *
+ * @return The distinguished name for the configuration schema as a string.
+ */
 QString AdConfig::schema_dn() const {
     return d->schema_dn;
 }
 
+/**
+ * Get the distinguished name (DN) for the configuration partitions.
+ *
+ * @return The distinguished name for the configuration partitions as a string.
+ */
 QString AdConfig::partitions_dn() const {
     return QString("CN=Partitions,%1").arg(configuration_dn());
 }
 
+/**
+ * Get the distinguished name (DN) for the configuration extended rights.
+ *
+ * @return The distinguished name for the configuration extended rights as a
+ * string.
+ */
 QString AdConfig::extended_rights_dn() const {
     return QString("CN=Extended-Rights,%1").arg(configuration_dn());
 }
 
+/**
+ * Get the distinguished name (DN) for the configuration policies.
+ *
+ * @return The distinguished name for the configuration policies as a string.
+ */
 QString AdConfig::policies_dn() const {
     return QString("CN=Policies,CN=System,%1").arg(domain_dn());
 }
@@ -202,19 +253,44 @@ bool AdConfig::control_is_supported(const QString &control_oid) const {
     return supported;
 }
 
+/**
+ * Get the domain secure identifier (SID) for the domain.
+ *
+ * See
+ * https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers.
+ *
+ * @return The domain SID as a string.
+ */
+
 QString AdConfig::domain_sid() const
 {
     return d->domain_sid;
 }
 
+/**
+ * Get the root domain distinguished name (DN) for the configuration.
+ *
+ * @return The root domain distinguished name.
+ */
 QString AdConfig::root_domain_dn() const {
     return d->root_domain_dn;
 }
 
+/**
+ * Get the sites container distinguished name (DN) for the configuration.
+ *
+ * @return The sites container distinguished name.
+ */
 QString AdConfig::sites_container_dn() const {
     return QString("CN=Sites,%1").arg(configuration_dn());
 }
 
+/**
+ * Get the password settings object (PSO) distinguished name (DN) for the
+ * configuration.
+ *
+ * @return The PSO container DN.
+ */
 QString AdConfig::pso_container_dn() const {
     return QString("CN=Password Settings Container,CN=System,%1")
         .arg(domain_dn());
