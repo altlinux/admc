@@ -35,6 +35,8 @@
 
 #include "samba/ndr_security.h"
 
+#include "lcid.h"
+
 #include <QCoreApplication>
 #include <QDebug>
 #include <QLocale>
@@ -112,24 +114,8 @@ AdConfig::~AdConfig() {
     delete d;
 }
 
-/**
- * Convert a Qt locale to a Windows language code identifier (MS-LCID.)
- *
- * See https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid
- *
- * @param locale A locale to convert.
- * @return A language code identifier as a string.
- */
-QString locale_to_code(const QLocale &locale) {
-    if (locale.language() == QLocale::Russian) {
-        return "419";
-    } else {
-        return "409"; // English
-    }
-}
-
 const QString AdConfig::get_locale_dir(const QLocale &locale) const {
-    const QString locale_code = locale_to_code(locale);
+    const QString locale_code = lcid_string_from_locale(locale);
     return QString("CN=%1,CN=DisplaySpecifiers,%2")
         .arg(locale_code, configuration_dn());
 }
