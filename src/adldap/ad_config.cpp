@@ -248,9 +248,7 @@ QString AdConfig::policies_dn() const {
 }
 
 bool AdConfig::control_is_supported(const QString &control_oid) const {
-    const bool supported = d->supported_control_list.contains(control_oid);
-
-    return supported;
+    return d->supported_control_list.contains(control_oid);
 }
 
 /**
@@ -262,8 +260,7 @@ bool AdConfig::control_is_supported(const QString &control_oid) const {
  * @return The domain SID as a string.
  */
 
-QString AdConfig::domain_sid() const
-{
+QString AdConfig::domain_sid() const {
     return d->domain_sid;
 }
 
@@ -589,8 +586,7 @@ bool AdConfig::get_attribute_is_constructed(const QString &attribute) const {
 }
 
 QByteArray AdConfig::get_right_guid(const QString &right_cn) const {
-    const QByteArray out = d->right_to_guid_map.value(right_cn, QByteArray());
-    return out;
+    return d->right_to_guid_map.value(right_cn, QByteArray());
 }
 
 // NOTE: technically, Active Directory provides translations for right names but
@@ -685,15 +681,10 @@ QString AdConfig::get_right_name(const QByteArray &right_guid,
 
     const QString right_cn = d->right_guid_to_cn_map[right_guid];
     if (language == QLocale::Russian && cn_to_map_russian.contains(right_cn)) {
-        const QString out = cn_to_map_russian[right_cn];
-
-        return out;
+        return cn_to_map_russian[right_cn];
     }
 
-    const QString out = d->rights_guid_to_name_map.value(
-        right_guid,
-        tr("<unknown rights>"));
-    return out;
+    return d->rights_guid_to_name_map.value(right_guid, tr("<unknown rights>"));
 }
 
 QList<QString> AdConfig::get_extended_rights_list(const QList<QString> &class_list) const {
@@ -755,10 +746,7 @@ bool AdConfig::rights_applies_to_class(const QString &rights_cn,
 
     const QSet<QString> class_set = QSet<QString>(class_list.begin(),
                                                   class_list.end());
-
-    const bool applies = applies_to_set.intersects(class_set);
-
-    return applies;
+    return applies_to_set.intersects(class_set);
 }
 
 QStringList AdConfig::get_possible_inferiors(const QString &obj_class) const {
@@ -789,9 +777,7 @@ QList<QString> AdConfig::all_inferiors_list(const QString &obj_class) const {
         out.append(get_possible_inferiors(inferior_class));
     }
     // Remove duplicates with converting to set and back
-    out = QSet<QString>(out.begin(), out.end()).values();
-
-    return out;
+    return QSet<QString>(out.begin(), out.end()).values();
 }
 
 QList<QString> AdConfig::all_extended_right_classes() const {
@@ -800,8 +786,7 @@ QList<QString> AdConfig::all_extended_right_classes() const {
         out.append(obj_classes);
     }
     // Remove duplicates with QSet
-    out = QSet<QString>(out.begin(), out.end()).values();
-    return out;
+    return QSet<QString>(out.begin(), out.end()).values();
 }
 
 QStringList AdConfig::get_site_related_classes() const {
