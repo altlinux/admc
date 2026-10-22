@@ -146,6 +146,7 @@ DEFINE_SETTING(SETTING_custom_domain);
 DEFINE_SETTING(SETTING_current_icon_theme);
 DEFINE_SETTING(SETTING_last_logged_user)
 DEFINE_SETTING(SETTING_remembered_principals)
+DEFINE_SETTING(SETTING_was_last_exit_logout)
 
 // Feature flags
 //

@@ -673,6 +673,7 @@ void MainWindow::on_logout() {
         (! settings_are_creds_saved(krb5_client->current_principal()));
     auth_dialog->logout(delete_creds);
     krb5_client->logout(delete_creds);
+    settings_set_variant(SETTING_was_last_exit_logout, true);
 
     ui->console->refresh_scope(ui->console->domain_info_index());
     auth_dialog->show();

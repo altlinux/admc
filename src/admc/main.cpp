@@ -90,7 +90,9 @@ int main(int argc, char **argv) {
     {
         const bool show_login_window =
             settings_get_bool(SETTING_show_login_window_on_startup);
-        if (show_login_window) {
+        const bool was_last_exit_logout =
+            settings_get_bool(SETTING_was_last_exit_logout);
+        if (show_login_window || was_last_exit_logout) {
             krb5_client->logout(false);
         }
 
@@ -103,7 +105,7 @@ int main(int argc, char **argv) {
         }
         else {
             bool no_principals = krb5_client->active_tgt_principals().isEmpty();
-            if (show_login_window || no_principals) {
+            if (show_login_window || was_last_exit_logout || no_principals) {
                 main_window->open_auth_dialog();
             } else {
                 error_window = new MainWindowConnectionError(main_window);

@@ -314,6 +314,7 @@ void KrbAuthDialog::authenticate(const QString &principal) {
     ui->password_edit->clear();
     hide_passwd_widgets(true);
     ui->error_label->setHidden(true);
+    settings_set_variant(SETTING_was_last_exit_logout, false);
 }
 
 void KrbAuthDialog::on_sign_in() {
