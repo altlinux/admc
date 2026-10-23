@@ -85,6 +85,10 @@ bool ad_object_is_person(const AdObject &object) {
     return (object.is_class(CLASS_USER) || object.is_class(CLASS_INET_ORG_PERSON));
 }
 
+QString ad_object_get_gplink(const AdObject &object) {
+    return object.get_string(ATTRIBUTE_GPLINK);
+}
+
 QString ad_current_dc_dns_host_name(AdInterface &ad) {
     const AdObject rootDSE = ad.search_object("");
     const QString server_name = rootDSE.get_string(ATTRIBUTE_SERVER_NAME);

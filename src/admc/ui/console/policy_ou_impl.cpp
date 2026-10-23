@@ -121,7 +121,7 @@ void PolicyOUImpl::fetch(const QModelIndex &index) {
 
     // Add policies linked to this OU
     const AdObject parent_object = ad.search_object(dn);
-    const QString gplink_string = parent_object.get_string(ATTRIBUTE_GPLINK);
+    const QString gplink_string = ad_object_get_gplink(parent_object);
     const Gplink gplink = Gplink(gplink_string);
     const QList<QString> gpo_list = gplink.get_gpo_list();
 
