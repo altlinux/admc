@@ -598,14 +598,34 @@ bool SecurityRightState::get(const SecurityRightStateInherited inherited,
     return data[inherited][type];
 }
 
+/**
+ * Pull a security descriptor (SID) form the given byte array.
+ *
+ * @param mem_ctx Context.
+ * @param sd_bytes A byte array to convert.
+ * @return A newly created SID or nullptr on errors.
+ */
 security_descriptor *security_descriptor_make_from_bytes(
     TALLOC_CTX *mem_ctx,
     const QByteArray &sd_bytes)
 {
     DATA_BLOB blob = data_blob_const(sd_bytes.data(), sd_bytes.size());
     security_descriptor *out = talloc(mem_ctx, struct security_descriptor);
-    ndr_pull_struct_blob(&blob, out, out,
-                         (ndr_pull_flags_fn_t) ndr_pull_security_descriptor);
+    if (out == NULL) {
+        qCritical() << "ERROR:"
+                    << "security_descriptor_make_from_bytes:"
+                    << "Could not allocate memory";
+        return nullptr;
+    }
+    ndr_err_code ret = ndr_pull_struct_blob(
+        &blob, out, out,
+        (ndr_pull_flags_fn_t) ndr_pull_security_descriptor);
+    if (ret != NDR_ERR_SUCCESS) {
+        qCritical() << "ERROR:"
+                    << "security_descriptor_make_from_bytes:"
+                    << "Could not pull a SID structure from bytes";
+        return nullptr;
+    }
     return out;
 }
 

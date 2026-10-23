@@ -2709,6 +2709,13 @@ QString get_gpt_sd_string(const AdObject &gpc_object,
 
     security_descriptor *gpc_sd =
         gpc_object.get_security_descriptor(mem_ctx);
+    if (gpc_sd == nullptr) {
+        qCritical() << "ERROR:"
+                    << "get_gpt_sd_string:"
+                    << "Could not get a security descriptor";
+        talloc_free(mem_ctx);
+        return QString();
+    }
 
     struct security_descriptor *gpt_sd;
     const NTSTATUS create_sd_status =
