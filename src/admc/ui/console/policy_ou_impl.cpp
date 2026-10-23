@@ -19,30 +19,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QMenu>
+#include <QMessageBox>
+#include <QStandardItem>
+
 #include "adldap.h"
-#include "ui/console/all_policies_folder_impl.h"
-#include "ui/console/object/console_object_operations.h"
-#include "ui/console/policy_ou_impl.h"
-#include "ui/console/policy_impl.h"
-#include "core/console_item_type.h"
 #include "core/console/object/operations.h"
-#include "ui/dialog/create/policy.h"
-#include "ui/dialog/find/policy.h"
+#include "core/console_item_type.h"
 #include "core/fsmo.h"
 #include "core/globals.h"
+#include "core/managers/gplink_manager.h"
+#include "core/managers/icon_manager.h"
 #include "gplink.h"
-#include "ui/widget/result/policy_ou/policy_ou.h"
+#include "ui/console/all_policies_folder_impl.h"
+#include "ui/console/object/console_object_operations.h"
+#include "ui/console/policy_impl.h"
+#include "ui/console/policy_ou_impl.h"
+#include "ui/dialog/create/policy.h"
+#include "ui/dialog/find/policy.h"
 #include "ui/dialog/select/policy.h"
 #include "ui/status.h"
 #include "ui/utils.h"
-#include "core/managers/icon_manager.h"
-#include "core/managers/gplink_manager.h"
 #include "ui/widget/fsmo/fsmo_utils.h"
-
-#include <QDebug>
-#include <QMenu>
-#include <QStandardItem>
-#include <QMessageBox>
+#include "ui/widget/result/policy_ou/policy_ou.h"
 
 bool index_is_domain(const QModelIndex &index) {
     const QString dn = index.data(PolicyOURole_DN).toString();
