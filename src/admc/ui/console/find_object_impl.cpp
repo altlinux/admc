@@ -19,16 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/console/find_object_impl.h"
+#include <QModelIndex>
+#include <QStandardItem>
 
 #include "adldap.h"
 #include "core/console/object/operations.h"
 #include "core/console_item_type.h"
+#include "ui/console/find_object_impl.h"
 #include "ui/console/object/console_object_operations.h"
 #include "ui/widget/console/results_view.h"
-
-#include <QModelIndex>
-#include <QStandardItem>
 
 FindObjectImpl::FindObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {

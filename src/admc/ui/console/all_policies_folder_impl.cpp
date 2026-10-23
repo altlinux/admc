@@ -19,26 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/console/all_policies_folder_impl.h"
-
-#include "adldap.h"
-#include "ui/console/policy_impl.h"
-#include "ui/console/policy_root_impl.h"
-#include "core/console_item_type.h"
-#include "ui/widget/console/results_view.h"
-#include "ui/dialog/create/policy.h"
-#include "core/fsmo.h"
-#include "core/globals.h"
-#include "gplink.h"
-#include "ui/status.h"
-#include "ui/utils.h"
-#include "ui/widget/fsmo/fsmo_utils.h"
-#include "core/managers/gplink_manager.h"
-
 #include <QAction>
 #include <QList>
 #include <QStandardItem>
 #include <QMessageBox>
+
+#include "adldap.h"
+#include "core/console_item_type.h"
+#include "core/fsmo.h"
+#include "core/globals.h"
+#include "core/managers/gplink_manager.h"
+#include "gplink.h"
+#include "ui/console/all_policies_folder_impl.h"
+#include "ui/console/policy_impl.h"
+#include "ui/console/policy_root_impl.h"
+#include "ui/dialog/create/policy.h"
+#include "ui/status.h"
+#include "ui/utils.h"
+#include "ui/widget/console/results_view.h"
+#include "ui/widget/fsmo/fsmo_utils.h"
 
 AllPoliciesFolderImpl::AllPoliciesFolderImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {

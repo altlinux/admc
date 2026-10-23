@@ -19,21 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "adldap.h"
-#include "ui/console/all_policies_folder_impl.h"
-#include "ui/console/policy_root_impl.h"
-#include "core/console_item_type.h"
-#include "ui/console/policy_ou_impl.h"
-#include "ui/widget/console/results_view.h"
-#include "core/globals.h"
-#include "gplink.h"
-#include "ui/status.h"
-#include "ui/utils.h"
-#include "core/managers/icon_manager.h"
-#include "core/managers/gplink_manager.h"
-
 #include <QList>
 #include <QStandardItem>
+
+#include "adldap.h"
+#include "core/console_item_type.h"
+#include "core/globals.h"
+#include "core/managers/gplink_manager.h"
+#include "core/managers/icon_manager.h"
+#include "gplink.h"
+#include "ui/console/all_policies_folder_impl.h"
+#include "ui/console/policy_ou_impl.h"
+#include "ui/console/policy_root_impl.h"
+#include "ui/status.h"
+#include "ui/utils.h"
+#include "ui/widget/console/results_view.h"
 
 PolicyRootImpl::PolicyRootImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {

@@ -19,18 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "adldap.h"
+#include <QAction>
+#include <QStandardItem>
 
+#include "adldap.h"
 #include "core/console_item_type.h"
+#include "core/globals.h"
+#include "core/managers/icon_manager.h"
 #include "ui/console/find_policy_impl.h"
 #include "ui/console/found_policy_impl.h"
 #include "ui/console/policy_impl.h"
 #include "ui/utils.h"
-#include "core/globals.h"
-#include "core/managers/icon_manager.h"
-
-#include <QAction>
-#include <QStandardItem>
 
 FoundPolicyImpl::FoundPolicyImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {

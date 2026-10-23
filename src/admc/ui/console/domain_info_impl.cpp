@@ -17,28 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "domain_info_impl.h"
-#include "ui/widget/console/console_widget.h"
-#include "ui/widget/result/domain_info/domain_info.h"
-#include "ui/console/object/object_impl.h"
-#include "ui/console/policy_root_impl.h"
-#include "ui/console/query_folder_impl.h"
-#include "ad_interface.h"
-#include "core/console_item_type.h"
-#include "ui/dialog/connection_options.h"
-#include "ui/dialog/fsmo.h"
-#include "ui/utils.h"
-#include "ui/status.h"
-#include "core/globals.h"
-#include "core/managers/icon_manager.h"
-#include "core/managers/gplink_manager.h"
-
 #include <QSet>
 #include <QAction>
 #include <QModelIndex>
 #include <QStandardItem>
-#include <QIcon>
 
+#include "ad_interface.h"
+#include "core/console_item_type.h"
+#include "core/globals.h"
+#include "core/managers/gplink_manager.h"
+#include "core/managers/icon_manager.h"
+#include "domain_info_impl.h"
+#include "ui/console/object/object_impl.h"
+#include "ui/console/policy_root_impl.h"
+#include "ui/console/query_folder_impl.h"
+#include "ui/dialog/connection_options.h"
+#include "ui/dialog/fsmo.h"
+#include "ui/status.h"
+#include "ui/utils.h"
+#include "ui/widget/console/console_widget.h"
+#include "ui/widget/result/domain_info/domain_info.h"
 
 DomainInfoImpl::DomainInfoImpl(ConsoleWidget *console_arg): ConsoleImpl(console_arg) {
     domain_info_results_widget = new DomainInfoResultsWidget(console_arg);

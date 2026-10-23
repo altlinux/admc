@@ -18,7 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "password_settings_impl.h"
+#include <QAction>
+#include <QList>
+#include <QMessageBox>
+#include <QStandardItem>
 
 #include "ad_defines.h"
 #include "adldap.h"
@@ -26,6 +29,7 @@
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/utils.h"
+#include "password_settings_impl.h"
 #include "ui/console/object/console_object_operations.h"
 #include "ui/console/object/object_impl.h"
 #include "ui/console/policy_impl.h"
@@ -35,11 +39,6 @@
 #include "ui/widget/console/results_view.h"
 #include "ui/widget/fsmo/fsmo_utils.h"
 #include "ui/widget/result/pso/pso.h"
-
-#include <QAction>
-#include <QList>
-#include <QMessageBox>
-#include <QStandardItem>
 
 PasswordSettingsImpl::PasswordSettingsImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
