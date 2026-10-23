@@ -22,9 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
 #include <QMenu>
-#include <QMessageBox>
 #include <QSet>
 #include <QStackedWidget>
 #include <QStandardItemModel>
