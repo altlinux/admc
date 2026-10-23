@@ -284,11 +284,9 @@ void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
     const bool recursive_cut_and_paste =
         (copied_is_cut && copied_list.contains(parent_index));
     if (recursive_cut_and_paste) {
-        message_box_warning(
+        message_box_generic_error(
             console,
-            tr("Error"),
             tr("Can't cut and paste query folder into itself."));
-
         return;
     }
 
@@ -309,9 +307,8 @@ void QueryFolderImpl::paste(const QList<QModelIndex> &index_list) {
     // console_query_move() does check for name
     // conflicts but doesn't handle this edge case.
     if (!copied_is_cut && parent_is_same) {
-        message_box_warning(
+        message_box_generic_error(
             console,
-            tr("Error"),
             tr("There's already an item with this name."));
 
         return;
@@ -345,10 +342,7 @@ void QueryFolderImpl::on_import() {
             const QString error_text = QCoreApplication::translate(
                 "query.cpp",
                 "Could not open a query file.");
-            message_box_warning(
-                console,
-                QCoreApplication::translate("query.cpp", "Error"),
-                error_text);
+            message_box_generic_error(console, error_text);
             console_query_item_load_hash(console, data, parent_index);
             continue;
         }
@@ -360,11 +354,7 @@ void QueryFolderImpl::on_import() {
             const QString error_text = QCoreApplication::translate(
                 "query.cpp",
                 "Query file is corrupted.");
-            message_box_warning(console,
-                                QCoreApplication::translate("query.cpp",
-                                                            "Error"),
-                                error_text);
-
+            message_box_generic_error(console, error_text);
             console_query_item_load_hash(console, data, parent_index);
             continue;
         }
@@ -632,10 +622,7 @@ bool console_query_or_folder_name_is_good(const QString &name,
         const QString error_text =
             QString(QCoreApplication::translate("query.cpp",
                                                 "Name may not be empty"));
-        message_box_warning(
-            parent_widget,
-            QCoreApplication::translate("query.cpp", "Error"),
-            error_text);
+        message_box_generic_error(parent_widget, error_text);
 
         return false;
     }
@@ -648,16 +635,12 @@ bool console_query_or_folder_name_is_good(const QString &name,
             QString(QCoreApplication::translate(
                         "query.cpp",
                         "There's already an item with this name."));
-        message_box_warning(parent_widget,
-                            QCoreApplication::translate("query.cpp", "Error"),
-                            error_text);
+        message_box_generic_error(parent_widget, error_text);
     } else if (name_contains_slash) {
         const QString error_text =
             QString(QCoreApplication::translate("query.cpp",
                                                 "Names cannot contain \"/\"."));
-        message_box_warning(parent_widget,
-                            QCoreApplication::translate("query.cpp", "Error"),
-                            error_text);
+        message_box_generic_error(parent_widget, error_text);
     }
 
     const bool name_is_good = (!name_conflict && !name_contains_slash);

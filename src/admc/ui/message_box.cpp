@@ -19,6 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QCoreApplication>
 #include <QMessageBox>
 #include <QString>
 #include <QWidget>
@@ -63,6 +64,21 @@ QMessageBox *message_box_warning(QWidget *parent,
                                  const QString &title,
                                  const QString &text) {
     return message_box_generic(QMessageBox::Warning, title, text, parent);
+}
+
+/**
+ * Show a generic message box with "Error" in the title and the given error text
+ * inside.
+ *
+ * @param text An error text to show.
+ * @return A pointer to a newly created message box.
+ */
+QMessageBox *message_box_generic_error(QWidget *parent,
+                                       const QString &text) {
+    return message_box_generic(QMessageBox::Warning,
+                               QObject::tr("Error"),
+                               text,
+                               parent);
 }
 
 bool confirmation_dialog(const QString &text, QWidget *parent) {

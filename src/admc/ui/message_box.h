@@ -46,6 +46,8 @@ QMessageBox *message_box_question(QWidget *parent,
 QMessageBox *message_box_warning(QWidget *parent,
                                  const QString &title,
                                  const QString &text);
+QMessageBox *message_box_generic_error(QWidget *parent,
+                                       const QString &text);
 
 bool confirmation_dialog(const QString &text, QWidget *parent);
 

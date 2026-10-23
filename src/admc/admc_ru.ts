@@ -3975,6 +3975,10 @@
         <translation>Подтверждение действия</translation>
     </message>
     <message>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
         <location filename="ui/console/object/console_object_operations.cpp" line="506"/>
         <source>Fine-grained password policies</source>
         <translation>Детализированные политики паролей</translation>
