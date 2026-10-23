@@ -23,24 +23,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QCoreApplication>
+#include <QLocale>
+#include <algorithm>
+
 #include "ad_config.h"
 #include "ad_config_p.h"
-
+#include "ad_display.h"
 #include "ad_filter.h"
 #include "ad_interface.h"
 #include "ad_object.h"
 #include "ad_security.h"
 #include "ad_utils.h"
-#include "ad_display.h"
-
-#include "samba/ndr_security.h"
-
 #include "lcid.h"
-
-#include <QCoreApplication>
-#include <QDebug>
-#include <QLocale>
-#include <algorithm>
+#include "samba/ndr_security.h"
 
 #define ATTRIBUTE_ATTRIBUTE_DISPLAY_NAMES "attributeDisplayNames"
 #define ATTRIBUTE_EXTRA_COLUMNS "extraColumns"
