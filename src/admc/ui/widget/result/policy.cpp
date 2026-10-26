@@ -19,29 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/widget/result/policy.h"
-#include "ui/widget/result/ui_policy.h"
-
-#include "adldap.h"
-#include "core/console_item_type.h"
-#include "ui/console/policy_impl.h"
-//#include "console_widget/console_widget.h"
-#include "ui/widget/console/results_view.h"
-#include "core/globals.h"
-#include "core/settings.h"
-#include "core/utils.h"
-#include "ui/status.h"
-#include "ui/utils.h"
-#include "core/managers/icon_manager.h"
-#include "core/managers/gplink_manager.h"
-
 #include <QAction>
 #include <QHeaderView>
 #include <QMenu>
 #include <QModelIndex>
 #include <QStandardItemModel>
 #include <QTreeView>
-#include <QVBoxLayout>
+
+#include "adldap.h"
+#include "core/console_item_type.h"
+#include "core/globals.h"
+#include "core/managers/gplink_manager.h"
+#include "core/managers/icon_manager.h"
+#include "core/settings.h"
+#include "core/utils.h"
+#include "ui/console/policy_impl.h"
+#include "ui/status.h"
+#include "ui/utils.h"
+#include "ui/widget/result/policy.h"
+#include "ui/widget/result/ui_policy.h"
 
 enum PolicyResultsColumn {
     PolicyResultsColumn_Name,
