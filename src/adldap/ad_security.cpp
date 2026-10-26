@@ -741,11 +741,22 @@ QString ad_security_get_trustee_name(AdInterface &ad,
     }
 }
 
+/**
+ * Convert a security descriptor (SID) to a byte array.
+ *
+ * @param new_sd A SID to convert.
+ * @return A new byte array or a nullptr on errors.
+ */
 static QByteArray descriptor_to_bytes(const security_descriptor *new_sd) {
     TALLOC_CTX *tmp_ctx = talloc_new(NULL);
     DATA_BLOB blob;
-    ndr_push_struct_blob(&blob, tmp_ctx, new_sd,
-                         (ndr_push_flags_fn_t) ndr_push_security_descriptor);
+    enum ndr_err_code ndr_err = ndr_push_struct_blob(
+        &blob, tmp_ctx, new_sd,
+        (ndr_push_flags_fn_t) ndr_push_security_descriptor);
+    if (! NDR_ERR_CODE_IS_SUCCESS(ndr_err)) {
+        talloc_free(tmp_ctx);
+        return nullptr;
+    }
 
     const QByteArray out = QByteArray((char *) blob.data, blob.length);
 
