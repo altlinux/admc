@@ -19,20 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "permissions.h"
-
-#include "ui/utils.h"
-#include "core/settings.h"
-#include "samba/ndr_security.h"
-#include "adldap.h"
-#include "core/globals.h"
-#include "core/utils.h"
-
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QLayout>
-#include <QDebug>
 
+#include "adldap.h"
+#include "core/globals.h"
+#include "core/settings.h"
+#include "core/utils.h"
+#include "permissions.h"
+#include "samba/ndr_security.h"
+#include "ui/utils.h"
 
 PermissionsWidget::PermissionsWidget(QWidget *parent) :
     QWidget(parent), read_only(false) {
