@@ -218,9 +218,7 @@ QByteArray dom_sid_string_to_bytes(const QString &string) {
  * read.
  */
 uint32_t ad_security_map_access_mask(const uint32_t access_mask) {
-    const bool is_generic_read = (access_mask == SEC_ADS_GENERIC_READ);
-
-    if (is_generic_read) {
+    if (access_mask == SEC_ADS_GENERIC_READ) {
         return GENERIC_READ_FIXED;
     } else {
         return access_mask;
@@ -665,8 +663,7 @@ security_descriptor *security_descriptor_make_from_bytes(
 security_descriptor *security_descriptor_make_from_bytes(
     const QByteArray &sd_bytes)
 {
-    security_descriptor *out = security_descriptor_make_from_bytes(NULL, sd_bytes);
-    return out;
+    return security_descriptor_make_from_bytes(NULL, sd_bytes);
 }
 
 /**
