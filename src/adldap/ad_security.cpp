@@ -41,6 +41,9 @@ static const QList<int> ACE_TYPES_WITH_OBJECT = {
     SEC_ACE_TYPE_SYSTEM_ALARM_OBJECT,
 };
 
+/**
+ * Well-known security identifiers (SID) list.
+ */
 const QList<QString> WELL_KNOWN_SID_LIST = {
     SID_WORLD_DOMAIN,
     SID_WORLD,
@@ -172,12 +175,24 @@ CommonTaskManager *common_task_manager = new CommonTaskManager();
 ////////////////////////////////////////////////////////////////////////////////
 // Helper procedures.
 
+/**
+ * Convert a domain security identifier (SID) structure instance to a byte
+ * array.
+ *
+ * @param sid A dom_sid instance to convert.
+ * @return A byte array.
+ */
 QByteArray dom_sid_to_bytes(const dom_sid &sid) {
     return QByteArray((char *) &sid, sizeof(struct dom_sid));
 }
 
-// Copy sid bytes into dom_sid struct and adds padding
-// if necessary
+/**
+ * Copy security identifier (SID) bytes into domain security identifier and add
+ * padding if necessary.
+ *
+ * @param bytes A byte array to convert.
+ * @return A new dom_sid structure instance.
+ */
 dom_sid dom_sid_from_bytes(const QByteArray &bytes) {
     dom_sid out;
     memset(&out, '\0', sizeof(dom_sid));
@@ -186,14 +201,22 @@ dom_sid dom_sid_from_bytes(const QByteArray &bytes) {
     return out;
 }
 
+/**
+ * Convert a domain security identifier (SID) string into a byte array.
+ *
+ * @param string A string to convert.
+ * @return A new byte array.
+ */
 QByteArray dom_sid_string_to_bytes(const QString &string) {
     dom_sid sid;
     dom_sid_parse(cstr(string), &sid);
     return dom_sid_to_bytes(sid);
 }
 
-// This f-n is only necessary to band-aid one problem
-// with generic read.
+/**
+ * NOTE: This function is only necessary to band-aid one problem with generic
+ * read.
+ */
 uint32_t ad_security_map_access_mask(const uint32_t access_mask) {
     const bool is_generic_read = (access_mask == SEC_ADS_GENERIC_READ);
 
@@ -225,22 +248,19 @@ bool ace_is_access_allowed(const security_ace &ace) {
             (ace.type == SEC_ACE_TYPE_ACCESS_ALLOWED_OBJECT));
 }
 
-// This simplified version of ace_compare() for
-// verifying ACL order. Only includes necessary
-// comparisons specified by Microsoft here:
-// https://docs.microsoft.com/en-us/windows/win32/secauthz/order-of-aces-in-a-dacl
-//
-// TODO: currently missing one comparison:
-//
-// "Inherited ACE's are placed in the order in which
-// they are inherited"
-//
-// Not a big problem because inherited ACE's are added
-// to ACL by the server. Clients cannot manually add
-// such ACE's, so theoretically their order should
-// always be correct. But do implement this at some
-// point, just in case. Using order requirements listed
-// here:
+/**
+ * This simplified version of ace_compare() for verifying ACL order.  Only
+ * includes necessary comparisons specified by Microsoft here:
+ * https://docs.microsoft.com/en-us/windows/win32/secauthz/order-of-aces-in-a-dacl
+ *
+ * TODO: currently missing one comparison:
+     "Inherited ACE's are placed in the order in which they are inherited"
+ *
+ * Not a big problem because inherited ACE's are added to ACL by the server.
+ * Clients cannot manually add such ACE's, so theoretically their order should
+ * always be correct. But do implement this at some point, just in case.  Using
+ * order requirements listed here:
+ */
 int ace_compare_simplified(const security_ace &ace1, const security_ace &ace2) {
     /* If the ACEs are equal, we have nothing more to do. */
     if (security_ace_equal(&ace1, &ace2)) {
@@ -383,14 +403,16 @@ static int match_dacl_index(const QByteArray &trustee,
 ////////////////////////////////////////////////////////////////////////////////
 // Adding/removing ACEs.
 
-// NOTE: these "base" f-ns are used by the full versions of add/remove right
-// f-ns. Base f-ns do only the bare minimum, just adding/removing matching ace,
-// without handling opposites, subordinates, superiors, etc. They also don't
-// sort ACL, callers need to handle sorting themselves. - Dmitry Degtyarev
+/**
+ * NOTE: these "base" f-ns are used by the full versions of add/remove right
+ * functions.  Base functions do only the bare minimum, just adding/removing
+ * matching ace, without handling opposites, subordinates, superiors, etc.  They
+ * also don't sort ACL, callers need to handle sorting themselves. - Dmitry
+ * Degtyarev
 
-// Checks if ace matches given members. Note that access masks are not
-// compared. Compare them yourself if you need to further filter by masks.
-
+ * Checks if ace matches given members. Note that access masks are not compared.
+ * Compare them yourself if you need to further filter by masks.
+ */
 static bool are_rights_already_set(const QList<security_ace> &dacl,
                                    const int &matching_index,
                                    const uint32_t &access_mask) {
@@ -418,6 +440,11 @@ static security_ace_type get_security_ace_type(const bool &object_present,
     return SEC_ACE_TYPE_ACCESS_ALLOWED;
 }
 
+/**
+ * Convert a byte array to a GUID structure.
+ * @param guid_bytes A byte array to convert.
+ * @return A newly created GUID structure.
+ */
 static struct GUID bytes_to_guid(const QByteArray &guid_bytes) {
     struct GUID guid;
     memcpy(&guid, guid_bytes.data(), sizeof(GUID));
@@ -474,9 +501,11 @@ static security_ace make_security_ace(const QByteArray &trustee,
     return out;
 }
 
-// NOTE: need to handle a special case due to read and write rights sharing the
-// "read control" bit. When setting either read/write, don't change that shared
-// bit if the other of these rights is set. -- Dmitry Degtyarev
+/**
+ * NOTE: need to handle a special case due to read and write rights sharing the
+ * "read control" bit.  When setting either read/write, don't change that shared
+ * bit if the other of these rights is set. -- Dmitry Degtyarev
+ */
 static uint32_t get_mask_to_unset(const security_ace &ace,
                                   const uint32_t &access_mask) {
     static const QHash<uint32_t, uint32_t> OPPOSITE_MAP = {
@@ -628,6 +657,11 @@ security_descriptor *security_descriptor_make_from_bytes(
     return out;
 }
 
+/**
+ * Make a new security descriptor from an array of bytes.
+ * @param sd_bytes An array to convert.
+ * @return A newly created security descriptor.
+ */
 security_descriptor *security_descriptor_make_from_bytes(
     const QByteArray &sd_bytes)
 {
@@ -635,6 +669,10 @@ security_descriptor *security_descriptor_make_from_bytes(
     return out;
 }
 
+/**
+ * Destroy a given security descriptor.
+ * @param sd A security descriptor to destroy.
+ */
 void security_descriptor_free(security_descriptor *sd) {
     if (sd == nullptr) {
         return;
@@ -644,6 +682,10 @@ void security_descriptor_free(security_descriptor *sd) {
     sd = nullptr;
 }
 
+/**
+ * Make a copy of a given security descriptor.
+ * @return A copy of the given security descriptor.
+ */
 security_descriptor *security_descriptor_copy(security_descriptor *sd) {
     return security_descriptor_copy(NULL, sd);
 }
@@ -653,8 +695,10 @@ QString ad_security_get_well_known_trustee_name(const QByteArray &trustee) {
     return TRUSTEE_NAME_MAP.value(trustee_string, QString());
 }
 
-// NOTE: this is some weird name selection logic but that's how microsoft does
-// it.  Maybe need to use this somewhere else as well?
+/**
+ * NOTE: this is some weird name selection logic but that's how microsoft does
+ * it.  Maybe need to use this somewhere else as well?
+ */
 const QString trustee_search_results_get_name(
     const QHash<QString, AdObject> &results)
 {
@@ -1070,9 +1114,10 @@ static bool is_order_correct(const security_descriptor *copy) {
     return out;
 }
 
-// TODO: Need to verify SACL order as well, because
-// advanced security dialog(to be implemented) edits
-// SACL.
+/**
+ * TODO: Need to verify SACL order as well, because advanced security dialog (to
+ * be implemented) edits SACL.
+ */
 bool security_descriptor_verify_acl_order(security_descriptor *sd) {
     security_descriptor *copy = security_descriptor_copy(sd);
     const bool order_is_correct = is_order_correct(copy);
