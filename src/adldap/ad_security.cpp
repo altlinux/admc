@@ -161,12 +161,11 @@ const QList<uint32_t> COMMON_RIGHTS_LIST = {
     SEC_ADS_DELETE_CHILD
 };
 
-// NOTE: This is needed because for some reason,
-// security editing in RSAT has a different value for
-// generic read, without the "list object" right. Need
-// to remove that bit both when setting generic read
-// and when reading it.
-#define GENERIC_READ_FIXED (SEC_ADS_GENERIC_READ & ~SEC_ADS_LIST_OBJECT)
+// NOTE: This is needed because for some reason, security editing in RSAT has a
+// different value for generic read, without the "list object" right. Need to
+// remove that bit both when setting generic read and when reading it.
+static const uint32_t GENERIC_READ_FIXED =
+    (SEC_ADS_GENERIC_READ & ~SEC_ADS_LIST_OBJECT);
 
 CommonTaskManager *common_task_manager = new CommonTaskManager();
 
