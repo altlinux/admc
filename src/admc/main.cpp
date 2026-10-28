@@ -21,6 +21,7 @@
  */
 
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QGuiApplication>
 #include <QScreen>
 
@@ -55,6 +56,11 @@ int main(int argc, char **argv) {
     app.setOrganizationName(ADMC_ORGANIZATION);
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
     app.setWindowIcon(QIcon(":/admc/admc.ico"));
+
+    QCommandLineParser parser;
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.process(app);
 
     QScreen *screen = QGuiApplication::primaryScreen();
     qreal dpi = screen->logicalDotsPerInch();
