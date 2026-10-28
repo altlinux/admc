@@ -21,8 +21,6 @@
  */
 
 #include <QApplication>
-#include <QDebug>
-#include <QLibraryInfo>
 #include <QGuiApplication>
 #include <QScreen>
 
@@ -45,10 +43,9 @@ int main(int argc, char **argv) {
 
     QGuiApplication::setDesktopFileName("admc");
 
-    // NOTE: this is needed to pass this type from thread's
-    // signal in find_widget.cpp. Without doing this,
-    // passing this type from thread results in a runtime
-    // error.
+    // NOTE: this is needed to pass this type from thread's signal in
+    // find_widget.cpp. Without doing this, passing this type from thread
+    // results in a runtime error.
     qRegisterMetaType<QHash<QString, AdObject>>("QHash<QString, AdObject>");
 
     QApplication app(argc, argv);
@@ -76,7 +73,9 @@ int main(int argc, char **argv) {
 
         const QString last_logged_user =
             settings_get_string(SETTING_last_logged_user);
-        if (!last_logged_user.isEmpty() && krb5_client->active_tgt_principals().contains(last_logged_user)) {
+        if ((! last_logged_user.isEmpty()) &&
+            krb5_client->active_tgt_principals().contains(last_logged_user))
+        {
             krb5_client->set_current_principal(last_logged_user);
         }
     }
