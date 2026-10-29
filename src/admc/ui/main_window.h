@@ -51,7 +51,8 @@ class MainWindow final : public QMainWindow {
 public:
     Ui::MainWindow *ui;
 
-    MainWindow(AdInterface &ad, Krb5Client &krb5_client_arg, QWidget *parent = nullptr);
+    MainWindow(AdInterface &ad, Krb5Client &krb5_client_arg, QString principal,
+               QWidget *parent = nullptr);
     ~MainWindow();
 
     void show_changelog_on_update();
@@ -63,6 +64,7 @@ protected:
     void changeEvent(QEvent *event);
 
 private:
+    QString default_principal;
     QLabel *login_label;
     AuthDialogBase *auth_dialog;
     bool inited = false;

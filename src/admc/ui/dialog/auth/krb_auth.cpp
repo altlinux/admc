@@ -32,14 +32,19 @@ enum {
     ROW_PASSWORD_CONFIRMATION = 5
 };
 
-KrbAuthDialog::KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg)
+KrbAuthDialog::KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg,
+    QString principal)
     : AuthDialogBase(parent), ui(new Ui::KrbAuthDialog),
       state(KRB5_DIALOG_STATE_AUTHENTICATION),
-      client(krb_client_arg)
+      client(krb_client_arg),
+      default_principal(principal)
 {
     ui->setupUi(this);
     switch_ui_to_authentication();
     setupWidgets();
+    if (default_principal != nullptr) {
+        ui->principal_cmb_box->setCurrentText(default_principal);
+    }
 }
 
 KrbAuthDialog::~KrbAuthDialog() {

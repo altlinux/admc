@@ -69,6 +69,13 @@ int main(int argc, char **argv) {
             "Sets the domain controller to connect to."),
         "domain-controller");
     parser.addOption(dc_option);
+    QCommandLineOption principal_option(
+        "p",
+        QCoreApplication::translate(
+            "main",
+            "Sets the principal name to use."),
+        "principal");
+    parser.addOption(principal_option);
     parser.process(app);
 
     QString custom_dc = nullptr;
@@ -86,13 +93,19 @@ int main(int argc, char **argv) {
     font.setPointSize(scaledSize);
     app.setFont(font);
 
+    QString default_principal = nullptr;
+    if (parser.isSet(principal_option)) {
+        default_principal = parser.value(principal_option);
+    }
+
     std::unique_ptr<Krb5Client> krb5_client = nullptr;
     try {
         krb5_client = std::unique_ptr<Krb5Client>(new Krb5Client);
 
         const QString last_logged_user =
-            settings_get_string(SETTING_last_logged_user);
-        if ((! last_logged_user.isEmpty()) &&
+             settings_get_string(SETTING_last_logged_user);
+        if ((default_principal == nullptr) &&
+            (! last_logged_user.isEmpty()) &&
             krb5_client->active_tgt_principals().contains(last_logged_user))
         {
             krb5_client->set_current_principal(last_logged_user);
@@ -111,13 +124,15 @@ int main(int argc, char **argv) {
             settings_get_bool(SETTING_show_login_window_on_startup);
         const bool was_last_exit_logout =
             settings_get_bool(SETTING_was_last_exit_logout);
-        if (show_login_window || was_last_exit_logout) {
+        if (show_login_window || was_last_exit_logout ||
+            (default_principal != nullptr))
+        {
             krb5_client->logout(false);
         }
 
         AdInterface::set_custom_dc(custom_dc);
         AdInterface ad;
-        main_window = new MainWindow(ad, *krb5_client);
+        main_window = new MainWindow(ad, *krb5_client, default_principal);
         main_window->show();
 
         if (ad.is_connected()) {
@@ -125,8 +140,9 @@ int main(int argc, char **argv) {
         }
         else {
             bool no_principals = krb5_client->active_tgt_principals().isEmpty();
-            if (show_login_window || was_last_exit_logout || no_principals ||
-                (custom_dc != nullptr)) {
+            if (show_login_window || was_last_exit_logout || no_principals
+                || (default_principal != nullptr) || (custom_dc != nullptr))
+            {
                 main_window->open_auth_dialog();
             } else {
                 error_window = new MainWindowConnectionError(main_window);

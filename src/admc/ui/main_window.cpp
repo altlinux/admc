@@ -64,8 +64,10 @@
 
 MainWindow::MainWindow(AdInterface &ad,
                        Krb5Client &krb5_client_arg,
+                       QString principal,
                        QWidget *parent)
-: QMainWindow(parent), krb5_client(&krb5_client_arg) {
+: QMainWindow(parent), krb5_client(&krb5_client_arg),
+  default_principal(principal) {
     ui = new Ui::MainWindow();
     ui->setupUi(this);
 
@@ -623,7 +625,7 @@ void MainWindow::init_on_connect(AdInterface &ad) {
 }
 
 void MainWindow::setup_authentication_dialog() {
-    auth_dialog = new KrbAuthDialog(this, krb5_client);
+    auth_dialog = new KrbAuthDialog(this, krb5_client, default_principal);
     connect(auth_dialog, &KrbAuthDialog::authenticated, this, [this]() {
         AdInterface ad;
         if (!ad.is_connected()) {

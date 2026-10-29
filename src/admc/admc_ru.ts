@@ -5117,5 +5117,9 @@
         <source>Sets the domain controller to connect to.</source>
         <translation>Задаёт контроллер домена для подключения.</translation>
     </message>
+    <message>
+        <source>Sets the principal name to use.</source>
+        <translation>Задаёт имя принципала для подключения.</translation>
+    </message>
 </context>
 </TS>

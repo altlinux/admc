@@ -46,7 +46,8 @@ class KrbAuthDialog final : public AuthDialogBase {
     Q_OBJECT
 
 public:
-    explicit KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg);
+    explicit KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg,
+        QString principal = nullptr);
     ~KrbAuthDialog();
 
     virtual void logout(bool delete_creds) override;
@@ -57,6 +58,7 @@ private:
 
     KrbDialogState state;
     bool enterprise = false;
+    QString default_principal;
 
     virtual void setupWidgets() override;
     virtual void on_sign_in() override;
