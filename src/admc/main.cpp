@@ -57,10 +57,25 @@ int main(int argc, char **argv) {
     app.setOrganizationDomain(ADMC_ORGANIZATION_DOMAIN);
     app.setWindowIcon(QIcon(":/admc/admc.ico"));
 
+    AdmcTranslator::get_instance().load_saved_locale();
+
     QCommandLineParser parser;
     parser.addHelpOption();
     parser.addVersionOption();
+    QCommandLineOption dc_option(
+        "d",
+        QCoreApplication::translate(
+            "main",
+            "Sets the domain controller to connect to."),
+        "domain-controller");
+    parser.addOption(dc_option);
     parser.process(app);
+
+    QString custom_dc = nullptr;
+    if (parser.isSet(dc_option)) {
+        custom_dc = parser.value(dc_option);
+        settings_set_variant(SETTING_host, custom_dc);
+    }
 
     QScreen *screen = QGuiApplication::primaryScreen();
     qreal dpi = screen->logicalDotsPerInch();
@@ -70,8 +85,6 @@ int main(int argc, char **argv) {
     int scaledSize = std::round(baseSize * dpi / 96.0);
     font.setPointSize(scaledSize);
     app.setFont(font);
-
-    AdmcTranslator::get_instance().load_saved_locale();
 
     std::unique_ptr<Krb5Client> krb5_client = nullptr;
     try {
@@ -102,6 +115,7 @@ int main(int argc, char **argv) {
             krb5_client->logout(false);
         }
 
+        AdInterface::set_custom_dc(custom_dc);
         AdInterface ad;
         main_window = new MainWindow(ad, *krb5_client);
         main_window->show();
@@ -111,7 +125,8 @@ int main(int argc, char **argv) {
         }
         else {
             bool no_principals = krb5_client->active_tgt_principals().isEmpty();
-            if (show_login_window || was_last_exit_logout || no_principals) {
+            if (show_login_window || was_last_exit_logout || no_principals ||
+                (custom_dc != nullptr)) {
                 main_window->open_auth_dialog();
             } else {
                 error_window = new MainWindowConnectionError(main_window);

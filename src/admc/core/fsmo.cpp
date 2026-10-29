@@ -132,6 +132,7 @@ QString fsmo_current_master_for_role(AdInterface &ad, FSMORole role) {
 void fsmo_connect_host_with_role(AdInterface &ad, FSMORole role) {
     QString current_master = fsmo_current_master_for_role(ad, role);
     settings_set_variant(SETTING_host, current_master);
+    AdInterface::set_custom_dc(nullptr);
     AdInterface::set_dc(current_master);
     ad.update_dc();
 }

@@ -5111,4 +5111,11 @@
         <translation>Ошибка</translation>
     </message>
 </context>
+<context>
+    <name>main</name>
+    <message>
+        <source>Sets the domain controller to connect to.</source>
+        <translation>Задаёт контроллер домена для подключения.</translation>
+    </message>
+</context>
 </TS>

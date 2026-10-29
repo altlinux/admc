@@ -66,6 +66,7 @@ private:
     static AdConfig *adconfig;
     static bool s_log_searches;
     static QString s_dc;
+    static QString s_custom_dc;
     static void *s_sasl_nocanon;
     static int s_port;
     static bool s_domain_is_default;

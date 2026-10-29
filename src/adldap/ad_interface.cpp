@@ -97,6 +97,7 @@ int create_sd_control(bool get_sacl, int is_critical, LDAPControl **ctrlp, bool 
 AdConfig *AdInterfacePrivate::adconfig = nullptr;
 bool AdInterfacePrivate::s_log_searches = false;
 QString AdInterfacePrivate::s_dc = QString();
+QString AdInterfacePrivate::s_custom_dc = nullptr;
 bool AdInterfacePrivate::s_domain_is_default = true;
 QString AdInterfacePrivate::s_custom_domain = QString();
 void *AdInterfacePrivate::s_sasl_nocanon = LDAP_OPT_ON;
@@ -168,7 +169,11 @@ AdInterface::AdInterface() {
     // Connect via LDAP
     //
 
-    d->dc = find_domain_controller();
+    if (d->s_custom_dc == nullptr) {
+        d->dc = find_domain_controller();
+    } else {
+        d->dc = d->s_custom_dc;
+    }
 
     if (AdInterfacePrivate::s_dc.isEmpty()) {
         AdInterfacePrivate::s_dc = d->dc;
@@ -206,6 +211,21 @@ void AdInterface::set_log_searches(const bool enabled) {
 
 void AdInterface::set_dc(const QString &dc) {
     AdInterfacePrivate::s_dc = dc;
+}
+
+/**
+ * Get the current custom domain controller (DC) name.
+ */
+QString AdInterface::get_custom_dc() {
+    return AdInterfacePrivate::s_custom_dc;
+}
+
+/**
+ * Set the custom domain controller (DC) name.  This DC has priority over the DC
+ * that is stored in the application settings after the previous run.
+ */
+void AdInterface::set_custom_dc(const QString &dc) {
+    AdInterfacePrivate::s_custom_dc = dc;
 }
 
 void AdInterface::set_sasl_nocanon(const bool is_on) {

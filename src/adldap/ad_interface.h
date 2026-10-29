@@ -107,6 +107,8 @@ public:
     static void set_log_searches(const bool enabled);
 
     static void set_dc(const QString &dc);
+    static QString get_custom_dc();
+    static void set_custom_dc(const QString &dc);
     static void set_sasl_nocanon(const bool is_on);
     static void set_port(const int port);
     static void set_cert_strategy(const CertStrategy strategy);

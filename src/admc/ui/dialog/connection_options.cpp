@@ -174,11 +174,15 @@ void ConnectionOptionsDialog::accept() {
         {SETTING_domain_is_default, domain_is_default}
     };
 
+    const QString CURRENT_CUSTOM_DC = AdInterface::get_custom_dc();
+    AdInterface::set_custom_dc(nullptr);
+
     load_connection_options(settings);
 
     AdInterface ad;
     if (ad_failed(ad, parentWidget())) {
         // load back options from config
+        AdInterface::set_custom_dc(CURRENT_CUSTOM_DC);
         load_connection_options();
         return;
     }
