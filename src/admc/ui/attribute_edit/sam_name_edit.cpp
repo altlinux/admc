@@ -47,32 +47,33 @@ SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit,
         this, &AttributeEdit::edited);
 }
 
+/**
+ * Get a trimmed value of the Samba name from the input field.
+ * @param edit An edit field to get the value from.
+ * @return The trimmed value as a string.
+ */
+static QString get_value(const QLineEdit *edit) {
+    return edit->text().trimmed();
+}
+
 void SamNameEdit::load(AdInterface &ad, const AdObject &object) {
     Q_UNUSED(ad);
-
-    const QString value = object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME);
-    edit->setText(value);
+    edit->setText(object.get_string(ATTRIBUTE_SAM_ACCOUNT_NAME));
 }
 
 bool SamNameEdit::verify(AdInterface &ad, const QString &dn) const {
     Q_UNUSED(ad);
     Q_UNUSED(dn);
-
-    const bool out = sam_name_edit_verify(edit);
-
-    return out;
+    return sam_name_edit_verify(edit);
 }
 
 // NOTE: requirements are from here
 // https://social.technet.microsoft.com/wiki/contents/articles/11216.active-directory-requirements-for-creating-objects.aspx#Note_Regarding_the_quot_quot_Character_in_sAMAccountName
 bool sam_name_edit_verify(QLineEdit *edit) {
-    const QString new_value = edit->text().trimmed();
-
+    const QString new_value = get_value(edit);
     const bool contains_bad_chars =
         string_contains_bad_chars(new_value, SAM_NAME_BAD_CHARS);
-
     const bool ends_with_dot = new_value.endsWith(".");
-
     const bool value_is_valid = (!contains_bad_chars && !ends_with_dot);
 
     if (!value_is_valid) {
@@ -93,11 +94,9 @@ bool sam_name_edit_verify(QLineEdit *edit) {
 }
 
 bool SamNameEdit::apply(AdInterface &ad, const QString &dn) const {
-    const QString new_value = edit->text().trimmed();
-    const bool success = ad.attribute_replace_string(
+    const QString new_value = get_value(edit);
+    return ad.attribute_replace_string(
         dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
-
-    return success;
 }
 
 void SamNameEdit::set_enabled(const bool enabled) {
