@@ -1,8 +1,10 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2026 BaseALT Ltd.
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2023 Ivan A. Melnikov
+ * Copyright (C) 2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,8 +29,11 @@
 #include "ui/attribute_edit/computer_sam_name_edit.h"
 #include "ui/attribute_edit/sam_name_edit.h"
 
-ComputerSamNameEdit::ComputerSamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QObject *parent)
-: AttributeEdit(parent) {
+ComputerSamNameEdit::ComputerSamNameEdit(QLineEdit *edit_arg,
+                                         QLineEdit *domain_edit,
+                                         QObject *parent)
+    : AttributeEdit(parent)
+{
     edit = edit_arg;
 
     edit->setMaxLength(SAM_NAME_COMPUTER_MAX_LENGTH);
@@ -68,7 +73,8 @@ bool ComputerSamNameEdit::verify(AdInterface &ad, const QString &dn) const {
 bool ComputerSamNameEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString name = edit->text().trimmed();
     const QString new_value = QString("%1$").arg(name);
-    const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
+    const bool success = ad.attribute_replace_string(
+        dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
 
     return success;
 }

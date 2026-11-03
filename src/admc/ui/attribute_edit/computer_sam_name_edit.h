@@ -1,8 +1,10 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2026 BaseALT Ltd.
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2023 Ivan A. Melnikov
+ * Copyright (C) 2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +31,8 @@ class QLineEdit;
 class ComputerSamNameEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    ComputerSamNameEdit(QLineEdit *edit, QLineEdit *domain_edit, QObject *parent);
+    ComputerSamNameEdit(QLineEdit *edit, QLineEdit *domain_edit,
+                        QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool verify(AdInterface &ad, const QString &dn) const override;
