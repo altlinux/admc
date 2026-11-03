@@ -43,8 +43,6 @@ GeneralGroupTab::GeneralGroupTab(QWidget *parent)
     ui = new Ui::GeneralGroupTab();
     ui->setupUi(this);
 
-    m_edit_list.append(create_edits());
-
     ui->name_label->setVisible(false);
 
     ui->description_edit->setReadOnly(true);
@@ -54,6 +52,8 @@ GeneralGroupTab::GeneralGroupTab(QWidget *parent)
 
     ui->scope_combo->setEditable(false);
     ui->type_combo->setEditable(false);
+
+    m_edit_list.append(create_edits());
 }
 
 GeneralGroupTab::~GeneralGroupTab() {

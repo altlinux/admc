@@ -34,7 +34,9 @@ SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit,
 : AttributeEdit(parent) {
     edit = edit_arg;
 
-    edit->setMaxLength(SAM_NAME_MAX_LENGTH);
+    if (! edit->isReadOnly()) {
+        edit->setMaxLength(SAM_NAME_MAX_LENGTH);
+    }
 
     const QString domain = g_adconfig->domain();
     const QString domain_name = domain.split(".")[0];
