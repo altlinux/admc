@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2026 BaseALT Ltd.
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,7 +29,8 @@
 #include "ui/message_box.h"
 #include "ui/utils.h"           // string_contains_bad_chars
 
-SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit, QObject *parent)
+SamNameEdit::SamNameEdit(QLineEdit *edit_arg, QLineEdit *domain_edit,
+                         QObject *parent)
 : AttributeEdit(parent) {
     edit = edit_arg;
 
@@ -66,15 +68,23 @@ bool SamNameEdit::verify(AdInterface &ad, const QString &dn) const {
 bool sam_name_edit_verify(QLineEdit *edit) {
     const QString new_value = edit->text().trimmed();
 
-    const bool contains_bad_chars = string_contains_bad_chars(new_value, SAM_NAME_BAD_CHARS);
+    const bool contains_bad_chars =
+        string_contains_bad_chars(new_value, SAM_NAME_BAD_CHARS);
 
     const bool ends_with_dot = new_value.endsWith(".");
 
     const bool value_is_valid = (!contains_bad_chars && !ends_with_dot);
 
     if (!value_is_valid) {
-        const QString error_text = QString(QCoreApplication::translate("SamNameEdit", "Input field for Logon name (pre-Windows 2000) contains one or more of the following illegal characters: @ \" [ ] : ; | = + * ? < > / \\ ,"));
-        message_box_warning(edit, QCoreApplication::translate("SamNameEdit", "Error"), error_text);
+        const QString error_text =
+            QString(
+                QCoreApplication::translate(
+                    "SamNameEdit",
+                    "Input field for Logon name (pre-Windows 2000) contains one or more of the following illegal characters: @ \" [ ] : ; | = + * ? < > / \\ ,"));
+        message_box_warning(
+            edit,
+            QCoreApplication::translate("SamNameEdit", "Error"),
+            error_text);
 
         return false;
     }
@@ -84,7 +94,8 @@ bool sam_name_edit_verify(QLineEdit *edit) {
 
 bool SamNameEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString new_value = edit->text().trimmed();
-    const bool success = ad.attribute_replace_string(dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
+    const bool success = ad.attribute_replace_string(
+        dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
 
     return success;
 }
