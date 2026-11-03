@@ -65,18 +65,14 @@ bool ComputerSamNameEdit::verify(AdInterface &ad, const QString &dn) const {
     Q_UNUSED(ad);
     Q_UNUSED(dn);
 
-    const bool out = sam_name_edit_verify(edit);
-
-    return out;
+    return sam_name_edit_verify(edit);
 }
 
 bool ComputerSamNameEdit::apply(AdInterface &ad, const QString &dn) const {
     const QString name = edit->text().trimmed();
     const QString new_value = QString("%1$").arg(name);
-    const bool success = ad.attribute_replace_string(
+    return ad.attribute_replace_string(
         dn, ATTRIBUTE_SAM_ACCOUNT_NAME, new_value);
-
-    return success;
 }
 
 void ComputerSamNameEdit::set_enabled(const bool enabled) {
