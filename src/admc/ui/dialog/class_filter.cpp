@@ -19,18 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/dialog/class_filter.h"
-#include "ui/dialog/ui_class_filter.h"
+#include <QPushButton>
 
 #include "core/settings.h"
-
-#include <QPushButton>
+#include "ui/dialog/class_filter.h"
+#include "ui/dialog/ui_class_filter.h"
 
 // NOTE: "all" checkbox functionality is messy due to
 // reuse and composition. It is what it is.
 
-ClassFilterDialog::ClassFilterDialog(const QList<QString> &class_list, const QList<QString> &selected_list, const bool filtering_all_classes_is_enabled, const bool all_is_checked, QWidget *parent)
-: QDialog(parent) {
+ClassFilterDialog::ClassFilterDialog(
+    const QList<QString> &class_list,
+    const QList<QString> &selected_list,
+    const bool filtering_all_classes_is_enabled,
+    const bool all_is_checked, QWidget *parent)
+    : QDialog(parent)
+{
     ui = new Ui::ClassFilterDialog();
     ui->setupUi(this);
 
@@ -89,7 +93,8 @@ void ClassFilterDialog::on_input_changed() {
     const bool all_is_selected = ui->all_checkbox->isChecked();
     const QList<QString> selected_classes = get_selected_classes();
     const bool any_specific_class_selected = !selected_classes.isEmpty();
-    const bool input_is_valid = (all_is_selected || any_specific_class_selected);
+    const bool input_is_valid =
+        (all_is_selected || any_specific_class_selected);
     QPushButton *ok_button = ui->button_box->button(QDialogButtonBox::Ok);
     ok_button->setEnabled(input_is_valid);
 }

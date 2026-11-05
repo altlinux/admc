@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +42,11 @@ class ClassFilterDialog final : public QDialog {
 public:
     Ui::ClassFilterDialog *ui;
 
-    ClassFilterDialog(const QList<QString> &class_list, const QList<QString> &selected_list, const bool filtering_all_classes_is_enabled, const bool all_is_checked, QWidget *parent);
+    ClassFilterDialog(const QList<QString> &class_list,
+                      const QList<QString> &selected_list,
+                      const bool filtering_all_classes_is_enabled,
+                      const bool all_is_checked,
+                      QWidget *parent);
     ~ClassFilterDialog();
 
     QString get_filter() const;
