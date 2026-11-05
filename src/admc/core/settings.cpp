@@ -131,7 +131,7 @@ void settings_save_header_state(const QString setting, QHeaderView *header) {
  * @return True if the state is restored, false otherwise.
  */
 bool settings_restore_header_state(const QString setting, QHeaderView *header) {
-    const QByteArray STATE = settings_get_variant(setting).toByteArray();
+    const QByteArray STATE = settings_get_byte_array(setting);
     if (! STATE.isEmpty()) {
         header->restoreState(STATE);
 
