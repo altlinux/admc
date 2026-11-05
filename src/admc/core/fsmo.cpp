@@ -35,8 +35,13 @@
 #include "fsmo.h"
 #include "globals.h"
 
-// Returns the DN of the object that
-// store's role's master in it's attributes
+/**
+ * Return the distinguished name (DN) for the object that stores role master in
+ * it's attributes.
+ *
+ * @param role A role to use.
+ * @return A DN string.
+ */
 QString fsmo_dn_from_role(FSMORole role) {
     const QString domain_dn = g_adconfig->domain_dn();
 
@@ -63,6 +68,12 @@ QString fsmo_dn_from_role(FSMORole role) {
     return QString();
 }
 
+/**
+ * Convert a role to a string.
+ *
+ * @param role A role to convert.
+ * @return A role string.
+ */
 QString fsmo_role_to_string(FSMORole role) {
     switch (role) {
     case FSMORole_DomainDNS:
@@ -87,6 +98,13 @@ QString fsmo_role_to_string(FSMORole role) {
     return QString();
 }
 
+/**
+ * Check if the current domain controller (DC) is a master for the given role.
+ *
+ * @param ad An AD interface instance.
+ * @param role A role to check.
+ * @return True if the DC is the master for the role, false otherwise.
+ */
 bool fsmo_is_current_dc_master_for_role(AdInterface &ad, FSMORole role) {
     QString role_dn = fsmo_dn_from_role(role);
     QString current_master = ad_current_master_for_role_dn(ad, role_dn);
@@ -94,11 +112,23 @@ bool fsmo_is_current_dc_master_for_role(AdInterface &ad, FSMORole role) {
     return current_master == current_dc;
 }
 
+/**
+ * Get the current master for the given role.
+ *
+ * @param ad An AD interface instance.
+ * @param role A role to query.
+ * @return DNS host name for the role master.
+ */
 QString fsmo_current_master_for_role(AdInterface &ad, FSMORole role) {
     QString role_dn = fsmo_dn_from_role(role);
     return ad_current_master_for_role_dn(ad, role_dn);
 }
 
+/**
+ * Connect to a domain controller (DC) with the given role.
+ * @param ad An AD interface instance.
+ * @param role A role to use.
+ */
 void fsmo_connect_host_with_role(AdInterface &ad, FSMORole role) {
     QString current_master = fsmo_current_master_for_role(ad, role);
     settings_set_variant(SETTING_host, current_master);
@@ -106,6 +136,12 @@ void fsmo_connect_host_with_role(AdInterface &ad, FSMORole role) {
     ad.update_dc();
 }
 
+/**
+ * Get a FSMO role string for the given FSMO role distinguished name.
+ *
+ * @param fsmo_role_dn An FSMO role to convert.
+ * @return A FSMO role string.
+ */
 QString fsmo_string_from_dn(const QString &fsmo_role_dn) {
     for (int role = 0; role < FSMORole_COUNT; ++role) {
         if (fsmo_dn_from_role(FSMORole(role)) == fsmo_role_dn) {
@@ -115,6 +151,14 @@ QString fsmo_string_from_dn(const QString &fsmo_role_dn) {
     return QString();
 }
 
+/**
+ * Get a FSMO role from the given distinguished name (DN.)
+ *
+ * @param[in] role_dn A role distinguished name (DN) to convert.
+ * @param[out] role_out A reference to the output FSMO role to store
+ * the results.
+ * @return True if the DN successfully converted, false otherwise.
+ */
 bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out) {
     const QString domain_dn = g_adconfig->domain_dn();
     const QString schema_dn = g_adconfig->schema_dn();
@@ -165,6 +209,14 @@ bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out) {
      return false;
 }
 
+/**
+ * Change the owner of the given FSMO role.
+ *
+ * @param ad An AD interface instance.
+ * @param root_dse Root Directory Server Agent Service Entry (RootDSE.)
+ * See <https://ldapwiki.com/wiki/Wiki.jsp?page=RootDSE>
+ * @param role_dn A role distinguished name (DN.)
+ */
 bool fsmo_set_master(AdInterface& ad,
                      const AdObject &root_dse,
                      const QString &role_dn) {

@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file fsmo.h
+ * @brief Procedures for working with Flexible Single Master Operation (FSMO).
+ */
+
 #ifndef CORE_FSMO_H
 #define CORE_FSMO_H
 
@@ -32,6 +37,12 @@
 
 using namespace std;
 
+/**
+ * Flexible Single Master Operations (FSMO) type.
+ *
+ * See
+ * <https://learn.microsoft.com/en-us/troubleshoot/windows-server/active-directory/fsmo-roles>
+ */
 enum FSMORole {
     FSMORole_DomainDNS,
     FSMORole_ForestDNS,
