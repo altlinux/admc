@@ -181,20 +181,9 @@ QVariant settings_load_console_state();
 QString settings_load_last_opened_version();
 void settings_save_last_opened_version();
 bool settings_has_admc_been_updated();
-
-// Does two things. First it restores previously saved
-// geometry, if it exists. Then it connects to dialogs
-// finished() signal so that it's geometry is saved when
-// dialog is finished.
 void settings_setup_dialog_geometry(const QString setting, QDialog *dialog);
-
-// NOTE: If setting is present, restore is performed,
-// otherwise f-n does nothing and returns false. You
-// should check for the return and perform default
-// sizing in the false case.
 bool settings_restore_geometry(const QString setting, QWidget *widget);
 bool settings_restore_main_window_geometry(QWidget* widget);
-
 void settings_save_header_state(const QString setting, QHeaderView *header);
 bool settings_restore_header_state(const QString setting, QHeaderView *header);
 bool settings_are_creds_saved(const QString &username);
