@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +23,10 @@
 #define AD_INTERFACE_H
 
 /**
- * Interface to AD server. Provides a way to search and
- * modify objects.
+ * @file ad_interface.h
+ * @brief Interface to an active directory (AD) server (header.)
+ *
+ * Provides a way to search and modify objects.
  */
 
 #include <QCoreApplication>
@@ -48,9 +51,11 @@ enum AdMessageType {
     AdMessageType_Info
 };
 
-// Some f-ns in this class reuse other f-ns and this
-// enum is used to turn off status messages of child
-// f-ns which are otherwise displayed by default.
+/**
+ * Some procedures in this class reuse other procedures.  This enumeration is
+ * used to turn off status messages of child procedures that are displayed
+ * otherwise.
+ */
 enum DoStatusMsg {
     DoStatusMsg_Yes,
     DoStatusMsg_No
@@ -125,20 +130,9 @@ public:
     // NOTE: If request attributes list is empty, all
     // attributes are returned
 
-    // This is a simplified version that searches all pages
-    // in one go
     QHash<QString, AdObject> search(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, const bool get_sacl = false);
-
-    // This is a more complicated version of search() which
-    // separates the search process by pages as they arrive
-    // from the server. In general you can use the simpler
-    // search(). This version is for cases where you want to
-    // display search results as they come in instead of all
-    // at once.
     bool search_paged(const QString &base, const SearchScope scope, const QString &filter, const QList<QString> &attributes, QHash<QString, AdObject> *results, AdCookie *cookie, const bool get_sacl = false);
 
-    // Simplest search f-n that only searches for attributes
-    // of one object
     AdObject search_object(const QString &dn, const QList<QString> &attributes = QList<QString>(), const bool get_sacl = false);
 
     bool attribute_replace_values(const QString &dn, const QString &attribute, const QList<QByteArray> &values, const DoStatusMsg do_msg = DoStatusMsg_Yes, const bool set_dacl = false);
@@ -151,13 +145,7 @@ public:
     bool attribute_replace_int(const QString &dn, const QString &attribute, const int value, const DoStatusMsg do_msg = DoStatusMsg_Yes);
     bool attribute_replace_datetime(const QString &dn, const QString &attribute, const QDateTime &datetime);
 
-    // NOTE: attrs_map should contain attribute values
-    // that will be added to the newly created object.
-    // Note that it *must* contain a valid value for
-    // objectClass attribute.
     bool object_add(const QString &dn, const QHash<QString, QList<QString>> &attrs_map);
-    // Simplified version that only only adds one
-    // objectClass value
     bool object_add(const QString &dn, const QString &object_class);
 
     bool object_delete(const QString &dn, const DoStatusMsg do_msg = DoStatusMsg_Yes);
@@ -176,7 +164,6 @@ public:
 
     bool computer_reset_account(const QString &dn);
 
-    // "dn_out" is set to the dn of created gpo
     bool gpo_add(const QString &name, QString &dn_out);
     bool gpo_delete(const QString &dn, bool *deleted_object);
     bool gpo_check_perms(const QString &gpo, bool *ok);

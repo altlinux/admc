@@ -20,6 +20,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ad_interface.cpp
+ * @brief Interface to an active directory (AD) server.
+ *
+ * Provides a way to search and modify objects.
+ */
+
 #include <QStringEncoder>
 #include <cstdio>
 #include <cstdlib>
@@ -74,6 +81,9 @@ typedef struct sasl_defaults_gssapi {
     char *authzid;
 } sasl_defaults_gssapi;
 
+/**
+ * Access control entry (ACE) mask format.
+ */
 enum AceMaskFormat {
     AceMaskFormat_Hexadecimal,
     AceMaskFormat_Decimal,
@@ -300,10 +310,13 @@ QHash<QString, QList<QByteArray>> object_attributes_to_bytes(
     return object_attributes;
 }
 
-// Helper f-n for search()
-//
-// NOTE: cookie is starts as NULL. Then after each while loop, it is set to the
-// value returned by ldap_search_ext_s(). At the end cookie is set back to NULL.
+/**
+ * A helper procedure for search()
+ *
+ * NOTE: Cookie starts as NULL, then after each while loop, it is set to the
+ * value returned by ldap_search_ext_s(). At the end the cookie is set back to
+ * NULL.
+ */
 bool AdInterfacePrivate::search_paged_internal(const char *base,
                                                const int scope,
                                                const char *filter,
@@ -438,6 +451,11 @@ bool AdInterfacePrivate::search_paged_internal(const char *base,
     return true;
 }
 
+/**
+ * This is a simplified version of the search that searches all pages in one go.
+ *
+ * @see search_paged()
+*/
 QHash<QString, AdObject> AdInterface::search(const QString &base,
                                              const SearchScope scope,
                                              const QString &filter,
@@ -462,6 +480,13 @@ QHash<QString, AdObject> AdInterface::search(const QString &base,
     return results;
 }
 
+/**
+ * Convert a search scope constant to a string.
+ *
+ * @param scope A scope value to convert.
+ * @return The scope string for the given scope or an empty string if no scope
+ * is matched to the given value.
+ */
 QString scope_to_string(const SearchScope &scope) {
     switch (scope) {
     case SearchScope_Object:
@@ -477,6 +502,12 @@ QString scope_to_string(const SearchScope &scope) {
     }
 }
 
+/**
+ * Convert a search scope constant to an LDAP integer value.
+ *
+ * @param scope A scope value to convert.
+ * @return An LDAP integer value or 0.
+ */
 int scope_to_int(const SearchScope &scope) {
     switch (scope) {
     case SearchScope_Object:
@@ -501,6 +532,14 @@ const char *filter_to_cstr(const QString &filter) {
     }
 }
 
+/**
+ * This is a more complicated version of search() which separates the search
+ * process by pages as they arrive from the server.  In general you can use the
+ * simpler search().  This version is for cases where you want to display search
+ * results as they come in instead of all at once.
+ *
+ * @see search()
+ */
 bool AdInterface::search_paged(const QString &base,
                                const SearchScope scope,
                                const QString &filter,
@@ -566,6 +605,12 @@ bool AdInterface::search_paged(const QString &base,
     return true;
 }
 
+/**
+ * Simplest search method that only searches for attributes of one object.
+ *
+ * @see search()
+ * @see search_paged()
+ */
 AdObject AdInterface::search_object(const QString &dn,
                                     const QList<QString> &attributes,
                                     const bool get_sacl) {
@@ -859,6 +904,17 @@ bool AdInterface::is_wrong_ou_parent(const QString &dn) const {
     return (ldap_result == LDAP_NAMING_VIOLATION && is_ou && bad_parent);
 }
 
+/**
+ * @brief Add a new object.
+ *
+ * NOTE: attrs_map should contain attribute values that will be added to the
+ * newly created object.  Note that it *must* contain a valid value for
+ * objectClass attribute.
+ *
+ * @param dn A distinguished name.
+ * @param attrs_map Object attributes.
+ * @return True if an object successfully added, false otherwise.
+ */
 bool AdInterface::object_add(const QString &dn,
                              const QHash<QString, QList<QString>> &attrs_map) {
     QString error;
@@ -892,6 +948,16 @@ bool AdInterface::object_add(const QString &dn,
     }
 }
 
+/**
+ * @brief Add a new object.
+ *
+ * This is a simplified version of object_add() that only adds objectClass
+ * value to the attributes.
+ *
+ * @param dn A distinguished name.
+ * @param object_class The class for the new object.
+ * @return True if an object successfully added, false otherwise.
+ */
 bool AdInterface::object_add(const QString &dn, const QString &object_class) {
     const QHash<QString, QList<QString>> attrs_map = {
         {"objectClass", {object_class}},
@@ -1448,6 +1514,12 @@ bool AdInterface::computer_reset_account(const QString &dn) {
     }
 }
 
+/**
+ * @brief Add a new GPO.
+ * @param[in] display_name A GPO display name.
+ * @param[out] dn_out A variable to store the distinguished name for the newly
+ * created GPO.
+ */
 bool AdInterface::gpo_add(const QString &display_name, QString &dn_out) {
     const bool is_domain_admin = logged_in_as_domain_admin();
 
@@ -1841,6 +1913,11 @@ QString AdInterface::get_ldap_sasl_username() const {
     return out;
 }
 
+/**
+ * Initialize LDAP connection.
+ *
+ * @return True if LDAP initialized successfully, false otherwise.
+ */
 bool AdInterface::ldap_init() {
     const QString connect_error_context = tr("Failed to connect.");
     const QString uri = make_ldap_uri();
@@ -2326,9 +2403,11 @@ bool AdInterfacePrivate::smb_path_is_dir(const QString &path, bool *ok) {
     }
 }
 
-// NOTE: this function is analogous to ldap_create_page_control() and others.
-// See pagectl.c in ldap sources for examples. Extracted to contain the C
-// madness.
+/**
+ * NOTE: this function is analogous to ldap_create_page_control() and others.
+ * See pagectl.c in ldap sources for examples.  Extracted to contain the C
+ * madness.
+*/
 int create_sd_control(bool get_sacl,
                       int is_critical,
                       LDAPControl **ctrlp,
@@ -2623,7 +2702,9 @@ QList<QString> query_server_for_hosts(const char *dname) {
 }
 
 /**
- * Callback for ldap_sasl_interactive_bind_s
+ * Callback for ldap_sasl_interactive_bind_s()
+ *
+ * @return LDAP_SUCCESS on success, LDAP_PARAM_ERROR on errors.
  */
 int sasl_interact_gssapi(LDAP *ld,
                          unsigned flags,
