@@ -2,7 +2,8 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +32,9 @@ class QWidget;
 class AccountOptionEdit final : public AttributeEdit {
     Q_OBJECT
 public:
-    AccountOptionEdit(QCheckBox *check, const AccountOption option_arg, QObject *parent);
+    AccountOptionEdit(QCheckBox *check,
+                      const AccountOption option_arg,
+                      QObject *parent);
 
     void load(AdInterface &ad, const AdObject &object) override;
     bool apply(AdInterface &ad, const QString &dn) const override;
@@ -41,6 +44,7 @@ private:
     QCheckBox *check;
 };
 
-void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &check_map);
+void account_option_setup_conflicts(
+    const QHash<AccountOption, QCheckBox *> &check_map);
 
 #endif /* ACCOUNT_OPTION_EDIT_H */

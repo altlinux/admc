@@ -2,7 +2,9 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2025 Semyon Knyazev
+ * Copyright (C) 2026 Kozyrev Yuri
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +28,9 @@
 #include "ui/attribute_edit/account_option_edit.h"
 #include "ui/message_box.h"
 
-AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg, const AccountOption option_arg, QObject *parent)
+AccountOptionEdit::AccountOptionEdit(QCheckBox *check_arg,
+                                     const AccountOption option_arg,
+                                     QObject *parent)
 : AttributeEdit(parent) {
     option = option_arg;
     check = check_arg;
@@ -56,9 +60,13 @@ bool AccountOptionEdit::apply(AdInterface &ad, const QString &dn) const {
 // PasswordExpired can't be set Implement this by connecting
 // to state changes of all options and resetting to previous
 // state if state transition is invalid
-void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &check_map) {
-    auto setup_conflict = [&](const AccountOption subject_option, const AccountOption blocker_option) {
-        if (!check_map.contains(subject_option) || !check_map.contains(blocker_option)) {
+void account_option_setup_conflicts(
+    const QHash<AccountOption, QCheckBox *> &check_map)
+{
+    auto setup_conflict = [&](const AccountOption subject_option,
+                              const AccountOption blocker_option) {
+        if ((! check_map.contains(subject_option)) ||
+            (! check_map.contains(blocker_option))) {
             return;
         }
 
@@ -69,13 +77,19 @@ void account_option_setup_conflicts(const QHash<AccountOption, QCheckBox *> &che
             subject, &QCheckBox::clicked,
             blocker,
             [subject, blocker, subject_option, blocker_option]() {
-                const bool conflict = (subject->isChecked() && blocker->isChecked());
+                const bool conflict =
+                    (subject->isChecked() && blocker->isChecked());
                 if (conflict) {
                     subject->setChecked(false);
 
-                    const QString subject_name = account_option_string(subject_option);
-                    const QString blocker_name = account_option_string(blocker_option);
-                    const QString error = QString(QObject::tr("Can't set \"%1\" when \"%2\" is set.")).arg(subject_name, blocker_name);
+                    const QString subject_name =
+                        account_option_string(subject_option);
+                    const QString blocker_name =
+                        account_option_string(blocker_option);
+                    const QString error =
+                        QString(QObject::tr(
+                                    "Can't set \"%1\" when \"%2\" is set."))
+                        .arg(subject_name, blocker_name);
                     message_box_warning(blocker, QObject::tr("Error"), error);
                 }
             });
