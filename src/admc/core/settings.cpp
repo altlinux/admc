@@ -21,6 +21,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file settings.cpp
+ * @brief Procedures for working with application settings.
+ */
+
 #include <QAction>
 #include <QDialog>
 #include <QHeaderView>

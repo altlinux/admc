@@ -18,6 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ad.cpp
+ * @brief Active directory (AD) related procedures.
+ */
+
 #include <QHash>
 #include <QList>
 #include <QString>

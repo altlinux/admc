@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file icon_manager.cpp
+ * @brief Icon manager.
+ */
+
 #include "icon_manager.h"
 #include "ad_defines.h"
 #include "core/utils.h"

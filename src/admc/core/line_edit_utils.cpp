@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file line_edit_utils.cpp
+ * @brief Common utilities for working with QLineEdit instances.
+ */
+
 #include <QLineEdit>
 #include <QObject>
 #include <QRegularExpressionValidator>

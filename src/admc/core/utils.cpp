@@ -22,6 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file utils.cpp
+ * @brief This file contains common utilities for the ADMC core functionality.
+ */
+
 #include <QList>
 #include <QPlainTextEdit>
 #include <QRegularExpression>

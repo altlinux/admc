@@ -18,6 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file changelog.cpp
+ * @brief Change log handling procedures.
+ */
+
 #include <QCoreApplication>
 #include <QFile>
 #include <QLocale>

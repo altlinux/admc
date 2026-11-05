@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file fsmo.cpp
+ * @brief Procedures for working with Flexible Single Master Operation (FSMO).
+ */
+
 #include <QHash>
 #include <QObject>
 #include <QString>

@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file search_thread.cpp
+ * @brief AD object search thread implementation.
+ */
+
 #include "search_thread.h"
 
 #include "adldap.h"

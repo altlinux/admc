@@ -1,8 +1,6 @@
 /*
  * ADMC - AD Management Center
  *
- * This file contains procedures for attribute handling and validation.
- *
  * Copyright (C) 2025-2026 BaseALT Ltd.
  * Copyright (C) 2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
@@ -19,6 +17,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @file gplink_manager.cpp
+ * @brief GPLink manager.
  */
 
 #include "gplink_manager.h"

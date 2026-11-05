@@ -21,6 +21,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file country_manager.cpp
+ * @brief Country manager is responsible for loading and handling the country
+ * data.
+ */
+
 #include <QByteArray>
 #include <QFile>
 #include <QList>

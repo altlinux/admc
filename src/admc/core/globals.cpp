@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file globals.cpp
+ * @brief Global variables and the related procedures.
+ */
+
 #include "core/globals.h"
 
 #include "adldap.h"

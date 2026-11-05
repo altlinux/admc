@@ -21,6 +21,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file attribute.cpp
+ * @brief This file contains procedures for attribute handling and validation.
+ */
+
 #include <QByteArray>
 #include <QList>
 #include <QRegularExpression>

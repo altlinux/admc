@@ -21,6 +21,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file operations.cpp
+ * @brief Common procedures for working with AD objects.
+ */
+
 #include <QList>
 #include <QStandardItem>
 

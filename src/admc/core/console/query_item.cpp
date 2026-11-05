@@ -18,6 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file query_item.cpp
+ * @brief Common procedures for working with query results.
+ */
+
 #include <Qt>
 
 #include "query_item.h"
