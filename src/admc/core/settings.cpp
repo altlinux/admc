@@ -104,17 +104,13 @@ bool settings_restore_header_state(const QString setting, QHeaderView *header) {
 
 QVariant settings_get_variant(const QString setting) {
     QSettings settings;
-
-    const QVariant default_value = setting_default_map.value(setting, QVariant());
-
-    const QVariant value = settings.value(setting, default_value);
-
-    return value;
+    const QVariant default_value =
+        setting_default_map.value(setting, QVariant());
+    return settings.value(setting, default_value);
 }
 
 void settings_set_variant(const QString setting, const QVariant &value) {
     QSettings settings;
-
     settings.setValue(setting, value);
 }
 
