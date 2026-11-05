@@ -2,7 +2,9 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2020 Igor Chudov
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2025-2026 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,27 +21,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/settings.h"
-
-#include "core/config.h"
-#include "ui/dialog/connection_options.h"
-
 #include <QAction>
 #include <QDialog>
 #include <QHeaderView>
 #include <QLocale>
 #include <QSettings>
 
+#include "core/config.h"
+#include "core/settings.h"
+#include "ui/dialog/connection_options.h"
+
 /**
  * Default values hash map for the application settings.
  */
-const QHash<QString, QVariant> setting_default_map = {
+const QHash<QString, QVariant> SETTIN_DEFAULT_MAP = {
     {SETTING_advanced_features, false},
     {SETTING_confirm_actions, true},
     {SETTING_show_non_containers_in_console_tree, false},
     {SETTING_last_name_before_first_name,
         []() {
-            const bool locale_is_russian = (QLocale::system().language() == QLocale::Russian);
+            const bool locale_is_russian =
+                (QLocale::system().language() == QLocale::Russian);
             if (locale_is_russian) {
                 return true;
             } else {
@@ -77,8 +79,8 @@ void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
         dialog, &QDialog::finished,
         dialog,
         [setting, dialog]() {
-            const QByteArray geometry = dialog->saveGeometry();
-            settings_set_variant(setting, geometry);
+            const QByteArray GEOMETRY = dialog->saveGeometry();
+            settings_set_variant(setting, GEOMETRY);
         });
 }
 
@@ -90,9 +92,9 @@ void settings_setup_dialog_geometry(const QString setting, QDialog *dialog) {
  * @return True if the geometry is restored from the settings, false otherwise.
  */
 bool settings_restore_geometry(const QString setting, QWidget *widget) {
-    const QByteArray geometry = settings_get_byte_array(setting);
-    if (!geometry.isEmpty()) {
-        widget->restoreGeometry(geometry);
+    const QByteArray GEOMETRY = settings_get_byte_array(setting);
+    if (! GEOMETRY.isEmpty()) {
+        widget->restoreGeometry(GEOMETRY);
 
         return true;
     } else {
@@ -117,8 +119,8 @@ bool settings_restore_main_window_geometry(QWidget* widget) {
  * @param header A header for which the state must be saved.
  */
 void settings_save_header_state(const QString setting, QHeaderView *header) {
-    const QByteArray state = header->saveState();
-    settings_set_variant(setting, state);
+    const QByteArray STATE = header->saveState();
+    settings_set_variant(setting, STATE);
 }
 
 /**
@@ -129,9 +131,9 @@ void settings_save_header_state(const QString setting, QHeaderView *header) {
  * @return True if the state is restored, false otherwise.
  */
 bool settings_restore_header_state(const QString setting, QHeaderView *header) {
-    const QByteArray state = settings_get_variant(setting).toByteArray();
-    if (!state.isEmpty()) {
-        header->restoreState(state);
+    const QByteArray STATE = settings_get_variant(setting).toByteArray();
+    if (! STATE.isEmpty()) {
+        header->restoreState(STATE);
 
         return true;
     } else {
@@ -149,9 +151,9 @@ bool settings_restore_header_state(const QString setting, QHeaderView *header) {
  */
 QVariant settings_get_variant(const QString setting) {
     QSettings settings;
-    const QVariant default_value =
-        setting_default_map.value(setting, QVariant());
-    return settings.value(setting, default_value);
+    const QVariant DEFAULT_VALUE =
+        SETTIN_DEFAULT_MAP.value(setting, QVariant());
+    return settings.value(setting, DEFAULT_VALUE);
 }
 
 /**
@@ -234,8 +236,8 @@ void settings_save_last_opened_version() {
  * match the saved one), false otherwise.
  */
 bool settings_has_admc_been_updated() {
-    const QString last_version = settings_load_last_opened_version();
-    return (last_version != ADMC_VERSION);
+    const QString LAST_VERSION = settings_load_last_opened_version();
+    return (LAST_VERSION != ADMC_VERSION);
 }
 
 /**
