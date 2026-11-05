@@ -34,7 +34,7 @@
 /**
  * Default values hash map for the application settings.
  */
-const QHash<QString, QVariant> SETTIN_DEFAULT_MAP = {
+const QHash<QString, QVariant> SETTINGS_DEFAULT_MAP = {
     {SETTING_advanced_features, false},
     {SETTING_confirm_actions, true},
     {SETTING_show_non_containers_in_console_tree, false},
@@ -152,7 +152,7 @@ bool settings_restore_header_state(const QString setting, QHeaderView *header) {
 QVariant settings_get_variant(const QString setting) {
     QSettings settings;
     const QVariant DEFAULT_VALUE =
-        SETTIN_DEFAULT_MAP.value(setting, QVariant());
+        SETTINGS_DEFAULT_MAP.value(setting, QVariant());
     return settings.value(setting, DEFAULT_VALUE);
 }
 
