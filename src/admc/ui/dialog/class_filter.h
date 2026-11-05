@@ -2,7 +2,8 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,11 +23,6 @@
 #ifndef CLASS_FILTER_DIALOG_H
 #define CLASS_FILTER_DIALOG_H
 
-/**
- * Dialog to select classes, opened from
- * SelectClassesWidget. Wraps ClassFilterWidget inside.
- */
-
 #include <QDialog>
 #include <QVariant>
 
@@ -36,6 +32,10 @@ namespace Ui {
 class ClassFilterDialog;
 }
 
+/**
+ * Dialog to select classes, opened from SelectClassesWidget.  Wraps
+ * ClassFilterWidget inside.
+ */
 class ClassFilterDialog final : public QDialog {
     Q_OBJECT
 

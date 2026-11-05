@@ -2,7 +2,8 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -99,8 +100,9 @@ void ClassFilterDialog::on_input_changed() {
     ok_button->setEnabled(input_is_valid);
 }
 
-// Disable checkboxes for specific classes when "All"
-// checkbox is checked.
+/**
+ * Disable checkboxes for specific classes when "All" checkbox is checked.
+ */
 void ClassFilterDialog::on_all_checkbox() {
     const bool all_is_checked = ui->all_checkbox->isChecked();
     ui->class_filter_widget->setDisabled(all_is_checked);
