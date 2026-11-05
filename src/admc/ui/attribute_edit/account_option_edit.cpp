@@ -87,8 +87,7 @@ void account_option_setup_conflicts(
                     const QString blocker_name =
                         account_option_string(blocker_option);
                     const QString error =
-                        QString(QObject::tr(
-                                    "Can't set \"%1\" when \"%2\" is set."))
+                        QObject::tr("Can't set \"%1\" when \"%2\" is set.")
                         .arg(subject_name, blocker_name);
                     message_box_warning(blocker, QObject::tr("Error"), error);
                 }
