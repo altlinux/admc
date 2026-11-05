@@ -46,6 +46,8 @@ CountryManager::CountryManager() {
  * This is an one-pass CSV line parser that reads a line from left to right and
  * parses it into separate fields, with proper quoted fields handling.
  *
+ * It runs the following finite-state machine:
+ * @code{.unparsed}
  *       [*]          double-quote?
  *        |    ,-------------------------,
  *        |    |                         |
@@ -57,6 +59,7 @@ CountryManager::CountryManager() {
  *                 | end-of-line?
  *                 V
  *                [*]
+ * @endcode
  *
  * @param line A line to parse.
  * @return A list of parsed fields.
