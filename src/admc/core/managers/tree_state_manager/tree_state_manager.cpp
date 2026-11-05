@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2026 BaseALT Ltd.
  * Copyright (C) 2026 Semyon Knyazev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,35 +24,41 @@
  * @brief Tree state manager.
  */
 
-#include "tree_state_manager.h"
-#include "ui/widget/console/console_widget.h"
-#include <QSettings>
-#include "ad_config.h"
-#include "core/globals.h"
-#include "ui/console/object/console_object_operations.h"
-#include "ui/console/policy_root_impl.h"
-#include "ui/console/policy_impl.h"
-#include "ui/console/policy_ou_impl.h"
-#include "ui/console/all_policies_folder_impl.h"
-#include "ui/console/query_folder_impl.h"
-#include "ui/console/password_settings_impl.h"
-#include <QTreeView>
-#include "core/utils.h"
-#include "ad_utils.h"
-#include "core/settings.h"
-#include <QAbstractProxyModel>
 #include <QAbstractItemModel>
+#include <QAbstractProxyModel>
+#include <QSettings>
+#include <QTreeView>
 #include <utility>
 
+#include "ad_config.h"
+#include "ad_utils.h"
+#include "core/globals.h"
+#include "core/settings.h"
+#include "core/utils.h"
+#include "tree_state_manager.h"
+#include "ui/console/all_policies_folder_impl.h"
+#include "ui/console/object/console_object_operations.h"
+#include "ui/console/password_settings_impl.h"
+#include "ui/console/policy_impl.h"
+#include "ui/console/policy_ou_impl.h"
+#include "ui/console/policy_root_impl.h"
+#include "ui/console/query_folder_impl.h"
+#include "ui/widget/console/console_widget.h"
 
-TreeStateManager::TreeStateManager(ConsoleWidget *console, QTreeView *view, const QString &domain, const QString &user, QObject *parent) :
-QObject(parent), console_(console), view_(view), domain_(domain), user_(user),
-tree_state_prefix("tree_state/" + user + "/" + domain) {
+TreeStateManager::TreeStateManager(ConsoleWidget *console,
+                                   QTreeView *view,
+                                   const QString &domain,
+                                   const QString &user,
+                                   QObject *parent) :
+    QObject(parent), console_(console), view_(view), domain_(domain), user_(user),
+    tree_state_prefix("tree_state/" + user + "/" + domain)
+{
     proxy_model_ = qobject_cast<QAbstractProxyModel*>(view_->model());
     source_model_ = proxy_model_ ? proxy_model_->sourceModel() : nullptr;
 
-    connect(source_model_, &QAbstractItemModel::rowsInserted, this, &TreeStateManager::on_rows_inserted,
-        Qt::QueuedConnection);
+    connect(source_model_, &QAbstractItemModel::rowsInserted,
+            this, &TreeStateManager::on_rows_inserted,
+            Qt::QueuedConnection);
 }
 
 void TreeStateManager::set_context(const QString &domain, const QString &user) {
@@ -61,24 +68,28 @@ void TreeStateManager::set_context(const QString &domain, const QString &user) {
 }
 
 void TreeStateManager::save() {
-    if (domain_.isEmpty() || user_.isEmpty() || !console_ || !view_ || !proxy_model_ || !source_model_) {
+    if (domain_.isEmpty() || user_.isEmpty() || (! console_) || (! view_) ||
+        (! proxy_model_) || (! source_model_)) {
         return;
     }
 
-    save_object_subtree(ConsoleObjectTreeOperations::get_domain_object_tree_root(console_),
+    save_object_subtree(
+        ConsoleObjectTreeOperations::get_domain_object_tree_root(console_),
         object_tree_key);
     save_policy_subtree();
     save_pso_subtree();
-    save_object_subtree(ConsoleObjectTreeOperations::get_sites_container_tree_root(console_),
+    save_object_subtree(
+        ConsoleObjectTreeOperations::get_sites_container_tree_root(console_),
         sites_tree_key);
     save_query_subtree();
     save_current_selected_item();
 }
 
 void TreeStateManager::restore() {
-    const bool context_match = g_adconfig->domain().toLower() == domain_ &&
-                               g_adconfig->user() == user_;
-    if (!proxy_model_ || !source_model_ || !console_ || !view_ || !context_match) {
+    const bool context_match = ((g_adconfig->domain().toLower() == domain_) &&
+                                (g_adconfig->user() == user_));
+    if ((! proxy_model_) || (! source_model_) || (! console_) || (! view_)
+        || (! context_match)) {
         return;
     }
 
@@ -93,7 +104,9 @@ void TreeStateManager::restore() {
     start_next_restore_task();
 }
 
-void TreeStateManager::on_rows_inserted(const QModelIndex &parent, int first, int last) {
+void TreeStateManager::on_rows_inserted(const QModelIndex &parent,
+                                        int first,
+                                        int last) {
     Q_UNUSED(first);
     Q_UNUSED(last);
 
@@ -106,15 +119,18 @@ void TreeStateManager::on_rows_inserted(const QModelIndex &parent, int first, in
         return;
     }
 
-    if (!restore_task_active_ && restore_task_queue_.isEmpty() &&
-        !item_selection_restored_) {
+    if ((! restore_task_active_) && restore_task_queue_.isEmpty() &&
+        (! item_selection_restored_)) {
         restore_current_selected_item();
     }
 }
 
-void TreeStateManager::enqueue_restore_task(const QModelIndex &root, const QStringList &name_list, int role,
-        ItemType item_type, std::function<void()> on_finished) {
-    if (!root.isValid()) {
+void TreeStateManager::enqueue_restore_task(
+    const QModelIndex &root,
+    const QStringList &name_list,
+    int role,
+    ItemType item_type, std::function<void()> on_finished) {
+    if (! root.isValid()) {
         return;
     }
 
@@ -163,7 +179,7 @@ void TreeStateManager::start_next_restore_task() {
 }
 
 void TreeStateManager::continue_restore_task() {
-    if (!restore_task_active_) {
+    if (! restore_task_active_) {
         return;
     }
 
@@ -185,7 +201,7 @@ void TreeStateManager::continue_restore_task() {
         task.dn_queue.head(),
         {task.item_type});
 
-    if (!idx.isValid()) {
+    if (! idx.isValid()) {
         // Wait if no corresponding model items are
         // still fetched
         return;
@@ -234,8 +250,9 @@ void TreeStateManager::finish_current_restore_task() {
     start_next_restore_task();
 }
 
-void TreeStateManager::save_object_subtree(const QModelIndex &parent, const QString &key) {
-    if (!parent.isValid()) {
+void TreeStateManager::save_object_subtree(const QModelIndex &parent,
+                                           const QString &key) {
+    if (! parent.isValid()) {
         return;
     }
 
@@ -261,7 +278,7 @@ void TreeStateManager::save_object_subtree(const QModelIndex &parent, const QStr
 
 void TreeStateManager::save_policy_subtree() {
     const QModelIndex policy_root = get_policy_tree_root(console_);
-    if (!policy_root.isValid()) {
+    if (! policy_root.isValid()) {
         return;
     }
 
@@ -304,7 +321,7 @@ void TreeStateManager::save_policy_subtree() {
             policy_root,
             PolicyOURole_DN,
             g_adconfig->domain_dn(),
-            {ItemType_PolicyOU});
+            { ItemType_PolicyOU });
 
     if (domain_idx.isValid()) {
         const QModelIndex proxy_domain_idx =
@@ -331,7 +348,7 @@ void TreeStateManager::save_policy_subtree() {
 void TreeStateManager::save_pso_subtree() {
     const QModelIndex pso_root_proxy_idx = proxy_model_->mapFromSource(
         get_password_settings_tree_root(console_));
-    if (!pso_root_proxy_idx.isValid()) {
+    if (! pso_root_proxy_idx.isValid()) {
         return;
     }
 
@@ -351,7 +368,7 @@ void TreeStateManager::save_query_subtree() {
     QStringList query_path_list;
 
     const QModelIndex proxy_root = proxy_model_->mapFromSource(queries_root);
-    if (!proxy_root.isValid() || !view_->isExpanded(proxy_root)) {
+    if ((! proxy_root.isValid()) || (! view_->isExpanded(proxy_root))) {
         settings.setValue(
             tree_state_prefix + queries_tree_key,
             query_path_list);
@@ -365,7 +382,7 @@ void TreeStateManager::save_query_subtree() {
         settings_get_hash(SETTING_query_folders).keys();
     for (const QModelIndex &idx : expanded_list) {
         const QString path = console_query_folder_path(idx, console_);
-        if (path.isEmpty() || !folder_list.contains(path)) {
+        if (path.isEmpty() || (! folder_list.contains(path))) {
             continue;
         }
         query_path_list.append(path);
@@ -376,13 +393,15 @@ void TreeStateManager::save_query_subtree() {
         query_path_list);
 }
 
-QList<QModelIndex> TreeStateManager::expanded_index_list(const QModelIndex &parent) {
+QList<QModelIndex> TreeStateManager::expanded_index_list(
+    const QModelIndex &parent)
+{
     QList<QModelIndex> out;
 
     const QModelIndex proxy_parent = proxy_model_->mapFromSource(parent);
 
     if (parent.isValid() &&
-        (!proxy_parent.isValid() || !view_->isExpanded(proxy_parent))) {
+        ((! proxy_parent.isValid()) || (! view_->isExpanded(proxy_parent)))) {
         return out;
     }
 
@@ -390,21 +409,23 @@ QList<QModelIndex> TreeStateManager::expanded_index_list(const QModelIndex &pare
 
     for (int row = 0; row < row_count; ++row) {
         const QModelIndex idx = source_model_->index(row, 0, parent);
-        if (!idx.isValid()) {
+        if (! idx.isValid()) {
             continue;
         }
         const QModelIndex proxy_idx = proxy_model_->mapFromSource(idx);
 
         const bool is_fetched = idx.data(ConsoleRole_WasFetched).toBool();
-        const bool is_expanded = proxy_idx.isValid() && view_->isExpanded(proxy_idx);
+        const bool is_expanded =
+            proxy_idx.isValid() && view_->isExpanded(proxy_idx);
         const bool has_children = source_model_->hasChildren(idx);
 
-        if (!is_fetched || !is_expanded || !has_children) {
+        if ((! is_fetched) || (! is_expanded) || (! has_children)) {
             continue;
         }
 
-        const QList<QModelIndex> child_expanded_idx_list = expanded_index_list(idx);
-        if (!child_expanded_idx_list.isEmpty()) {
+        const QList<QModelIndex> child_expanded_idx_list =
+            expanded_index_list(idx);
+        if (! child_expanded_idx_list.isEmpty()) {
             out.append(child_expanded_idx_list);
         }
         else {
@@ -423,7 +444,10 @@ void TreeStateManager::save_current_selected_item() {
     settings.setValue(settings_key, value);
 }
 
-QQueue<QString> TreeStateManager::prepare_restore_dn_queue(const QString &base_dn, const QStringList &dn_list) {
+QQueue<QString> TreeStateManager::prepare_restore_dn_queue(
+    const QString &base_dn,
+    const QStringList &dn_list)
+{
     QQueue<QString> prepared_queue;
 
     QSet<QString> prepared_dn_set =
@@ -431,7 +455,7 @@ QQueue<QString> TreeStateManager::prepare_restore_dn_queue(const QString &base_d
             ? QSet<QString>{}
             : QSet<QString>{base_dn};
 
-    if (!base_dn.isEmpty() && dn_list.contains(base_dn)) {
+    if (! base_dn.isEmpty() && dn_list.contains(base_dn)) {
         prepared_queue.enqueue(base_dn);
     }
 
@@ -476,7 +500,7 @@ void TreeStateManager::restore_object_subtree() {
     const QModelIndex object_root =
         ConsoleObjectTreeOperations::get_domain_object_tree_root(console_);
 
-    if (!object_root.isValid()) {
+    if (! object_root.isValid()) {
         return;
     }
 
@@ -496,7 +520,7 @@ void TreeStateManager::restore_object_subtree() {
 
 void TreeStateManager::restore_policy_subtree() {
     const QModelIndex policy_root_idx = get_policy_tree_root(console_);
-    if (!policy_root_idx.isValid()) {
+    if (! policy_root_idx.isValid()) {
         return;
     }
 
@@ -504,11 +528,12 @@ void TreeStateManager::restore_policy_subtree() {
     const bool policy_root_expanded = settings.value(
                     tree_state_prefix + policy_root_key,
                     false).toBool();
-    if (!policy_root_expanded) {
+    if (! policy_root_expanded) {
         return;
     }
 
-    const QModelIndex proxy_policy_root = proxy_model_->mapFromSource(policy_root_idx);
+    const QModelIndex proxy_policy_root =
+        proxy_model_->mapFromSource(policy_root_idx);
     if (proxy_policy_root.isValid()) {
         view_->setExpanded(proxy_policy_root, true);
     }
@@ -524,13 +549,13 @@ void TreeStateManager::restore_policy_subtree() {
         PolicyOURole_DN,
         ItemType_PolicyOU,
         [this, all_policies_expanded]() {
-            if (!all_policies_expanded) {
+            if (! all_policies_expanded) {
                 return;
             }
 
             const QModelIndex all_policies_idx =
                 get_all_policies_folder_index(console_);
-            if (!all_policies_idx.isValid()) {
+            if (! all_policies_idx.isValid()) {
                 return;
             }
 
@@ -544,20 +569,21 @@ void TreeStateManager::restore_policy_subtree() {
 
 void TreeStateManager::restore_queries_subtree() {
     const QModelIndex queries_root = get_query_tree_root(console_);
-    if (!queries_root.isValid()) {
+    if (! queries_root.isValid()) {
         return;
     }
 
     QSettings settings;
     const QStringList path_list =
         settings.value(tree_state_prefix + queries_tree_key).toStringList();
-    if (path_list.isEmpty() || !path_list.contains(QueryFolderImpl::QUERY_ROOT)) {
+    if (path_list.isEmpty() ||
+        (! path_list.contains(QueryFolderImpl::QUERY_ROOT))) {
         return;
     }
 
     const QModelIndex proxy_root =
         proxy_model_->mapFromSource(queries_root);
-    if (!proxy_root.isValid()) {
+    if (! proxy_root.isValid()) {
         return;
     }
     view_->setExpanded(proxy_root, true);
@@ -592,7 +618,7 @@ void TreeStateManager::restore_queries_subtree() {
                 }
             }
 
-            if (!child_idx.isValid()) {
+            if (! child_idx.isValid()) {
                 break;
             }
 
@@ -608,12 +634,13 @@ void TreeStateManager::restore_queries_subtree() {
 
 void TreeStateManager::restore_pso_subtree() {
     const QModelIndex pso_root = get_password_settings_tree_root(console_);
-    if (!pso_root.isValid()) {
+    if (! pso_root.isValid()) {
         return;
     }
 
     QSettings settings;
-    const bool expanded = settings.value(tree_state_prefix + pso_tree_key).toBool();
+    const bool expanded =
+        settings.value(tree_state_prefix + pso_tree_key).toBool();
     const QModelIndex pso_root_proxy = proxy_model_->mapFromSource(pso_root);
     if (pso_root_proxy.isValid() && expanded) {
         view_->setExpanded(pso_root_proxy, true);
@@ -621,18 +648,23 @@ void TreeStateManager::restore_pso_subtree() {
 }
 
 void TreeStateManager::restore_sites_subtree() {
-    const QModelIndex sites_subtree_root = ConsoleObjectTreeOperations::get_sites_container_tree_root(console_);
-    if (!sites_subtree_root.isValid()) {
+    const QModelIndex sites_subtree_root =
+        ConsoleObjectTreeOperations::get_sites_container_tree_root(console_);
+    if (! sites_subtree_root.isValid()) {
         return;
     }
 
     QSettings settings;
-    const QStringList dn_list_to_restore = settings.value(tree_state_prefix + sites_tree_key).toStringList();
+    const QStringList dn_list_to_restore =
+        settings.value(tree_state_prefix + sites_tree_key).toStringList();
     if (dn_list_to_restore.isEmpty()) {
         return;
     }
 
-    enqueue_restore_task(sites_subtree_root, dn_list_to_restore, ObjectRole_DN, ItemType_Object);
+    enqueue_restore_task(sites_subtree_root,
+                         dn_list_to_restore,
+                         ObjectRole_DN,
+                         ItemType_Object);
 }
 
 void TreeStateManager::restore_current_selected_item() {
@@ -753,14 +785,15 @@ void TreeStateManager::restore_object_subtree_selection(const QString &dn) {
     }
 }
 
-void TreeStateManager::restore_policy_subtree_selection(const QString &dn, ItemType type) {
+void TreeStateManager::restore_policy_subtree_selection(const QString &dn,
+                                                        ItemType type) {
     const int role = type == ItemType_PolicyOU
                          ? static_cast<int>(PolicyOURole_DN)
                          : static_cast<int>(PolicyRole_DN);
     const QModelIndex policy_root =
         get_policy_tree_root(console_);
 
-    if (!policy_root.isValid()) {
+    if (! policy_root.isValid()) {
         return;
     }
 
@@ -769,16 +802,17 @@ void TreeStateManager::restore_policy_subtree_selection(const QString &dn, ItemT
             policy_root,
             role,
             dn,
-            {type});
+            { type });
     if (selected_policy_idx.isValid()) {
         console_->set_current_scope(selected_policy_idx);
     }
 }
 
-void TreeStateManager::restore_queries_subtree_selection(const QString &name, ItemType type) {
+void TreeStateManager::restore_queries_subtree_selection(const QString &name,
+                                                         ItemType type) {
     const QModelIndex queries_root =
         get_query_tree_root(console_);
-    if (!queries_root.isValid()) {
+    if (! queries_root.isValid()) {
         return;
     }
     if (type == ItemType_QueryFolder &&
@@ -788,7 +822,7 @@ void TreeStateManager::restore_queries_subtree_selection(const QString &name, It
     }
     const QString prefix =
         QueryFolderImpl::QUERY_ROOT + "/";
-    if (!name.startsWith(prefix)) {
+    if (! name.startsWith(prefix)) {
         return;
     }
     const QString relative_path =
@@ -819,7 +853,7 @@ void TreeStateManager::restore_queries_subtree_selection(const QString &name, It
                 break;
             }
         }
-        if (!child_idx.isValid()) {
+        if (! child_idx.isValid()) {
             return;
         }
         current = child_idx;
@@ -832,7 +866,7 @@ void TreeStateManager::restore_queries_subtree_selection(const QString &name, It
 
 TreeStateManager::SelectedItemData TreeStateManager::selected_item_data() {
         const QModelIndex selected_idx = console_->get_current_scope_item();
-        if (!selected_idx.isValid()) {
+        if (! selected_idx.isValid()) {
             return SelectedItemData{ItemType_Unassigned, QString()};
         }
 
@@ -853,7 +887,8 @@ TreeStateManager::SelectedItemData TreeStateManager::selected_item_data() {
             {
                 const QModelIndex queries_root = get_query_tree_root(console_);
                 if (selected_idx != queries_root) {
-                    name_data = console_query_folder_path(selected_idx, console_);
+                    name_data =
+                        console_query_folder_path(selected_idx, console_);
                 }
                 break;
             }

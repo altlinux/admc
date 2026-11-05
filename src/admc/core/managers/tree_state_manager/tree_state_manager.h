@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2026 BaseALT Ltd.
  * Copyright (C) 2026 Semyon Knyazev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,9 +105,9 @@ private:
      * @brief Describes one sequential subtree expansion operation.
      */
     struct ExpandTask {
-        QPersistentModelIndex root;       ///< Root used for item lookup.
-        QQueue<QString> dn_queue;         ///< Item identifiers restored in order.
-        int role = 0;                     ///< Model role used to match identifiers.
+        QPersistentModelIndex root;   ///< Root used for item lookup.
+        QQueue<QString> dn_queue;     ///< Item identifiers restored in order.
+        int role = 0;                 ///< Model role used to match identifiers.
         ItemType item_type = ItemType_Unassigned; ///< Expected item type.
         std::function<void()> on_finished; ///< Optional completion callback.
     };
@@ -131,8 +132,16 @@ private:
 
     QQueue<ExpandTask> restore_task_queue_;
     bool restore_task_active_ = false;
-    QPersistentModelIndex waiting_parent_; ///< Parent whose children are currently awaited.
-    bool item_selection_restored_ = false; ///< Whether the saved current item was restored.
+
+    /**
+     * @brief Parent whose children are currently awaited.
+     */
+    QPersistentModelIndex waiting_parent_;
+
+    /**
+     * @brief Whether the saved current item was restored.
+     */
+    bool item_selection_restored_ = false;
 
     /**
      * @brief Adds a subtree expansion task to the restore queue.
@@ -142,8 +151,11 @@ private:
      * @param item_type Expected item type.
      * @param on_finished Optional callback invoked after the task completes.
      */
-    void enqueue_restore_task(const QModelIndex &root, const QStringList &name_list, int role,
-        ItemType item_type, std::function<void()> on_finished = {});
+    void enqueue_restore_task(const QModelIndex &root,
+                              const QStringList &name_list,
+                              int role,
+                              ItemType item_type,
+                              std::function<void()> on_finished = {});
 
     /** @brief Starts the next queued expansion task or restores selection. */
     void start_next_restore_task();
@@ -200,7 +212,8 @@ private:
      * @param dn_list Saved DNs to restore.
      * @return Ordered queue of identifiers to process.
      */
-    QQueue<QString> prepare_restore_dn_queue(const QString &base_dn, const QStringList &dn_list);
+    QQueue<QString> prepare_restore_dn_queue(const QString &base_dn,
+                                             const QStringList &dn_list);
 
     /** @brief Enqueues restoration of the domain object subtree. */
     void restore_object_subtree();
