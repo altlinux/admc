@@ -20,6 +20,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file main_window.cpp
+ * @brief Application main window implementation.
+ */
+
 #include <QActionGroup>
 #include <QDesktopServices>
 #include <QLabel>

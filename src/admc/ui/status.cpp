@@ -21,6 +21,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file status.cpp
+ * @brief Status bar and message log implementation.
+ */
+
 #include <QDateTime>
 #include <QStatusBar>
 #include <QTextEdit>

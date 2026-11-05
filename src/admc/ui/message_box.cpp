@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file message_box.cpp
+ * @brief Common procedures for displaying message boxes.
+ */
+
 #include <QCoreApplication>
 #include <QMessageBox>
 #include <QString>

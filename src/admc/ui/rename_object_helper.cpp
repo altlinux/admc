@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file rename_object_helper.cpp
+ * @brief A helper class for renaming active directory (AD) objects.
+ */
+
 #include <QDialog>
 #include <QLineEdit>
 #include <QRegularExpression>

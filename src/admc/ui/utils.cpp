@@ -22,6 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file utils.cpp
+ * @brief ADMC common UI utilities.
+ */
+
 #include <QAbstractItemView>
 #include <QCursor>
 #include <QGuiApplication>

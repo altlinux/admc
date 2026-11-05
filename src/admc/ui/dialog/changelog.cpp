@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file changelog.cpp
+ * @brief ADMC "Changelog" dialog implementation.
+ */
+
 #include <QCoreApplication>
 #include <QDebug>
 #include <QStandardPaths>

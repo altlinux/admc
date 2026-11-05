@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file about.cpp
+ * @brief ADMC "About" dialog implementation.
+ */
+
 #include "core/config.h"
 #include "ui/dialog/about.h"
 #include "ui/dialog/ui_about.h"

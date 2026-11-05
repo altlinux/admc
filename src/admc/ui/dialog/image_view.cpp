@@ -18,6 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file image_view.cpp
+ * @brief ADMC image view dialog implementation.
+ */
+
 #include <QCoreApplication>
 #include <QPixmap>
 

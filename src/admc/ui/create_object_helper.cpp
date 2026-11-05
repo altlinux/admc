@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file create_object_helper.cpp
+ * @brief A helper class for creating active directory (AD) objects.
+ */
+
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
