@@ -1,7 +1,7 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2025 BaseALT Ltd.
+ * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
  *
  * This program is free software: you can redistribute it and/or modify
@@ -69,6 +69,7 @@ signals:
 
 // Load connection options from settings and apply to
 // AdInterface
-void load_connection_options(const QHash<QString, QVariant> &settings = QHash<QString, QVariant>());
+void load_connection_options(
+    const QHash<QString, QVariant> &settings = QHash<QString, QVariant>());
 
 #endif /* CONNECTION_OPTIONS_DIALOG_H */

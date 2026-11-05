@@ -37,11 +37,16 @@
 #include "ui/utils.h"
 #include "ui/widget/fsmo/fsmo_utils.h"
 
-const QString CERT_STRATEGY_NEVER = QCoreApplication::translate("ConnectionOptionsDialog", "never");
-const QString CERT_STRATEGY_HARD = QCoreApplication::translate("ConnectionOptionsDialog", "hard");
-const QString CERT_STRATEGY_DEMAND = QCoreApplication::translate("ConnectionOptionsDialog", "demand");
-const QString CERT_STRATEGY_ALLOW = QCoreApplication::translate("ConnectionOptionsDialog", "allow");
-const QString CERT_STRATEGY_TRY = QCoreApplication::translate("ConnectionOptionsDialog", "try");
+const QString CERT_STRATEGY_NEVER =
+    QCoreApplication::translate("ConnectionOptionsDialog", "never");
+const QString CERT_STRATEGY_HARD =
+    QCoreApplication::translate("ConnectionOptionsDialog", "hard");
+const QString CERT_STRATEGY_DEMAND =
+    QCoreApplication::translate("ConnectionOptionsDialog", "demand");
+const QString CERT_STRATEGY_ALLOW =
+    QCoreApplication::translate("ConnectionOptionsDialog", "allow");
+const QString CERT_STRATEGY_TRY =
+    QCoreApplication::translate("ConnectionOptionsDialog", "try");
 
 ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
 : QDialog(parent) {
@@ -114,7 +119,8 @@ ConnectionOptionsDialog::ConnectionOptionsDialog(QWidget *parent)
         ui->host_warning_label->setVisible(true);
     }
 
-    settings_setup_dialog_geometry(SETTING_connection_options_dialog_geometry, this);
+    settings_setup_dialog_geometry(SETTING_connection_options_dialog_geometry,
+                                   this);
 
     connect(ui->restore_defaults_button, &QPushButton::clicked,
         this, &ConnectionOptionsDialog::load_default_options);
@@ -132,18 +138,16 @@ ConnectionOptionsDialog::~ConnectionOptionsDialog() {
 
 void ConnectionOptionsDialog::accept() {
     if (any_hosts_available) {
-        const bool any_host_selected = !ui->host_select_list->selectedItems().isEmpty();
-
-        if (!any_host_selected) {
+        const bool any_host_selected =
+            ! ui->host_select_list->selectedItems().isEmpty();
+        if (! any_host_selected) {
             message_box_warning(this, tr("Error"), tr("Select a host."));
             return;
         }
     }
 
     const int port = ui->port_spinbox->value();
-
     const bool sasl_nocanon = ui->canonize_check->isChecked();
-
     const QString cert_strategy = ui->cert_combo->currentText();
 
     QString selected_host;
@@ -155,7 +159,8 @@ void ConnectionOptionsDialog::accept() {
         selected_host = item->text();
     }
 
-    const bool domain_was_default = settings_get_bool(SETTING_domain_is_default);
+    const bool domain_was_default =
+        settings_get_bool(SETTING_domain_is_default);
     const bool domain_is_default = ui->host_default_button->isChecked();
     const bool custom_domain_changed =
         (settings_get_string(SETTING_custom_domain) != custom_domain);
@@ -182,21 +187,28 @@ void ConnectionOptionsDialog::accept() {
         settings_set_variant(setting, settings.value(setting));
     }
 
-    const bool domain_is_changed = (domain_was_default != domain_is_default) || custom_domain_changed;
+    const bool domain_is_changed =
+        ((domain_was_default != domain_is_default) || custom_domain_changed);
     if (domain_is_changed) {
         load_g_adconfig(ad);
     }
 
     emit host_changed(selected_host);
 
-    if (!fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation) &&
-            !ad_current_master_for_role_dn(ad, fsmo_dn_from_role(FSMORole_PDCEmulation)).isEmpty()) {
-        if (gpo_edit_without_PDC_disabled)
-            g_status->add_message(tr("You are connected to DC without PDC-Emulator role. "
-                                     "Group policy editing is prohibited by the setting."), StatusType_Success);
-        else
-            g_status->add_message(tr("You are connected to DC without PDC-Emulator role. "
-                                     "Group policy editing is available."), StatusType_Success);
+    if ((! fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation)) &&
+        (! ad_current_master_for_role_dn(
+            ad, fsmo_dn_from_role(FSMORole_PDCEmulation)).isEmpty())) {
+        if (gpo_edit_without_PDC_disabled) {
+            g_status->add_message(
+                tr("You are connected to DC without PDC-Emulator role. "
+                   "Group policy editing is prohibited by the setting."),
+                StatusType_Success);
+        } else {
+            g_status->add_message(
+                tr("You are connected to DC without PDC-Emulator role. "
+                   "Group policy editing is available."),
+                StatusType_Success);
+        }
     }
 
     QDialog::accept();
@@ -220,17 +232,17 @@ void ConnectionOptionsDialog::set_saved_host_current_item()
 {
     const QString saved_host = settings_get_string(SETTING_host);
 
-    if (!saved_host.isEmpty()) {
-        const QList<QListWidgetItem *> item_list = ui->host_select_list->findItems(saved_host, Qt::MatchExactly);
-        const bool saved_host_is_in_list = !item_list.isEmpty();
+    if (! saved_host.isEmpty()) {
+        const QList<QListWidgetItem *> item_list =
+            ui->host_select_list->findItems(saved_host, Qt::MatchExactly);
+        const bool saved_host_is_in_list = ! item_list.isEmpty();
 
         if (saved_host_is_in_list) {
             QListWidgetItem *item = item_list[0];
             ui->host_select_list->setCurrentItem(item);
         }
     } else {
-        // If saved host is empty, select first available
-        // host in select list
+        // If saved host is empty, select first available host in select list
         ui->host_select_list->setCurrentRow(0);
     }
 }
@@ -324,7 +336,8 @@ void load_connection_options(const QHash<QString, QVariant> &settings) {
         AdInterface::set_port(0);
     }
 
-    const QString cert_strategy_string = get_setting(SETTING_cert_strategy).toString();
+    const QString cert_strategy_string =
+        get_setting(SETTING_cert_strategy).toString();
     const QHash<QString, CertStrategy> cert_strategy_map = {
         {CERT_STRATEGY_NEVER, CertStrategy_Never},
         {CERT_STRATEGY_HARD, CertStrategy_Hard},
@@ -332,6 +345,7 @@ void load_connection_options(const QHash<QString, QVariant> &settings) {
         {CERT_STRATEGY_ALLOW, CertStrategy_Allow},
         {CERT_STRATEGY_TRY, CertStrategy_Try},
     };
-    const CertStrategy cert_strategy = cert_strategy_map.value(cert_strategy_string, CertStrategy_Never);
+    const CertStrategy cert_strategy =
+        cert_strategy_map.value(cert_strategy_string, CertStrategy_Never);
     AdInterface::set_cert_strategy(cert_strategy);
 }
