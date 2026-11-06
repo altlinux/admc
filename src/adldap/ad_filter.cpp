@@ -2,7 +2,8 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2024-2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,6 +18,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @file ad_filter.cpp
+ * @brief Procedures for constructing LDAP filters.
  */
 
 #include <QCoreApplication>
@@ -105,12 +111,24 @@ QString filter_operation(const QString &operation,
     }
 }
 
-// {x, y, z ...} => (&(x)(y)(z)...)
+/**
+ * If the sub-filters list is empty, empty string is returned.
+ *
+ * @code{.unknown}
+ * {x, y, z ...} => (&(x)(y)(z)...)
+ * @endcode
+ */
 QString filter_AND(const QList<QString> &subfilters_raw) {
     return filter_operation(FILTER_OPERATION_AND, subfilters_raw);
 }
 
-// {x, y, z ...} => (|(x)(y)(z)...)
+/**
+ * If the sub-filters list is empty, empty string is returned.
+ *
+ * @code{.unknown}
+ * {x, y, z ...} => (|(x)(y)(z)...)
+ * @endcode
+ */
 QString filter_OR(const QList<QString> &subfilters_raw) {
     return filter_operation(FILTER_OPERATION_OR, subfilters_raw);
 }
@@ -176,11 +194,24 @@ QString filter_attributes(filter_t filter,
     return filter(subfilter_list);
 }
 
+/**
+ * Filter that accepts any distinguished name (DN) from the given list.
+ *
+ * @param dn_list A list of DNs.
+ * @return The newly created filter.
+ */
 QString filter_dn_list(const QList<QString> &dn_list) {
     return filter_attributes(filter_OR, Condition_Equals, ATTRIBUTE_DN,
                              dn_list);
 }
 
+/**
+ * Search all the way to the root through the chain of ancestry until it finds a
+ * match.  This method works only with DN-type attributes.
+ *
+ * @param attribute
+ * @param dn_value
+*/
 QString filter_matching_rule_in_chain(const QString &attribute,
                                       const QString &dn_value) {
     const QString filter = attribute + ":"

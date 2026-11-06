@@ -2,7 +2,8 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2024-2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,12 +20,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ad_filter.h
+ * @brief Procedures for constructing LDAP filters.
+ */
+
 #ifndef AD_FILTER_H
 #define AD_FILTER_H
-
-/**
- * Functions for constructing an LDAP filter.
- */
 
 #include <QString>
 
@@ -48,7 +50,6 @@ extern const QList<QString> filter_classes;
 
 QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value = QString());
 
-// If arguments for AND/OR are empty, empty string is returned
 QString filter_AND(const QList<QString> &subfilters);
 QString filter_OR(const QList<QString> &subfilters);
 
@@ -58,9 +59,6 @@ QString add_advanced_view_filter(const QString &filter);
 
 QString condition_to_display_string(const Condition condition);
 
-// Search all the way to the root through the chain of
-// ancestry until it finds a match. This method works only with DN-type
-// attributes
 QString filter_matching_rule_in_chain(const QString &attribute, const QString &dn_value);
 
 QString filter_operation(const QString &operation,
@@ -74,7 +72,6 @@ QString filter_attributes(filter_t filter,
                           const QString &attribute,
                           const QList<QString> &attribute_list);
 
-// Filter that accepts any DN from given list
 QString filter_dn_list(const QList<QString> &dn_list);
 
 #endif /* AD_FILTER_H */
