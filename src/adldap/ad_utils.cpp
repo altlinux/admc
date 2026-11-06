@@ -36,8 +36,8 @@
 #include "ad_utils.h"
 #include "samba/dom_sid.h"
 
-#define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
-#define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
+static const QString GENERALIZED_TIME_FORMAT_STRING = "yyyyMMddhhmmss.zZ";
+static const QString UTC_TIME_FORMAT_STRING = "yyMMddhhmmss.zZ";
 
 const QDateTime ntfs_epoch = QDateTime(QDate(1601, 1, 1), QTime(), Qt::UTC);
 
