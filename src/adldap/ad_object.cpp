@@ -20,6 +20,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ad_object.cpp
+ * @brief Active directory (AD) object implementation.
+ */
+
 #include <QByteArray>
 #include <QDateTime>
 #include <QHash>

@@ -20,6 +20,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ad_object.h
+ * @brief Active directory (AD) object implementation.
+ */
+
 #ifndef AD_OBJECT_H
 #define AD_OBJECT_H
 
