@@ -9,14 +9,6 @@ find_package(Qt6 REQUIRED
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-link_libraries(
-    Qt6::Core
-    Qt6::Widgets
-    Qt6::Test
-    adldap
-    admctest
-)
-
 include_directories(
     PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -41,6 +33,7 @@ set(TEST_TARGETS
     admc_test_string_large_edit
     admc_test_country_edit
     admc_test_gplink
+    admc_test_gpt_ini
     admc_test_select_base_widget
     admc_test_filter_widget
     admc_test_attributes_tab
@@ -78,9 +71,21 @@ set(TEST_TARGETS
 )
 
 foreach(target ${TEST_TARGETS})
-    add_executable(${target}
-        admc_test.cpp
-        ${target}.cpp
+    # GPT.INI parsing does not need the common domain and GUI fixture.
+    if(target STREQUAL "admc_test_gpt_ini")
+        add_executable(${target} ${target}.cpp)
+    else()
+        add_executable(${target}
+            admc_test.cpp
+            ${target}.cpp
+        )
+        target_link_libraries(${target} PRIVATE Qt6::Widgets admctest)
+    endif()
+
+    target_link_libraries(${target} PRIVATE
+        Qt6::Core
+        Qt6::Test
+        adldap
     )
 
     add_test(${target}

@@ -2211,21 +2211,16 @@ bool AdInterface::gpo_sync_perms(const QString &dn) {
     return true;
 }
 
-int AdInterface::get_version(const QString &ini_contents,
-                                 const QString &error_context) const {
-    int out;
-    const int scan_result =
-        sscanf(cstr(ini_contents), "[General]\r\nVersion=%i\r\n", &out);
-    const bool scan_success = (scan_result > 0);
-    if (! scan_success) {
+int AdInterface::get_version(
+    const QString &ini_contents, const QString &error_context) const {
+    const int version = gpt_ini_get_version(ini_contents);
+    if (version < 0) {
         const QString error_text =
-            QString(tr("Failed to extract version from GPT.INI, %1."))
-            .arg(strerror(errno));
+            tr("Failed to extract version from GPT.INI.");
         d->error_message(error_context, error_text);
-        return -1;
     }
 
-    return out;
+    return version;
 }
 
 QString AdInterface::read_gpt_ini(const AdObject &gpc_object,
@@ -2255,7 +2250,7 @@ QString AdInterface::read_gpt_ini(const AdObject &gpc_object,
 
     smbc_close(ini_fd);
 
-    return QString(buffer);
+    return QString::fromUtf8(buffer, bytes_read);
 }
 
 bool AdInterface::gpo_get_sysvol_version(const AdObject &gpc_object,

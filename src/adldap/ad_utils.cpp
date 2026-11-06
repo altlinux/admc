@@ -25,6 +25,7 @@
 #include <QDateTime>
 #include <QLocale>
 #include <QString>
+#include <QStringList>
 #include <QTranslator>
 #include <krb5.h>
 #include <ldap.h>
@@ -42,6 +43,35 @@ static const QString UTC_TIME_FORMAT_STRING = "yyMMddhhmmss.zZ";
 const QDateTime ntfs_epoch = QDateTime(QDate(1601, 1, 1), QTime(), Qt::UTC);
 
 QString escape_name_for_dn(const QString &unescaped);
+
+int gpt_ini_get_version(const QString &ini_contents) {
+    bool in_general_section = false;
+    const QStringList lines = ini_contents.split('\n');
+
+    for (const QString &raw_line : lines) {
+        const QString line = raw_line.trimmed();
+
+        if (line.startsWith('[')) {
+            in_general_section = (line == "[General]");
+            continue;
+        }
+
+        if (!in_general_section) {
+            continue;
+        }
+
+        const qsizetype separator = line.indexOf('=');
+        if ((separator < 0) || (line.left(separator).trimmed() != "Version")) {
+            continue;
+        }
+
+        bool ok = false;
+        const int version = line.mid(separator + 1).trimmed().toInt(&ok);
+        return (ok && (version >= 0)) ? version : -1;
+    }
+
+    return -1;
+}
 
 bool large_integer_datetime_is_never(const QString &value) {
     const bool is_never = ((value == AD_LARGE_INTEGER_DATETIME_NEVER_1) ||

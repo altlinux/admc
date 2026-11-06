@@ -58,6 +58,14 @@ QString group_type_string_adjective(GroupType type);
 
 QString filesys_path_to_smb_path(const QString &sysvol_path);
 
+/**
+ * Read the version from the General section of GPT.INI.
+ *
+ * @param ini_contents Text contents of GPT.INI.
+ * @return A non-negative version, or -1 if it is missing or invalid.
+ */
+int gpt_ini_get_version(const QString &ini_contents);
+
 QString extract_rid_from_sid(const QByteArray &sid, AdConfig *adconfig);
 
 bool ad_string_to_bool(const QString &string);

@@ -800,8 +800,8 @@
     </message>
     <message>
         <location filename="ad_interface.cpp" line="1763"/>
-        <source>Failed to extract version from GPT.INI, %1.</source>
-        <translation>Не удалось получить версию из GPT.INI, %1.</translation>
+        <source>Failed to extract version from GPT.INI.</source>
+        <translation>Не удалось получить версию из GPT.INI.</translation>
     </message>
     <message>
         <location filename="ad_interface.cpp" line="1490"/>

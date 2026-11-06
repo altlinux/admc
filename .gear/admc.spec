@@ -90,6 +90,7 @@ Tests for ADMC
 %_bindir/admc_test_string_large_edit
 %_bindir/admc_test_country_edit
 %_bindir/admc_test_gplink
+%_bindir/admc_test_gpt_ini
 %_bindir/admc_test_select_base_widget
 %_bindir/admc_test_filter_widget
 %_bindir/admc_test_attributes_tab

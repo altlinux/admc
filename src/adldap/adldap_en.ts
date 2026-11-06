@@ -781,7 +781,7 @@
     </message>
     <message>
         <location filename="ad_interface.cpp" line="1763"/>
-        <source>Failed to extract version from GPT.INI, %1.</source>
+        <source>Failed to extract version from GPT.INI.</source>
         <translation></translation>
     </message>
     <message>
