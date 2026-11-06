@@ -20,14 +20,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ad_config.h
+ * @brief Active directory (AD) configuration (header.)
+ */
+
 #ifndef AD_CONFIG_H
 #define AD_CONFIG_H
-
-/**
- * Provides access to constant server data, which includes
- * configuration data and some DN's. All of the data is
- * loaded once to avoid unnecessary server requests.
- */
 
 #include "ad_defines.h"
 
@@ -106,8 +105,6 @@ public:
     QString get_right_name(const QByteArray &right_guid, const QLocale::Language language) const;
     int get_rights_valid_accesses(const QString &rights_cn) const;
 
-    // Returns extended rights that apply to given
-    // classes
     QList<QString> get_extended_rights_list(const QList<QString> &class_list) const;
 
     QString guid_to_attribute(const QByteArray &guid) const;
@@ -126,10 +123,8 @@ public:
 
     bool class_is_auxiliary(const QString &obj_class) const;
 
-    // Gets all children class chain for given class
     QList<QString> all_inferiors_list(const QString &obj_class) const;
 
-    // Gets all classes, for which there are extended rights
     QList<QString> all_extended_right_classes() const;
 
     QStringList get_site_related_classes() const;
@@ -139,8 +134,6 @@ private:
     void load_attribute_schemas(AdInterface &ad);
     void load_class_schemas(AdInterface &ad);
 
-    // Loads class and attribute display names
-    // NOTE: can't just store objects for these because the values require a decent amount of preprocessing which is best done once here, not everytime value is requested
     void load_display_names(AdInterface &ad, const QString &locale_dir);
 
     void load_columns(AdInterface &ad, const QString &locale_dir);

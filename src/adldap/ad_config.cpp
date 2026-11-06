@@ -23,6 +23,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ad_config.cpp
+ * @brief Active directory (AD) configuration.
+ */
+
 #include <QCoreApplication>
 #include <QLocale>
 #include <algorithm>
@@ -669,6 +674,12 @@ QString AdConfig::get_right_name(const QByteArray &right_guid,
     return d->rights_guid_to_name_map.value(right_guid, tr("<unknown rights>"));
 }
 
+/**
+ * Returns extended rights that apply to given classes.
+ *
+ * @param class_list A list of classes to get extended rights for.
+ * @return A list of rights.
+ */
 QList<QString> AdConfig::get_extended_rights_list(const QList<QString> &class_list) const {
     QList<QString> out;
 
@@ -752,6 +763,12 @@ bool AdConfig::class_is_auxiliary(const QString &obj_class) const {
     return class_category == auxiliary_category_value;
 }
 
+/**
+ * Get all children class chain for given class.
+ *
+ * @param obj_class An object class.
+ * @return A list of children classes.
+ */
 QList<QString> AdConfig::all_inferiors_list(const QString &obj_class) const {
     QList<QString> out;
     for (const QString &inferior_class : get_possible_inferiors(obj_class)) {
@@ -762,6 +779,11 @@ QList<QString> AdConfig::all_inferiors_list(const QString &obj_class) const {
     return QSet<QString>(out.begin(), out.end()).values();
 }
 
+/**
+ * Gets all classes for which there are extended rights.
+ *
+ * @return A list of classes.
+ */
 QList<QString> AdConfig::all_extended_right_classes() const {
     QList<QString> out;
     for (auto obj_classes : d->rights_applies_to_map.values()) {
@@ -940,6 +962,13 @@ QList<QString> display_names_to_attributes(
     return out;
 }
 
+/**
+ * Loads class and attribute display names.
+ *
+ * NOTE: We cannot just store objects for these because the values require a
+ * decent amount of pre-processing which is best done once here, not every time
+ * value is requested.
+ */
 void AdConfig::load_display_names(AdInterface &ad, const QString &locale_dir) {
     const QString filter = QString();
 
