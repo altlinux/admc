@@ -1,9 +1,11 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2026 BaseALT Ltd.
+ * Copyright (C) 2020-2022 Dmitry Degtyarev
+ * Copyright (C) 2023-2026 Semyon Knyazev
  * Copyright (C) 2026 Yuri Kozyrev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +21,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ad_defines.h
+ * @brief Active directory (AD) related enums and constants.
+ */
+
 #ifndef AD_DEFINES_H
 #define AD_DEFINES_H
-
-/**
- * AD related enums and constants.
- */
 
 enum AttributeType {
     AttributeType_Boolean,
@@ -49,9 +52,11 @@ enum AttributeType {
     AttributeType_DSDN,
 };
 
-// NOTE: large integer type has sub types but AD schema
-// doesn't distinguish between them (from what I've seen).
-// Create enums for subtypes for easier processing.
+/**
+ * NOTE: large integer type has sub types but AD schema doesn't distinguish
+ * between them (from what I've seen).  Create enums for subtypes for easier
+ * processing. -- Dmitry Degtyarev
+ */
 enum LargeIntegerSubtype {
     LargeIntegerSubtype_Integer,
     LargeIntegerSubtype_Datetime,
