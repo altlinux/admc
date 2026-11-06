@@ -23,7 +23,7 @@
 #define ATTRIBUTE_DISPLAY_H
 
 /**
- * @file ad_display.cpp
+ * @file ad_display.h
  * @brief Helper procedures for formatting and displaying AD values (header.)
  *
  * Procedures for converting raw attribute values (bytes) into strings fit for
