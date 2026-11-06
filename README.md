@@ -22,7 +22,8 @@ Required:
 Optional build-time dependencies:
 * [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) -- a build-time
   dependency that is used by the auxiliary `clangformat` target.
-* [Doxygen](https://www.doxygen.nl/index.html)
+* [Doxygen](https://www.doxygen.nl/index.html) -- to generate the documentation
+  from the code.
 
 ### ALT distributions
 
@@ -84,6 +85,18 @@ This `gear-rpm` command produces the following RPM files in `~/RPM/` directory
   information for ADMC.
 - `~/RPM/RPMS/x86_64/admc-test-debuginfo-<version>-alt1.x86_64.rpm` -- debug
   information for unit tests.
+
+### Doxygen documentation
+
+> [!NOTE]
+> To do this you need Doxygen installed on your system.
+
+To produce HTML documentation from Doxygen commentaries in the code, run:
+```shell
+$ make -j$(nproc) doc
+```
+
+The generated documentation will be stored in `doc` directory.
 
 ### Source code auto-formatting
 You can also format the sources by building `clangformat` target after `cmake`
