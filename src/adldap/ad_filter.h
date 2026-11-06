@@ -49,21 +49,12 @@ typedef QString (*filter_t)(const QList<QString> &subfilters_raw);
 extern const QList<QString> filter_classes;
 
 QString filter_CONDITION(const Condition condition, const QString &attribute, const QString &value = QString());
-
 QString filter_AND(const QList<QString> &subfilters);
 QString filter_OR(const QList<QString> &subfilters);
-
-// Adds advanced view filter, depending on current advanced
-// view setting
-QString add_advanced_view_filter(const QString &filter);
-
 QString condition_to_display_string(const Condition condition);
-
 QString filter_matching_rule_in_chain(const QString &attribute, const QString &dn_value);
-
 QString filter_operation(const QString &operation,
                          const QList<QString> &subfilters_raw);
-
 const QList<QString> make_filter_list(const Condition &condition,
                                       const QString &attribute,
                                       const QList<QString> &attribute_list);
@@ -71,7 +62,6 @@ QString filter_attributes(filter_t filter,
                           const Condition &condition,
                           const QString &attribute,
                           const QList<QString> &attribute_list);
-
 QString filter_dn_list(const QList<QString> &dn_list);
 
 #endif /* AD_FILTER_H */
