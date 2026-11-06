@@ -1,8 +1,9 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2026 BaseALT Ltd.
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2023-2025 Semyon Knyazev
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,9 +23,12 @@
 #define ATTRIBUTE_DISPLAY_H
 
 /**
- * Functions for converting raw attribute values (bytes)
- * into strings fit for displaying to user. If no adconfig
- * is given, then raw attribute values are returned.
+ * @file ad_display.cpp
+ * @brief Helper procedures for formatting and displaying AD values (header.)
+ *
+ * Procedures for converting raw attribute values (bytes) into strings fit for
+ * displaying to a user.  If no AdConfig is given, then raw attribute values are
+ * returned.
  */
 
 class AdConfig;

@@ -1,8 +1,11 @@
 /*
  * ADMC - AD Management Center
  *
- * Copyright (C) 2020-2026 BaseALT Ltd.
- * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2021-2026 BaseALT Ltd.
+ * Copyright (C) 2021-2022 Dmitry Degtyarev
+ * Copyright (C) 2023 Ivan A. Melnikov
+ * Copyright (C) 2023-2025 Semyon Knyazev
+ * Copyright (C) 2024 DimDone
  * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,6 +20,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @file ad_display.cpp
+ * @brief Helper procedures for formatting and displaying AD values.
+ *
+ * Procedures for converting raw attribute values (bytes) into strings fit for
+ * displaying to a user.  If no AdConfig is given, then raw attribute values are
+ * returned.
  */
 
 #include "ad_display.h"
