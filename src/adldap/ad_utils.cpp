@@ -20,24 +20,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ad_utils.h"
-
-#include "ad_config.h"
-#include "ad_display.h"
-#include "samba/dom_sid.h"
-
-#include <krb5.h>
-#include <ldap.h>
-
 #include <QByteArray>
 #include <QCoreApplication>
 #include <QDateTime>
-#include <QDebug>
 #include <QLocale>
 #include <QString>
 #include <QTranslator>
+#include <krb5.h>
+#include <ldap.h>
 #include <mutex>
 #include <uuid/uuid.h>
+
+#include "ad_config.h"
+#include "ad_display.h"
+#include "ad_utils.h"
+#include "samba/dom_sid.h"
 
 #define GENERALIZED_TIME_FORMAT_STRING "yyyyMMddhhmmss.zZ"
 #define UTC_TIME_FORMAT_STRING "yyMMddhhmmss.zZ"
