@@ -22,6 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ad_security.cpp
+ * @brief Functions for working with AD security and security descriptors.
+ */
+
 #include "ad_security.h"
 #include "adldap.h"
 #include "samba/dom_sid.h"
@@ -1096,6 +1101,10 @@ static QList<security_ace> remove_trustee(
     return new_dacl;
 }
 
+/**
+ * Remove all ACE's from DACL for given trustee. Note that inherited ACE's are
+ * untouched, so trustee might still have ace's remaining after this is called.
+ */
 void security_descriptor_remove_trustee(
     security_descriptor *sd,
     const QList<QByteArray> &trustee_list)
@@ -1133,6 +1142,10 @@ bool security_descriptor_verify_acl_order(security_descriptor *sd) {
     return order_is_correct;
 }
 
+/**
+ * Returns the full right name, adding "Write" or "Read" depending on access
+ * mask.
+ */
 QString ad_security_get_right_name(AdConfig *adconfig,
                                    const SecurityRight &right,
                                    const QLocale::Language language) {
@@ -1194,6 +1207,11 @@ static bool is_opposite_superior_set(const security_descriptor *sd,
     return state.get(SecurityRightStateInherited_No, type);
 }
 
+/**
+ * "Complete" versions of add right functions that do A LOT more than just add
+ * rights.  It also takes care of superior and subordinate rights to follow a
+ * logic of a typical gui checklist of rights.
+ */
 void security_descriptor_add_right(security_descriptor *sd,
                                    AdConfig *adconfig,
                                    const QList<QString> &class_list,
@@ -1266,6 +1284,11 @@ static bool is_superior_set(const security_descriptor *sd,
     return state.get(SecurityRightStateInherited_No, type);
 }
 
+/**
+ * "Complete" versions of remove right function that do A LOT more than just add
+ * rights.  It also takes care of superior and subordinate rights to follow a
+ * logic of a typical gui checklist of rights.
+ */
 void security_descriptor_remove_right(security_descriptor *sd,
                                       AdConfig *adconfig,
                                       const QList<QString> &class_list,

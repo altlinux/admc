@@ -22,8 +22,8 @@
  */
 
 /**
- * Functions for working with AD security and security
- * descriptors.
+ * @file ad_security.h
+ * @brief Functions for working with AD security and security descriptors.
  */
 
 #ifndef AD_SECURITY_H
@@ -91,12 +91,14 @@ Q_DECLARE_METATYPE(SecurityRight)
 
 extern CommonTaskManager *common_task_manager;
 
-// ace_match_flags struct is used to configure ACE matching, that determines
-// permissions check state and DACL's ACE search:
-// - inherited ACEs match for all permissions with the same access mask;
-// - object type match is required for correct ACE search and addition/deletion.
-//
-// SEC_ACE_FLAG_NO_PROPAGATE_INHERIT flag may be taken in account in future
+/**
+ * ace_match_flags struct is used to configure ACE matching, that determines
+ * permissions check state and DACL's ACE search:
+ * - inherited ACEs match for all permissions with the same access mask;
+ * - object type match is required for correct ACE search and addition/deletion.
+ *
+ * SEC_ACE_FLAG_NO_PROPAGATE_INHERIT flag may be taken in account in future
+ */
 struct ace_match_flags {
     bool match_inheritance;
     bool match_object_type;
@@ -117,8 +119,6 @@ bool ad_security_replace_security_descriptor(
 void ad_security_replace_dacl(
     security_descriptor *sd, const QList<security_ace> &new_dacl);
 
-// Returns the full right name, adding "Write" or "Read" depending on access
-// mask.
 QString ad_security_get_right_name(
     AdConfig *adconfig, const SecurityRight &right, QLocale::Language language);
 
@@ -137,15 +137,9 @@ SecurityRightState security_descriptor_get_right_state(
 void security_descriptor_print(security_descriptor *sd, AdInterface &ad);
 bool security_descriptor_verify_acl_order(security_descriptor *sd);
 QList<security_ace> security_descriptor_get_dacl(const security_descriptor *sd);
-
-// Remove all ACE's from DACL for given trustee. Note that inherited ACE's are
-// untouched, so trustee might still have ace's remaining after this is called.
 void security_descriptor_remove_trustee(
     security_descriptor *sd, const QList<QByteArray> &trustee_list);
 
-// "Complete" versions of add/remove right f-ns that do A LOT more than just add
-// rights. They also take care of superior and subordinate rights to follow a
-// logic of a typical gui checklist of rights.
 void security_descriptor_add_right(
     security_descriptor *sd, AdConfig *adconfig, const QList<QString> &class_list,
     const QByteArray &trustee, const SecurityRight &right, const bool allow);
