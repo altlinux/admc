@@ -97,10 +97,6 @@ public:
     bool get_attribute_is_backlink(const Attribute &attribute) const;
     bool get_attribute_is_constructed(const Attribute &attribute) const;
 
-    // Limit's edit's max valid input length based on
-    // the upper range defined for attribute in schema
-    void limit_edit(QLineEdit *edit, const QString &attribute);
-
     QByteArray get_right_guid(const QString &right_cn) const;
     QString get_right_name(const QByteArray &right_guid, const QLocale::Language language) const;
     int get_rights_valid_accesses(const QString &rights_cn) const;

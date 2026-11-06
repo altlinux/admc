@@ -123,6 +123,10 @@ void line_edit_setup_full_name_autofill(
         middle_name_edit, autofill);
 }
 
+/**
+ * Limit LineEdit maximum valid input length based on the upper range defined
+ * for attribute in schema.
+ */
 void line_edit_limit_edit(QLineEdit *edit, const QString &attribute) {
     const int range_upper = ad_get_range_upper(attribute);
 
