@@ -37,6 +37,16 @@
 
 #include "krb5client.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// Constants.
+
+/**
+ * Environment variable name for the Kerberos cache.
+ */
+static const char* KRB5_CC_NAME = "KRB5CCNAME";
+
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Contains temporal Kerberos credential cache names
  */
@@ -213,7 +223,7 @@ void Krb5Client::Krb5ClientImpl::kinit(const QString &principal,
     }
 
     // Set as the default for subsequent authentication via SASL
-    if (setenv("KRB5CCNAME", cache_name_bytes.constData(), 1)) {
+    if (setenv(KRB5_CC_NAME, cache_name_bytes.constData(), 1)) {
         const QString setenv_fail = QCoreApplication::translate(
             "Krb5Client", "Failed to set KRB5CCNAME");
         cleanup_and_throw(setenv_fail, 0, ccache, &creds, princ, nullptr);
@@ -582,7 +592,7 @@ void Krb5Client::set_current_principal(const QString &principal) {
     const QByteArray ccache_name =
         QByteArray(krb5_cc_get_type(impl->context, ccache)) + QByteArray(":") +
         QByteArray(krb5_cc_get_name(impl->context, ccache));
-    int res = setenv("KRB5CCNAME", ccache_name.constData(), 1);
+    int res = setenv(KRB5_CC_NAME, ccache_name.constData(), 1);
     if (res) {
         error = QCoreApplication::translate("Krb5Client",
                                             "Failed to switch principal");
@@ -668,7 +678,7 @@ QStringList Krb5Client::active_tgt_principals() const {
 
 void Krb5Client::logout(bool delete_creds) {
     // Put arbitrary empty cache name to KRB5CCNAME env
-    qputenv("KRB5CCNAME", "MEMORY:empty_ccache");
+    qputenv(KRB5_CC_NAME, "MEMORY:empty_ccache");
 
     bool creds_not_system = impl->curr_principal != impl->sys_principal;
 
