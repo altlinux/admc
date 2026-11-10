@@ -26,7 +26,6 @@
  */
 
 #include <QCoreApplication>
-#include <QDebug>
 #include <QDir>
 #include <QHash>
 #include <csignal>
