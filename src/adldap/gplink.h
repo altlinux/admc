@@ -18,6 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file gplink.h
+ * @brief Group Policy Link (GPLink) management.
+ *
+ * A Group Policy Link (GPLink) is a link between a Group Policy Object (GPO)
+ * and an Active Directory container, such as site, domain and organizational
+ * unit (OU.)
+ */
+
 #ifndef GPLINK_H
 #define GPLINK_H
 

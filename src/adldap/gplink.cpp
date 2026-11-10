@@ -20,6 +20,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file gplink.cpp
+ * @brief Group Policy Link (GPLink) management.
+ *
+ * A Group Policy Link (GPLink) is a link between a Group Policy Object (GPO)
+ * and an Active Directory container, such as site, domain and organizational
+ * unit (OU.)
+ */
+
 #include <QObject>
 
 #include "gplink.h"
@@ -41,7 +50,7 @@ Gplink::Gplink(const Gplink &other)
  *   "LDAP://cn={UUID},cn=something,DC=a,DC=b"
  *   =>
  *   "cn={uuid},cn=something,dc=a,dc=b"
-*/
+ */
 static QString ldap_to_gpo(const QString &in) {
     QString out = in;
     out.remove(LDAP_PREFIX);
@@ -140,8 +149,9 @@ static QString gpo_dn_to_gplink_case(const QList<QString> &rdn_list) {
     return rdn_list_case.join(",");
 }
 
-// Transform into gplink format. Have to uppercase some
-// parts of the output.
+/**
+ * Transform into gplink format. Have to uppercase some parts of the output.
+ */
 QString Gplink::to_string() const {
     QList<QString> part_list;
 
