@@ -18,6 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file lcid.cpp
+ * @brief Language code identifier (LCID) helpers for ADMC.
+ */
+
 #include <QHash>
 #include <QLocale>
 #include <QString>

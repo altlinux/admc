@@ -18,6 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file lcid.h
+ * @brief Language code identifier (LCID) helpers for ADMC.
+ */
+
 #ifndef ADLDAP_LCID_H
 #define ADLDAP_LCID_H
 
