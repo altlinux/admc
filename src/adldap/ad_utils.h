@@ -24,7 +24,8 @@
 #define AD_UTILS_H
 
 /**
- * Various functions related to AD attributes which do not interact with the
+ * @file ad_utils.h
+ * @brief Various functions related to AD attributes which do not interact with the
  * server.
  */
 
@@ -86,12 +87,8 @@ QString get_default_domain_from_krb5();
 int bitmask_set(const int input_mask, const int mask_to_set, const bool is_set);
 bool bitmask_is_set(const int input_mask, const int mask_to_read);
 
-// NOTE: uses a buffer that is capped at 100 strings, so pointers returned from
-// this become invalid after 99 more calls. Only use this to give cstr args to C
-// routines in the same scope. Keep this far away from any recursion.
 const char *cstr(const QString &qstr);
 
-// NOTE: you must call Q_INIT_RESOURCE(adldap) before calling this
 bool load_adldap_translation(QTranslator &translator, const QLocale &locale);
 
 QByteArray guid_string_to_bytes(const QString &guid_string);

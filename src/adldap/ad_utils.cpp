@@ -20,6 +20,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file ad_utils.cpp
+ * @brief Various functions related to AD attributes which do not interact with the
+ * server.
+ */
+
 #include <QByteArray>
 #include <QCoreApplication>
 #include <QDateTime>
@@ -44,6 +50,12 @@ const QDateTime ntfs_epoch = QDateTime(QDate(1601, 1, 1), QTime(), Qt::UTC);
 
 QString escape_name_for_dn(const QString &unescaped);
 
+/**
+ * Read the version from the General section of GPT.INI.
+ *
+ * @param ini_contents Text contents of GPT.INI.
+ * @return A non-negative version, or -1 if it is missing or invalid.
+ */
 int gpt_ini_get_version(const QString &ini_contents) {
     bool in_general_section = false;
     const QStringList lines = ini_contents.split('\n');
@@ -277,8 +289,10 @@ QString group_type_string(GroupType type) {
     }
 }
 
-// NOTE: need a special translation for Russian where type
-// adjectives get suffixes.
+/**
+ * NOTE: need a special translation for Russian where type adjectives get
+ * suffixes.
+ */
 QString group_type_string_adjective(GroupType type) {
     switch (type) {
     case GroupType_Security:
@@ -305,9 +319,11 @@ bool ad_string_to_bool(const QString &string) {
     return (string == LDAP_BOOL_TRUE);
 }
 
-// "CN=foo,CN=bar,DC=domain,DC=com"
-// =>
-// "CN=foo"
+/**
+ * @code{.unknown}
+ * "CN=foo,CN=bar,DC=domain,DC=com" => "CN=foo"
+ * @endcode
+ */
 QString dn_get_rdn(const QString &dn) {
     const QStringList exploded_dn = dn.split(',');
     const QString rdn = exploded_dn[0];
@@ -315,9 +331,11 @@ QString dn_get_rdn(const QString &dn) {
     return rdn;
 }
 
-// "CN=foo,CN=bar,DC=domain,DC=com"
-// =>
-// "foo"
+/**
+ * @code{.unknown}
+ * "CN=foo,CN=bar,DC=domain,DC=com" => "foo"
+ * @endcode
+ */
 QString dn_get_name(const QString &dn) {
     int equals_i = dn.indexOf('=') + 1;
     int comma_i = dn.indexOf(',');
@@ -367,9 +385,11 @@ QString dn_move(const QString &dn, const QString &new_parent_dn) {
     return new_dn;
 }
 
-// "CN=foo,CN=bar,DC=domain,DC=com"
-// =>
-// "domain.com/bar/foo"
+/**
+ * @code{.unknown}
+ * "CN=foo,CN=bar,DC=domain,DC=com" => "domain.com/bar/foo"
+ * @endcode
+ */
 QString dn_canonical(const QString &dn) {
     char *canonical_cstr = ldap_dn2ad_canonical(cstr(dn));
     const QString canonical = QString(canonical_cstr);
@@ -448,6 +468,11 @@ bool bitmask_is_set(const int input_mask, const int mask_to_read) {
     return ((input_mask & mask_to_read) == mask_to_read);
 }
 
+/**
+ * NOTE: uses a buffer that is capped at 100 strings, so pointers returned from
+ * this become invalid after 99 more calls.  Only use this to give cstr args to
+ * C routines in the same scope. Keep this far away from any recursion.
+ */
 const char *cstr(const QString &qstr) {
     static std::mutex buffer_mutex;
     static QList<QByteArray> buffer;
@@ -465,6 +490,9 @@ const char *cstr(const QString &qstr) {
     return buffer.last().constData();
 }
 
+/**
+ * NOTE: you must call Q_INIT_RESOURCE(adldap) before calling this
+ */
 bool load_adldap_translation(QTranslator &translator, const QLocale &locale) {
     return translator.load(locale, "adldap", "_", ":/adldap");
 }
