@@ -20,6 +20,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file adldap.h
+ * @brief Active directory (AD) LDAP interface for ADMC.
+ */
+
 #ifndef ADLDAP_H
 #define ADLDAP_H
 
