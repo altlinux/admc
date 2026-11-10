@@ -20,6 +20,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file krb5client.cpp
+ * @brief ADMC Kerberos client.
+ */
+
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>

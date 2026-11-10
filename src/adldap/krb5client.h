@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file krb5client.h
+ * @brief ADMC Kerberos client.
+ */
+
 #ifndef KRB5CLIENT_H
 #define KRB5CLIENT_H
 
@@ -27,10 +32,22 @@
 #include <memory>
 
 enum Krb5TgtState {
-    Krb5TgtState_Active, // Ticket (TGT) is valid and a up-to-date
-    Krb5TgtState_Expired, // TGT is expired, but can be refreshed
-    Krb5TgtState_Outdated, // TGT lifetime is out of date and can't be refreshed
-    Krb5TgtState_Invalid // TGT is not valid for some reason
+    /**
+     * Ticket (TGT) is valid and a up-to-date
+     */
+    Krb5TgtState_Active,
+    /**
+     * TGT is expired, but can be refreshed
+     */
+    Krb5TgtState_Expired,
+    /**
+     * TGT lifetime is out of date and can't be refreshed
+     */
+    Krb5TgtState_Outdated,
+    /**
+     *  TGT is not valid for some reason
+     */
+    Krb5TgtState_Invalid
 };
 
 struct Krb5TGTData {
