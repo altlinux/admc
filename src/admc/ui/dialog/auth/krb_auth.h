@@ -18,6 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file krb_auth.h
+ * @brief Krb5 authentication dialog.
+ */
 
 #ifndef KRB_AUTH_DIALOG_H
 #define KRB_AUTH_DIALOG_H
@@ -33,15 +37,23 @@ class KrbAuthDialog;
 
 class Krb5Client;
 
+/**
+ * Krb5 authentication dialog state.
+ */
 typedef enum {
+    /**
+     * Regular authentication (default dialog state.)
+     */
     KRB5_DIALOG_STATE_AUTHENTICATION,
+    /**
+     * Principal password is expired, need to change it.
+     */
     KRB5_DIALOG_STATE_PASSWORD_CHANGE
 } KrbDialogState;
 
 /**
- * Kerberos authentication dialog
+ * Kerberos authentication dialog.
  */
-
 class KrbAuthDialog final : public AuthDialogBase {
     Q_OBJECT
 

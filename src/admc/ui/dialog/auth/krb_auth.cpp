@@ -18,6 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file krb_auth.cpp
+ * @brief Krb5 authentication dialog.
+ */
+
 #include <QDebug>
 #include <stdexcept>
 
@@ -108,6 +113,8 @@ void KrbAuthDialog::setupWidgets() {
 
 /**
  * Switch the UI to the password change state.
+ *
+ * @see KrbDialogState
  */
 void KrbAuthDialog::switch_ui_to_password_change() {
     ui->formLayout->setRowVisible(ROW_NEW_PASSWORD, true);
@@ -241,6 +248,12 @@ bool KrbAuthDialog::change_password(const QString &principal) {
     return true;
 }
 
+/**
+ * Perform Kerberos authentication.
+ *
+ * @param principal A principal name to authenticate.
+ * @throws runtime_error
+ */
 void KrbAuthDialog::authenticate(const QString &principal) {
     if (principal.isEmpty()) {
         show_error_message(tr("Enter your Kerberos principal"));
