@@ -21,13 +21,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file settings.h
+ * @brief Utility functions for saving and loading settings using QSettings.
+ */
+
 #ifndef SETTINGS_H
 #define SETTINGS_H
-
-/**
- * Utility f-ns for saving and loading settings using
- * QSettings.
- */
 
 #include <QVariant>
 
@@ -38,9 +38,15 @@ class QHeaderView;
 class QDialog;
 class QObject;
 
-// NOTE: define setting names this way to guarantee that all
-// setting names are unique
-// const QString SETTING = "SETTING";
+/**
+ * A macro to define setting names to guarantee that all setting names are
+ * unique.  For example, when called with SETTING as an argument, the macro
+ * produces the following code:
+ *
+ * @code{cpp}
+ * const QString SETTING = "SETTING";
+ * @endcode
+ */
 #define DEFINE_SETTING(SETTING) \
     const QString SETTING = #SETTING;
 
