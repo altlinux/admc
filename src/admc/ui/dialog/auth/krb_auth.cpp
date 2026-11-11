@@ -36,8 +36,8 @@ KrbAuthDialog::KrbAuthDialog(QWidget *parent, Krb5Client *krb_client_arg,
     QString principal)
     : AuthDialogBase(parent), ui(new Ui::KrbAuthDialog),
       state(KRB5_DIALOG_STATE_AUTHENTICATION),
-      client(krb_client_arg),
-      default_principal(principal)
+      default_principal(principal),
+      client(krb_client_arg)
 {
     ui->setupUi(this);
     switch_ui_to_authentication();
