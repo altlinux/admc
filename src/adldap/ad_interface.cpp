@@ -1815,6 +1815,10 @@ bool AdInterface::gpo_delete(const QString &dn, bool *deleted_object) {
     const bool delete_gpc_success = object_delete(dn);
     if (!delete_gpc_success) {
         d->error_message(tr("Failed to delete GPC."), d->default_error());
+        d->success_message(
+            QString(tr("Failed to delete policy %1.")).arg(name));
+        *deleted_object = false;
+        return false;
     }
 
     const bool delete_gpt_success = d->delete_gpt(smb_path);
