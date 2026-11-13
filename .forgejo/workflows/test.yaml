@@ -1,0 +1,31 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+
+# independent jobs, run in parallel
+jobs:
+  test-sisyphus:
+    runs-on: domina
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.forgejo/actions/test
+        with:
+          branch: sisyphus
+  test-p11:
+    runs-on: domina
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.forgejo/actions/test
+        with:
+          branch: p11
+  test-p10:
+    runs-on: domina
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.forgejo/actions/test
+        with:
+          branch: p10

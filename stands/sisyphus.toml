@@ -1,0 +1,40 @@
+# see https://altlinux.space/alt-domain/domina
+name = "admc-tests"
+networks = ["10.66.0.0/24"]
+
+[domain."admc.alt"]
+dcs = ["dc"]
+dns = "dc"
+credentials = { "Administrator" = "Pa55word!" }
+
+[machine."dc.admc.alt"]
+alt.branch = "p11"
+samba-dc = {}
+
+[machine."ws.admc.alt"]
+alt.branch = "sisyphus"
+alt.pkg.extra = [
+            "make",
+            "cmake",
+            "cmake-modules",
+            "ctest",
+            "clang-tools",
+            "gcc",
+            "gcc-c++",
+            "krb5-kinit",
+            "libcng-dpapi-devel",
+            "libgkdi-devel",
+            "libkrb5-devel",
+            "libldap-devel",
+            "libsasl2-devel",
+            "libsasl2-plugin-gssapi",
+            "libsmbclient-devel",
+            "libuuid-devel",
+            "qt6-base-devel",
+            "qt6-linguist",
+            "qt6-svg",
+            "qt6-tools-devel",
+            "qt6-translations",
+            "samba-devel",
+]
+client = { winbind = true }

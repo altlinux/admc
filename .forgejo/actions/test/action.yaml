@@ -1,0 +1,59 @@
+name: test
+description: build and test admc on a branch
+
+inputs:
+  branch:
+    description: stand name, e.g. stands/<branch>.toml
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup
+      shell: bash
+      env:
+        BRANCH: ${{ inputs.branch }}
+        STAND: admc-${{ github.run_number }}-${{ github.run_attempt }}-${{ inputs.branch }}
+      run: |
+        set -x
+        domina -y load -v -j 4 -l "$STAND" -t 30m0s "stands/$BRANCH.toml"
+        git archive HEAD | domina run "$STAND/ws" -- sh -ec '
+          mkdir -p /src
+          tar -x -C /src
+        '
+    - name: Build
+      shell: bash
+      env:
+        STAND: admc-${{ github.run_number }}-${{ github.run_attempt }}-${{ inputs.branch }}
+      run: |
+        set -x
+        domina run "$STAND/ws" -- sh -ec '
+          cmake -DCMAKE_AUTOGEN_PARALLEL=8 -S /src -B /build
+          cmake --build /build -j$(nproc)
+        '
+    - name: Test
+      shell: bash
+      env:
+        STAND: admc-${{ github.run_number }}-${{ github.run_attempt }}-${{ inputs.branch }}
+      run: |
+        set -x
+        domina creds "$STAND/Administrator" | \
+          domina run "$STAND/ws" -- sh -ec '
+            kinit Administrator
+            cd /build/tests
+            export QT_QPA_PLATFORM=offscreen
+            rc=0
+            make test || rc=$?
+            cat Testing/Temporary/LastTest.log || echo "no logs"
+            printf "\n\nlist of failed tests:\n"
+            cat Testing/Temporary/LastTestsFailed.log || echo "none"
+            exit $rc
+          '
+    - name: Clean up
+      if: always()
+      shell: bash
+      env:
+        STAND: admc-${{ github.run_number }}-${{ github.run_attempt }}-${{ inputs.branch }}
+      run: |
+        set -x
+        domina -y destroy -f "$STAND"
