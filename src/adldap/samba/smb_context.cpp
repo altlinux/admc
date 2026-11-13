@@ -2,6 +2,7 @@
  * ADMC - AD Management Center
  *
  * Copyright (C) 2020-2024 BaseALT Ltd.
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file smb_context.cpp
+ * @brief A Samba context wrapper.
+ */
+
 #include "smb_context.h"
 
 #include <libsmbclient.h>
@@ -27,6 +33,11 @@ SMBContext::SMBContext() : smb_ctx_ptr(createContext(), freeContext) {
     }
 }
 
+/**
+ * Check if the Samba context is valid.
+ *
+ * @return True if the context is valid, false otherwise.
+ */
 bool SMBContext::is_valid() const {
     return bool(smb_ctx_ptr);
 }
@@ -35,6 +46,11 @@ int SMBContext::smbcGetxattr(const char *fname, const char *name, const void *va
     return smbc_getFunctionGetxattr(smb_ctx_ptr.get())(smb_ctx_ptr.get(), fname, name, value, size);
 }
 
+/**
+ * Create new Samba context.
+ *
+ * @return New Samba context.
+ */
 SMBCCTX *SMBContext::createContext() {
     SMBCCTX* newContext = smbc_new_context();
 
@@ -52,6 +68,11 @@ SMBCCTX *SMBContext::createContext() {
     return newContext;
 }
 
+/**
+ * Free the Samba context.
+ *
+ * @param context A context to free.
+ */
 void SMBContext::freeContext(SMBCCTX *context) {
     if (context) {
         smbc_free_context(context, SMB_FREE_EVEN_IF_BUSY);

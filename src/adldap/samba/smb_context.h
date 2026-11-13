@@ -17,6 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file smb_context.h
+ * @brief A Samba context wrapper.
+ */
+
 #ifndef SMBCONTEXT_H
 #define SMBCONTEXT_H
 
