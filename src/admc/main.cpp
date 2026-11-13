@@ -119,35 +119,33 @@ int main(int argc, char **argv) {
 
     MainWindow *main_window = nullptr;
     MainWindowConnectionError *error_window = nullptr;
+    const bool show_login_window =
+        settings_get_bool(SETTING_show_login_window_on_startup);
+    const bool was_last_exit_logout =
+        settings_get_bool(SETTING_was_last_exit_logout);
+    if (show_login_window || was_last_exit_logout ||
+        (default_principal != nullptr))
     {
-        const bool show_login_window =
-            settings_get_bool(SETTING_show_login_window_on_startup);
-        const bool was_last_exit_logout =
-            settings_get_bool(SETTING_was_last_exit_logout);
-        if (show_login_window || was_last_exit_logout ||
-            (default_principal != nullptr))
+        krb5_client->logout(false);
+    }
+
+    AdInterface::set_custom_dc(custom_dc);
+    AdInterface ad;
+    main_window = new MainWindow(ad, *krb5_client, default_principal);
+    main_window->show();
+
+    if (ad.is_connected()) {
+        main_window->show_changelog_on_update();
+    }
+    else {
+        bool no_principals = krb5_client->active_tgt_principals().isEmpty();
+        if (show_login_window || was_last_exit_logout || no_principals
+            || (default_principal != nullptr) || (custom_dc != nullptr))
         {
-            krb5_client->logout(false);
-        }
-
-        AdInterface::set_custom_dc(custom_dc);
-        AdInterface ad;
-        main_window = new MainWindow(ad, *krb5_client, default_principal);
-        main_window->show();
-
-        if (ad.is_connected()) {
-            main_window->show_changelog_on_update();
-        }
-        else {
-            bool no_principals = krb5_client->active_tgt_principals().isEmpty();
-            if (show_login_window || was_last_exit_logout || no_principals
-                || (default_principal != nullptr) || (custom_dc != nullptr))
-            {
-                main_window->open_auth_dialog();
-            } else {
-                error_window = new MainWindowConnectionError(main_window);
-                error_window->show();
-            }
+            main_window->open_auth_dialog();
+        } else {
+            error_window = new MainWindowConnectionError(main_window);
+            error_window->show();
         }
     }
 
