@@ -619,8 +619,6 @@ void MainWindow::init_on_connect(AdInterface &ad) {
 
     login_label->setText(ad.client_user());
 
-    show_changelog_on_update();
-
     inited = true;
 }
 

@@ -134,10 +134,9 @@ int main(int argc, char **argv) {
     main_window = new MainWindow(ad, *krb5_client, default_principal);
     main_window->show();
 
-    if (ad.is_connected()) {
-        main_window->show_changelog_on_update();
-    }
-    else {
+    main_window->show_changelog_on_update();
+
+    if (! ad.is_connected()) {
         bool no_principals = krb5_client->active_tgt_principals().isEmpty();
         if (show_login_window || was_last_exit_logout || no_principals
             || (default_principal != nullptr) || (custom_dc != nullptr))
