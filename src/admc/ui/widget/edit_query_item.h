@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2020-2025 BaseALT Ltd.
  * Copyright (C) 2020-2025 Dmitry Degtyarev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file edit_query_item.h
+ * @brief Widget used for editing queries.
+ */
+
 #ifndef EDIT_QUERY_ITEM_WIDGET_H
 #define EDIT_QUERY_ITEM_WIDGET_H
-
-/**
- * Widget used for editing queries. Used in edit query
- * dialog and create query dialog.
- */
 
 #include <QVariant>
 #include <QWidget>
@@ -33,6 +34,10 @@ namespace Ui {
 class EditQueryItemWidget;
 }
 
+/**
+ * Widget used for editing queries. Used in edit query
+ * dialog and create query dialog.
+ */
 class EditQueryItemWidget : public QWidget {
     Q_OBJECT
 

@@ -19,6 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file edit_query_item.cpp
+ * @brief Widget used for editing queries.
+ */
+
 #include "ui/widget/edit_query_item.h"
 #include "ui/widget/ui_edit_query_item.h"
 
