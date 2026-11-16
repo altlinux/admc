@@ -113,6 +113,17 @@ bool fsmo_is_current_dc_master_for_role(AdInterface &ad, FSMORole role) {
 }
 
 /**
+ * Check if the current domain controller (DC) is a master for the PDC-Emulator
+ * role.
+ *
+ * @param ad An AD interface instance.
+ * @return True if the DC is the master for the PDC-Emulator role.
+ */
+bool fsmo_is_current_dc_master_for_pdc_emulation(AdInterface &ad) {
+    return fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation);
+}
+
+/**
  * Get the current master for the given role.
  *
  * @param ad An AD interface instance.

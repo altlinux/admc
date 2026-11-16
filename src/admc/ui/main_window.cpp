@@ -608,7 +608,7 @@ void MainWindow::init_on_connect(AdInterface &ad) {
     // console
     g_status->display_ad_messages(ad, this);
 
-    if (!fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation)) {
+    if (! fsmo_is_current_dc_master_for_pdc_emulation(ad)) {
         g_status->add_message(
             tr("You are connected to DC without PDC-Emulator role"),
             StatusType_Success);

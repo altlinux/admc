@@ -59,6 +59,7 @@ QString fsmo_dn_from_role(FSMORole role);
 QString fsmo_string_from_dn(const QString &fsmo_role_dn);
 QString fsmo_role_to_string(FSMORole role);
 bool fsmo_is_current_dc_master_for_role(AdInterface &ad, FSMORole role);
+bool fsmo_is_current_dc_master_for_pdc_emulation(AdInterface &ad);
 QString fsmo_current_master_for_role(AdInterface &ad, FSMORole role);
 void fsmo_connect_host_with_role(AdInterface &ad, FSMORole role);
 bool fsmo_role_from_dn(const QString &role_dn, FSMORole &role_out);
