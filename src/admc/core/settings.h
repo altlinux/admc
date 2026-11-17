@@ -197,6 +197,7 @@ bool settings_restore_header_state(const QString setting, QHeaderView *header);
 bool settings_are_creds_saved(const QString &username);
 QStringList settings_get_remembered_principals();
 const QLocale settings_get_current_locale();
+const QString settings_get_current_icon_theme();
 bool settings_get_bool(const QString &setting);
 QString settings_get_string(const QString &setting);
 int settings_get_int(const QString &setting);

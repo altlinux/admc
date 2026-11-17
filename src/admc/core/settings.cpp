@@ -274,6 +274,15 @@ const QLocale settings_get_current_locale() {
 }
 
 /**
+ * Get the current application icon theme from the settings.
+ *
+ * @return The current application icon theme.
+ */
+const QString settings_get_current_icon_theme() {
+    return settings_get_string(SETTING_current_icon_theme);
+}
+
+/**
  * Get a boolean value for the specified setting.
  *
  * @param setting A setting to get.
