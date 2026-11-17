@@ -181,6 +181,8 @@ void MainWindow::setup_themes() {
     const QStringList theme_list = g_icon_manager->available_themes();
     const QLocale current_locale = settings_get_current_locale();
     theme_action_group = new QActionGroup(this);
+    const QString current_theme =
+        settings_get_string(SETTING_current_icon_theme);
     for (const QString &theme : theme_list) {
         const QString localized_name =
             g_icon_manager->localized_theme_name(current_locale, theme);
@@ -191,13 +193,7 @@ void MainWindow::setup_themes() {
 
         action->setCheckable(true);
         theme_action_group->addAction(action);
-
-        bool is_checked;
-        const QString current_theme =
-            settings_get_string(SETTING_current_icon_theme);
-        current_theme == theme ? is_checked = true : is_checked = false;
-
-        action->setChecked(is_checked);
+        action->setChecked(current_theme == theme);
         ui->menu_theme->addAction(action);
 
         connect(
