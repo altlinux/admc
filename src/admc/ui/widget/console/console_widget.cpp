@@ -726,7 +726,7 @@ void ConsoleWidgetPrivate::add_actions(QMenu *menu) {
 // Returns whether any action is visible
 bool ConsoleWidgetPrivate::update_actions() {
     const QList<QModelIndex> selected_list = get_all_selected_items();
-    if (!selected_list.isEmpty() && !selected_list[0].isValid()) {
+    if ((! selected_list.isEmpty()) && (! selected_list[0].isValid())) {
         return false;
     }
 
@@ -736,75 +736,34 @@ bool ConsoleWidgetPrivate::update_actions() {
     // Collect information about action state from impl's
     //
 
-    QSet<QAction *> visible_custom_action_set;
-    for (int i = 0; i < selected_list.size(); i++) {
-        const QModelIndex index = selected_list[i];
-
-        ConsoleImpl *impl = get_impl(index);
-        QSet<QAction *> for_this_index =
-            impl->get_custom_actions(index, single_selection);
-
-        if (i == 0) {
-            // NOTE: for first index, add the whole set
-            // instead of intersecting, otherwise total set
-            // would just stay empty
-            visible_custom_action_set = for_this_index;
-        } else {
-            visible_custom_action_set.intersect(for_this_index);
-        }
-    }
-
-    QSet<QAction *> disabled_custom_action_set;
-    for (int i = 0; i < selected_list.size(); i++) {
-        const QModelIndex index = selected_list[i];
-
-        ConsoleImpl *impl = get_impl(index);
-        QSet<QAction *> for_this_index =
-            impl->get_disabled_custom_actions(index, single_selection);
-
-        if (i == 0) {
-            // NOTE: for first index, add the whole set
-            // instead of intersecting, otherwise total set
-            // would just stay empty
-            disabled_custom_action_set = for_this_index;
-        } else {
-            disabled_custom_action_set.intersect(for_this_index);
-        }
-    }
-
+    QSet<QAction *> visible_custom_actions;
+    QSet<QAction *> disabled_custom_actions;
     QSet<StandardAction> visible_standard_actions;
-    for (int i = 0; i < selected_list.size(); i++) {
-        const QModelIndex index = selected_list[i];
-
-        ConsoleImpl *impl = get_impl(index);
-        QSet<StandardAction> for_this_index =
-            impl->get_standard_actions(index, single_selection);
-
-        if (i == 0) {
-            // NOTE: for first index, add the whole set
-            // instead of intersecting, otherwise total set
-            // would just stay empty
-            visible_standard_actions = for_this_index;
-        } else {
-            visible_standard_actions.intersect(for_this_index);
-        }
-    }
-
     QSet<StandardAction> disabled_standard_actions;
     for (int i = 0; i < selected_list.size(); i++) {
         const QModelIndex index = selected_list[i];
-
         ConsoleImpl *impl = get_impl(index);
-        QSet<StandardAction> for_this_index =
+        QSet<QAction *> custom =
+            impl->get_custom_actions(index, single_selection);
+        QSet<QAction *> disabled_custom =
+            impl->get_disabled_custom_actions(index, single_selection);
+        QSet<StandardAction> standard =
+            impl->get_standard_actions(index, single_selection);
+        QSet<StandardAction> disabled_standard =
             impl->get_disabled_standard_actions(index, single_selection);
 
-        if (i == 0) {
-            // NOTE: for first index, add the whole set
-            // instead of intersecting, otherwise total set
-            // would just stay empty
-            disabled_standard_actions = for_this_index;
+        if (i > 0) {
+            visible_custom_actions.intersect(custom);
+            disabled_custom_actions.intersect(disabled_custom);
+            visible_standard_actions.intersect(standard);
+            disabled_standard_actions.intersect(disabled_standard);
         } else {
-            disabled_standard_actions.intersect(for_this_index);
+            // NOTE: for first index, add the whole set instead of intersecting,
+            // otherwise total set would just stay empty
+            visible_custom_actions = custom;
+            disabled_custom_actions = disabled_custom;
+            visible_standard_actions = standard;
+            disabled_standard_actions = disabled_standard;
         }
     }
 
@@ -812,12 +771,11 @@ bool ConsoleWidgetPrivate::update_actions() {
     // Apply action state
     //
 
-    const QList<QAction *> custom_action_list = get_custom_action_list();
-
     // Show/hide and enable/disable custom actions
+    const QList<QAction *> custom_action_list = get_custom_action_list();
     for (QAction *action : custom_action_list) {
-        action->setVisible(visible_custom_action_set.contains(action));
-        action->setDisabled(disabled_custom_action_set.contains(action));
+        action->setVisible(visible_custom_actions.contains(action));
+        action->setDisabled(disabled_custom_actions.contains(action));
     }
 
     // Show/hide and enable/disable standard actions
@@ -828,8 +786,8 @@ bool ConsoleWidgetPrivate::update_actions() {
     }
 
     const bool any_action_is_visible =
-        (!visible_standard_actions.isEmpty() ||
-         !visible_custom_action_set.isEmpty());
+        ((! visible_standard_actions.isEmpty()) ||
+         (! visible_custom_actions.isEmpty()));
 
     return any_action_is_visible;
 }
