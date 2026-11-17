@@ -49,7 +49,7 @@ static const QString SPLITTER_STATE = "SPLITTER_STATE";
 static const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
 static const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
 
-const QList<StandardAction> standard_action_list = {
+static const QList<StandardAction> STANDARD_ACTION_LIST = {
     StandardAction_Copy,
     StandardAction_Cut,
     StandardAction_Rename,
@@ -208,7 +208,7 @@ ConsoleWidget::ConsoleWidget(QWidget *parent)
         d->model, &QAbstractItemModel::rowsRemoved,
         d, &ConsoleWidgetPrivate::update_description);
 
-    for (const StandardAction &action_enum : standard_action_list) {
+    for (const StandardAction &action_enum : STANDARD_ACTION_LIST) {
         QAction *action = d->standard_action_map[action_enum];
 
         connect(
@@ -814,34 +814,17 @@ bool ConsoleWidgetPrivate::update_actions() {
 
     const QList<QAction *> custom_action_list = get_custom_action_list();
 
-    // Show/hide custom actions
+    // Show/hide and enable/disable custom actions
     for (QAction *action : custom_action_list) {
-        const bool visible = visible_custom_action_set.contains(action);
-
-        action->setVisible(visible);
+        action->setVisible(visible_custom_action_set.contains(action));
+        action->setDisabled(disabled_custom_action_set.contains(action));
     }
 
-    // Enable/disable custom actions
-    for (QAction *action : custom_action_list) {
-        const bool disabled = disabled_custom_action_set.contains(action);
-
-        action->setDisabled(disabled);
-    }
-
-    // Show/hide standard actions
-    for (const StandardAction &action_enum : standard_action_list) {
-        const bool visible = visible_standard_actions.contains(action_enum);
-
+    // Show/hide and enable/disable standard actions
+    for (const StandardAction &action_enum : STANDARD_ACTION_LIST) {
         QAction *action = standard_action_map[action_enum];
-        action->setVisible(visible);
-    }
-
-    // Enable/disable standard actions
-    for (const StandardAction &action_enum : standard_action_list) {
-        const bool disabled = disabled_standard_actions.contains(action_enum);
-
-        QAction *action = standard_action_map[action_enum];
-        action->setDisabled(disabled);
+        action->setVisible(visible_standard_actions.contains(action_enum));
+        action->setDisabled(disabled_standard_actions.contains(action_enum));
     }
 
     const bool any_action_is_visible =
