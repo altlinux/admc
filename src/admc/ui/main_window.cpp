@@ -178,32 +178,29 @@ void MainWindow::reload_console_tree() {
 }
 
 void MainWindow::setup_themes() {
-    const QStringList theme_list = g_icon_manager->available_themes();
-    const QLocale current_locale = settings_get_current_locale();
+    const QStringList THEME_LIST = g_icon_manager->available_themes();
+    const QLocale CURRENT_LOCALE = settings_get_current_locale();
+    const QString CURRENT_THEME = settings_get_current_icon_theme();
     theme_action_group = new QActionGroup(this);
-    const QString current_theme = settings_get_current_icon_theme();
-    for (const QString &theme : theme_list) {
+    for (const QString &theme : THEME_LIST) {
         const QString localized_name =
-            g_icon_manager->localized_theme_name(current_locale, theme);
+            g_icon_manager->localized_theme_name(CURRENT_LOCALE, theme);
         if (localized_name.isEmpty()) {
             continue;
         }
-        const auto action = new QAction(localized_name, theme_action_group);
-
+        auto action = new QAction(localized_name, theme_action_group);
         action->setCheckable(true);
         theme_action_group->addAction(action);
-        action->setChecked(current_theme == theme);
+        action->setChecked(CURRENT_THEME == theme);
         ui->menu_theme->addAction(action);
 
         connect(
             action, &QAction::triggered,
-            this,
-            [this, theme](bool checked) {
-                if (checked == false)
+            this, [this, theme](bool checked) {
+                if (checked == false) {
                     return;
-
+                }
                 g_icon_manager->set_theme(theme);
-
                 update();
 
                 // TODO: Replace total tree updating from base by tree item
@@ -262,8 +259,7 @@ void MainWindow::setup_languages() {
  */
 void MainWindow::retranslate_themes_menu() {
     const QStringList theme_list = g_icon_manager->available_themes();
-    const QLocale current_locale =
-        settings_get_variant(SETTING_locale).toLocale();
+    const QLocale current_locale = settings_get_current_locale();
     auto  actions = theme_action_group->actions();
     for (int idx = 0; idx < theme_list.length(); idx++) {
         const QString& theme = theme_list[idx];
