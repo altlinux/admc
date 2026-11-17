@@ -460,27 +460,13 @@ QModelIndex ConsoleWidget::search_item(const QModelIndex &parent,
                                        const QList<int> &type_list) const {
     const QList<QModelIndex> index_list = search_items(parent, role, value,
                                                        type_list);
-
-    if (!index_list.isEmpty()) {
-        const QModelIndex out = index_list[0];
-
-        return out;
-    } else {
-        return QModelIndex();
-    }
+    return (! index_list.isEmpty()) ? index_list[0] : QModelIndex();
 }
 
 QModelIndex ConsoleWidget::search_item(const QModelIndex &parent,
                                        const QList<int> &type) const {
     const QList<QModelIndex> index_list = search_items(parent, type);
-
-    if (!index_list.isEmpty()) {
-        const QModelIndex out = index_list[0];
-
-        return out;
-    } else {
-        return QModelIndex();
-    }
+    return (! index_list.isEmpty()) ? index_list[0] : QModelIndex();
 }
 
 QModelIndex ConsoleWidget::get_current_scope_item() const {
@@ -498,9 +484,7 @@ QModelIndex ConsoleWidget::get_current_scope_item() const {
 }
 
 int ConsoleWidget::get_child_count(const QModelIndex &index) const {
-    const int out = d->model->rowCount(index);
-
-    return out;
+    return d->model->rowCount(index);
 }
 
 QStandardItem *ConsoleWidget::get_item(const QModelIndex &index) const {
@@ -633,11 +617,11 @@ void ConsoleWidget::update_current_item_results_widget()
 
 QWidget *ConsoleWidget::get_result_widget_for_index(const QModelIndex &index) {
     ConsoleImpl *current_item_impl = d->get_impl(index);
-    QWidget *result_widget = nullptr;
-    if (current_item_impl)
-        result_widget = current_item_impl->widget();
-
-    return result_widget;
+    if (current_item_impl) {
+        return current_item_impl->widget();
+    } else {
+        return nullptr;
+    }
 }
 
 void ConsoleWidget::clear_scope_tree() {
@@ -881,17 +865,13 @@ void ConsoleWidgetPrivate::start_drag(
 
 bool ConsoleWidgetPrivate::can_drop(const QModelIndex &target) {
     const int target_type = target.data(ConsoleRole_Type).toInt();
-
     ConsoleImpl *impl = get_impl(target);
-    const bool ok = impl->can_drop(dropped_list, dropped_type_list,
-                                   target, target_type);
-
-    return ok;
+    return impl->can_drop(dropped_list, dropped_type_list,
+                          target, target_type);
 }
 
 void ConsoleWidgetPrivate::drop(const QModelIndex &target) {
     const int target_type = target.data(ConsoleRole_Type).toInt();
-
     ConsoleImpl *impl = get_impl(target);
     impl->drop(dropped_list, dropped_type_list, target, target_type);
 }
@@ -923,17 +903,12 @@ void ConsoleWidgetPrivate::fetch_scope(const QModelIndex &index) {
 
 ConsoleImpl *ConsoleWidgetPrivate::get_current_scope_impl() const {
     const QModelIndex current_scope = q->get_current_scope_item();
-
-    ConsoleImpl *impl = get_impl(current_scope);
-
-    return impl;
+    return get_impl(current_scope);
 }
 
 ConsoleImpl *ConsoleWidgetPrivate::get_impl(const QModelIndex &index) const {
     const int type = index.data(ConsoleRole_Type).toInt();
-    ConsoleImpl *impl = impl_map.value(type, default_impl);
-
-    return impl;
+    return impl_map.value(type, default_impl);
 }
 
 void ConsoleWidgetPrivate::update_description() {
