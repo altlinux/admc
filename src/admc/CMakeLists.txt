@@ -78,6 +78,7 @@ set(ADMC_SOURCES
     core/settings.cpp
     core/user_photo.cpp
     core/utils.cpp
+    ui/action/theme.cpp
     ui/console/all_policies_folder_impl.cpp
     ui/console/domain_info_impl.cpp
     ui/console/find_object_impl.cpp

@@ -40,6 +40,7 @@
 #include "core/managers/gplink_manager.h"
 #include "core/managers/icon_manager.h"
 #include "core/settings.h"
+#include "ui/action/theme.h"
 #include "ui/attribute_edit/country_combo.h"
 #include "ui/console/all_policies_folder_impl.h"
 #include "ui/console/domain_info_impl.h"
@@ -179,21 +180,14 @@ void MainWindow::reload_console_tree() {
 
 void MainWindow::setup_themes() {
     const QStringList THEME_LIST = g_icon_manager->available_themes();
-    const QLocale CURRENT_LOCALE = settings_get_current_locale();
-    const QString CURRENT_THEME = settings_get_current_icon_theme();
     theme_action_group = new QActionGroup(this);
     for (const QString &theme : THEME_LIST) {
-        const QString localized_name =
-            g_icon_manager->localized_theme_name(CURRENT_LOCALE, theme);
-        if (localized_name.isEmpty()) {
+        auto action = new ThemeAction(theme, theme_action_group);
+        if (! action->has_localized_name()) {
             continue;
         }
-        auto action = new QAction(localized_name, theme_action_group);
-        action->setCheckable(true);
         theme_action_group->addAction(action);
-        action->setChecked(CURRENT_THEME == theme);
         ui->menu_theme->addAction(action);
-
         connect(
             action, &QAction::triggered,
             this, [this, theme](bool checked) {
