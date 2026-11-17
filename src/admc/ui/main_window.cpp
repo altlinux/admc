@@ -40,6 +40,7 @@
 #include "core/managers/gplink_manager.h"
 #include "core/managers/icon_manager.h"
 #include "core/settings.h"
+#include "ui/action/language.h"
 #include "ui/action/theme.h"
 #include "ui/attribute_edit/country_combo.h"
 #include "ui/console/all_policies_folder_impl.h"
@@ -214,21 +215,8 @@ void MainWindow::setup_languages() {
     auto language_group = new QActionGroup(this);
     for (const QLocale::Language &language : language_list) {
         const QLocale locale(language);
-
-        // NOTE: Russian nativeLanguageName starts with lowercase letter for
-        // some reason
-        QString language_name = locale.nativeLanguageName();
-        const QChar first_letter_uppercased = language_name[0].toUpper();
-        language_name.replace(0, 1, first_letter_uppercased);
-
-        const auto action = new QAction(language_name, language_group);
-        action->setCheckable(true);
+        const auto action = new LanguageAction(locale, language_group);
         language_group->addAction(action);
-
-        const QLocale current_locale = settings_get_current_locale();
-        bool is_checked = (current_locale.language() == locale.language());
-        action->setChecked(is_checked);
-
         ui->menu_language->addAction(action);
 
         connect(
