@@ -37,9 +37,8 @@ FindObjectImpl::FindObjectImpl(ConsoleWidget *console_arg)
 }
 
 QString FindObjectImpl::get_description(const QModelIndex &index) const {
-    const QString object_count_text = ConsoleObjectTreeOperations::console_object_count_string(console, index);
-
-    return object_count_text;
+    return ConsoleObjectTreeOperations::console_object_count_string(console,
+                                                                    index);
 }
 
 QList<QString> FindObjectImpl::column_labels() const {
@@ -51,7 +50,5 @@ QList<int> FindObjectImpl::default_columns() const {
 }
 
 QModelIndex get_find_object_root(ConsoleWidget *console) {
-    const QModelIndex out = console->search_item(QModelIndex(), {ItemType_FindObject});
-
-    return out;
+    return console->search_item(QModelIndex(), {ItemType_FindObject});
 }
