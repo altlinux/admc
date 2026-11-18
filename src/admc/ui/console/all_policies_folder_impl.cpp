@@ -110,6 +110,18 @@ QList<int> AllPoliciesFolderImpl::default_columns() const {
     return {0};
 }
 
+/**
+ * Make a message box asking for PDC-Emulator connection.
+ */
+QMessageBox::StandardButton AllPoliciesFolderImpl::pdc_question() const {
+    return QMessageBox::question(
+        console,
+        QObject::tr("Creation is not available"),
+        QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
+                    "group policy creation is prohibited by the setting. "
+                    "Connect to PDC-Emulator?"));
+}
+
 void AllPoliciesFolderImpl::create_policy() {
     AdInterface ad;
     if (ad_failed(ad, console)) {
@@ -123,17 +135,11 @@ void AllPoliciesFolderImpl::create_policy() {
     }
 
     if (!fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
-        QMessageBox::StandardButton answer = QMessageBox::question(console, QObject::tr("Creation is not available"),
-                                                                   QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
-                                                                   "group policy creation is prohibited by the setting. "
-                                                                   "Connect to PDC-Emulator?"));
+        QMessageBox::StandardButton answer = pdc_question();
         if (answer == QMessageBox::Yes) {
             connect_to_PDC_emulator(ad, console);
-            return;
         }
-        else {
-            return;
-        }
+        return;
     }
 
     const QModelIndex parent_index = selected_list[0];
@@ -159,9 +165,7 @@ void AllPoliciesFolderImpl::create_policy() {
 
 QModelIndex get_all_policies_folder_index(ConsoleWidget *console) {
     const QModelIndex policy_tree_root = get_policy_tree_root(console);
-    const QModelIndex out = console->search_item(policy_tree_root, {ItemType_AllPoliciesFolder});
-
-    return out;
+    return console->search_item(policy_tree_root, {ItemType_AllPoliciesFolder});
 }
 
 void all_policies_folder_impl_add_objects(ConsoleWidget *console, const QList<AdObject> &object_list, const QModelIndex &parent) {

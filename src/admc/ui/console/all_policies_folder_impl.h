@@ -27,6 +27,8 @@
  * all of the policies present in the domain.
  */
 
+#include <QMessageBox>
+
 #include "ui/widget/console/console_impl.h"
 #include "ui/widget/console/console_widget.h"
 
@@ -56,6 +58,7 @@ private:
     QAction *create_policy_action;
 
     void create_policy();
+    QMessageBox::StandardButton pdc_question() const;
 };
 
 QModelIndex get_all_policies_folder_index(ConsoleWidget *console);
