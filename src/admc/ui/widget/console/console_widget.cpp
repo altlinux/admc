@@ -19,6 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file console_widget.cpp
+ * @brief The central widget of the app through which the user can
+ * browse and manipulate objects.
+ */
+
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
