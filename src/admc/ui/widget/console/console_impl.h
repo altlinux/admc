@@ -24,10 +24,9 @@
 #define CONSOLE_IMPL_H
 
 /**
- * Base class for implementing item logic specific to
- * different item types. You should implement this class for
- * each type of item that you use. Implemented functions
- * will be called by console.
+ * Base class for implementing item logic specific to different item types. You
+ * should implement this class for each type of item that you use. Implemented
+ * functions will be called by console.
  */
 
 #include <QObject>
@@ -44,34 +43,37 @@ public:
     ConsoleImpl(ConsoleWidget *console_arg);
 
     /**
-    * @brief Called when a scope item of this type. Fetching
-    * happens when using the user selects or expands an
-    * item for the first time. Typically this is where you
-    * would load children of an item, if they need to be
-    * loaded dynamically. If children of your item type are
-    * static, you don't need to implement this.
+    * @brief Called when a scope item of this type. Fetching happens when using
+    * the user selects or expands an item for the first time. Typically this is
+    * where you would load children of an item, if they need to be loaded
+    * dynamically. If children of your item type are static, you don't need to
+    * implement this.
     */
     virtual void fetch(const QModelIndex &index);
 
     /**
-    * @brief Called when items are dragged on top of an item of
-    * this type to determine whether dropping is allowed.
-    * Note that dragged items may be of any type and even
-    * contain mixed types.
+    * @brief Called when items are dragged on top of an item of this type to
+    * determine whether dropping is allowed. Note that dragged items may be of
+    * any type and even contain mixed types.
     */
-    virtual bool can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
+    virtual bool can_drop(const QList<QPersistentModelIndex> &dropped_list,
+                          const QSet<int> &dropped_type_list,
+                          const QPersistentModelIndex &target,
+                          const int target_type);
 
     /**
-    * @brief Called when items are dropped onto item of this type.
-    * In the implementation, move items or perform other
-    * operations as necessary.
+    * @brief Called when items are dropped onto item of this type. In the
+    * implementation, move items or perform other operations as necessary.
     */
-    virtual void drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type);
+    virtual void drop(const QList<QPersistentModelIndex> &dropped_list,
+                      const QSet<int> &dropped_type_list,
+                      const QPersistentModelIndex &target,
+                      const int target_type);
 
     /**
-    * @brief Called when description bar text needs to be updated
-    * and currently selected scope item is of this type.
-    * Return whatever text should be displayed.
+    * @brief Called when description bar text needs to be updated and currently
+    * selected scope item is of this type. Return whatever text should be
+    * displayed.
     */
     virtual QString get_description(const QModelIndex &index) const;
 
@@ -89,46 +91,49 @@ public:
     virtual void selected_as_scope(const QModelIndex &index);
 
     /**
-    * @brief Return all custom actions that are available for this
-    * type. This will be used to determine the order of
-    * actions in the menu.
+    * @brief Return all custom actions that are available for this type. This
+    * will be used to determine the order of actions in the menu.
     */
     virtual QList<QAction *> get_all_custom_actions() const;
 
     /**
-    * @brief Return a set of custom actions that should be
-    * disabled
+    * @brief Return a set of custom actions that should be disabled
     */
-    virtual QSet<QAction *> get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const;
+    virtual QSet<QAction *> get_disabled_custom_actions(
+        const QModelIndex &index,
+        const bool single_selection) const;
 
     /**
-    * @brief Return all custom actions that are available for this
-    * item. This should be a subset of all possible
-    * actions.
+    * @brief Return all custom actions that are available for this item. This
+    * should be a subset of all possible actions.
     */
-    virtual QSet<QAction *> get_custom_actions(const QModelIndex &index, const bool single_selection) const;
+    virtual QSet<QAction *> get_custom_actions(
+        const QModelIndex &index,
+        const bool single_selection) const;
 
     /**
-    * @brief Return a set of standard actions that should be
-    * displayed for this item
+    * @brief Return a set of standard actions that should be displayed for this
+    * item
     */
-    virtual QSet<StandardAction> get_standard_actions(const QModelIndex &index, const bool single_selection) const;
+    virtual QSet<StandardAction> get_standard_actions(
+        const QModelIndex &index,
+        const bool single_selection) const;
 
     /**
-    * @brief Return a set of standard actions that should be
-    * disabled
+    * @brief Return a set of standard actions that should be disabled
     */
-    virtual QSet<StandardAction> get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const;
+    virtual QSet<StandardAction> get_disabled_standard_actions(
+        const QModelIndex &index,
+        const bool single_selection) const;
 
-    // NOTE: It is possible to select indexes of mixed type.
-    // For this reason, action f-ns will be called with
-    // index lists that only contain indexes of the same
-    // type as this impl. Use this list, NOT the
-    // list from console's get_selected_items().
+    // NOTE: It is possible to select indexes of mixed type. For this reason,
+    // action f-ns will be called with index lists that only contain indexes of
+    // the same type as this impl. Use this list, NOT the list from console's
+    // get_selected_items().
 
-    // Implementations of standard actions. Note that you
-    // don't have to implement all of these, only the ones
-    // that you return from get_standard_actions().
+    // Implementations of standard actions. Note that you don't have to
+    // implement all of these, only the ones that you return from
+    // get_standard_actions().
     virtual void copy(const QList<QModelIndex> &index_list);
     virtual void cut(const QList<QModelIndex> &index_list);
     virtual void rename(const QList<QModelIndex> &index_list);
@@ -138,9 +143,8 @@ public:
     virtual void refresh(const QList<QModelIndex> &index_list);
     virtual void properties(const QList<QModelIndex> &index_list);
 
-    // Override to provide custom header labels and default
-    // columns. You need to do this if you are defining a
-    // results view.
+    // Override to provide custom header labels and default columns. You need to
+    // do this if you are defining a results view.
     virtual QList<QString> column_labels() const;
     virtual QList<int> default_columns() const;
 

@@ -19,13 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ui/widget/console/console_impl.h"
-
-#include "ui/widget/console/console_widget.h"
-#include "ui/widget/console/results_view.h"
-
 #include <QSet>
 #include <QVariant>
+
+#include "ui/widget/console/console_impl.h"
+#include "ui/widget/console/console_widget.h"
+#include "ui/widget/console/results_view.h"
 
 ConsoleImpl::ConsoleImpl(ConsoleWidget *console_arg)
 : QObject(console_arg) {
@@ -38,7 +37,10 @@ void ConsoleImpl::fetch(const QModelIndex &index) {
     Q_UNUSED(index);
 }
 
-bool ConsoleImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+bool ConsoleImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list,
+                           const QSet<int> &dropped_type_list,
+                           const QPersistentModelIndex &target,
+                           const int target_type) {
     Q_UNUSED(dropped_list);
     Q_UNUSED(dropped_type_list);
     Q_UNUSED(target);
@@ -47,7 +49,10 @@ bool ConsoleImpl::can_drop(const QList<QPersistentModelIndex> &dropped_list, con
     return false;
 }
 
-void ConsoleImpl::drop(const QList<QPersistentModelIndex> &dropped_list, const QSet<int> &dropped_type_list, const QPersistentModelIndex &target, const int target_type) {
+void ConsoleImpl::drop(const QList<QPersistentModelIndex> &dropped_list,
+                       const QSet<int> &dropped_type_list,
+                       const QPersistentModelIndex &target,
+                       const int target_type) {
     Q_UNUSED(dropped_list);
     Q_UNUSED(dropped_type_list);
     Q_UNUSED(target);
@@ -72,28 +77,40 @@ QList<QAction *> ConsoleImpl::get_all_custom_actions() const {
     return {};
 }
 
-QSet<QAction *> ConsoleImpl::get_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> ConsoleImpl::get_custom_actions(
+    const QModelIndex &index,
+    const bool single_selection) const
+{
     Q_UNUSED(index);
     Q_UNUSED(single_selection);
 
     return {};
 }
 
-QSet<QAction *> ConsoleImpl::get_disabled_custom_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<QAction *> ConsoleImpl::get_disabled_custom_actions(
+    const QModelIndex &index,
+    const bool single_selection) const
+{
     Q_UNUSED(index);
     Q_UNUSED(single_selection);
 
     return {};
 }
 
-QSet<StandardAction> ConsoleImpl::get_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> ConsoleImpl::get_standard_actions(
+    const QModelIndex &index,
+    const bool single_selection) const
+{
     Q_UNUSED(index);
     Q_UNUSED(single_selection);
 
     return {};
 }
 
-QSet<StandardAction> ConsoleImpl::get_disabled_standard_actions(const QModelIndex &index, const bool single_selection) const {
+QSet<StandardAction> ConsoleImpl::get_disabled_standard_actions(
+    const QModelIndex &index,
+    const bool single_selection) const
+{
     Q_UNUSED(index);
     Q_UNUSED(single_selection);
 
