@@ -65,6 +65,25 @@
 #include "ui/utils.h"
 #include "core/console/object/operations.h"
 
+/**
+ * Find indices of modified objects in query tree.
+ */
+static QHash<QString, QModelIndex> find_indices(
+    const ConsoleWidget *console,
+    const QModelIndex root,
+    const QList<QString>& old_dn_list)
+{
+    QHash<QString, QModelIndex> index_map;
+    for (const QString &dn : old_dn_list) {
+        const QList<QModelIndex> results =
+            console->search_items(root, ObjectRole_DN, dn, { ItemType_Object });
+        for (const QModelIndex &index : results) {
+            index_map[dn] = index;
+        }
+    }
+    return index_map;
+}
+
 void ConsoleObjectTreeOperations::console_object_move_and_rename(
     const QList<ConsoleWidget *> &console_list,
     AdInterface &ad,
@@ -143,19 +162,8 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(
         // refresh the query if needed.
         const QModelIndex query_root = get_query_tree_root(target_console);
         if (query_root.isValid()) {
-            // Find indexes of modified objects in query
-            // tree
-            QHash<QString, QModelIndex> index_map;
-            for (const QString &old_dn : old_dn_list) {
-                const QList<QModelIndex> results =
-                    target_console->search_items(query_root,
-                                                 ObjectRole_DN,
-                                                 old_dn,
-                                                 { ItemType_Object });
-                for (const QModelIndex &index : results) {
-                    index_map[old_dn] = index;
-                }
-            }
+            QHash<QString, QModelIndex> index_map =
+                find_indices(target_console, query_root, old_dn_list);
 
             for (const QString &old_dn : index_map.keys()) {
                 const QModelIndex index = index_map[old_dn];
@@ -188,17 +196,8 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(
         if (find_object_root.isValid()) {
             // Find indexes of modified objects in find
             // tree
-            QHash<QString, QModelIndex> index_map;
-            for (const QString &old_dn : old_dn_list) {
-                const QList<QModelIndex> results =
-                    target_console->search_items(find_object_root,
-                                                 ObjectRole_DN,
-                                                 old_dn,
-                                                 { ItemType_Object });
-                for (const QModelIndex &index : results) {
-                    index_map[old_dn] = index;
-                }
-            }
+            QHash<QString, QModelIndex> index_map =
+                find_indices(target_console, find_object_root, old_dn_list);
 
             for (const QString &old_dn : index_map.keys()) {
                 const QModelIndex index = index_map[old_dn];
