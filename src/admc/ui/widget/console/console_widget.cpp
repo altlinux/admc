@@ -368,12 +368,7 @@ QList<QModelIndex> ConsoleWidget::get_selected_items(const int type) const {
 
 QModelIndex ConsoleWidget::get_selected_item(const int type) const {
     const QList<QModelIndex> index_list = get_selected_items(type);
-
-    if (!index_list.isEmpty()) {
-        return index_list[0];
-    } else {
-        return QModelIndex();
-    }
+    return (! index_list.isEmpty()) ? index_list[0] : QModelIndex();
 }
 
 QList<QModelIndex> ConsoleWidget::search_items(
