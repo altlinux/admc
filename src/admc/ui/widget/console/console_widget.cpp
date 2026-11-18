@@ -306,8 +306,7 @@ QList<QStandardItem *> ConsoleWidget::add_results_item(
     }
 
     for (int i = 0; i < column_count; i++) {
-        const auto item = new QStandardItem();
-        row.append(item);
+        row.append(new QStandardItem());
     }
 
     row[0]->setData(false, ConsoleRole_IsScope);
@@ -421,27 +420,22 @@ QList<QModelIndex> ConsoleWidget::search_items(
     const QModelIndex &parent,
     const QList<int> &type_list) const
 {
+    const int ROLE = ConsoleRole_Type;
+    const Qt::MatchFlags FLAGS =
+        Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive);
+
     QList<QModelIndex> out;
-
     for (const int type : type_list) {
-        const int role = ConsoleRole_Type;
-        const int value = type;
-
-        // NOTE: start index may be invalid if parent has no
-        // children
+        // NOTE: start index may be invalid if parent has no children
         const QModelIndex start_index = d->model->index(0, 0, parent);
         if (start_index.isValid()) {
             const QList<QModelIndex> descendant_matches =
-                d->model->match(
-                    start_index, role, value, -1,
-                    Qt::MatchFlags(Qt::MatchExactly | Qt::MatchRecursive));
+                d->model->match(start_index, ROLE, type, -1, FLAGS);
             out.append(descendant_matches);
         }
 
-        const QVariant parent_value = parent.data(role);
-        const bool parent_is_match =
-            (parent_value.isValid() && parent_value == value);
-        if (parent_is_match) {
+        const QVariant parent_value = parent.data(ROLE);
+        if (parent_value.isValid() && (parent_value == type)) {
             out.append(parent);
         }
     }
@@ -467,12 +461,8 @@ QModelIndex ConsoleWidget::search_item(const QModelIndex &parent,
 QModelIndex ConsoleWidget::get_current_scope_item() const {
     const QModelIndex index =
         d->scope_view->selectionModel()->currentIndex();
-
     if (index.isValid()) {
-        const QModelIndex source_index =
-            d->scope_proxy_model->mapToSource(index);
-
-        return source_index;
+        return d->scope_proxy_model->mapToSource(index);
     } else {
         return QModelIndex();
     }
@@ -612,11 +602,7 @@ void ConsoleWidget::update_current_item_results_widget()
 
 QWidget *ConsoleWidget::get_result_widget_for_index(const QModelIndex &index) {
     ConsoleImpl *current_item_impl = d->get_impl(index);
-    if (current_item_impl) {
-        return current_item_impl->widget();
-    } else {
-        return nullptr;
-    }
+    return current_item_impl ? current_item_impl->widget() : nullptr;
 }
 
 void ConsoleWidget::clear_scope_tree() {
@@ -1254,46 +1240,30 @@ void ConsoleWidgetPrivate::on_standard_action(
 
         ConsoleImpl *impl = impl_map[type];
         switch (action_enum) {
-            case StandardAction_Copy: {
+            case StandardAction_Copy:
                 impl->copy(selected_of_type);
-
                 break;
-            }
-            case StandardAction_Cut: {
+            case StandardAction_Cut:
                 impl->cut(selected_of_type);
-
                 break;
-            }
-            case StandardAction_Rename: {
+            case StandardAction_Rename:
                 impl->rename(selected_of_type);
-
                 break;
-            }
-            case StandardAction_Delete: {
+            case StandardAction_Delete:
                 impl->delete_action(selected_of_type);
-
                 break;
-            }
-            case StandardAction_Paste: {
+            case StandardAction_Paste:
                 impl->paste(selected_of_type);
-
                 break;
-            }
-            case StandardAction_Print: {
+            case StandardAction_Print:
                 impl->print(selected_of_type);
-
                 break;
-            }
-            case StandardAction_Refresh: {
+            case StandardAction_Refresh:
                 impl->refresh(selected_of_type);
-
                 break;
-            }
-            case StandardAction_Properties: {
+            case StandardAction_Properties:
                 impl->properties(selected_of_type);
-
                 break;
-            }
         }
     }
 }
@@ -1320,7 +1290,6 @@ void ConsoleWidgetPrivate::on_results_context_menu(const QPoint &pos) {
 
 void ConsoleWidgetPrivate::on_scope_context_menu(const QPoint &pos) {
     const QModelIndex index = scope_view->indexAt(pos);
-
     if (!index.isValid()) {
         return;
     }
@@ -1360,13 +1329,11 @@ void ConsoleWidgetPrivate::on_results_activated(const QModelIndex &index) {
 }
 
 int console_item_get_type(const QModelIndex &index) {
-    const int type = index.data(ConsoleRole_Type).toInt();
-    return type;
+    return index.data(ConsoleRole_Type).toInt();
 }
 
 bool console_item_get_was_fetched(const QModelIndex &index) {
-    const int was_fetched = index.data(ConsoleRole_WasFetched).toBool();
-    return was_fetched;
+    return index.data(ConsoleRole_WasFetched).toBool();
 }
 
 QString results_state_name(const int type) {
