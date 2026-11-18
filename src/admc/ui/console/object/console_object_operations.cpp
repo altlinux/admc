@@ -349,13 +349,8 @@ void ConsoleObjectTreeOperations::console_object_search(
     const QList<QString> &attributes)
 {
     auto search_id_matches = [](QStandardItem *item, SearchThread *thread) {
-        const int id_from_item =
-            item->data(MyConsoleRole_SearchThreadId).toInt();
-        const int thread_id = thread->get_id();
-
-        const bool match = (id_from_item == thread_id);
-
-        return match;
+        const int item_id = item->data(MyConsoleRole_SearchThreadId).toInt();
+        return item_id == thread->get_id();
     };
 
     QStandardItem *item = console->get_item(index);
@@ -363,51 +358,41 @@ void ConsoleObjectTreeOperations::console_object_search(
     // Set icon to indicate that item is in "search" state
     item->setIcon(g_icon_manager->item_icon(ItemIcon_Search_Indicator));
 
-    // NOTE: need to set this role to disable actions during
-    // fetch
+    // NOTE: need to set this role to disable actions during fetch
     item->setData(true, ObjectRole_Fetching);
     item->setDragEnabled(false);
 
     auto search_thread = new SearchThread(base, scope, filter, attributes);
 
-    // NOTE: change item's search thread, this will be used
-    // later to handle situations where a thread is started
-    // while another is running
+    // NOTE: change item's search thread, this will be used later to handle
+    // situations where a thread is started while another is running
     item->setData(search_thread->get_id(), MyConsoleRole_SearchThreadId);
 
     const QPersistentModelIndex persistent_index = index;
 
-    // NOTE: need to pass console as receiver object to
-    // connect() even though we're using lambda as a slot.
-    // This is to be able to define queuedconnection type,
-    // because there's no connect() version with no receiver
-    // which has a connection type argument.
+    // NOTE: need to pass console as receiver object to connect() even though
+    // we're using lambda as a slot.  This is to be able to define
+    // queuedconnection type, because there's no connect() version with no
+    // receiver which has a connection type argument.
     QObject::connect(
         search_thread, &SearchThread::results_ready,
-        console,
-        [=](const QHash<QString, AdObject> &results) {
-            // NOTE: fetched index might become invalid for
-            // many reasons, parent getting moved, deleted,
-            // item at the index itself might get modified.
-            // Since this slot runs in the main thread, it's
-            // not possible for any catastrophic conflict to
-            // happen, so it's enough to just stop the
-            // search.
+        console, [=](const QHash<QString, AdObject> &results) {
+            // NOTE: fetched index might become invalid for many reasons, parent
+            // getting moved, deleted, item at the index itself might get
+            // modified.  Since this slot runs in the main thread, it's not
+            // possible for any catastrophic conflict to happen, so it's enough
+            // to just stop the search.
             if (!persistent_index.isValid()) {
                 search_thread->stop();
-
                 return;
             }
 
             QStandardItem *item_now = console->get_item(persistent_index);
 
-            // NOTE: if another thread was started for this
-            // item, abort this thread
-            const bool thread_id_match =
-                search_id_matches(item_now, search_thread);
-            if (!thread_id_match) {
+            // NOTE: if another thread was started for this item, abort this
+            // thread
+            if (! search_id_matches(item_now, search_thread)) {
                 search_thread->stop();
-
                 return;
             }
 
@@ -419,8 +404,7 @@ void ConsoleObjectTreeOperations::console_object_search(
         Qt::QueuedConnection);
     QObject::connect(
         search_thread, &SearchThread::finished,
-        console,
-        [=]() {
+        console, [=]() {
             if (!persistent_index.isValid()) {
                 return;
             }
@@ -431,12 +415,9 @@ void ConsoleObjectTreeOperations::console_object_search(
 
             QStandardItem *item_now = console->get_item(persistent_index);
 
-            // NOTE: if another thread was started for this
-            // item, don't change item data. It will be
-            // changed by that other thread.
-            const bool thread_id_match = search_id_matches(item_now,
-                                                           search_thread);
-            if (!thread_id_match) {
+            // NOTE: if another thread was started for this item, don't change
+            // item data. It will be changed by that other thread.
+            if (! search_id_matches(item_now, search_thread)) {
                 return;
             }
 
