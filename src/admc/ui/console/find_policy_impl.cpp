@@ -37,31 +37,18 @@ FindPolicyImpl::FindPolicyImpl(ConsoleWidget *console_arg)
 }
 
 QString FindPolicyImpl::get_description(const QModelIndex &index) const {
-    const QString object_count_text = ConsoleObjectTreeOperations::console_object_count_string(console, index);
-
-    return object_count_text;
+    return ConsoleObjectTreeOperations::console_object_count_string(console,
+                                                                    index);
 }
 
 QList<QString> FindPolicyImpl::column_labels() const {
-    const QList<QString> out = {
-        tr("Name"),
-        tr("GUID"),
-    };
-
-    return out;
+    return { tr("Name"), tr("GUID") };
 }
 
 QList<int> FindPolicyImpl::default_columns() const {
-    const QList<int> out = {
-        FindPolicyColumn_Name,
-        FindPolicyColumn_GUID,
-    };
-
-    return out;
+    return { FindPolicyColumn_Name, FindPolicyColumn_GUID };
 }
 
 QModelIndex get_find_policy_root(ConsoleWidget *console) {
-    const QModelIndex out = console->search_item(QModelIndex(), {ItemType_FindPolicy});
-
-    return out;
+    return console->search_item(QModelIndex(), {ItemType_FindPolicy});
 }
