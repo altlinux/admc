@@ -84,6 +84,30 @@ static QHash<QString, QModelIndex> find_indices(
     return index_map;
 }
 
+static void load_objects(const ConsoleWidget *console,
+                         const QModelIndex &root,
+                         const QList<QString> &old_dn_list,
+                         const QHash<QString, QString> &old_to_new_dn_map,
+                         const QHash<QString, AdObject> &object_map,
+                         std::function<void(QStandardItem *item)> handler) {
+    if (root.isValid()) {
+        QHash<QString, QModelIndex> index_map =
+            find_indices(console, root, old_dn_list);
+        for (const QString &old_dn : index_map.keys()) {
+            const QModelIndex index = index_map[old_dn];
+            if (handler) {
+                const QModelIndex query_index = index.parent();
+                QStandardItem *item = console->get_item(query_index);
+                handler(item);
+            }
+            const QList<QStandardItem *> row = console->get_row(index);
+            const QString new_dn = old_to_new_dn_map[old_dn];
+            const AdObject object = object_map[new_dn];
+            object_load(object, row);
+        }
+    }
+}
+
 void ConsoleObjectTreeOperations::console_object_move_and_rename(
     const QList<ConsoleWidget *> &console_list,
     AdInterface &ad,
@@ -160,56 +184,29 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(
         // we instead mark queries with modified objects as
         // "out of date". It is then up to the user to
         // refresh the query if needed.
+        const QString tooltip = QCoreApplication::translate(
+            "ObjectImpl",
+            "Query may be out of date");
+        auto warning_icon =
+            g_icon_manager->item_icon(ItemIcon_Warning_Indicator);
         const QModelIndex query_root = get_query_tree_root(target_console);
-        if (query_root.isValid()) {
-            QHash<QString, QModelIndex> index_map =
-                find_indices(target_console, query_root, old_dn_list);
+        load_objects(target_console,
+                     query_root,
+                     old_dn_list,
+                     old_to_new_dn_map,
+                     object_map,
+                     [&](QStandardItem *item) {
+                         item->setIcon(warning_icon);
+                         item->setToolTip(tooltip);
+                     });
 
-            for (const QString &old_dn : index_map.keys()) {
-                const QModelIndex index = index_map[old_dn];
-
-                // Mark parent query as "out of date". Icon
-                // and tooltip will be restored after
-                // refresh
-                const QModelIndex query_index = index.parent();
-                QStandardItem *item = target_console->get_item(query_index);
-                item->setIcon(
-                    g_icon_manager->item_icon(ItemIcon_Warning_Indicator));
-                item->setToolTip(QCoreApplication::translate(
-                                     "ObjectImpl",
-                                     "Query may be out of date"));
-
-                // Update item row
-                const QList<QStandardItem *> row =
-                    target_console->get_row(index);
-                const QString new_dn = old_to_new_dn_map[old_dn];
-                const AdObject object = object_map[new_dn];
-                object_load(object, row);
-            }
-        }
-
-        // TODO: decrease code duplication
-        // For find tree, we only reload the rows to
-        // update name, and attributes (DN for example)
-        const QModelIndex find_object_root =
-            get_query_tree_root(target_console);
-        if (find_object_root.isValid()) {
-            // Find indexes of modified objects in find
-            // tree
-            QHash<QString, QModelIndex> index_map =
-                find_indices(target_console, find_object_root, old_dn_list);
-
-            for (const QString &old_dn : index_map.keys()) {
-                const QModelIndex index = index_map[old_dn];
-
-                // Update item row
-                const QList<QStandardItem *> row =
-                    target_console->get_row(index);
-                const QString new_dn = old_to_new_dn_map[old_dn];
-                const AdObject object = object_map[new_dn];
-                object_load(object, row);
-            }
-        }
+        const QModelIndex find_object_root = get_query_tree_root(target_console);
+        load_objects(target_console,
+                     find_object_root,
+                     old_dn_list,
+                     old_to_new_dn_map,
+                     object_map,
+                     nullptr);
 
         // Apply changes to policy tree
         const QModelIndex policy_root = get_policy_tree_root(target_console);
