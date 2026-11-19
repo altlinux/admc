@@ -743,21 +743,19 @@ void ConsoleObjectTreeOperations::console_object_delete(
     const QList<QModelIndex> &index_list,
     const int dn_role)
 {
-    const bool confirmed = console_object_deletion_dialog(console_list[0],
-                                                          index_list);
-    if (!confirmed) {
+    ConsoleWidget *console = console_list[0];
+    if (! console_object_deletion_dialog(console, index_list)) {
         return;
     }
 
     AdInterface ad;
-    if (ad_failed(ad, console_list[0])) {
+    if (ad_failed(ad, console)) {
         return;
     }
 
     show_busy_indicator();
 
     QList<QString> deleted_list;
-
     for (const QModelIndex &idx : index_list) {
         const QString target_dn = idx.data(dn_role).toString();
         const QStringList obj_classes =
@@ -765,8 +763,7 @@ void ConsoleObjectTreeOperations::console_object_delete(
         const QString obj_class =
             obj_classes.isEmpty() ? QString() : obj_classes.last();
 
-        const bool success = ad.object_delete(target_dn);
-        if (success) {
+        if (ad.object_delete(target_dn)) {
             object_update_delete(ad, obj_class, target_dn);
             deleted_list.append(target_dn);
         }
@@ -799,7 +796,7 @@ void ConsoleObjectTreeOperations::console_object_delete(
 
     hide_busy_indicator();
 
-    g_status->display_ad_messages(ad, console_list[0]);
+    g_status->display_ad_messages(ad, console);
 }
 
 void ConsoleObjectTreeOperations::apply_changes_to_branch(
