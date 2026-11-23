@@ -62,7 +62,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Constants.
 
-const QList<QString> RENAMABLE_CLASS_LIST = {
+static const QList<QString> RENAMABLE_CLASS_LIST = {
     CLASS_USER,
     CLASS_GROUP,
     CLASS_OU,
@@ -70,7 +70,7 @@ const QList<QString> RENAMABLE_CLASS_LIST = {
     CLASS_PSO
 };
 
-const QList<QString> NON_MOVABLE_OBJECT_CLASSES = {
+static const QList<QString> NON_MOVABLE_OBJECT_CLASSES = {
     CLASS_PSO,
     CLASS_SITE,
     CLASS_SUBNET,
