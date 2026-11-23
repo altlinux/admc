@@ -62,8 +62,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Helper procedures.
 
+QStringList index_data_object_classes(const QModelIndex &index) {
+    return index.data(ObjectRole_ObjectClasses).toStringList();
+}
+
 QString index_data_object_class(const QModelIndex &index) {
     return index.data(ObjectRole_ObjectClasses).toStringList().last();
+}
+
+QString index_data_object_role_dn(const QModelIndex &index) {
+    return index.data(ObjectRole_DN).toString();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +188,7 @@ void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list,
     Q_UNUSED(target_type);
     Q_UNUSED(dropped_type_list);
 
-    const QString target_dn = target.data(ObjectRole_DN).toString();
+    const QString target_dn = index_data_object_role_dn(target);
 
     AdInterface ad;
     if (ad_failed(ad, console)) {
@@ -190,7 +198,7 @@ void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list,
     show_busy_indicator();
 
     for (const QPersistentModelIndex &dropped : dropped_list) {
-        const QString dropped_dn = dropped.data(ObjectRole_DN).toString();
+        const QString dropped_dn = index_data_object_role_dn(dropped);
         const ObjectDragDrop::DropType drop_type =
             ObjectDragDrop::console_object_get_drop_type(dropped, target);
 
@@ -446,9 +454,7 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
 void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
     QSet<QString> class_set;
     for (const QModelIndex &index : index_list) {
-        const QList<QString> this_class_list =
-            index.data(ObjectRole_ObjectClasses).toStringList();
-        const QString main_class = this_class_list.last();
+        const QString main_class = index_data_object_class(index);
         class_set.insert(main_class);
     }
     QList<QString> class_list =
@@ -486,7 +492,7 @@ void ObjectImpl::selected_as_scope(const QModelIndex &index)
         return;
     }
 
-    const QString dn = index.data(ObjectRole_DN).toString();
+    const QString dn = index_data_object_role_dn(index);
     const AdObject object = ad.search_object(dn);
 
     if (object.is_class(CLASS_GROUP)) {
@@ -513,9 +519,7 @@ void ObjectImpl::selected_as_scope(const QModelIndex &index)
 }
 
 void ObjectImpl::update_results_widget(const QModelIndex &index) const {
-    const QStringList index_data_classes =
-        index.data(ObjectRole_ObjectClasses).toStringList();
-
+    const QStringList index_data_classes = index_data_object_classes(index);
     if (!(index_data_classes.contains(CLASS_GROUP) ||
           index_data_classes.contains(CLASS_CONTACT) ||
           index_data_classes.contains(CLASS_USER) ||
@@ -530,7 +534,7 @@ void ObjectImpl::update_results_widget(const QModelIndex &index) const {
         return;
     }
 
-    const QString dn = index.data(ObjectRole_DN).toString();
+    const QString dn = index_data_object_role_dn(index);
     const AdObject object = ad.search_object(dn);
 
     if (object.is_class(CLASS_GROUP)) {
@@ -605,7 +609,7 @@ void ObjectImpl::refresh_current_subtree(const QString &new_dn) {
 
     show_busy_indicator();
 
-    const QString selected_dn = index.data(ObjectRole_DN).toString();
+    const QString selected_dn = index_data_object_role_dn(index);
     QString new_full_dn = nullptr;
     try {
         new_full_dn = ad_ldap_dn_string_replace_value(selected_dn, 0, new_dn);
