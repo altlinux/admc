@@ -476,14 +476,32 @@ bool ConsoleObjectTreeOperations::console_object_deletion_dialog(
     return true;
 }
 
+/**
+ * Add "Password settings" scope item to the given console.
+ *
+ * @param console A console to add password settings item to.
+ * @param ad An active directory interface object.
+ * @return The password settings root item.
+ */
+static QStandardItem *console_add_password_settings(ConsoleWidget *console,
+                                                    AdInterface &ad) {
+    QStandardItem *password_settings_root = console->add_scope_item(
+        ItemType_PasswordSettings,
+        console->domain_info_index())[0];
+    password_settings_root->setText(
+        QObject::tr("Fine-grained password policies"));
+    password_settings_root->setIcon(
+        g_icon_manager->item_icon(ItemIcon_Password_Settings_Object));
+    password_settings_root->setDragEnabled(false);
+    return password_settings_root;
+}
+
 void ConsoleObjectTreeOperations::console_tree_add_password_settings(
     ConsoleWidget *console,
     AdInterface &ad)
 {
-    QStandardItem *password_settings_root = console->add_scope_item(ItemType_PasswordSettings, console->domain_info_index())[0];
-    password_settings_root->setText(QObject::tr("Fine-grained password policies"));
-    password_settings_root->setIcon(g_icon_manager->item_icon(ItemIcon_Password_Settings_Object));
-    password_settings_root->setDragEnabled(false);
+    QStandardItem *password_settings_root =
+        console_add_password_settings(console, ad);
     auto search_results = ad_search_pso_container(ad);
     if (ad_is_pso_container_not_found(search_results)) {
         const QString error =
