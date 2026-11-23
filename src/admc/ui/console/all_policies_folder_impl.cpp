@@ -34,6 +34,7 @@
 #include "ui/console/policy_impl.h"
 #include "ui/console/policy_root_impl.h"
 #include "ui/dialog/create/policy.h"
+#include "ui/message_box.h"
 #include "ui/status.h"
 #include "ui/utils.h"
 #include "ui/widget/console/results_view.h"
@@ -110,18 +111,6 @@ QList<int> AllPoliciesFolderImpl::default_columns() const {
     return {0};
 }
 
-/**
- * Make a message box asking for PDC-Emulator connection.
- */
-QMessageBox::StandardButton AllPoliciesFolderImpl::pdc_question() const {
-    return QMessageBox::question(
-        console,
-        QObject::tr("Creation is not available"),
-        QObject::tr("ADMC is connected to DC without the PDC-Emulator role - "
-                    "group policy creation is prohibited by the setting. "
-                    "Connect to PDC-Emulator?"));
-}
-
 void AllPoliciesFolderImpl::create_policy() {
     AdInterface ad;
     if (ad_failed(ad, console)) {
@@ -135,7 +124,8 @@ void AllPoliciesFolderImpl::create_policy() {
     }
 
     if (!fsmo_is_current_dc_master_for_role(ad, FSMORole_PDCEmulation) && gpo_edit_without_PDC_disabled) {
-        QMessageBox::StandardButton answer = pdc_question();
+        QMessageBox::StandardButton answer =
+            message_box_pdc_question(console, PDCQuestionType_Creation);
         if (answer == QMessageBox::Yes) {
             connect_to_PDC_emulator(ad, console);
         }

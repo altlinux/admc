@@ -28,8 +28,10 @@
 #include <QMessageBox>
 #include <QString>
 #include <QWidget>
+#include <cassert>
 
 #include "core/settings.h"
+#include "ui/message_box.h"
 
 QMessageBox *message_box_generic(const QMessageBox::Icon icon,
                                  const QString &title,
@@ -98,4 +100,40 @@ bool confirmation_dialog(const QString &text, QWidget *parent) {
                               QMessageBox::Yes | QMessageBox::No);
 
     return reply == QMessageBox::Yes;
+}
+
+/**
+ * Create a message box dialog asking for PDC-Emulator connection.
+ */
+QMessageBox::StandardButton message_box_pdc_question(QWidget *parent,
+                                                     PDCQuestionType type) {
+    QString title;
+    QString message;
+    // TODO: Make it shorter by re-using common parts of the strings.
+    switch (type) {
+    case PDCQuestionType_Creation:
+        title = QObject::tr("Creation is not available");
+        message = QObject::tr(
+            "ADMC is connected to DC without the PDC-Emulator role - "
+            "group policy creation is prohibited by the setting. "
+            "Connect to PDC-Emulator?");
+        break;
+    case PDCQuestionType_Deletion:
+        title = QObject::tr("Deletion is not available");
+        message = QObject::tr(
+            "ADMC is connected to DC without the PDC-Emulator role - "
+            "group policy deletion is prohibited by the setting. "
+            "Connect to PDC-Emulator?");
+        break;
+    case PDCQuestionType_Editing:
+        title = QObject::tr("Editing is not available");
+        message = QObject::tr(
+            "ADMC is connected to DC without the PDC-Emulator role - "
+            "group policy editing is prohibited by the setting. "
+            "Connect to PDC-Emulator?");
+        break;
+    default:
+            assert(false && "Unknown PDC message box type");
+    }
+    return QMessageBox::question(parent, title, message);
 }

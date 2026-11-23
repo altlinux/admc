@@ -26,6 +26,13 @@
 #include <QString>
 #include <QWidget>
 
+enum PDCQuestionType {
+    PDCQuestionType_Creation,
+    PDCQuestionType_Deletion,
+    PDCQuestionType_Editing,
+    PDCQuestionType_LAST
+};
+
 // NOTE: these f-ns replace QMessageBox static f-ns. The
 // static f-ns use exec(), which block execution and makes
 // testing a hassle. These f-ns use open().
@@ -50,5 +57,7 @@ QMessageBox *message_box_generic_error(QWidget *parent,
                                        const QString &text);
 
 bool confirmation_dialog(const QString &text, QWidget *parent);
+QMessageBox::StandardButton message_box_pdc_question(QWidget *parent,
+                                                     PDCQuestionType type);
 
 #endif  /* ifndef MESSAGE_BOX_H */
