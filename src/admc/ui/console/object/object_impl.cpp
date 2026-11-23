@@ -729,7 +729,7 @@ void ObjectImpl::on_move() {
                 }
             }
 
-            g_status->display_ad_messages(ad2, nullptr);
+            g_status->display_ad_messages(ad2);
 
             // Then move in console
             move(ad2, moved_objects, new_parent_dn);
