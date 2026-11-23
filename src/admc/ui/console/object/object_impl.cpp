@@ -60,6 +60,17 @@
 #include "ui/widget/tab/general_user.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// Constants.
+
+const QList<QString> RENAMABLE_CLASS_LIST = {
+    CLASS_USER,
+    CLASS_GROUP,
+    CLASS_OU,
+    CLASS_SITE,
+    CLASS_PSO
+};
+
+////////////////////////////////////////////////////////////////////////////////
 // Helper procedures.
 
 QStringList index_data_object_classes(const QModelIndex &index) {
@@ -413,16 +424,9 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(
         out.insert(StandardAction_Refresh);
     }
 
-    const QList<QString> renamable_class_list = {
-        CLASS_USER,
-        CLASS_GROUP,
-        CLASS_OU,
-        CLASS_SITE,
-        CLASS_PSO
-    };
     const QString object_class = index_data_object_class(index);
     const bool can_rename =
-        (single_selection && renamable_class_list.contains(object_class));
+        (single_selection && RENAMABLE_CLASS_LIST.contains(object_class));
     if (can_rename) {
         out.insert(StandardAction_Rename);
     }
