@@ -74,6 +74,14 @@ QString index_data_object_role_dn(const QModelIndex &index) {
     return index.data(ObjectRole_DN).toString();
 }
 
+bool index_data_object_cannot_rename(const QModelIndex &index) {
+    return index.data(ObjectRole_CannotRename).toBool();
+}
+
+bool index_data_object_cannot_delete(const QModelIndex &index) {
+    return index.data(ObjectRole_CannotDelete).toBool();
+}
+
 QString item_data_object_category(const QStandardItem *item) {
     return item->data(ObjectRole_ObjectCategory).toString();
 }
@@ -432,14 +440,11 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(
 
     QSet<StandardAction> out;
 
-    const bool cannot_rename = index.data(ObjectRole_CannotRename).toBool();
-    const bool cannot_delete = index.data(ObjectRole_CannotDelete).toBool();
-
-    if (cannot_rename) {
+    if (index_data_object_cannot_rename(index)) {
         out.insert(StandardAction_Rename);
     }
 
-    if (cannot_delete) {
+    if (index_data_object_cannot_delete(index)) {
         out.insert(StandardAction_Delete);
     }
 
@@ -1031,9 +1036,8 @@ bool ObjectImpl::can_create_class_at_parent(const QString &create_class,
     const QList<QString> possible_superiors =
         g_adconfig->get_possible_superiors(
             QList<QString>(action_object_class_list));
-    const bool out = possible_superiors.contains(parent_class);
 
-    return out;
+    return possible_superiors.contains(parent_class);
 }
 
 void ObjectImpl::setup_widgets() {
