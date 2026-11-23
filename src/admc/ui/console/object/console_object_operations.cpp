@@ -277,29 +277,25 @@ void ConsoleObjectTreeOperations::add_objects_to_console(
     const QList<AdObject> &object_list,
     const QModelIndex &parent)
 {
-    if (!parent.isValid()) {
+    if (! parent.isValid()) {
         return;
     }
 
-    // NOTE: don't add if parent wasn't fetched yet. If that
-    // is the case then the object will be added naturally
-    // when parent is fetched.
-    const bool parent_was_fetched = console_item_get_was_fetched(parent);
-    if (!parent_was_fetched) {
+    // NOTE: don't add if parent wasn't fetched yet. If that is the case then
+    // the object will be added naturally when parent is fetched.
+    if (! console_item_get_was_fetched(parent)) {
         return;
     }
 
     for (const AdObject &object : object_list) {
-        if (object.is_empty())
+        if (object.is_empty()) {
             continue;
-        // NOTE: "containers" referenced here don't mean
-        // objects with "container" object class.
-        // Instead it means all the objects that can
-        // have children(some of which are not
-        // "container" class).
-        const bool should_be_in_scope = object_should_be_in_scope(object);
+        }
         QList<QStandardItem *> row;
-        if (should_be_in_scope) {
+        // NOTE: "containers" referenced here don't mean objects with
+        // "container" object class.  Instead it means all the objects that can
+        // have children(some of which are not "container" class).
+        if (object_should_be_in_scope(object)) {
             row = console->add_scope_item(ItemType_Object, parent);
         } else {
             row = console->add_results_item(ItemType_Object, parent);
@@ -670,12 +666,10 @@ void ConsoleObjectTreeOperations::console_object_rename(
         old_dn = QString();
     }
 
-    const bool is_user = (object_class == CLASS_USER);
-    const bool is_group = (object_class == CLASS_GROUP);
     RenameObjectDialog *dialog;
-    if (is_user) {
+    if (object_class == CLASS_USER) {
         dialog = new RenameUserDialog(ad, old_dn, console_list[0]);
-    } else if (is_group) {
+    } else if (object_class == CLASS_GROUP) {
         dialog = new RenameGroupDialog(ad, old_dn, console_list[0]);
     } else {
         dialog = new RenameOtherDialog(ad, old_dn, console_list[0]);
