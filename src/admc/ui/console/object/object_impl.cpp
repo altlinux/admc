@@ -74,6 +74,10 @@ QString index_data_object_role_dn(const QModelIndex &index) {
     return index.data(ObjectRole_DN).toString();
 }
 
+QString item_data_object_category(const QStandardItem *item) {
+    return item->data(ObjectRole_ObjectCategory).toString();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
@@ -883,10 +887,7 @@ void ObjectImpl::set_disabled(const bool disabled) {
     QList<QString> changed_objects;
     const QList<QString> dn_list = get_selected_dn_list_object();
     for (const QString &dn : dn_list) {
-        const bool success = ad.user_set_account_option(dn,
-                                                        AccountOption_Disabled,
-                                                        disabled);
-        if (success) {
+        if (ad.user_set_account_option(dn, AccountOption_Disabled, disabled)) {
             changed_objects.append(dn);
         }
     }
@@ -907,9 +908,8 @@ void ObjectImpl::set_disabled(const bool disabled) {
                 for (const QModelIndex &index : index_list) {
                     QStandardItem *item = target_console->get_item(index);
                     item->setData(disabled, ObjectRole_AccountDisabled);
-                    const QString category=
-                        dn_get_name(
-                            item->data(ObjectRole_ObjectCategory).toString());
+                    const QString category =
+                        dn_get_name(item_data_object_category(item));
                     QIcon icon;
                     if (category == OBJECT_CATEGORY_PERSON) {
                         icon = disabled ?
