@@ -410,23 +410,23 @@ void console_policy_load(const QList<QStandardItem *> &row,
     console_policy_load_item(main_item, object);
 }
 
+static int item_data_type(const QStandardItem *item) {
+    return item->data(ConsoleRole_Type).toInt();
+}
+
 void console_policy_load_item(QStandardItem *main_item,
                               const AdObject &object) {
     main_item->setData(object.get_dn(), PolicyRole_DN);
-
-    if ((main_item->parent() != nullptr)
-        && (main_item->parent()->data(ConsoleRole_Type).toInt()
-            == ItemType_PolicyOU)) {
+    auto parent = main_item->parent();
+    if ((parent != nullptr) && (item_data_type(parent) == ItemType_PolicyOU)) {
         bool is_enforced = policy_is_enforced(main_item);
         bool is_disabled = policy_is_disabled(main_item);
-
         set_policy_link_icon(main_item, is_enforced, is_disabled);
     } else {
         main_item->setIcon(g_icon_manager->object_icon(object));
     }
 
-    const QString display_name = object.get_string(ATTRIBUTE_DISPLAY_NAME);
-    main_item->setText(display_name);
+    main_item->setText(object.get_string(ATTRIBUTE_DISPLAY_NAME));
     const QString gpo_status =
         gpo_status_from_int(object.get_int(ATTRIBUTE_FLAGS));
     main_item->setData(gpo_status, PolicyRole_GPO_Status);
