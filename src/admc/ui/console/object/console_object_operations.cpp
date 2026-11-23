@@ -114,14 +114,11 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(
     const QHash<QString, QString> &old_to_new_dn_map_arg,
     const QString &new_parent_dn)
 {
-    // NOTE: sometimes, some objects that are supposed
-    // to be moved don't actually need to be. For
-    // example, if an object were to be moved to an
-    // object that is already it's current parent. If
-    // we were to move them that would cause gui
-    // glitches because that kind of move is not
-    // considered in the update logic. Instead, we skip
-    // these kinds of objects.
+    // NOTE: sometimes, some objects that are supposed to be moved don't
+    // actually need to be. For example, if an object were to be moved to an
+    // object that is already it's current parent. If we were to move them that
+    // would cause gui glitches because that kind of move is not considered in
+    // the update logic. Instead, we skip these kinds of objects.
     QHash<QString, QString> old_to_new_dn_map =
         ad_select_changed_dn(old_to_new_dn_map_arg);
 
@@ -135,20 +132,16 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(
     auto apply_changes = [&old_to_new_dn_map, &old_dn_list,
                           &new_parent_dn, &object_map](
                               ConsoleWidget *target_console) {
-        // For object tree, we add items representing
-        // updated objects and delete old items. In the case
-        // of move, this moves the items to their new
-        // parent. In the case of rename, this updates
-        // item's information about the object by recreating
-        // it.
+        // For object tree, we add items representing updated objects and delete
+        // old items. In the case of move, this moves the items to their new
+        // parent. In the case of rename, this updates item's information about
+        // the object by recreating it.
 
-        // NOTE: delete old item AFTER adding new item
-        // because: If old item is deleted first, then it's
-        // possible for new parent to get selected (if they
-        // are next to each other in scope tree). Then what
-        // happens is that due to new parent being selected,
-        // it gets fetched and loads new object. End result
-        // is that new object is duplicated.
+        // NOTE: delete old item AFTER adding new item because: If old item is
+        // deleted first, then it's possible for new parent to get selected (if
+        // they are next to each other in scope tree). Then what happens is that
+        // due to new parent being selected, it gets fetched and loads new
+        // object. End result is that new object is duplicated.
         const QModelIndex object_root =
             new_parent_dn.contains(g_adconfig->sites_container_dn())
             ? get_sites_container_tree_root(target_console)
@@ -170,20 +163,16 @@ void ConsoleObjectTreeOperations::console_object_move_and_rename(
                                    new_parent_obj_index);
         }
 
-        // For query tree, we don't move items or recreate
-        // items but instead update items. Move doesn't make
-        // sense because query tree doesn't represent the
-        // object tree. Note that changing name or DN of
-        // objects may mean that the parent query may become
-        // invalid. For example, if query searches for all
-        // objects with names starting with "foo" and we
-        // rename an object in that query so that it doesn't
-        // start with "foo" anymore. Since it is too
-        // complicated to determine match criteria on the
-        // client, and refreshing the query is too wasteful,
-        // we instead mark queries with modified objects as
-        // "out of date". It is then up to the user to
-        // refresh the query if needed.
+        // For query tree, we don't move items or recreate items but instead
+        // update items. Move doesn't make sense because query tree doesn't
+        // represent the object tree. Note that changing name or DN of objects
+        // may mean that the parent query may become invalid. For example, if
+        // query searches for all objects with names starting with "foo" and we
+        // rename an object in that query so that it doesn't start with "foo"
+        // anymore. Since it is too complicated to determine match criteria on
+        // the client, and refreshing the query is too wasteful, we instead mark
+        // queries with modified objects as "out of date". It is then up to the
+        // user to refresh the query if needed.
         const QString tooltip = QCoreApplication::translate(
             "ObjectImpl",
             "Query may be out of date");
@@ -507,13 +496,14 @@ void ConsoleObjectTreeOperations::console_tree_add_password_settings(
         const QString error =
             QObject::tr("Password settings container is not available");
         g_status->add_message(error, StatusType_Info);
-    } 
-    else{
-        object_item_data_load(search_results.values()[0], password_settings_root);
+    } else{
+        object_item_data_load(search_results.values()[0],
+                              password_settings_root);
     }
 
     const int PSO_CONTAINER_SORT_INDEX = 3;
-    console->set_item_sort_index(password_settings_root->index(), PSO_CONTAINER_SORT_INDEX);
+    console->set_item_sort_index(password_settings_root->index(),
+                                 PSO_CONTAINER_SORT_INDEX);
 }
 
 QString ConsoleObjectTreeOperations::console_object_count_string(
@@ -537,11 +527,9 @@ void ConsoleObjectTreeOperations::console_object_create(
         return;
     }
 
-    // NOTE: creating dialogs here instead of directly
-    // in "on_new_x" slots looks backwards but it's
-    // necessary to avoid even more code duplication
-    // due to having to pass "ad" and "parent_dn" args
-    // to dialog ctors
+    // NOTE: creating dialogs here instead of directly in "on_new_x" slots looks
+    // backwards but it's necessary to avoid even more code duplication due to
+    // having to pass "ad" and "parent_dn" args to dialog ctors
     CreateObjectDialog *dialog = create_dialog(object_class,
                                                ad,
                                                parent_dn,
@@ -567,11 +555,10 @@ void ConsoleObjectTreeOperations::console_object_create(
 
             const QString created_dn = dialog->get_created_dn();
 
-            // NOTE: we don't just use currently selected index as
-            // parent to add new object onto, because you can create
-            // an object in a query tree or find dialog. Therefore
-            // need to search for index of parent object in domain
-            // tree.
+            // NOTE: we don't just use currently selected index as parent to add
+            // new object onto, because you can create an object in a query tree
+            // or find dialog. Therefore need to search for index of parent
+            // object in domain tree.
             auto apply_changes = [&](ConsoleWidget *target_console) {
                 if (object_class == CLASS_SITE) {
                     const QModelIndex site_root =
@@ -630,14 +617,11 @@ void ConsoleObjectTreeOperations::console_object_create(
                     }
                 }
 
-                // NOTE: changes are not applied to
-                // find tree because creation of
-                // objects shouldn't affect find
-                // results. If it does affect them by
-                // creating a new object that fits
-                // search criteria, then find dialog
-                // can just be considered out of date
-                // and should be updated
+                // NOTE: changes are not applied to find tree because creation
+                // of objects shouldn't affect find results. If it does affect
+                // them by creating a new object that fits search criteria, then
+                // find dialog can just be considered out of date and should be
+                // updated
 
                 // Apply changes to policy tree
                 const QModelIndex policy_root =
@@ -729,10 +713,11 @@ void ConsoleObjectTreeOperations::console_object_rename(
 
             if (object_class == CLASS_PSO) {
                 console->refresh_scope(parent);
-                const QModelIndex selected = console->search_item(parent,
-                                                                  ObjectRole_DN,
-                                                                  new_dn,
-                                                                  { ItemType_Object });
+                const QModelIndex selected =
+                    console->search_item(parent,
+                                         ObjectRole_DN,
+                                         new_dn,
+                                         { ItemType_Object });
                 if (selected.isValid()) {
                     console->set_current_scope(selected);
                 } else {
@@ -880,13 +865,10 @@ void ConsoleObjectTreeOperations::console_object_properties(
         for (const QString &dn : dn_list) {
             const AdObject object = ad2.search_object(dn);
 
-            // TODO: band-aid for the situations
-            // where properties dialog interacts
-            // with deleted objects. Bad stuff can
-            // still happen if properties is opened
-            // while object exists, then object is
-            // deleted and properties is applied.
-            // Remove this or improve it when you
+            // TODO: band-aid for the situations where properties dialog
+            // interacts with deleted objects. Bad stuff can still happen if
+            // properties is opened while object exists, then object is deleted
+            // and properties is applied. Remove this or improve it when you
             // tackle this issue head-on.
             if (object.is_empty()) {
                 continue;
