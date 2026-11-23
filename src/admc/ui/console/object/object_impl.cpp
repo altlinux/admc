@@ -70,6 +70,18 @@ const QList<QString> RENAMABLE_CLASS_LIST = {
     CLASS_PSO
 };
 
+const QList<QString> NON_MOVABLE_OBJECT_CLASSES = {
+    CLASS_PSO,
+    CLASS_SITE,
+    CLASS_SUBNET,
+    CLASS_SITE_LINK,
+    CLASS_SITE_LINK_BRIDGE,
+    CLASS_SITES_CONTAINER,
+    CLASS_INTER_SITE_TRANSPORT,
+    CLASS_INTER_SITE_TRANSPORT_CONTAINER,
+    CLASS_SUBNET_CONTAINER
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // Helper procedures.
 
@@ -389,19 +401,8 @@ QSet<QAction *> ObjectImpl::get_disabled_custom_actions(
 
     const QString object_class = index_data_object_class(index);
     const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
-    const QList<QString> not_movable_obj_classes = {
-        CLASS_PSO,
-        CLASS_SITE,
-        CLASS_SUBNET,
-        CLASS_SITE_LINK,
-        CLASS_SITE_LINK_BRIDGE,
-        CLASS_SITES_CONTAINER,
-        CLASS_INTER_SITE_TRANSPORT,
-        CLASS_INTER_SITE_TRANSPORT_CONTAINER,
-        CLASS_SUBNET_CONTAINER
-    };
 
-    if (cannot_move || not_movable_obj_classes.contains(object_class)) {
+    if (cannot_move || NON_MOVABLE_OBJECT_CLASSES.contains(object_class)) {
         out.insert(move_action);
     }
 
