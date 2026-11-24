@@ -30,6 +30,7 @@
 #include <QModelIndex>
 #include <QString>
 
+#include "ad_interface.h"
 #include "ad_object.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,6 +60,7 @@ public:
     bool has_renameable_class() const;
     bool is_moveable() const;
     bool is_deleteable() const;
+    AdObject search_object(AdInterface &ad) const;
     static QList<QString> get_unique_classes(const QList<QModelIndex> &indices);
 };
 

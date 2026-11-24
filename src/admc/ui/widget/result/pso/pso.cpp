@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2020-2026 BaseALT Ltd.
  * Copyright (C) 2026 Yuri Kozyrev
+ * Copyright (C) 2026 Artyom V. Poptsov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@
 #include "ui/widget/result/pso/pso.h"
 #include "ad_interface.h"
 #include "ui/utils.h"
+#include "core/console/model/object.h"
 #include "ui/console/object/object_impl.h"
 #include "ui/widget/result/pso/pso_edit.h"
 #include "../ui_base.h"
@@ -44,7 +46,8 @@ void PSOResultsWidget::update(const QModelIndex &index) {
         return;
     }
 
-    AdObject pso = ad.search_object(index.data(ObjectRole_DN).toString());
+    ConsoleObjectModelIndex item(index);
+    AdObject pso = item.search_object(ad);
     update(pso);
 }
 

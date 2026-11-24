@@ -88,6 +88,16 @@ QPersistentModelIndex ConsoleObjectModelIndex::get_parent() const {
     return parent();
 }
 
+/**
+ * Search AD object using the its distinguished name (DN.)
+ *
+ * @param ad Active Directory (AD) interface to use.
+ * @return An AD object.
+ */
+AdObject ConsoleObjectModelIndex::search_object(AdInterface &ad) const {
+    return ad.search_object(get_dn());
+}
+
 bool ConsoleObjectModelIndex::is_parent_valid() const {
     return parent().isValid();
 }
