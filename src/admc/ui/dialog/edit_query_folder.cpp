@@ -31,7 +31,8 @@ EditQueryFolderDialog::EditQueryFolderDialog(QWidget *parent)
 
     setAttribute(Qt::WA_DeleteOnClose);
 
-    settings_setup_dialog_geometry(SETTING_edit_query_folder_dialog_geometry, this);
+    settings_setup_dialog_geometry(SETTING_edit_query_folder_dialog_geometry,
+                                   this);
 }
 
 EditQueryFolderDialog::~EditQueryFolderDialog() {
@@ -46,7 +47,9 @@ QString EditQueryFolderDialog::description() const {
     return ui->description_edit->text();
 }
 
-void EditQueryFolderDialog::set_data(const QList<QString> &sibling_name_list_arg, const QString &name, const QString &description) {
+void EditQueryFolderDialog::set_data(const QList<QString> &sibling_name_list_arg,
+                                     const QString &name,
+                                     const QString &description) {
     sibling_name_list = sibling_name_list_arg;
     ui->name_edit->setText(name);
     ui->description_edit->setText(description);
@@ -54,9 +57,8 @@ void EditQueryFolderDialog::set_data(const QList<QString> &sibling_name_list_arg
 
 void EditQueryFolderDialog::accept() {
     const QString name = ui->name_edit->text().trimmed();
-
-    const bool name_is_valid = console_query_or_folder_name_is_good(name, sibling_name_list, this);
-
+    const bool name_is_valid =
+        console_query_or_folder_name_is_good(name, sibling_name_list, this);
     if (name_is_valid) {
         QDialog::accept();
     }

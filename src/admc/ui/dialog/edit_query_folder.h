@@ -39,7 +39,9 @@ public:
     QString name() const;
     QString description() const;
 
-    void set_data(const QList<QString> &sibling_name_list, const QString &name, const QString &description);
+    void set_data(const QList<QString> &sibling_name_list,
+                  const QString &name,
+                  const QString &description);
     void accept() override;
 
 private:
