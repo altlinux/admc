@@ -120,3 +120,20 @@ bool ConsoleObjectModelIndex::is_moveable() const {
     return ((data(ObjectRole_CannotMove).toBool() == false) &&
             (! has_non_moveable_class()));
 }
+
+/**
+ * Get unique classes for model index list.
+ *
+ * @param indices A list of Qt model indices.
+ * @return A list of unique classes.
+ */
+QList<QString> ConsoleObjectModelIndex::get_unique_classes(
+    const QList<QModelIndex> &indices)
+{
+    QSet<QString> set;
+    for (const QModelIndex &index : indices) {
+        const ConsoleObjectModelIndex item(index);
+        set.insert(item.get_main_class());
+    }
+    return QList<QString>(set.begin(), set.end());
+}

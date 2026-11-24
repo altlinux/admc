@@ -59,6 +59,7 @@ public:
     bool has_renameable_class() const;
     bool is_moveable() const;
     bool is_deleteable() const;
+    static QList<QString> get_unique_classes(const QList<QModelIndex> &indices);
 };
 
 #endif  // ifndef CONSOLE_OBJECT_MODEL_H

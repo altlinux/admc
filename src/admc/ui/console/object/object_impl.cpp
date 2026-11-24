@@ -414,14 +414,8 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
 }
 
 void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
-    QSet<QString> class_set;
-    for (const QModelIndex &index : index_list) {
-        const ConsoleObjectModelIndex item(index);
-        class_set.insert(item.get_main_class());
-    }
     QList<QString> class_list =
-        QList<QString>(class_set.begin(), class_set.end());
-
+        ConsoleObjectModelIndex::get_unique_classes(index_list);
     ConsoleObjectTreeOperations::console_object_properties(console_list,
                                                            index_list,
                                                            ObjectRole_DN,
