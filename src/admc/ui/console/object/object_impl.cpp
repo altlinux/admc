@@ -60,31 +60,6 @@
 #include "ui/widget/tab/general_group.h"
 #include "ui/widget/tab/general_user.h"
 
-////////////////////////////////////////////////////////////////////////////////
-// Constants.
-
-static const QList<QString> RENAMABLE_CLASS_LIST = {
-    CLASS_USER,
-    CLASS_GROUP,
-    CLASS_OU,
-    CLASS_SITE,
-    CLASS_PSO
-};
-
-static const QList<QString> NON_MOVABLE_OBJECT_CLASSES = {
-    CLASS_PSO,
-    CLASS_SITE,
-    CLASS_SUBNET,
-    CLASS_SITE_LINK,
-    CLASS_SITE_LINK_BRIDGE,
-    CLASS_SITES_CONTAINER,
-    CLASS_INTER_SITE_TRANSPORT,
-    CLASS_INTER_SITE_TRANSPORT_CONTAINER,
-    CLASS_SUBNET_CONTAINER
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
     console_list = {

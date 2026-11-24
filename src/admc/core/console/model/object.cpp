@@ -26,6 +26,31 @@
 #include "core/console/console.h"
 #include "core/console/model/object.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// Constants.
+
+const QList<QString> RENAMABLE_CLASS_LIST = {
+    CLASS_USER,
+    CLASS_GROUP,
+    CLASS_OU,
+    CLASS_SITE,
+    CLASS_PSO
+};
+
+const QList<QString> NON_MOVABLE_OBJECT_CLASSES = {
+    CLASS_PSO,
+    CLASS_SITE,
+    CLASS_SUBNET,
+    CLASS_SITE_LINK,
+    CLASS_SITE_LINK_BRIDGE,
+    CLASS_SITES_CONTAINER,
+    CLASS_INTER_SITE_TRANSPORT,
+    CLASS_INTER_SITE_TRANSPORT_CONTAINER,
+    CLASS_SUBNET_CONTAINER
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
 ConsoleObjectModelIndex::ConsoleObjectModelIndex(const QModelIndex& index)
     : QModelIndex(index) {
     // Do nothing.

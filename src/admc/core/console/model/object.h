@@ -26,8 +26,20 @@
 #ifndef CONSOLE_OBJECT_MODEL_H
 #define CONSOLE_OBJECT_MODEL_H
 
+#include <QList>
 #include <QModelIndex>
 #include <QString>
+
+#include "ad_object.h"
+
+////////////////////////////////////////////////////////////////////////////////
+// Constants.
+
+extern const QList<QString> RENAMABLE_CLASS_LIST;
+extern const QList<QString> NON_MOVABLE_OBJECT_CLASSES;
+
+////////////////////////////////////////////////////////////////////////////////
+// Classes.
 
 /**
  * @class ConsoleObjectItem
