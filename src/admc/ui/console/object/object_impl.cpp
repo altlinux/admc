@@ -33,6 +33,7 @@
 #include "core/ad.h"
 #include "core/console/object/drag_n_drop.h"
 #include "core/console/object/operations.h"
+#include "core/console/model/object.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
@@ -83,33 +84,6 @@ static const QList<QString> NON_MOVABLE_OBJECT_CLASSES = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Helper procedures.
-
-QStringList index_data_object_classes(const QModelIndex &index) {
-    return index.data(ObjectRole_ObjectClasses).toStringList();
-}
-
-QString index_data_object_class(const QModelIndex &index) {
-    return index.data(ObjectRole_ObjectClasses).toStringList().last();
-}
-
-QString index_data_object_role_dn(const QModelIndex &index) {
-    return index.data(ObjectRole_DN).toString();
-}
-
-bool index_data_object_cannot_rename(const QModelIndex &index) {
-    return index.data(ObjectRole_CannotRename).toBool();
-}
-
-bool index_data_object_cannot_delete(const QModelIndex &index) {
-    return index.data(ObjectRole_CannotDelete).toBool();
-}
-
-QString item_data_object_category(const QStandardItem *item) {
-    return item->data(ObjectRole_ObjectCategory).toString();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 
 ObjectImpl::ObjectImpl(ConsoleWidget *console_arg)
 : ConsoleImpl(console_arg) {
@@ -132,8 +106,8 @@ void ObjectImpl::set_buddy_console(ConsoleWidget *buddy_console) {
 // Load children of this item in scope tree
 // and load results linked to this scope item
 void ObjectImpl::fetch(const QModelIndex &index) {
-    const QString base = index.data(ObjectRole_DN).toString();
-
+    const ConsoleObjectModelIndex item(index);
+    const QString base = item.get_dn();
     const SearchScope scope = SearchScope_Children;
 
     //
@@ -148,7 +122,7 @@ void ObjectImpl::fetch(const QModelIndex &index) {
         filter = filter_OR({object_filter, filter});
     }
 
-    const auto fetched = index.data(ObjectRole_ObjectClasses).toStringList();
+    const auto fetched = item.get_all_classes();
     if (fetched.isEmpty()){
         return;
     }
@@ -223,7 +197,8 @@ void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list,
     Q_UNUSED(target_type);
     Q_UNUSED(dropped_type_list);
 
-    const QString target_dn = index_data_object_role_dn(target);
+    const ConsoleObjectModelIndex item(target);
+    const QString target_dn = item.get_dn();
 
     AdInterface ad;
     if (ad_failed(ad, console)) {
@@ -233,7 +208,8 @@ void ObjectImpl::drop(const QList<QPersistentModelIndex> &dropped_list,
     show_busy_indicator();
 
     for (const QPersistentModelIndex &dropped : dropped_list) {
-        const QString dropped_dn = index_data_object_role_dn(dropped);
+        const ConsoleObjectModelIndex dropped_item(dropped);
+        const QString dropped_dn = dropped_item.get_dn();
         const ObjectDragDrop::DropType drop_type =
             ObjectDragDrop::console_object_get_drop_type(dropped, target);
 
@@ -298,8 +274,8 @@ QSet<QAction *> ObjectImpl::get_custom_actions(
     const bool single_selection) const
 {
     QSet<QAction *> out;
-
-    const QString object_class = index_data_object_class(index);
+    const ConsoleObjectModelIndex item(index);
+    const QString object_class = item.get_main_class();
     const QList<QString> container_classes = g_adconfig->get_filter_containers();
     const bool is_container = container_classes.contains(object_class);
 
@@ -398,9 +374,10 @@ QSet<QAction *> ObjectImpl::get_disabled_custom_actions(
     Q_UNUSED(single_selection);
 
     QSet<QAction *> out;
+    ConsoleObjectModelIndex item(index);
 
-    const QString object_class = index_data_object_class(index);
-    const bool cannot_move = index.data(ObjectRole_CannotMove).toBool();
+    const QString object_class = item.get_main_class();
+    const bool cannot_move = ! item.is_moveable();
 
     if (cannot_move || NON_MOVABLE_OBJECT_CLASSES.contains(object_class)) {
         out.insert(move_action);
@@ -425,7 +402,8 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(
         out.insert(StandardAction_Refresh);
     }
 
-    const QString object_class = index_data_object_class(index);
+    const ConsoleObjectModelIndex item(index);
+    const QString object_class = item.get_main_class();
     const bool can_rename =
         (single_selection && RENAMABLE_CLASS_LIST.contains(object_class));
     if (can_rename) {
@@ -443,13 +421,14 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(
 {
     Q_UNUSED(single_selection);
 
+    const ConsoleObjectModelIndex item(index);
     QSet<StandardAction> out;
 
-    if (index_data_object_cannot_rename(index)) {
+    if (! item.is_renameable()) {
         out.insert(StandardAction_Rename);
     }
 
-    if (index_data_object_cannot_delete(index)) {
+    if (! item.is_deleteable()) {
         out.insert(StandardAction_Delete);
     }
 
@@ -458,7 +437,8 @@ QSet<StandardAction> ObjectImpl::get_disabled_standard_actions(
 
 void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
     const QModelIndex index = index_list[0];
-    const QString object_class = index_data_object_class(index);
+    const ConsoleObjectModelIndex item(index);
+    const QString object_class = item.get_main_class();
     ConsoleObjectTreeOperations::console_object_rename(console_list,
                                                        index_list,
                                                        ObjectRole_DN,
@@ -468,8 +448,8 @@ void ObjectImpl::rename(const QList<QModelIndex> &index_list) {
 void ObjectImpl::properties(const QList<QModelIndex> &index_list) {
     QSet<QString> class_set;
     for (const QModelIndex &index : index_list) {
-        const QString main_class = index_data_object_class(index);
-        class_set.insert(main_class);
+        const ConsoleObjectModelIndex item(index);
+        class_set.insert(item.get_main_class());
     }
     QList<QString> class_list =
         QList<QString>(class_set.begin(), class_set.end());
@@ -506,8 +486,8 @@ void ObjectImpl::selected_as_scope(const QModelIndex &index)
         return;
     }
 
-    const QString dn = index_data_object_role_dn(index);
-    const AdObject object = ad.search_object(dn);
+    const ConsoleObjectModelIndex item(index);
+    const AdObject object = ad.search_object(item.get_dn());
 
     if (object.is_class(CLASS_GROUP)) {
         stacked_widget->setCurrentWidget(group_results_widget);
@@ -533,7 +513,8 @@ void ObjectImpl::selected_as_scope(const QModelIndex &index)
 }
 
 void ObjectImpl::update_results_widget(const QModelIndex &index) const {
-    const QStringList index_data_classes = index_data_object_classes(index);
+    ConsoleObjectModelIndex item(index);
+    const QStringList index_data_classes = item.get_all_classes();
     if (!(index_data_classes.contains(CLASS_GROUP) ||
           index_data_classes.contains(CLASS_CONTACT) ||
           index_data_classes.contains(CLASS_USER) ||
@@ -548,7 +529,7 @@ void ObjectImpl::update_results_widget(const QModelIndex &index) const {
         return;
     }
 
-    const QString dn = index_data_object_role_dn(index);
+    const QString dn = item.get_dn();
     const AdObject object = ad.search_object(dn);
 
     if (object.is_class(CLASS_GROUP)) {
@@ -616,14 +597,15 @@ QList<int> ObjectImpl::default_columns() const {
  */
 void ObjectImpl::refresh_current_subtree(const QString &new_dn) {
     const QModelIndex index = console->get_current_scope_item();
-    QPersistentModelIndex parent = index.parent();
-    if (! parent.isValid()) {
+    const ConsoleObjectModelIndex item(index);
+    if (! item.is_parent_valid()) {
         return;
     }
 
+    QPersistentModelIndex parent = item.get_parent();
     show_busy_indicator();
 
-    const QString selected_dn = index_data_object_role_dn(index);
+    const QString selected_dn = item.get_dn();
     QString new_full_dn = nullptr;
     try {
         new_full_dn = ad_ldap_dn_string_replace_value(selected_dn, 0, new_dn);
@@ -916,10 +898,11 @@ void ObjectImpl::set_disabled(const bool disabled) {
                                                  { ItemType_Object });
 
                 for (const QModelIndex &index : index_list) {
+                    const ConsoleObjectModelIndex object_index(index);
                     QStandardItem *item = target_console->get_item(index);
                     item->setData(disabled, ObjectRole_AccountDisabled);
                     const QString category =
-                        dn_get_name(item_data_object_category(item));
+                        dn_get_name(object_index.get_category());
                     QIcon icon;
                     if (category == OBJECT_CATEGORY_PERSON) {
                         icon = disabled ?
