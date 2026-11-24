@@ -56,6 +56,7 @@ public:
     bool is_parent_valid() const;
     bool is_renameable() const;
     bool has_non_moveable_class() const;
+    bool has_renameable_class() const;
     bool is_moveable() const;
     bool is_deleteable() const;
 };

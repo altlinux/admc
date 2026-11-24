@@ -374,10 +374,7 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(
     }
 
     const ConsoleObjectModelIndex item(index);
-    const QString object_class = item.get_main_class();
-    const bool can_rename =
-        (single_selection && RENAMABLE_CLASS_LIST.contains(object_class));
-    if (can_rename) {
+    if (single_selection && item.has_renameable_class()) {
         out.insert(StandardAction_Rename);
     }
 

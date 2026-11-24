@@ -104,6 +104,10 @@ bool ConsoleObjectModelIndex::has_non_moveable_class() const {
     return NON_MOVABLE_OBJECT_CLASSES.contains(get_main_class());
 }
 
+bool ConsoleObjectModelIndex::has_renameable_class() const {
+    return RENAMABLE_CLASS_LIST.contains(get_main_class());
+}
+
 /**
  * @brief Check if an object is moveable.
  *
