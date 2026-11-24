@@ -100,6 +100,19 @@ bool ConsoleObjectModelIndex::is_deleteable() const {
     return data(ObjectRole_CannotDelete).toBool() == false;
 }
 
+bool ConsoleObjectModelIndex::has_non_moveable_class() const {
+    return NON_MOVABLE_OBJECT_CLASSES.contains(get_main_class());
+}
+
+/**
+ * @brief Check if an object is moveable.
+ *
+ * An object is considered moveable if it does * not have "CannotMove" parameter
+ * set to "true" and if it does not belong to a * non-moveable class.
+ *
+ * @return True if the object is moveable, false otherwise.
+ */
 bool ConsoleObjectModelIndex::is_moveable() const {
-    return data(ObjectRole_CannotMove).toBool() == false;
+    return ((data(ObjectRole_CannotMove).toBool() == false) &&
+            (! has_non_moveable_class()));
 }

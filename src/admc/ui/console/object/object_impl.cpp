@@ -350,11 +350,7 @@ QSet<QAction *> ObjectImpl::get_disabled_custom_actions(
 
     QSet<QAction *> out;
     ConsoleObjectModelIndex item(index);
-
-    const QString object_class = item.get_main_class();
-    const bool cannot_move = ! item.is_moveable();
-
-    if (cannot_move || NON_MOVABLE_OBJECT_CLASSES.contains(object_class)) {
+    if (! item.is_moveable()) {
         out.insert(move_action);
     }
 
