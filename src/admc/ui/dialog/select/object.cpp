@@ -23,6 +23,7 @@
 
 #include "adldap.h"
 #include "core/console/object/operations.h"
+#include "core/console/model/object.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "core/utils.h"
@@ -97,10 +98,8 @@ QList<QString> SelectObjectDialog::get_selected() const {
     QList<QString> out;
 
     for (int row = 0; row < model->rowCount(); row++) {
-        const QModelIndex index = model->index(row, 0);
-        const QString dn = index.data(ObjectRole_DN).toString();
-
-        out.append(dn);
+        const ConsoleObjectModelIndex item(model->index(row, 0));
+        out.append(item.get_dn());
     }
 
     return out;
@@ -110,11 +109,8 @@ QList<SelectedObjectData> SelectObjectDialog::get_selected_advanced() const {
     QList<SelectedObjectData> out;
 
     for (int row = 0; row < model->rowCount(); row++) {
-        const QModelIndex index = model->index(row, 0);
-        const QString dn = index.data(ObjectRole_DN).toString();
-        const QString category = index.data(ObjectRole_ObjectCategory).toString();
-
-        out.append({dn, category});
+        const ConsoleObjectModelIndex item(model->index(row, 0));
+        out.append({item.get_dn(), item.get_category()});
     }
 
     return out;
