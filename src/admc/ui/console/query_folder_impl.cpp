@@ -609,8 +609,7 @@ bool console_query_or_folder_name_is_good(const QString &name,
                                           QWidget *parent_widget) {
     if (name.isEmpty()) {
         const QString error_text =
-            QString(QCoreApplication::translate("query.cpp",
-                                                "Name may not be empty"));
+            QCoreApplication::translate("query.cpp", "Name may not be empty");
         message_box_generic_error(parent_widget, error_text);
 
         return false;
@@ -621,14 +620,15 @@ bool console_query_or_folder_name_is_good(const QString &name,
 
     if (name_conflict) {
         const QString error_text =
-            QString(QCoreApplication::translate(
-                        "query.cpp",
-                        "There's already an item with this name."));
+            QCoreApplication::translate(
+                "query.cpp",
+                "There's already an item with this name.");
         message_box_generic_error(parent_widget, error_text);
     } else if (name_contains_slash) {
         const QString error_text =
-            QString(QCoreApplication::translate("query.cpp",
-                                                "Names cannot contain \"/\"."));
+            QCoreApplication::translate(
+                "query.cpp",
+                "Names cannot contain \"/\".");
         message_box_generic_error(parent_widget, error_text);
     }
 
