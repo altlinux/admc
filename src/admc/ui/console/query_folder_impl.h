@@ -111,8 +111,5 @@ bool console_query_or_folder_name_is_good(
 void query_action_delete(
     ConsoleWidget *console,
     const QList<QModelIndex> &index_list);
-QList<QString> get_sibling_name_list(
-    const QModelIndex &parent_index,
-    const QModelIndex &index_to_omit);
 
 #endif /* QUERY_FOLDER_IMPL_H */
