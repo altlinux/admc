@@ -29,6 +29,7 @@
 #include <QStandardPaths>
 
 #include "adldap.h"
+#include "core/console/model/query.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
@@ -142,11 +143,11 @@ void QueryFolderImpl::on_edit_query_folder() {
     auto dialog = new EditQueryFolderDialog(console);
 
     const QModelIndex index = console->get_selected_item(ItemType_QueryFolder);
+    const ConsoleQueryModelIndex item(index);
 
     {
-        const QString name = index.data(Qt::DisplayRole).toString();
-        const QString description =
-            index.data(QueryItemRole_Description).toString();
+        const QString name = item.get_name();
+        const QString description = item.get_description();
         const QModelIndex parent_index = index.parent();
         const QList<QString> sibling_name_list =
             get_sibling_name_list(parent_index, index);
@@ -482,6 +483,7 @@ void console_query_tree_save(ConsoleWidget *console) {
 
     while (!stack.isEmpty()) {
         const QModelIndex index = stack.pop();
+        const ConsoleQueryModelIndex item(index);
 
         for (int i = 0; i < model->rowCount(index); ++i) {
             stack.append(model->index(i, 0, index));
@@ -512,11 +514,8 @@ void console_query_tree_save(ConsoleWidget *console) {
             QHash<QString, QVariant> data;
 
             if (!is_root) {
-                data["name"] =
-                    index.data(Qt::DisplayRole).toString();
-
-                data["description"] =
-                    index.data(QueryItemRole_Description).toString();
+                data["name"] = item.get_name();
+                data["description"] = item.get_description();
             }
 
             data["child_list"] = child_list;
@@ -575,10 +574,8 @@ QString console_query_folder_path(const QModelIndex &index,
     QModelIndex current = index;
 
     while (current.parent() != console->domain_info_index()) {
-        const QString name =
-            current.data(Qt::DisplayRole).toString();
-
-        path_split.prepend(name);
+        const ConsoleQueryModelIndex item(current);
+        path_split.prepend(item.get_name());
         current = current.parent();
     }
 
@@ -687,7 +684,8 @@ void console_query_move(ConsoleWidget *console,
                         const bool delete_old_branch) {
     // Check for name conflict
     for (const QPersistentModelIndex &index : index_list) {
-        const QString name = index.data(Qt::DisplayRole).toString();
+        const ConsoleQueryModelIndex item(index);
+        const QString name = item.get_name();
         if (! console_query_or_folder_name_is_good(name, new_parent_index,
                                                    console, index)) {
             return;
@@ -715,19 +713,13 @@ void console_query_move(ConsoleWidget *console,
 
             const ItemType type = (ItemType) console_item_get_type(index);
             if (type == ItemType_QueryItem) {
-                const QString description =
-                    index.data(QueryItemRole_Description).toString();
-                const QString filter =
-                    index.data(QueryItemRole_Filter).toString();
-                const QByteArray filter_state =
-                    index.data(QueryItemRole_FilterState).toByteArray();
-                const QString base =
-                    index.data(QueryItemRole_Base).toString();
-                const QString name =
-                    index.data(Qt::DisplayRole).toString();
-                const bool scope_is_children =
-                    index.data(QueryItemRole_ScopeIsChildren).toBool();
-
+                const ConsoleQueryModelIndex item(index);
+                const QString description = item.get_description();
+                const QString filter = item.get_filter();
+                const QByteArray filter_state = item.get_filter_state();
+                const QString base = item.get_base();
+                const QString name = item.get_name();
+                const bool scope_is_children = item.is_children_scope();
                 const QModelIndex item_index =
                     console_query_item_create(console, name, description,
                                               filter, filter_state, base,
@@ -735,9 +727,9 @@ void console_query_move(ConsoleWidget *console,
 
                 created_list.append(item_index);
             } else if (type == ItemType_QueryFolder) {
-                const QString name = index.data(Qt::DisplayRole).toString();
-                const QString description =
-                    index.data(QueryItemRole_Description).toString();
+                const ConsoleQueryModelIndex item(index);
+                const QString name = item.get_name();
+                const QString description = item.get_description();
                 const QModelIndex folder_index =
                     console_query_folder_create(console, name, description,
                                                 new_parent);
@@ -774,19 +766,15 @@ void console_query_move(ConsoleWidget *console,
 QList<QString> get_sibling_name_list(const QModelIndex &parent_index,
                                      const QModelIndex &index_to_omit) {
     QList<QString> out;
-
     const QAbstractItemModel *model = parent_index.model();
-
     for (int row = 0; row < model->rowCount(parent_index); row++) {
-        const QModelIndex sibling = model->index(row, 0, parent_index);
-        const QString sibling_name = sibling.data(Qt::DisplayRole).toString();
-
+        const ConsoleQueryModelIndex sibling(model->index(row, 0, parent_index));
         const bool this_is_query_itself = (sibling == index_to_omit);
         if (this_is_query_itself) {
             continue;
         }
 
-        out.append(sibling_name);
+        out.append(sibling.get_name());
     }
 
     return out;
