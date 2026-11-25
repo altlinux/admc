@@ -537,12 +537,10 @@ void console_query_tree_save(ConsoleWidget *console) {
 }
 
 QModelIndex get_query_tree_root(ConsoleWidget *console) {
-    const QModelIndex out = console->search_item(console->domain_info_index(),
-                                                 QueryItemRole_IsRoot,
-                                                 true,
-                                                 { ItemType_QueryFolder });
-
-    return out;
+    return console->search_item(console->domain_info_index(),
+                                QueryItemRole_IsRoot,
+                                true,
+                                { ItemType_QueryFolder });
 }
 
 QList<QString> QueryFolderImpl::column_labels() const {
