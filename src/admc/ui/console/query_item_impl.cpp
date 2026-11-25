@@ -28,6 +28,7 @@
 #include <QStandardPaths>
 
 #include "adldap.h"
+#include "core/console/model/query.h"
 #include "core/console/object/operations.h"
 #include "core/console/query_item.h"
 #include "core/console_item_type.h"
@@ -296,7 +297,7 @@ void QueryItemImpl::on_edit_query_item() {
 
     const QModelIndex parent_index = index.parent();
     const QList<QString> sibling_name_list =
-        get_sibling_name_list(parent_index, index);
+        ConsoleQueryModelIndex::get_sibling_name_list(parent_index, index);
 
     auto dialog = new EditQueryItemDialog(sibling_name_list, console);
 

@@ -90,8 +90,8 @@ void QueryFolderImpl::on_create_query_folder() {
 
     const QModelIndex parent_index =
         console->get_selected_item(ItemType_QueryFolder);
-    const QList<QString> sibling_name_list =
-        get_sibling_name_list(parent_index, QModelIndex());
+    const QStringList sibling_name_list =
+        ConsoleQueryModelIndex::get_sibling_name_list(parent_index);
 
     dialog->set_sibling_name_list(sibling_name_list);
 
@@ -114,8 +114,8 @@ void QueryFolderImpl::on_create_query_folder() {
 void QueryFolderImpl::on_create_query_item() {
     const QModelIndex parent_index =
         console->get_selected_item(ItemType_QueryFolder);
-    const QList<QString> sibling_name_list =
-        get_sibling_name_list(parent_index, QModelIndex());
+    const QStringList sibling_name_list =
+        ConsoleQueryModelIndex::get_sibling_name_list(parent_index);
 
     auto dialog = new CreateQueryItemDialog(sibling_name_list, console);
     dialog->open();
@@ -149,8 +149,8 @@ void QueryFolderImpl::on_edit_query_folder() {
         const QString name = item.get_name();
         const QString description = item.get_description();
         const QModelIndex parent_index = index.parent();
-        const QList<QString> sibling_name_list =
-            get_sibling_name_list(parent_index, index);
+        const QStringList sibling_name_list =
+            ConsoleQueryModelIndex::get_sibling_name_list(parent_index, index);
 
         dialog->set_data(sibling_name_list, name, description);
     }
@@ -649,8 +649,9 @@ bool console_query_or_folder_name_is_good(const QString &name,
                                           const QModelIndex &parent_index,
                                           QWidget *parent_widget,
                                           const QModelIndex &current_index) {
-    const QList<QString> sibling_names = get_sibling_name_list(parent_index,
-                                                               current_index);
+    const QStringList sibling_names =
+        ConsoleQueryModelIndex::get_sibling_name_list(parent_index,
+                                                      current_index);
 
     return console_query_or_folder_name_is_good(name, sibling_names,
                                                 parent_widget);
@@ -761,21 +762,4 @@ void console_query_move(ConsoleWidget *console,
     }
 
     console_query_tree_save(console);
-}
-
-QList<QString> get_sibling_name_list(const QModelIndex &parent_index,
-                                     const QModelIndex &index_to_omit) {
-    QList<QString> out;
-    const QAbstractItemModel *model = parent_index.model();
-    for (int row = 0; row < model->rowCount(parent_index); row++) {
-        const ConsoleQueryModelIndex sibling(model->index(row, 0, parent_index));
-        const bool this_is_query_itself = (sibling == index_to_omit);
-        if (this_is_query_itself) {
-            continue;
-        }
-
-        out.append(sibling.get_name());
-    }
-
-    return out;
 }

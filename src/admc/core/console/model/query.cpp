@@ -54,3 +54,24 @@ QString ConsoleQueryModelIndex::get_name() const {
 bool ConsoleQueryModelIndex::is_children_scope() const {
     return data(QueryItemRole_ScopeIsChildren).toBool();
 }
+
+QStringList ConsoleQueryModelIndex::get_sibling_name_list(
+    const QModelIndex &parent_idx,
+    const QModelIndex &index_to_omit)
+{
+    const QAbstractItemModel *model = parent_idx.model();
+    const int row_count = model->rowCount(parent_idx);
+
+    QStringList out;
+    for (int row = 0; row < row_count; row++) {
+        const ConsoleQueryModelIndex sibling(model->index(row, 0, parent_idx));
+        const bool this_is_query_itself = (sibling == index_to_omit);
+        if (this_is_query_itself) {
+            continue;
+        }
+
+        out.append(sibling.get_name());
+    }
+
+    return out;
+}

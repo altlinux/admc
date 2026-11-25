@@ -44,6 +44,9 @@ public:
     QString get_base() const;
     QString get_name() const;
     bool is_children_scope() const;
+    static QStringList get_sibling_name_list(
+        const QModelIndex &parent_idx,
+        const QModelIndex &index_to_omit = QModelIndex());
 };
 
 #endif  // ifndef CONSOLE_QUERY_MODEL_H
