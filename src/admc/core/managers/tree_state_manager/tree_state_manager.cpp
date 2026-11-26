@@ -224,8 +224,7 @@ void TreeStateManager::continue_restore_task() {
         return;
     }
 
-    const bool fetched = idx.data(ConsoleRole_WasFetched).toBool();
-    if (fetched) {
+    if (ConsoleModelIndex(idx).was_fetched()) {
         continue_restore_task();
     }
 }
@@ -415,7 +414,7 @@ QList<QModelIndex> TreeStateManager::expanded_index_list(
         }
         const QModelIndex proxy_idx = proxy_model_->mapFromSource(idx);
 
-        const bool is_fetched = idx.data(ConsoleRole_WasFetched).toBool();
+        const bool is_fetched = ConsoleModelIndex(idx).was_fetched();
         const bool is_expanded =
             proxy_idx.isValid() && view_->isExpanded(proxy_idx);
         const bool has_children = source_model_->hasChildren(idx);
