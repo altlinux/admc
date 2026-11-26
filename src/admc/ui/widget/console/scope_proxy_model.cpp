@@ -28,9 +28,7 @@
 // the item is fetched, normal behavior is restored.
 bool ScopeProxyModel::hasChildren(const QModelIndex &parent) const {
     const bool was_fetched = parent.data(ConsoleRole_WasFetched).toBool();
-    const bool unfetched = !was_fetched;
-
-    if (unfetched) {
+    if (! was_fetched) {
         return true;
     } else {
         return QSortFilterProxyModel::hasChildren(parent);
@@ -51,12 +49,8 @@ bool ScopeProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right
     const int right_sort_index = right.data(ConsoleRole_SortIndex).toInt();
 
     if (left_sort_index != right_sort_index) {
-        const bool out = (left_sort_index < right_sort_index);
-
-        return out;
+        return left_sort_index < right_sort_index;
     }
 
-    const bool out = QSortFilterProxyModel::lessThan(left, right);
-
-    return out;
+    return QSortFilterProxyModel::lessThan(left, right);
 }
