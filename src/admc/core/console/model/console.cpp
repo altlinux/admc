@@ -19,7 +19,7 @@
  */
 
 /**
- * @file consle.cpp
+ * @file console.cpp
  * @brief Console model index implementation.
  */
 
