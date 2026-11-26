@@ -154,6 +154,7 @@ set(ADMC_SOURCES
     ui/utils.cpp
     ui/widget/console/console_widget.cpp
     ui/widget/console/scope_proxy_model.cpp
+    ui/widget/console/scope_view.cpp
     ui/widget/console/customize_columns_dialog.cpp
     ui/widget/console/results_view.cpp
     ui/widget/console/console_drag_model.cpp

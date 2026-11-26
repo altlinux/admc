@@ -51,26 +51,13 @@
 #include "ui/widget/console/customize_columns_dialog.h"
 #include "ui/widget/console/results_view.h"
 #include "ui/widget/console/scope_proxy_model.h"
+#include "ui/widget/console/scope_view.h"
 
 static const QString SPLITTER_STATE = "SPLITTER_STATE";
 static const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
 static const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
 
 QString results_state_name(const int type);
-
-class ScopeView : public QTreeView {
-public:
-    using QTreeView::QTreeView;
-
-    void resizeEvent(QResizeEvent *event) override {
-        QTreeView::resizeEvent(event);
-
-        QSize areaSize = viewport()->size();
-        const int view_width = areaSize.width();
-        const int content_width = sizeHintForColumn(0);
-        header()->setDefaultSectionSize(std::max(view_width, content_width));
-    }
-};
 
 ConsoleWidget::ConsoleWidget(QWidget *parent)
 : QWidget(parent) {
