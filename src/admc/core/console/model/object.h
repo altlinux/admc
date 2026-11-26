@@ -32,6 +32,7 @@
 
 #include "ad_interface.h"
 #include "ad_object.h"
+#include "core/console/model/console.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constants.
@@ -46,7 +47,7 @@ extern const QList<QString> NON_MOVABLE_OBJECT_CLASSES;
  * @class ConsoleObjectItem
  * @brief ADMC console object item.
  */
-class ConsoleObjectModelIndex : public QModelIndex {
+class ConsoleObjectModelIndex : public ConsoleModelIndex {
 public:
     ConsoleObjectModelIndex(const QModelIndex& index);
     QStringList get_all_classes() const;

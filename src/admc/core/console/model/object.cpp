@@ -52,7 +52,7 @@ const QList<QString> NON_MOVABLE_OBJECT_CLASSES = {
 ////////////////////////////////////////////////////////////////////////////////
 
 ConsoleObjectModelIndex::ConsoleObjectModelIndex(const QModelIndex& index)
-    : QModelIndex(index) {
+    : ConsoleModelIndex(index) {
     // Do nothing.
 }
 

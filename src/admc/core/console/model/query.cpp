@@ -24,10 +24,11 @@
  */
 
 #include "core/console/query_item.h"
+#include "core/console/model/console.h"
 #include "core/console/model/query.h"
 
 ConsoleQueryModelIndex::ConsoleQueryModelIndex(const QModelIndex& index)
-    : QModelIndex(index) {
+    : ConsoleModelIndex(index) {
     // Do nothing.
 }
 
@@ -45,10 +46,6 @@ QByteArray ConsoleQueryModelIndex::get_filter_state() const {
 
 QString ConsoleQueryModelIndex::get_base() const {
     return data(QueryItemRole_Base).toString();
-}
-
-QString ConsoleQueryModelIndex::get_name() const {
-    return data(Qt::DisplayRole).toString();
 }
 
 bool ConsoleQueryModelIndex::is_children_scope() const {

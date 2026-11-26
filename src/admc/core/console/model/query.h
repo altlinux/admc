@@ -30,19 +30,20 @@
 #include <QModelIndex>
 #include <QString>
 
+#include "core/console/model/console.h"
+
 /**
  * @brief Console query model index implementation.
  *
  * This class is used for query folder operations in the console tree.
  */
-class ConsoleQueryModelIndex : public QModelIndex {
+class ConsoleQueryModelIndex : public ConsoleModelIndex {
 public:
     ConsoleQueryModelIndex(const QModelIndex& index);
     QString get_description() const;
     QString get_filter() const;
     QByteArray get_filter_state() const;
     QString get_base() const;
-    QString get_name() const;
     bool is_children_scope() const;
     static QStringList get_sibling_name_list(
         const QModelIndex &parent_idx,
