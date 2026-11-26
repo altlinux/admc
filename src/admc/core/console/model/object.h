@@ -49,7 +49,8 @@ extern const QList<QString> NON_MOVABLE_OBJECT_CLASSES;
  */
 class ConsoleObjectModelIndex : public ConsoleModelIndex {
 public:
-    ConsoleObjectModelIndex(const QModelIndex& index);
+    using ConsoleModelIndex::ConsoleModelIndex;
+
     QStringList get_all_classes() const;
     QString get_main_class() const;
     QString get_dn() const;

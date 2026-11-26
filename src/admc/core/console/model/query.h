@@ -39,7 +39,8 @@
  */
 class ConsoleQueryModelIndex : public ConsoleModelIndex {
 public:
-    ConsoleQueryModelIndex(const QModelIndex& index);
+    using ConsoleModelIndex::ConsoleModelIndex;
+
     QString get_description() const;
     QString get_filter() const;
     QByteArray get_filter_state() const;

@@ -27,11 +27,6 @@
 #include "core/console/model/console.h"
 #include "core/console/model/query.h"
 
-ConsoleQueryModelIndex::ConsoleQueryModelIndex(const QModelIndex& index)
-    : ConsoleModelIndex(index) {
-    // Do nothing.
-}
-
 QString ConsoleQueryModelIndex::get_description() const {
     return data(QueryItemRole_Description).toString();
 }

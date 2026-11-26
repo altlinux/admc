@@ -51,11 +51,6 @@ const QList<QString> NON_MOVABLE_OBJECT_CLASSES = {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-ConsoleObjectModelIndex::ConsoleObjectModelIndex(const QModelIndex& index)
-    : ConsoleModelIndex(index) {
-    // Do nothing.
-}
-
 QStringList ConsoleObjectModelIndex::get_all_classes() const {
     return data(ObjectRole_ObjectClasses).toStringList();
 }

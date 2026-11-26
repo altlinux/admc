@@ -37,6 +37,7 @@
  */
 class ConsoleModelIndex : public QModelIndex {
 public:
+    ConsoleModelIndex() = default;
     ConsoleModelIndex(const QModelIndex& index);
     QString get_name() const;
     int get_type() const;
