@@ -24,6 +24,7 @@
 #include <QStandardItem>
 
 #include "adldap.h"
+#include "core/console/model/console.h"
 #include "core/console/object/operations.h"
 #include "core/console_item_type.h"
 #include "core/fsmo.h"
@@ -218,7 +219,8 @@ QSet<StandardAction> PolicyOUImpl::get_standard_actions(const QModelIndex &index
 
     out.insert(StandardAction_Properties);
 
-    const bool can_refresh = console_item_get_was_fetched(index);
+    const ConsoleModelIndex item(index);
+    const bool can_refresh = item.was_fetched();
     if (can_refresh) {
         out.insert(StandardAction_Refresh);
     }
@@ -348,8 +350,8 @@ void policy_ou_impl_add_objects_to_console(ConsoleWidget *console, const QList<A
         return;
     }
 
-    const bool parent_was_fetched = console_item_get_was_fetched(parent);
-    if (!parent_was_fetched) {
+    const ConsoleModelIndex parent_item(parent);
+    if (! parent_item.was_fetched()) {
         return;
     }
 

@@ -32,6 +32,7 @@
 
 #include "ad_config.h"
 #include "ad_utils.h"
+#include "core/console/model/console.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "core/utils.h"
@@ -608,11 +609,12 @@ void TreeStateManager::restore_queries_subtree() {
 
             for (int row = 0; row < source_model_->rowCount(current); ++row) {
                 const QModelIndex child = source_model_->index(row, 0, current);
-                if (console_item_get_type(child) != ItemType_QueryFolder) {
+                const ConsoleModelIndex child_item(child);
+                if (child_item.get_type() != ItemType_QueryFolder) {
                     continue;
                 }
 
-                if (child.data(Qt::DisplayRole).toString() == part) {
+                if (child_item.get_name() == part) {
                     child_idx = child;
                     break;
                 }
@@ -843,12 +845,12 @@ void TreeStateManager::restore_queries_subtree_selection(const QString &name,
 
         for (int row = 0; row < source_model_->rowCount(current); ++row) {
             const QModelIndex child = source_model_->index(row, 0, current);
-
-            if (console_item_get_type(child) != expected_type) {
+            const ConsoleModelIndex child_item(child);
+            if (child_item.get_type() != expected_type) {
                 continue;
             }
 
-            if (child.data(Qt::DisplayRole).toString() == parts[i]) {
+            if (child_item.get_name() == parts[i]) {
                 child_idx = child;
                 break;
             }
@@ -858,8 +860,8 @@ void TreeStateManager::restore_queries_subtree_selection(const QString &name,
         }
         current = child_idx;
     }
-    if (current.isValid() &&
-        console_item_get_type(current) == type) {
+    const ConsoleModelIndex current_item(current);
+    if (current.isValid() && (current_item.get_type() == type)) {
         console_->set_current_scope(current);
     }
 }
@@ -870,8 +872,9 @@ TreeStateManager::SelectedItemData TreeStateManager::selected_item_data() {
             return SelectedItemData{ItemType_Unassigned, QString()};
         }
 
+        const ConsoleModelIndex selected_item(selected_idx);
         const ItemType item_type =
-            static_cast<ItemType>(console_item_get_type(selected_idx));
+            static_cast<ItemType>(selected_item.get_type());
         QString name_data;
         switch (item_type) {
             case ItemType_Object:

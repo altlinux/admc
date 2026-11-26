@@ -33,6 +33,7 @@
 #include "core/ad.h"
 #include "core/console/object/drag_n_drop.h"
 #include "core/console/object/operations.h"
+#include "core/console/model/console.h"
 #include "core/console/model/object.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
@@ -361,6 +362,7 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(
     const QModelIndex &index,
     const bool single_selection) const
 {
+    const ConsoleModelIndex console_item(index);
     QSet<StandardAction> out;
 
     out.insert(StandardAction_Properties);
@@ -368,13 +370,13 @@ QSet<StandardAction> ObjectImpl::get_standard_actions(
     // NOTE: only add refresh action if item was fetched,
     // this filters out all the objects like users that
     // should never get refresh action
-    const bool can_refresh = console_item_get_was_fetched(index);
+    const bool can_refresh = console_item.was_fetched();
     if (can_refresh && single_selection && refresh_action_enabled) {
         out.insert(StandardAction_Refresh);
     }
 
-    const ConsoleObjectModelIndex item(index);
-    if (single_selection && item.has_renameable_class()) {
+    const ConsoleObjectModelIndex object_item(index);
+    if (single_selection && object_item.has_renameable_class()) {
         out.insert(StandardAction_Rename);
     }
 

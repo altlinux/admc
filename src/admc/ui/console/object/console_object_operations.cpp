@@ -26,6 +26,7 @@
 
 #include "ad_object.h"
 #include "core/ad.h"
+#include "core/console/model/console.h"
 #include "core/console/object/operations.h"
 #include "core/console/object/server_dn_attrs_updater.h"
 #include "core/console/object/site_dn_attrs_updater.h"
@@ -281,9 +282,10 @@ void ConsoleObjectTreeOperations::add_objects_to_console(
         return;
     }
 
+    const ConsoleModelIndex parent_item(parent);
     // NOTE: don't add if parent wasn't fetched yet. If that is the case then
     // the object will be added naturally when parent is fetched.
-    if (! console_item_get_was_fetched(parent)) {
+    if (! parent_item.was_fetched()) {
         return;
     }
 
@@ -591,7 +593,8 @@ void ConsoleObjectTreeOperations::console_object_create(
                                                         ad_inner,
                                                         { created_dn },
                                                         pso_root);
-                    if (console_item_get_was_fetched(pso_root)) {
+                    const ConsoleModelIndex pso_root_item(pso_root);
+                    if (pso_root_item.was_fetched()) {
                         target_console->refresh_scope(pso_root);
                     }
                 }

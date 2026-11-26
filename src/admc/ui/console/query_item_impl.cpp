@@ -28,6 +28,7 @@
 #include <QStandardPaths>
 
 #include "adldap.h"
+#include "core/console/model/console.h"
 #include "core/console/model/query.h"
 #include "core/console/object/operations.h"
 #include "core/console/query_item.h"
@@ -135,8 +136,8 @@ QSet<StandardAction> QueryItemImpl::get_standard_actions(
         out.insert(StandardAction_Cut);
         out.insert(StandardAction_Copy);
     }
-
-    const bool can_refresh = console_item_get_was_fetched(index);
+    const ConsoleModelIndex item(index);
+    const bool can_refresh = item.was_fetched();
     if (can_refresh && single_selection) {
         out.insert(StandardAction_Refresh);
     }

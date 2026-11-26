@@ -27,6 +27,7 @@
 #include <QTreeView>
 
 #include "adldap.h"
+#include "core/console/model/console.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/managers/icon_manager.h"
@@ -161,8 +162,8 @@ LinkedPoliciesWidget::~LinkedPoliciesWidget()
 }
 
 void LinkedPoliciesWidget::update(const QModelIndex &ou_index) {
-    const ItemType type = (ItemType) console_item_get_type(ou_index);
-    if (type != ItemType_PolicyOU) {
+    const ConsoleModelIndex item(ou_index);
+    if (item.get_type() != ItemType_PolicyOU) {
         return;
     }
 

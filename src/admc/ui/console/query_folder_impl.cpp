@@ -29,6 +29,7 @@
 #include <QStandardPaths>
 
 #include "adldap.h"
+#include "core/console/model/console.h"
 #include "core/console/model/query.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
@@ -486,9 +487,7 @@ void console_query_tree_save(ConsoleWidget *console) {
         const QString path =
             console_query_folder_path(index, console);
 
-        const ItemType type =
-            static_cast<ItemType>(console_item_get_type(index));
-
+        const ConsoleModelIndex console_item(index);
         QStringList child_list;
 
         for (int i = 0; i < model->rowCount(index); ++i) {
@@ -501,7 +500,7 @@ void console_query_tree_save(ConsoleWidget *console) {
             child_list.append(child_path);
         }
 
-        if (type == ItemType_QueryFolder) {
+        if (console_item.get_type() == ItemType_QueryFolder) {
             const bool is_root =
                 index.parent() == console->domain_info_index();
 
@@ -515,7 +514,7 @@ void console_query_tree_save(ConsoleWidget *console) {
             data["child_list"] = child_list;
             folder_list[path] = data;
         }
-        else if (type == ItemType_QueryItem) {
+        else if (console_item.get_type() == ItemType_QueryItem) {
             item_list[path] =
                 console_query_item_save_hash(index);
         }
@@ -704,8 +703,8 @@ void console_query_move(ConsoleWidget *console,
             const QPersistentModelIndex new_parent =
                 new_parent_map[index.parent()];
 
-            const ItemType type = (ItemType) console_item_get_type(index);
-            if (type == ItemType_QueryItem) {
+            const ConsoleModelIndex console_item(index);
+            if (console_item.get_type() == ItemType_QueryItem) {
                 const ConsoleQueryModelIndex item(index);
                 const QString description = item.get_description();
                 const QString filter = item.get_filter();
@@ -719,7 +718,7 @@ void console_query_move(ConsoleWidget *console,
                                               scope_is_children, new_parent);
 
                 created_list.append(item_index);
-            } else if (type == ItemType_QueryFolder) {
+            } else if (console_item.get_type() == ItemType_QueryFolder) {
                 const ConsoleQueryModelIndex item(index);
                 const QString name = item.get_name();
                 const QString description = item.get_description();

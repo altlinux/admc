@@ -25,6 +25,7 @@
 #include <QStandardItem>
 
 #include "adldap.h"
+#include "core/console/model/console.h"
 #include "core/console_item_type.h"
 #include "core/fsmo.h"
 #include "core/globals.h"
@@ -115,16 +116,17 @@ void PolicyImpl::selected_as_scope(const QModelIndex &index) {
         return;
     }
 
+    const ConsoleModelIndex item(index);
+
     // When selecting a policy, check it's permissions to
     // make sure that they permissions of GPT and GPC match.
     // If they don't, offer to update GPT permissions.
     const QString selected_gpo = index.data(PolicyRole_DN).toString();
     bool ok = true;
     bool perms_ok = true;
-    const bool was_fetched = console_item_get_was_fetched(index);
     // Dont check perms if item was already fetched. It helps to avoid excessive
     // freezes.
-    if (!was_fetched) {
+    if (! item.was_fetched()) {
         perms_ok  = ad.gpo_check_perms(selected_gpo, &ok);
     }
 
@@ -220,10 +222,8 @@ void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
 
 void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
     const QModelIndex parent_index = index_list[0].parent();
-    const ItemType parent_type = (ItemType) console_item_get_type(parent_index);
-    const bool parent_is_ou = (parent_type == ItemType_PolicyOU);
-
-    if (parent_is_ou) {
+    const ConsoleModelIndex parent_item(parent_index);
+    if (parent_item.get_type() == ItemType_PolicyOU) {
         const QString ou_dn = parent_index.data(PolicyOURole_DN).toString();
 
         console_policy_remove_link({ console },
@@ -881,10 +881,8 @@ void policy_add_links(const QList<ConsoleWidget *> &console_list,
                         continue;
                     }
 
-                    const bool ou_was_fetched =
-                        console_item_get_was_fetched(ou_index);
-
-                    if (! ou_was_fetched) {
+                    const ConsoleModelIndex item(ou_index);
+                    if (! item.was_fetched()) {
                         continue;
                     }
 

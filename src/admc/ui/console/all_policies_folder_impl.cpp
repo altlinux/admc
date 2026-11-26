@@ -25,6 +25,7 @@
 #include <QMessageBox>
 
 #include "adldap.h"
+#include "core/console/model/console.h"
 #include "core/console_item_type.h"
 #include "core/fsmo.h"
 #include "core/globals.h"
@@ -162,9 +163,8 @@ void all_policies_folder_impl_add_objects(ConsoleWidget *console, const QList<Ad
     if (!parent.isValid()) {
         return;
     }
-
-    const bool parent_was_fetched = console_item_get_was_fetched(parent);
-    if (!parent_was_fetched) {
+    const ConsoleModelIndex parent_item(parent);
+    if (! parent_item.was_fetched()) {
         return;
     }
 

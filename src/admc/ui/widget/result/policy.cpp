@@ -27,6 +27,7 @@
 #include <QTreeView>
 
 #include "adldap.h"
+#include "core/console/model/console.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "core/managers/gplink_manager.h"
@@ -119,8 +120,8 @@ PolicyResultsWidget::~PolicyResultsWidget() {
 }
 
 void PolicyResultsWidget::update(const QModelIndex &index) {
-    const ItemType type = (ItemType) console_item_get_type(index);
-    if (type != ItemType_Policy) {
+    const ConsoleModelIndex item(index);
+    if (item.get_type() != ItemType_Policy) {
         return;
     }
 

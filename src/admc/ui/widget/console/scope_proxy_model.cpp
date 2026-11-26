@@ -19,6 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "core/console/model/console.h"
 #include "ui/widget/console/scope_proxy_model.h"
 #include "ui/widget/console/console_widget_p.h"
 
@@ -27,8 +28,8 @@
 // expander to be shown while the item is unfetched. After
 // the item is fetched, normal behavior is restored.
 bool ScopeProxyModel::hasChildren(const QModelIndex &parent) const {
-    const bool was_fetched = parent.data(ConsoleRole_WasFetched).toBool();
-    if (! was_fetched) {
+    const ConsoleModelIndex item(parent);
+    if (! item.was_fetched()) {
         return true;
     } else {
         return QSortFilterProxyModel::hasChildren(parent);
@@ -36,17 +37,16 @@ bool ScopeProxyModel::hasChildren(const QModelIndex &parent) const {
 }
 
 bool ScopeProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const {
-    const QModelIndex source_index = sourceModel()->index(source_row, 0, source_parent);
-
-    const bool is_accepted = source_index.data(ConsoleRole_IsScope).toBool() ||
-                                source_index.data(ConsoleRole_IsHidden).toBool();
-
+    const ConsoleModelIndex item(sourceModel()->index(source_row, 0, source_parent));
+    const bool is_accepted = item.is_scope() || item.is_hidden();
     return is_accepted;
 }
 
 bool ScopeProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const {
-    const int left_sort_index = left.data(ConsoleRole_SortIndex).toInt();
-    const int right_sort_index = right.data(ConsoleRole_SortIndex).toInt();
+    const ConsoleModelIndex left_item(left);
+    const ConsoleModelIndex right_item(right);
+    const int left_sort_index = left_item.get_sort_index();
+    const int right_sort_index = right_item.get_sort_index();
 
     if (left_sort_index != right_sort_index) {
         return left_sort_index < right_sort_index;
