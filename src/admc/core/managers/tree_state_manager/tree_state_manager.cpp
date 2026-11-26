@@ -147,7 +147,7 @@ void TreeStateManager::enqueue_restore_task(
     switch (item_type) {
         case ItemType_Object:
             task.dn_queue = prepare_restore_dn_queue(
-                root.data(ObjectRole_DN).toString(),
+                ConsoleObjectModelIndex(root).get_dn(),
                 name_list);
             break;
 
@@ -264,7 +264,7 @@ void TreeStateManager::save_object_subtree(const QModelIndex &parent,
     const QModelIndex proxy_parent = proxy_model_->mapFromSource(parent);
 
     if (proxy_parent.isValid() && view_->isExpanded(proxy_parent)) {
-        expanded_dn_list.append(parent.data(ObjectRole_DN).toString());
+        expanded_dn_list.append(ConsoleObjectModelIndex(parent).get_dn());
 
         const QList<QModelIndex> expanded_list =
             expanded_index_list(parent);
@@ -333,9 +333,8 @@ void TreeStateManager::save_policy_subtree() {
         if (proxy_domain_idx.isValid() &&
             view_->isExpanded(proxy_domain_idx)) {
 
-            const QString domain_dn =
-                domain_idx.data(PolicyOURole_DN).toString();
-
+            const ConsolePolicyOUModelIndex domain_item(domain_idx);
+            const QString domain_dn = domain_item.get_dn();
             if (!domain_dn.isEmpty() &&
                 !expanded_dn_list.contains(domain_dn)) {
                 expanded_dn_list.prepend(domain_dn);
