@@ -80,6 +80,25 @@ enum ObjectRole {
     ObjectRole_LAST,
 };
 
+// TODO: Find a way to unite policy, policy ou and object subtree
+// roles. It'll help to not include all impl headers every time
+// to get mentioned roles.
+enum PolicyOURole {
+    PolicyOURole_DN = MyConsoleRole_LAST + 1,
+    PolicyOURole_Inheritance_Block,
+
+    PolicyOURole_LAST,
+};
+
+// TODO: Find a way to unite policy, policy ou and object subtree
+// roles. It'll help to not include all impl headers every time
+// to get mentioned roles.
+enum PolicyRole {
+    PolicyRole_DN = ConsoleRole_LAST + 1,
+    PolicyRole_GPO_Status,
+    PolicyRole_LAST,
+};
+
 enum StandardAction {
     StandardAction_Copy,
     StandardAction_Cut,

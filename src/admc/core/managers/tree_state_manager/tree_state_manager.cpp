@@ -33,6 +33,9 @@
 #include "ad_config.h"
 #include "ad_utils.h"
 #include "core/console/model/console.h"
+#include "core/console/model/object.h"
+#include "core/console/model/policy.h"
+#include "core/console/model/policy_ou.h"
 #include "core/globals.h"
 #include "core/settings.h"
 #include "core/utils.h"
@@ -877,13 +880,13 @@ TreeStateManager::SelectedItemData TreeStateManager::selected_item_data() {
         QString name_data;
         switch (item_type) {
             case ItemType_Object:
-                name_data = selected_idx.data(ObjectRole_DN).toString();
+                name_data = ConsoleObjectModelIndex(selected_idx).get_dn();
                 break;
             case ItemType_PolicyOU:
-                name_data = selected_idx.data(PolicyOURole_DN).toString();
+                name_data = ConsolePolicyOUModelIndex(selected_idx).get_dn();
                 break;
             case ItemType_Policy:
-                name_data = selected_idx.data(PolicyRole_DN).toString();
+                name_data = ConsolePolicyModelIndex(selected_idx).get_dn();
                 break;
             case ItemType_QueryFolder:
             {
