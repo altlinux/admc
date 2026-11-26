@@ -62,6 +62,7 @@ set(ADMC_SOURCES
     core/admc_translator.cpp
     core/attribute.cpp
     core/changelog.cpp
+    core/console/console.cpp
     core/console/object/drag_n_drop.cpp
     core/console/object/operations.cpp
     core/console/object/site_dn_attrs_updater.cpp

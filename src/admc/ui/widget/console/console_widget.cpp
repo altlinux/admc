@@ -39,6 +39,7 @@
 #include <algorithm>
 
 #include "ad_config.h"
+#include "core/console/console.h"
 #include "core/console_item_type.h"
 #include "core/globals.h"
 #include "ui/status.h"
@@ -54,17 +55,6 @@
 static const QString SPLITTER_STATE = "SPLITTER_STATE";
 static const QString CONSOLE_TREE_STATE = "CONSOLE_TREE_STATE";
 static const QString DESCRIPTION_BAR_STATE = "DESCRIPTION_BAR_STATE";
-
-static const QList<StandardAction> STANDARD_ACTION_LIST = {
-    StandardAction_Copy,
-    StandardAction_Cut,
-    StandardAction_Rename,
-    StandardAction_Delete,
-    StandardAction_Paste,
-    StandardAction_Print,
-    StandardAction_Refresh,
-    StandardAction_Properties,
-};
 
 QString results_state_name(const int type);
 
