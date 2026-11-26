@@ -30,6 +30,8 @@
 #include <QModelIndex>
 #include <QString>
 
+#include "core/console_item_type.h"
+
 /**
  * @brief Console model index implementation.
  *
@@ -40,7 +42,7 @@ public:
     ConsoleModelIndex() = default;
     explicit ConsoleModelIndex(const QModelIndex& index);
     QString get_name() const;
-    int get_type() const;
+    ItemType get_type() const;
     int get_sort_index() const;
     bool was_fetched() const;
     bool is_scope() const;

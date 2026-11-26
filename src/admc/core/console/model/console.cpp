@@ -35,8 +35,8 @@ QString ConsoleModelIndex::get_name() const {
     return data(Qt::DisplayRole).toString();
 }
 
-int ConsoleModelIndex::get_type() const {
-    return data(ConsoleRole_Type).toInt();
+ItemType ConsoleModelIndex::get_type() const {
+    return static_cast<ItemType>(data(ConsoleRole_Type).toInt());
 }
 
 int ConsoleModelIndex::get_sort_index() const {

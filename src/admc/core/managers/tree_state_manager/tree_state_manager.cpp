@@ -875,8 +875,7 @@ TreeStateManager::SelectedItemData TreeStateManager::selected_item_data() {
         }
 
         const ConsoleModelIndex selected_item(selected_idx);
-        const ItemType item_type =
-            static_cast<ItemType>(selected_item.get_type());
+        const ItemType item_type = selected_item.get_type();
         QString name_data;
         switch (item_type) {
             case ItemType_Object:
