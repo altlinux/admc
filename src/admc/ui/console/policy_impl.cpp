@@ -26,6 +26,8 @@
 
 #include "adldap.h"
 #include "core/console/model/console.h"
+#include "core/console/model/policy.h"
+#include "core/console/model/policy_ou.h"
 #include "core/console_item_type.h"
 #include "core/fsmo.h"
 #include "core/globals.h"
@@ -116,12 +118,12 @@ void PolicyImpl::selected_as_scope(const QModelIndex &index) {
         return;
     }
 
-    const ConsoleModelIndex item(index);
+    const ConsolePolicyModelIndex item(index);
 
     // When selecting a policy, check it's permissions to
     // make sure that they permissions of GPT and GPC match.
     // If they don't, offer to update GPT permissions.
-    const QString selected_gpo = index.data(PolicyRole_DN).toString();
+    const QString selected_gpo = item.get_dn();
     bool ok = true;
     bool perms_ok = true;
     // Dont check perms if item was already fetched. It helps to avoid excessive
@@ -181,8 +183,7 @@ QSet<QAction *> PolicyImpl::get_custom_actions(
     if (single_selection) {
         out.insert(add_link_action);
         out.insert(edit_action);
-        if (index.parent().data(ConsoleRole_Type).toInt() == ItemType_PolicyOU)
-        {
+        if (ConsoleModelIndex(index.parent()).is_type(ItemType_PolicyOU)) {
             update_gplink_option_check_actions();
             out.insert(enforce_action);
             out.insert(disable_action);
@@ -223,9 +224,8 @@ void PolicyImpl::rename(const QList<QModelIndex> &index_list) {
 void PolicyImpl::delete_action(const QList<QModelIndex> &index_list) {
     const QModelIndex parent_index = index_list[0].parent();
     const ConsoleModelIndex parent_item(parent_index);
-    if (parent_item.get_type() == ItemType_PolicyOU) {
-        const QString ou_dn = parent_index.data(PolicyOURole_DN).toString();
-
+    if (parent_item.is_type(ItemType_PolicyOU)) {
+        const QString ou_dn = ConsolePolicyOUModelIndex(parent_index).get_dn();
         console_policy_remove_link({ console },
                                    policy_results,
                                    ItemType_Policy,

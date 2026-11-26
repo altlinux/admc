@@ -45,6 +45,7 @@ public:
     ItemType get_type() const;
     int get_sort_index() const;
     bool was_fetched() const;
+    bool is_type(const ItemType &type) const;
     bool is_scope() const;
     bool is_hidden() const;
 };

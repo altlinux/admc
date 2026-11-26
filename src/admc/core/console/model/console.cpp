@@ -47,6 +47,10 @@ bool ConsoleModelIndex::was_fetched() const {
     return data(ConsoleRole_WasFetched).toBool();
 }
 
+bool ConsoleModelIndex::is_type(const ItemType& type) const {
+    return get_type() == type;
+}
+
 bool ConsoleModelIndex::is_scope() const {
     return data(ConsoleRole_IsScope).toBool();
 }
