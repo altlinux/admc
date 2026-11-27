@@ -22,6 +22,7 @@
 #include <QPushButton>
 #include <QStandardItemModel>
 
+#include "core/console/model/object.h"
 #include "core/settings.h"
 #include "ui/console/object/object_impl.h"
 #include "ui/dialog/select/object.h"
@@ -66,8 +67,7 @@ QList<QString> SelectObjectMatchDialog::get_selected() const {
     const QList<QModelIndex> selected_indexes = ui->view->selectionModel()->selectedRows();
 
     for (const QModelIndex &index : selected_indexes) {
-        const QString dn = index.data(ObjectRole_DN).toString();
-        out.append(dn);
+        out.append(ConsoleObjectModelIndex(index).get_dn());
     }
 
     return out;
