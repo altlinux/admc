@@ -473,6 +473,7 @@ bool ConsoleObjectTreeOperations::console_object_deletion_dialog(
  */
 static QStandardItem *console_add_password_settings(ConsoleWidget *console,
                                                     AdInterface &ad) {
+    Q_UNUSED(ad);
     QStandardItem *password_settings_root = console->add_scope_item(
         ItemType_PasswordSettings,
         console->domain_info_index())[0];
