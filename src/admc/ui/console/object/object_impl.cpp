@@ -252,9 +252,6 @@ QSet<QAction *> ObjectImpl::get_custom_actions(
     QSet<QAction *> out;
     const ConsoleObjectModelIndex item(index);
     const QString object_class = item.get_main_class();
-    const QList<QString> container_classes = g_adconfig->get_filter_containers();
-    const bool is_container = container_classes.contains(object_class);
-
     const bool is_user = (object_class == CLASS_USER);
     const bool is_group = (object_class == CLASS_GROUP);
     const bool is_domain = (object_class == CLASS_DOMAIN);
@@ -264,13 +261,9 @@ QSet<QAction *> ObjectImpl::get_custom_actions(
     const bool is_site_links_container =
         (object_class == CLASS_INTER_SITE_TRANSPORT);
 
-
-    const bool account_disabled =
-        index.data(ObjectRole_AccountDisabled).toBool();
-
     if (single_selection) {
         // Single selection only
-        if (is_container) {
+        if (item.is_container()) {
             out.insert(new_action);
 
             if (find_action_enabled) {
@@ -283,7 +276,7 @@ QSet<QAction *> ObjectImpl::get_custom_actions(
         }
 
         if (is_user || is_computer) {
-            if (account_disabled) {
+            if (item.is_account_disabled()) {
                 out.insert(enable_action);
             } else {
                 out.insert(disable_action);

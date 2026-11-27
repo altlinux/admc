@@ -23,8 +23,10 @@
  * @brief Console object model index implementation.
  */
 
+#include "ad_config.h"
 #include "core/console/console.h"
 #include "core/console/model/object.h"
+#include "core/globals.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constants.
@@ -124,6 +126,21 @@ bool ConsoleObjectModelIndex::has_renameable_class() const {
 bool ConsoleObjectModelIndex::is_moveable() const {
     return ((data(ObjectRole_CannotMove).toBool() == false) &&
             (! has_non_moveable_class()));
+}
+
+bool ConsoleObjectModelIndex::is_account_disabled() const {
+    return data(ObjectRole_AccountDisabled).toBool();
+}
+
+/**
+ * Check if the main class of the object belongs to container classes.
+ *
+ * @return True if the main class of the object belongs to container classes,
+ * false otherwise.
+ */
+bool ConsoleObjectModelIndex::is_container() const {
+    const QStringList container_classes = g_adconfig->get_filter_containers();
+    return container_classes.contains(get_main_class());
 }
 
 /**

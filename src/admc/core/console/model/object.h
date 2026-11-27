@@ -62,6 +62,8 @@ public:
     bool has_renameable_class() const;
     bool is_moveable() const;
     bool is_deleteable() const;
+    bool is_account_disabled() const;
+    bool is_container() const;
     AdObject search_object(AdInterface &ad) const;
     static QList<QString> get_unique_classes(const QList<QModelIndex> &indices);
 };
