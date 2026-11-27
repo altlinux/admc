@@ -27,6 +27,7 @@
 #include "ad_object.h"
 #include "core/ad.h"
 #include "core/console/model/console.h"
+#include "core/console/model/object.h"
 #include "core/console/object/operations.h"
 #include "core/console/object/server_dn_attrs_updater.h"
 #include "core/console/object/site_dn_attrs_updater.h"
@@ -663,8 +664,7 @@ void ConsoleObjectTreeOperations::console_object_rename(
 
     QString old_dn;
     if (!index_list.isEmpty()) {
-        const QModelIndex index = index_list[0];
-        old_dn = index.data(dn_role).toString();
+        old_dn = ConsoleModelIndex(index_list[0]).get_string(dn_role);
     } else {
         old_dn = QString();
     }
@@ -757,9 +757,9 @@ void ConsoleObjectTreeOperations::console_object_delete(
 
     QList<QString> deleted_list;
     for (const QModelIndex &idx : index_list) {
-        const QString target_dn = idx.data(dn_role).toString();
-        const QStringList obj_classes =
-            idx.data(ObjectRole_ObjectClasses).toStringList();
+        const ConsoleObjectModelIndex item(idx);
+        const QString target_dn = item.get_string(dn_role);
+        const QStringList obj_classes = item.get_all_classes();
         const QString obj_class =
             obj_classes.isEmpty() ? QString() : obj_classes.last();
 

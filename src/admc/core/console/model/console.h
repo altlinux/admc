@@ -41,6 +41,7 @@ class ConsoleModelIndex : public QModelIndex {
 public:
     ConsoleModelIndex() = default;
     explicit ConsoleModelIndex(const QModelIndex& index);
+    QString get_string(const int &role) const;
     QString get_name() const;
     ItemType get_type() const;
     int get_sort_index() const;

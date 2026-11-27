@@ -31,6 +31,16 @@ ConsoleModelIndex::ConsoleModelIndex(const QModelIndex& index)
     // Do nothing.
 }
 
+/**
+ * Get a string data from the model.
+ *
+ * @param role Model data role to get.
+ * @return A string value of the data.
+ */
+QString ConsoleModelIndex::get_string(const int &role) const {
+    return data(role).toString();
+}
+
 QString ConsoleModelIndex::get_name() const {
     return data(Qt::DisplayRole).toString();
 }
